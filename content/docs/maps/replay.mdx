@@ -1,0 +1,59 @@
+---
+title: "Replay Viewer"
+---
+
+The replay viewer lets you play back a map and watch positions,
+kills, and ultimates unfold over time. It sits on the **Replay**
+tab of a scrim's map page.
+
+The replay viewer is available on paid plans (Basic and Premium).
+Older scrims that were parsed before positional data support was
+added will not show a Replay tab.
+
+<Callout type="info">
+    The replay viewer needs two things to work: positional data on the
+    scrim, and a calibrated map. If either is missing, the Replay tab
+    will not appear or will show an empty state. Map calibration is
+    handled by Parsertime admins for supported maps.
+</Callout>
+
+## Layout
+
+The viewer is a single view split into four panels:
+
+- **Map panel**: the map image overlaid with player markers. Markers
+  are colored by team and move as the match progresses. When a kill
+  happens, a brief line is drawn from the attacker to the victim and
+  fades after about two seconds.
+- **Timeline scrubber**: a horizontal scrubber along the bottom
+  showing match time. Drag the handle to seek to any moment.
+- **Event feed**: a chronological list of kills, ultimates, and other
+  events from the map.
+- **Player list**: each player with their current hero. Useful for
+  keeping track of who is on which team and what they are playing.
+
+## Controls
+
+- **Seek**: drag the scrubber to move through the match. The map
+  panel, event feed, and player list all update to match.
+- **Jump to an event**: click any row in the event feed to snap the
+  viewer to that moment.
+- **Highlight a player**: click a player in the player list to
+  highlight their marker on the map.
+- **Zoom and pan**: scroll to zoom the map, drag to pan.
+
+## Sharing a Moment
+
+The current timestamp is synced to the URL, so you can copy the link
+from your browser and share a direct link to a specific moment. When
+someone opens that link, the viewer opens at the same time. This is
+useful for pointing a teammate or coach at a specific fight without
+having to explain where to look.
+
+## How to Use It
+
+The replay viewer is most useful after you have spotted something in
+the killfeed, tempo chart, or heatmap and want to see exactly what
+happened. Jump to the moment from an event row, highlight the
+players involved, and step forward or back with the scrubber to see
+the positioning and timing around the play.

@@ -1,0 +1,97 @@
+---
+title: "Team Availability Calendar"
+---
+
+The Availability Calendar helps you find a practice time that works for
+your whole roster. Team owners and managers configure a weekly schedule
+and share a link, players click the times they're available and the grid
+shades itself so overlap is obvious at a glance.
+
+You can find the calendar on your team's page under the **Availability**
+tab.
+
+<Callout type="info">
+    The availability calendar is free for all users.
+</Callout>
+
+## For Team Owners and Managers
+
+Configure the schedule from **Availability Settings** on your team page.
+
+### Slot Granularity
+
+Choose how finely you want to divide the day:
+
+- **15 minutes**: best for tight scrim coordination.
+- **30 minutes**: a common middle ground.
+- **60 minutes**: simpler grid, fewer clicks from players.
+
+### Time Window
+
+Set the start and end hours of the grid (for example, 18:00–23:00) so
+players only see the range of times they might actually be available for
+practice.
+
+### Default Viewing Timezone
+
+A searchable combobox lets you pick the team's canonical timezone. It
+auto-detects your local timezone and offers the team's default, nearby
+regional zones, and the full list of IANA zones.
+
+### Discord Reminder
+
+Toggle on the Discord reminder to have the bot post a weekly reminder in
+your team's channel. You can configure:
+
+- **Day of week**
+- **Time**
+- An optional **channel** and **role mention**
+
+Discord reminders require the [Parsertime Discord bot](/discord-bot) to
+be installed in your server.
+
+### Sharing the Link
+
+Once the schedule is configured, share the public fill-and-view link with
+your roster. Players don't need a Parsertime account to fill it in, and
+you can password-protect the link if you'd prefer to keep it private.
+
+## For Players
+
+Open the link your coach or manager sent you, enter the password if
+prompted, and you'll see the weekly grid. Click cells to mark the times
+you're available, your responses save automatically.
+
+<Callout type="info">
+    You don't need a Parsertime account to fill in availability. Just
+    open the link and click the times that work for you.
+</Callout>
+
+## What You See
+
+The availability view shows:
+
+- A **weekly grid** with days across the columns and time slots down the
+  rows, in the granularity the team chose.
+- **Density coloring** on each cell, the more respondents available at a
+  time, the darker the cell, so overlapping windows jump out immediately.
+- **Response counts**, such as "3 responses so far", above the grid.
+- A **timezone label** so everyone knows which canonical time the grid is
+  displayed in.
+
+## Discord Reminders
+
+If your team has reminders configured, the Discord bot will post a weekly
+reminder in your channel at the configured day and time, with a direct
+link to the form.
+
+Admins can also trigger a reminder on demand with `/availability trigger`.
+See the [Discord bot](/discord-bot) page for full command details.
+
+## Timezone Handling
+
+The availability view defaults to the team's canonical timezone, but
+players' local times are reflected accurately when they fill in their
+slots. That way, a player in a different region sees their own local
+hours while the coach sees everyone aligned to the team's reference
+timezone.

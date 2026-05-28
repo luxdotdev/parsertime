@@ -1,0 +1,113 @@
+---
+title: "Win Probability Simulator"
+---
+
+The Win Probability Simulator is a match-prep tool that estimates your team's win rate
+for a hypothetical game based on bans, map, and composition. Use it to model opponent
+draft choices, test composition ideas, and identify which bans hurt your team the most
+before you step into a scrim or match.
+
+<Callout type="info">
+    The simulator is available to Premium subscribers. You can find it under the **Simulator**
+    tab on the team stats page.
+</Callout>
+
+## Prerequisites
+
+The simulator runs against your team's historical scrim data, so it needs at least one
+scrim's worth of data to render. If no game data exists for the selected time period,
+the tab shows a placeholder:
+
+> No game data available for the selected time period. Play some scrims to unlock the simulator.
+
+Upload a scrim or widen your time range to get started.
+
+## Layout
+
+The Simulator tab uses a two-column layout.
+
+- **Scenario Setup** on the left lets you configure the hypothetical match.
+- **Predicted Win Rate** on the right shows the output and a factor-by-factor breakdown.
+
+## Scenario Setup
+
+Configure the match you want to model. All inputs are optional, leaving fields empty
+simply excludes that factor from the prediction.
+
+### Enemy Bans
+
+Enter up to four heroes the opposing team has banned against you. The simulator compares
+these against your team's historical performance when those heroes are unavailable.
+
+### Your Team's Bans
+
+Enter up to four heroes your team plans to ban. The simulator uses this to factor in
+how much you're limiting the opponent's options.
+
+### Map
+
+Pick a map from the dropdown. Maps are grouped by mode, Control, Escort, Hybrid,
+Flashpoint, Push, and Clash, and the dropdown is searchable, so you can type a map
+name to jump straight to it.
+
+### Compositions
+
+Enter up to five heroes for your team composition and up to five heroes for the enemy
+team composition. The simulator evaluates how each composition matches up against the
+other on the selected map.
+
+### Reset
+
+The **Reset** button clears every input and returns the simulator to a blank state.
+
+## Predicted Win Rate
+
+Once you have inputs configured, the right column updates with a prediction.
+
+### Headline Output
+
+- **Predicted win rate**: a large percentage showing the estimated likelihood that your
+  team wins this scenario.
+- **Confidence badge**: High, Medium, or Low, based on how much data supports the
+  prediction. Lower confidence means the estimate is drawn from a smaller or less
+  consistent sample.
+- **Delta vs. baseline**: how this scenario compares to your team's baseline win rate
+  (for example, `+2.5% vs. base` means this scenario is 2.5 points better than your
+  overall average).
+
+### Insight Callout
+
+An insight callout highlights the single biggest factor driving the prediction, the
+ban, map, or composition choice that moves the needle most in either direction.
+
+### Breakdown
+
+The **Breakdown** section lists each factor's contribution to the final prediction,
+shown with colored bars and trend icons:
+
+- **Base rate**: your team's baseline win rate before any scenario adjustments.
+- **Enemy bans**: how the opponent's bans shift your expected win rate.
+- **Our bans**: how your bans shift the prediction.
+- **Map**: how your team historically performs on the selected map.
+- **Compositions**: how the matchup of your comp against theirs affects the outcome.
+
+Positive contributions push the prediction up; negative contributions pull it down.
+
+### Sample Size Warning
+
+<Callout type="warning" emoji="⚠️">
+    When the underlying sample size is small, a warning appears (for example, **Based on
+    N maps**). Treat low-sample predictions as directional rather than definitive, the
+    fewer games backing a scenario, the more room there is for noise.
+</Callout>
+
+## How Coaches Use It
+
+- **Draft prep**: model what the opponent is likely to ban and see which of your team's
+  strengths they're trying to erase.
+- **Composition testing**: try out comp ideas before running them in a scrim to see
+  whether the historical matchup data supports them.
+- **Ban priority**: flip bans in and out to find the combination that shifts your win
+  rate the most, then bring that priority list into the match.
+- **Map veto**: compare predictions across maps to see where you have the strongest
+  edge against a given opponent profile.

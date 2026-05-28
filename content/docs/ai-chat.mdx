@@ -1,0 +1,100 @@
+---
+title: "AI Analyst Chat"
+---
+
+The AI Analyst is a conversational assistant that answers questions about
+your team's scrim data in natural language. Instead of digging through tabs
+to find the numbers you need, you can ask things like "how did we do on
+Ilios last week?" and get a grounded answer backed by rich, structured cards.
+
+You can find the AI Analyst in the main navigation under **Analyst**, or go
+directly to `/chat`.
+
+<Callout type="info" eyebrow="Billing model">
+  AI Chat is metered against your **credit balance**. Top up once, chat until
+  the balance runs low, optionally auto-refill from your card on file. No
+  subscription required. See [Billing](/docs/settings/billing) for top-up
+  presets, auto-refill, and the transaction log. For current per-token
+  rates, see the [pricing page](https://parsertime.app/pricing).
+</Callout>
+
+A small balance indicator sits above the chat input. If your balance drops
+below the minimum required to send a message, the input disables and points
+you to the top-up flow. Low-balance warnings and refund / top-up
+confirmations are delivered through your configured
+[Discord notifications](/docs/discord-bot).
+
+## Starting a Conversation
+
+When you open the Analyst for the first time, you'll see a conversation
+window with an input at the bottom. Four suggested starter prompts are shown
+to help you get going:
+
+- "How did my team perform in our last scrim?"
+- "Which maps do we have the best win rate on?"
+- "What are our performance trends this month?"
+- "Who had the most outlier stats recently?"
+
+You can click one of these to send it immediately, or type your own question
+in the input. The AI works best with specific questions, include time
+windows, player names, or map names where relevant.
+
+## What the AI Can Do
+
+The Analyst has access to a set of tools for pulling data from your team
+before it answers. These include:
+
+- **Scrim analysis**: summarize a specific scrim or set of scrims.
+- **Map performance**: per-map breakdowns of your team's results.
+- **Team trends**: performance changes over a time window.
+- **Player performance**: individual player stats, comparisons, and outliers.
+- **Report generation**: produce a downloadable report for a scrim or time range.
+
+Ask in natural language, for example, "who's been dropping off on support
+this month?" or "summarize our last three Ilios scrims", and the AI pulls
+the underlying data before writing a response.
+
+## The Response Format
+
+Each AI response includes a written answer plus rich cards showing the
+structured data it referenced. Depending on the question, you may see:
+
+- **Scrim Analysis** cards with match results and headline stats
+- **Map Performance** breakdowns by map
+- **Team Trends** visualizations over time
+- **Player Performance** cards with per-player stats
+- **Reports** that you can download for offline review
+
+The cards make it easy to verify the numbers the AI is referencing and to
+dig deeper if you want more detail.
+
+## Interactions
+
+A few controls let you refine and reuse responses:
+
+- **Edit your message**: click the pencil icon on one of your messages to
+  revise the question and regenerate the answer.
+- **Regenerate**: click the regenerate button under the last AI response
+  if you'd like a fresh take.
+- **Copy**: copy any response to your clipboard.
+
+Conversations are saved to a sidebar history so you can return to a previous
+thread later instead of starting over.
+
+## When to Use the Analyst
+
+The Analyst is a good fit when you want a quick, grounded answer without
+manually digging through tabs, or as a starting point for a deeper review.
+It's also useful when you want to explore a loose hunch, "does anything
+stand out about our last few matches?", and let the AI surface the outliers
+for you.
+
+## Tips
+
+- Be specific. Include time windows, player names, and map names where
+  relevant.
+- The AI can only reason about scrims it has access to, if a scrim isn't
+  in your team's data, it can't include it.
+- Responses are based on your team's data, so results improve as you upload
+  more logs.
+- Use the rich cards to verify the numbers before acting on a conclusion.

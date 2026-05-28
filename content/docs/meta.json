@@ -1,0 +1,22 @@
+{
+  "pages": [
+    "index",
+    "teams",
+    "scrims",
+    "maps",
+    "stats",
+    "team-stats",
+    "csr",
+    "tsr",
+    "matchmaker",
+    "profile",
+    "ai-chat",
+    "coaching-canvas",
+    "availability",
+    "discord-bot",
+    "settings",
+    "reporting-bugs",
+    "known-issues",
+    "[Contact](https://parsertime.app/contact)"
+  ]
+}

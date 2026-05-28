@@ -1,0 +1,85 @@
+---
+title: "Stat Fluctuation Cards"
+---
+
+Visual cards displaying key statistics and their changes over time, with embedded charts.
+
+![Stat Fluctuation Cards](/stat-fluctuation-cards.png)
+
+## Available Statistics
+
+**MVP Metrics**
+- **MVP Score**: Overall performance score (higher is better)
+- **Total Map MVPs**: Count of times awarded map MVP
+
+**Impact Metrics**
+- **Fleta Deadlift %**: Percentage of team's total damage output
+- **Fight Reversal %**: Percentage of fights won after being down
+
+**Engagement Metrics**
+- **First Pick %**: Percentage of fights where you got first kill
+- **Total First Picks**: Count of first kills
+- **First Death %**: Percentage of fights where you died first  
+- **Total First Deaths**: Count of first deaths
+
+**Ultimate Efficiency**
+- **Avg Ult Charge Time**: Average seconds to charge ultimate
+- **Avg Time to Use Ult**: Average seconds holding ultimate before use
+- **Kills per Ultimate**: Average eliminations per ultimate used
+
+**Special Metrics**
+- **Drought Time**: Average time between eliminations
+- **Ajax Count**: Number of clutch multi-kills while critically wounded
+
+## Card Features
+
+**Value Display**
+- Large, bold primary value (average or sum depending on stat)
+- Absolute change value since start of timeframe
+- Percentage change with +/- indicator
+  - Green: Positive change (good stats increasing, bad stats decreasing)
+  - Red: Negative change (good stats decreasing, bad stats increasing)
+
+**Maximum Value** (for percentage/weighted stats)
+- Shows highest value achieved in timeframe
+- Helps understand peak performance
+
+**Embedded Charts**
+- **Bar Charts**: Used for cumulative stats (counts, totals)
+- **Area Charts**: Used for averaged stats (percentages, rates)
+- Color-coded by performance (green for positive trends, red for negative)
+- X-axis hidden for clean appearance
+- Charts show trend over entire timeframe
+
+## Timeframe Filtering
+
+Cards update based on selected timeframe in the parent view:
+- **One Week**: Last 7 days
+- **Two Weeks**: Last 14 days
+- **One Month**: Last 30 days
+- **Three Months**: Last 90 days
+- **Six Months**: Last 180 days
+- **One Year**: Last 365 days
+- **All Time**: Complete history
+
+## Aggregation Logic
+
+Statistics use appropriate aggregation:
+- **Sum**: Total counts (First Picks, Map MVPs, Ajax Count)
+- **Average**: Rates and percentages (MVP Score, Fleta Deadlift %, Ult Charge Time)
+
+## Stat Order
+
+Statistics display in a meaningful order:
+1. Overall performance (MVP metrics)
+2. Impact and engagement (Fleta, First Picks/Deaths)
+3. Fight control (Reversals)
+4. Ultimate efficiency
+5. Special achievements (Ajax)
+
+## Empty State
+
+If no data exists for the selected timeframe, a friendly empty state displays:
+- Chart icon
+- "No data available" message
+- Explanation that data is missing for this timeframe

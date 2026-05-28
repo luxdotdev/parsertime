@@ -1,0 +1,65 @@
+---
+title: "Billing"
+---
+
+The billing page allows you to manage your billing information and subscription.
+Here, you can view your subscription details, update your payment method, and more.
+
+## Plan Overview
+
+The plan overview section shows your current subscription plan and your usage details.
+
+![Billing page](/billing.png)
+
+You can see how many teams you have created, how many members you have in your teams, and how many scrims you have uploaded.
+
+You are also able to click the "View Other Plans" button to navigate to your billing portal via Stripe.
+This is where you can manage your subscription, update your payment method, and more.
+
+If you would like to see the benefits of each plan, please see the [Pricing](https://parsertime.app/pricing) page.
+
+## AI Credits
+
+[AI Chat](/docs/ai-chat) is metered separately, against a prepaid **credit
+balance** on your account. Your balance is shown at the top of the billing
+page and in a small indicator above the chat input.
+
+### Topping up
+
+Top-up presets are **$5, $10, $25, and $50**. Custom amounts are accepted
+above the $5 minimum. Top-ups settle through Stripe using the payment
+method on file for your account; if you do not have a payment method,
+adding a top-up will collect one.
+
+### Auto-refill
+
+Toggle **auto-refill** to keep your balance from running out mid-session.
+You set two values:
+
+- **Threshold**: when the balance drops below this, auto-refill triggers.
+  Default $2.00.
+- **Amount**: how much to add. Default $10.00.
+
+Auto-refill requires a payment method on file. The system is idempotent —
+two near-simultaneous chat messages that both push the balance below the
+threshold will only trigger one charge.
+
+### Transaction log
+
+The billing page shows the last 30 days of credit activity, with one row
+per event. Types include:
+
+- **TOPUP** — manual top-up
+- **AUTO_REFILL** — automated top-up
+- **CHARGE** — usage by AI Chat
+- **REFUND** — issued by support
+- **ADJUSTMENT** — admin correction
+
+Click through to a charge row to see the underlying chat turn it covered,
+which is useful when reconciling spend.
+
+### Low-balance warnings
+
+A Discord notification is sent when your balance drops below **$1.00** for
+the first time. A second warning is not sent until the balance is replenished
+above the threshold and crosses it again.

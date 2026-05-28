@@ -1,0 +1,47 @@
+---
+title: "Hero Mastery Grid"
+---
+
+An interactive grid showing all heroes the player has played, organized by role.
+
+![Hero Mastery Grid](/hero-mastery.png)
+
+## Hero Tiles
+
+Each hero displays:
+- **Hero Portrait**: Visual representation of the hero
+- **Hero Name**: Localized hero name
+- **SR Badge**: Skill rating with tier-colored icon
+- **Quick Stats** (on hover):
+  - Current SR and rank
+  - Percentile ranking
+  - Total time played
+  - Maps played (if unplaced)
+
+## SR Tier System
+
+Heroes are color-coded by skill rating:
+
+| Tier | SR Range | Color | Description |
+|------|----------|-------|-------------|
+| **Unplaced** | 0 | Gray | Less than 10 maps played |
+| **Bronze** | < 1,500 | Brown | Significantly below average performance |
+| **Silver** | 1,500 - 1,999 | Silver | Below average performance |
+| **Gold** | 2,000 - 2,499 | Gold | Average performance |
+| **Platinum** | 2,500 - 2,999 | Light Gray | Above average performance |
+| **Diamond** | 3,000 - 3,499 | Sky Blue | Very good performance |
+| **Masters** | 3,500 - 3,999 | Emerald Green | Excellent performance |
+| **Grandmaster** | 4,000 - 4,499 | Indigo | Exceptional performance |  
+| **Champion** | 4,500+ | Violet | Legendary performance |
+
+Please note that hero skill ratings do not match up 1:1 to Overwatch 2's skill rating system.
+The average player in Parsertime will have a skill rating of 2500, while likely being much higher in the game.
+
+## Role Organization
+
+Heroes are grouped and color-coded by role:
+- **Tank** (Blue dot): Frontline heroes with high survivability
+- **Damage** (Red dot): High damage output heroes
+- **Support** (Green dot): Healing and utility heroes
+
+Within each role, heroes are sorted by SR from highest to lowest. Clicking any hero tile navigates to that hero's leaderboard page.

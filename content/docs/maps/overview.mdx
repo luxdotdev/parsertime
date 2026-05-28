@@ -1,0 +1,310 @@
+---
+title: "Overview"
+---
+
+The map overview is the default view for each map. It shows basic information
+such as the total match time, the final score, the hero damage dealt by each team,
+and the team healing dealt. The overview also shows the stats table for each
+player, which includes stats like eliminations, deaths, and damage dealt. There
+is also an analysis section that contains information such as the team's first
+death percentage, which team got the most value out of their ultimates, and which
+player had the most first deaths. If a player played Lúcio and got their ultimate
+cancelled, it will be listed as an Ajax in the analysis section.
+
+## Basic Stats
+
+The basic stats section shows the total match time, the final score of the map, 
+the hero damage dealt by each team, and the team healing dealt. This section
+gives you a quick overview of how the map went and which team came out on top.
+Generally, the team with the most hero damage dealt tends to win the map, but
+there are exceptions to this rule.
+
+<Callout type="warning">
+    Due to limitations with the Workshop, the final score is NOT able to be 
+    tracked for Push maps. The final score will be displayed as "N/A". This
+    is a known issue and is being tracked on the [Known Issues](/known-issues)
+    page.
+</Callout>
+
+### Total Match Time
+
+The total match time is the amount of time that the map took to complete. This
+is measured by the Workshop and does not include any time spent in the lobby
+or in between rounds. The total match time is important because it can help
+you determine hero stats per 10 minutes, which can be useful for comparing
+players on the same hero.
+
+### Final Score
+
+The final score is the score that each team achieved on the map. This is
+important because it shows which team won the map. The final score is calculated
+differently for each map type.
+
+The calculation for Control looks like this:
+
+```sql
+CASE Control
+  -- Determine winner by comparing scores of both teams
+  IF finalRound.team_1_score > finalRound.team_2_score THEN
+    RETURN matchDetails.team_1_name
+  ELSE
+    RETURN matchDetails.team_2_name
+  ENDIF
+```
+
+This is the most basic calculation for determining the winner of a map. The
+winner is determined by comparing the scores of both teams and seeing which
+team scored more points. The team with the most points wins the map.
+
+The calculation for Escort looks like this:
+
+```sql
+CASE Escort
+  -- Evaluate win based on captures; if none, other team wins
+  IF team1Captures HAS NO ELEMENTS THEN
+    RETURN matchDetails.team_2_name
+  ENDIF
+  IF team2Captures HAS NO ELEMENTS THEN
+    RETURN matchDetails.team_1_name
+  ENDIF
+  
+  -- If both teams have captures, compare last capture times remaining
+  IF team1Captures.length EQUALS team2Captures.length THEN
+    IF team1Captures[last index].match_time_remaining > team2Captures[last index].match_time_remaining THEN
+      RETURN matchDetails.team_1_name
+    ELSE
+      RETURN matchDetails.team_2_name
+    ENDIF
+  ELSE
+    -- Otherwise, the team with more captures wins
+    IF team1Captures.length > team2Captures.length THEN
+      RETURN matchDetails.team_1_name
+    ELSE
+      RETURN matchDetails.team_2_name
+    ENDIF
+  ENDIF
+```
+
+This calculation is a bit more complex than the Control calculation. The winner
+is determined by comparing the number of captures that each team has. If one
+team has more captures than the other, they win the map. If both teams have
+the same number of captures, the team with the most time remaining on their
+last capture wins the map. This is important because it shows which team was
+able to push the payload the furthest in the least amount of time. This can
+be a good indicator of which team was able to work together and push the
+payload as a team.
+
+The calculation for Flashpoint looks like this:
+
+```sql
+CASE Flashpoint
+  -- Similar to Control, winner determined by team scores
+  IF finalRound.team_1_score > finalRound.team_2_score THEN
+    RETURN matchDetails.team_1_name
+  ELSE
+    RETURN matchDetails.team_2_name
+  ENDIF
+```
+
+This calculation is similar to the Control calculation. The winner is determined
+by comparing the scores of both teams and seeing which team scored more points.
+The team with the most points wins the map.
+
+The calculation for Hybrid looks like this:
+
+```sql
+CASE Hybrid
+  -- Similar logic to Escort but considers capture existence
+  IF team1Captures IS NOT DEFINED THEN
+    RETURN matchDetails.team_2_name
+  ENDIF
+  IF team2Captures IS NOT DEFINED THEN
+    RETURN matchDetails.team_1_name
+  ENDIF
+  
+  IF team1Captures.length EQUALS team2Captures.length THEN
+    IF team1Captures[last index].match_time_remaining > team2Captures[last index].match_time_remaining THEN
+      RETURN matchDetails.team_1_name
+    ELSE
+      RETURN matchDetails.team_2_name
+    ENDIF
+  ELSE
+    IF team1Captures.length > team2Captures.length THEN
+      RETURN matchDetails.team_1_name
+    ELSE
+      RETURN matchDetails.team_2_name
+    ENDIF
+  ENDIF
+```
+
+This calculation is similar to the Escort calculation. Due to
+the nature of Hybrid combining a first point capture and a payload push,
+the winner is determined by comparing the number of captures that each team
+has. If one team has more captures than the other, they win the map. If both
+teams have the same number of captures, the team with the most time remaining
+on their last capture wins the map.
+
+The calculation for Push looks like this:
+
+```sql
+CASE Push
+  -- Push map type does not calculate winner due to Workshop limitations
+  RETURN "N/A"
+```
+
+Unfortunately, the Push map type does not have a calculation for determining
+the winner. This is a known issue and is being tracked on the [Known Issues](/known-issues)
+page. This is due to the Workshop not tracking the Push objective as a capture
+or payload progress. The final score will be displayed as "N/A" until this
+issue is resolved.
+
+There are edge cases where the final score may not accurately reflect the
+winner of the map. If this happens, please reach out to us so we can investigate
+the issue further.
+
+<Callout type="info">
+    All calculations shown are in pseudocode and are not the actual code used
+    to determine the final score. The actual code is more complex. You can
+    find the implementation [here](https://github.com/luxdotdev/parsertime/blob/670637291ad439cd9decf6dd8240ab239d9f3746/src/lib/winrate.ts).
+</Callout>
+
+### Hero Damage Dealt
+
+The hero damage dealt is the total amount of damage that each team dealt to
+the enemy team. The amount of damage is an indicator of the value and pressure
+being applied by each team. The team with the most hero damage dealt tends to
+win the map, but there are exceptions to this rule.
+
+### Team Healing Dealt
+
+The team healing dealt is the total amount of healing that each team provided
+to their teammates. The amount of healing is an indicator of the sustain and
+survivability of each team. The team with the most team healing dealt is often
+the losing team due to taking more damage and needing more healing. However,
+this is not always the case and can vary depending on the team compositions
+and playstyles.
+
+## Player Stats Table
+
+The player stats table shows the stats for each player on the map. The following stats
+are included in the table:
+
+- Player Name
+- Role
+- Player Team
+- Time Played
+- Eliminations
+- Final Blows
+- Assists
+- Deaths
+- K/D Ratio
+- KA/D Ratio
+- Hero Damage Dealt
+- Damage Received
+- Healing Received 
+- Healing Dealt 
+- Damage Dealt/Healing Received Ratio
+- Ultimates Charged
+- Ultimates Used
+
+Here is a photo of the player stats table:
+
+![Player Stats Table](/maps/overview-table.png)
+*A view of the player stats table for a map.*
+
+The table is sorted by team and then by role. For example, team 1 is listed
+before team 2 and the roles are listed in the following order: Damage, Tank,
+Support. This makes it easier to compare players on the same team and role.
+The players in each role are sorted alphabetically by player name. This makes
+it easier to find a specific player and see how they performed on the map.
+
+The table columns are both hoverable and sortable. You can hover over a column
+header to see a description of what the column represents. You can also click
+on a column header to sort the table by that column. This makes it easier to
+find the information you are looking for and compare players on different stats.
+
+![Player name tooltip](/maps/player-name-tooltip.png)
+*A view of the player name column header tooltip for the player stats table.*
+
+![Sorting the table](/maps/sorted-by-hero-dmg.png)
+*A view of the player stats table sorted by hero damage dealt.*
+
+
+### Player Name
+
+The player name column shows the name of each player that participated in the map.
+
+<Callout type="info">
+    The player name is a clickable link that will take you to the individual
+    stats page for that player. This allows you to see how that player performed
+    on the map.
+</Callout>
+
+## Analysis
+
+The analysis section contains information about the map that can help you
+understand how the map went and what you can improve on. The following
+information is included in the analysis section:
+
+- First Death Percentage
+- Ultimate Value
+- First Deaths
+- Ajaxes (Optional)
+
+Here are two examples of the analysis section:
+
+![Analysis Section](/maps/analysis.png)
+*A view of the analysis section for a map. This includes an example of an Ajax.*
+
+![Analysis without Ajaxes](/maps/analysis-no-ajax.png)
+*A view of the analysis section without Ajaxes for a map.*
+
+The Ajax section is conditional and will only be displayed if a player played
+Lúcio and had their ultimate cancelled. This can be a rare occurrence and is
+not always present in the analysis section.
+
+### What is an Ajax?
+
+An Ajax is a term used to describe when a player (typically Lúcio) has their
+ultimate ability interupted or cancelled during its cast due to being stunned,
+hacked, or killed. The term is a reference to Ajax, a Contenders player who played
+for Atlanta Academy. He was known for dying mid-beat and losing his ultimate.
+
+Still confused? Check out [this explanation](https://www.reddit.com/r/Competitiveoverwatch/comments/olxekd/what_does_ajax_mean/).
+
+### First Death Percentage
+
+The first death percentage is the percentage of fights where a specific team
+had one of their players die first. First deaths are very impactful in Overwatch
+because they can lead to a team fight loss and a snowball effect. The team with
+the lowest first death percentage tends to win the map because they are able
+to stay alive longer, control more space, assert more pressure, and get more value.
+
+The first death percentage is calculated by counting the number of fights where
+a specific team had one of their players die first and dividing that by the total
+number of fights. This gives you a percentage that shows how often a team is
+losing the first player in a fight.
+
+<Callout type="info">
+    Fights are determined by finding each kill and
+    grouping them together based on the time between kills. If a kill happens within
+    15 seconds of another kill, it is considered part of the same fight. If a kill
+    happens more than 15 seconds after the last kill, it is considered a new fight.
+</Callout>
+
+### Ultimate Value
+
+The ultimate value is a metric that shows which team got the most value out of
+their ultimates. Ultimates are impactful abilities that can turn the tide of a
+fight. Not getting value out of an ultimate can be detrimental to a team and
+can lead to a lost fight. This metric shows which team got more kills as a result
+of their ultimates.
+
+### First Deaths
+
+The first deaths section shows which player had the most first deaths on the map.
+This metric is valuable because it shows which player is dying first in fights
+most often. If there is an outlier, it can be a sign that the player is out of
+position, not getting enough support, or not playing with their team. This can
+be a good indicator of where a team needs to improve and what they need to focus
+on in future maps.

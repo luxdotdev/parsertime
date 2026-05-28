@@ -1,0 +1,196 @@
+---
+title: "Scrims"
+---
+
+Scrims are the core feature of Parsertime. By uploading your map logs,
+you can see how your team performed in each scrim. You can also see how
+you performed individually, and compare your stats to other players.
+
+## Creating a Scrim
+*Please see the [Introduction](/#collecting-scrim-logs) for instructions on how to collect logs.*
+
+To create a scrim, click the "Create Scrim" button. You will be prompted to upload 
+the logs for the first map of the scrim.
+
+![Create Scrim](/create-scrim.png)
+*The create scrim button on an account with no scrims.*
+
+![Create Scrim Dialog](/create-scrim-dialog.png)
+*The create scrim dialog filled out with the data to create a scrim.*
+
+## Adding Maps to a Scrim
+After you've uploaded your first map, you can add more maps to the scrim by
+dragging and dropping the logs onto the "Add Map" card or by choosing a file.
+
+![Scrim view](/scrim-view.png)
+*The scrim view with the first map added. You can see the "Add Map" card right next to it.*
+
+## Scrim Overview Card
+
+The scrim overview card is available to Basic and Premium subscribers. It
+sits at the top of the scrim detail page and gives coaches a one-glance
+read of the scrim before they dive into the detail.
+
+The card surfaces:
+
+- A **W-L-D result badge**: green for wins, red for losses, so the
+  outcome is readable at a glance.
+- **Headline stats**: fight win rate, total fights, ultimate efficiency,
+  and first pick rate.
+- An **insights row** with icons highlighting standouts from the scrim:
+  - **MVP**: the player who had the strongest overall performance.
+  - **Most Improved**: the player whose numbers jumped the most
+    compared to their recent baseline.
+  - **Most Declined**: the player whose numbers dropped the most
+    compared to their recent baseline.
+  - **Positive Outlier**: a player who noticeably over-performed their
+    usual stat line.
+  - **Negative Outlier**: a player who noticeably under-performed their
+    usual stat line.
+
+The overview card is a quick scan before the rest of the review, pick
+out the headline numbers and the names you want to look closer at, then
+drop into the Analysis Accordion below for specifics.
+
+## Analysis Accordion
+
+The Analysis Accordion is a free feature available to all users. It sits
+on the scrim detail page and groups the full analysis into collapsible
+sections. You can expand sections individually or toggle all of them at
+once, so you can focus on one part of the review at a time or skim
+everything in parallel.
+
+### Player Performance
+
+A per-player stat table with highlights called out directly in the table.
+MVPs, positive and negative outliers, and most-improved players are all
+flagged so you don't have to scan manually.
+
+### Fights
+
+Head-to-head breakdowns of fight outcomes. You'll see:
+
+- Bars for **Fights Won**, **First Pick Rate**, and **First Death Rate**
+  against the opponent.
+- **Conditional fight win rates**: for example, your win rate in fights
+  with an ultimate advantage versus fights with an ultimate disadvantage.
+- Blue callouts that surface notable patterns, such as "Used ults first
+  in X fights (Y% WR)".
+
+### Ability Timing
+
+Shown when ability data is available for the scrim. Displays a grid of
+when key abilities were cast throughout the match so you can see spikes,
+trades, and timing patterns at a glance.
+
+### Ultimates
+
+A two-column team-versus-opponent breakdown of ultimate economy. Includes
+total ults used, efficiency percentage, and advantage rate, along with
+charts for role-by-role breakdowns and timing across the map.
+
+### Swaps
+
+Hero swap analysis. Shows your team's win rate when it swapped versus
+when it didn't, along with the timing of those swaps relative to fights,
+so you can tell whether a mid-map swap actually helped or not.
+
+## Sharing Scrims
+There are two ways to share a scrim. If you have added the scrim to your team during the
+scrim creation process, the scrim will be visible to all members of the team. If you have not
+added the scrim to your team, you can make the scrim publically available by clicking the
+"Edit" button and toggling on "Enable Guest Mode". This will allow anyone with the link to view
+the scrim.
+
+### Steps to make a scrim public:
+1. Click the "Edit" button on the scrim.
+![Scrim Edit Button](/scrim-edit-button.png)
+*The edit button on the scrim view.*
+
+2. Toggle on "Enable Guest Mode".
+![Enable Guest Mode](/enable-guest-mode.png)
+*The edit scrim dialog with the "Enable Guest Mode" toggled on.*
+
+3. Click "Update Scrim" to save your changes.
+
+## Editing Scrims
+You can edit a scrim by clicking the "Edit" button on the scrim view. This will allow you to
+change the scrim's name, re-assign the scrim to a team, enable guest mode, delete maps, 
+or delete the scrim entirely.
+
+![Scrim Edit View](/scrim-edit-view.png)
+*The edit scrim page.*
+
+You can change the name of the scrim by adding a new name in the "Display Name" field.
+This is how the scrim will be displayed on the dashboard. Once your changes are made, click
+"Update Scrim" to save your changes.
+
+### Re-assigning a Scrim to a Team
+
+To re-assign a scrim to a new team, click the "Team" selector and select the team from the menu that you 
+want to assign the scrim to. Once you have selected the team, click "Update Scrim" to save your changes.
+
+![Team Dropdown](/team-dropdown.png)
+*The team selector on the edit scrim page.*
+
+![Re-assign Scrim to Team](/reassign-scrim.png)
+*The team selector with the team selected.*
+
+### Adding Replay Codes to Maps
+
+To add a replay code to a map, click on the name of the map in the "Maps" section of the scrim edit page.
+Enter the desired replay code in the text field and click "Update Scrim" to save your changes.
+
+![Replay Code](/add-replay-code.png)
+*The replay code input field on the edit scrim page.*
+
+Once a replay code is added, it will be visible on the scrim overview page. You can click on the replay code
+to copy it to your clipboard.
+
+![Replay codes on the scrim dashboard.](/replay-code-view.png)
+*The replay code view on the scrim dashboard.*
+
+### Deleting Maps
+
+To delete a map from a scrim, navigate to the "Maps" section of the scrim edit page. Click the
+name of the map you want to delete. You will see a red "Delete" button.
+
+![Delete Map Button](/delete-map.png)
+*A view of the maps section with the delete button visible.*
+
+Click the "Delete" button to remove the map from the scrim. This will open a dialog asking you
+to confirm the deletion. Once you have confirmed the deletion, the map will be removed from the
+scrim and will no longer be accessible.
+
+<Callout type="error" emoji="❗">
+    Deleting a map is permanent and cannot be undone. Please be sure you want to delete
+    the map before confirming the deletion. We recommend keeping a backup of the log files
+    in case you need to re-upload the map.
+</Callout>
+
+## Deleting Scrims
+To delete a scrim, navigate to the scrim view and click the "Edit" button. This will open the
+edit scrim page. Click the "Delete Scrim" button to delete the scrim. This will open a dialog
+asking you to confirm the deletion. To avoid accidental deletions, you will need to type the
+name of the scrim to confirm the deletion. Once you have confirmed the deletion, the scrim will
+be removed from the database and will no longer be accessible.
+
+![Delete Scrim Dialog](/delete-scrim.png)
+*The delete scrim dialog. Notice that the delete button is disabled until you enter the name
+of the scrim.*
+
+<Callout type="error" emoji="❗">
+    Deleting a scrim is permanent and cannot be undone. Please be sure you want to delete
+    the scrim before confirming the deletion. If you are unsure, you can make the scrim private
+    by disabling guest mode.
+</Callout>
+
+Once you have deleted the scrim, it will no longer be visible on the dashboard or to anyone
+who has the link. If you have shared the scrim with your team, the scrim will be removed from
+the team's dashboard as well. You will be redirected to the dashboard after the scrim is deleted.
+
+**It is highly recommended to keep the logs for all of your scrims.** If you delete a scrim, the logs
+will be removed from the database and will no longer be accessible. The logs are measured in
+kilobytes and should not take up much space on your computer. For this reason, it is recommended
+to organize and store your logs in a safe place. If you need to delete a scrim, you can always
+re-upload the logs to create a new scrim.

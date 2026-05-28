@@ -1,0 +1,163 @@
+---
+title: "Teamfights"
+---
+
+The Teamfights tab provides in-depth analysis of teamfight performance, ultimate economy, and win probability factors. This tab helps teams understand the micro-level aspects of gameplay that determine fight outcomes.
+
+## Features
+
+### Team Fight Stats Card
+
+![Team Fight Stats Card](/team-fight-statistics.png)
+
+Comprehensive statistics about teamfight performance:
+
+#### Key Metrics:
+- **Overall Fight Winrate**: Percentage of teamfights won
+- **First Pick Winrate**: Win rate when your team gets the first elimination
+- **First Death Winrate**: Win rate when your team suffers the first death
+- **First Ultimate Winrate**: Win rate when your team uses the first ultimate
+- **Dry Fight Statistics**: 
+  - Percentage of fights with no ultimates used
+  - Win rate in dry fights
+- **Average Ultimates Per Fight**: Average number of ultimates used in non-dry fights
+
+#### Insights:
+- Understand the importance of first pick/death
+- Track ultimate usage patterns
+- Identify fight initiation effectiveness
+- Measure fight consistency
+
+### Ultimate Economy Card
+
+![Ultimate Economy Card](/ultimate-economy.png)
+
+Detailed analysis of ultimate usage and efficiency:
+
+#### Main Metrics:
+- **Ultimate Efficiency**: Fights won per ultimate used (higher is better)
+  - Excellent: ≥0.40
+  - Good: 0.25-0.39
+  - Average: 0.15-0.24
+  - Poor: \<0.15
+- **Wasted Ultimates**: Count and percentage of ultimates used in losing situations (after 3+ player disadvantage)
+- **Total Ultimates Used**: Overall ultimate usage across all fights
+
+#### Usage Timing Comparison:
+- **Winning Fights**: Average ultimates used in won fights
+- **Losing Fights**: Average ultimates used in lost fights
+- **Insights**: Compares ultimate discipline between winning and losing scenarios
+
+#### Context Information:
+- Dry fight statistics and win rate
+- Non-dry fight count and average ultimates
+- Overall fight distribution
+
+#### Use Cases:
+- Identify if ultimates are being used efficiently
+- Understand when ultimates are wasted
+- Improve ultimate economy management
+- Learn optimal ultimate timing
+
+### Win Probability Insights
+
+![Win Probability Insights](/win-probability-insights.png)
+
+Analysis of factors that correlate with fight wins:
+
+#### Features:
+- **Key Factors**: Identifies which factors most strongly predict fight outcomes:
+  - First pick advantage
+  - First ultimate advantage
+  - Ultimate economy
+  - Player advantage timing
+- **Probability Calculations**: Shows win probability based on various scenarios
+- **Recommendations**: Actionable insights on:
+  - When to engage
+  - When to disengage
+  - Ultimate usage timing
+  - Fight initiation strategies
+
+#### Insights Provided:
+- Which advantages matter most
+- Optimal engagement conditions
+- Risk assessment for different scenarios
+- Strategic recommendations
+
+## Fight Reversal Metrics
+
+Fight reversal metrics track the fights your team wins after falling behind, the
+clutch and comeback fights that often decide close series. These metrics are free for
+all users.
+
+### What Counts as a Reversal
+
+A **reversal** is a fight where your team was losing, for example, you took the first
+death or were at a numbers disadvantage, and came back to win it anyway. Parsertime
+splits reversals into two categories:
+
+- **Dry reversals**: no kills were traded. The fight fizzled and reset: one side
+  backed off, the losing team regrouped, and the fight effectively didn't resolve into
+  a traditional win.
+- **Non-dry reversals**: kills were traded and the losing team flipped the fight
+  outright. These are the true comeback wins.
+
+### Where to Find It
+
+The **non-dry reversal rate** shows up in two places:
+
+- **Ultimate Economy card** on the scrim overview, so you can see reversals in the
+  context of individual maps.
+- **Win Probability Insights card** here on the Teamfights tab, alongside the other
+  factors that correlate with fight wins.
+
+### How to Read It
+
+A high non-dry reversal rate means your team wins fights they should have lost, you
+trade back, hold composure under pressure, and convert bad starts into clean wins.
+That's often the margin in close matches.
+
+A low non-dry reversal rate means bad starts stay bad. When that pattern shows up,
+work on disengage rules and shot-calling after first deaths, rather than trying to
+prevent every bad start.
+
+## Key Insights
+
+The Teamfights tab helps answer questions like:
+- How effective is our teamfight execution?
+- Are we using ultimates efficiently?
+- What factors most influence our fight outcomes?
+- When should we engage or disengage?
+- How can we improve our ultimate economy?
+
+## Use Cases
+
+- **Strategy Development**: Understand what makes fights successful
+- **Ultimate Management**: Improve ultimate usage efficiency
+- **Engagement Timing**: Learn optimal fight initiation
+- **Performance Review**: Identify micro-level weaknesses
+- **Practice Focus**: Determine what to work on in scrims
+
+## Data Requirements
+
+- Requires detailed fight data from scrims
+- Needs kill/elimination timestamps
+- Ultimate usage tracking
+- Player advantage state tracking
+
+## Best Practices
+
+- Review ultimate economy regularly to avoid waste
+- Track first pick/death win rates to understand engagement effectiveness
+- Use win probability insights to inform decision-making
+- Compare ultimate usage between winning and losing fights
+- Focus practice on identified weaknesses
+
+## Terminology
+
+- **Dry Fight**: A teamfight where no ultimates are used
+- **First Pick**: The first elimination in a teamfight
+- **First Death**: The first death suffered by your team
+- **Wasted Ultimate**: An ultimate used when already at a 3+ player disadvantage
+- **Ultimate Efficiency**: Ratio of fights won to ultimates used
+

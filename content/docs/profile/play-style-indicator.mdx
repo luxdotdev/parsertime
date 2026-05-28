@@ -1,0 +1,36 @@
+---
+title: "Play Style Indicator"
+---
+
+A radar chart visualizing the player's overall approach to the game based on calculated statistics.
+
+![Play Style Indicator](/play-style.png)
+
+## Play Style Metrics
+
+**Aggression** (0-100)
+- Derived from First Pick Percentage
+- Measures tendency to initiate fights and engage enemies
+- Higher values indicate more aggressive, proactive play
+
+**Survivability** (0-100)
+- Inverse of First Death Percentage
+- Measures ability to stay alive and avoid early deaths
+- Higher values indicate better positioning and awareness
+
+**Impact** (0-100)
+- Based on Fleta Deadlift Percentage
+- Measures individual contribution to team success
+- Higher values indicate carrying potential and game-changing plays
+
+**Clutch** (0-100)
+- Derived from Fight Reversal Percentage
+- Measures ability to turn around losing situations
+- Higher values indicate strong performance under pressure
+
+**Performance** (0-100)
+- Based on normalized MVP Score
+- Overall performance metric across all aspects
+- Capped at 100 for scaling purposes
+
+The radar chart visually represents these five dimensions, with values further from the center indicating stronger presence in that attribute. Below the chart, each metric is listed with its numerical score out of 100.
