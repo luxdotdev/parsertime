@@ -1,3 +1,4 @@
+import { isAuthedToViewTeam } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -10,10 +11,16 @@ export async function generateMetadata(
   const locale = await getLocale();
 
   const teamId = parseInt(params.teamId);
-  const team = await prisma.team.findFirst({
-    where: { id: teamId },
-    select: { name: true },
-  });
+  const canViewTeam =
+    Number.isSafeInteger(teamId) &&
+    teamId > 0 &&
+    (await isAuthedToViewTeam(teamId));
+  const team = canViewTeam
+    ? await prisma.team.findFirst({
+        where: { id: teamId },
+        select: { name: true },
+      })
+    : null;
 
   const teamName = team?.name ?? t("defaultTeam");
 
