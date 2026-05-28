@@ -26,7 +26,7 @@ import { PlayerService } from "@/data/player";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { auth, isAuthedToViewMap } from "@/lib/auth";
 import {
   aiChat,
   coachingCanvas,
@@ -36,7 +36,7 @@ import {
   tempoChart,
   tournament,
 } from "@/lib/flags";
-import { resolveMapDataId } from "@/lib/map-data-resolver";
+import { resolveScrimMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { getColorblindMode, translateMapName } from "@/lib/utils";
 import type { PagePropsWithLocale, SearchParams } from "@/types/next";
@@ -48,21 +48,27 @@ export async function generateMetadata(
   props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]">
 ): Promise<Metadata> {
   const params = await props.params;
-  const mapId = decodeURIComponent(params.mapId);
-  const metadataMapDataId = await resolveMapDataId(parseInt(mapId));
+  const scrimId = parseInt(params.scrimId);
+  const mapId = parseInt(decodeURIComponent(params.mapId));
+  const canViewMap =
+    Number.isSafeInteger(scrimId) &&
+    Number.isSafeInteger(mapId) &&
+    (await isAuthedToViewMap(scrimId, mapId));
   const t = await getTranslations({
     locale: params.locale,
     namespace: "mapPage.mapMetadata",
   });
 
-  const mapName = await prisma.matchStart.findFirst({
-    where: {
-      MapDataId: metadataMapDataId,
-    },
-    select: {
-      map_name: true,
-    },
-  });
+  const mapName = canViewMap
+    ? await prisma.matchStart.findFirst({
+        where: {
+          MapDataId: await resolveScrimMapDataId(scrimId, mapId),
+        },
+        select: {
+          map_name: true,
+        },
+      })
+    : null;
 
   const translatedMapName = await translateMapName(mapName?.map_name ?? "Map");
 
@@ -95,7 +101,7 @@ export default async function MapDashboardPage(
   const params = await props.params;
   const searchParams = await props.searchParams;
   const id = parseInt(params.mapId);
-  const mapDataId = await resolveMapDataId(id);
+  const mapDataId = await resolveScrimMapDataId(parseInt(params.scrimId), id);
   const session = await auth();
   const user = await AppRuntime.runPromise(
     UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
