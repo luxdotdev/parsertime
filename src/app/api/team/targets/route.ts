@@ -4,6 +4,7 @@ import { UserService } from "@/data/user";
 import { TargetsService } from "@/data/player";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { $Enums } from "@prisma/client";
 import { unauthorized } from "next/navigation";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
@@ -69,11 +70,6 @@ export async function POST(req: NextRequest) {
   );
   if (!user) unauthorized();
 
-  // Premium check
-  if (user.billingPlan === "FREE" && user.role !== "ADMIN") {
-    return new Response("Premium plan required", { status: 403 });
-  }
-
   const body = CreateTargetSchema.safeParse(await req.json());
   if (!body.success) {
     return Response.json(body.error.flatten(), { status: 400 });
@@ -88,6 +84,25 @@ export async function POST(req: NextRequest) {
     scrimWindow,
     note,
   } = body.data;
+
+  const team = await prisma.team.findUnique({
+    where: { id: teamId },
+    select: { ownerId: true },
+  });
+  if (!team) return new Response("Team not found", { status: 404 });
+
+  const teamOwner = await prisma.user.findUnique({
+    where: { id: team.ownerId },
+    select: { billingPlan: true },
+  });
+  if (!teamOwner) return new Response("Team owner not found", { status: 404 });
+
+  const hasTeamEntitlement =
+    user.role === $Enums.UserRole.ADMIN ||
+    teamOwner.billingPlan === $Enums.BillingPlan.PREMIUM;
+  if (!hasTeamEntitlement) {
+    return new Response("Premium plan required", { status: 403 });
+  }
 
   // Check manager/owner perms
   const hasPerms =
