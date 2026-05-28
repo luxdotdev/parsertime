@@ -12,6 +12,7 @@ import {
 import { sendScrimNotifications } from "@/lib/bot-events";
 import { Logger } from "@/lib/logger";
 import { createNewScrimFromParsedData } from "@/lib/parser";
+import { Permission } from "@/lib/permissions";
 import { normalizeMapForScrim } from "@/lib/team-normalization";
 import {
   newSuspiciousActivityWebhookConstructor,
@@ -24,6 +25,7 @@ import { ipAddress } from "@vercel/functions";
 import { kv } from "@vercel/kv";
 import { unauthorized } from "next/navigation";
 import { after, type NextRequest, userAgent } from "next/server";
+import { z } from "zod";
 
 export type CreateScrimRequestData = {
   name: string;
@@ -41,6 +43,45 @@ export type CreateScrimRequestData = {
     banPosition: number;
   }[];
 };
+
+const parserDataSchema = z.custom<ParserData>((value) => {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  const map = value as Record<string, unknown>;
+  return (
+    Array.isArray(map.match_start) &&
+    Array.isArray(map.round_end) &&
+    Array.isArray(map.player_stat)
+  );
+});
+
+const createScrimSchema = z.object({
+  name: z.string().min(1).max(100),
+  team: z
+    .string()
+    .regex(/^\d+$/)
+    .refine((value) => Number.isSafeInteger(Number(value)), {
+      message: "Team ID is too large",
+    }),
+  date: z.string().min(1),
+  map: parserDataSchema,
+  replayCode: z.string().max(100),
+  opponentTeamAbbr: z.string().max(20).nullable().optional(),
+  autoAssignTeamNames: z.boolean().optional(),
+  team1Name: z.string().max(100).nullable().optional(),
+  team2Name: z.string().max(100).nullable().optional(),
+  heroBans: z
+    .array(
+      z.object({
+        hero: z.string().min(1).max(100),
+        team: z.string().min(1).max(100),
+        banPosition: z.number().int().min(0),
+      })
+    )
+    .default([]),
+});
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -117,7 +158,17 @@ export async function POST(request: NextRequest) {
       return new Response("Rate limit exceeded", { status: 429 });
     }
 
-    const data = (await request.json()) as CreateScrimRequestData;
+    const parsed = createScrimSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      event.outcome = "validation_error";
+      event.status_code = 400;
+      return Response.json(
+        { error: "Invalid request", details: parsed.error.flatten() },
+        { status: 400 }
+      );
+    }
+
+    const data = parsed.data;
     event.scrim_name = data.name;
     event.team_id_raw = data.team;
     event.has_hero_bans = data.heroBans.length > 0;
@@ -142,8 +193,21 @@ export async function POST(request: NextRequest) {
         billing_plan: user.billingPlan,
       });
     }
+    if (!user) {
+      event.outcome = "user_not_found";
+      event.status_code = 404;
+      return new Response("User not found", { status: 404 });
+    }
 
-    const teamId = parseInt(data.team) === 0 ? null : parseInt(data.team);
+    const canCreateScrim = await new Permission("create-scrim").check();
+    if (!canCreateScrim) {
+      event.outcome = "permission_denied";
+      event.status_code = 403;
+      return new Response("Forbidden", { status: 403 });
+    }
+
+    const parsedTeamId = Number(data.team);
+    const teamId = parsedTeamId === 0 ? null : parsedTeamId;
     event.team_id = teamId;
     if (teamId && !(await canManageTeam(teamId, user))) {
       event.outcome = "forbidden_team";
