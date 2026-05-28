@@ -8,10 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { MatchForLabeling, MatchMapForLabeling } from "@/data/admin/types";
-import { parseVodUrl } from "@/lib/vods";
+import { getYoutubeEmbedSrc, parseVodUrl } from "@/lib/vods";
 import { toHero } from "@/lib/utils";
 import { heroRoleMapping, type HeroName } from "@/types/heroes";
-import { YouTubeEmbed } from "@next/third-parties/google";
 import { ArrowLeft, Check, Loader2, RotateCcw } from "lucide-react";
 import type { Route } from "next";
 import { useTranslations } from "next-intl";
@@ -56,6 +55,8 @@ type VodPanelProps = {
 const VodPanel = memo(function VodPanel({ vod, parentDomain }: VodPanelProps) {
   const t = useTranslations("dataLabeling.labeling");
   const parsedVod = vod ? parseVodUrl(vod.url) : null;
+  const youtubeSrc =
+    parsedVod?.source === "youtube" ? getYoutubeEmbedSrc(parsedVod) : "";
 
   return (
     <div className="space-y-4">
@@ -63,10 +64,14 @@ const VodPanel = memo(function VodPanel({ vod, parentDomain }: VodPanelProps) {
         <Card className="overflow-hidden">
           <CardContent className="p-0">
             <div className="aspect-video">
-              <YouTubeEmbed
-                videoid={parsedVod.videoId}
-                params={`controls=1&start=${parsedVod.start}`}
-                style="width:100%; height:100%; max-width:100%; max-height:100%; border:0;"
+              <iframe
+                src={youtubeSrc}
+                title="YouTube VOD"
+                className="h-full w-full border-0"
+                loading="lazy"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
               />
             </div>
           </CardContent>

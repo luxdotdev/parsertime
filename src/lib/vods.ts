@@ -86,3 +86,14 @@ export function parseVodUrl(vodUrl: string): ParsedVod | null {
     return null;
   }
 }
+
+export function getYoutubeEmbedSrc(
+  vod: Extract<ParsedVod, { source: "youtube" }>
+): string {
+  const params = new URLSearchParams({
+    controls: "1",
+    start: vod.start,
+  });
+
+  return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(vod.videoId)}?${params.toString()}`;
+}

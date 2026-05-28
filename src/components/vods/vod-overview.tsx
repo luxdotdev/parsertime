@@ -3,8 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { VodForm } from "@/components/vods/vod-form";
-import { parseVodUrl } from "@/lib/vods";
-import { YouTubeEmbed } from "@next/third-parties/google";
+import { getYoutubeEmbedSrc, parseVodUrl } from "@/lib/vods";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -21,6 +20,8 @@ export function VodOverview({ vod, mapId }: { vod: string; mapId: number }) {
   const t = useTranslations("mapPage.vod");
 
   const parsedVod = parseVodUrl(vodState);
+  const youtubeSrc =
+    parsedVod?.source === "youtube" ? getYoutubeEmbedSrc(parsedVod) : "";
   const twitchSrc =
     parsedVod?.source === "twitch"
       ? `https://player.twitch.tv/?video=${parsedVod.videoId}&parent=${parentDomain}`
@@ -40,10 +41,14 @@ export function VodOverview({ vod, mapId }: { vod: string; mapId: number }) {
 
       <div className="aspect-video overflow-hidden rounded-md">
         {parsedVod?.source === "youtube" && (
-          <YouTubeEmbed
-            videoid={parsedVod.videoId}
-            params={`controls=1&start=${parsedVod.start}`}
-            style="width:full; height:full; max-width:100%; max-height:100%; border:0;"
+          <iframe
+            src={youtubeSrc}
+            title="YouTube VOD"
+            className="h-full w-full border-0"
+            loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
           />
         )}
 
