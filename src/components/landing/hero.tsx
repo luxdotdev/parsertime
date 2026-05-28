@@ -164,15 +164,17 @@ export async function LandingHero() {
   return (
     <section
       aria-labelledby="parsertime-docs-hero-title"
-      className="relative isolate min-h-[calc(100vh-3rem)] w-full overflow-hidden"
+      className="relative isolate w-full overflow-hidden lg:min-h-[calc(100vh-3rem)]"
     >
-      {/* Background scene anchored to the right half on desktop, full-bleed on mobile */}
-      <div className="absolute inset-0 z-0 lg:left-[42%]">
-        <SceneHost />
-      </div>
-
-      <div className="pointer-events-none relative z-10 mx-auto grid min-h-[calc(100vh-3rem)] w-full max-w-7xl grid-cols-1 lg:grid-cols-[minmax(0,520px)_minmax(0,1fr)]">
-        <div className="pointer-events-auto flex flex-col justify-between gap-12 px-6 pt-16 pb-12 lg:px-10 lg:pt-20 lg:pb-16">
+      {/*
+       * Mobile: text stacks above the sigil (single grid column). The sigil
+       * gets a constrained-height row so it reads as a hero visual without
+       * crashing into the headline.
+       * Desktop: two columns side by side, sigil fills the right half edge to
+       * edge, no absolute positioning needed.
+       */}
+      <div className="mx-auto grid w-full max-w-7xl grid-cols-1 lg:h-[calc(100vh-3rem)] lg:grid-cols-[minmax(0,520px)_minmax(0,1fr)]">
+        <div className="flex flex-col justify-between gap-10 px-6 pt-12 pb-8 lg:gap-12 lg:px-10 lg:pt-20 lg:pb-16">
           {/* Top bracket: doc register + version */}
           <div className="flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-fd-muted-foreground">
             <span>[01]</span>
@@ -260,7 +262,11 @@ export async function LandingHero() {
           </div>
         </div>
 
-        <div aria-hidden className="hidden lg:block" />
+        {/* Sigil column. Tall enough on mobile to read as a hero, full
+            column on desktop. The wrapper div is what r3f Canvas fills. */}
+        <div className="relative h-[55vh] min-h-[360px] w-full lg:h-auto lg:min-h-0">
+          <SceneHost />
+        </div>
       </div>
     </section>
   );
