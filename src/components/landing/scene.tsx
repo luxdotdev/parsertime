@@ -2,12 +2,38 @@
 
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { Float } from '@react-three/drei';
-import { Suspense, useMemo, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import type { MutableRefObject } from 'react';
 import * as THREE from 'three';
 
+/**
+ * Read the active theme from the `.dark` class on <html> that next-themes
+ * (via fumadocs's RootProvider) sets. Avoids adding next-themes as a direct
+ * dependency and survives system-theme changes by listening to mutations on
+ * the root element's class list.
+ */
+function useIsDark(): boolean {
+  const [isDark, setIsDark] = useState(true);
+  useEffect(() => {
+    const root = document.documentElement;
+    const read = () => setIsDark(root.classList.contains('dark'));
+    read();
+    const obs = new MutationObserver(read);
+    obs.observe(root, { attributes: true, attributeFilter: ['class'] });
+    return () => obs.disconnect();
+  }, []);
+  return isDark;
+}
+
 const AMBER = '#e8a23a';
 const BASE_SPIN = 0.5; // rad/s, the resting auto-rotation speed
+
+// Per DESIGN.md, the foreground hue in each mode. We mirror those for the
+// silhouette so it always reads as the page's content color.
+const SILHOUETTE = {
+  dark: '#ffffff',
+  light: '#1f2024', // near-black with the cool tint of foreground-light
+} as const;
 
 type VelocityRef = MutableRefObject<number>;
 
@@ -16,7 +42,13 @@ type VelocityRef = MutableRefObject<number>;
  * white and everything else is fully transparent. Continuous alpha at the
  * edges so the material's alphaToCoverage can hand the AA work to MSAA.
  */
-function useSilhouetteTexture(src: string): THREE.Texture {
+function hexToRgb(hex: string): [number, number, number] {
+  const clean = hex.replace('#', '');
+  const n = parseInt(clean, 16);
+  return [(n >> 16) & 0xff, (n >> 8) & 0xff, n & 0xff];
+}
+
+function useSilhouetteTexture(src: string, colorHex: string): THREE.Texture {
   const raw = useLoader(THREE.TextureLoader, src);
 
   return useMemo(() => {
@@ -34,6 +66,7 @@ function useSilhouetteTexture(src: string): THREE.Texture {
     ctx.drawImage(img, 0, 0, w, h);
     const data = ctx.getImageData(0, 0, w, h);
     const px = data.data;
+    const [cr, cg, cb] = hexToRgb(colorHex);
     for (let i = 0; i < px.length; i += 4) {
       const r = px[i] ?? 0;
       const g = px[i + 1] ?? 0;
@@ -43,9 +76,9 @@ function useSilhouetteTexture(src: string): THREE.Texture {
       const coverage = a / 255;
       const darkness = 1 - lum / 255;
       const alpha = Math.pow(darkness, 1.4) * coverage;
-      px[i] = 255;
-      px[i + 1] = 255;
-      px[i + 2] = 255;
+      px[i] = cr;
+      px[i + 1] = cg;
+      px[i + 2] = cb;
       px[i + 3] = Math.round(Math.min(1, alpha) * 255);
     }
     ctx.putImageData(data, 0, 0);
@@ -57,11 +90,17 @@ function useSilhouetteTexture(src: string): THREE.Texture {
     tex.minFilter = THREE.LinearMipmapLinearFilter;
     tex.needsUpdate = true;
     return tex;
-  }, [raw]);
+  }, [raw, colorHex]);
 }
 
-function LogoSlab({ velocityRef }: { velocityRef: VelocityRef }) {
-  const tex = useSilhouetteTexture('/parsertime-logo.png');
+function LogoSlab({
+  velocityRef,
+  silhouette,
+}: {
+  velocityRef: VelocityRef;
+  silhouette: string;
+}) {
+  const tex = useSilhouetteTexture('/parsertime-logo.png', silhouette);
   const group = useRef<THREE.Group>(null);
 
   useFrame((_, dt) => {
@@ -97,8 +136,8 @@ function LogoSlab({ velocityRef }: { velocityRef: VelocityRef }) {
               transparent
               alphaToCoverage
               alphaTest={0.08}
-              color="#ffffff"
-              emissive={isFace ? '#ffffff' : AMBER}
+              color={silhouette}
+              emissive={isFace ? silhouette : AMBER}
               emissiveIntensity={isFace ? 0.1 : 0.22}
               metalness={0.18}
               roughness={0.42}
@@ -156,17 +195,28 @@ function Particles() {
   );
 }
 
-function Sigil({ velocityRef }: { velocityRef: VelocityRef }) {
+function Sigil({
+  velocityRef,
+  silhouette,
+}: {
+  velocityRef: VelocityRef;
+  silhouette: string;
+}) {
   return (
     <Float speed={1.1} rotationIntensity={0.12} floatIntensity={0.3}>
       <group scale={1.05}>
-        <LogoSlab velocityRef={velocityRef} />
+        <LogoSlab velocityRef={velocityRef} silhouette={silhouette} />
       </group>
     </Float>
   );
 }
 
 export function LandingScene() {
+  const isDark = useIsDark();
+  const silhouette = isDark ? SILHOUETTE.dark : SILHOUETTE.light;
+  // In light mode the white key light blows out the dark silhouette; dim it
+  // so the form reads as a solid mark rather than a glare patch.
+  const isLight = !isDark;
   const wrapperRef = useRef<HTMLDivElement>(null);
   const velocityRef = useRef(0);
   const draggingRef = useRef(false);
@@ -217,13 +267,25 @@ export function LandingScene() {
       >
         {/* No <color> or <fog>: the canvas stays transparent so the page
             background (--color-fd-background) reads through edge-to-edge. */}
-        <ambientLight intensity={0.45} />
-        <directionalLight position={[3, 4, 5]} intensity={1.4} color="#ffffff" />
-        <pointLight position={[-3, 1, 1]} intensity={1.6} color={AMBER} />
-        <pointLight position={[3, -1, 1]} intensity={0.8} color={AMBER} />
+        <ambientLight intensity={isLight ? 0.85 : 0.45} />
+        <directionalLight
+          position={[3, 4, 5]}
+          intensity={isLight ? 0.5 : 1.4}
+          color="#ffffff"
+        />
+        <pointLight
+          position={[-3, 1, 1]}
+          intensity={isLight ? 1.2 : 1.6}
+          color={AMBER}
+        />
+        <pointLight
+          position={[3, -1, 1]}
+          intensity={isLight ? 0.5 : 0.8}
+          color={AMBER}
+        />
 
         <Suspense fallback={null}>
-          <Sigil velocityRef={velocityRef} />
+          <Sigil velocityRef={velocityRef} silhouette={silhouette} />
           <Particles />
         </Suspense>
       </Canvas>

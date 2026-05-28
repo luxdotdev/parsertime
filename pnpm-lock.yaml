@@ -32,6 +32,9 @@ importers:
       next:
         specifier: 16.2.6
         version: 16.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      next-seo:
+        specifier: ^7.2.0
+        version: 7.2.0(next@16.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)
       react:
         specifier: ^19.2.6
         version: 19.2.6
@@ -1796,6 +1799,12 @@ packages:
     resolution: {integrity: sha512-ZB9RH/39qpq5Vu6Y+NmUaFhQR6pp+M2Xt76XBnEwDaGcVAqhlvxrl3B2bKS5D3NH3QR76v3aSrKaF/Kiy7lEtQ==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
+
+  next-seo@7.2.0:
+    resolution: {integrity: sha512-ST7/YB8g0SXGuEKNucBz9wiP6nCYVZ4v8qJB7rAz9Vr1X98mw5orWL9COr8td/dzqtCYd4xaIg0YVCq5Yy3PQA==}
+    peerDependencies:
+      next: '>=13.4.0'
+      react: '>=18.2.0'
 
   next-themes@0.4.6:
     resolution: {integrity: sha512-pZvgD5L0IEvX5/9GWyHMf3m8BKiVQwsCMHfoFosXtXBMnaS0ZnIJ9ST4b4NqLVKDEm8QBxoNNGNaBv2JNF6XNA==}
@@ -4098,6 +4107,11 @@ snapshots:
   ms@2.1.3: {}
 
   nanoid@3.3.12: {}
+
+  next-seo@7.2.0(next@16.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6):
+    dependencies:
+      next: 16.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      react: 19.2.6
 
   next-themes@0.4.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
     dependencies:
