@@ -1,5 +1,6 @@
 import {
   type BaggageEntry,
+  type Context,
   context,
   propagation,
   trace,
@@ -13,11 +14,11 @@ type BaggageAttrs = {
 };
 
 /**
- * Sets OTel baggage and span attributes for the current request context.
- * Call this after auth() in route handlers to propagate user/team/flag
- * context through traces, logs, and downstream service calls.
+ * Builds OTel baggage for request context and sets matching attributes on the
+ * active span. The returned context must be passed to context.with() or
+ * propagation.inject() by the caller.
  */
-export function setRequestContext(attrs: BaggageAttrs) {
+export function setRequestContext(attrs: BaggageAttrs): Context {
   const entries: Record<string, BaggageEntry> = {};
   for (const [key, value] of Object.entries(attrs)) {
     if (value !== undefined) {
@@ -27,9 +28,6 @@ export function setRequestContext(attrs: BaggageAttrs) {
 
   const bag = propagation.createBaggage(entries);
   const ctx = propagation.setBaggage(context.active(), bag);
-  context.with(ctx, () => {
-    /* empty */
-  });
 
   // Also set as span attributes so they appear in traces
   const span = trace.getActiveSpan();
@@ -40,6 +38,19 @@ export function setRequestContext(attrs: BaggageAttrs) {
       }
     }
   }
+
+  return ctx;
+}
+
+/**
+ * Runs work with request baggage active so downstream OpenTelemetry propagation
+ * can read the user/team/flag values from context.active().
+ */
+export function withRequestContext<T>(
+  attrs: BaggageAttrs,
+  fn: () => T
+): T {
+  return context.with(setRequestContext(attrs), fn);
 }
 
 /**

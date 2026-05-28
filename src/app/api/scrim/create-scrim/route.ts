@@ -3,7 +3,7 @@ import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auditLog } from "@/lib/audit-logs";
 import { auth, canManageTeam } from "@/lib/auth";
-import { setRequestContext } from "@/lib/axiom/baggage";
+import { withRequestContext } from "@/lib/axiom/baggage";
 import {
   rateLimitHitCounter,
   scrimCreatedCounter,
@@ -187,76 +187,78 @@ export async function POST(request: NextRequest) {
     event.user_id = user?.id;
     event.billing_plan = user?.billingPlan;
 
-    if (user) {
-      setRequestContext({
-        user_id: user.id,
-        billing_plan: user.billingPlan,
-      });
-    }
     if (!user) {
       event.outcome = "user_not_found";
       event.status_code = 404;
       return new Response("User not found", { status: 404 });
     }
 
-    const canCreateScrim = await new Permission("create-scrim").check();
-    if (!canCreateScrim) {
-      event.outcome = "permission_denied";
-      event.status_code = 403;
-      return new Response("Forbidden", { status: 403 });
-    }
+    return await withRequestContext(
+      {
+        user_id: user.id,
+        billing_plan: user.billingPlan,
+      },
+      async () => {
+        const canCreateScrim = await new Permission("create-scrim").check();
+        if (!canCreateScrim) {
+          event.outcome = "permission_denied";
+          event.status_code = 403;
+          return new Response("Forbidden", { status: 403 });
+        }
 
-    const parsedTeamId = Number(data.team);
-    const teamId = parsedTeamId === 0 ? null : parsedTeamId;
-    event.team_id = teamId;
-    if (teamId && !(await canManageTeam(teamId, user))) {
-      event.outcome = "forbidden_team";
-      event.status_code = 403;
-      return new Response("Forbidden", { status: 403 });
-    }
+        const parsedTeamId = Number(data.team);
+        const teamId = parsedTeamId === 0 ? null : parsedTeamId;
+        event.team_id = teamId;
+        if (teamId && !(await canManageTeam(teamId, user))) {
+          event.outcome = "forbidden_team";
+          event.status_code = 403;
+          return new Response("Forbidden", { status: 403 });
+        }
 
-    if (data.autoAssignTeamNames && teamId && data.team1Name) {
-      event.normalized_teams = true;
-      data.map = await normalizeMapForScrim(
-        data.map,
-        teamId,
-        data.team1Name,
-        data.team2Name ?? null
-      );
-    }
-
-    const parseStart = performance.now();
-    await createNewScrimFromParsedData(data, session);
-    const parseDuration = performance.now() - parseStart;
-    scrimParsingDuration.record(parseDuration);
-    scrimCreatedCounter.add(1);
-
-    event.parse_duration_ms = Math.round(parseDuration);
-    event.outcome = "success";
-    event.status_code = 200;
-
-    after(async () => {
-      await auditLog.createAuditLog({
-        userEmail: session.user.email,
-        action: "SCRIM_CREATED",
-        target: `${data.name} (Team: ${data.team})`,
-        details: `Scrim created: ${data.name}`,
-      });
-
-      if (teamId) {
-        await sendScrimNotifications(teamId, {
-          event: "scrim.created",
-          data: {
-            scrimName: data.name,
-            scrimId: 0, // Scrim ID not returned from parser
-            createdBy: session.user.email,
+        if (data.autoAssignTeamNames && teamId && data.team1Name) {
+          event.normalized_teams = true;
+          data.map = await normalizeMapForScrim(
+            data.map,
             teamId,
-          },
-        });
-      }
-    });
+            data.team1Name,
+            data.team2Name ?? null
+          );
+        }
 
-    return new Response("OK", { status: 200 });
+        const parseStart = performance.now();
+        await createNewScrimFromParsedData(data, session);
+        const parseDuration = performance.now() - parseStart;
+        scrimParsingDuration.record(parseDuration);
+        scrimCreatedCounter.add(1);
+
+        event.parse_duration_ms = Math.round(parseDuration);
+        event.outcome = "success";
+        event.status_code = 200;
+
+        after(async () => {
+          await auditLog.createAuditLog({
+            userEmail: session.user.email,
+            action: "SCRIM_CREATED",
+            target: `${data.name} (Team: ${data.team})`,
+            details: `Scrim created: ${data.name}`,
+          });
+
+          if (teamId) {
+            await sendScrimNotifications(teamId, {
+              event: "scrim.created",
+              data: {
+                scrimName: data.name,
+                scrimId: 0, // Scrim ID not returned from parser
+                createdBy: session.user.email,
+                teamId,
+              },
+            });
+          }
+        });
+
+        return new Response("OK", { status: 200 });
+      }
+    );
   } catch (error) {
     event.outcome = "error";
     event.status_code = 500;
