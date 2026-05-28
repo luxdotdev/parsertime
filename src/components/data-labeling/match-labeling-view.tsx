@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { MatchForLabeling, MatchMapForLabeling } from "@/data/admin/types";
+import { parseVodUrl } from "@/lib/vods";
 import { toHero } from "@/lib/utils";
 import { heroRoleMapping, type HeroName } from "@/types/heroes";
 import { YouTubeEmbed } from "@next/third-parties/google";
@@ -47,52 +48,24 @@ function validateRoleConstraint(heroes: string[]): boolean {
   return tanks === 1 && damage === 2 && support === 2;
 }
 
-function extractYouTubeId(url: string): string {
-  if (url.startsWith("https://youtu.be/"))
-    return url.split("youtu.be/")[1].split("?")[0];
-  if (url.includes("/embed/")) return url.split("/embed/")[1].split("?")[0];
-  if (url.includes("/live/")) return url.split("/live/")[1].split("?")[0];
-  return url.split("v=")[1]?.split("&")[0] || "";
-}
-
-function extractStartTime(url: string): number {
-  const match = url.match(/[?&]t=(\d+)/);
-  return match ? Number(match[1]) : 0;
-}
-
-function getVodSource(url: string) {
-  if (
-    url.startsWith("https://www.youtube.com/") ||
-    url.startsWith("https://youtu.be/") ||
-    url.startsWith("https://youtube.com/")
-  )
-    return "youtube";
-  if (url.startsWith("https://www.twitch.tv/videos/")) return "twitch";
-  return null;
-}
-
 type VodPanelProps = {
   vod: MatchForLabeling["vods"][number] | undefined;
-  vodSource: string | null;
   parentDomain: string;
 };
 
-const VodPanel = memo(function VodPanel({
-  vod,
-  vodSource,
-  parentDomain,
-}: VodPanelProps) {
+const VodPanel = memo(function VodPanel({ vod, parentDomain }: VodPanelProps) {
   const t = useTranslations("dataLabeling.labeling");
+  const parsedVod = vod ? parseVodUrl(vod.url) : null;
 
   return (
     <div className="space-y-4">
-      {vod && vodSource === "youtube" && (
+      {parsedVod?.source === "youtube" && (
         <Card className="overflow-hidden">
           <CardContent className="p-0">
             <div className="aspect-video">
               <YouTubeEmbed
-                videoid={extractYouTubeId(vod.url)}
-                params={`controls=1&start=${extractStartTime(vod.url)}`}
+                videoid={parsedVod.videoId}
+                params={`controls=1&start=${parsedVod.start}`}
                 style="width:100%; height:100%; max-width:100%; max-height:100%; border:0;"
               />
             </div>
@@ -100,12 +73,12 @@ const VodPanel = memo(function VodPanel({
         </Card>
       )}
 
-      {vod && vodSource === "twitch" && (
+      {parsedVod?.source === "twitch" && (
         <Card className="overflow-hidden">
           <CardContent className="p-0">
             <div className="aspect-video">
               <iframe
-                src={`https://player.twitch.tv/?video=${vod.url.split("/videos/")[1].split("?")[0]}&parent=${parentDomain}`}
+                src={`https://player.twitch.tv/?video=${parsedVod.videoId}&parent=${parentDomain}`}
                 title={t("twitchVodTitle")}
                 className="h-full w-full border-0"
                 allowFullScreen
@@ -115,7 +88,7 @@ const VodPanel = memo(function VodPanel({
         </Card>
       )}
 
-      {(!vod || !vodSource) && (
+      {(!vod || !parsedVod) && (
         <Card>
           <CardContent className="flex aspect-video items-center justify-center">
             <span className="text-muted-foreground">{t("noVodAvailable")}</span>
@@ -314,7 +287,6 @@ export function MatchLabelingView({ match }: MatchLabelingViewProps) {
   }, []);
 
   const vod = match.vods[0];
-  const vodSource = vod ? getVodSource(vod.url) : null;
   const parentDomain = process.env.NEXT_PUBLIC_VERCEL_URL
     ? process.env.NEXT_PUBLIC_VERCEL_URL.replace(/^https?:\/\//, "").split(
         "/"
@@ -341,7 +313,7 @@ export function MatchLabelingView({ match }: MatchLabelingViewProps) {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_400px]">
-        <VodPanel vod={vod} vodSource={vodSource} parentDomain={parentDomain} />
+        <VodPanel vod={vod} parentDomain={parentDomain} />
 
         <div className="space-y-4">
           <Tabs value={activeMap} onValueChange={setActiveMap}>

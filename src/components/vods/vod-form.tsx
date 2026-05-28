@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { parseVodUrl } from "@/lib/vods";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -34,24 +35,11 @@ export function VodForm({
 
   const t = useTranslations("mapPage.vod");
 
-  const ALLOWED_DOMAINS = [
-    "https://www.youtube.com/",
-    "https://youtube.com/",
-    "https://youtu.be/",
-    "https://www.twitch.tv/",
-    "https://twitch.tv/",
-  ];
-
   const formSchema = z.object({
     vodUrl: z
       .string()
       .min(1, { message: t("vodRequired") })
-      .refine(
-        (url) => {
-          return ALLOWED_DOMAINS.some((domain) => url.startsWith(domain));
-        },
-        { message: t("invalidUrl") }
-      ),
+      .refine((url) => parseVodUrl(url) !== null, { message: t("invalidUrl") }),
   });
 
   const [loading, setLoading] = useState(false);
@@ -86,13 +74,12 @@ export function VodForm({
         return;
       }
 
+      const updatedMap = (await res.json()) as { vod?: string | null };
       toast.success(t("vodSuccess"));
-      setVodState(data.vodUrl);
+      setVodState(updatedMap.vod ?? data.vodUrl);
       setLoading(false);
       setIsOpen(false);
       router.refresh();
-
-      return res.json();
     } catch (error) {
       toast.error(t("vodFail"), {
         description: String(error),
