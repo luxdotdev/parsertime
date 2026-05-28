@@ -51,8 +51,10 @@ export function UnlabeledMatchList() {
     ? Math.max(1, Math.ceil(data.totalCount / PAGE_SIZE))
     : 1;
 
-  function formatDate(date: Date) {
-    return formatter.dateTime(date, {
+  function formatDate(date: Date | string) {
+    const value = date instanceof Date ? date : new Date(date);
+
+    return formatter.dateTime(value, {
       year: "numeric",
       month: "short",
       day: "numeric",

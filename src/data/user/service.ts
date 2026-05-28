@@ -195,7 +195,7 @@ export const make: Effect.Effect<UserServiceInterface> = Effect.gen(
 
         const appSettings = yield* Effect.tryPromise({
           try: () =>
-            prisma.appSettings.findFirst({
+            prisma.appSettings.findUnique({
               where: { userId: user.id },
             }),
           catch: (error) =>

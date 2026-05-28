@@ -332,16 +332,19 @@ export const make: Effect.Effect<HeroServiceInterface> = Effect.gen(
     }
 
     function heroCacheKeyOf(scrimIds: number[], hero: string) {
-      return `${JSON.stringify(scrimIds)}:${hero}`;
+      return JSON.stringify([scrimIds, hero]);
+    }
+
+    function parseHeroCacheKey(key: string) {
+      const [scrimIds, hero] = JSON.parse(key) as [number[], string];
+      return { scrimIds, hero };
     }
 
     const statsCache = yield* Cache.make({
       capacity: 64,
       timeToLive: Duration.seconds(30),
       lookup: (key: string) => {
-        const colonIdx = key.lastIndexOf(":");
-        const scrimIds = JSON.parse(key.slice(0, colonIdx)) as number[];
-        const hero = key.slice(colonIdx + 1);
+        const { scrimIds, hero } = parseHeroCacheKey(key);
         return getAllStatsForHero(scrimIds, hero).pipe(
           Effect.tap(() => Metric.increment(heroCacheMissTotal))
         );
@@ -352,9 +355,7 @@ export const make: Effect.Effect<HeroServiceInterface> = Effect.gen(
       capacity: 64,
       timeToLive: Duration.seconds(30),
       lookup: (key: string) => {
-        const colonIdx = key.lastIndexOf(":");
-        const scrimIds = JSON.parse(key.slice(0, colonIdx)) as number[];
-        const hero = key.slice(colonIdx + 1);
+        const { scrimIds, hero } = parseHeroCacheKey(key);
         return getAllKillsForHero(scrimIds, hero).pipe(
           Effect.tap(() => Metric.increment(heroCacheMissTotal))
         );
@@ -365,9 +366,7 @@ export const make: Effect.Effect<HeroServiceInterface> = Effect.gen(
       capacity: 64,
       timeToLive: Duration.seconds(30),
       lookup: (key: string) => {
-        const colonIdx = key.lastIndexOf(":");
-        const scrimIds = JSON.parse(key.slice(0, colonIdx)) as number[];
-        const hero = key.slice(colonIdx + 1);
+        const { scrimIds, hero } = parseHeroCacheKey(key);
         return getAllDeathsForHero(scrimIds, hero).pipe(
           Effect.tap(() => Metric.increment(heroCacheMissTotal))
         );

@@ -7,15 +7,14 @@ type Error =
   | "AccessDenied"
   | "Verification"
   | "AuthorizedCallbackError"
+  | "AdapterError"
   | "Default";
 
 export default async function AuthErrorPage(props: PageProps<"/auth-error">) {
   const searchParams = await props.searchParams;
   const t = await getTranslations("authError");
 
-  const error = searchParams.error as Error;
-
-  const errorMessages = {
+  const errorMessages: Record<Error, string> = {
     Configuration: t("errors.configuration"),
     AccessDenied: t("errors.accessDenied"),
     AuthorizedCallbackError: t("errors.authorizedCallbackError"),
@@ -23,6 +22,11 @@ export default async function AuthErrorPage(props: PageProps<"/auth-error">) {
     AdapterError: t("errors.adapterError"),
     Default: t("errors.default"),
   };
+  const rawError = searchParams.error;
+  const error: Error =
+    typeof rawError === "string" && Object.hasOwn(errorMessages, rawError)
+      ? (rawError as Error)
+      : "Default";
 
   return (
     <div className="flex h-[90vh] flex-col items-center justify-center space-y-6 p-6 text-center">

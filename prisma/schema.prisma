@@ -111,15 +111,13 @@ enum ColorblindMode {
 
 model AppSettings {
   id               Int            @id @default(autoincrement())
-  userId           String
+  userId           String         @unique
   colorblindMode   ColorblindMode @default(OFF)
   customTeam1Color String?
   customTeam2Color String?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
 }
 
 enum BillingPlan {
