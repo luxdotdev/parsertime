@@ -268,7 +268,7 @@ export async function DefaultOverview({
       positionalEnabled
         ? AppRuntime.runPromise(
             KillfeedCalibrationService.pipe(
-              Effect.flatMap((svc) => svc.getKillfeedCalibration(id))
+              Effect.flatMap((svc) => svc.getKillfeedCalibration(mapDataId))
             )
           )
         : null,
