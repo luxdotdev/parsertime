@@ -9,6 +9,7 @@ import {
   computeAvailabilityOverlapHours,
   loadCurrentTeamAvailability,
 } from "@/lib/matchmaker/availability";
+import { getMatchmakerCandidates } from "@/lib/matchmaker/candidates";
 import { SkillDeviation } from "@/components/matchmaker/skill-deviation";
 import { SendRequestButton } from "@/components/matchmaker/send-request-button";
 import { TeamTsrCard } from "@/components/team/team-tsr-card";
@@ -49,6 +50,28 @@ export default async function MatchmakerDetailPage({ params }: PageProps) {
   const isAdmin = user.role === UserRole.ADMIN;
   if (user.teams.length === 0 && !isAdmin) redirect("/team");
 
+  const since = new Date(Date.now() - COOLDOWN_HOURS * 3_600_000);
+  const [candidateResult, recentInboundRequest] = await Promise.all([
+    getMatchmakerCandidates(fromTeamId),
+    prisma.scrimRequest.findFirst({
+      where: {
+        fromTeamId: toTeamId,
+        toTeamId: fromTeamId,
+        createdAt: { gt: since },
+      },
+      select: { id: true },
+    }),
+  ]);
+  if (candidateResult.kind !== "ok") {
+    redirect(`/matchmaker/${fromTeamId}` as Route);
+  }
+  const targetIsEligible = candidateResult.candidates.some(
+    (candidate) => candidate.teamId === toTeamId
+  );
+  if (!targetIsEligible && !recentInboundRequest) {
+    redirect(`/matchmaker/${fromTeamId}` as Route);
+  }
+
   const [fromSnap, toSnap, fromTeam, toTeam] = await Promise.all([
     prisma.teamTsrSnapshot.findUnique({ where: { teamId: fromTeamId } }),
     prisma.teamTsrSnapshot.findUnique({ where: { teamId: toTeamId } }),
@@ -81,7 +104,6 @@ export default async function MatchmakerDetailPage({ params }: PageProps) {
     fromTeam.ownerId === user.id ||
     fromTeam.managers.some((m) => m.userId === user.id);
 
-  const since = new Date(Date.now() - COOLDOWN_HOURS * 3_600_000);
   const [recentToTarget, sentToday] = await Promise.all([
     prisma.scrimRequest.findFirst({
       where: {
