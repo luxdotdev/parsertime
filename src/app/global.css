@@ -63,13 +63,22 @@
   --color-fd-overlay: oklch(0 0 0 / 0.5);
 }
 
-/* Sidebar carries its own slightly-lifted neutral so the active nav amber reads
- * against a surface that isn't the page background. */
-.dark #nd-sidebar,
-.dark aside[data-collapsible] {
-  --color-fd-muted: oklch(0.225 0.005 250);
-  --color-fd-secondary: oklch(0.245 0.005 250);
-  --color-fd-muted-foreground: oklch(0.72 0.005 250);
+/* Flat sidebar: match the page background so the docs feel like one
+ * continuous dark surface, the same way the landing page reads. The 1px
+ * end-border that fumadocs already paints carries the separation. Cards
+ * inside MDX content stay one tonal step lifted (--color-fd-card) so the
+ * layering vocabulary still works for genuine content surfaces. */
+#nd-sidebar,
+#nd-sidebar-mobile,
+aside[data-collapsible] {
+  background-color: var(--color-fd-background) !important;
+}
+
+/* Slight lift for in-sidebar pills (search button, theme switcher) so they
+ * read as interactive against the now-flat surrounding surface. */
+.dark #nd-sidebar [data-search-toggle],
+.dark #nd-sidebar-mobile [data-search-toggle] {
+  background-color: oklch(0.2 0.004 250);
 }
 
 html {
@@ -104,6 +113,98 @@ pre,
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--color-fd-muted-foreground);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Sidebar — match the landing's stylized vocabulary.
+ *
+ * Separators (the `---Setup---` style markers in meta.json) render as mono
+ * caps tracked-out group labels with a tiny rule above. Items get tighter
+ * padding and a small mono indicator on hover. Active item carries an amber
+ * left bar instead of the default tinted background, which keeps amber as
+ * pure signal (per the Amber-as-Signal Rule in DESIGN.md).
+ * ───────────────────────────────────────────────────────────────────────── */
+
+#nd-sidebar [data-radix-scroll-area-viewport] > div,
+#nd-sidebar-mobile [data-radix-scroll-area-viewport] > div {
+  padding-inline: 4px;
+}
+
+/* Separators — group headers */
+#nd-sidebar p,
+#nd-sidebar-mobile p {
+  font-family: var(--font-mono);
+  font-size: 10px !important;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-fd-muted-foreground);
+  padding-inline: 12px;
+  margin-top: 28px !important;
+  margin-bottom: 8px !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#nd-sidebar p::before,
+#nd-sidebar-mobile p::before {
+  content: '';
+  flex-shrink: 0;
+  display: block;
+  height: 1px;
+  width: 16px;
+  background: var(--color-fd-border);
+}
+
+#nd-sidebar nav > p:first-child,
+#nd-sidebar-mobile nav > p:first-child {
+  margin-top: 4px !important;
+}
+
+/* Items — tighter rows, with a mono caret on hover/active */
+#nd-sidebar a,
+#nd-sidebar-mobile a,
+#nd-sidebar button,
+#nd-sidebar-mobile button {
+  border-radius: 6px;
+  font-size: 13.5px;
+  letter-spacing: -0.005em;
+}
+
+/* Active state: amber-as-signal via a 2px left bar. Drop the default tinted
+ * background so the indicator stays the clear "selected" marker. */
+#nd-sidebar a[data-active='true'],
+#nd-sidebar-mobile a[data-active='true'] {
+  background-color: transparent !important;
+  color: var(--color-fd-primary) !important;
+  font-weight: 500;
+  position: relative;
+}
+
+#nd-sidebar a[data-active='true']::before,
+#nd-sidebar-mobile a[data-active='true']::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--color-fd-primary);
+}
+
+/* Hover: surface lift, no amber (per the Amber-as-Signal Rule) */
+#nd-sidebar a:not([data-active='true']):hover,
+#nd-sidebar-mobile a:not([data-active='true']):hover {
+  background-color: color-mix(in oklch, var(--color-fd-foreground) 5%, transparent);
+  color: var(--color-fd-foreground);
+}
+
+/* Folder chevrons sit tight against the right edge */
+#nd-sidebar [data-icon],
+#nd-sidebar-mobile [data-icon] {
+  opacity: 0.55;
 }
 
 /* View transitions — gated behind reduced motion per DESIGN.md. */
