@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
+    "@vercel/edge-config": "^1.4.3",
     "fumadocs-core": "16.9.1",
     "fumadocs-mdx": "15.0.9",
     "fumadocs-ui": "16.9.1",

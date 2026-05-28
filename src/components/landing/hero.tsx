@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { SceneHost } from './scene-host';
+import { getLatestUpdate } from '@/lib/edge-updates';
 
 const changelog = [
   {
@@ -157,7 +158,9 @@ const indexGroups = [
   },
 ];
 
-export function LandingHero() {
+export async function LandingHero() {
+  const latestUpdate = await getLatestUpdate();
+
   return (
     <section
       aria-labelledby="parsertime-docs-hero-title"
@@ -184,6 +187,24 @@ export function LandingHero() {
 
           {/* Headline column: quiet and technical */}
           <div className="flex flex-col">
+            <Link
+              href={latestUpdate.url}
+              className="group mb-6 inline-flex items-center gap-2.5 self-start rounded-full border border-fd-border bg-fd-card/60 py-1 pl-1 pr-3.5 text-[12px] backdrop-blur-sm transition-colors hover:border-fd-foreground/25 hover:bg-fd-muted/70"
+            >
+              <span className="rounded-full bg-fd-primary px-2.5 py-0.5 text-[11px] font-medium text-fd-primary-foreground">
+                Latest updates
+              </span>
+              <span className="text-fd-muted-foreground transition-colors group-hover:text-fd-foreground">
+                {latestUpdate.title}
+              </span>
+              <span
+                aria-hidden
+                className="text-fd-muted-foreground/70 transition-transform group-hover:translate-x-0.5"
+              >
+                &rarr;
+              </span>
+            </Link>
+
             <h1
               id="parsertime-docs-hero-title"
               className="max-w-[14ch] text-[clamp(2.4rem,4.2vw,3.6rem)] font-bold leading-[1.02] tracking-[-0.025em] text-fd-foreground"
