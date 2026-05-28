@@ -5,6 +5,7 @@ import { createNewMap } from "@/lib/parser";
 import prisma from "@/lib/prisma";
 import { advanceMatch } from "@/lib/tournaments/advancement";
 import { calculateWinner } from "@/lib/winrate";
+import { Prisma } from "@prisma/client";
 import type { ParserData } from "@/types/parser";
 import { unauthorized } from "next/navigation";
 import { after, type NextRequest } from "next/server";
@@ -113,6 +114,29 @@ export async function POST(
       );
     }
 
+    let tournamentMap;
+    try {
+      tournamentMap = await prisma.tournamentMap.create({
+        data: {
+          matchId: match.id,
+          gameNumber: data.gameNumber,
+        },
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        event.outcome = "duplicate_game_number";
+        event.statusCode = 409;
+        return Response.json(
+          { error: "A map already exists for this game number" },
+          { status: 409 }
+        );
+      }
+      throw error;
+    }
+
     const createdMap = await createNewMap(
       {
         map: data.map,
@@ -120,7 +144,12 @@ export async function POST(
         heroBans: data.heroBans,
       },
       session
-    );
+    ).catch(async (error) => {
+      await prisma.tournamentMap
+        .delete({ where: { id: tournamentMap.id } })
+        .catch(() => undefined);
+      throw error;
+    });
 
     const newMap = await prisma.map.findUnique({
       where: { id: createdMap.mapId },
@@ -139,15 +168,17 @@ export async function POST(
     });
 
     if (!newMap) {
+      await prisma.tournamentMap
+        .delete({ where: { id: tournamentMap.id } })
+        .catch(() => undefined);
       event.outcome = "map_creation_failed";
       event.statusCode = 500;
       return Response.json({ error: "Failed to create map" }, { status: 500 });
     }
 
-    const tournamentMap = await prisma.tournamentMap.create({
+    await prisma.tournamentMap.update({
+      where: { id: tournamentMap.id },
       data: {
-        matchId: match.id,
-        gameNumber: data.gameNumber,
         mapId: newMap.id,
       },
     });
