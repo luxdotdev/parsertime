@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+import { auth, getCurrentUser, isAdminUser } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { $Enums } from "@prisma/client";
 import { unauthorized } from "next/navigation";
@@ -20,6 +20,13 @@ export async function POST(req: NextRequest) {
     return new Response("Invalid request body", { status: 400 });
   }
 
+  const currentUser = await getCurrentUser();
+  if (!currentUser) unauthorized();
+
+  if (body.data.userId !== currentUser.id && !isAdminUser(currentUser)) {
+    return new Response("Forbidden", { status: 403 });
+  }
+
   // list of all titles this user has unlocked
   const userTitles = await prisma.user.findUnique({
     where: { id: body.data.userId },
@@ -27,21 +34,14 @@ export async function POST(req: NextRequest) {
   });
 
   if (userTitles?.titles.includes(body.data.newTitle)) {
-    // set the applied title to the new title
-    const existingTitle = await prisma.appliedTitle.findFirst({
-      where: { userId: body.data.userId },
-    });
-
-    if (existingTitle) {
-      await prisma.appliedTitle.update({
-        where: { id: existingTitle.id },
-        data: { title: body.data.newTitle },
+    await prisma.$transaction(async (tx) => {
+      await tx.appliedTitle.deleteMany({
+        where: { userId: body.data.userId },
       });
-    } else {
-      await prisma.appliedTitle.create({
+      await tx.appliedTitle.create({
         data: { userId: body.data.userId, title: body.data.newTitle },
       });
-    }
+    });
   } else {
     // deny the request
     return new Response("Title not allowed to be applied to this user", {

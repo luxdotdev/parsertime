@@ -121,13 +121,13 @@ export default async function PlayerStats(
   const yearScrims = allScrims.filter((scrim) => scrim.date >= year);
 
   const data: Record<Timeframe, Scrim[]> = {
-    "one-week": oneWeekScrims,
-    "two-weeks": twoWeeksScrims,
-    "one-month": monthScrims,
-    "three-months": threeMonthsScrims,
-    "six-months": sixMonthsScrims,
-    "one-year": yearScrims,
-    "all-time": allScrims,
+    "one-week": timeframe1 ? oneWeekScrims : [],
+    "two-weeks": timeframe1 ? twoWeeksScrims : [],
+    "one-month": timeframe1 ? monthScrims : [],
+    "three-months": timeframe2 ? threeMonthsScrims : [],
+    "six-months": timeframe2 ? sixMonthsScrims : [],
+    "one-year": timeframe3 ? yearScrims : [],
+    "all-time": timeframe3 ? allScrims : [],
     custom: [],
   };
 

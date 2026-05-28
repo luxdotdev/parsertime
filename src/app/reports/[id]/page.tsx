@@ -13,13 +13,28 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
+  const session = await auth();
+  if (!session?.user?.email) {
+    return { title: "Report | Parsertime" };
+  }
+
+  const userData = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+  );
+  if (!userData) {
+    return { title: "Report | Parsertime" };
+  }
+
   const report = await prisma.chatReport.findUnique({
     where: { id },
-    select: { title: true },
+    select: { title: true, userId: true },
   });
 
   return {
-    title: report ? `${report.title} | Parsertime` : "Report | Parsertime",
+    title:
+      report?.userId === userData.id
+        ? `${report.title} | Parsertime`
+        : "Report | Parsertime",
   };
 }
 
@@ -46,6 +61,7 @@ export default async function ReportPage({
   });
 
   if (!report) notFound();
+  if (report.userId !== userData.id) notFound();
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">

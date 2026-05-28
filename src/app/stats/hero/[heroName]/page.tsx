@@ -125,17 +125,22 @@ export default async function HeroStats(
   const yearScrims = allScrims.filter((scrim) => scrim.date >= year);
 
   const data: Record<Timeframe, Scrim[]> = {
-    "one-week": oneWeekScrims,
-    "two-weeks": twoWeeksScrims,
-    "one-month": monthScrims,
-    "three-months": threeMonthsScrims,
-    "six-months": sixMonthsScrims,
-    "one-year": yearScrims,
-    "all-time": allScrims,
+    "one-week": timeframe1 ? oneWeekScrims : [],
+    "two-weeks": timeframe1 ? twoWeeksScrims : [],
+    "one-month": timeframe1 ? monthScrims : [],
+    "three-months": timeframe2 ? threeMonthsScrims : [],
+    "six-months": timeframe2 ? sixMonthsScrims : [],
+    "one-year": timeframe3 ? yearScrims : [],
+    "all-time": timeframe3 ? allScrims : [],
     custom: [],
   };
 
-  const allScrimIds = allScrims.map((scrim) => scrim.id);
+  const permitted = timeframe3
+    ? "all-time"
+    : timeframe2
+      ? "six-months"
+      : "one-month";
+  const permittedScrimIds = data[permitted].map((scrim) => scrim.id);
 
   let allHeroStats: PlayerStat[];
   let allHeroKills: Kill[];
@@ -146,13 +151,19 @@ export default async function HeroStats(
       Effect.all(
         [
           HeroService.pipe(
-            Effect.flatMap((svc) => svc.getAllStatsForHero(allScrimIds, hero))
+            Effect.flatMap((svc) =>
+              svc.getAllStatsForHero(permittedScrimIds, hero)
+            )
           ),
           HeroService.pipe(
-            Effect.flatMap((svc) => svc.getAllKillsForHero(allScrimIds, hero))
+            Effect.flatMap((svc) =>
+              svc.getAllKillsForHero(permittedScrimIds, hero)
+            )
           ),
           HeroService.pipe(
-            Effect.flatMap((svc) => svc.getAllDeathsForHero(allScrimIds, hero))
+            Effect.flatMap((svc) =>
+              svc.getAllDeathsForHero(permittedScrimIds, hero)
+            )
           ),
         ],
         { concurrency: "unbounded" }
