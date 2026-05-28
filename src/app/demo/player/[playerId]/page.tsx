@@ -18,6 +18,15 @@ import type { PagePropsWithLocale } from "@/types/next";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+
+function decodePlayerId(playerId: string) {
+  try {
+    return decodeURIComponent(playerId);
+  } catch {
+    return null;
+  }
+}
 
 export async function generateMetadata(
   props: PagePropsWithLocale<"/demo/player/[playerId]">
@@ -27,7 +36,7 @@ export async function generateMetadata(
     locale: params.locale,
     namespace: "mapPage.playerMetadata",
   });
-  const playerName = decodeURIComponent(params.playerId);
+  const playerName = decodePlayerId(params.playerId) ?? "Player";
 
   return {
     title: t("title", { playerName }),
@@ -59,11 +68,22 @@ export default async function PlayerDashboardDemoPage(
   const t = await getTranslations("mapPage.player.dashboard");
   const id = 10148;
   const mapDataId = await resolveMapDataId(id);
-  const playerName = decodeURIComponent(params.playerId);
+  const playerName = decodePlayerId(params.playerId);
+
+  if (!playerName) {
+    notFound();
+  }
 
   const mostPlayedHeroes = await AppRuntime.runPromise(
     PlayerService.pipe(Effect.flatMap((svc) => svc.getMostPlayedHeroes(id)))
   );
+  const playerExists = mostPlayedHeroes.some(
+    (player) => player.player_name === playerName
+  );
+
+  if (!playerExists) {
+    notFound();
+  }
 
   const mapName = await prisma.matchStart.findFirst({
     where: {
