@@ -1,5 +1,4 @@
 import type { SimulatorContext } from "@/data/team/types";
-import type { RoleTrio } from "@/data/team/types";
 import { mapNameToMapTypeMapping } from "@/types/map";
 
 export type PredictionScenario = {
@@ -45,10 +44,6 @@ export type PredictionMessage =
       values: { map: string; mapType: string };
     }
   | {
-      key: "warnings.rosterLowSample";
-      values: { games: number };
-    }
-  | {
       key: "warnings.enemyHeroLowSample";
       values: { hero: string; samples: number };
     }
@@ -78,22 +73,6 @@ const MIN_SAMPLES_MEDIUM = 3;
 
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
-}
-
-function matchesTrio(composition: string[], trio: RoleTrio): boolean {
-  const trioPlayers = new Set([
-    trio.tank,
-    trio.dps1,
-    trio.dps2,
-    trio.support1,
-    trio.support2,
-  ]);
-  const compSet = new Set(composition);
-  if (compSet.size !== 5) return false;
-  for (const player of trioPlayers) {
-    if (!compSet.has(player)) return false;
-  }
-  return true;
 }
 
 function getConfidence(
@@ -267,36 +246,7 @@ export function computePrediction(
   }
 
   let compositionImpact = 0;
-  if (scenario.ourComposition.length === 5) {
-    const matchingTrio = ctx.roleTrioWinrates.find((trio) =>
-      matchesTrio(scenario.ourComposition, trio)
-    );
-
-    if (matchingTrio) {
-      compositionImpact = matchingTrio.winrate / 100 - ctx.baseWinrate;
-      activeSampleSizes.push(matchingTrio.gamesPlayed);
-      if (matchingTrio.gamesPlayed < MIN_SAMPLES_MEDIUM) {
-        warnings.push({
-          key: "warnings.rosterLowSample",
-          values: { games: matchingTrio.gamesPlayed },
-        });
-      }
-    } else {
-      let heroImpactSum = 0;
-      let heroCount = 0;
-      for (const hero of scenario.ourComposition) {
-        const heroWinrate = ctx.heroPoolWinrates[hero];
-        if (heroWinrate !== undefined) {
-          heroImpactSum += heroWinrate - ctx.baseWinrate;
-          heroCount++;
-          activeSampleSizes.push(ctx.heroPoolSampleSizes[hero] ?? 0);
-        }
-      }
-      if (heroCount > 0) {
-        compositionImpact = heroImpactSum / heroCount;
-      }
-    }
-  } else if (scenario.ourComposition.length > 0) {
+  if (scenario.ourComposition.length > 0) {
     let heroImpactSum = 0;
     let heroCount = 0;
     for (const hero of scenario.ourComposition) {

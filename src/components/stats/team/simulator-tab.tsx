@@ -1004,7 +1004,6 @@ function formatPredictionWarning(
     case "warnings.enemyBanLowSample":
     case "warnings.ourBanLowSample":
     case "warnings.mapLowSample":
-    case "warnings.rosterLowSample":
     case "warnings.enemyHeroLowSample":
       return t(message.key, message.values);
     case "warnings.mapModeFallback":
