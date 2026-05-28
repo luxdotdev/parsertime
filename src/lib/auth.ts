@@ -37,6 +37,13 @@ import isEmail from "validator/lib/isEmail";
 const isProd = process.env.NODE_ENV === "production";
 const isPreview = process.env.VERCEL_ENV === "preview";
 
+function hasUnsafeRedirectChars(value: string) {
+  return [...value].some((char) => {
+    const code = char.charCodeAt(0);
+    return char === "\\" || code <= 31 || code === 127;
+  });
+}
+
 export type Availability = "public" | "private";
 
 function handleEmailError(error: unknown) {
@@ -149,15 +156,15 @@ export const config = {
       return false;
     },
     redirect({ url, baseUrl }) {
-      // Allow safe relative URLs (reject protocol-relative URLs like "//evil.com")
-      if (url.startsWith("/") && !url.startsWith("//"))
-        return `${baseUrl}${url}`;
-      // Allow URLs on the same origin
+      if (hasUnsafeRedirectChars(url)) return `${baseUrl}/dashboard`;
+
       try {
-        if (new URL(url).origin === baseUrl) return url;
+        const parsed = new URL(url, baseUrl);
+        if (parsed.origin === baseUrl) return parsed.href;
       } catch {
         // Invalid URL, fall through to default
       }
+
       // Default to dashboard
       return `${baseUrl}/dashboard`;
     },

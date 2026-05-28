@@ -40,10 +40,29 @@ export async function generateMetadata(
   };
 }
 
+const APP_ORIGIN = "https://parsertime.app";
+
+function hasUnsafeRedirectChars(value: string) {
+  return [...value].some((char) => {
+    const code = char.charCodeAt(0);
+    return char === "\\" || code <= 31 || code === 127;
+  });
+}
+
 function getSafeCallbackUrl(callbackUrl: string | undefined): string {
-  if (callbackUrl?.startsWith("/") && !callbackUrl.startsWith("//")) {
-    return callbackUrl;
+  if (!callbackUrl || hasUnsafeRedirectChars(callbackUrl)) {
+    return "/dashboard";
   }
+
+  try {
+    const url = new URL(callbackUrl, APP_ORIGIN);
+    if (url.origin === APP_ORIGIN) {
+      return `${url.pathname}${url.search}${url.hash}`;
+    }
+  } catch {
+    // Fall through to the default dashboard path.
+  }
+
   return "/dashboard";
 }
 
