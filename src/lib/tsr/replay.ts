@@ -41,7 +41,10 @@ export type RecomputeResult = {
   playersUpdated: number;
   staleRowsDropped: number;
   durationMs: number;
+  skipped?: boolean;
 };
+
+const TSR_RECOMPUTE_LOCK_ID = 732401;
 
 async function loadReplayMatches(): Promise<ReplayMatch[]> {
   const rows = await prisma.faceitMatch.findMany({
@@ -104,6 +107,36 @@ async function loadReplayMatches(): Promise<ReplayMatch[]> {
 }
 
 export async function recomputeAllTsrs(): Promise<RecomputeResult> {
+  const lockStart = Date.now();
+  const [lock] = await prisma.$queryRaw<{ locked: boolean }[]>`
+    SELECT pg_try_advisory_lock(${TSR_RECOMPUTE_LOCK_ID}) AS locked
+  `;
+  if (!lock?.locked) {
+    const durationMs = Date.now() - lockStart;
+    Logger.info({
+      event: "tsr.recompute",
+      outcome: "skipped_locked",
+      duration_ms: durationMs,
+    });
+    return {
+      matchesReplayed: 0,
+      playersUpdated: 0,
+      staleRowsDropped: 0,
+      durationMs,
+      skipped: true,
+    };
+  }
+
+  try {
+    return await recomputeAllTsrsUnlocked();
+  } finally {
+    await prisma.$executeRaw`
+      SELECT pg_advisory_unlock(${TSR_RECOMPUTE_LOCK_ID})
+    `;
+  }
+}
+
+async function recomputeAllTsrsUnlocked(): Promise<RecomputeResult> {
   const start = Date.now();
   const matches = await loadReplayMatches();
 

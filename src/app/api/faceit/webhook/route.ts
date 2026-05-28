@@ -1,6 +1,7 @@
 import { Logger } from "@/lib/logger";
 import { ingestMatchById } from "@/lib/tsr/ingest";
 import { recomputeAllTsrs } from "@/lib/tsr/replay";
+import { kv } from "@vercel/kv";
 import { createHmac, timingSafeEqual } from "node:crypto";
 
 export const runtime = "nodejs";
@@ -24,6 +25,15 @@ const HANDLED_EVENTS = new Set([
   "match_status_cancelled",
   "match_status_aborted",
 ]);
+const MAX_EVENT_AGE_MS = 10 * 60 * 1000;
+const MAX_EVENT_FUTURE_SKEW_MS = 5 * 60 * 1000;
+const EVENT_DEDUPE_TTL_SECONDS = 7 * 24 * 60 * 60;
+
+function eventTimestampToMs(timestamp: number | undefined): number | null {
+  if (timestamp === undefined) return null;
+  if (!Number.isFinite(timestamp)) return null;
+  return timestamp > 1_000_000_000_000 ? timestamp : timestamp * 1000;
+}
 
 function verifySignature(rawBody: string, header: string | null): boolean {
   const secret = process.env.FACEIT_WEBHOOK_SECRET;
@@ -89,6 +99,40 @@ export async function POST(req: Request): Promise<Response> {
       wideEvent.outcome = "ignored";
       wideEvent.status_code = 200;
       return Response.json({ ok: true, ignored: true, event: eventName });
+    }
+
+    const timestampMs = eventTimestampToMs(event.timestamp);
+    if (!timestampMs) {
+      wideEvent.outcome = "bad_request";
+      wideEvent.status_code = 400;
+      wideEvent.parse_error = "missing_event_timestamp";
+      return new Response("Bad Request", { status: 400 });
+    }
+    const now = Date.now();
+    if (
+      now - timestampMs > MAX_EVENT_AGE_MS ||
+      timestampMs - now > MAX_EVENT_FUTURE_SKEW_MS
+    ) {
+      wideEvent.outcome = "stale_event";
+      wideEvent.status_code = 400;
+      return new Response("Stale event", { status: 400 });
+    }
+
+    const eventDedupId = event.event_id ?? event.transaction_id;
+    if (!eventDedupId) {
+      wideEvent.outcome = "bad_request";
+      wideEvent.status_code = 400;
+      wideEvent.parse_error = "missing_event_id";
+      return new Response("Bad Request", { status: 400 });
+    }
+    const dedupeResult = await kv.set(`faceit:webhook:${eventDedupId}`, "1", {
+      nx: true,
+      ex: EVENT_DEDUPE_TTL_SECONDS,
+    });
+    if (dedupeResult !== "OK") {
+      wideEvent.outcome = "duplicate";
+      wideEvent.status_code = 200;
+      return Response.json({ ok: true, duplicate: true });
     }
 
     const matchId = event.payload?.id;
