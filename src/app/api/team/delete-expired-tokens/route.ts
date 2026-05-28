@@ -1,7 +1,13 @@
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
+import type { NextRequest } from "next/server";
 
-export async function DELETE() {
+function isAuthorizedCronRequest(req: NextRequest) {
+  const secret = process.env.CRON_SECRET;
+  return Boolean(secret && req.headers.get("Authorization") === `Bearer ${secret}`);
+}
+
+async function deleteExpiredTokens() {
   const now = new Date();
   const tokens = await prisma.teamInviteToken.findMany({
     where: { expires: { lt: now } },
@@ -19,7 +25,17 @@ export async function DELETE() {
   return new Response("OK", { status: 200 });
 }
 
+export async function DELETE(req: NextRequest) {
+  if (!isAuthorizedCronRequest(req)) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+  return await deleteExpiredTokens();
+}
+
 // This is necessary for using Vercel Cron Jobs
-export async function GET() {
-  return await DELETE();
+export async function GET(req: NextRequest) {
+  if (!isAuthorizedCronRequest(req)) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+  return await deleteExpiredTokens();
 }
