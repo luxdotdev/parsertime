@@ -71,10 +71,10 @@ export async function calculateStats(mapDataId: number, playerName: string) {
   );
 
   const firstPickPercentage = round(
-    (playerFirstKills.length / fights.length) * 100
+    fights.length > 0 ? (playerFirstKills.length / fights.length) * 100 : 0
   );
   const firstDeathPercentage = round(
-    (playerFirstDeaths.length / fights.length) * 100
+    fights.length > 0 ? (playerFirstDeaths.length / fights.length) * 100 : 0
   );
 
   const team = playerFinalRoundStats[0]?.player_team;
@@ -105,7 +105,9 @@ export async function calculateStats(mapDataId: number, playerName: string) {
   );
 
   const playerFletaDeadliftPercentage =
-    (playerFinalBlows / (teamTotalFinalBlows - playerFinalBlows)) * 100;
+    teamTotalFinalBlows > 0
+      ? (playerFinalBlows / teamTotalFinalBlows) * 100
+      : 0;
 
   const fightReversals = fights.filter((fight) => {
     const playerKills = fight.kills.filter(
@@ -119,7 +121,7 @@ export async function calculateStats(mapDataId: number, playerName: string) {
   });
 
   const fightReversalPercentage = round(
-    (fightReversals.length / fights.length) * 100
+    fights.length > 0 ? (fightReversals.length / fights.length) * 100 : 0
   );
 
   return {

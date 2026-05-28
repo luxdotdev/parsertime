@@ -66,6 +66,10 @@ function assignRoundNumbersToUltimates(
   ultimateStarts: (UltimateStart & { round_number?: number })[],
   roundEnds: RoundEnd[]
 ) {
+  if (roundEnds.length === 0) {
+    return { ultimatesCharged, ultimateStarts };
+  }
+
   roundEnds.sort((a, b) => a.match_time - b.match_time);
 
   function findRoundNumber(matchTime: number) {
@@ -172,6 +176,8 @@ export async function getKillsPerUltimateForMapData(
       },
     }),
   ]);
+
+  if (ultimatesCharged.length === 0) return 0;
 
   const killsPerUltimate = ultKills.length / ultimatesCharged.length;
 
@@ -324,10 +330,10 @@ export async function calculateXFactor(mapId: number, playerName: string) {
   );
 
   const firstPickPercentage = round(
-    (playerFirstKills.length / fights.length) * 100
+    fights.length > 0 ? (playerFirstKills.length / fights.length) * 100 : 0
   );
   const firstDeathPercentage = round(
-    (playerFirstDeaths.length / fights.length) * 100
+    fights.length > 0 ? (playerFirstDeaths.length / fights.length) * 100 : 0
   );
 
   const fightReversals = fights.filter((fight) => {
@@ -342,7 +348,7 @@ export async function calculateXFactor(mapId: number, playerName: string) {
   });
 
   const fightReversalPercentage = round(
-    (fightReversals.length / fights.length) * 100
+    fights.length > 0 ? (fightReversals.length / fights.length) * 100 : 0
   );
 
   const duelWinratePercentage = await calculateAverageDuelWinrate(
@@ -391,7 +397,9 @@ export async function calculateXFactor(mapId: number, playerName: string) {
   );
 
   const playerFletaDeadliftPercentage =
-    (playerFinalBlows / (teamTotalFinalBlows - playerFinalBlows)) * 100;
+    teamTotalFinalBlows > 0
+      ? (playerFinalBlows / teamTotalFinalBlows) * 100
+      : 0;
 
   type DeathsPer10 = { player_name: string; deaths_per_10: number };
 
@@ -475,6 +483,8 @@ function calculateDroughtTimeFromFights(
     const previousKill = playerKills[index - 1];
     return kill.match_time - previousKill.match_time;
   });
+
+  if (droughts.length === 0) return 0;
 
   const averageDrought = droughts.reduce((a, b) => a + b, 0) / droughts.length;
 

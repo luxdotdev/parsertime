@@ -68,7 +68,9 @@ export async function DefaultOverview({
   );
 
   const playerFletaDeadliftPercentage =
-    (playerFinalBlows / (teamTotalFinalBlows - playerFinalBlows)) * 100;
+    teamTotalFinalBlows > 0
+      ? (playerFinalBlows / teamTotalFinalBlows) * 100
+      : 0;
 
   const firstKills = fights.map((fight) => fight.kills[0]);
   const playerFirstKills = firstKills.filter(
@@ -79,8 +81,10 @@ export async function DefaultOverview({
     (kill) => kill.victim_name === playerNameDecoded
   );
 
-  const firstPickPercentage = (playerFirstKills.length / fights.length) * 100;
-  const firstDeathPercentage = (playerFirstDeaths.length / fights.length) * 100;
+  const firstPickPercentage =
+    fights.length > 0 ? (playerFirstKills.length / fights.length) * 100 : 0;
+  const firstDeathPercentage =
+    fights.length > 0 ? (playerFirstDeaths.length / fights.length) * 100 : 0;
 
   return (
     <>
