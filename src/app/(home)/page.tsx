@@ -1,10 +1,17 @@
-import { LandingHero, LandingIndex } from '@/components/landing/hero';
+import {
+  LandingBrowse,
+  LandingChangelog,
+  LandingHero,
+  LandingQuickstart,
+} from '@/components/landing/hero';
 
 export default function HomePage() {
   return (
     <main className="flex-1">
       <LandingHero />
-      <LandingIndex />
+      <LandingChangelog />
+      <LandingQuickstart />
+      <LandingBrowse />
     </main>
   );
 }
