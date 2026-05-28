@@ -21,7 +21,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const jsonResponse = await handleUpload({
       body,
       request,
-      onBeforeGenerateToken: async () => {
+      onBeforeGenerateToken: async (pathname) => {
         // pathname: string
         /* clientPayload?: string, */
         // Generate a client token for the browser to upload the file
@@ -30,6 +30,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         const authedUser = await getCurrentUser();
         if (!authedUser) throw new Error("Unauthorized");
         if (authedUser.id !== userId) throw new Error("Forbidden");
+        if (!pathname.startsWith(`avatars/${authedUser.id}`)) {
+          throw new Error("Invalid upload path");
+        }
 
         const ratelimit = new Ratelimit({
           redis: kv,
@@ -41,7 +44,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         );
         if (!success) throw new Error("Rate limit exceeded");
 
-        return { tokenPayload: JSON.stringify({ userId: authedUser.id }) };
+        return {
+          tokenPayload: JSON.stringify({ userId: authedUser.id }),
+          allowedContentTypes: ["image/png", "image/jpeg", "image/webp"],
+          maximumSizeInBytes: 5 * 1024 * 1024,
+        };
       },
       onUploadCompleted: async ({ blob, tokenPayload }) => {
         // Get notified of client upload completion

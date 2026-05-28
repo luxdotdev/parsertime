@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import { $Enums } from "@prisma/client";
 import { get } from "@vercel/edge-config";
+import type { NextRequest } from "next/server";
 
 // Title display names for notifications
 const TITLE_DISPLAY_NAMES: Record<$Enums.Title, string> = {
@@ -63,8 +64,11 @@ async function awardTitleWithNotification(
   );
 }
 
-export async function GET() {
-  // No auth since this will run via cron
+export async function GET(req: NextRequest) {
+  const secret = process.env.CRON_SECRET;
+  if (!secret || req.headers.get("Authorization") !== `Bearer ${secret}`) {
+    return new Response("Unauthorized", { status: 401 });
+  }
 
   // Fetch all user data in parallel
   const [
