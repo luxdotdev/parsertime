@@ -103,18 +103,19 @@ export default async function PricingPage() {
     UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
   );
 
-  const plan = toTitleCase(user?.billingPlan ?? "");
-  const isLoggedIn = !!session?.user;
+  const plan = toTitleCase(user?.billingPlan ?? "FREE");
+  const isLoggedIn = !!user;
 
   async function getLink(tier: string) {
-    if (session) {
-      if (plan === "Free") {
-        const checkout = await createCheckout(session, tier);
-        return checkout.url as Route;
-      }
-      return await getCustomerPortalUrl(user!);
+    if (!session?.user?.email || !user) {
+      return "/dashboard";
     }
-    return "/dashboard";
+
+    if (plan === "Free") {
+      const checkout = await createCheckout(session, tier);
+      return checkout.url as Route;
+    }
+    return (await getCustomerPortalUrl(user)) as Route;
   }
 
   const tiers: TierData[] = [
@@ -138,7 +139,7 @@ export default async function PricingPage() {
     {
       name: t("tiers.basic"),
       id: "tier-basic",
-      href: ((await getLink("Basic")) as Route) ?? "/sign-in",
+      href: await getLink("Basic"),
       priceMonthly: t("tiers.basicMonthly"),
       description: t("tiers.basicDescription"),
       mostPopular: true,
@@ -157,7 +158,7 @@ export default async function PricingPage() {
     {
       name: t("tiers.premium"),
       id: "tier-premium",
-      href: ((await getLink("Premium")) as Route) ?? "/sign-in",
+      href: await getLink("Premium"),
       priceMonthly: t("tiers.premiumMonthly"),
       description: t("tiers.premiumDescription"),
       mostPopular: false,
