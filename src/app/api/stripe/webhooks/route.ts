@@ -23,6 +23,8 @@ const relevantEvents = new Set([
   "customer.created",
   "customer.deleted",
   "checkout.session.completed",
+  "checkout.session.async_payment_succeeded",
+  "checkout.session.async_payment_failed",
   "customer.subscription.created",
   "customer.subscription.deleted",
   "customer.subscription.updated",
@@ -89,6 +91,26 @@ export async function POST(req: Request) {
           }
           break;
         }
+        case "checkout.session.async_payment_succeeded": {
+          const checkoutSession = event.data.object;
+          if (
+            checkoutSession.mode === "payment" &&
+            checkoutSession.metadata?.type === "ai_chat_topup"
+          ) {
+            await handleTopupCheckoutCompleted(checkoutSession, event.id);
+          }
+          break;
+        }
+        case "checkout.session.async_payment_failed": {
+          const checkoutSession = event.data.object;
+          if (
+            checkoutSession.mode === "payment" &&
+            checkoutSession.metadata?.type === "ai_chat_topup"
+          ) {
+            handleTopupCheckoutFailed(checkoutSession);
+          }
+          break;
+        }
         case "payment_intent.succeeded": {
           const paymentIntent = event.data.object;
           if (paymentIntent.metadata?.type === "ai_chat_auto_refill") {
@@ -142,12 +164,42 @@ async function handleTopupCheckoutCompleted(
     return;
   }
 
+  if (typeof session.payment_intent !== "string") {
+    Logger.warn("topup checkout missing payment intent", {
+      sessionId: session.id,
+      userId,
+    });
+    return;
+  }
+
+  const paymentIntent = await stripe.paymentIntents.retrieve(
+    session.payment_intent
+  );
+  if (paymentIntent.status !== "succeeded") {
+    Logger.warn("topup checkout payment intent has not succeeded", {
+      sessionId: session.id,
+      paymentIntentId: paymentIntent.id,
+      status: paymentIntent.status,
+    });
+    return;
+  }
+
+  if (paymentIntent.amount_received < amountCents) {
+    Logger.warn("topup checkout paid amount is below expected amount", {
+      sessionId: session.id,
+      paymentIntentId: paymentIntent.id,
+      amountCents,
+      amountReceived: paymentIntent.amount_received,
+    });
+    return;
+  }
+
   const result = await creditUser(userId, {
     amountCents,
     type: "TOPUP",
     description: `Top-up via Stripe Checkout (${session.id})`,
-    stripeEventId: eventId,
-    metadata: { sessionId: session.id },
+    stripeEventId: paymentIntent.id,
+    metadata: { sessionId: session.id, eventId },
   });
 
   if (!result.ok) {
@@ -158,25 +210,20 @@ async function handleTopupCheckoutCompleted(
     return;
   }
 
-  if (typeof session.payment_intent === "string") {
-    try {
-      const paymentIntent = await stripe.paymentIntents.retrieve(
-        session.payment_intent
-      );
-      const paymentMethodId =
-        typeof paymentIntent.payment_method === "string"
-          ? paymentIntent.payment_method
-          : paymentIntent.payment_method?.id;
-      if (paymentMethodId) {
-        await saveDefaultPaymentMethod(userId, paymentMethodId);
-      }
-    } catch (error) {
-      Logger.warn("failed to save payment method from topup", {
-        userId,
-        sessionId: session.id,
-        error: error instanceof Error ? error.message : String(error),
-      });
+  try {
+    const paymentMethodId =
+      typeof paymentIntent.payment_method === "string"
+        ? paymentIntent.payment_method
+        : paymentIntent.payment_method?.id;
+    if (paymentMethodId) {
+      await saveDefaultPaymentMethod(userId, paymentMethodId);
     }
+  } catch (error) {
+    Logger.warn("failed to save payment method from topup", {
+      userId,
+      sessionId: session.id,
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
 
   await notifyCreditPurchase(
@@ -185,6 +232,13 @@ async function handleTopupCheckoutCompleted(
     result.balanceAfterCents,
     "topup"
   );
+}
+
+function handleTopupCheckoutFailed(session: Stripe.Checkout.Session) {
+  Logger.warn("topup checkout async payment failed", {
+    sessionId: session.id,
+    userId: session.metadata?.userId,
+  });
 }
 
 async function handleAutoRefillSucceeded(
