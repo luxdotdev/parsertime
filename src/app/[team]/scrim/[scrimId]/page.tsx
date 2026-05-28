@@ -20,7 +20,7 @@ import { ScrimOverviewService, ScrimService } from "@/data/scrim";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { auth, isAuthedToViewScrim } from "@/lib/auth";
 import { mapComparison, overviewCard } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -39,16 +39,22 @@ export async function generateMetadata(
     locale: params.locale,
     namespace: "scrimPage.metadata",
   });
-  const scrimId = decodeURIComponent(params.scrimId);
+  const scrimId = Number(params.scrimId);
+  const canViewScrim =
+    Number.isSafeInteger(scrimId) &&
+    scrimId > 0 &&
+    (await isAuthedToViewScrim(scrimId));
 
-  const scrim = await prisma.scrim.findFirst({
-    where: {
-      id: parseInt(scrimId),
-    },
-    select: {
-      name: true,
-    },
-  });
+  const scrim = canViewScrim
+    ? await prisma.scrim.findFirst({
+        where: {
+          id: scrimId,
+        },
+        select: {
+          name: true,
+        },
+      })
+    : null;
 
   const scrimName = scrim?.name ?? t("scrim");
 
@@ -63,7 +69,7 @@ export async function generateMetadata(
       siteName: "Parsertime",
       images: [
         {
-          url: `https://parsertime.app/api/og?title=${t("ogImage", { scrimName })}`,
+          url: `https://parsertime.app/api/og?title=${encodeURIComponent(t("ogImage", { scrimName }))}`,
           width: 1200,
           height: 630,
         },

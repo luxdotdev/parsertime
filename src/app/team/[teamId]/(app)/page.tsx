@@ -15,7 +15,7 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { ScoutingService } from "@/data/scouting";
 import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { auth, isAuthedToViewTeam } from "@/lib/auth";
 import { scoutingTool } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { computeTeamTsr } from "@/lib/tsr/team";
@@ -30,12 +30,18 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const params = await props.params;
   const t = await getTranslations("teamPage.teamMetadata");
-  const teamId = decodeURIComponent(params.teamId);
+  const teamId = Number(params.teamId);
+  const canViewTeam =
+    Number.isSafeInteger(teamId) &&
+    teamId > 0 &&
+    (await isAuthedToViewTeam(teamId));
 
-  const team = await prisma.team.findFirst({
-    where: { id: parseInt(teamId) },
-    select: { name: true },
-  });
+  const team = canViewTeam
+    ? await prisma.team.findFirst({
+        where: { id: teamId },
+        select: { name: true },
+      })
+    : null;
 
   const teamName = team?.name ?? t("defaultTeam");
 
@@ -50,7 +56,7 @@ export async function generateMetadata(
       siteName: "Parsertime",
       images: [
         {
-          url: `https://parsertime.app/api/og?title=${t("ogImage", { teamName })}`,
+          url: `https://parsertime.app/api/og?title=${encodeURIComponent(t("ogImage", { teamName }))}`,
           width: 1200,
           height: 630,
         },
