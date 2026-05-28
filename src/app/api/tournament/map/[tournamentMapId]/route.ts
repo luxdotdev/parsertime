@@ -5,7 +5,7 @@ import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { unauthorized } from "next/navigation";
+import { unauthorized, unstable_rethrow } from "next/navigation";
 import { after, type NextRequest } from "next/server";
 
 export async function DELETE(
@@ -151,10 +151,11 @@ export async function DELETE(
     event.outcome = "success";
     event.statusCode = 200;
     return Response.json({ success: true });
-  } catch (e) {
+  } catch (error) {
+    unstable_rethrow(error);
     event.outcome = "error";
     event.statusCode = 500;
-    event.error = e instanceof Error ? e.message : String(e);
+    event.error = error instanceof Error ? error.message : String(error);
     return Response.json({ error: "Failed to delete map" }, { status: 500 });
   } finally {
     event.durationMs = Date.now() - startTime;
