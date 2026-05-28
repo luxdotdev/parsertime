@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { advanceMatch } from "@/lib/tournaments/advancement";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { unauthorized } from "next/navigation";
+import { unauthorized, unstable_rethrow } from "next/navigation";
 import { after, type NextRequest } from "next/server";
 import { z } from "zod";
 
@@ -228,6 +228,7 @@ export async function POST(
     event.statusCode = 200;
     return Response.json({ success: true });
   } catch (e) {
+    unstable_rethrow(e);
     event.outcome = "error";
     event.statusCode = 500;
     event.error = e instanceof Error ? e.message : String(e);
