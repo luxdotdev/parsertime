@@ -6,9 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { TournamentService } from "@/data/tournament";
-import { auth } from "@/lib/auth";
+import { auth, canViewTournament, getCurrentUser } from "@/lib/auth";
 import { tournament } from "@/lib/flags";
-import prisma from "@/lib/prisma";
 import { ArrowLeft } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
@@ -32,6 +31,9 @@ export default async function TournamentMatchPage(props: {
   );
   if (!match || match.tournamentId !== tournamentId) notFound();
 
+  const user = await getCurrentUser();
+  if (!(await canViewTournament(tournamentId, user))) notFound();
+
   const isCompleted = match.status === "COMPLETED";
   const team1IsWinner = isCompleted && match.winnerId === match.team1Id;
   const team2IsWinner = isCompleted && match.winnerId === match.team2Id;
@@ -44,10 +46,6 @@ export default async function TournamentMatchPage(props: {
   const session = await auth();
   let canUpload = false;
   if (session?.user?.email) {
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true, role: true },
-    });
     canUpload =
       user?.id === match.tournament.creatorId ||
       user?.role === "ADMIN" ||
