@@ -33,7 +33,9 @@ export default async function ScoutingPlayerPage(
 
   const analytics = await AppRuntime.runPromise(
     ScoutingAnalyticsService.pipe(
-      Effect.flatMap((svc) => svc.getPlayerScoutingAnalytics(profile.name))
+      Effect.flatMap((svc) =>
+        svc.getPublicPlayerScoutingAnalytics(profile.name)
+      )
     )
   );
 

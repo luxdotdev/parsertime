@@ -816,6 +816,9 @@ export type ScoutingAnalyticsServiceInterface = {
   readonly getPlayerScoutingAnalytics: (
     playerName: string
   ) => Effect.Effect<PlayerScoutingAnalytics, ScoutingAnalyticsQueryError>;
+  readonly getPublicPlayerScoutingAnalytics: (
+    playerName: string
+  ) => Effect.Effect<PlayerScoutingAnalytics, ScoutingAnalyticsQueryError>;
 };
 
 export class ScoutingAnalyticsService extends Context.Tag(
@@ -1127,6 +1130,38 @@ export const make: Effect.Effect<ScoutingAnalyticsServiceInterface> =
       );
     }
 
+    function getPublicPlayerScoutingAnalytics(
+      playerName: string
+    ): Effect.Effect<PlayerScoutingAnalytics, ScoutingAnalyticsQueryError> {
+      return Effect.gen(function* () {
+        const competitiveMapWinrates = yield* Effect.tryPromise({
+          try: () => fetchCompetitiveMapWinrates(playerName),
+          catch: (error) =>
+            new ScoutingAnalyticsQueryError({
+              operation: "fetch public competitive map winrates",
+              cause: error,
+            }),
+        }).pipe(
+          Effect.withSpan(
+            "player.scoutingAnalytics.fetchPublicCompetitiveMapWinrates",
+            { attributes: { playerName } }
+          )
+        );
+
+        const analytics: PlayerScoutingAnalytics = {
+          scrimData: null,
+          competitiveMapWinrates,
+          scrimMapWinrates: null,
+          strengths: [],
+          weaknesses: [],
+        };
+        const insights = generatePlayerInsights(analytics);
+        analytics.strengths = insights.strengths;
+        analytics.weaknesses = insights.weaknesses;
+        return analytics;
+      }).pipe(Effect.withSpan("player.getPublicPlayerScoutingAnalytics"));
+    }
+
     const scoutingAnalyticsCache = yield* Cache.make({
       capacity: CACHE_CAPACITY,
       timeToLive: CACHE_TTL,
@@ -1141,6 +1176,7 @@ export const make: Effect.Effect<ScoutingAnalyticsServiceInterface> =
         scoutingAnalyticsCache
           .get(playerName)
           .pipe(Effect.tap(() => Metric.increment(playerCacheRequestTotal))),
+      getPublicPlayerScoutingAnalytics,
     } satisfies ScoutingAnalyticsServiceInterface;
   });
 
