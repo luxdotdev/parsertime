@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { serializeCsv } from "@/lib/csv";
 import type { $Enums, Kill } from "@prisma/client";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
@@ -57,18 +58,12 @@ export function KillfeedExport({ fights }: { fights: Fight[] }) {
   );
 
   function generateCSV(flattenedData: FlattenedData): string {
-    // Generate the headers
-    const headers = Object.keys(flattenedData[0]).join(",");
+    if (flattenedData.length === 0) return "";
 
-    // Generate the rows
-    const rows = flattenedData.map((obj) =>
-      Object.values(obj)
-        .map((value) => (value === null ? "" : String(value)))
-        .join(",")
-    );
+    const headers = Object.keys(flattenedData[0]);
+    const rows = flattenedData.map((obj) => Object.values(obj));
 
-    // Combine headers and rows
-    return [headers, ...rows].join("\n");
+    return serializeCsv([headers, ...rows]);
   }
 
   function handleClick() {

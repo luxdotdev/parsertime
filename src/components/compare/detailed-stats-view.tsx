@@ -16,6 +16,7 @@ import type {
   ComparisonStats,
   TrendsAnalysis,
 } from "@/data/comparison/types";
+import { serializeCsv } from "@/lib/csv";
 import {
   Activity,
   Award,
@@ -418,7 +419,7 @@ export function DetailedStatsView({ stats }: DetailedStatsViewProps) {
       ...stats.map((s) => formatStatValue(s.aggregated[stat.key], stat.format)),
     ]);
 
-    const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
+    const csv = serializeCsv([headers, ...rows]);
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
