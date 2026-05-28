@@ -29,9 +29,9 @@ function assignNestingDepths(spans: UltimateSpan[]): void {
   for (const span of sorted) {
     while (
       activeEndTimes.length > 0 &&
-      activeEndTimes[activeEndTimes.length - 1] <= span.startTime
+      activeEndTimes[0] <= span.startTime
     ) {
-      activeEndTimes.pop();
+      activeEndTimes.shift();
     }
 
     span.depth = activeEndTimes.length;

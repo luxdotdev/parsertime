@@ -524,7 +524,7 @@ export const make = Effect.gen(function* () {
           );
 
         for (const match of opponentMatches) {
-          const opponentSide = match.team1 === opponentAbbr ? "team2" : "team1";
+          const opponentSide = match.team1 === opponentAbbr ? "team1" : "team2";
           for (const map of match.maps) {
             totalOpponentMaps++;
             for (const ban of map.heroBans) {

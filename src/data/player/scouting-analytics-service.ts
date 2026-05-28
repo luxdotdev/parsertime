@@ -602,15 +602,10 @@ async function fetchCompetitiveMapWinrates(
   for (const assignment of assignments) {
     if (mapResults.has(assignment.mapResult.id)) continue;
 
-    const isTeam1 = assignment.team === "team1";
-    const playerTeamAbbr = isTeam1
-      ? assignment.mapResult.match.team1
-      : assignment.mapResult.match.team2;
-
     mapResults.set(assignment.mapResult.id, {
       mapName: assignment.mapResult.mapName,
       mapType: assignment.mapResult.mapType,
-      won: assignment.mapResult.winner === playerTeamAbbr,
+      won: assignment.mapResult.winner === assignment.team,
     });
   }
 
