@@ -11,6 +11,7 @@ import { UserRole } from "@prisma/client";
 
 const COOLDOWN_HOURS = 24;
 const DAILY_LIMIT = 10;
+const SCRIM_REQUEST_LOCK_NAMESPACE = 732402;
 
 export type SendResult =
   | { ok: true; requestId: string }
@@ -78,32 +79,6 @@ export async function sendScrimRequest(input: {
 
   const since = new Date(Date.now() - COOLDOWN_HOURS * 3_600_000);
 
-  const recent = await prisma.scrimRequest.findFirst({
-    where: {
-      fromTeamId: input.fromTeamId,
-      toTeamId: input.toTeamId,
-      createdAt: { gt: since },
-    },
-  });
-  if (recent) {
-    return {
-      ok: false,
-      status: 409,
-      reason: "Already messaged this team in the last 24 hours",
-    };
-  }
-
-  const sentToday = await prisma.scrimRequest.count({
-    where: { fromTeamId: input.fromTeamId, createdAt: { gt: since } },
-  });
-  if (sentToday >= DAILY_LIMIT) {
-    return {
-      ok: false,
-      status: 429,
-      reason: "Daily scrim request limit reached (10/24h)",
-    };
-  }
-
   const fromBucket = getTierBucket(fromSnap.rating);
   const message = renderScrimRequestMessage({
     fromTeamName: fromTeam.name,
@@ -112,16 +87,54 @@ export async function sendScrimRequest(input: {
     toTsr: toSnap.rating,
   });
 
-  const created = await prisma.scrimRequest.create({
-    data: {
-      fromTeamId: input.fromTeamId,
-      toTeamId: input.toTeamId,
-      sentByUserId: input.sentByUserId,
-      fromTsr: fromSnap.rating,
-      toTsr: toSnap.rating,
-      message,
-    },
+  const created = await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`
+      SELECT pg_advisory_xact_lock(
+        ${SCRIM_REQUEST_LOCK_NAMESPACE},
+        ${input.fromTeamId}
+      )
+    `;
+
+    const recent = await tx.scrimRequest.findFirst({
+      where: {
+        fromTeamId: input.fromTeamId,
+        toTeamId: input.toTeamId,
+        createdAt: { gt: since },
+      },
+    });
+    if (recent) {
+      return {
+        ok: false as const,
+        status: 409 as const,
+        reason: "Already messaged this team in the last 24 hours",
+      };
+    }
+
+    const sentToday = await tx.scrimRequest.count({
+      where: { fromTeamId: input.fromTeamId, createdAt: { gt: since } },
+    });
+    if (sentToday >= DAILY_LIMIT) {
+      return {
+        ok: false as const,
+        status: 429 as const,
+        reason: "Daily scrim request limit reached (10/24h)",
+      };
+    }
+
+    const request = await tx.scrimRequest.create({
+      data: {
+        fromTeamId: input.fromTeamId,
+        toTeamId: input.toTeamId,
+        sentByUserId: input.sentByUserId,
+        fromTsr: fromSnap.rating,
+        toTsr: toSnap.rating,
+        message,
+      },
+    });
+    return { ok: true as const, request };
   });
+  if (!created.ok) return created;
+
   matchmakerCounter.add(1, { outcome: "sent" });
 
   const senderUser = await prisma.user.findUnique({
@@ -146,7 +159,7 @@ export async function sendScrimRequest(input: {
     message,
   });
 
-  return { ok: true, requestId: created.id };
+  return { ok: true, requestId: created.request.id };
 }
 
 async function deliverNotifications(input: {
