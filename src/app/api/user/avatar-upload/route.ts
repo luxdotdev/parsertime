@@ -11,11 +11,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const body = (await request.json()) as HandleUploadBody;
   const userId = request.nextUrl.searchParams.get("userId");
 
-  if (!userId) {
+  if (body.type === "blob.generate-client-token" && !userId) {
     return NextResponse.json({ error: "userId is required" }, { status: 400 });
   }
 
-  Logger.info(`Uploading avatar for user: ${userId}`);
+  Logger.info("Handling avatar upload request", {
+    userId: userId ?? "callback",
+    type: body.type,
+  });
 
   try {
     const jsonResponse = await handleUpload({
@@ -30,7 +33,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         const authedUser = await getCurrentUser();
         if (!authedUser) throw new Error("Unauthorized");
         if (authedUser.id !== userId) throw new Error("Forbidden");
-        if (!pathname.startsWith(`avatars/${authedUser.id}`)) {
+        if (pathname !== `avatars/${authedUser.id}.png`) {
           throw new Error("Invalid upload path");
         }
 
@@ -55,12 +58,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         // ⚠️ This will not work on `localhost` websites,
         // Use ngrok or similar to get the full upload flow
 
-        Logger.info(`blob upload completed: ${blob.url} for user: ${userId}`);
-        await track("Image Upload", { label: "User Avatar" });
-
         try {
           // Run any logic after the file upload completed
-          const { userId } = JSON.parse(tokenPayload!) as { userId: string };
+          const { userId } = JSON.parse(tokenPayload ?? "{}") as {
+            userId?: string;
+          };
+          if (!userId) throw new Error("Missing token payload userId");
+
+          Logger.info("Avatar blob upload completed", {
+            blobUrl: blob.url,
+            userId,
+          });
+          await track("Image Upload", { label: "User Avatar" });
 
           await prisma.user.update({
             where: { id: userId },

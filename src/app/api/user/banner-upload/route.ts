@@ -16,11 +16,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const body = (await request.json()) as HandleUploadBody;
   const userId = request.nextUrl.searchParams.get("userId");
 
-  if (!userId) {
+  if (body.type === "blob.generate-client-token" && !userId) {
     return NextResponse.json({ error: "userId is required" }, { status: 400 });
   }
 
-  Logger.info(`Uploading banner for user: ${userId}`);
+  Logger.info("Handling banner upload request", {
+    userId: userId ?? "callback",
+    type: body.type,
+  });
 
   try {
     const jsonResponse = await handleUpload({
@@ -31,7 +34,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         if (!authedUser) throw new Error("Unauthorized");
         if (authedUser.id !== userId) throw new Error("Forbidden");
         if (!canUploadBanner(authedUser)) throw new Error("Premium required");
-        if (!pathname.startsWith(`banners/${authedUser.id}`)) {
+        if (pathname !== `banners/${authedUser.id}.png`) {
           throw new Error("Invalid upload path");
         }
 
@@ -52,11 +55,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         };
       },
       onUploadCompleted: async ({ blob, tokenPayload }) => {
-        Logger.info(`blob upload completed: ${blob.url} for user: ${userId}`);
-        await track("Image Upload", { label: "User Banner" });
-
         try {
-          const { userId } = JSON.parse(tokenPayload!) as { userId: string };
+          const { userId } = JSON.parse(tokenPayload ?? "{}") as {
+            userId?: string;
+          };
+          if (!userId) throw new Error("Missing token payload userId");
+
+          Logger.info("Banner blob upload completed", {
+            blobUrl: blob.url,
+            userId,
+          });
+          await track("Image Upload", { label: "User Banner" });
 
           await prisma.user.update({
             where: { id: userId },
