@@ -15,7 +15,6 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
-import { createCheckout, getCustomerPortalUrl } from "@/lib/stripe";
 import { toTitleCase } from "@/lib/utils";
 import type { Metadata, Route } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -106,16 +105,12 @@ export default async function PricingPage() {
   const plan = toTitleCase(user?.billingPlan ?? "FREE");
   const isLoggedIn = !!user;
 
-  async function getLink(tier: string) {
+  function getLink(tier: string) {
     if (!session?.user?.email || !user) {
       return "/dashboard";
     }
 
-    if (plan === "Free") {
-      const checkout = await createCheckout(session, tier);
-      return checkout.url as Route;
-    }
-    return (await getCustomerPortalUrl(user)) as Route;
+    return `/api/stripe/checkout?tier=${encodeURIComponent(tier)}` as Route;
   }
 
   const tiers: TierData[] = [
@@ -139,7 +134,7 @@ export default async function PricingPage() {
     {
       name: t("tiers.basic"),
       id: "tier-basic",
-      href: await getLink("Basic"),
+      href: getLink("Basic"),
       priceMonthly: t("tiers.basicMonthly"),
       description: t("tiers.basicDescription"),
       mostPopular: true,
@@ -158,7 +153,7 @@ export default async function PricingPage() {
     {
       name: t("tiers.premium"),
       id: "tier-premium",
-      href: await getLink("Premium"),
+      href: getLink("Premium"),
       priceMonthly: t("tiers.premiumMonthly"),
       description: t("tiers.premiumDescription"),
       mostPopular: false,
