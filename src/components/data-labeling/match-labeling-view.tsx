@@ -250,8 +250,7 @@ export function MatchLabelingView({ match }: MatchLabelingViewProps) {
             mapResultId: mapId,
             team1Comp: state.team1Comp,
             team2Comp: state.team2Comp,
-            heroAssignments:
-              heroAssignments.length > 0 ? heroAssignments : undefined,
+            heroAssignments,
           }),
         });
 
