@@ -7,7 +7,9 @@ import { advanceMatch } from "@/lib/tournaments/advancement";
 import { calculateWinner } from "@/lib/winrate";
 import { Prisma } from "@prisma/client";
 import type { ParserData } from "@/types/parser";
-import { unauthorized } from "next/navigation";
+import { Ratelimit } from "@upstash/ratelimit";
+import { kv } from "@vercel/kv";
+import { unauthorized, unstable_rethrow } from "next/navigation";
 import { after, type NextRequest } from "next/server";
 
 type AddTournamentMapRequest = {
@@ -15,6 +17,149 @@ type AddTournamentMapRequest = {
   heroBans?: { hero: string; team: string; banPosition: number }[];
   gameNumber: number;
 };
+type HeroBan = NonNullable<AddTournamentMapRequest["heroBans"]>[number];
+
+const MAX_EVENT_ROWS = 50_000;
+const MAX_TOTAL_EVENT_ROWS = 200_000;
+const MAX_ROW_STRING_LENGTH = 256;
+const MAX_HERO_BANS = 20;
+
+const parserEventKeys = [
+  "ability_1_used",
+  "ability_2_used",
+  "damage",
+  "defensive_assist",
+  "dva_remech",
+  "echo_duplicate_end",
+  "echo_duplicate_start",
+  "healing",
+  "hero_spawn",
+  "hero_swap",
+  "kill",
+  "match_end",
+  "match_start",
+  "mercy_rez",
+  "objective_captured",
+  "objective_updated",
+  "offensive_assist",
+  "payload_progress",
+  "player_stat",
+  "point_progress",
+  "remech_charged",
+  "round_end",
+  "round_start",
+  "setup_complete",
+  "ultimate_charged",
+  "ultimate_end",
+  "ultimate_start",
+] as const;
+
+const requiredParserEventKeys = [
+  "defensive_assist",
+  "hero_spawn",
+  "hero_swap",
+  "kill",
+  "match_start",
+  "objective_captured",
+  "objective_updated",
+  "offensive_assist",
+  "payload_progress",
+  "player_stat",
+  "point_progress",
+  "round_end",
+  "round_start",
+  "setup_complete",
+  "ultimate_charged",
+  "ultimate_end",
+  "ultimate_start",
+] as const;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function hasOversizedString(row: unknown[]) {
+  return row.some(
+    (cell) =>
+      typeof cell === "string" && cell.length > MAX_ROW_STRING_LENGTH
+  );
+}
+
+function isBoundedParserData(value: unknown): value is ParserData {
+  if (!isRecord(value)) return false;
+
+  let totalRows = 0;
+
+  for (const key of requiredParserEventKeys) {
+    if (!Array.isArray(value[key])) return false;
+  }
+
+  for (const key of parserEventKeys) {
+    const rows = value[key];
+    if (rows === undefined) continue;
+    if (!Array.isArray(rows) || rows.length > MAX_EVENT_ROWS) return false;
+    totalRows += rows.length;
+    if (totalRows > MAX_TOTAL_EVENT_ROWS) return false;
+
+    for (const row of rows) {
+      if (!Array.isArray(row) || hasOversizedString(row)) return false;
+    }
+  }
+
+  return true;
+}
+
+function isHeroBan(value: unknown): value is HeroBan {
+  return (
+    isRecord(value) &&
+    typeof value.hero === "string" &&
+    value.hero.length > 0 &&
+    value.hero.length <= MAX_ROW_STRING_LENGTH &&
+    typeof value.team === "string" &&
+    value.team.length > 0 &&
+    value.team.length <= MAX_ROW_STRING_LENGTH &&
+    typeof value.banPosition === "number" &&
+    Number.isInteger(value.banPosition) &&
+    value.banPosition >= 0
+  );
+}
+
+function parseAddTournamentMapRequest(
+  value: unknown
+): AddTournamentMapRequest | null {
+  if (!isRecord(value)) return null;
+  const gameNumber = value.gameNumber;
+  if (typeof gameNumber !== "number" || !Number.isInteger(gameNumber)) {
+    return null;
+  }
+  if (gameNumber < 1) return null;
+  if (!isBoundedParserData(value.map)) return null;
+
+  let heroBans: HeroBan[] | undefined;
+  if (value.heroBans !== undefined) {
+    const rawHeroBans = value.heroBans;
+    if (
+      !Array.isArray(rawHeroBans) ||
+      rawHeroBans.length > MAX_HERO_BANS ||
+      !rawHeroBans.every(isHeroBan)
+    ) {
+      return null;
+    }
+    heroBans = rawHeroBans;
+  }
+
+  return {
+    map: value.map,
+    heroBans,
+    gameNumber,
+  };
+}
+
+const tournamentMapUploadLimiter = new Ratelimit({
+  redis: kv,
+  limiter: Ratelimit.slidingWindow(3, "1 m"),
+  analytics: true,
+});
 
 export async function POST(
   req: NextRequest,
@@ -43,18 +188,22 @@ export async function POST(
       return Response.json({ error: "Invalid match ID" }, { status: 400 });
     }
 
-    const data = (await req.json()) as AddTournamentMapRequest;
-    event.gameNumber = data.gameNumber;
-    if (!Number.isInteger(data.gameNumber) || data.gameNumber < 1) {
-      event.outcome = "invalid_game_number";
-      event.statusCode = 400;
-      return Response.json({ error: "Invalid game number" }, { status: 400 });
+    const { success: uploadAllowed } = await tournamentMapUploadLimiter.limit(
+      `${session.user.email}:${matchId}`
+    );
+    if (!uploadAllowed) {
+      event.outcome = "rate_limited";
+      event.statusCode = 429;
+      return Response.json({ error: "Rate limit exceeded" }, { status: 429 });
     }
-    if (!data.map) {
+
+    const data = parseAddTournamentMapRequest(await req.json());
+    if (!data) {
       event.outcome = "invalid_map_data";
       event.statusCode = 400;
       return Response.json({ error: "Invalid map data" }, { status: 400 });
     }
+    event.gameNumber = data.gameNumber;
 
     const match = await prisma.tournamentMatch.findUnique({
       where: { id: matchId },
@@ -296,6 +445,7 @@ export async function POST(
       needsManualWinner: winner === null,
     });
   } catch (e) {
+    unstable_rethrow(e);
     event.outcome = "error";
     event.statusCode = 500;
     event.error = e instanceof Error ? e.message : String(e);
