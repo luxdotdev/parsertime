@@ -140,9 +140,8 @@ export async function chargeUser(
       update: {},
     });
 
-    const updated = await tx.userCredits.update({
+    const before = await tx.userCredits.findUniqueOrThrow({
       where: { userId },
-      data: { balanceCents: { decrement: args.amountCents } },
       select: {
         balanceCents: true,
         autoRefillEnabled: true,
@@ -151,8 +150,19 @@ export async function chargeUser(
       },
     });
 
+    const charged = await tx.userCredits.updateMany({
+      where: { userId, balanceCents: { gte: args.amountCents } },
+      data: { balanceCents: { decrement: args.amountCents } },
+    });
+    if (charged.count !== 1) throw new Error("insufficient credits");
+
+    const updated = await tx.userCredits.findUniqueOrThrow({
+      where: { userId },
+      select: { balanceCents: true },
+    });
+
     const balanceAfterCents = updated.balanceCents;
-    const beforeCents = balanceAfterCents + args.amountCents;
+    const beforeCents = before.balanceCents;
 
     const txn = await tx.creditTransaction.create({
       data: {
@@ -170,15 +180,15 @@ export async function chargeUser(
       balanceAfterCents,
       transactionId: txn.id,
       autoRefillTriggered: shouldTriggerAutoRefill({
-        enabled: updated.autoRefillEnabled,
-        hasPaymentMethod: !!updated.stripePaymentMethodId,
+        enabled: before.autoRefillEnabled,
+        hasPaymentMethod: !!before.stripePaymentMethodId,
         beforeCents,
         afterCents: balanceAfterCents,
-        thresholdCents: updated.autoRefillThresholdCents,
+        thresholdCents: before.autoRefillThresholdCents,
       }),
       lowBalanceWarningTriggered: shouldSendLowBalanceWarning({
-        autoRefillEnabled: updated.autoRefillEnabled,
-        hasPaymentMethod: !!updated.stripePaymentMethodId,
+        autoRefillEnabled: before.autoRefillEnabled,
+        hasPaymentMethod: !!before.stripePaymentMethodId,
         beforeCents,
         afterCents: balanceAfterCents,
         warningCents: LOW_BALANCE_WARNING_CENTS,

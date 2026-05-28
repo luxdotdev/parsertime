@@ -130,7 +130,12 @@ async function handleTopupCheckoutCompleted(
   const userId = session.metadata?.userId;
   const amountCents = session.amount_total ?? 0;
 
-  if (!userId || amountCents <= 0) {
+  if (
+    !userId ||
+    amountCents <= 0 ||
+    session.payment_status !== "paid" ||
+    session.status !== "complete"
+  ) {
     Logger.warn("topup checkout missing userId or amount", {
       sessionId: session.id,
     });

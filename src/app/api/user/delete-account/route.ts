@@ -22,10 +22,13 @@ export async function DELETE() {
   );
   if (!user) unauthorized();
 
-  await track("User Deleted Account", { email: user.email });
-
-  const wh = deleteUserWebhookConstructor(user);
-  await sendDiscordWebhook(process.env.DISCORD_WEBHOOK_URL, wh);
+  await Promise.allSettled([
+    track("User Deleted Account", { email: user.email }),
+    sendDiscordWebhook(
+      process.env.DISCORD_WEBHOOK_URL,
+      deleteUserWebhookConstructor(user)
+    ),
+  ]);
 
   Logger.info(`User ${user.email} deleted their account`);
 

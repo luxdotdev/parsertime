@@ -299,8 +299,8 @@ export async function sendDiscordWebhook(url: string, data: DiscordWebhook) {
     Logger.error("Failed to send Discord webhook", {
       status: response.status,
       statusText: response.statusText,
-      url,
-      data,
+      hasWebhookUrl: Boolean(url),
+      embedCount: data.embeds.length,
     });
     throw new Error("Failed to send Discord webhook");
   }
