@@ -6,16 +6,23 @@ import { after, type NextRequest } from "next/server";
 import { z } from "zod";
 
 const UpdateBattletagSchema = z.object({
-  battletag: z
-    .string()
-    .min(2, {
-      message: "Battletag must be at least 2 characters.",
-    })
-    .max(12, {
-      message: "Battletag must not be longer than 12 characters.",
-    })
-    .trim()
-    .regex(/^(?!.*?:).*$/),
+  battletag: z.preprocess(
+    (value) =>
+      typeof value === "string" && value.trim() === "" ? null : value,
+    z.union([
+      z
+        .string()
+        .min(2, {
+          message: "Battletag must be at least 2 characters.",
+        })
+        .max(12, {
+          message: "Battletag must not be longer than 12 characters.",
+        })
+        .trim()
+        .regex(/^(?!.*?:).*$/),
+      z.null(),
+    ])
+  ),
 });
 
 export async function POST(req: NextRequest) {

@@ -110,6 +110,11 @@ type AppSettings = {
   updatedAt: Date;
 } | null;
 
+function normalizeBattletag(value: string | null | undefined) {
+  const trimmed = value?.trim() ?? "";
+  return trimmed.length > 0 ? trimmed : null;
+}
+
 export function ProfileForm({
   user,
   appSettings,
@@ -180,14 +185,15 @@ export function ProfileForm({
         }
       }
 
-      // Update battletag if it changed
-      if (data.battletag !== user.battletag) {
+      const battletag = normalizeBattletag(data.battletag);
+      const currentBattletag = normalizeBattletag(user.battletag);
+      if (battletag !== currentBattletag) {
         const battletagRes = await fetch("/api/user/update-battletag", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ battletag: data.battletag }),
+          body: JSON.stringify({ battletag }),
         });
 
         if (!battletagRes.ok) {
