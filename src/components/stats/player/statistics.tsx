@@ -26,6 +26,7 @@ import { cn, toHero, useHeroNames } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
 import type { Kill, PlayerStat, Scrim } from "@prisma/client";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
+import type { Route } from "next";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -84,6 +85,9 @@ export function Statistics({
   const [filteredDeaths, setFilteredDeaths] = useState<Kill[]>([]);
   const [selectedStat, setSelectedStat] =
     useState<keyof Omit<Stat, NonMappableStat>>("eliminations");
+
+  const activeScrims =
+    timeframe === "custom" ? customScrims : scrims[timeframe];
 
   useEffect(() => {
     if (timeframe === "custom") {
@@ -149,12 +153,12 @@ export function Statistics({
   const top3FinalBlows = filteredStats
     .filter((stat) => stat.final_blows > 0)
     .sort((a, b) => b.final_blows - a.final_blows)
-    .map((stat) => [
-      stat.player_hero,
-      stat.final_blows,
-      stat.scrimId,
-      stat.MapDataId,
-    ])
+    .map((stat) => ({
+      hero: stat.player_hero,
+      finalBlows: stat.final_blows,
+      scrimId: stat.scrimId,
+      mapId: stat.MapDataId,
+    }))
     .slice(0, 3);
 
   const top3MostPlayedHeroes = filteredStats
@@ -242,6 +246,13 @@ export function Statistics({
             ? `${date.from.toLocaleDateString()} - ${date.to.toLocaleDateString()}`
             : t("timeframe.all-time"),
     });
+  }
+
+  function buildMapHref(scrimId: number | null, mapId: number | null) {
+    if (!scrimId || !mapId) return null;
+    const teamId = activeScrims.find((scrim) => scrim.id === scrimId)?.teamId;
+    if (!teamId) return null;
+    return `/${teamId}/scrim/${scrimId}/map/${mapId}` as Route;
   }
 
   return (
@@ -352,53 +363,56 @@ export function Statistics({
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border)]">
-              {top3FinalBlows.map(([hero, finalBlows, scrimId, mapId], idx) => {
-                const heroSlug = toHero(hero as HeroName);
-                const displayName = heroNames.get(heroSlug) ?? (hero as string);
-                return (
-                  <tr
-                    key={`${hero}-${mapId}`}
-                    className="hover:bg-muted/30 transition-colors"
-                  >
-                    <td className="text-muted-foreground px-4 py-3 font-mono tabular-nums">
-                      {formatRank(idx)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="border-border relative h-9 w-9 shrink-0 overflow-hidden rounded border">
-                          <Image
-                            src={`/heroes/${heroSlug}.png`}
-                            alt={displayName}
-                            fill
-                            className="object-cover"
-                          />
+              {top3FinalBlows.map(
+                ({ hero, finalBlows, scrimId, mapId }, idx) => {
+                  const heroSlug = toHero(hero as HeroName);
+                  const displayName = heroNames.get(heroSlug) ?? hero;
+                  const mapHref = buildMapHref(scrimId, mapId);
+                  return (
+                    <tr
+                      key={`${hero}-${mapId}`}
+                      className="hover:bg-muted/30 transition-colors"
+                    >
+                      <td className="text-muted-foreground px-4 py-3 font-mono tabular-nums">
+                        {formatRank(idx)}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="border-border relative h-9 w-9 shrink-0 overflow-hidden rounded border">
+                            <Image
+                              src={`/heroes/${heroSlug}.png`}
+                              alt={displayName}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          {mapHref ? (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Link
+                                  href={mapHref}
+                                  target="_blank"
+                                  className="hover:text-primary font-medium underline-offset-4 hover:underline"
+                                >
+                                  {displayName}
+                                </Link>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{t("bestPerformance.clickMap")}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : (
+                            <span className="font-medium">{displayName}</span>
+                          )}
                         </div>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Link
-                              href={`/${
-                                scrims[timeframe].find(
-                                  (scrim) => scrim.id === scrimId
-                                )?.teamId
-                              }/scrim/${scrimId}/map/${mapId}`}
-                              target="_blank"
-                              className="hover:text-primary font-medium underline-offset-4 hover:underline"
-                            >
-                              {displayName}
-                            </Link>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{t("bestPerformance.clickMap")}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 text-right font-mono tabular-nums">
-                      {finalBlows}
-                    </td>
-                  </tr>
-                );
-              })}
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono tabular-nums">
+                        {finalBlows}
+                      </td>
+                    </tr>
+                  );
+                }
+              )}
               {top3FinalBlows.length < 3 &&
                 Array.from({ length: 3 - top3FinalBlows.length }).map(
                   (_, idx) => (
