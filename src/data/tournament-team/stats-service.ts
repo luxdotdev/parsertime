@@ -5,7 +5,7 @@ import { mapNameToMapTypeMapping } from "@/types/map";
 import type { HeroName } from "@/types/heroes";
 import { roleHeroMapping } from "@/types/heroes";
 import { $Enums } from "@prisma/client";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { TournamentTeamQueryError } from "./errors";
 import {
@@ -349,7 +349,8 @@ export const make = Effect.gen(function* () {
 
   function getRoleBalanceAnalysis(
     tournamentId: number,
-    tournamentTeamId: number
+    tournamentTeamId: number,
+    locale?: string
   ): Effect.Effect<RoleBalanceAnalysis, TournamentTeamQueryError> {
     return wrapMethod(
       "getRoleBalanceAnalysis",
@@ -358,7 +359,13 @@ export const make = Effect.gen(function* () {
       (wideEvent) =>
         Effect.gen(function* () {
           const t = yield* Effect.tryPromise({
-            try: () => getTranslations("teamStatsPage.roleBalanceRadar"),
+            try: () =>
+              locale
+                ? getTranslations({
+                    locale,
+                    namespace: "teamStatsPage.roleBalanceRadar",
+                  })
+                : getTranslations("teamStatsPage.roleBalanceRadar"),
             catch: (error) =>
               new TournamentTeamQueryError({
                 operation: "get translations for role balance",
@@ -1801,8 +1808,16 @@ export const make = Effect.gen(function* () {
     capacity: CACHE_CAPACITY,
     timeToLive: CACHE_TTL,
     lookup: (key: string) => {
-      const [tId, ttId] = key.split(":");
-      return getRoleBalanceAnalysis(Number(tId), Number(ttId)).pipe(
+      const parsed = JSON.parse(key) as {
+        tournamentId: number;
+        tournamentTeamId: number;
+        locale: string;
+      };
+      return getRoleBalanceAnalysis(
+        parsed.tournamentId,
+        parsed.tournamentTeamId,
+        parsed.locale
+      ).pipe(
         Effect.tap(() => Metric.increment(ttCacheMissTotal))
       );
     },
@@ -2084,9 +2099,25 @@ export const make = Effect.gen(function* () {
         .get(cacheKey(tId, ttId))
         .pipe(Effect.tap(() => Metric.increment(ttCacheRequestTotal))),
     getRoleBalanceAnalysis: (tId: number, ttId: number) =>
-      roleBalanceCache
-        .get(cacheKey(tId, ttId))
-        .pipe(Effect.tap(() => Metric.increment(ttCacheRequestTotal))),
+      Effect.tryPromise({
+        try: () => getLocale(),
+        catch: (error) =>
+          new TournamentTeamQueryError({
+            operation: "get locale for role balance cache",
+            cause: error,
+          }),
+      }).pipe(
+        Effect.flatMap((locale) =>
+          roleBalanceCache.get(
+            JSON.stringify({
+              tournamentId: tId,
+              tournamentTeamId: ttId,
+              locale,
+            })
+          )
+        ),
+        Effect.tap(() => Metric.increment(ttCacheRequestTotal))
+      ),
     getBestRoleTrios: (tId: number, ttId: number) =>
       roleTriosCache
         .get(cacheKey(tId, ttId))
