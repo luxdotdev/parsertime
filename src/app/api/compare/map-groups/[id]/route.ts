@@ -16,11 +16,17 @@ const UpdateMapGroupSchema = z.object({
     .optional(),
   description: z.string().max(500, "Description is too long").optional(),
   mapIds: z
-    .array(z.number())
+    .array(z.number().int().positive())
     .min(1, "At least one map must be selected")
     .optional(),
   category: z.string().max(50, "Category is too long").optional(),
 });
+
+function parsePositiveInt(value: string) {
+  if (!/^[1-9]\d*$/.test(value)) return null;
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) ? parsed : null;
+}
 
 export async function PUT(
   request: NextRequest,
@@ -53,9 +59,9 @@ export async function PUT(
     wideEvent.user = { id: user.id, email: user.email };
 
     const { id: idParam } = await params;
-    const groupId = parseInt(idParam);
+    const groupId = parsePositiveInt(idParam);
 
-    if (isNaN(groupId)) {
+    if (!groupId) {
       wideEvent.status_code = 400;
       wideEvent.outcome = "invalid_group_id";
       wideEvent.error = { message: "Invalid group ID" };
@@ -248,9 +254,9 @@ export async function DELETE(
     wideEvent.user = { id: user.id, email: user.email };
 
     const { id: idParam } = await params;
-    const groupId = parseInt(idParam);
+    const groupId = parsePositiveInt(idParam);
 
-    if (isNaN(groupId)) {
+    if (!groupId) {
       wideEvent.status_code = 400;
       wideEvent.outcome = "invalid_group_id";
       wideEvent.error = { message: "Invalid group ID" };
