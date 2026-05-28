@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { email: inviteeEmail, token: inviteToken } = parsed.data;
+  const normalizedInviteeEmail = inviteeEmail.toLowerCase();
 
   const baseUrl =
     process.env.NODE_ENV === "production"
@@ -51,7 +52,7 @@ export async function POST(req: NextRequest) {
   if (teamInviteToken.expires <= new Date()) {
     return new Response("Invite expired", { status: 410 });
   }
-  if (teamInviteToken.email !== user.email) {
+  if (teamInviteToken.email.toLowerCase() !== normalizedInviteeEmail) {
     return new Response("Forbidden", { status: 403 });
   }
   if (!(await canManageTeam(teamInviteToken.teamId, user))) {
@@ -64,7 +65,7 @@ export async function POST(req: NextRequest) {
   if (!team) return new Response("Team not found", { status: 404 });
 
   const invitee = await prisma.user.findUnique({
-    where: { email: inviteeEmail },
+    where: { email: normalizedInviteeEmail },
     select: { id: true, image: true, name: true },
   });
 
@@ -76,7 +77,7 @@ export async function POST(req: NextRequest) {
     TeamInviteUserEmail({
       username: inviteeEmail,
       userImage:
-        invitee?.image ?? `https://avatar.vercel.sh/${inviteeEmail}.png`,
+        invitee?.image ?? `https://avatar.vercel.sh/${normalizedInviteeEmail}.png`,
       invitedByUsername: user.name ?? "Unknown",
       invitedByEmail: user.email ?? "Unknown",
       teamName: team.name ?? "Unknown",

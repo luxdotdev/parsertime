@@ -5,6 +5,12 @@ import prisma from "@/lib/prisma";
 import { TEAM_MEMBER_LIMIT } from "@/lib/usage";
 import { unauthorized } from "next/navigation";
 import type { NextRequest } from "next/server";
+import { z } from "zod";
+
+const CreateTeamInviteSchema = z.object({
+  id: z.coerce.number().int().positive(),
+  email: z.email().max(254).transform((email) => email.toLowerCase()),
+});
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -14,14 +20,15 @@ export async function POST(req: NextRequest) {
     unauthorized();
   }
 
-  const teamId = req.nextUrl.searchParams.get("id")
-    ? parseInt(req.nextUrl.searchParams.get("id")!)
-    : null;
-
-  if (!teamId) {
-    Logger.error("No team id provided to create team invite");
-    return new Response("No team id provided", { status: 400 });
+  const parsed = CreateTeamInviteSchema.safeParse({
+    id: req.nextUrl.searchParams.get("id"),
+    email: req.nextUrl.searchParams.get("email"),
+  });
+  if (!parsed.success) {
+    Logger.error("Invalid request to create team invite");
+    return new Response("Invalid request", { status: 400 });
   }
+  const { id: teamId, email: inviteeEmail } = parsed.data;
 
   const teamData = await prisma.team.findFirst({
     where: { id: teamId },
@@ -86,7 +93,7 @@ export async function POST(req: NextRequest) {
     data: {
       token: inviteToken,
       teamId,
-      email: session.user.email,
+      email: inviteeEmail,
       expires: new Date(expiresAt),
     },
   });

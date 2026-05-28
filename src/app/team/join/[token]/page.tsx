@@ -14,12 +14,15 @@ export default async function TokenPage(
   if (!session?.user?.email)
     redirect(`/sign-in?callbackUrl=/team/join/${token}`);
 
+  const userEmail = session.user.email.toLowerCase();
+
   const joinedTeam = await prisma.$transaction(async (tx) => {
     const teamInviteToken = await tx.teamInviteToken.findUnique({
       where: { token },
     });
 
     if (!teamInviteToken || teamInviteToken.expires <= new Date()) return null;
+    if (teamInviteToken.email.toLowerCase() !== userEmail) return null;
 
     const deleted = await tx.teamInviteToken.deleteMany({
       where: { token, expires: { gt: new Date() } },
@@ -28,7 +31,7 @@ export default async function TokenPage(
 
     return await tx.team.update({
       where: { id: teamInviteToken.teamId },
-      data: { users: { connect: { email: session.user.email } } },
+      data: { users: { connect: { email: userEmail } } },
       select: { id: true },
     });
   });

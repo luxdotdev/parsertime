@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
   }
 
   const token = req.nextUrl.searchParams.get("token");
+  const userEmail = session.user.email.toLowerCase();
 
   if (!token) {
     Logger.error("No token provided to join team");
@@ -26,6 +27,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!teamInviteToken || teamInviteToken.expires <= new Date()) return null;
+    if (teamInviteToken.email.toLowerCase() !== userEmail) return null;
 
     const deleted = await tx.teamInviteToken.deleteMany({
       where: { token, expires: { gt: new Date() } },
@@ -35,7 +37,7 @@ export async function POST(req: NextRequest) {
     return await tx.team.update({
       where: { id: teamInviteToken.teamId },
       data: {
-        users: { connect: { email: session.user.email } },
+        users: { connect: { email: userEmail } },
       },
       select: { id: true, name: true },
     });

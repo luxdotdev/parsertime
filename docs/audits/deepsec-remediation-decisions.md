@@ -11,6 +11,7 @@ Date: 2026-05-28
 - Enforced one `AppSettings` row per user with a deduping migration and unique index, then switched first-read and update paths to upsert by `userId`.
 - Disabled raw Discord role mentions in availability reminders until roles can be bound to a verified guild. Reminder guild/channel overrides are only accepted when they match an existing verified bot notification configuration for that team.
 - Accepted self-entered BattleTag matching for TSR attribution as a product tradeoff. Verified BattleTag linking remains difficult with the current data sources, so BattleTags continue to be user-editable identity hints for TSR rather than a security boundary.
+- Bound team invite tokens to the intended invitee email instead of preserving bearer-only invite redemption. Existing unredeemed invite links created under the old inviter-email storage may need to be resent.
 
 ## Operational Notes
 

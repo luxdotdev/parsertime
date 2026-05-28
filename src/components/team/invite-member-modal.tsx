@@ -52,12 +52,13 @@ export function InviteMemberModal({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
 
-    const getToken = await fetch(
-      `/api/team/create-team-invite?id=${params.teamId}`,
-      {
-        method: "POST",
-      }
-    );
+    const invite = new URLSearchParams({
+      id: params.teamId,
+      email: values.email,
+    });
+    const getToken = await fetch(`/api/team/create-team-invite?${invite}`, {
+      method: "POST",
+    });
     if (!getToken.ok) {
       toast.error(t("onSubmit.errorTitle"), {
         description: t("onSubmit.errorDescription", {
