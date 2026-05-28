@@ -6,7 +6,11 @@ import {
   movMultiplier,
   recencyWeight,
 } from "@/lib/tsr/constants";
-import { FaceitTier, type TsrRegion } from "@prisma/client";
+import {
+  FaceitTier,
+  TsrRosterOverrideAction,
+  type TsrRegion,
+} from "@prisma/client";
 
 export type TsrBreakdownFactor = {
   key:
@@ -77,32 +81,30 @@ export async function getTsrBreakdown(
   });
   if (!tsr) return null;
 
-  const rosterRows = await prisma.faceitMatchRoster.findMany({
-    where: { faceitPlayerId },
-    include: {
-      match: {
-        select: {
-          faceitMatchId: true,
-          status: true,
-          bestOf: true,
-          team1Score: true,
-          team2Score: true,
-          winnerFaction: true,
-          finishedAt: true,
-          championship: {
-            select: { name: true, tier: true },
-          },
-        },
+  const matches = await prisma.faceitMatch.findMany({
+    where: {
+      OR: [
+        { rosters: { some: { faceitPlayerId } } },
+        { rosterOverrides: { some: { faceitPlayerId } } },
+      ],
+    },
+    select: {
+      faceitMatchId: true,
+      status: true,
+      bestOf: true,
+      team1Score: true,
+      team2Score: true,
+      winnerFaction: true,
+      finishedAt: true,
+      championship: {
+        select: { name: true, tier: true },
+      },
+      rosters: { select: { teamSide: true, faceitPlayerId: true } },
+      rosterOverrides: {
+        select: { faceitPlayerId: true, action: true, teamSide: true },
       },
     },
   });
-
-  const eligible = rosterRows.filter(
-    (r) =>
-      r.match.status === "FINISHED" &&
-      r.match.championship.tier !== FaceitTier.UNCLASSIFIED &&
-      (r.match.winnerFaction === 1 || r.match.winnerFaction === 2)
-  );
 
   const todayMs = Date.now();
   const recentCutoffMs = todayMs - RECENT_WINDOW_MS;
@@ -134,9 +136,48 @@ export async function getTsrBreakdown(
   };
   const matchViews: MatchView[] = [];
 
-  for (const row of eligible) {
-    const m = row.match;
-    const won = m.winnerFaction === row.teamSide;
+  for (const m of matches) {
+    if (
+      m.status !== "FINISHED" ||
+      m.championship.tier === FaceitTier.UNCLASSIFIED ||
+      (m.winnerFaction !== 1 && m.winnerFaction !== 2)
+    ) {
+      continue;
+    }
+
+    const exclude = new Set(
+      m.rosterOverrides
+        .filter((o) => o.action === TsrRosterOverrideAction.EXCLUDE)
+        .map((o) => o.faceitPlayerId)
+    );
+    const includeBySide: Record<1 | 2, string[]> = { 1: [], 2: [] };
+    for (const override of m.rosterOverrides) {
+      if (
+        override.action === TsrRosterOverrideAction.INCLUDE &&
+        (override.teamSide === 1 || override.teamSide === 2)
+      ) {
+        includeBySide[override.teamSide].push(override.faceitPlayerId);
+      }
+    }
+
+    const faction1 = m.rosters
+      .filter((r) => r.teamSide === 1 && !exclude.has(r.faceitPlayerId))
+      .map((r) => r.faceitPlayerId)
+      .concat(includeBySide[1]);
+    const faction2 = m.rosters
+      .filter((r) => r.teamSide === 2 && !exclude.has(r.faceitPlayerId))
+      .map((r) => r.faceitPlayerId)
+      .concat(includeBySide[2]);
+    if (faction1.length === 0 || faction2.length === 0) continue;
+
+    const playerSide = faction1.includes(faceitPlayerId)
+      ? 1
+      : faction2.includes(faceitPlayerId)
+        ? 2
+        : null;
+    if (!playerSide) continue;
+
+    const won = m.winnerFaction === playerSide;
     const ageDays = (todayMs - m.finishedAt.getTime()) / 86_400_000;
     const recency = recencyWeight(ageDays);
     const mov = movMultiplier(m.bestOf, m.team1Score, m.team2Score);
