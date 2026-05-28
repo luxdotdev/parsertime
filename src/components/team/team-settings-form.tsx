@@ -26,22 +26,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import type { ScoutingTeam } from "@/data/scouting/types";
 import { ClientOnly } from "@/lib/client-only";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Team } from "@prisma/client";
-import {
-  CheckIcon,
-  ChevronDownIcon,
-  ClipboardCopyIcon,
-  ReloadIcon,
-} from "@radix-ui/react-icons";
+import { CheckIcon, ChevronDownIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -145,37 +135,6 @@ export function TeamSettingsForm({
     <ClientOnly>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormItem>
-            <FormLabel>{t("teamInviteLink.title")}</FormLabel>
-            <FormControl>
-              <div className="items-center">
-                <p>{t("teamInviteLink.subtitle")}</p>
-                <code className="rounded bg-zinc-800 p-1 text-zinc-800 transition-colors hover:text-white">
-                  {`https://parsertime.app/team/join/${btoa(team.createdAt.toISOString())}`}
-                </code>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <ClipboardCopyIcon
-                      className="ml-2 inline-block h-5 w-5 cursor-pointer"
-                      onClick={() => {
-                        void navigator.clipboard.writeText(
-                          `https://parsertime.app/team/join/${btoa(
-                            team.createdAt.toISOString()
-                          )}`
-                        );
-                        toast.success(t("clipboard.title"), {
-                          description: t("clipboard.description"),
-                          duration: 5000,
-                        });
-                      }}
-                    />
-                  </TooltipTrigger>
-                  <TooltipContent>{t("clipboard.tooltip")}</TooltipContent>
-                </Tooltip>
-              </div>
-            </FormControl>
-            <FormDescription>{t("teamInviteLink.description")}</FormDescription>
-          </FormItem>
           <FormField
             control={form.control}
             name="name"

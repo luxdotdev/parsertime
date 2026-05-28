@@ -35,6 +35,21 @@ export async function POST(req: NextRequest) {
     return new Response("Forbidden", { status: 403 });
   }
 
+  if (body.data.scoutingTeamAbbr) {
+    const scoutingTeam = await prisma.scoutingMatch.findFirst({
+      where: {
+        OR: [
+          { team1: body.data.scoutingTeamAbbr },
+          { team2: body.data.scoutingTeamAbbr },
+        ],
+      },
+      select: { id: true },
+    });
+    if (!scoutingTeam) {
+      return new Response("Invalid scouting team", { status: 400 });
+    }
+  }
+
   await prisma.team.update({
     where: { id: body.data.teamId },
     data: {

@@ -71,12 +71,13 @@ export function InviteMemberModal({
 
     const token = (await getToken.json()) as { token: string };
 
-    const res = await fetch(
-      `/api/send-team-invite?email=${values.email}&token=${token.token}`,
-      {
-        method: "POST",
-      }
-    );
+    const search = new URLSearchParams({
+      email: values.email,
+      token: token.token,
+    });
+    const res = await fetch(`/api/send-team-invite?${search.toString()}`, {
+      method: "POST",
+    });
 
     if (res.ok) {
       setShowInviteMemberModal(false);
