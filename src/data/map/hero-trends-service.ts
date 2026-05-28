@@ -98,6 +98,8 @@ type MapGroup = {
 };
 
 const RECENT_DAYS = 60;
+const MIN_PUBLIC_TEAM_APPEARANCES = 10;
+const MIN_PUBLIC_HERO_APPEARANCES = 3;
 const PARENTHETICAL_SUFFIX = /\s*\([^)]*\)\s*$/;
 
 function canonicalizeMapName(name: string): string {
@@ -230,7 +232,11 @@ function finalizeGroup(group: MapGroup): MapHeroTrendGroup {
           trend,
         };
       })
-      .filter((hero) => hero.totalPlaytime > 0)
+      .filter(
+        (hero) =>
+          hero.totalPlaytime > 0 &&
+          hero.samples >= MIN_PUBLIC_HERO_APPEARANCES
+      )
       .sort((a, b) => b.totalPlaytime - a.totalPlaytime),
   };
 }
@@ -417,6 +423,7 @@ function aggregateHeroTrends(
 
   const groupValues = Array.from(mapGroups.values());
   const perMap = groupValues
+    .filter((group) => group.teamAppearances >= MIN_PUBLIC_TEAM_APPEARANCES)
     .map(finalizeGroup)
     .filter((group) => group.heroes.length > 0)
     .sort((a, b) => a.mapName.localeCompare(b.mapName));

@@ -36,6 +36,8 @@ const ratelimit = new Ratelimit({
   analytics: true,
   prefix: "ratelimit:ai-chat",
 });
+const MAX_CHAT_REQUEST_CHARS = 120_000;
+const MAX_CHAT_OUTPUT_TOKENS = 4_096;
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -70,6 +72,12 @@ export async function POST(req: Request) {
   }
 
   const { messages } = (await req.json()) as { messages: UIMessage[] };
+  if (!Array.isArray(messages)) {
+    return new Response("Invalid chat request", { status: 400 });
+  }
+  if (JSON.stringify(messages).length > MAX_CHAT_REQUEST_CHARS) {
+    return new Response("Chat request is too large", { status: 413 });
+  }
 
   const user = await prisma.user.findUnique({
     where: { id: userData.id },
@@ -100,6 +108,7 @@ export async function POST(req: Request) {
       system: systemPrompt,
       messages: modelMessages,
       tools,
+      maxOutputTokens: MAX_CHAT_OUTPUT_TOKENS,
       stopWhen: stepCountIs(5),
       experimental_telemetry: {
         isEnabled: true,
