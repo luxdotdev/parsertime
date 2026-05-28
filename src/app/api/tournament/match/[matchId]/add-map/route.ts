@@ -23,6 +23,7 @@ const MAX_EVENT_ROWS = 50_000;
 const MAX_TOTAL_EVENT_ROWS = 200_000;
 const MAX_ROW_STRING_LENGTH = 256;
 const MAX_HERO_BANS = 20;
+const TOURNAMENT_MATCH_LOCK_NAMESPACE = 61_042;
 
 const parserEventKeys = [
   "ability_1_used",
@@ -341,23 +342,6 @@ export async function POST(
       return Response.json({ error: "Failed to create map" }, { status: 500 });
     }
 
-    try {
-      await prisma.tournamentMap.update({
-        where: { id: tournamentMap.id },
-        data: {
-          mapId: newMap.id,
-        },
-      });
-    } catch (error) {
-      await prisma.map
-        .delete({ where: { id: newMap.id } })
-        .catch(() => undefined);
-      await prisma.tournamentMap
-        .delete({ where: { id: tournamentMap.id } })
-        .catch(() => undefined);
-      throw error;
-    }
-
     const mapData = newMap.mapData[0];
     let winner: string | null = null;
 
@@ -415,13 +399,42 @@ export async function POST(
           winner = result;
         }
 
-        await prisma.tournamentMap.update({
-          where: { id: tournamentMap.id },
-          data: { winnerOverride: winner },
-        });
-
-        await updateMatchScores(match.id);
       }
+    }
+
+    const finalization = await finalizeTournamentMap({
+      tournamentMapId: tournamentMap.id,
+      matchId: match.id,
+      mapId: newMap.id,
+      winner,
+    });
+
+    if (finalization.status === "not_found") {
+      event.outcome = "map_creation_failed";
+      event.statusCode = 500;
+      return Response.json({ error: "Failed to create map" }, { status: 500 });
+    }
+
+    if (finalization.status === "match_completed") {
+      event.outcome = "match_locked";
+      event.statusCode = 409;
+      return Response.json(
+        { error: "Cannot add maps to this match" },
+        { status: 409 }
+      );
+    }
+
+    if (
+      finalization.isDecided &&
+      finalization.winnerId &&
+      finalization.loserId &&
+      finalization.match
+    ) {
+      await advanceMatch(
+        finalization.match,
+        finalization.winnerId,
+        finalization.loserId
+      );
     }
 
     event.winner = winner ?? "auto";
@@ -460,57 +473,113 @@ export async function POST(
   }
 }
 
-async function updateMatchScores(matchId: number) {
-  const match = await prisma.tournamentMatch.findUnique({
-    where: { id: matchId },
-    include: {
-      tournament: true,
-      team1: true,
-      team2: true,
-      round: true,
-      maps: true,
-    },
-  });
+async function finalizeTournamentMap({
+  tournamentMapId,
+  matchId,
+  mapId,
+  winner,
+}: {
+  tournamentMapId: number;
+  matchId: number;
+  mapId: number;
+  winner: string | null;
+}) {
+  return await prisma.$transaction(async (tx) => {
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(${TOURNAMENT_MATCH_LOCK_NAMESPACE}, ${matchId})`;
 
-  if (!match?.team1 || !match.team2) return;
+    const tournamentMap = await tx.tournamentMap.findUnique({
+      where: { id: tournamentMapId },
+      select: { id: true, matchId: true },
+    });
 
-  let team1Wins = 0;
-  let team2Wins = 0;
+    if (!tournamentMap || tournamentMap.matchId !== matchId) {
+      await tx.map.delete({ where: { id: mapId } }).catch(() => undefined);
+      return { status: "not_found" as const };
+    }
 
-  for (const map of match.maps) {
-    if (map.winnerOverride === match.team1.name) team1Wins++;
-    else if (map.winnerOverride === match.team2.name) team2Wins++;
-  }
+    const match = await tx.tournamentMatch.findUnique({
+      where: { id: matchId },
+      include: {
+        tournament: true,
+        team1: true,
+        team2: true,
+        round: true,
+        maps: true,
+      },
+    });
 
-  const bestOf = match.round.bestOf ?? match.tournament.bestOf;
-  const winsNeeded = Math.ceil(bestOf / 2);
+    if (!match) {
+      await tx.tournamentMap.delete({ where: { id: tournamentMapId } });
+      await tx.map.delete({ where: { id: mapId } }).catch(() => undefined);
+      return { status: "not_found" as const };
+    }
 
-  const isDecided = team1Wins >= winsNeeded || team2Wins >= winsNeeded;
-  const winnerId =
-    team1Wins >= winsNeeded
-      ? match.team1Id
-      : team2Wins >= winsNeeded
+    if (match.status === "COMPLETED" && match.winnerId) {
+      await tx.tournamentMap.delete({ where: { id: tournamentMapId } });
+      await tx.map.delete({ where: { id: mapId } }).catch(() => undefined);
+      return { status: "match_completed" as const };
+    }
+
+    await tx.tournamentMap.update({
+      where: { id: tournamentMapId },
+      data: {
+        mapId,
+        winnerOverride: winner,
+      },
+    });
+
+    if (!winner || !match.team1 || !match.team2) {
+      return {
+        status: "ok" as const,
+        isDecided: false,
+        winnerId: null,
+        loserId: null,
+        match: null,
+      };
+    }
+
+    let team1Wins = 0;
+    let team2Wins = 0;
+
+    for (const map of match.maps) {
+      const mapWinner =
+        map.id === tournamentMapId ? winner : map.winnerOverride;
+      if (mapWinner === match.team1.name) team1Wins++;
+      else if (mapWinner === match.team2.name) team2Wins++;
+    }
+
+    const bestOf = match.round.bestOf ?? match.tournament.bestOf;
+    const winsNeeded = Math.ceil(bestOf / 2);
+    const isDecided = team1Wins >= winsNeeded || team2Wins >= winsNeeded;
+    const winnerId =
+      team1Wins >= winsNeeded
+        ? match.team1Id
+        : team2Wins >= winsNeeded
+          ? match.team2Id
+          : null;
+
+    await tx.tournamentMatch.update({
+      where: { id: matchId },
+      data: {
+        team1Score: team1Wins,
+        team2Score: team2Wins,
+        status: isDecided ? "COMPLETED" : "ONGOING",
+        winnerId: isDecided ? winnerId : null,
+      },
+    });
+
+    const loserId = winnerId
+      ? winnerId === match.team1Id
         ? match.team2Id
-        : null;
+        : match.team1Id
+      : null;
 
-  const updateResult = await prisma.tournamentMatch.updateMany({
-    where: {
-      id: matchId,
-      ...(isDecided ? { status: { not: "COMPLETED" as const } } : {}),
-    },
-    data: {
-      team1Score: team1Wins,
-      team2Score: team2Wins,
-      status: isDecided ? "COMPLETED" : "ONGOING",
-      winnerId: isDecided ? winnerId : null,
-    },
-  });
-
-  if (isDecided && winnerId && updateResult.count > 0) {
-    const loserId = winnerId === match.team1Id ? match.team2Id : match.team1Id;
-
-    await advanceMatch(
-      {
+    return {
+      status: "ok" as const,
+      isDecided,
+      winnerId,
+      loserId,
+      match: {
         id: match.id,
         tournamentId: match.tournamentId,
         bracketPosition: match.bracketPosition,
@@ -526,8 +595,6 @@ async function updateMatchScores(matchId: number) {
           grandFinalReset: match.tournament.grandFinalReset,
         },
       },
-      winnerId,
-      loserId
-    );
-  }
+    };
+  });
 }
