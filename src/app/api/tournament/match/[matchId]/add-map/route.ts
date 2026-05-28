@@ -75,6 +75,19 @@ export async function POST(
 
     event.tournamentId = match.tournamentId;
 
+    if (
+      match.status === "COMPLETED" ||
+      match.tournament.status === "COMPLETED" ||
+      match.tournament.status === "CANCELLED"
+    ) {
+      event.outcome = "match_locked";
+      event.statusCode = 409;
+      return Response.json(
+        { error: "Cannot add maps to this match" },
+        { status: 409 }
+      );
+    }
+
     const bestOf = match.round.bestOf ?? match.tournament.bestOf;
     if (data.gameNumber > bestOf) {
       event.outcome = "invalid_game_number";
@@ -171,17 +184,30 @@ export async function POST(
       await prisma.tournamentMap
         .delete({ where: { id: tournamentMap.id } })
         .catch(() => undefined);
+      await prisma.map
+        .delete({ where: { id: createdMap.mapId } })
+        .catch(() => undefined);
       event.outcome = "map_creation_failed";
       event.statusCode = 500;
       return Response.json({ error: "Failed to create map" }, { status: 500 });
     }
 
-    await prisma.tournamentMap.update({
-      where: { id: tournamentMap.id },
-      data: {
-        mapId: newMap.id,
-      },
-    });
+    try {
+      await prisma.tournamentMap.update({
+        where: { id: tournamentMap.id },
+        data: {
+          mapId: newMap.id,
+        },
+      });
+    } catch (error) {
+      await prisma.map
+        .delete({ where: { id: newMap.id } })
+        .catch(() => undefined);
+      await prisma.tournamentMap
+        .delete({ where: { id: tournamentMap.id } })
+        .catch(() => undefined);
+      throw error;
+    }
 
     const mapData = newMap.mapData[0];
     let winner: string | null = null;
@@ -317,8 +343,11 @@ async function updateMatchScores(matchId: number) {
         ? match.team2Id
         : null;
 
-  await prisma.tournamentMatch.update({
-    where: { id: matchId },
+  const updateResult = await prisma.tournamentMatch.updateMany({
+    where: {
+      id: matchId,
+      ...(isDecided ? { status: { not: "COMPLETED" as const } } : {}),
+    },
     data: {
       team1Score: team1Wins,
       team2Score: team2Wins,
@@ -327,7 +356,7 @@ async function updateMatchScores(matchId: number) {
     },
   });
 
-  if (isDecided && winnerId) {
+  if (isDecided && winnerId && updateResult.count > 0) {
     const loserId = winnerId === match.team1Id ? match.team2Id : match.team1Id;
 
     await advanceMatch(
