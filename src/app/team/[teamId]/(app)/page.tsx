@@ -134,10 +134,11 @@ export default async function Team(
   }
 
   const hasPerms =
-    userIsManager(user!) ||
-    user?.id === teamData?.ownerId ||
-    user?.role === $Enums.UserRole.MANAGER ||
-    user?.role === $Enums.UserRole.ADMIN;
+    !!user &&
+    (userIsManager(user) ||
+      user.id === teamData?.ownerId ||
+      user.role === $Enums.UserRole.MANAGER ||
+      user.role === $Enums.UserRole.ADMIN);
 
   const teamOwner = await prisma.user.findFirst({
     where: { id: teamData?.ownerId },
@@ -205,15 +206,17 @@ export default async function Team(
             />
           </div>
         </TabsContent>
-        <TabsContent value="settings" className="space-y-4">
-          <TeamSettingsForm
-            team={teamData!}
-            scoutingTeams={scoutingTeams}
-            scoutingEnabled={scoutingEnabled}
-          />
-          <div className="p-4" />
-          <DangerZone team={teamData!} />
-        </TabsContent>
+        {hasPerms && (
+          <TabsContent value="settings" className="space-y-4">
+            <TeamSettingsForm
+              team={teamData!}
+              scoutingTeams={scoutingTeams}
+              scoutingEnabled={scoutingEnabled}
+            />
+            <div className="p-4" />
+            <DangerZone team={teamData!} />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );
