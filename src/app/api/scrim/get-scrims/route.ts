@@ -9,6 +9,39 @@ import { unauthorized } from "next/navigation";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
+type ParsedPositiveInt =
+  | { ok: true; value: number | undefined }
+  | { ok: false; response: NextResponse };
+
+function parseOptionalPositiveInt(
+  value: string | null,
+  name: string
+): ParsedPositiveInt {
+  if (value === null) return { ok: true, value: undefined };
+  if (!/^[1-9]\d*$/.test(value)) {
+    return {
+      ok: false,
+      response: NextResponse.json(
+        { error: `${name} must be a positive integer` },
+        { status: 400 }
+      ),
+    };
+  }
+
+  const parsed = Number(value);
+  if (!Number.isSafeInteger(parsed)) {
+    return {
+      ok: false,
+      response: NextResponse.json(
+        { error: `${name} is too large` },
+        { status: 400 }
+      ),
+    };
+  }
+
+  return { ok: true, value: parsed };
+}
+
 export async function GET(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.email) unauthorized();
@@ -19,12 +52,33 @@ export async function GET(req: NextRequest) {
   if (!userData) unauthorized();
 
   const searchParams = req.nextUrl.searchParams;
-  const cursor = searchParams.get("cursor");
-  const page = searchParams.get("page");
-  const limit = Math.min(parseInt(searchParams.get("limit") ?? "15"), 50); // Cap at 50
+  const parsedCursor = parseOptionalPositiveInt(
+    searchParams.get("cursor"),
+    "cursor"
+  );
+  if (!parsedCursor.ok) return parsedCursor.response;
+
+  const parsedPage = parseOptionalPositiveInt(searchParams.get("page"), "page");
+  if (!parsedPage.ok) return parsedPage.response;
+
+  const parsedLimit = parseOptionalPositiveInt(
+    searchParams.get("limit"),
+    "limit"
+  );
+  if (!parsedLimit.ok) return parsedLimit.response;
+
+  const parsedTeamId = parseOptionalPositiveInt(
+    searchParams.get("teamId"),
+    "teamId"
+  );
+  if (!parsedTeamId.ok) return parsedTeamId.response;
+
+  const cursor = parsedCursor.value;
+  const page = parsedPage.value;
+  const limit = Math.min(parsedLimit.value ?? 15, 50);
   const search = searchParams.get("search") ?? "";
   const filter = searchParams.get("filter") ?? "";
-  const teamId = searchParams.get("teamId");
+  const teamId = parsedTeamId.value;
   const adminMode = searchParams.get("adminMode") === "true";
   const lastPage = searchParams.get("lastPage") === "true";
 
@@ -41,9 +95,7 @@ export async function GET(req: NextRequest) {
     };
 
     // Filter by team if teamId is provided
-    if (teamId) {
-      whereClause.teamId = parseInt(teamId);
-    }
+    if (teamId) whereClause.teamId = teamId;
 
     // Apply search filter at database level
     if (search) {
@@ -113,8 +165,7 @@ export async function GET(req: NextRequest) {
     if (lastPage) {
       skipValue = Math.max(0, totalCount - limit);
     } else if (page) {
-      const pageNum = parseInt(page);
-      skipValue = Math.max(0, (pageNum - 1) * limit);
+      skipValue = Math.max(0, (page - 1) * limit);
     }
 
     // Get scrims with pagination
@@ -130,7 +181,7 @@ export async function GET(req: NextRequest) {
             ? {
                 skip: 1, // Skip the cursor
                 cursor: {
-                  id: parseInt(cursor),
+                  id: cursor,
                 },
               }
             : {}),
@@ -160,7 +211,7 @@ export async function GET(req: NextRequest) {
             ? {
                 skip: 1, // Skip the cursor
                 cursor: {
-                  id: parseInt(cursor),
+                  id: cursor,
                 },
               }
             : {}),
@@ -214,9 +265,8 @@ export async function GET(req: NextRequest) {
     if (lastPage) {
       hasMore = false;
     } else if (page) {
-      const pageNum = parseInt(page);
       const totalPages = Math.ceil(totalCount / limit);
-      hasMore = pageNum < totalPages;
+      hasMore = page < totalPages;
     } else {
       hasMore = scrims.length === limit;
     }
