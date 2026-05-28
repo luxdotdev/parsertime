@@ -14,6 +14,7 @@ import {
 import type { AbilityImpact } from "@/types/heroes";
 import { allHeroes } from "@/types/heroes";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
+import type { Kill } from "@prisma/client";
 import { ScrimQueryError } from "./errors";
 import {
   scrimAbilityTimingDuration,
@@ -109,19 +110,41 @@ function classifyPhase(abilityTime: number, fight: Fight): FightPhase | null {
   return "late";
 }
 
+function getFightMapDataId(fight: Fight): number | null {
+  return fight.kills[0]?.MapDataId ?? null;
+}
+
+function groupEventsIntoFightsByMap(events: Kill[]): Fight[] {
+  const eventsByMap = new Map<number | null, Kill[]>();
+  for (const event of events) {
+    const mapDataId = event.MapDataId ?? null;
+    const mapEvents = eventsByMap.get(mapDataId) ?? [];
+    mapEvents.push(event);
+    eventsByMap.set(mapDataId, mapEvents);
+  }
+
+  return Array.from(eventsByMap.values()).flatMap((mapEvents) =>
+    groupEventsIntoFights(
+      mapEvents.sort((a, b) => a.match_time - b.match_time)
+    )
+  );
+}
+
 function assignToFight(
-  abilityTime: number,
+  abilityEvent: AbilityEvent,
   fights: Fight[]
 ): { fight: Fight; phase: FightPhase } | null {
   let bestMatch: { fight: Fight; phase: FightPhase; distance: number } | null =
     null;
 
   for (const fight of fights) {
-    const phase = classifyPhase(abilityTime, fight);
+    if (getFightMapDataId(fight) !== abilityEvent.MapDataId) continue;
+
+    const phase = classifyPhase(abilityEvent.match_time, fight);
     if (phase === null) continue;
 
     const fightCenter = (fight.start + fight.end) / 2;
-    const distance = Math.abs(abilityTime - fightCenter);
+    const distance = Math.abs(abilityEvent.match_time - fightCenter);
 
     if (!bestMatch || distance < bestMatch.distance) {
       bestMatch = { fight, phase, distance };
@@ -223,7 +246,7 @@ function processAbilityTimingAnalysis(
       const abilityDef = slot === 1 ? heroDef.ability1 : heroDef.ability2;
       if (!isHighImpact(abilityDef.impact)) continue;
 
-      const match = assignToFight(event.match_time, fights);
+      const match = assignToFight(event, fights);
       if (!match) continue;
 
       const key = `${event.player_hero}|${slot}`;
@@ -421,11 +444,11 @@ export const make: Effect.Effect<
             Promise.all([
               prisma.kill.findMany({
                 where: { MapDataId: { in: mapIds } },
-                orderBy: { match_time: "asc" },
+                orderBy: [{ MapDataId: "asc" }, { match_time: "asc" }],
               }),
               prisma.mercyRez.findMany({
                 where: { MapDataId: { in: mapIds } },
-                orderBy: { match_time: "asc" },
+                orderBy: [{ MapDataId: "asc" }, { match_time: "asc" }],
               }),
               prisma.ability1Used.findMany({
                 where: { MapDataId: { in: mapIds } },
@@ -435,7 +458,7 @@ export const make: Effect.Effect<
                   player_hero: true,
                   MapDataId: true,
                 },
-                orderBy: { match_time: "asc" },
+                orderBy: [{ MapDataId: "asc" }, { match_time: "asc" }],
               }),
               prisma.ability2Used.findMany({
                 where: { MapDataId: { in: mapIds } },
@@ -445,7 +468,7 @@ export const make: Effect.Effect<
                   player_hero: true,
                   MapDataId: true,
                 },
-                orderBy: { match_time: "asc" },
+                orderBy: [{ MapDataId: "asc" }, { match_time: "asc" }],
               }),
             ]),
           catch: (error) =>
@@ -465,9 +488,9 @@ export const make: Effect.Effect<
       const killEvents = [
         ...dedupedKills,
         ...allRezzes.map(mercyRezToKillEvent),
-      ].sort((a, b) => a.match_time - b.match_time);
+      ];
 
-      const fights = groupEventsIntoFights(killEvents);
+      const fights = groupEventsIntoFightsByMap(killEvents);
 
       if (fights.length === 0) {
         wideEvent.outcome = "success";
@@ -593,11 +616,11 @@ export const make: Effect.Effect<
             Promise.all([
               prisma.kill.findMany({
                 where: { MapDataId: { in: mapIds } },
-                orderBy: { match_time: "asc" },
+                orderBy: [{ MapDataId: "asc" }, { match_time: "asc" }],
               }),
               prisma.mercyRez.findMany({
                 where: { MapDataId: { in: mapIds } },
-                orderBy: { match_time: "asc" },
+                orderBy: [{ MapDataId: "asc" }, { match_time: "asc" }],
               }),
               prisma.ability1Used.findMany({
                 where: { MapDataId: { in: mapIds } },
@@ -608,7 +631,7 @@ export const make: Effect.Effect<
                   player_name: true,
                   MapDataId: true,
                 },
-                orderBy: { match_time: "asc" },
+                orderBy: [{ MapDataId: "asc" }, { match_time: "asc" }],
               }),
               prisma.ability2Used.findMany({
                 where: { MapDataId: { in: mapIds } },
@@ -619,7 +642,7 @@ export const make: Effect.Effect<
                   player_name: true,
                   MapDataId: true,
                 },
-                orderBy: { match_time: "asc" },
+                orderBy: [{ MapDataId: "asc" }, { match_time: "asc" }],
               }),
             ]),
           catch: (error) =>
@@ -639,9 +662,9 @@ export const make: Effect.Effect<
       const killEvents = [
         ...dedupedKills,
         ...allRezzes.map(mercyRezToKillEvent),
-      ].sort((a, b) => a.match_time - b.match_time);
+      ];
 
-      const fights = groupEventsIntoFights(killEvents);
+      const fights = groupEventsIntoFightsByMap(killEvents);
 
       if (fights.length === 0) {
         wideEvent.outcome = "success";
@@ -701,9 +724,13 @@ export const make: Effect.Effect<
           }[],
           slot: 1 | 2
         ): FightAbilityEvent[] {
+          const fightMapDataId = getFightMapDataId(fight);
           return events
             .filter(
-              (e) => e.match_time >= windowStart && e.match_time <= windowEnd
+              (e) =>
+                e.MapDataId === fightMapDataId &&
+                e.match_time >= windowStart &&
+                e.match_time <= windowEnd
             )
             .map((e) => {
               const heroDef = heroAbilityLookup.get(e.player_hero);
