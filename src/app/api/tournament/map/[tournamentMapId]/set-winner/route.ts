@@ -77,6 +77,14 @@ export async function POST(
 
     const match = tournamentMap.match;
     event.matchId = match.id;
+    if (!match.team1?.name || !match.team2?.name) {
+      event.outcome = "missing_teams";
+      event.statusCode = 400;
+      return Response.json(
+        { error: "Match teams must be assigned before setting a winner" },
+        { status: 400 }
+      );
+    }
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
@@ -92,10 +100,20 @@ export async function POST(
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    await prisma.tournamentMap.update({
-      where: { id: tournamentMapId },
-      data: { winnerOverride: parsed.data.winner },
-    });
+    if (![match.team1.name, match.team2.name].includes(parsed.data.winner)) {
+      event.outcome = "invalid_winner";
+      event.statusCode = 400;
+      return Response.json({ error: "Invalid winner" }, { status: 400 });
+    }
+
+    if (match.status === "COMPLETED" && match.winnerId) {
+      event.outcome = "match_completed";
+      event.statusCode = 409;
+      return Response.json(
+        { error: "Cannot change winners after a match is completed" },
+        { status: 409 }
+      );
+    }
 
     const allMaps = await prisma.tournamentMap.findMany({
       where: { matchId: match.id },
@@ -123,14 +141,21 @@ export async function POST(
 
     event.matchDecided = isDecided;
 
-    await prisma.tournamentMatch.update({
-      where: { id: match.id },
-      data: {
-        team1Score: team1Wins,
-        team2Score: team2Wins,
-        status: isDecided ? "COMPLETED" : "ONGOING",
-        winnerId: isDecided ? winnerId : null,
-      },
+    await prisma.$transaction(async (tx) => {
+      await tx.tournamentMap.update({
+        where: { id: tournamentMapId },
+        data: { winnerOverride: parsed.data.winner },
+      });
+
+      await tx.tournamentMatch.update({
+        where: { id: match.id },
+        data: {
+          team1Score: team1Wins,
+          team2Score: team2Wins,
+          status: isDecided ? "COMPLETED" : "ONGOING",
+          winnerId: isDecided ? winnerId : null,
+        },
+      });
     });
 
     if (isDecided && winnerId) {

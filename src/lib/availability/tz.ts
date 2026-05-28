@@ -43,6 +43,15 @@ export function getTzParts(date: Date, timeZone: string): TzParts {
   };
 }
 
+export function isValidTimeZone(timeZone: string): boolean {
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone }).format(new Date());
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function wallClockUtcMs(
   year: number,
   month: number,

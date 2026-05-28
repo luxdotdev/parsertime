@@ -22,6 +22,8 @@ export async function getAverageUltChargeTime(id: number, playerName: string) {
   // Take the first ultimate charged and the next ultimate end
   // Then take the next ultimate charged and the next ultimate end
   // Continue until the end of the match
+  if (ultimatesCharged.length === 0) return 0;
+
   const ultimateTimes = [ultimatesCharged[0].match_time];
 
   // for each ultimate end, calculate the time between the next ultimate charged and the current ultimate end

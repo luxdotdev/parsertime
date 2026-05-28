@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { weekEndInTz, weekStartInTz } from "./tz";
+import { isValidTimeZone, weekEndInTz, weekStartInTz } from "./tz";
 
 export type ReminderJob = {
   teamId: number;
@@ -28,6 +28,7 @@ export async function buildReminderJob(
     where: { teamId },
   });
   if (!settings) return null;
+  if (!isValidTimeZone(settings.timezone)) return null;
 
   const fallback = await prisma.botNotificationConfig.findFirst({
     where: { teamIds: { has: teamId } },

@@ -79,47 +79,58 @@ export async function DELETE(
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
+    if (match.status === "COMPLETED" && match.winnerId) {
+      event.outcome = "match_completed";
+      event.statusCode = 409;
+      return Response.json(
+        { error: "Cannot delete maps after a match is completed" },
+        { status: 409 }
+      );
+    }
+
     const mapId = tournamentMap.mapId;
 
-    await prisma.tournamentMap.delete({
-      where: { id: tournamentMapId },
-    });
+    await prisma.$transaction(async (tx) => {
+      await tx.tournamentMap.delete({
+        where: { id: tournamentMapId },
+      });
 
-    if (mapId) {
-      await prisma.map.delete({ where: { id: mapId } });
-    }
+      if (mapId) {
+        await tx.map.delete({ where: { id: mapId } });
+      }
 
-    const remainingMaps = await prisma.tournamentMap.findMany({
-      where: { matchId: match.id },
-    });
+      const remainingMaps = await tx.tournamentMap.findMany({
+        where: { matchId: match.id },
+      });
 
-    let team1Wins = 0;
-    let team2Wins = 0;
-    for (const map of remainingMaps) {
-      if (map.winnerOverride === match.team1?.name) team1Wins++;
-      else if (map.winnerOverride === match.team2?.name) team2Wins++;
-    }
+      let team1Wins = 0;
+      let team2Wins = 0;
+      for (const map of remainingMaps) {
+        if (map.winnerOverride === match.team1?.name) team1Wins++;
+        else if (map.winnerOverride === match.team2?.name) team2Wins++;
+      }
 
-    const bestOf = match.round.bestOf ?? match.tournament.bestOf;
-    const winsNeeded = Math.ceil(bestOf / 2);
-    const isDecided = team1Wins >= winsNeeded || team2Wins >= winsNeeded;
+      const bestOf = match.round.bestOf ?? match.tournament.bestOf;
+      const winsNeeded = Math.ceil(bestOf / 2);
+      const isDecided = team1Wins >= winsNeeded || team2Wins >= winsNeeded;
 
-    await prisma.tournamentMatch.update({
-      where: { id: match.id },
-      data: {
-        team1Score: team1Wins,
-        team2Score: team2Wins,
-        status: isDecided
-          ? "COMPLETED"
-          : remainingMaps.length > 0
-            ? "ONGOING"
-            : "UPCOMING",
-        winnerId: isDecided
-          ? team1Wins >= winsNeeded
-            ? match.team1Id
-            : match.team2Id
-          : null,
-      },
+      await tx.tournamentMatch.update({
+        where: { id: match.id },
+        data: {
+          team1Score: team1Wins,
+          team2Score: team2Wins,
+          status: isDecided
+            ? "COMPLETED"
+            : remainingMaps.length > 0
+              ? "ONGOING"
+              : "UPCOMING",
+          winnerId: isDecided
+            ? team1Wins >= winsNeeded
+              ? match.team1Id
+              : match.team2Id
+            : null,
+        },
+      });
     });
 
     await AppRuntime.runPromise(

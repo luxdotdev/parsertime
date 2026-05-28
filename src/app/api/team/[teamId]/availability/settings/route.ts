@@ -1,4 +1,5 @@
 import { isAuthedToViewTeam, isTeamOwnerOrManager } from "@/lib/auth";
+import { isValidTimeZone } from "@/lib/availability/tz";
 import prisma from "@/lib/prisma";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
@@ -56,6 +57,10 @@ export async function PUT(req: NextRequest, ctx: RouteCtx) {
   }
 
   const data = parsed.data;
+  if (!isValidTimeZone(data.timezone)) {
+    return Response.json({ error: "Invalid timezone" }, { status: 400 });
+  }
+
   if (data.hoursEnd <= data.hoursStart) {
     return Response.json(
       { error: "hoursEnd must be greater than hoursStart" },
