@@ -150,7 +150,7 @@ async function main() {
       }
       if (!originalBuffer) throw new Error("Download failed after 3 attempts");
 
-      const slug = toSlug(record.mapName);
+      const slug = `${record.id}-${toSlug(record.mapName)}`;
       const originalKey = `map-images/${slug}/original.png`;
       const displayKey = `map-images/${slug}/display.png`;
 
