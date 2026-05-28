@@ -1,4 +1,5 @@
 import { NoAuthCard } from "@/components/auth/no-auth";
+import { DashboardLayout } from "@/components/dashboard-layout";
 import { isAuthedToViewTeam } from "@/lib/auth";
 
 export default async function TeamLayout(props: LayoutProps<"/team/[teamId]">) {
@@ -13,7 +14,5 @@ export default async function TeamLayout(props: LayoutProps<"/team/[teamId]">) {
     return NoAuthCard();
   }
 
-  // Must be wrapped in an element due to Next.js Server Component typing
-  // oxlint-disable-next-line react/jsx-no-useless-fragment
-  return <>{children}</>;
+  return <DashboardLayout>{children}</DashboardLayout>;
 }

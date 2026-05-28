@@ -1,4 +1,5 @@
 import { TeamSearch } from "@/components/admin/team-search";
+import { DashboardLayout } from "@/components/dashboard-layout";
 import { EmptyTeamView } from "@/components/team/empty-team-view";
 import { UserTeamsList } from "@/components/team/user-teams-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,6 +12,7 @@ import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { redirect } from "next/navigation";
 
 export async function generateMetadata(
   props: PagePropsWithLocale<"/team">
@@ -42,9 +44,12 @@ export default async function TeamPage() {
   const t = await getTranslations("teamPage");
 
   const session = await auth();
+  if (!session?.user?.email) {
+    redirect("/sign-in");
+  }
 
   const userData = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
   );
 
   const userTeams = await prisma.team.findMany({
@@ -55,7 +60,7 @@ export default async function TeamPage() {
     userData?.role === $Enums.UserRole.ADMIN ||
     userData?.role === $Enums.UserRole.MANAGER;
 
-  return (
+  const content = (
     <div className="flex-col md:flex">
       <div className="flex-1 space-y-4 p-8 pt-6">
         <div className="flex items-center justify-between space-y-2">
@@ -85,4 +90,6 @@ export default async function TeamPage() {
       </div>
     </div>
   );
+
+  return <DashboardLayout>{content}</DashboardLayout>;
 }
