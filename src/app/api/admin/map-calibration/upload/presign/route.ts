@@ -13,6 +13,10 @@ const ALLOWED_IMAGE_CONTENT_TYPES = new Set([
   "image/webp",
 ]);
 
+function slugForMapName(mapName: string) {
+  return mapName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+}
+
 export async function POST(request: Request): Promise<NextResponse> {
   const startTime = Date.now();
   const wideEvent: Record<string, unknown> = {
@@ -59,7 +63,17 @@ export async function POST(request: Request): Promise<NextResponse> {
       );
     }
 
-    const slug = mapName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    const slug = slugForMapName(mapName);
+    if (!slug) {
+      wideEvent.status_code = 400;
+      wideEvent.outcome = "error";
+      wideEvent.error = { message: "Missing or invalid mapName field" };
+      return NextResponse.json(
+        { error: "Missing or invalid mapName field" },
+        { status: 400 }
+      );
+    }
+
     const rawKey = `map-images/${slug}/raw-${Date.now()}`;
 
     wideEvent.map_name = mapName;

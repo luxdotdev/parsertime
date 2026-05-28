@@ -11,6 +11,10 @@ export const maxDuration = 60;
 
 const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
 
+function slugForMapName(mapName: string) {
+  return mapName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+}
+
 export async function POST(request: Request): Promise<NextResponse> {
   const startTime = Date.now();
   const wideEvent: Record<string, unknown> = {
@@ -59,6 +63,17 @@ export async function POST(request: Request): Promise<NextResponse> {
     wideEvent.map_name = mapName;
     wideEvent.raw_key = rawKey;
 
+    const slug = slugForMapName(mapName);
+    if (!slug || !rawKey.startsWith(`map-images/${slug}/raw-`)) {
+      wideEvent.status_code = 400;
+      wideEvent.outcome = "error";
+      wideEvent.error = { message: "rawKey does not match mapName" };
+      return NextResponse.json(
+        { error: "rawKey does not match mapName" },
+        { status: 400 }
+      );
+    }
+
     const buffer = await r2.download(rawKey);
     wideEvent.file_size = buffer.length;
     if (buffer.length > MAX_UPLOAD_BYTES) {
@@ -87,7 +102,6 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     wideEvent.image_dimensions = { width: imageWidth, height: imageHeight };
 
-    const slug = mapName.toLowerCase().replace(/[^a-z0-9]+/g, "-");
     wideEvent.slug = slug;
 
     const pngBuffer = await sharp(buffer).png().toBuffer();
