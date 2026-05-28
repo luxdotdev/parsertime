@@ -342,7 +342,6 @@ export async function groupPlayerKillsIntoFights(
           start: event.match_time,
           end: event.match_time,
         };
-        fights.push(currentFight);
       } else {
         // Otherwise, start a fight with no kills (yet)
         currentFight = {

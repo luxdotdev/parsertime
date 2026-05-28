@@ -43,6 +43,7 @@ async function groupKillsByInterval(id: number, maxInterval: number) {
     where: {
       MapDataId: mdId,
     },
+    orderBy: [{ match_time: "asc" }, { id: "asc" }],
   });
 
   const groupedKills: Kill[][] = [];
