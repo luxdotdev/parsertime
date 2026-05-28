@@ -365,6 +365,7 @@ export function buildTools(opts: {
         mapIds: z
           .array(z.number())
           .min(1)
+          .max(25)
           .describe(
             "Array of map IDs to analyze the player's performance across."
           ),
@@ -383,9 +384,12 @@ export function buildTools(opts: {
           where: { id: { in: mapIds } },
           select: { Scrim: { select: { teamId: true } } },
         });
-        const hasAccess = maps.some(
-          (m) => m.Scrim?.teamId && allowedTeamIds.has(m.Scrim.teamId)
-        );
+        const uniqueMapIds = new Set(mapIds);
+        const hasAccess =
+          maps.length === uniqueMapIds.size &&
+          maps.every(
+            (m) => m.Scrim?.teamId && allowedTeamIds.has(m.Scrim.teamId)
+          );
         if (!hasAccess) {
           return { error: "You don't have access to the requested maps." };
         }

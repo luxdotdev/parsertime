@@ -371,6 +371,57 @@ export async function canViewScrim(
   return userTeams > 0;
 }
 
+export async function canManageTournament(
+  tournamentId: number,
+  user: Pick<User, "id" | "role"> | null | undefined
+) {
+  if (!user) return false;
+  if (isAdminUser(user)) return true;
+
+  const tournament = await prisma.tournament.findUnique({
+    where: { id: tournamentId },
+    select: { creatorId: true },
+  });
+  if (!tournament) return false;
+
+  return tournament.creatorId === user.id;
+}
+
+export async function canViewTournament(
+  tournamentId: number,
+  user: Pick<User, "id" | "role"> | null | undefined
+) {
+  if (!user) return false;
+  if (isAdminUser(user)) return true;
+
+  const tournament = await prisma.tournament.findUnique({
+    where: { id: tournamentId },
+    select: {
+      creatorId: true,
+      teams: { select: { teamId: true } },
+    },
+  });
+  if (!tournament) return false;
+  if (tournament.creatorId === user.id) return true;
+
+  const teamIds = tournament.teams
+    .map((team) => team.teamId)
+    .filter((id): id is number => id !== null);
+  if (teamIds.length === 0) return false;
+
+  const matchingTeams = await prisma.team.count({
+    where: {
+      id: { in: teamIds },
+      OR: [
+        { ownerId: user.id },
+        { users: { some: { id: user.id } } },
+        { managers: { some: { userId: user.id } } },
+      ],
+    },
+  });
+  return matchingTeams > 0;
+}
+
 export async function getViewableScrimIds(
   scrimIds: number[],
   user: Pick<User, "id" | "role"> | null | undefined

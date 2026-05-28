@@ -37,7 +37,7 @@ import {
 } from "@/data/tournament-team";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
-import { auth } from "@/lib/auth";
+import { auth, canViewTournament, getCurrentUser } from "@/lib/auth";
 import { tournament, simulationTool, ultimateImpactTool } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { getMapNames } from "@/lib/utils";
@@ -60,6 +60,9 @@ export default async function TournamentTeamStatsPage(props: {
   const tournamentId = Number(params.id);
   const tournamentTeamId = Number(params.teamId);
   if (Number.isNaN(tournamentId) || Number.isNaN(tournamentTeamId)) notFound();
+
+  const user = await getCurrentUser();
+  if (!(await canViewTournament(tournamentId, user))) notFound();
 
   const tournamentData = await prisma.tournament.findFirst({
     where: { id: tournamentId },

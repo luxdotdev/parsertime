@@ -7,7 +7,7 @@ import { TournamentActions } from "@/components/tournament/tournament-actions";
 import { Badge } from "@/components/ui/badge";
 import { AppRuntime } from "@/data/runtime";
 import { TournamentService } from "@/data/tournament";
-import { auth } from "@/lib/auth";
+import { auth, canViewTournament, getCurrentUser } from "@/lib/auth";
 import { tournament } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { Effect } from "effect";
@@ -25,6 +25,9 @@ export default async function TournamentDetailPage(props: {
   const params = await props.params;
   const id = Number(params.id);
   if (Number.isNaN(id)) notFound();
+
+  const user = await getCurrentUser();
+  if (!(await canViewTournament(id, user))) notFound();
 
   const data = await AppRuntime.runPromise(
     TournamentService.pipe(

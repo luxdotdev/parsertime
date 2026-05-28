@@ -2,7 +2,7 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auditLog } from "@/lib/audit-logs";
-import { auth } from "@/lib/auth";
+import { auth, canViewTeam } from "@/lib/auth";
 import {
   generateDoubleEliminationBracket,
   generateRoundRobinSEBracket,
@@ -122,6 +122,18 @@ export async function POST(request: NextRequest) {
       event.outcome = "user_not_found";
       event.statusCode = 404;
       return Response.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const linkedTeamIds = teams
+      .map((team) => team.teamId)
+      .filter((id): id is number => id !== undefined);
+    const linkedTeamAccess = await Promise.all(
+      [...new Set(linkedTeamIds)].map((teamId) => canViewTeam(teamId, user))
+    );
+    if (linkedTeamAccess.some((allowed) => !allowed)) {
+      event.outcome = "forbidden_team";
+      event.statusCode = 403;
+      return Response.json({ error: "Forbidden linked team" }, { status: 403 });
     }
 
     const bracket =

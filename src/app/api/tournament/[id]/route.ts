@@ -1,5 +1,5 @@
 import { auditLog } from "@/lib/audit-logs";
-import { auth } from "@/lib/auth";
+import { auth, canManageTournament, getCurrentUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { TournamentStatus } from "@prisma/client";
@@ -62,15 +62,8 @@ export async function PATCH(
       return Response.json({ error: "Tournament not found" }, { status: 404 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true, role: true },
-    });
-    if (
-      user?.id !== tournament.creatorId &&
-      user?.role !== "ADMIN" &&
-      user?.role !== "MANAGER"
-    ) {
+    const user = await getCurrentUser();
+    if (!(await canManageTournament(id, user))) {
       event.outcome = "forbidden";
       event.statusCode = 403;
       return Response.json({ error: "Forbidden" }, { status: 403 });
@@ -184,15 +177,8 @@ export async function DELETE(
       return Response.json({ error: "Tournament not found" }, { status: 404 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true, role: true },
-    });
-    if (
-      user?.id !== tournament.creatorId &&
-      user?.role !== "ADMIN" &&
-      user?.role !== "MANAGER"
-    ) {
+    const user = await getCurrentUser();
+    if (!(await canManageTournament(id, user))) {
       event.outcome = "forbidden";
       event.statusCode = 403;
       return Response.json({ error: "Forbidden" }, { status: 403 });

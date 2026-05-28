@@ -75,7 +75,7 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
 });
 
-register();
+void register();
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const locale = await getLocale();

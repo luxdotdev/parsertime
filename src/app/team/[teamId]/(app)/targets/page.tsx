@@ -133,11 +133,14 @@ export default async function TeamTargetsPage(props: Props) {
       const topHero = await prisma.$queryRaw<
         { player_hero: string; total_time: number }[]
       >`
-        SELECT player_hero, SUM(hero_time_played) AS total_time
-        FROM "PlayerStat"
-        WHERE player_name ILIKE ${playerName}
-          AND hero_time_played > 0
-        GROUP BY player_hero
+        SELECT ps.player_hero, SUM(ps.hero_time_played) AS total_time
+        FROM "PlayerStat" ps
+        INNER JOIN "MapData" md ON md.id = ps."MapDataId"
+        INNER JOIN "Scrim" s ON s.id = md."scrimId"
+        WHERE ps.player_name ILIKE ${playerName}
+          AND ps.hero_time_played > 0
+          AND s."teamId" = ${teamId}
+        GROUP BY ps.player_hero
         ORDER BY total_time DESC
         LIMIT 1
       `;
