@@ -464,6 +464,7 @@ export const make: Effect.Effect<MapHeroTrendsServiceInterface> = Effect.gen(
                     Scrim: {
                       is: {
                         date: { gte: since },
+                        guestMode: true,
                       },
                     },
                   },
