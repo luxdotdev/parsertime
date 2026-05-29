@@ -162,4 +162,40 @@ describe("query-builder natural-language planner", () => {
       limit: 20,
     });
   });
+
+  it("plans ban weak-point questions onto received ban impact", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "Which heroes are weak points when the opponent bans them?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ban_impact",
+      metrics: [
+        { metric: "win_rate_delta", agg: "avg" },
+        { metric: "maps_banned", agg: "sum" },
+      ],
+      dimensions: ["hero"],
+      filters: [
+        { field: "side", op: "eq", value: "banned by enemy" },
+        { field: "tag", op: "eq", value: "weak point" },
+      ],
+    });
+  });
+
+  it("plans most-banned-by-us questions onto outgoing ban rates", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What are our most banned heroes by us?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ban_impact",
+      metrics: [{ metric: "ban_rate", agg: "avg" }],
+      dimensions: ["hero"],
+      filters: [{ field: "side", op: "eq", value: "banned by us" }],
+      sort: { key: "avg__ban_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
 });

@@ -21,6 +21,7 @@ export const DATASETS = [
   "swap_impact",
   "hero_pool",
   "enemy_hero",
+  "ban_impact",
 ] as const;
 export type DatasetId = (typeof DATASETS)[number];
 

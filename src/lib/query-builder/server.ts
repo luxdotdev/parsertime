@@ -5,6 +5,7 @@ import { queryBuilder } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { aggregateComputed } from "@/lib/query-builder/aggregate";
 import { computeAbilityImpact } from "@/lib/query-builder/compute/ability-impact";
+import { computeBanImpact } from "@/lib/query-builder/compute/ban-impact";
 import { computeDuels } from "@/lib/query-builder/compute/duels";
 import { computeEnemyHeroMatchups } from "@/lib/query-builder/compute/enemy-hero";
 import { computeHeroPool } from "@/lib/query-builder/compute/hero-pool";
@@ -247,6 +248,9 @@ async function runComputedQuery(
           spec.teamId,
           ctx.scrimIds
         );
+        break;
+      case "ban_impact":
+        computedRows = await computeBanImpact(spec.teamId, ctx.scrimIds);
         break;
       default:
         return { ok: false, error: "Unknown analysis." };

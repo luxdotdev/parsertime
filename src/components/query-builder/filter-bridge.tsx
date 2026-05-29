@@ -51,6 +51,7 @@ const FIELD_ICONS: Record<string, React.ReactNode> = {
   enemy_role: <ShieldIcon />,
   ability: <ZapIcon />,
   side: <UsersIcon />,
+  tag: <TagIcon />,
   used: <ZapIcon />,
   scenario: <TagIcon />,
   had_swap: <RotateCcwIcon />,

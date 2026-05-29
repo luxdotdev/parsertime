@@ -39,6 +39,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   swap_impact: "win_rate",
   hero_pool: "win_rate",
   enemy_hero: "win_rate",
+  ban_impact: "win_rate_delta",
 };
 
 const DATASET_HINTS: Record<DatasetId, string[]> = {
@@ -142,6 +143,19 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "worst against",
     "best against",
   ],
+  ban_impact: [
+    "ban",
+    "bans",
+    "banned",
+    "hero ban",
+    "ban impact",
+    "ban rate",
+    "most banned",
+    "weak point",
+    "weak points",
+    "strong ban",
+    "strong bans",
+  ],
 };
 
 const METRIC_ALIASES: Record<string, string[]> = {
@@ -164,6 +178,19 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "elims per ult",
   ],
   kd: ["kd", "k d", "final blows per death"],
+  ban_rate: ["ban rate", "banned rate", "most banned"],
+  maps_banned: ["maps banned", "bans", "ban count", "total bans"],
+  win_rate_delta: [
+    "win rate delta",
+    "winrate delta",
+    "impact",
+    "weak point",
+    "weak points",
+    "strong ban",
+    "strong bans",
+  ],
+  win_rate_with: ["win rate with ban", "winrate with ban"],
+  win_rate_without: ["win rate without ban", "winrate without ban"],
   avg_wasted_ults: ["wasted ult", "wasted ults", "wasted ultimates"],
   win_rate: ["winrate", "winrates", "win rate", "win rates", "wr"],
   fights: ["fights", "teamfights", "team fights"],
@@ -452,6 +479,18 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
       a.metric === "win_rate" ? -1 : b.metric === "win_rate" ? 1 : 0
     );
   }
+  if (
+    dataset === "ban_impact" &&
+    (includesPhrase(normalized, "weak point") ||
+      includesPhrase(normalized, "weak points") ||
+      includesPhrase(normalized, "strong ban") ||
+      includesPhrase(normalized, "strong bans") ||
+      includesPhrase(normalized, "impact"))
+  ) {
+    deduped.sort((a, b) =>
+      a.metric === "win_rate_delta" ? -1 : b.metric === "win_rate_delta" ? 1 : 0
+    );
+  }
   return deduped.slice(0, 4);
 }
 
@@ -616,6 +655,44 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
   }
 
+  if (dataset === "ban_impact") {
+    if (
+      includesPhrase(normalized, "banned by us") ||
+      includesPhrase(normalized, "we ban") ||
+      includesPhrase(normalized, "we banned") ||
+      includesPhrase(normalized, "by us") ||
+      includesPhrase(normalized, "our bans") ||
+      includesPhrase(normalized, "strong ban")
+    ) {
+      const sideFilter = filterFor(dataset, "side", "banned by us");
+      if (sideFilter) filters.push(sideFilter);
+    } else if (
+      includesPhrase(normalized, "banned by enemy") ||
+      includesPhrase(normalized, "enemy ban") ||
+      includesPhrase(normalized, "enemy bans") ||
+      includesPhrase(normalized, "opponent ban") ||
+      includesPhrase(normalized, "opponent bans") ||
+      includesPhrase(normalized, "banned from us") ||
+      includesPhrase(normalized, "weak point")
+    ) {
+      const sideFilter = filterFor(dataset, "side", "banned by enemy");
+      if (sideFilter) filters.push(sideFilter);
+    }
+
+    if (
+      includesPhrase(normalized, "weak point") ||
+      includesPhrase(normalized, "weak points")
+    ) {
+      filters.push({ field: "tag", op: "eq", value: "weak point" });
+    }
+    if (
+      includesPhrase(normalized, "strong ban") ||
+      includesPhrase(normalized, "strong bans")
+    ) {
+      filters.push({ field: "tag", op: "eq", value: "strong ban" });
+    }
+  }
+
   return filters.slice(0, 8);
 }
 
@@ -687,6 +764,9 @@ function pickDimensions(
     !hasFilter("enemy_hero")
   ) {
     add("enemy_hero");
+  }
+  if (dataset === "ban_impact" && dims.length === 0 && !hasFilter("hero")) {
+    add("hero");
   }
 
   return dims.slice(0, 4);
