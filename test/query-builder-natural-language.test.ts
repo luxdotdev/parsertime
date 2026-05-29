@@ -906,6 +906,24 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans swap-count loss questions onto swap buckets", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 3,
+      question: "Which swap counts do we lose maps with the most?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "swap_impact",
+      dimensions: ["swap_count_bucket"],
+      sort: { key: "sum__losses", dir: "desc" },
+      limit: 20,
+    });
+    expect(planned?.spec.metrics[0]).toEqual({
+      metric: "losses",
+      agg: "sum",
+    });
+  });
+
   it("plans hero-pool questions onto hero winrates", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,

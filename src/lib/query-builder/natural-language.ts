@@ -1972,6 +1972,26 @@ function pickDataset(question: string): DatasetId {
   const mapName = findMapName(question);
   const heroMentions = findHeroMentions(question);
   const player = findPlayer(question, heroMentions[0]?.hero ?? null);
+  const mentionsSwap =
+    includesPhrase(normalized, "swap") ||
+    includesPhrase(normalized, "swaps") ||
+    includesPhrase(normalized, "swapped") ||
+    includesPhrase(normalized, "swapping");
+  if (
+    mentionsSwap &&
+    (includesPhrase(normalized, "win rate") ||
+      includesPhrase(normalized, "winrate") ||
+      includesPhrase(normalized, "wins") ||
+      includesPhrase(normalized, "losses") ||
+      includesPhrase(normalized, "lose") ||
+      includesPhrase(normalized, "lost") ||
+      includesPhrase(normalized, "maps") ||
+      includesPhrase(normalized, "per map") ||
+      includesPhrase(normalized, "swap count") ||
+      includesPhrase(normalized, "swap counts"))
+  ) {
+    return "swap_impact";
+  }
   if (mentionsTeamPerformanceContext(normalized)) return "team_performance";
   if (
     mentionsPlayerImpactContext(normalized) &&
@@ -4128,7 +4148,18 @@ function pickDimensions(
     }
   }
   if (dataset === "swap_impact" && dims.length === 0) {
-    add(hasFilter("had_swap") ? "swap_count_bucket" : "had_swap");
+    if (
+      hasFilter("had_swap") ||
+      includesPhrase(normalized, "swap count") ||
+      includesPhrase(normalized, "swap counts") ||
+      includesPhrase(normalized, "swap bucket") ||
+      includesPhrase(normalized, "swap buckets") ||
+      includesPhrase(normalized, "how many swaps")
+    ) {
+      add("swap_count_bucket");
+    } else {
+      add("had_swap");
+    }
   }
   if (dataset === "hero_pool" && dims.length === 0) {
     add("hero");

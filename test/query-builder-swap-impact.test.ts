@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 
 const MAPS: ComputedRow[] = [
   {
+    loss: 0,
     won: 1,
     result: "win",
     had_swap: "yes",
@@ -18,6 +19,7 @@ const MAPS: ComputedRow[] = [
     scrim: "A",
   },
   {
+    loss: 1,
     won: 0,
     result: "loss",
     had_swap: "yes",
@@ -29,6 +31,7 @@ const MAPS: ComputedRow[] = [
     scrim: "B",
   },
   {
+    loss: 0,
     won: 1,
     result: "win",
     had_swap: "no",
@@ -84,5 +87,23 @@ describe("computed aggregator (swap impact)", () => {
     expect(rows).toHaveLength(1);
     expect(rows[0]["avg__win_rate"]).toBe(0);
     expect(rows[0]["count__maps"]).toBe(1);
+  });
+
+  it("counts losses by swap count bucket", () => {
+    const { rows } = aggregateComputed(
+      MAPS,
+      spec({
+        metrics: [{ metric: "losses", agg: "sum" }],
+        dimensions: ["swap_count_bucket"],
+        sort: { key: "sum__losses", dir: "desc" },
+      })
+    );
+
+    expect(rows.map((row) => row.swap_count_bucket)).toEqual([
+      "3+ swaps",
+      "1 swap",
+      "0 swaps",
+    ]);
+    expect(rows[0]["sum__losses"]).toBe(1);
   });
 });

@@ -123,6 +123,7 @@ export async function computeSwapImpact(
     const won = winner === ourTeam;
 
     rows.push({
+      loss: won ? 0 : 1,
       won: won ? 1 : 0,
       result: won ? "win" : "loss",
       had_swap: swapCount > 0 ? "yes" : "no",

@@ -5361,6 +5361,18 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         precision: 0,
       },
       {
+        id: "losses",
+        label: "losses",
+        description: "Number of maps lost",
+        table: "SwapImpact",
+        column: "loss",
+        source: "base",
+        allowedAggs: ["sum"],
+        defaultAgg: "sum",
+        precision: 0,
+        lowerIsBetter: true,
+      },
+      {
         id: "avg_swaps",
         label: "avg swaps",
         description: "Average swaps per map",
