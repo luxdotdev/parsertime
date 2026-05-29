@@ -39,6 +39,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   map_intelligence: "weighted_win_rate",
   player_map_performance: "win_rate",
   player_impact: "consistency_score",
+  player_trend: "improvement_percentage",
   role_performance: "win_rate",
   ult_economy: "win_rate",
   duel: "win_rate",
@@ -299,6 +300,22 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "map mvp rate",
     "kills per ultimate",
     "kills per ult",
+  ],
+  player_trend: [
+    "player trend",
+    "player trends",
+    "improving player",
+    "improving players",
+    "players improving",
+    "player improving",
+    "declining player",
+    "declining players",
+    "players declining",
+    "player declining",
+    "trending up",
+    "trending down",
+    "what is improving",
+    "what are improving",
   ],
   role_performance: [
     "role performance",
@@ -667,6 +684,16 @@ const METRIC_ALIASES: Record<string, string[]> = {
   ],
   recent_win_rate: ["recent win rate", "recent form", "last 10 win rate"],
   trend_delta: ["trend delta", "recent delta", "change", "improvement"],
+  improvement_percentage: [
+    "improvement percentage",
+    "improvement %",
+    "change percentage",
+    "trend percentage",
+  ],
+  improvement: ["improvement", "trend change"],
+  raw_change: ["raw change", "late minus early"],
+  early_value: ["early value", "early sample", "first half"],
+  late_value: ["late value", "late sample", "second half"],
   consistency_score: [
     "consistency",
     "consistent",
@@ -761,6 +788,7 @@ const DIMENSION_ALIASES: Record<string, string[]> = {
   first_swap_timing: ["first swap timing", "swap timing"],
   streak: ["streak"],
   trend: ["trend"],
+  direction: ["direction"],
   confidence: ["confidence", "sample confidence"],
   start_date: ["start date", "started"],
   end_date: ["end date", "ended"],
@@ -785,6 +813,7 @@ const FILLER_WORDS = new Set([
   "i",
   "in",
   "it",
+  "is",
   "know",
   "map",
   "maps",
@@ -971,6 +1000,9 @@ function findPlayer(question: string, hero: string | null): string | null {
     ...question.matchAll(
       /\b([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:dies|died|die|gets|got)\b/gi
     ),
+    ...question.matchAll(
+      /\b([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:improving|improve|improved|declining|decline|declined|trending)\b/gi
+    ),
     ...question.matchAll(/\b([A-Za-z][A-Za-z0-9_.-]{1,})'s\s+/gi),
   ];
 
@@ -1062,6 +1094,39 @@ function mentionsMapIntelligenceContext(normalized: string): boolean {
     includesPhrase(normalized, "map type dependency") ||
     includesPhrase(normalized, "map type dependencies")
   );
+}
+
+function mentionsPlayerTrendContext(normalized: string): boolean {
+  if (
+    includesPhrase(normalized, "player trend") ||
+    includesPhrase(normalized, "player trends")
+  ) {
+    return true;
+  }
+
+  const trendIntent =
+    includesPhrase(normalized, "improving") ||
+    includesPhrase(normalized, "improve") ||
+    includesPhrase(normalized, "improved") ||
+    includesPhrase(normalized, "declining") ||
+    includesPhrase(normalized, "decline") ||
+    includesPhrase(normalized, "declined") ||
+    includesPhrase(normalized, "trending up") ||
+    includesPhrase(normalized, "trending down");
+  const playerContext =
+    includesPhrase(normalized, "who") ||
+    includesPhrase(normalized, "whose") ||
+    includesPhrase(normalized, "which player") ||
+    includesPhrase(normalized, "which players") ||
+    includesPhrase(normalized, "player") ||
+    includesPhrase(normalized, "players");
+  const mapContext =
+    includesPhrase(normalized, "map") ||
+    includesPhrase(normalized, "maps") ||
+    includesPhrase(normalized, "map type") ||
+    includesPhrase(normalized, "map mode");
+
+  return trendIntent && playerContext && !mapContext;
 }
 
 function mentionsStreakContext(normalized: string): boolean {
@@ -1455,6 +1520,18 @@ function pickDataset(question: string): DatasetId {
   const heroMentions = findHeroMentions(question);
   const player = findPlayer(question, heroMentions[0]?.hero ?? null);
   if (mentionsOpeningKillContext(normalized)) return "opening_kill";
+  if (
+    mentionsPlayerTrendContext(normalized) ||
+    (player &&
+      (includesPhrase(normalized, "improving") ||
+        includesPhrase(normalized, "improve") ||
+        includesPhrase(normalized, "declining") ||
+        includesPhrase(normalized, "decline") ||
+        includesPhrase(normalized, "trending up") ||
+        includesPhrase(normalized, "trending down")))
+  ) {
+    return "player_trend";
+  }
   if (mentionsPlayerImpactContext(normalized)) return "player_impact";
   if (mentionsCalculatedStatContext(normalized)) return "calculated_stat";
   if (mentionsStreakContext(normalized)) return "streak";
@@ -2232,6 +2309,71 @@ function pickFightPhase(normalized: string): string | null {
   return null;
 }
 
+function pickPlayerTrendMetric(normalized: string): string | null {
+  if (
+    includesPhrase(normalized, "damage taken") ||
+    includesPhrase(normalized, "damage taken per 10")
+  ) {
+    return "damage_taken_per10";
+  }
+  if (
+    includesPhrase(normalized, "hero damage") ||
+    includesPhrase(normalized, "damage dealt") ||
+    includesPhrase(normalized, "damage per 10") ||
+    includesPhrase(normalized, "damage")
+  ) {
+    return "hero_damage_per10";
+  }
+  if (
+    includesPhrase(normalized, "first death") ||
+    includesPhrase(normalized, "first deaths") ||
+    includesPhrase(normalized, "opening death") ||
+    includesPhrase(normalized, "opening deaths")
+  ) {
+    return "first_death_percentage";
+  }
+  if (
+    includesPhrase(normalized, "first pick") ||
+    includesPhrase(normalized, "first picks") ||
+    includesPhrase(normalized, "opening pick") ||
+    includesPhrase(normalized, "opening picks")
+  ) {
+    return "first_pick_percentage";
+  }
+  if (
+    includesPhrase(normalized, "deaths") ||
+    includesPhrase(normalized, "death rate")
+  ) {
+    return "deaths_per10";
+  }
+  if (
+    includesPhrase(normalized, "eliminations") ||
+    includesPhrase(normalized, "elims")
+  ) {
+    return "eliminations_per10";
+  }
+  if (includesPhrase(normalized, "mvp")) return "mvp_score";
+  if (
+    includesPhrase(normalized, "fight reversal") ||
+    includesPhrase(normalized, "reversal")
+  ) {
+    return "fight_reversal_percentage";
+  }
+  if (
+    includesPhrase(normalized, "fleta") ||
+    includesPhrase(normalized, "deadlift")
+  ) {
+    return "fleta_deadlift_percentage";
+  }
+  if (
+    includesPhrase(normalized, "kills per ult") ||
+    includesPhrase(normalized, "kills per ultimate")
+  ) {
+    return "kills_per_ultimate";
+  }
+  return null;
+}
+
 function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   const filters: QueryFilter[] = [];
   const heroMentions = findHeroMentions(question);
@@ -2407,6 +2549,45 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   }
 
   if (dataset === "player_impact") {
+    for (const role of ["Tank", "Damage", "Support"]) {
+      const roleWord = normalize(role);
+      if (
+        includesPhrase(normalized, `${roleWord} players`) ||
+        includesPhrase(normalized, `${roleWord}s`) ||
+        includesPhrase(normalized, `${roleWord} role`) ||
+        includesPhrase(normalized, `for ${roleWord}`) ||
+        includesPhrase(normalized, `as ${roleWord}`)
+      ) {
+        const filter = filterFor(dataset, "role", role);
+        if (filter) filters.push(filter);
+      }
+    }
+  }
+
+  if (dataset === "player_trend") {
+    if (
+      includesPhrase(normalized, "improving") ||
+      includesPhrase(normalized, "improve") ||
+      includesPhrase(normalized, "improved") ||
+      includesPhrase(normalized, "trending up")
+    ) {
+      filters.push({ field: "direction", op: "in", value: ["improving"] });
+    } else if (
+      includesPhrase(normalized, "declining") ||
+      includesPhrase(normalized, "decline") ||
+      includesPhrase(normalized, "declined") ||
+      includesPhrase(normalized, "trending down")
+    ) {
+      filters.push({ field: "direction", op: "in", value: ["declining"] });
+    } else if (includesPhrase(normalized, "stable")) {
+      filters.push({ field: "direction", op: "in", value: ["stable"] });
+    }
+
+    const trendMetric = pickPlayerTrendMetric(normalized);
+    if (trendMetric) {
+      filters.push({ field: "metric", op: "in", value: [trendMetric] });
+    }
+
     for (const role of ["Tank", "Damage", "Support"]) {
       const roleWord = normalize(role);
       if (
@@ -2786,6 +2967,7 @@ function pickDimensions(
 
   if (
     (includesPhrase(normalized, "who") ||
+      includesPhrase(normalized, "whose") ||
       includesPhrase(normalized, "which player") ||
       includesPhrase(normalized, "which players")) &&
     !hasFilter("player")
@@ -2948,6 +3130,19 @@ function pickDimensions(
     !hasFilter("player")
   ) {
     add("player");
+  }
+  if (dataset === "player_trend" && dims.length === 0) {
+    if (
+      hasFilter("player") ||
+      includesPhrase(normalized, "what") ||
+      includesPhrase(normalized, "which metric") ||
+      includesPhrase(normalized, "which metrics") ||
+      includesPhrase(normalized, "at")
+    ) {
+      add("metric");
+    } else if (!hasFilter("player")) {
+      add("player");
+    }
   }
   if (dataset === "role_performance" && dims.length === 0) {
     if (!hasFilter("role")) add("role");

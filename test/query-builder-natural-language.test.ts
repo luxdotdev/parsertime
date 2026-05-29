@@ -806,6 +806,60 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans player trend improvement questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which players are improving the most?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_trend",
+      metrics: [{ metric: "improvement_percentage", agg: "avg" }],
+      dimensions: ["player"],
+      filters: [{ field: "direction", op: "in", value: ["improving"] }],
+      sort: { key: "avg__improvement_percentage", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans player trend decline questions for a specific metric", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Whose damage is declining?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_trend",
+      metrics: [{ metric: "improvement_percentage", agg: "avg" }],
+      dimensions: ["player"],
+      filters: [
+        { field: "direction", op: "in", value: ["declining"] },
+        { field: "metric", op: "in", value: ["hero_damage_per10"] },
+      ],
+      sort: { key: "avg__improvement_percentage", dir: "asc" },
+      limit: 20,
+    });
+  });
+
+  it("plans player-specific trend drilldown questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "What is PGE improving at?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_trend",
+      metrics: [{ metric: "improvement_percentage", agg: "avg" }],
+      dimensions: ["metric"],
+      filters: [
+        { field: "player", op: "in", value: ["PGE"] },
+        { field: "direction", op: "in", value: ["improving"] },
+      ],
+      sort: { key: "avg__improvement_percentage", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans enemy-hero matchup questions with hero filters", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,

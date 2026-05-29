@@ -20,6 +20,7 @@ export const DATASETS = [
   "map_intelligence",
   "player_map_performance",
   "player_impact",
+  "player_trend",
   "role_performance",
   "ult_economy",
   "duel",
