@@ -68,6 +68,41 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans environmental death rate questions by player", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 7,
+      question: "Who has the highest environmental deaths per 10?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_stat",
+      teamId: 7,
+      metrics: [{ metric: "environmental_deaths", agg: "per10" }],
+      dimensions: ["player"],
+      filters: [],
+      sort: { key: "per10__environmental_deaths", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans best-multikill questions with max aggregation", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 7,
+      question: "What is PGE's best multikill on Tracer?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_stat",
+      teamId: 7,
+      metrics: [{ metric: "multikill_best", agg: "max" }],
+      dimensions: [],
+      filters: [
+        { field: "hero", op: "in", value: ["Tracer"] },
+        { field: "player", op: "in", value: ["PGE"] },
+      ],
+    });
+  });
+
   it("plans extended fight winrate questions onto computed teamfight fields", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

@@ -160,6 +160,7 @@ const PLAYER_STAT_COLUMNS: {
   precision?: number;
   lowerIsBetter?: boolean;
   rateable?: boolean;
+  defaultAgg?: Aggregation;
 }[] = [
   {
     id: "eliminations",
@@ -256,6 +257,13 @@ const PLAYER_STAT_COLUMNS: {
     rateable: true,
   },
   {
+    id: "environmental_deaths",
+    label: "environmental deaths",
+    column: "environmental_deaths",
+    lowerIsBetter: true,
+    rateable: true,
+  },
+  {
     id: "ults_earned",
     label: "ultimates earned",
     column: "ultimates_earned",
@@ -272,6 +280,13 @@ const PLAYER_STAT_COLUMNS: {
     label: "multikills",
     column: "multikills",
     rateable: true,
+  },
+  {
+    id: "multikill_best",
+    label: "best multikill",
+    column: "multikill_best",
+    precision: 0,
+    defaultAgg: "max",
   },
   {
     id: "offensive_assists",
@@ -350,7 +365,7 @@ const playerStatMetrics: MetricDef[] = PLAYER_STAT_COLUMNS.map((c) => ({
   column: c.column,
   source: "base" as const,
   allowedAggs: c.rateable ? RATEABLE_AGGS : COUNTLESS_AGGS,
-  defaultAgg: "avg",
+  defaultAgg: c.defaultAgg ?? "avg",
   unit: c.unit,
   precision: c.precision ?? 1,
   lowerIsBetter: c.lowerIsBetter,

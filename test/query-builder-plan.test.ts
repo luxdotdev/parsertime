@@ -70,6 +70,26 @@ describe("query-builder compiler", () => {
     );
   });
 
+  it("compiles environmental death rates and max best-multikill stats", () => {
+    const spec = parse({
+      dataset: "player_stat",
+      teamId: 5,
+      metrics: [
+        { metric: "environmental_deaths", agg: "per10" },
+        { metric: "multikill_best", agg: "max" },
+      ],
+      dimensions: ["player"],
+    });
+    const { sql } = toExecutable(buildPlan(spec), [10]);
+
+    expect(sql).toContain(
+      '((SUM(fr."environmental_deaths")::numeric / NULLIF(SUM(fr."hero_time_played"), 0)) * 600)::float8 AS "per10__environmental_deaths"'
+    );
+    expect(sql).toContain(
+      '(MAX(fr."multikill_best"))::float8 AS "max__multikill_best"'
+    );
+  });
+
   it("scopes kill queries in the outer WHERE and counts rows", () => {
     const spec = parse({
       dataset: "kill",

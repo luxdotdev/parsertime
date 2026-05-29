@@ -80,6 +80,11 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "critical hit accuracy",
     "scoped accuracy",
     "scoped critical hit accuracy",
+    "environmental death",
+    "environmental deaths",
+    "best multikill",
+    "biggest multikill",
+    "multikill best",
     "widowmaker versus the time",
   ],
   calculated_stat: [
@@ -613,6 +618,13 @@ const METRIC_ALIASES: Record<string, string[]> = {
   all_damage: ["all damage", "total damage"],
   damage_taken: ["damage taken", "damage taken per 10"],
   healing: ["healing", "heals", "healing per 10"],
+  environmental_deaths: [
+    "environmental death",
+    "environmental deaths",
+    "boop deaths",
+    "booped deaths",
+  ],
+  multikill_best: ["best multikill", "biggest multikill", "multikill best"],
   ults_used: [
     "ults used",
     "ultimates used",
@@ -2207,10 +2219,17 @@ function pickMetricAgg(dataset: DatasetId, metricId: string, question: string) {
   return metric.defaultAgg;
 }
 
+function metricAliasCore(alias: string) {
+  return normalize(alias)
+    .replace(/\bper 10(?: minutes?)?\b/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   const normalized = normalize(question);
   const ds = getDataset(dataset);
-  const refs: MetricRef[] = [];
+  const matches: { ref: MetricRef; aliases: string[] }[] = [];
 
   for (const metric of ds.metrics) {
     const aliases = [
@@ -2218,11 +2237,36 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
       metric.label,
       ...(METRIC_ALIASES[metric.id] ?? []),
     ];
-    if (aliases.some((alias) => includesPhrase(normalized, alias))) {
+    const matchedAliases = aliases.filter((alias) =>
+      includesPhrase(normalized, alias)
+    );
+    if (matchedAliases.length > 0) {
       const agg = pickMetricAgg(dataset, metric.id, question);
-      if (agg) refs.push({ metric: metric.id, agg });
+      if (agg) matches.push({ ref: { metric: metric.id, agg }, aliases });
     }
   }
+
+  const refs = matches
+    .filter(({ aliases }, index) => {
+      const matchedAliases = aliases.filter((alias) =>
+        includesPhrase(normalized, alias)
+      );
+      return matchedAliases.some((alias) => {
+        const normalizedAlias = metricAliasCore(alias);
+        return !matches.some((other, otherIndex) => {
+          if (otherIndex === index) return false;
+          return other.aliases.some((otherAlias) => {
+            const normalizedOtherAlias = metricAliasCore(otherAlias);
+            return (
+              normalizedOtherAlias.length > normalizedAlias.length &&
+              includesPhrase(normalized, otherAlias) &&
+              includesPhrase(normalizedOtherAlias, normalizedAlias)
+            );
+          });
+        });
+      });
+    })
+    .map(({ ref }) => ref);
 
   if (
     dataset === "player_stat" &&
