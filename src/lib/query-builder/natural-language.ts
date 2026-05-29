@@ -630,6 +630,12 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "elims per ult",
     "eliminations per ultimate",
   ],
+  kills_per_ultimate: [
+    "kills per ult",
+    "kills per ultimate",
+    "elims per ult",
+    "eliminations per ultimate",
+  ],
   duel_winrate: ["duel winrate", "duel win rate", "duel rate"],
   fight_reversal: [
     "fight reversal",
@@ -637,6 +643,7 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "fight reversal rate",
   ],
   time_played: ["time played", "playtime", "played it", "played them"],
+  hero_time_played: ["time played", "playtime", "hero time played"],
   hero_damage: ["hero damage", "damage dealt", "damage per 10"],
   all_damage: ["all damage", "total damage"],
   damage_taken: ["damage taken", "damage taken per 10"],
@@ -4258,7 +4265,14 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       }
     }
   }
-  if (player) {
+  if (
+    player &&
+    !(
+      dataset === "player_impact" &&
+      player === "Impact" &&
+      includesPhrase(normalized, "player impact")
+    )
+  ) {
     const filter = filterFor(dataset, "player", player);
     if (filter) filters.push(filter);
   }
@@ -4785,6 +4799,128 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         if (filter) filters.push(filter);
       }
     }
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "consistency_score",
+          aliases: ["consistency", "consistency score", "stable score"],
+        },
+        {
+          field: "maps",
+          aliases: ["maps", "games", "maps played", "sample size"],
+        },
+        {
+          field: "eliminations_per10",
+          aliases: ["eliminations per 10", "elims per 10"],
+        },
+        {
+          field: "final_blows_per10",
+          aliases: ["final blows per 10", "finals per 10"],
+        },
+        {
+          field: "deaths_per10",
+          aliases: ["deaths per 10", "death rate"],
+        },
+        {
+          field: "hero_damage_per10",
+          aliases: ["hero damage per 10", "damage per 10"],
+        },
+        {
+          field: "all_damage_per10",
+          aliases: ["all damage per 10", "total damage per 10"],
+        },
+        {
+          field: "healing_per10",
+          aliases: ["healing per 10", "heals per 10"],
+        },
+        {
+          field: "damage_taken_per10",
+          aliases: ["damage taken per 10", "damage received per 10"],
+        },
+        {
+          field: "ults_used_per10",
+          aliases: ["ults used per 10", "ultimates used per 10"],
+        },
+        {
+          field: "first_pick_percentage",
+          aliases: ["first pick rate", "first pick percentage"],
+        },
+        {
+          field: "first_death_percentage",
+          aliases: ["first death rate", "first death percentage"],
+        },
+        {
+          field: "first_pick_count",
+          aliases: ["first picks", "first pick count"],
+        },
+        {
+          field: "first_death_count",
+          aliases: ["first deaths", "first death count"],
+        },
+        {
+          field: "first_picks_per10",
+          aliases: ["first picks per 10", "opening picks per 10"],
+        },
+        {
+          field: "first_deaths_per10",
+          aliases: ["first deaths per 10", "opening deaths per 10"],
+        },
+        {
+          field: "mvp_score",
+          aliases: ["mvp score", "mvp"],
+        },
+        {
+          field: "map_mvp_rate",
+          aliases: ["map mvp rate", "map mvp percentage"],
+        },
+        {
+          field: "map_mvp_count",
+          aliases: ["map mvps", "map mvp count"],
+        },
+        {
+          field: "kills_per_ultimate",
+          aliases: ["kills per ult", "kills per ultimate"],
+        },
+        {
+          field: "fight_reversal_percentage",
+          aliases: ["fight reversal", "fight reversal rate"],
+        },
+        {
+          field: "fleta_deadlift_percentage",
+          aliases: ["fleta deadlift", "deadlift percentage"],
+        },
+        {
+          field: "ajax_count",
+          aliases: ["ajax", "ajaxes", "ajax count"],
+        },
+        {
+          field: "ajax_per10",
+          aliases: ["ajax per 10", "ajaxes per 10"],
+        },
+        {
+          field: "eliminations_per10_stddev",
+          aliases: ["eliminations volatility", "elims volatility"],
+        },
+        {
+          field: "deaths_per10_stddev",
+          aliases: ["deaths volatility", "death volatility"],
+        },
+        {
+          field: "all_damage_per10_stddev",
+          aliases: ["damage volatility", "all damage volatility"],
+        },
+        {
+          field: "healing_per10_stddev",
+          aliases: ["healing volatility", "heals volatility"],
+        },
+      ]),
+      ...extractDurationThresholdFilters(dataset, normalized, [
+        {
+          field: "hero_time_played",
+          aliases: ["time played", "playtime", "hero time played", "played"],
+        },
+      ])
+    );
   }
 
   if (dataset === "player_trend") {
@@ -5820,7 +5956,10 @@ function pickDimensions(
   if (
     dataset === "player_impact" &&
     dims.length === 0 &&
-    !hasFilter("player")
+    (!hasFilter("player") ||
+      includesPhrase(normalized, "which players") ||
+      includesPhrase(normalized, "which player") ||
+      includesPhrase(normalized, "who"))
   ) {
     add("player");
   }

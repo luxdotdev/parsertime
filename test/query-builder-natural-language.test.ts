@@ -2023,6 +2023,56 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans player-impact aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Which Damage players have hero damage per 10 over 8000 with at least 5 maps and consistency score at least 80?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_impact",
+      dimensions: ["player"],
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([
+        { metric: "hero_damage_per10", agg: "ratio" },
+        { metric: "maps", agg: "sum" },
+        { metric: "consistency_score", agg: "avg" },
+      ])
+    );
+    expect(planned?.spec.filters).toEqual(
+      expect.arrayContaining([
+        { field: "role", op: "in", value: ["Damage"] },
+        { field: "hero_damage_per10", op: "gt", value: 8000 },
+        { field: "maps", op: "gte", value: 5 },
+        { field: "consistency_score", op: "gte", value: 80 },
+      ])
+    );
+  });
+
+  it("plans player-impact duration threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Which players have player impact kills per ult over 2 with at least 30 minutes played?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_impact",
+      dimensions: ["player"],
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([{ metric: "kills_per_ultimate", agg: "avg" }])
+    );
+    expect(planned?.spec.filters).toEqual(
+      expect.arrayContaining([
+        { field: "kills_per_ultimate", op: "gt", value: 2 },
+        { field: "hero_time_played", op: "gte", value: 1800 },
+      ])
+    );
+  });
+
   it("plans player trend improvement questions", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,

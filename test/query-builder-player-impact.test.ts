@@ -157,4 +157,29 @@ describe("computed aggregator (player impact)", () => {
     expect(rows.map((row) => row.player)).toEqual(["Landon", "PGE"]);
     expect(rows[0]["avg__healing_per10_stddev"]).toBe(1800);
   });
+
+  it("filters grouped player-impact metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      PLAYER_IMPACT_ROWS,
+      spec({
+        metrics: [
+          { metric: "hero_damage_per10", agg: "ratio" },
+          { metric: "maps", agg: "sum" },
+          { metric: "consistency_score", agg: "avg" },
+        ],
+        dimensions: ["player"],
+        filters: [
+          { field: "hero_damage_per10", op: "gt", value: 8000 },
+          { field: "maps", op: "gte", value: 8 },
+          { field: "consistency_score", op: "gte", value: 80 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].player).toBe("PGE");
+    expect(rows[0]["ratio__hero_damage_per10"]).toBe(9000);
+    expect(rows[0]["sum__maps"]).toBe(8);
+    expect(rows[0]["avg__consistency_score"]).toBe(82);
+  });
 });
