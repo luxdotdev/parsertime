@@ -38,6 +38,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   map_result: "win_rate",
   map_intelligence: "weighted_win_rate",
   player_map_performance: "win_rate",
+  player_impact: "consistency_score",
   role_performance: "win_rate",
   ult_economy: "win_rate",
   duel: "win_rate",
@@ -280,6 +281,24 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "best players on map",
     "perform best on",
     "performance on",
+  ],
+  player_impact: [
+    "player impact",
+    "impact metrics",
+    "consistency",
+    "consistent",
+    "most consistent",
+    "least consistent",
+    "volatile",
+    "volatility",
+    "variance",
+    "standard deviation",
+    "stddev",
+    "swingy",
+    "streaky",
+    "map mvp rate",
+    "kills per ultimate",
+    "kills per ult",
   ],
   role_performance: [
     "role performance",
@@ -648,6 +667,27 @@ const METRIC_ALIASES: Record<string, string[]> = {
   ],
   recent_win_rate: ["recent win rate", "recent form", "last 10 win rate"],
   trend_delta: ["trend delta", "recent delta", "change", "improvement"],
+  consistency_score: [
+    "consistency",
+    "consistent",
+    "consistency score",
+    "steady",
+    "stable output",
+  ],
+  eliminations_per10_stddev: [
+    "eliminations volatility",
+    "elims volatility",
+    "eliminations standard deviation",
+  ],
+  deaths_per10_stddev: ["deaths volatility", "deaths standard deviation"],
+  all_damage_per10_stddev: [
+    "damage volatility",
+    "damage standard deviation",
+    "volatile damage",
+  ],
+  map_mvp_rate: ["map mvp rate", "map mvp percentage"],
+  fleta_deadlift_percentage: ["fleta deadlift", "fleta deadlift percentage"],
+  fight_reversal_percentage: ["fight reversal", "fight reversal percentage"],
   length: ["length", "streak length", "streak count"],
   fights: ["fights", "teamfights", "team fights"],
   duration: [
@@ -1354,6 +1394,23 @@ function mentionsPlayerIntelligenceContext(normalized: string): boolean {
   );
 }
 
+function mentionsPlayerImpactContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "player impact") ||
+    includesPhrase(normalized, "impact metrics") ||
+    includesPhrase(normalized, "consistency") ||
+    includesPhrase(normalized, "consistent") ||
+    includesPhrase(normalized, "volatile") ||
+    includesPhrase(normalized, "volatility") ||
+    includesPhrase(normalized, "variance") ||
+    includesPhrase(normalized, "standard deviation") ||
+    includesPhrase(normalized, "stddev") ||
+    includesPhrase(normalized, "swingy") ||
+    includesPhrase(normalized, "streaky") ||
+    includesPhrase(normalized, "map mvp rate")
+  );
+}
+
 function mentionsCalculatedStatContext(normalized: string): boolean {
   const wantsPlayerDuelStat =
     (includesPhrase(normalized, "duel winrate") ||
@@ -1398,6 +1455,7 @@ function pickDataset(question: string): DatasetId {
   const heroMentions = findHeroMentions(question);
   const player = findPlayer(question, heroMentions[0]?.hero ?? null);
   if (mentionsOpeningKillContext(normalized)) return "opening_kill";
+  if (mentionsPlayerImpactContext(normalized)) return "player_impact";
   if (mentionsCalculatedStatContext(normalized)) return "calculated_stat";
   if (mentionsStreakContext(normalized)) return "streak";
   if (mentionsMapIntelligenceContext(normalized)) return "map_intelligence";
@@ -2348,6 +2406,22 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
   }
 
+  if (dataset === "player_impact") {
+    for (const role of ["Tank", "Damage", "Support"]) {
+      const roleWord = normalize(role);
+      if (
+        includesPhrase(normalized, `${roleWord} players`) ||
+        includesPhrase(normalized, `${roleWord}s`) ||
+        includesPhrase(normalized, `${roleWord} role`) ||
+        includesPhrase(normalized, `for ${roleWord}`) ||
+        includesPhrase(normalized, `as ${roleWord}`)
+      ) {
+        const filter = filterFor(dataset, "role", role);
+        if (filter) filters.push(filter);
+      }
+    }
+  }
+
   if (dataset === "ult_economy") {
     const bucket = pickUltEconomyBucket(normalized);
     if (bucket) {
@@ -2868,6 +2942,13 @@ function pickDimensions(
     if (!hasFilter("player")) add("player");
     if (!hasFilter("map")) add("map");
   }
+  if (
+    dataset === "player_impact" &&
+    dims.length === 0 &&
+    !hasFilter("player")
+  ) {
+    add("player");
+  }
   if (dataset === "role_performance" && dims.length === 0) {
     if (!hasFilter("role")) add("role");
   }
@@ -2967,6 +3048,9 @@ function pickSort(
     !includesPhrase(normalized, "forced off") &&
     !includesPhrase(normalized, "improving") &&
     !includesPhrase(normalized, "declining") &&
+    !includesPhrase(normalized, "consistent") &&
+    !includesPhrase(normalized, "volatile") &&
+    !includesPhrase(normalized, "volatility") &&
     !(
       dataset === "hero_pickrate" &&
       (includesPhrase(normalized, "owns") ||
@@ -2998,6 +3082,9 @@ function pickSort(
     includesPhrase(normalized, "one-trick") ||
     includesPhrase(normalized, "forced off") ||
     includesPhrase(normalized, "improving") ||
+    includesPhrase(normalized, "consistent") ||
+    includesPhrase(normalized, "volatile") ||
+    includesPhrase(normalized, "volatility") ||
     (dataset === "ability_timing" &&
       (includesPhrase(normalized, "when should") ||
         includesPhrase(normalized, "when to use") ||

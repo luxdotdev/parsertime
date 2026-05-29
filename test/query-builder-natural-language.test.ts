@@ -776,6 +776,36 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans player-impact consistency questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Who is our most consistent player?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_impact",
+      metrics: [{ metric: "consistency_score", agg: "avg" }],
+      dimensions: ["player"],
+      sort: { key: "avg__consistency_score", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans player-impact volatility questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which players have the most volatile damage per 10?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_impact",
+      metrics: [{ metric: "all_damage_per10_stddev", agg: "avg" }],
+      dimensions: ["player"],
+      sort: { key: "avg__all_damage_per10_stddev", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans enemy-hero matchup questions with hero filters", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,
