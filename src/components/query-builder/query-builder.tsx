@@ -480,6 +480,7 @@ const DEFAULT_METRIC: Record<DraftSpec["dataset"], string> = {
   player_map_performance: "win_rate",
   player_impact: "consistency_score",
   player_trend: "improvement_percentage",
+  player_outlier: "abs_z_score",
   role_performance: "win_rate",
   ult_economy: "win_rate",
   duel: "win_rate",

@@ -860,6 +860,44 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans player outlier questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which players are damage outliers?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_outlier",
+      metrics: [{ metric: "abs_z_score", agg: "max" }],
+      dimensions: ["player"],
+      filters: [
+        { field: "outlier", op: "eq", value: "yes" },
+        { field: "stat", op: "in", value: ["hero_damage_dealt"] },
+      ],
+      sort: { key: "max__abs_z_score", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans player-specific baseline drilldown questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which stats is PGE far below hero baseline on?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_outlier",
+      metrics: [{ metric: "abs_z_score", agg: "max" }],
+      dimensions: ["stat"],
+      filters: [
+        { field: "player", op: "in", value: ["PGE"] },
+        { field: "direction", op: "in", value: ["low"] },
+      ],
+      sort: { key: "max__abs_z_score", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans enemy-hero matchup questions with hero filters", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,

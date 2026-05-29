@@ -40,6 +40,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   player_map_performance: "win_rate",
   player_impact: "consistency_score",
   player_trend: "improvement_percentage",
+  player_outlier: "abs_z_score",
   role_performance: "win_rate",
   ult_economy: "win_rate",
   duel: "win_rate",
@@ -316,6 +317,19 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "trending down",
     "what is improving",
     "what are improving",
+  ],
+  player_outlier: [
+    "outlier",
+    "outliers",
+    "z score",
+    "z-score",
+    "hero baseline",
+    "baseline",
+    "percentile",
+    "far above",
+    "far below",
+    "above baseline",
+    "below baseline",
   ],
   role_performance: [
     "role performance",
@@ -694,6 +708,17 @@ const METRIC_ALIASES: Record<string, string[]> = {
   raw_change: ["raw change", "late minus early"],
   early_value: ["early value", "early sample", "first half"],
   late_value: ["late value", "late sample", "second half"],
+  abs_z_score: [
+    "outlier",
+    "outliers",
+    "absolute z score",
+    "absolute z-score",
+    "distance from baseline",
+  ],
+  z_score: ["z score", "z-score", "above baseline", "below baseline"],
+  percentile: ["percentile", "hero percentile"],
+  per10_value: ["per 10 value", "actual per 10"],
+  baseline_per10: ["baseline", "baseline per 10", "hero baseline"],
   consistency_score: [
     "consistency",
     "consistent",
@@ -996,6 +1021,9 @@ function findPlayer(question: string, hero: string | null): string | null {
     ...question.matchAll(
       /\b(?:with|alongside)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\b/gi
     ),
+    ...question.matchAll(
+      /\b(?:is|was|are|were)\s+([A-Z][A-Za-z0-9_.-]{1,})\b/g
+    ),
     ...question.matchAll(/\b([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:has|had)\b/gi),
     ...question.matchAll(
       /\b([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:dies|died|die|gets|got)\b/gi
@@ -1127,6 +1155,23 @@ function mentionsPlayerTrendContext(normalized: string): boolean {
     includesPhrase(normalized, "map mode");
 
   return trendIntent && playerContext && !mapContext;
+}
+
+function mentionsPlayerOutlierContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "outlier") ||
+    includesPhrase(normalized, "outliers") ||
+    includesPhrase(normalized, "hero baseline") ||
+    includesPhrase(normalized, "above baseline") ||
+    includesPhrase(normalized, "below baseline") ||
+    includesPhrase(normalized, "far above") ||
+    includesPhrase(normalized, "far below") ||
+    (includesPhrase(normalized, "percentile") &&
+      (includesPhrase(normalized, "player") ||
+        includesPhrase(normalized, "players") ||
+        includesPhrase(normalized, "who") ||
+        includesPhrase(normalized, "whose")))
+  );
 }
 
 function mentionsStreakContext(normalized: string): boolean {
@@ -1532,6 +1577,7 @@ function pickDataset(question: string): DatasetId {
   ) {
     return "player_trend";
   }
+  if (mentionsPlayerOutlierContext(normalized)) return "player_outlier";
   if (mentionsPlayerImpactContext(normalized)) return "player_impact";
   if (mentionsCalculatedStatContext(normalized)) return "calculated_stat";
   if (mentionsStreakContext(normalized)) return "streak";
@@ -1866,6 +1912,26 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
         a.metric === priority ? -1 : b.metric === priority ? 1 : 0
       );
     }
+  }
+  if (
+    dataset === "player_outlier" &&
+    (includesPhrase(normalized, "outlier") ||
+      includesPhrase(normalized, "outliers") ||
+      includesPhrase(normalized, "far above") ||
+      includesPhrase(normalized, "far below") ||
+      includesPhrase(normalized, "above baseline") ||
+      includesPhrase(normalized, "below baseline"))
+  ) {
+    for (let i = deduped.length - 1; i >= 0; i--) {
+      if (deduped[i].metric === "baseline_per10") deduped.splice(i, 1);
+    }
+    if (!deduped.some((ref) => ref.metric === "abs_z_score")) {
+      const agg = pickMetricAgg(dataset, "abs_z_score", question);
+      if (agg) deduped.unshift({ metric: "abs_z_score", agg });
+    }
+    deduped.sort((a, b) =>
+      a.metric === "abs_z_score" ? -1 : b.metric === "abs_z_score" ? 1 : 0
+    );
   }
   if (dataset === "role_performance") {
     const per10ToRaw: Record<string, string> = {
@@ -2374,6 +2440,42 @@ function pickPlayerTrendMetric(normalized: string): string | null {
   return null;
 }
 
+function pickPlayerOutlierStat(normalized: string): string | null {
+  if (
+    includesPhrase(normalized, "damage blocked") ||
+    includesPhrase(normalized, "mitigation") ||
+    includesPhrase(normalized, "mitigated")
+  ) {
+    return "damage_blocked";
+  }
+  if (
+    includesPhrase(normalized, "hero damage") ||
+    includesPhrase(normalized, "damage dealt") ||
+    includesPhrase(normalized, "damage")
+  ) {
+    return "hero_damage_dealt";
+  }
+  if (
+    includesPhrase(normalized, "healing") ||
+    includesPhrase(normalized, "heals")
+  ) {
+    return "healing_dealt";
+  }
+  if (
+    includesPhrase(normalized, "deaths") ||
+    includesPhrase(normalized, "death")
+  ) {
+    return "deaths";
+  }
+  if (
+    includesPhrase(normalized, "eliminations") ||
+    includesPhrase(normalized, "elims")
+  ) {
+    return "eliminations";
+  }
+  return null;
+}
+
 function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   const filters: QueryFilter[] = [];
   const heroMentions = findHeroMentions(question);
@@ -2586,6 +2688,47 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     const trendMetric = pickPlayerTrendMetric(normalized);
     if (trendMetric) {
       filters.push({ field: "metric", op: "in", value: [trendMetric] });
+    }
+
+    for (const role of ["Tank", "Damage", "Support"]) {
+      const roleWord = normalize(role);
+      if (
+        includesPhrase(normalized, `${roleWord} players`) ||
+        includesPhrase(normalized, `${roleWord}s`) ||
+        includesPhrase(normalized, `${roleWord} role`) ||
+        includesPhrase(normalized, `for ${roleWord}`) ||
+        includesPhrase(normalized, `as ${roleWord}`)
+      ) {
+        const filter = filterFor(dataset, "role", role);
+        if (filter) filters.push(filter);
+      }
+    }
+  }
+
+  if (dataset === "player_outlier") {
+    if (
+      includesPhrase(normalized, "outlier") ||
+      includesPhrase(normalized, "outliers")
+    ) {
+      filters.push({ field: "outlier", op: "eq", value: "yes" });
+    }
+    if (
+      includesPhrase(normalized, "above baseline") ||
+      includesPhrase(normalized, "far above") ||
+      includesPhrase(normalized, "high")
+    ) {
+      filters.push({ field: "direction", op: "in", value: ["high"] });
+    } else if (
+      includesPhrase(normalized, "below baseline") ||
+      includesPhrase(normalized, "far below") ||
+      includesPhrase(normalized, "low")
+    ) {
+      filters.push({ field: "direction", op: "in", value: ["low"] });
+    }
+
+    const outlierStat = pickPlayerOutlierStat(normalized);
+    if (outlierStat) {
+      filters.push({ field: "stat", op: "in", value: [outlierStat] });
     }
 
     for (const role of ["Tank", "Damage", "Support"]) {
@@ -3144,6 +3287,19 @@ function pickDimensions(
       add("player");
     }
   }
+  if (dataset === "player_outlier" && dims.length === 0) {
+    if (
+      hasFilter("player") ||
+      includesPhrase(normalized, "which stat") ||
+      includesPhrase(normalized, "which stats") ||
+      includesPhrase(normalized, "what stat") ||
+      includesPhrase(normalized, "what stats")
+    ) {
+      add("stat");
+    } else if (!hasFilter("player")) {
+      add("player");
+    }
+  }
   if (dataset === "role_performance" && dims.length === 0) {
     if (!hasFilter("role")) add("role");
   }
@@ -3243,6 +3399,10 @@ function pickSort(
     !includesPhrase(normalized, "forced off") &&
     !includesPhrase(normalized, "improving") &&
     !includesPhrase(normalized, "declining") &&
+    !includesPhrase(normalized, "outlier") &&
+    !includesPhrase(normalized, "outliers") &&
+    !includesPhrase(normalized, "far above") &&
+    !includesPhrase(normalized, "far below") &&
     !includesPhrase(normalized, "consistent") &&
     !includesPhrase(normalized, "volatile") &&
     !includesPhrase(normalized, "volatility") &&
@@ -3277,6 +3437,10 @@ function pickSort(
     includesPhrase(normalized, "one-trick") ||
     includesPhrase(normalized, "forced off") ||
     includesPhrase(normalized, "improving") ||
+    includesPhrase(normalized, "outlier") ||
+    includesPhrase(normalized, "outliers") ||
+    includesPhrase(normalized, "far above") ||
+    includesPhrase(normalized, "far below") ||
     includesPhrase(normalized, "consistent") ||
     includesPhrase(normalized, "volatile") ||
     includesPhrase(normalized, "volatility") ||
