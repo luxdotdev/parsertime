@@ -126,14 +126,20 @@ describe("query-builder compiler", () => {
       teamId: 3,
       metrics: [{ metric: "first_pick_pct", agg: "avg" }],
       dimensions: ["player"],
-      filters: [{ field: "first_pick_pct", op: "gt", value: 25 }],
+      filters: [
+        { field: "first_pick_pct", op: "gt", value: 25 },
+        { field: "first_death_pct", op: "lt", value: 10 },
+      ],
     });
     const { sql, params } = toExecutable(buildPlan(spec), [1]);
 
     expect(sql).toContain(
-      `cs."stat" = 'FIRST_PICK_PERCENTAGE'::"CalculatedStatType" AND cs."value" > $2`
+      `HAVING AVG(cs."value") FILTER (WHERE cs."stat" = 'FIRST_PICK_PERCENTAGE'::"CalculatedStatType") > $2`
     );
-    expect(params).toEqual([1, 25]);
+    expect(sql).toContain(
+      `AVG(cs."value") FILTER (WHERE cs."stat" = 'FIRST_DEATH_PERCENTAGE'::"CalculatedStatType") < $3`
+    );
+    expect(params).toEqual([1, 25, 10]);
   });
 
   it("joins MatchStart for map-type dimensions and casts the enum to text", () => {

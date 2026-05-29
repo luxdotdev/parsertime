@@ -67,6 +67,8 @@ export type FilterDef = {
   unit?: string;
   /** CalculatedStat metric filters: constrain value comparisons to this stat. */
   statType?: string;
+  /** CalculatedStat metric filters: compare the grouped aggregate value. */
+  aggregate?: Aggregation;
 };
 
 export type DatasetDef = {
@@ -591,6 +593,7 @@ const calculatedStatFilters: FilterDef[] = CALC_METRICS.map((c) => ({
   operators: ["gte", "gt", "lte", "lt"],
   unit: c.unit,
   statType: c.statType,
+  aggregate: c.agg,
 }));
 
 // --- Kill metrics -----------------------------------------------------------

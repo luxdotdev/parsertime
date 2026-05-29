@@ -94,6 +94,7 @@ export type QueryPlan = {
   selections: PlanSelection[];
   dimensionCount: number;
   whereClauses: WhereClause[];
+  havingClauses: WhereClause[];
   orderBy: { key: string; dir: "asc" | "desc" } | null;
   limit: number;
   tables: string[];
@@ -153,18 +154,12 @@ function buildWhereClause(
   baseAlias: string
 ): WhereClause {
   const ref = columnRef(filter.source, filter.column, baseAlias);
-  const statScope = filter.statType
-    ? `${baseAlias}."stat" = '${filter.statType}'::"CalculatedStatType" AND `
-    : "";
   if (spec.op === "in" || spec.op === "nin") {
     const values = Array.isArray(spec.value) ? spec.value : [spec.value];
     if (values.length === 0) return { sql: "TRUE", params: [] };
     const placeholders = values.map(() => "?").join(", ");
     const keyword = spec.op === "nin" ? "NOT IN" : "IN";
-    return {
-      sql: `${statScope}${ref} ${keyword} (${placeholders})`,
-      params: values,
-    };
+    return { sql: `${ref} ${keyword} (${placeholders})`, params: values };
   }
   const single = Array.isArray(spec.value) ? spec.value[0] : spec.value;
   const opSql: Record<string, string> = {
@@ -175,7 +170,34 @@ function buildWhereClause(
     lt: "<",
     lte: "<=",
   };
-  return { sql: `${statScope}${ref} ${opSql[spec.op]} ?`, params: [single] };
+  return { sql: `${ref} ${opSql[spec.op]} ?`, params: [single] };
+}
+
+function buildHavingClause(
+  filter: FilterDef,
+  spec: QueryFilter,
+  baseAlias: string
+): WhereClause {
+  if (!filter.statType) return buildWhereClause(filter, spec, baseAlias);
+  const fn = (filter.aggregate ?? "avg").toUpperCase();
+  const expr = `${fn}(${baseAlias}."value") FILTER (WHERE ${baseAlias}."stat" = '${filter.statType}'::"CalculatedStatType")`;
+  if (spec.op === "in" || spec.op === "nin") {
+    const values = Array.isArray(spec.value) ? spec.value : [spec.value];
+    if (values.length === 0) return { sql: "TRUE", params: [] };
+    const placeholders = values.map(() => "?").join(", ");
+    const keyword = spec.op === "nin" ? "NOT IN" : "IN";
+    return { sql: `${expr} ${keyword} (${placeholders})`, params: values };
+  }
+  const single = Array.isArray(spec.value) ? spec.value[0] : spec.value;
+  const opSql: Record<string, string> = {
+    eq: "=",
+    neq: "<>",
+    gt: ">",
+    gte: ">=",
+    lt: "<",
+    lte: "<=",
+  };
+  return { sql: `${expr} ${opSql[spec.op]} ?`, params: [single] };
 }
 
 export function buildPlan(spec: QuerySpec): QueryPlan {
@@ -230,6 +252,7 @@ export function buildPlan(spec: QuerySpec): QueryPlan {
   }
 
   const whereClauses: WhereClause[] = [];
+  const havingClauses: WhereClause[] = [];
   for (const f of spec.filters) {
     const filter = getFilter(spec.dataset, f.field);
     if (!filter) throw new Error(`Unknown filter: ${f.field}`);
@@ -238,7 +261,11 @@ export function buildPlan(spec: QuerySpec): QueryPlan {
     }
     if (filter.source === "match_start") joins.matchStart = true;
     tables.add(filter.table);
-    whereClauses.push(buildWhereClause(filter, f, baseAlias));
+    if (filter.statType) {
+      havingClauses.push(buildHavingClause(filter, f, baseAlias));
+    } else {
+      whereClauses.push(buildWhereClause(filter, f, baseAlias));
+    }
   }
 
   if (joins.scrim) tables.add("Scrim");
@@ -261,6 +288,7 @@ export function buildPlan(spec: QuerySpec): QueryPlan {
     selections,
     dimensionCount: spec.dimensions.length,
     whereClauses,
+    havingClauses,
     orderBy,
     limit: spec.limit ?? 1000,
     tables: Array.from(tables),
@@ -364,10 +392,20 @@ export function toExecutable(
     }
     where.push(sql);
   }
+  const having: string[] = [];
+  for (const clause of plan.havingClauses) {
+    let sql = clause.sql;
+    for (const p of clause.params) {
+      sql = sql.replace("?", next());
+      params.push(p);
+    }
+    having.push(sql);
+  }
 
   const whereSql = where.length ? `\nWHERE ${where.join("\n  AND ")}` : "";
+  const havingSql = having.length ? `\nHAVING ${having.join("\n  AND ")}` : "";
 
-  const sql = `${cte}SELECT\n${selectSql(plan)}\n${from}${joinSql(plan)}${whereSql}${groupBySql(plan)}${orderLimitSql(plan)}`;
+  const sql = `${cte}SELECT\n${selectSql(plan)}\n${from}${joinSql(plan)}${whereSql}${groupBySql(plan)}${havingSql}${orderLimitSql(plan)}`;
   return { sql, params };
 }
 
@@ -410,9 +448,16 @@ export function renderDisplaySql(
     for (const p of clause.params) sql = sql.replace("?", literal(p));
     where.push(sql);
   }
+  const having: string[] = [];
+  for (const clause of plan.havingClauses) {
+    let sql = clause.sql;
+    for (const p of clause.params) sql = sql.replace("?", literal(p));
+    having.push(sql);
+  }
   const whereSql = where.length ? `\nWHERE ${where.join("\n  AND ")}` : "";
+  const havingSql = having.length ? `\nHAVING ${having.join("\n  AND ")}` : "";
 
-  return `${cte}SELECT\n${selectSql(plan)}\n${from}${joinSql(plan)}${whereSql}${groupBySql(plan)}${orderLimitSql(plan)}`;
+  return `${cte}SELECT\n${selectSql(plan)}\n${from}${joinSql(plan)}${whereSql}${groupBySql(plan)}${havingSql}${orderLimitSql(plan)}`;
 }
 
 /** A compact, human-readable summary of one selection for the hover layer. */

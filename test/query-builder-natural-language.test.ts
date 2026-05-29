@@ -529,6 +529,23 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans multiple calculated-stat threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "Which players have first pick rate over 25% and first death rate below 10%?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "calculated_stat",
+      dimensions: ["player"],
+      filters: [
+        { field: "first_pick_pct", op: "gt", value: 25 },
+        { field: "first_death_pct", op: "lt", value: 10 },
+      ],
+    });
+  });
+
   it("plans calculated-stat duration threshold filters", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,
