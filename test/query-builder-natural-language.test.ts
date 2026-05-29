@@ -16,6 +16,7 @@ describe("query-builder natural-language planner", () => {
       metrics: [
         { metric: "final_blows", agg: "sum" },
         { metric: "time_played", agg: "sum" },
+        { metric: "final_blows", agg: "per10" },
       ],
       dimensions: [],
       filters: [
@@ -25,6 +26,28 @@ describe("query-builder natural-language planner", () => {
       timeScope: { kind: "all" },
       sort: null,
       limit: null,
+    });
+  });
+
+  it("plans rateable player stats versus playtime as raw, time, and per-10 metrics", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 7,
+      question: "Show PGE's hero damage compared to playtime on Tracer",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_stat",
+      teamId: 7,
+      metrics: [
+        { metric: "hero_damage", agg: "sum" },
+        { metric: "time_played", agg: "sum" },
+        { metric: "hero_damage", agg: "per10" },
+      ],
+      dimensions: [],
+      filters: [
+        { field: "hero", op: "in", value: ["Tracer"] },
+        { field: "player", op: "in", value: ["PGE"] },
+      ],
     });
   });
 

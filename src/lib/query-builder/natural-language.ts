@@ -1308,6 +1308,31 @@ function mentionsPlayerOutlierContext(normalized: string): boolean {
   );
 }
 
+function mentionsStatVersusPlaytimeContext(normalized: string): boolean {
+  return (
+    (includesPhrase(normalized, "versus time") ||
+      /\b(?:versus|vs|against)\s+(?:the\s+)?(?:time|playtime)\b/.test(
+        normalized
+      ) ||
+      includesPhrase(normalized, "vs time") ||
+      includesPhrase(normalized, "against time") ||
+      includesPhrase(normalized, "compared to time") ||
+      /\b(?:compared|relative)\s+to\s+(?:the\s+)?(?:time|playtime)\b/.test(
+        normalized
+      ) ||
+      includesPhrase(normalized, "relative to time") ||
+      includesPhrase(normalized, "relative to playtime") ||
+      includesPhrase(normalized, "compared to playtime") ||
+      includesPhrase(normalized, "versus playtime") ||
+      includesPhrase(normalized, "vs playtime")) &&
+    (includesPhrase(normalized, "time played") ||
+      includesPhrase(normalized, "playtime") ||
+      includesPhrase(normalized, "played it") ||
+      includesPhrase(normalized, "played them") ||
+      includesPhrase(normalized, "time"))
+  );
+}
+
 function mentionsPlayerTargetContext(normalized: string): boolean {
   return (
     includesPhrase(normalized, "player target") ||
@@ -2092,6 +2117,35 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
       deduped.sort((a, b) =>
         a.metric.endsWith("_per10") ? -1 : b.metric.endsWith("_per10") ? 1 : 0
       );
+    }
+  }
+  if (
+    dataset === "player_stat" &&
+    mentionsStatVersusPlaytimeContext(normalized)
+  ) {
+    for (const ref of deduped) {
+      if (ref.metric === "time_played" || ref.metric === "maps") continue;
+      const metric = getMetric(dataset, ref.metric);
+      if (ref.agg === "avg" && metric?.allowedAggs.includes("sum")) {
+        ref.agg = "sum";
+      }
+    }
+    const rateableRefs = deduped.filter((ref) => {
+      if (ref.metric === "time_played" || ref.metric === "maps") return false;
+      return getMetric(dataset, ref.metric)?.allowedAggs.includes("per10");
+    });
+    for (const ref of rateableRefs) {
+      if (
+        !deduped.some(
+          (candidate) =>
+            candidate.metric === ref.metric && candidate.agg === "per10"
+        )
+      ) {
+        deduped.push({ metric: ref.metric, agg: "per10" });
+      }
+    }
+    if (!deduped.some((ref) => ref.metric === "time_played")) {
+      deduped.push({ metric: "time_played", agg: "sum" });
     }
   }
   if (
