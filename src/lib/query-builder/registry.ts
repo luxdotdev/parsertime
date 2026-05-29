@@ -2045,6 +2045,15 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         ],
       },
       {
+        id: "map",
+        label: "map",
+        table: "SwapImpact",
+        column: "map",
+        source: "base",
+        valueType: "text",
+        operators: ["in", "nin"],
+      },
+      {
         id: "map_type",
         label: "map type",
         table: "SwapImpact",
@@ -3470,6 +3479,15 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
           { value: "win", label: "win" },
           { value: "loss", label: "loss" },
         ],
+      },
+      {
+        id: "map",
+        label: "map",
+        table: "TrendResult",
+        column: "map",
+        source: "base",
+        valueType: "text",
+        operators: ["in", "nin"],
       },
       {
         id: "day_of_week",

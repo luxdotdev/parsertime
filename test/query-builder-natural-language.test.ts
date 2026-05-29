@@ -124,6 +124,37 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans specific-map swap questions onto swap impact", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "What is our win rate when we swap on King's Row?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "swap_impact",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["swap_count_bucket"],
+      filters: [
+        { field: "map", op: "in", value: ["King's Row"] },
+        { field: "had_swap", op: "eq", value: "yes" },
+      ],
+    });
+  });
+
+  it("plans specific-map recent form questions onto trends", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "What is our recent form on King's Row?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "trend",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["date"],
+      filters: [{ field: "map", op: "in", value: ["King's Row"] }],
+    });
+  });
+
   it("plans ult-economy advantage questions onto advantage buckets", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

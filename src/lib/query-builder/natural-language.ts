@@ -668,6 +668,26 @@ function mentionsFightContext(normalized: string): boolean {
   );
 }
 
+function mentionsTrendContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "trend") ||
+    includesPhrase(normalized, "trends") ||
+    includesPhrase(normalized, "over time") ||
+    includesPhrase(normalized, "recent form") ||
+    includesPhrase(normalized, "last 5 maps") ||
+    includesPhrase(normalized, "last 10 maps") ||
+    includesPhrase(normalized, "last 20 maps") ||
+    includesPhrase(normalized, "last five") ||
+    includesPhrase(normalized, "last ten") ||
+    includesPhrase(normalized, "weekly") ||
+    includesPhrase(normalized, "by week") ||
+    includesPhrase(normalized, "monthly") ||
+    includesPhrase(normalized, "by month") ||
+    includesPhrase(normalized, "day of week") ||
+    includesPhrase(normalized, "by day")
+  );
+}
+
 function mentionsTeamfightUltContext(normalized: string): boolean {
   return (
     includesPhrase(normalized, "first ult") ||
@@ -746,6 +766,7 @@ function pickDataset(question: string): DatasetId {
   const normalized = normalize(question);
   const mapName = findMapName(question);
   if (mentionsCalculatedStatContext(normalized)) return "calculated_stat";
+  if (mentionsTrendContext(normalized)) return "trend";
   if (findAbility(question)) return "ability_impact";
 
   const mentionsUlt =
@@ -811,6 +832,15 @@ function pickDataset(question: string): DatasetId {
 
     if (mentionsFightContext(normalized)) {
       return "teamfight";
+    }
+
+    if (
+      includesPhrase(normalized, "swap") ||
+      includesPhrase(normalized, "swaps") ||
+      includesPhrase(normalized, "swapped") ||
+      includesPhrase(normalized, "swapping")
+    ) {
+      return "swap_impact";
     }
 
     if (

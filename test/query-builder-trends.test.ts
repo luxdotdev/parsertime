@@ -73,6 +73,19 @@ describe("computed aggregator (trends)", () => {
     expect(rows[0]["count__maps"]).toBe(2);
   });
 
+  it("filters recent form questions to a specific map", () => {
+    const { rows } = aggregateComputed(
+      TREND_ROWS,
+      spec({
+        filters: [{ field: "map", op: "in", value: ["King's Row"] }],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]["avg__win_rate"]).toBe(0);
+    expect(rows[0]["count__maps"]).toBe(1);
+  });
+
   it("groups win rate by week", () => {
     const { rows } = aggregateComputed(
       TREND_ROWS,

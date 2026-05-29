@@ -69,4 +69,20 @@ describe("computed aggregator (swap impact)", () => {
     expect(bySwap.no["count__maps"]).toBe(1);
     expect(bySwap.no["avg__win_rate"]).toBe(100);
   });
+
+  it("filters swap impact questions to a specific map", () => {
+    const { rows } = aggregateComputed(
+      MAPS,
+      spec({
+        filters: [
+          { field: "map", op: "in", value: ["King's Row"] },
+          { field: "had_swap", op: "eq", value: "yes" },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]["avg__win_rate"]).toBe(0);
+    expect(rows[0]["count__maps"]).toBe(1);
+  });
 });
