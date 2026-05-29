@@ -1123,6 +1123,18 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         precision: 2,
         lowerIsBetter: true,
       },
+      {
+        id: "duration",
+        label: "fight duration",
+        description: "Length of each detected teamfight in seconds",
+        table: "Teamfight",
+        column: "duration",
+        source: "base",
+        allowedAggs: ["avg", "max", "min"],
+        defaultAgg: "avg",
+        unit: "s",
+        precision: 1,
+      },
     ],
     dimensions: [
       {

@@ -107,6 +107,19 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans average fight-duration questions onto teamfights", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "What is our average fight duration by map type?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "duration", agg: "avg" }],
+      dimensions: ["map_type"],
+    });
+  });
+
   it("plans specific-map enemy hero questions onto enemy matchups", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

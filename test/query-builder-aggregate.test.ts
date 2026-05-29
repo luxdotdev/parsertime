@@ -8,6 +8,7 @@ import { describe, expect, it } from "vitest";
 const FIGHTS: ComputedRow[] = [
   {
     won: 1,
+    duration: 18,
     ults_used: 2,
     wasted_ults: 0,
     result: "win",
@@ -19,6 +20,7 @@ const FIGHTS: ComputedRow[] = [
   },
   {
     won: 0,
+    duration: 24,
     ults_used: 2,
     wasted_ults: 1,
     result: "loss",
@@ -30,6 +32,7 @@ const FIGHTS: ComputedRow[] = [
   },
   {
     won: 1,
+    duration: 12,
     ults_used: 2,
     wasted_ults: 0,
     result: "win",
@@ -41,6 +44,7 @@ const FIGHTS: ComputedRow[] = [
   },
   {
     won: 0,
+    duration: 16,
     ults_used: 0,
     wasted_ults: 0,
     result: "loss",
@@ -52,6 +56,7 @@ const FIGHTS: ComputedRow[] = [
   },
   {
     won: 1,
+    duration: 10,
     ults_used: 1,
     wasted_ults: 0,
     result: "win",
@@ -186,5 +191,23 @@ describe("computed aggregator (teamfights)", () => {
     expect(rows).toHaveLength(1);
     expect(rows[0]["count__fights"]).toBe(1);
     expect(rows[0]["avg__win_rate"]).toBe(100);
+  });
+
+  it("aggregates fight duration by map type", () => {
+    const { rows } = aggregateComputed(
+      FIGHTS,
+      spec({
+        metrics: [{ metric: "duration", agg: "avg" }],
+        dimensions: ["map_type"],
+        sort: { key: "avg__duration", dir: "desc" },
+      })
+    );
+
+    expect(rows.map((row) => row.map_type)).toEqual([
+      "Control",
+      "Hybrid",
+      "Push",
+    ]);
+    expect(rows[0]["avg__duration"]).toBeCloseTo((18 + 24 + 16) / 3, 1);
   });
 });

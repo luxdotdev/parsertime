@@ -412,6 +412,15 @@ const METRIC_ALIASES: Record<string, string[]> = {
   win_rate: ["winrate", "winrates", "win rate", "win rates", "wr"],
   length: ["length", "streak length", "streak count"],
   fights: ["fights", "teamfights", "team fights"],
+  duration: [
+    "duration",
+    "fight duration",
+    "teamfight duration",
+    "team fight duration",
+    "average fight length",
+    "average fight duration",
+    "fight length",
+  ],
   maps: ["maps", "map count", "maps played"],
   kills: ["kills", "kill count"],
 };
@@ -899,6 +908,19 @@ function pickDataset(question: string): DatasetId {
   if (
     mentionsFightContext(normalized) &&
     mentionsTeamfightUltContext(normalized)
+  ) {
+    return "teamfight";
+  }
+
+  if (
+    mentionsFightContext(normalized) &&
+    (includesPhrase(normalized, "duration") ||
+      includesPhrase(normalized, "fight length") ||
+      includesPhrase(normalized, "fight duration") ||
+      includesPhrase(normalized, "teamfight duration") ||
+      includesPhrase(normalized, "team fight duration") ||
+      includesPhrase(normalized, "average fight length") ||
+      includesPhrase(normalized, "average fight duration"))
   ) {
     return "teamfight";
   }

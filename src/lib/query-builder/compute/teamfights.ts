@@ -113,6 +113,7 @@ export async function computeTeamfights(
       );
       rows.push({
         won: analysis.won ? 1 : 0,
+        duration: fight.end - fight.start,
         ults_used: analysis.ultCount,
         wasted_ults: analysis.wastedUlts,
         result: analysis.won ? "win" : "loss",
