@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 
 const ENEMY_ROWS: ComputedRow[] = [
   {
+    loss: 0,
     won: 1,
     result: "win",
     enemy_hero: "Tracer",
@@ -16,6 +17,7 @@ const ENEMY_ROWS: ComputedRow[] = [
     scrim: "A",
   },
   {
+    loss: 1,
     won: 0,
     result: "loss",
     enemy_hero: "Tracer",
@@ -25,6 +27,7 @@ const ENEMY_ROWS: ComputedRow[] = [
     scrim: "B",
   },
   {
+    loss: 1,
     won: 0,
     result: "loss",
     enemy_hero: "Winston",
@@ -88,5 +91,19 @@ describe("computed aggregator (enemy hero matchups)", () => {
 
     expect(rows.map((row) => row.enemy_hero)).toEqual(["Winston", "Tracer"]);
     expect(rows[0]["avg__win_rate"]).toBe(0);
+  });
+
+  it("ranks enemy heroes by map losses", () => {
+    const { rows } = aggregateComputed(
+      ENEMY_ROWS,
+      spec({
+        metrics: [{ metric: "losses", agg: "sum" }],
+        dimensions: ["enemy_hero"],
+        sort: { key: "sum__losses", dir: "desc" },
+      })
+    );
+
+    expect(rows.map((row) => row.enemy_hero)).toEqual(["Tracer", "Winston"]);
+    expect(rows[0]["sum__losses"]).toBe(1);
   });
 });

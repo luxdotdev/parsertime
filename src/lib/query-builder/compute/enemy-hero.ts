@@ -90,6 +90,7 @@ export async function computeEnemyHeroMatchups(
       }
 
       rows.push({
+        loss: won ? 0 : 1,
         won: won ? 1 : 0,
         result: won ? "win" : "loss",
         enemy_hero: hero,

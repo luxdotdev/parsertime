@@ -1294,6 +1294,24 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans enemy hero map loss questions as ranked matchup groups", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "Which enemy heroes do we lose maps against the most?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "enemy_hero",
+      dimensions: ["enemy_hero"],
+      sort: { key: "sum__losses", dir: "desc" },
+      limit: 20,
+    });
+    expect(planned?.spec.metrics[0]).toEqual({
+      metric: "losses",
+      agg: "sum",
+    });
+  });
+
   it("plans specific duel matchup questions with both hero sides", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,

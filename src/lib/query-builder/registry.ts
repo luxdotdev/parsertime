@@ -6607,6 +6607,18 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         defaultAgg: "sum",
         precision: 0,
       },
+      {
+        id: "losses",
+        label: "losses",
+        description: "Number of maps lost against the enemy hero",
+        table: "EnemyHeroMatchup",
+        column: "loss",
+        source: "base",
+        allowedAggs: ["sum"],
+        defaultAgg: "sum",
+        precision: 0,
+        lowerIsBetter: true,
+      },
     ],
     dimensions: [
       {
