@@ -15,6 +15,8 @@ export const DATASETS = [
   "map",
   "teamfight",
   "map_result",
+  "ult_economy",
+  "duel",
 ] as const;
 export type DatasetId = (typeof DATASETS)[number];
 

@@ -37,6 +37,8 @@ const BASE_ALIAS: Record<QuerySpec["dataset"], string> = {
   // computed datasets never use the SQL planner, but the map must be total
   teamfight: "tf",
   map_result: "mr",
+  ult_economy: "ue",
+  duel: "d",
 };
 
 const ENUM_TEXT_COLUMNS = new Set(["map_type", "role"]);

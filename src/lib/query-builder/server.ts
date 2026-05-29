@@ -4,8 +4,10 @@ import { canViewTeam, getCurrentUser, isAdminUser } from "@/lib/auth";
 import { queryBuilder } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { aggregateComputed } from "@/lib/query-builder/aggregate";
+import { computeDuels } from "@/lib/query-builder/compute/duels";
 import { computeMapResults } from "@/lib/query-builder/compute/map-results";
 import { computeTeamfights } from "@/lib/query-builder/compute/teamfights";
+import { computeUltEconomy } from "@/lib/query-builder/compute/ult-economy";
 import { getDataset, getFilter } from "@/lib/query-builder/registry";
 import {
   buildPlan,
@@ -220,6 +222,12 @@ async function runComputedQuery(
         break;
       case "map_result":
         computedRows = await computeMapResults(spec.teamId, ctx.scrimIds);
+        break;
+      case "ult_economy":
+        computedRows = await computeUltEconomy(spec.teamId, ctx.scrimIds);
+        break;
+      case "duel":
+        computedRows = await computeDuels(spec.teamId, ctx.scrimIds);
         break;
       default:
         return { ok: false, error: "Unknown analysis." };
