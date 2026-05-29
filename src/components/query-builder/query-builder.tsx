@@ -479,6 +479,7 @@ const DEFAULT_METRIC: Record<DraftSpec["dataset"], string> = {
   ability_impact: "win_rate",
   swap_impact: "win_rate",
   hero_pool: "win_rate",
+  enemy_hero: "win_rate",
 };
 
 function defaultMetricFor(dataset: DraftSpec["dataset"]): string {

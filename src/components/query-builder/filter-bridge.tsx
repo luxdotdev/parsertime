@@ -40,6 +40,7 @@ const OPERATOR_LABELS: Record<SpecOperator, string> = {
 
 const FIELD_ICONS: Record<string, React.ReactNode> = {
   hero: <SwordsIcon />,
+  enemy_hero: <SwordsIcon />,
   attacker_hero: <SwordsIcon />,
   victim_hero: <SwordsIcon />,
   player: <UserIcon />,
@@ -47,6 +48,7 @@ const FIELD_ICONS: Record<string, React.ReactNode> = {
   in_game_team: <UsersIcon />,
   map_type: <MapIcon />,
   role: <ShieldIcon />,
+  enemy_role: <ShieldIcon />,
   ability: <ZapIcon />,
   side: <UsersIcon />,
   used: <ZapIcon />,

@@ -133,4 +133,33 @@ describe("query-builder natural-language planner", () => {
       limit: 20,
     });
   });
+
+  it("plans enemy-hero matchup questions with hero filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What is our win rate against Tracer?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "enemy_hero",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: [],
+      filters: [{ field: "enemy_hero", op: "in", value: ["Tracer"] }],
+    });
+  });
+
+  it("plans worst enemy hero questions as ranked matchup groups", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "Which enemy heroes are worst for us?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "enemy_hero",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["enemy_hero"],
+      sort: { key: "avg__win_rate", dir: "asc" },
+      limit: 20,
+    });
+  });
 });

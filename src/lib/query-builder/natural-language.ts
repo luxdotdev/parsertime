@@ -38,6 +38,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   ability_impact: "win_rate",
   swap_impact: "win_rate",
   hero_pool: "win_rate",
+  enemy_hero: "win_rate",
 };
 
 const DATASET_HINTS: Record<DatasetId, string[]> = {
@@ -127,6 +128,19 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "deaths per 10",
     "ultimate efficiency",
     "ult efficiency",
+  ],
+  enemy_hero: [
+    "against",
+    "against enemy",
+    "against enemy hero",
+    "enemy heroes",
+    "enemy hero win rate",
+    "enemy hero winrate",
+    "win rate against",
+    "winrate against",
+    "weak against",
+    "worst against",
+    "best against",
   ],
 };
 
@@ -225,6 +239,7 @@ const FILLER_WORDS = new Set([
   "them",
   "time",
   "to",
+  "us",
   "versus",
   "vs",
   "we",
@@ -469,6 +484,7 @@ function filterFor(
     hero: [
       "hero",
       "our_hero",
+      "enemy_hero",
       "attacker_hero",
       "victim_hero",
       "to_hero",
@@ -480,7 +496,7 @@ function filterFor(
     side: ["side"],
     used: ["used"],
     had_swap: ["had_swap"],
-    role: ["role"],
+    role: ["role", "enemy_role"],
   };
   const field = candidates[kind]
     ?.map((id) => getDataset(dataset).filters.find((f) => f.id === id))
@@ -664,6 +680,13 @@ function pickDimensions(
   }
   if (dataset === "hero_pool" && dims.length === 0) {
     add("hero");
+  }
+  if (
+    dataset === "enemy_hero" &&
+    dims.length === 0 &&
+    !hasFilter("enemy_hero")
+  ) {
+    add("enemy_hero");
   }
 
   return dims.slice(0, 4);
