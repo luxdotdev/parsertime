@@ -615,6 +615,7 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "ultimate usage",
     "most ults",
     "most ultimates",
+    "total ultimates",
   ],
   ultimates_used: ["ults used", "ultimates used", "ultimate usage"],
   ultimates_earned: ["ults earned", "ultimates earned"],
@@ -741,6 +742,47 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "opening ultimate",
   ],
   avg_wasted_ults: ["wasted ult", "wasted ults", "wasted ultimates"],
+  first_pick_rate: ["first pick rate", "first-pick rate", "opening pick rate"],
+  first_death_rate: [
+    "first death rate",
+    "first-death rate",
+    "opening death rate",
+  ],
+  first_ult_rate: ["first ult rate", "first ultimate rate"],
+  dry_fight_rate: ["dry fight rate", "dry-fight rate"],
+  reversal_rate: ["reversal rate", "fight reversal rate"],
+  dry_fight_reversal_rate: [
+    "dry fight reversal rate",
+    "dry-fight reversal rate",
+    "dry reversal rate",
+  ],
+  non_dry_fight_reversal_rate: [
+    "non dry fight reversal rate",
+    "non-dry fight reversal rate",
+    "non dry reversal rate",
+  ],
+  ultimate_efficiency: [
+    "ultimate efficiency",
+    "ult efficiency",
+    "fight wins per ultimate",
+    "fight wins per ult",
+  ],
+  avg_ults_per_non_dry_fight: [
+    "average ults per non dry fight",
+    "average ultimates per non dry fight",
+    "ults per non dry fight",
+    "ultimates per non dry fight",
+  ],
+  avg_ults_in_won_fights: [
+    "average ults in won fights",
+    "average ultimates in won fights",
+    "ults in won fights",
+  ],
+  avg_ults_in_lost_fights: [
+    "average ults in lost fights",
+    "average ultimates in lost fights",
+    "ults in lost fights",
+  ],
   first_events: ["opening kill", "opening kills", "first kill", "first kills"],
   first_deaths: [
     "first death",
@@ -1865,6 +1907,23 @@ function pickDataset(question: string): DatasetId {
   if (mentionsPlayerTargetContext(normalized)) return "player_target";
   if (mentionsPlayerImpactContext(normalized)) return "player_impact";
   if (mentionsTeamPerformanceContext(normalized)) return "team_performance";
+  if (
+    mentionsFightContext(normalized) &&
+    (includesPhrase(normalized, "first pick rate") ||
+      includesPhrase(normalized, "first death rate") ||
+      includesPhrase(normalized, "first ult rate") ||
+      includesPhrase(normalized, "first ultimate rate") ||
+      includesPhrase(normalized, "dry fight rate") ||
+      includesPhrase(normalized, "reversal rate") ||
+      includesPhrase(normalized, "ultimate efficiency") ||
+      includesPhrase(normalized, "ult efficiency") ||
+      includesPhrase(normalized, "ults in won fights") ||
+      includesPhrase(normalized, "ults in lost fights") ||
+      includesPhrase(normalized, "ults per non dry fight") ||
+      includesPhrase(normalized, "ultimates per non dry fight"))
+  ) {
+    return "teamfight";
+  }
   if (mentionsCalculatedStatContext(normalized)) return "calculated_stat";
   if (mentionsHeroTrendContext(normalized)) return "hero_trend";
   if (mentionsStreakContext(normalized)) return "streak";
@@ -2167,6 +2226,44 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
 
   if (dataset === "teamfight" && includesPhrase(normalized, "wasted ult")) {
     refs.push({ metric: "avg_wasted_ults", agg: "avg" });
+  }
+
+  if (dataset === "teamfight") {
+    const wantsFightCount =
+      includesPhrase(normalized, "how many fights") ||
+      includesPhrase(normalized, "number of fights") ||
+      includesPhrase(normalized, "fight count") ||
+      includesPhrase(normalized, "count fights");
+    if (!wantsFightCount && refs.length > 1) {
+      for (let i = refs.length - 1; i >= 0; i--) {
+        if (refs[i].metric === "fights") refs.splice(i, 1);
+      }
+    }
+
+    const preferredTeamfightMetric =
+      includesPhrase(normalized, "non dry fight reversal rate") ||
+      includesPhrase(normalized, "non-dry fight reversal rate") ||
+      includesPhrase(normalized, "non dry reversal rate")
+        ? "non_dry_fight_reversal_rate"
+        : includesPhrase(normalized, "dry fight reversal rate") ||
+            includesPhrase(normalized, "dry-fight reversal rate") ||
+            includesPhrase(normalized, "dry reversal rate")
+          ? "dry_fight_reversal_rate"
+          : includesPhrase(normalized, "ultimate efficiency") ||
+              includesPhrase(normalized, "ult efficiency") ||
+              includesPhrase(normalized, "fight wins per ultimate") ||
+              includesPhrase(normalized, "fight wins per ult")
+            ? "ultimate_efficiency"
+            : null;
+    if (preferredTeamfightMetric) {
+      for (let i = refs.length - 1; i >= 0; i--) {
+        if (refs[i].metric !== preferredTeamfightMetric) refs.splice(i, 1);
+      }
+      if (!refs.some((ref) => ref.metric === preferredTeamfightMetric)) {
+        const agg = pickMetricAgg(dataset, preferredTeamfightMetric, question);
+        if (agg) refs.push({ metric: preferredTeamfightMetric, agg });
+      }
+    }
   }
 
   if (
@@ -3030,24 +3127,44 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   }
 
   if (dataset === "teamfight") {
-    if (includesPhrase(normalized, "first death")) {
+    const asksFirstPickRate =
+      includesPhrase(normalized, "first pick rate") ||
+      includesPhrase(normalized, "opening pick rate");
+    const asksFirstDeathRate =
+      includesPhrase(normalized, "first death rate") ||
+      includesPhrase(normalized, "opening death rate");
+    const asksFirstUltRate =
+      includesPhrase(normalized, "first ult rate") ||
+      includesPhrase(normalized, "first ultimate rate");
+    const asksDryFightRate =
+      includesPhrase(normalized, "dry fight rate") ||
+      includesPhrase(normalized, "dry-fight rate") ||
+      includesPhrase(normalized, "dry fight reversal rate") ||
+      includesPhrase(normalized, "dry-fight reversal rate");
+    const asksReversalRate =
+      includesPhrase(normalized, "reversal rate") ||
+      includesPhrase(normalized, "fight reversal rate");
+
+    if (includesPhrase(normalized, "first death") && !asksFirstDeathRate) {
       filters.push({ field: "first_death", op: "eq", value: "yes" });
     }
-    if (includesPhrase(normalized, "first pick")) {
+    if (includesPhrase(normalized, "first pick") && !asksFirstPickRate) {
       filters.push({ field: "first_pick", op: "eq", value: "yes" });
     }
-    if (includesPhrase(normalized, "dry fight")) {
+    if (includesPhrase(normalized, "dry fight") && !asksDryFightRate) {
       filters.push({ field: "dry_fight", op: "eq", value: "yes" });
     }
     if (
-      includesPhrase(normalized, "first ult") ||
-      includesPhrase(normalized, "first ultimate")
+      (includesPhrase(normalized, "first ult") ||
+        includesPhrase(normalized, "first ultimate")) &&
+      !asksFirstUltRate
     ) {
       filters.push({ field: "first_ult", op: "eq", value: "yes" });
     }
     if (
-      includesPhrase(normalized, "reversal") ||
-      includesPhrase(normalized, "reverse fight")
+      (includesPhrase(normalized, "reversal") ||
+        includesPhrase(normalized, "reverse fight")) &&
+      !asksReversalRate
     ) {
       filters.push({ field: "reversal", op: "eq", value: "yes" });
     }

@@ -143,6 +143,48 @@ describe("query-builder natural-language planner", () => {
     expect(planned?.spec.metrics[0]).toEqual({ metric: "losses", agg: "sum" });
   });
 
+  it("plans teamfight first-pick rate questions without filtering to first picks", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "What is our first pick rate in fights by map type?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "first_pick_rate", agg: "avg" }],
+      dimensions: ["map_type"],
+      filters: [],
+    });
+  });
+
+  it("plans teamfight dry-fight reversal rate questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "What is our dry fight reversal rate?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "dry_fight_reversal_rate", agg: "ratio" }],
+      dimensions: [],
+      filters: [],
+    });
+  });
+
+  it("plans teamfight ultimate-efficiency questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "What is our ultimate efficiency in fights?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "ultimate_efficiency", agg: "ratio" }],
+      dimensions: [],
+      filters: [],
+    });
+  });
+
   it("plans specific-map fight winrate questions onto teamfights", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,
