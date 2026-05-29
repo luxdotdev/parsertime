@@ -12,6 +12,7 @@ import { computeHeroPool } from "@/lib/query-builder/compute/hero-pool";
 import { computeMapResults } from "@/lib/query-builder/compute/map-results";
 import { computeRoleTrios } from "@/lib/query-builder/compute/role-trios";
 import { computeSwapImpact } from "@/lib/query-builder/compute/swap-impact";
+import { computeStreaks } from "@/lib/query-builder/compute/streaks";
 import { computeTeamfights } from "@/lib/query-builder/compute/teamfights";
 import { computeTrends } from "@/lib/query-builder/compute/trends";
 import { computeUltCombos } from "@/lib/query-builder/compute/ult-combos";
@@ -271,6 +272,9 @@ async function runComputedQuery(
         break;
       case "trend":
         computedRows = await computeTrends(spec.teamId, ctx.scrimIds);
+        break;
+      case "streak":
+        computedRows = await computeStreaks(spec.teamId, ctx.scrimIds);
         break;
       default:
         return { ok: false, error: "Unknown analysis." };

@@ -486,6 +486,7 @@ const DEFAULT_METRIC: Record<DraftSpec["dataset"], string> = {
   ult_impact: "win_rate",
   ult_usage: "ults_used",
   trend: "win_rate",
+  streak: "length",
 };
 
 function defaultMetricFor(dataset: DraftSpec["dataset"]): string {

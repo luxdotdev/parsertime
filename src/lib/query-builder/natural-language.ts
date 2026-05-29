@@ -46,6 +46,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   ult_impact: "win_rate",
   ult_usage: "ults_used",
   trend: "win_rate",
+  streak: "length",
 };
 
 const DATASET_HINTS: Record<DatasetId, string[]> = {
@@ -158,6 +159,18 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "by month",
     "day of week",
     "by day",
+  ],
+  streak: [
+    "streak",
+    "streaks",
+    "win streak",
+    "loss streak",
+    "current streak",
+    "current win streak",
+    "current loss streak",
+    "longest streak",
+    "longest win streak",
+    "longest loss streak",
   ],
   teamfight: [
     "fight",
@@ -369,6 +382,7 @@ const METRIC_ALIASES: Record<string, string[]> = {
   ],
   avg_wasted_ults: ["wasted ult", "wasted ults", "wasted ultimates"],
   win_rate: ["winrate", "winrates", "win rate", "win rates", "wr"],
+  length: ["length", "streak length", "streak count"],
   fights: ["fights", "teamfights", "team fights"],
   maps: ["maps", "map count", "maps played"],
   kills: ["kills", "kill count"],
@@ -420,6 +434,9 @@ const DIMENSION_ALIASES: Record<string, string[]> = {
   swap_count: ["swap count", "number of swaps"],
   swap_count_bucket: ["swap count bucket", "swaps"],
   first_swap_timing: ["first swap timing", "swap timing"],
+  streak: ["streak"],
+  start_date: ["start date", "started"],
+  end_date: ["end date", "ended"],
 };
 
 const FILLER_WORDS = new Set([
@@ -688,6 +705,17 @@ function mentionsTrendContext(normalized: string): boolean {
   );
 }
 
+function mentionsStreakContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "streak") ||
+    includesPhrase(normalized, "streaks") ||
+    includesPhrase(normalized, "win streak") ||
+    includesPhrase(normalized, "loss streak") ||
+    includesPhrase(normalized, "current streak") ||
+    includesPhrase(normalized, "longest streak")
+  );
+}
+
 function mentionsTeamfightUltContext(normalized: string): boolean {
   return (
     includesPhrase(normalized, "first ult") ||
@@ -766,6 +794,7 @@ function pickDataset(question: string): DatasetId {
   const normalized = normalize(question);
   const mapName = findMapName(question);
   if (mentionsCalculatedStatContext(normalized)) return "calculated_stat";
+  if (mentionsStreakContext(normalized)) return "streak";
   if (mentionsTrendContext(normalized)) return "trend";
   if (findAbility(question)) return "ability_impact";
 
@@ -1650,6 +1679,29 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
   }
 
+  if (dataset === "streak") {
+    if (includesPhrase(normalized, "current")) {
+      filters.push({ field: "streak", op: "eq", value: "current streak" });
+    } else if (
+      includesPhrase(normalized, "longest") &&
+      (includesPhrase(normalized, "loss") ||
+        includesPhrase(normalized, "losses") ||
+        includesPhrase(normalized, "losing"))
+    ) {
+      filters.push({
+        field: "streak",
+        op: "eq",
+        value: "longest loss streak",
+      });
+    } else if (includesPhrase(normalized, "longest")) {
+      filters.push({
+        field: "streak",
+        op: "eq",
+        value: "longest win streak",
+      });
+    }
+  }
+
   return filters.slice(0, 8);
 }
 
@@ -1796,6 +1848,13 @@ function pickDimensions(
       (f) => f.field === "row_type" && f.value === "fight opening hero"
     );
     add(openingHeroRows ? "hero" : "player");
+  }
+  if (dataset === "streak" && dims.length === 0) {
+    if (hasFilter("streak")) {
+      add("result");
+    } else {
+      add("streak");
+    }
   }
   if (dataset === "trend" && dims.length === 0) {
     if (

@@ -715,4 +715,32 @@ describe("query-builder natural-language planner", () => {
       dimensions: ["week"],
     });
   });
+
+  it("plans current streak questions onto streak summaries", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What is our current win streak?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "streak",
+      metrics: [{ metric: "length", agg: "max" }],
+      dimensions: ["result"],
+      filters: [{ field: "streak", op: "eq", value: "current streak" }],
+    });
+  });
+
+  it("plans longest loss streak questions onto streak summaries", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What is our longest losing streak?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "streak",
+      metrics: [{ metric: "length", agg: "max" }],
+      dimensions: ["result"],
+      filters: [{ field: "streak", op: "eq", value: "longest loss streak" }],
+    });
+  });
 });
