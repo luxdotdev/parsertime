@@ -119,6 +119,7 @@ export async function computeAbilityImpact(
     const m = meta.get(mapDataId);
     if (!m?.ourTeam) continue;
     const ourTeam = m.ourTeam;
+    const map = m.map;
     const mapType = m.mapType;
     const scrim = m.scrim;
 
@@ -229,6 +230,7 @@ export async function computeAbilityImpact(
               side: "us",
               used: didUse ? "yes" : "no",
               scenario: scenario("us", didUse),
+              map,
               map_type: mapType,
               scrim,
             });
@@ -245,6 +247,7 @@ export async function computeAbilityImpact(
               side: "enemy",
               used: didUse ? "yes" : "no",
               scenario: scenario("enemy", didUse),
+              map,
               map_type: mapType,
               scrim,
             });

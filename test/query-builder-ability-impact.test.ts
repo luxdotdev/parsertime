@@ -14,6 +14,7 @@ const ABILITY_ROWS: ComputedRow[] = [
     side: "us",
     used: "yes",
     scenario: "used by us",
+    map: "Lijiang Tower",
     map_type: "Control",
     scrim: "A",
   },
@@ -25,6 +26,7 @@ const ABILITY_ROWS: ComputedRow[] = [
     side: "us",
     used: "yes",
     scenario: "used by us",
+    map: "King's Row",
     map_type: "Control",
     scrim: "B",
   },
@@ -36,6 +38,7 @@ const ABILITY_ROWS: ComputedRow[] = [
     side: "us",
     used: "no",
     scenario: "not used by us",
+    map: "King's Row",
     map_type: "Hybrid",
     scrim: "C",
   },
@@ -47,6 +50,7 @@ const ABILITY_ROWS: ComputedRow[] = [
     side: "enemy",
     used: "yes",
     scenario: "used by enemy",
+    map: "Colosseo",
     map_type: "Push",
     scrim: "D",
   },
@@ -82,6 +86,28 @@ describe("computed aggregator (ability impact)", () => {
     const byUsed = Object.fromEntries(rows.map((row) => [row.used, row]));
     expect(byUsed.yes["count__fights"]).toBe(2);
     expect(byUsed.yes["avg__win_rate"]).toBe(50);
+    expect(byUsed.no["count__fights"]).toBe(1);
+    expect(byUsed.no["avg__win_rate"]).toBe(0);
+  });
+
+  it("filters ability impact questions to a specific map", () => {
+    const { rows } = aggregateComputed(
+      ABILITY_ROWS,
+      spec({
+        dimensions: ["used"],
+        filters: [
+          { field: "hero", op: "in", value: ["Kiriko"] },
+          { field: "ability", op: "in", value: ["Protection Suzu"] },
+          { field: "side", op: "eq", value: "us" },
+          { field: "map", op: "in", value: ["King's Row"] },
+        ],
+        sort: { key: "used", dir: "desc" },
+      })
+    );
+
+    const byUsed = Object.fromEntries(rows.map((row) => [row.used, row]));
+    expect(byUsed.yes["count__fights"]).toBe(1);
+    expect(byUsed.yes["avg__win_rate"]).toBe(0);
     expect(byUsed.no["count__fights"]).toBe(1);
     expect(byUsed.no["avg__win_rate"]).toBe(0);
   });

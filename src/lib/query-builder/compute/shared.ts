@@ -10,6 +10,7 @@ import { Effect } from "effect";
 
 export type MapMeta = {
   ourTeam: string | null;
+  map: string;
   mapType: string;
   scrim: string;
   scrimId: number;
@@ -45,6 +46,7 @@ export function buildMapMeta(data: ExtendedTeamData): Map<number, MapMeta> {
         data.allPlayerStats,
         data.teamRosterSet
       ),
+      map: record.name ?? "Unknown",
       mapType: "Unknown",
       scrim: record.Scrim?.name ?? "Scrim",
       scrimId: record.Scrim?.id ?? scrimByMap.get(record.id) ?? -1,
@@ -53,7 +55,10 @@ export function buildMapMeta(data: ExtendedTeamData): Map<number, MapMeta> {
   for (const ms of data.matchStarts) {
     if (ms.MapDataId == null) continue;
     const m = meta.get(ms.MapDataId);
-    if (m) m.mapType = ms.map_type;
+    if (m) {
+      m.map = ms.map_name;
+      m.mapType = ms.map_type;
+    }
   }
   return meta;
 }

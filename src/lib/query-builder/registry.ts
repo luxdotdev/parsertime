@@ -1779,6 +1779,13 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         source: "base",
       },
       {
+        id: "map",
+        label: "map",
+        table: "AbilityImpact",
+        column: "map",
+        source: "base",
+      },
+      {
         id: "map_type",
         label: "map type",
         table: "AbilityImpact",
@@ -1854,6 +1861,15 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
           { value: "used by enemy", label: "used by enemy" },
           { value: "not used by enemy", label: "not used by enemy" },
         ],
+      },
+      {
+        id: "map",
+        label: "map",
+        table: "AbilityImpact",
+        column: "map",
+        source: "base",
+        valueType: "text",
+        operators: ["in", "nin"],
       },
       {
         id: "map_type",

@@ -365,6 +365,25 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans specific-map ability-impact questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 9,
+      question: "How does using Suzu affect our fight win rate on King's Row?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ability_impact",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["used"],
+      filters: [
+        { field: "hero", op: "in", value: ["Kiriko"] },
+        { field: "ability", op: "in", value: ["Protection Suzu"] },
+        { field: "map", op: "in", value: ["King's Row"] },
+        { field: "side", op: "eq", value: "us" },
+      ],
+    });
+  });
+
   it("plans swap-impact questions onto swap buckets", () => {
     const planned = planQueryFromQuestion({
       teamId: 3,
