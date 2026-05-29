@@ -4794,6 +4794,18 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         defaultAgg: "sum",
         precision: 0,
       },
+      {
+        id: "losses",
+        label: "duels lost",
+        description: "Number of duels lost (deaths)",
+        table: "Duel",
+        column: "loss",
+        source: "base",
+        allowedAggs: ["sum"],
+        defaultAgg: "sum",
+        precision: 0,
+        lowerIsBetter: true,
+      },
     ],
     dimensions: [
       {

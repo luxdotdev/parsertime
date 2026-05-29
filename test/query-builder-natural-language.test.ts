@@ -1328,6 +1328,21 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans duel loss questions as ranked enemy hero groups", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "Which enemy heroes do we lose duels to the most?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "duel",
+      metrics: [{ metric: "losses", agg: "sum" }],
+      dimensions: ["enemy_hero"],
+      sort: { key: "sum__losses", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans ban weak-point questions onto received ban impact", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,

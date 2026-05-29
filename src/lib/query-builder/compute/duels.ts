@@ -30,6 +30,7 @@ export async function computeDuels(
 
     if (attacker === m.ourTeam) {
       rows.push({
+        loss: 0,
         outcome: 1,
         our_hero: kill.attacker_hero,
         enemy_hero: kill.victim_hero,
@@ -38,6 +39,7 @@ export async function computeDuels(
       });
     } else if (victim === m.ourTeam) {
       rows.push({
+        loss: 1,
         outcome: 0,
         our_hero: kill.victim_hero,
         enemy_hero: kill.attacker_hero,

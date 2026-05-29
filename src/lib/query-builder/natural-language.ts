@@ -2777,14 +2777,29 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
       includesPhrase(normalized, "number") ||
       includesPhrase(normalized, "count") ||
       includesPhrase(normalized, "total");
+    const wantsLosses =
+      includesPhrase(normalized, "losses") ||
+      includesPhrase(normalized, "lost") ||
+      includesPhrase(normalized, "lose") ||
+      includesPhrase(normalized, "deaths") ||
+      includesPhrase(normalized, "died");
     if (!wantsCount) {
       for (let i = deduped.length - 1; i >= 0; i--) {
         if (deduped[i].metric === "duels") deduped.splice(i, 1);
       }
-      if (!deduped.some((ref) => ref.metric === "win_rate")) {
+      if (wantsLosses && !deduped.some((ref) => ref.metric === "losses")) {
+        const agg = pickMetricAgg(dataset, "losses", question);
+        if (agg) deduped.unshift({ metric: "losses", agg });
+      }
+      if (!wantsLosses && !deduped.some((ref) => ref.metric === "win_rate")) {
         const agg = pickMetricAgg(dataset, "win_rate", question);
         if (agg) deduped.unshift({ metric: "win_rate", agg });
       }
+    }
+    if (wantsLosses) {
+      deduped.sort((a, b) =>
+        a.metric === "losses" ? -1 : b.metric === "losses" ? 1 : 0
+      );
     }
   }
   return deduped.slice(0, 4);
@@ -4054,8 +4069,25 @@ function pickDimensions(
   if (dataset === "duel" && dims.length === 0) {
     const hasOurHeroFilter = hasFilter("our_hero");
     const hasEnemyHeroFilter = hasFilter("enemy_hero");
-    if (!hasOurHeroFilter) add("our_hero");
-    if (!hasEnemyHeroFilter) add("enemy_hero");
+    const wantsOurHeroes =
+      includesPhrase(normalized, "our heroes") ||
+      includesPhrase(normalized, "our hero") ||
+      includesPhrase(normalized, "which heroes") ||
+      includesPhrase(normalized, "which of our heroes") ||
+      includesPhrase(normalized, "who on");
+    const wantsEnemyHeroes =
+      includesPhrase(normalized, "enemy heroes") ||
+      includesPhrase(normalized, "enemy hero") ||
+      includesPhrase(normalized, "opponent heroes") ||
+      includesPhrase(normalized, "opponent hero") ||
+      includesPhrase(normalized, "against who") ||
+      includesPhrase(normalized, "against which");
+    if (!hasOurHeroFilter && (!wantsEnemyHeroes || wantsOurHeroes)) {
+      add("our_hero");
+    }
+    if (!hasEnemyHeroFilter && (!wantsOurHeroes || wantsEnemyHeroes)) {
+      add("enemy_hero");
+    }
   }
   if (dataset === "rotation_death" && dims.length === 0) {
     if (hasFilter("player")) {
