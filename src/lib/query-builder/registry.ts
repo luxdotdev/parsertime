@@ -1100,6 +1100,18 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         precision: 0,
       },
       {
+        id: "losses",
+        label: "losses",
+        description: "Number of fights lost",
+        table: "Teamfight",
+        column: "lost",
+        source: "base",
+        allowedAggs: ["sum"],
+        defaultAgg: "sum",
+        precision: 0,
+        lowerIsBetter: true,
+      },
+      {
         id: "avg_ults",
         label: "avg ultimates used",
         description: "Average ultimates your team spent per fight",

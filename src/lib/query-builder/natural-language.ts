@@ -422,6 +422,7 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "opening ultimate",
   ],
   avg_wasted_ults: ["wasted ult", "wasted ults", "wasted ultimates"],
+  losses: ["losses", "lost", "lose"],
   win_rate: ["winrate", "winrates", "win rate", "win rates", "wr"],
   length: ["length", "streak length", "streak count"],
   fights: ["fights", "teamfights", "team fights"],
@@ -1179,6 +1180,16 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   ) {
     deduped.sort((a, b) =>
       a.metric === "win_rate" ? -1 : b.metric === "win_rate" ? 1 : 0
+    );
+  }
+  if (
+    deduped.some((ref) => ref.metric === "losses") &&
+    (includesPhrase(normalized, "losses") ||
+      includesPhrase(normalized, "lost") ||
+      includesPhrase(normalized, "lose"))
+  ) {
+    deduped.sort((a, b) =>
+      a.metric === "losses" ? -1 : b.metric === "losses" ? 1 : 0
     );
   }
   if (

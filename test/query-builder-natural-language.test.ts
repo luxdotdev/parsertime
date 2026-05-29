@@ -89,6 +89,20 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans fight-loss count questions onto computed teamfight fields", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "How many fights did we lose when we get first death?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      dimensions: [],
+      filters: [{ field: "first_death", op: "eq", value: "yes" }],
+    });
+    expect(planned?.spec.metrics[0]).toEqual({ metric: "losses", agg: "sum" });
+  });
+
   it("plans specific-map fight winrate questions onto teamfights", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

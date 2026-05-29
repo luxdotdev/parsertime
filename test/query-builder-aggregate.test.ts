@@ -8,6 +8,7 @@ import { describe, expect, it } from "vitest";
 const FIGHTS: ComputedRow[] = [
   {
     won: 1,
+    lost: 0,
     duration: 18,
     ults_used: 2,
     wasted_ults: 0,
@@ -20,6 +21,7 @@ const FIGHTS: ComputedRow[] = [
   },
   {
     won: 0,
+    lost: 1,
     duration: 24,
     ults_used: 2,
     wasted_ults: 1,
@@ -32,6 +34,7 @@ const FIGHTS: ComputedRow[] = [
   },
   {
     won: 1,
+    lost: 0,
     duration: 12,
     ults_used: 2,
     wasted_ults: 0,
@@ -44,6 +47,7 @@ const FIGHTS: ComputedRow[] = [
   },
   {
     won: 0,
+    lost: 1,
     duration: 16,
     ults_used: 0,
     wasted_ults: 0,
@@ -56,6 +60,7 @@ const FIGHTS: ComputedRow[] = [
   },
   {
     won: 1,
+    lost: 0,
     duration: 10,
     ults_used: 1,
     wasted_ults: 0,
@@ -174,6 +179,18 @@ describe("computed aggregator (teamfights)", () => {
       })
     );
     expect(wasted.rows[0]["sum__avg_wasted_ults"]).toBe(1);
+  });
+
+  it("sums fight losses directly", () => {
+    const { rows } = aggregateComputed(
+      FIGHTS,
+      spec({
+        metrics: [{ metric: "losses", agg: "sum" }],
+        filters: [{ field: "first_death", op: "eq", value: "yes" }],
+      })
+    );
+
+    expect(rows[0]["sum__losses"]).toBe(2);
   });
 
   it("filters fight win rate to a specific map", () => {
