@@ -13,6 +13,7 @@ import {
   type DraftSpec,
 } from "@/components/query-builder/sentence-canvas";
 import type { Filter } from "@/components/reui/filters";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -28,7 +29,11 @@ import {
   renderComputedPlan,
   renderDisplaySql,
 } from "@/lib/query-builder/plan";
-import { getDataset, getMetric } from "@/lib/query-builder/registry";
+import {
+  AGG_LABELS,
+  getDataset,
+  getMetric,
+} from "@/lib/query-builder/registry";
 import {
   deleteSavedQuery,
   getFieldOptions,
@@ -55,6 +60,13 @@ import {
 import { useTranslations } from "next-intl";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
+
+type PlannerInterpretation = {
+  summary: string;
+  dataset: string;
+  metrics: { key: string; label: string }[];
+  filterCount: number;
+};
 
 function initialDraft(defaultTeamId: number | null): DraftSpec {
   return {
@@ -91,6 +103,8 @@ export function QueryBuilder({
   const [filterModel, setFilterModel] = useState<Filter[]>([]);
   const [question, setQuestion] = useState("");
   const [plannerError, setPlannerError] = useState<string | null>(null);
+  const [plannerInterpretation, setPlannerInterpretation] =
+    useState<PlannerInterpretation | null>(null);
 
   const teamName =
     teams.find((tm) => tm.id === draft.teamId)?.name ?? t("yourTeam");
@@ -99,6 +113,7 @@ export function QueryBuilder({
     setDataset: (dataset) => {
       // dataset-specific selections (incl. filters) reset on switch
       setFilterModel([]);
+      setPlannerInterpretation(null);
       setDraft((d) => ({
         ...d,
         dataset,
@@ -109,34 +124,53 @@ export function QueryBuilder({
         sort: null,
       }));
     },
-    setTeamId: (teamId) => setDraft((d) => ({ ...d, teamId })),
-    addMetric: (metric, agg) =>
+    setTeamId: (teamId) => {
+      setPlannerInterpretation(null);
+      setDraft((d) => ({ ...d, teamId }));
+    },
+    addMetric: (metric, agg) => {
+      setPlannerInterpretation(null);
       setDraft((d) =>
         d.metrics.some((m) => m.metric === metric)
           ? d
           : { ...d, metrics: [...d.metrics, { metric, agg }] }
-      ),
-    updateMetric: (index, ref) =>
+      );
+    },
+    updateMetric: (index, ref) => {
+      setPlannerInterpretation(null);
       setDraft((d) => ({
         ...d,
         metrics: d.metrics.map((m, i) => (i === index ? ref : m)),
-      })),
-    removeMetric: (index) =>
+      }));
+    },
+    removeMetric: (index) => {
+      setPlannerInterpretation(null);
       setDraft((d) => ({
         ...d,
         metrics: d.metrics.filter((_, i) => i !== index),
-      })),
-    toggleDimension: (id) =>
+      }));
+    },
+    toggleDimension: (id) => {
+      setPlannerInterpretation(null);
       setDraft((d) => ({
         ...d,
         dimensions: d.dimensions.includes(id)
           ? d.dimensions.filter((x) => x !== id)
           : [...d.dimensions, id],
-      })),
-    setTimeScope: (timeScope: TimeScope) =>
-      setDraft((d) => ({ ...d, timeScope })),
-    setSort: (sort: QuerySort | null) => setDraft((d) => ({ ...d, sort })),
-    setLimit: (limit) => setDraft((d) => ({ ...d, limit })),
+      }));
+    },
+    setTimeScope: (timeScope: TimeScope) => {
+      setPlannerInterpretation(null);
+      setDraft((d) => ({ ...d, timeScope }));
+    },
+    setSort: (sort: QuerySort | null) => {
+      setPlannerInterpretation(null);
+      setDraft((d) => ({ ...d, sort }));
+    },
+    setLimit: (limit) => {
+      setPlannerInterpretation(null);
+      setDraft((d) => ({ ...d, limit }));
+    },
   };
 
   const fetchOptions = useCallback(
@@ -151,6 +185,11 @@ export function QueryBuilder({
     () => buildFilterFields(draft.dataset, fetchOptions),
     [draft.dataset, fetchOptions]
   );
+
+  const setFilters = useCallback((filters: Filter[]) => {
+    setPlannerInterpretation(null);
+    setFilterModel(filters);
+  }, []);
 
   const candidateSpec: QuerySpec = useMemo(
     () => ({
@@ -213,6 +252,7 @@ export function QueryBuilder({
   function planQuestion() {
     if (!draft.teamId) {
       setPlannerError(t("needTeam"));
+      setPlannerInterpretation(null);
       return;
     }
     const planned = planQueryFromQuestion({
@@ -221,6 +261,7 @@ export function QueryBuilder({
     });
     if (!planned) {
       setPlannerError(t("planFailed"));
+      setPlannerInterpretation(null);
       return;
     }
     setDraft({
@@ -233,6 +274,15 @@ export function QueryBuilder({
       limit: planned.spec.limit,
     });
     setFilterModel(querySpecToFilters(planned.spec.filters));
+    setPlannerInterpretation({
+      summary: planned.summary,
+      dataset: getDataset(planned.spec.dataset).label,
+      metrics: planned.spec.metrics.map((ref) => ({
+        key: `${ref.agg}__${ref.metric}`,
+        label: `${getMetric(planned.spec.dataset, ref.metric)?.label ?? ref.metric} · ${AGG_LABELS[ref.agg]}`,
+      })),
+      filterCount: planned.spec.filters.length,
+    });
     setPlannerError(null);
     setStatus("idle");
     setResult(null);
@@ -252,6 +302,7 @@ export function QueryBuilder({
       limit: item.spec.limit,
     });
     setFilterModel(querySpecToFilters(item.spec.filters));
+    setPlannerInterpretation(null);
     setStatus("idle");
     setResult(null);
     toast.success(t("loadedQuery", { name: item.name }));
@@ -304,6 +355,7 @@ export function QueryBuilder({
             onChange={(event) => {
               setQuestion(event.target.value);
               if (plannerError) setPlannerError(null);
+              if (plannerInterpretation) setPlannerInterpretation(null);
             }}
             placeholder={t("plannerPlaceholder")}
             className="min-h-20 resize-y md:min-h-16"
@@ -321,6 +373,32 @@ export function QueryBuilder({
         {plannerError && (
           <p className="text-destructive mt-2 text-sm">{plannerError}</p>
         )}
+        {plannerInterpretation && (
+          <div className="border-border/80 bg-muted/40 mt-3 rounded-lg border p-3">
+            <div className="text-muted-foreground flex items-center gap-2 text-xs font-medium tracking-wide uppercase">
+              <WandSparklesIcon className="size-3.5" aria-hidden="true" />
+              {t("plannerInterpreted")}
+            </div>
+            <p className="mt-1 text-sm">{plannerInterpretation.summary}</p>
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              <Badge variant="secondary">
+                {t("plannerDataset", {
+                  dataset: plannerInterpretation.dataset,
+                })}
+              </Badge>
+              {plannerInterpretation.metrics.map((metric) => (
+                <Badge key={metric.key} variant="outline">
+                  {metric.label}
+                </Badge>
+              ))}
+              <Badge variant="outline">
+                {t("plannerFilterCount", {
+                  count: plannerInterpretation.filterCount,
+                })}
+              </Badge>
+            </div>
+          </div>
+        )}
       </section>
 
       <section
@@ -332,7 +410,7 @@ export function QueryBuilder({
           actions={actions}
           teams={teams}
           filterModel={filterModel}
-          onFilterModelChange={setFilterModel}
+          onFilterModelChange={setFilters}
           filterFields={filterFields}
         />
       </section>
