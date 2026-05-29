@@ -522,6 +522,41 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans fight-relative opening-kill timing filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "Which players get first pick within the first 10 seconds of fights?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "opening_kill",
+      metrics: [{ metric: "first_picks", agg: "sum" }],
+      dimensions: ["attacker"],
+      filters: [
+        { field: "attacker_side", op: "eq", value: "us" },
+        { field: "fight_time", op: "lte", value: 10 },
+      ],
+    });
+  });
+
+  it("plans map-relative opening-kill timing filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Which players die first after 30 seconds into the map?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "opening_kill",
+      metrics: [{ metric: "first_deaths", agg: "sum" }],
+      dimensions: ["player"],
+      filters: [
+        { field: "side", op: "eq", value: "us" },
+        { field: "kill_time", op: "gt", value: 30 },
+      ],
+    });
+  });
+
   it("plans player-specific dies-first winrate questions", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

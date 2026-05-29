@@ -1071,6 +1071,8 @@ const FILLER_WORDS = new Set([
   "have",
   "he",
   "her",
+  "hero",
+  "heroes",
   "his",
   "i",
   "in",
@@ -1091,6 +1093,8 @@ const FILLER_WORDS = new Set([
   "our",
   "over",
   "damage",
+  "player",
+  "players",
   "role",
   "scrim",
   "scrims",
@@ -3164,6 +3168,52 @@ function extractTimePlayedFilter(
   return null;
 }
 
+function extractOpeningKillTimeFilters(normalized: string): QueryFilter[] {
+  const duration = `(${NUMBER_TOKEN})`;
+  const unit = "(seconds?|secs?|s|minutes?|mins?|m)";
+  const filters: QueryFilter[] = [];
+
+  function fieldForContext(context: string): "fight_time" | "kill_time" {
+    return /\b(?:fight|fights|teamfight|teamfights|team fight|team fights)\b/.test(
+      context
+    )
+      ? "fight_time"
+      : "kill_time";
+  }
+
+  const firstWindow = new RegExp(
+    `\\b(?:within|in|during)\\s+(?:the\\s+)?first\\s+${duration}\\s*${unit}(?:\\s+(?:of|into|in)\\s+(?:the\\s+)?(fight|fights|teamfight|teamfights|team\\s+fight|team\\s+fights|map|maps|round|rounds|match|matches))?\\b`
+  );
+  const firstMatch = normalized.match(firstWindow);
+  if (firstMatch) {
+    const seconds = durationSeconds(firstMatch[1], firstMatch[2]);
+    if (seconds != null) {
+      filters.push({
+        field: fieldForContext(firstMatch[3] ?? ""),
+        op: "lte",
+        value: seconds,
+      });
+    }
+  }
+
+  const afterWindow = new RegExp(
+    `\\b(?:after|later\\s+than|more\\s+than|over)\\s+${duration}\\s*${unit}\\s+(?:into|in|of)\\s+(?:the\\s+)?(fight|fights|teamfight|teamfights|team\\s+fight|team\\s+fights|map|maps|round|rounds|match|matches)\\b`
+  );
+  const afterMatch = normalized.match(afterWindow);
+  if (afterMatch) {
+    const seconds = durationSeconds(afterMatch[1], afterMatch[2]);
+    if (seconds != null) {
+      filters.push({
+        field: fieldForContext(afterMatch[3]),
+        op: "gt",
+        value: seconds,
+      });
+    }
+  }
+
+  return filters;
+}
+
 function extractUltCountFilter(normalized: string): QueryFilter | null {
   if (
     includesPhrase(normalized, "no ults") ||
@@ -3616,6 +3666,7 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         value: enemyContext ? "enemy" : "us",
       });
     }
+    filters.push(...extractOpeningKillTimeFilters(normalized));
   }
 
   if (dataset === "teamfight") {
