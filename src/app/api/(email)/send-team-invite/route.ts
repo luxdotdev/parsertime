@@ -77,7 +77,8 @@ export async function POST(req: NextRequest) {
     TeamInviteUserEmail({
       username: inviteeEmail,
       userImage:
-        invitee?.image ?? `https://avatar.vercel.sh/${normalizedInviteeEmail}.png`,
+        invitee?.image ??
+        `https://avatar.vercel.sh/${normalizedInviteeEmail}.png`,
       invitedByUsername: user.name ?? "Unknown",
       invitedByEmail: user.email ?? "Unknown",
       teamName: team.name ?? "Unknown",

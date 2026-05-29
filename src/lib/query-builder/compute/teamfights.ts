@@ -79,7 +79,8 @@ export async function computeTeamfights(
     else byMap.set(mapDataId, [event]);
   }
   for (const kill of data.allKills) push(kill.MapDataId, kill);
-  for (const rez of data.allRezzes) push(rez.MapDataId, mercyRezToKillEvent(rez));
+  for (const rez of data.allRezzes)
+    push(rez.MapDataId, mercyRezToKillEvent(rez));
   for (const ult of data.allUltimates) {
     push(ult.MapDataId, {
       ...ultimateStartToKillEvent(ult),

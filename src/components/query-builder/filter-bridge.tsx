@@ -63,7 +63,10 @@ function fieldType(filter: FilterDef): FilterFieldConfig["type"] {
 }
 
 function operatorsFor(filter: FilterDef): FilterOperator[] {
-  return filter.operators.map((op) => ({ value: op, label: OPERATOR_LABELS[op] }));
+  return filter.operators.map((op) => ({
+    value: op,
+    label: OPERATOR_LABELS[op],
+  }));
 }
 
 /** Build the Filters field config for a dataset, with async option loading. */
@@ -81,7 +84,10 @@ export function buildFilterFields(
     defaultOperator: filter.operators[0],
     unit: filter.unit,
     placeholder: filter.unit ? filter.label : "Select",
-    options: filter.enumOptions?.map((o) => ({ value: o.value, label: o.label })),
+    options: filter.enumOptions?.map((o) => ({
+      value: o.value,
+      label: o.label,
+    })),
     loadOptions: filter.enumOptions
       ? undefined
       : () =>

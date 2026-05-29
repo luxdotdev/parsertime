@@ -37,7 +37,8 @@ const rowDark = new Array<number>(height).fill(0);
 for (let y = 0; y < height; y++) {
   for (let x = 0; x < width; x++) {
     const i = (y * width + x) * channels;
-    if (luminance(data[i], data[i + 1], data[i + 2]) >= BBOX_THRESHOLD) continue;
+    if (luminance(data[i], data[i + 1], data[i + 2]) >= BBOX_THRESHOLD)
+      continue;
     colDark[x]++;
     rowDark[y]++;
   }
@@ -54,8 +55,14 @@ const interiorMax = (counts: number[], lo: number, hi: number) => {
   for (let k = lo; k <= hi; k++) if (counts[k] > m) m = counts[k];
   return m;
 };
-const colGate = Math.max(GATE_FLOOR, interiorMax(colDark, mx, width - 1 - mx) * 0.1);
-const rowGate = Math.max(GATE_FLOOR, interiorMax(rowDark, my, height - 1 - my) * 0.1);
+const colGate = Math.max(
+  GATE_FLOOR,
+  interiorMax(colDark, mx, width - 1 - mx) * 0.1
+);
+const rowGate = Math.max(
+  GATE_FLOOR,
+  interiorMax(rowDark, my, height - 1 - my) * 0.1
+);
 const firstAbove = (counts: number[], gate: number, lo: number, hi: number) => {
   for (let k = lo; k <= hi; k++) if (counts[k] >= gate) return k;
   return -1;

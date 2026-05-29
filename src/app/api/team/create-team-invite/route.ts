@@ -9,7 +9,10 @@ import { z } from "zod";
 
 const CreateTeamInviteSchema = z.object({
   id: z.coerce.number().int().positive(),
-  email: z.email().max(254).transform((email) => email.toLowerCase()),
+  email: z
+    .email()
+    .max(254)
+    .transform((email) => email.toLowerCase()),
 });
 
 export async function POST(req: NextRequest) {

@@ -97,7 +97,9 @@ export function Statistics({
 
     const { from, to } = date;
     setCustomScrims(
-      scrims["all-time"].filter((scrim) => scrim.date >= from && scrim.date <= to)
+      scrims["all-time"].filter(
+        (scrim) => scrim.date >= from && scrim.date <= to
+      )
     );
   }, [timeframe, date, scrims]);
 

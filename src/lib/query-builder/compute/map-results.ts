@@ -88,7 +88,8 @@ export async function computeMapResults(
     });
     if (winner === "N/A") continue;
 
-    const scrim = data.mapDataRecords.find((r) => r.id === mapDataId)?.Scrim?.name;
+    const scrim = data.mapDataRecords.find((r) => r.id === mapDataId)?.Scrim
+      ?.name;
     rows.push({
       won: winner === ourTeam ? 1 : 0,
       result: winner === ourTeam ? "win" : "loss",

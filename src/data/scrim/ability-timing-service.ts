@@ -124,9 +124,7 @@ function groupEventsIntoFightsByMap(events: Kill[]): Fight[] {
   }
 
   return Array.from(eventsByMap.values()).flatMap((mapEvents) =>
-    groupEventsIntoFights(
-      mapEvents.sort((a, b) => a.match_time - b.match_time)
-    )
+    groupEventsIntoFights(mapEvents.sort((a, b) => a.match_time - b.match_time))
   );
 }
 

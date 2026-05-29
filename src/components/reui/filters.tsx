@@ -18,7 +18,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Kbd } from "@/components/ui/kbd";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { CheckIcon, ListFilterIcon, XIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -87,7 +91,9 @@ export function createFilter(
   return { id: `f${filterSeq}-${field}`, field, operator, values };
 }
 
-function isGroup(item: FilterFieldConfig | FilterFieldGroup): item is FilterFieldGroup {
+function isGroup(
+  item: FilterFieldConfig | FilterFieldGroup
+): item is FilterFieldGroup {
   return "fields" in item;
 }
 
@@ -95,7 +101,9 @@ function flatten(fields: FilterFieldsConfig): FilterFieldConfig[] {
   return fields.flatMap((item) => (isGroup(item) ? item.fields : [item]));
 }
 
-function fieldsMap(fields: FilterFieldsConfig): Record<string, FilterFieldConfig> {
+function fieldsMap(
+  fields: FilterFieldsConfig
+): Record<string, FilterFieldConfig> {
   const map: Record<string, FilterFieldConfig> = {};
   for (const f of flatten(fields)) map[f.key] = f;
   return map;
@@ -193,7 +201,7 @@ export function Filters({
               type="button"
               variant="outline"
               size="sm"
-              className="border-dashed gap-1.5"
+              className="gap-1.5 border-dashed"
             >
               <ListFilterIcon className="size-4" aria-hidden="true" />
               {addFilterLabel}
@@ -243,7 +251,9 @@ function FieldItem({
   return (
     <CommandItem value={field.label} onSelect={() => onAdd(field)}>
       {field.icon && (
-        <span className="text-muted-foreground [&_svg]:size-4">{field.icon}</span>
+        <span className="text-muted-foreground [&_svg]:size-4">
+          {field.icon}
+        </span>
       )}
       {field.label}
     </CommandItem>
@@ -288,7 +298,10 @@ function FilterChip({
           <Button
             type="button"
             variant="outline"
-            className={cn(SEGMENT, "text-muted-foreground hover:text-foreground")}
+            className={cn(
+              SEGMENT,
+              "text-muted-foreground hover:text-foreground"
+            )}
           >
             {operatorLabel}
           </Button>
@@ -330,7 +343,7 @@ function FilterChip({
         size="icon-sm"
         aria-label="Remove filter"
         onClick={onRemove}
-        className="rounded-none text-muted-foreground hover:text-foreground"
+        className="text-muted-foreground hover:text-foreground rounded-none"
       >
         <XIcon className="size-3.5" aria-hidden="true" />
       </Button>
@@ -405,7 +418,7 @@ function ValueSegment({
   const selected = options.filter((o) => values.includes(o.value));
   const display =
     selected.length === 0
-      ? field.placeholder ?? "Select"
+      ? (field.placeholder ?? "Select")
       : selected.length === 1
         ? selected[0].label
         : `${selected.length} selected`;
@@ -433,7 +446,9 @@ function ValueSegment({
         >
           {selected.length > 0 && selected.length <= 3 && (
             <span className="flex items-center -space-x-1 [&_svg]:size-4">
-              {selected.map((o) => o.icon && <span key={o.value}>{o.icon}</span>)}
+              {selected.map(
+                (o) => o.icon && <span key={o.value}>{o.icon}</span>
+              )}
             </span>
           )}
           <span className="truncate">{display}</span>
@@ -460,7 +475,9 @@ function ValueSegment({
                   <CheckIcon
                     className={cn(
                       "text-primary ml-auto size-4",
-                      values.includes(option.value) ? "opacity-100" : "opacity-0"
+                      values.includes(option.value)
+                        ? "opacity-100"
+                        : "opacity-0"
                     )}
                     aria-hidden="true"
                   />

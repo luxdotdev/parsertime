@@ -1,4 +1,7 @@
-import { aggregateComputed, type ComputedRow } from "@/lib/query-builder/aggregate";
+import {
+  aggregateComputed,
+  type ComputedRow,
+} from "@/lib/query-builder/aggregate";
 import { querySpecSchema, type QuerySpec } from "@/lib/query-builder/types";
 import { describe, expect, it } from "vitest";
 

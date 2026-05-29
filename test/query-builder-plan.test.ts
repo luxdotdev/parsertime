@@ -133,7 +133,9 @@ describe("query-builder compiler", () => {
     expect(sql).toContain('WHERE hs."scrimId" IN ($1, $2)');
     expect(sql).toContain("(COUNT(*))::float8");
     expect(sql).toContain('hs."player_hero" AS "to_hero"');
-    expect(sql).toContain('FROM "MatchStart") ms ON ms."MapDataId" = hs."MapDataId"');
+    expect(sql).toContain(
+      'FROM "MatchStart") ms ON ms."MapDataId" = hs."MapDataId"'
+    );
     expect(sql).toContain('ms."map_type"::text AS "map_type"');
     expect(params).toEqual([10, 11]);
   });

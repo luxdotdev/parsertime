@@ -164,8 +164,7 @@ export async function POST(req: Request) {
               } catch (error) {
                 Logger.error("failed to send low-balance warning", {
                   userId: userData.id,
-                  error:
-                    error instanceof Error ? error.message : String(error),
+                  error: error instanceof Error ? error.message : String(error),
                 });
               }
             }

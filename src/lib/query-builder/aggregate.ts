@@ -20,12 +20,16 @@ import {
 
 export type ComputedRow = Record<string, string | number | null>;
 
-function matchesFilter(row: ComputedRow, filter: QueryFilter, field: string): boolean {
+function matchesFilter(
+  row: ComputedRow,
+  filter: QueryFilter,
+  field: string
+): boolean {
   const cell = row[field];
   if (filter.op === "in" || filter.op === "nin") {
-    const values = (Array.isArray(filter.value) ? filter.value : [filter.value]).map(
-      String
-    );
+    const values = (
+      Array.isArray(filter.value) ? filter.value : [filter.value]
+    ).map(String);
     if (values.length === 0) return true;
     const hit = values.includes(String(cell));
     return filter.op === "in" ? hit : !hit;
@@ -60,7 +64,9 @@ function aggregate(
     case "sum":
       return values.reduce((a, b) => a + b, 0);
     case "avg":
-      return values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0;
+      return values.length
+        ? values.reduce((a, b) => a + b, 0) / values.length
+        : 0;
     case "max":
       return values.length ? Math.max(...values) : 0;
     case "min":
@@ -113,7 +119,11 @@ export function aggregateComputed(
   }
 
   const columns: ResultColumn[] = [
-    ...dims.map((d) => ({ key: d.id, label: d.label, kind: "dimension" as const })),
+    ...dims.map((d) => ({
+      key: d.id,
+      label: d.label,
+      kind: "dimension" as const,
+    })),
     ...metrics.map((m) => ({
       key: m.key,
       label: m.label,
@@ -152,7 +162,8 @@ export function aggregateComputed(
       const bv = b[key];
       if (av === null) return 1;
       if (bv === null) return -1;
-      if (typeof av === "number" && typeof bv === "number") return (av - bv) * sign;
+      if (typeof av === "number" && typeof bv === "number")
+        return (av - bv) * sign;
       return String(av).localeCompare(String(bv)) * sign;
     });
   }

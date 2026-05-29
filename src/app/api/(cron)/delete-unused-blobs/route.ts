@@ -66,8 +66,7 @@ export async function DELETE(req: NextRequest) {
   const filteredBlobs = blobs
     .filter((blob) => !activeBlobs.has(blob.url))
     .filter(
-      (blob) =>
-        now - new Date(blob.uploadedAt).getTime() > BLOB_DELETE_GRACE_MS
+      (blob) => now - new Date(blob.uploadedAt).getTime() > BLOB_DELETE_GRACE_MS
     )
     .map((blob) => blob.url);
 

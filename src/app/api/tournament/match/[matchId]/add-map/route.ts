@@ -81,8 +81,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function hasOversizedString(row: unknown[]) {
   return row.some(
-    (cell) =>
-      typeof cell === "string" && cell.length > MAX_ROW_STRING_LENGTH
+    (cell) => typeof cell === "string" && cell.length > MAX_ROW_STRING_LENGTH
   );
 }
 
@@ -398,7 +397,6 @@ export async function POST(
         } else {
           winner = result;
         }
-
       }
     }
 

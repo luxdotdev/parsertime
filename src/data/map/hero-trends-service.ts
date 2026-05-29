@@ -234,8 +234,7 @@ function finalizeGroup(group: MapGroup): MapHeroTrendGroup {
       })
       .filter(
         (hero) =>
-          hero.totalPlaytime > 0 &&
-          hero.samples >= MIN_PUBLIC_HERO_APPEARANCES
+          hero.totalPlaytime > 0 && hero.samples >= MIN_PUBLIC_HERO_APPEARANCES
       )
       .sort((a, b) => b.totalPlaytime - a.totalPlaytime),
   };

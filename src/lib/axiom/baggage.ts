@@ -46,10 +46,7 @@ export function setRequestContext(attrs: BaggageAttrs): Context {
  * Runs work with request baggage active so downstream OpenTelemetry propagation
  * can read the user/team/flag values from context.active().
  */
-export function withRequestContext<T>(
-  attrs: BaggageAttrs,
-  fn: () => T
-): T {
+export function withRequestContext<T>(attrs: BaggageAttrs, fn: () => T): T {
   return context.with(setRequestContext(attrs), fn);
 }
 

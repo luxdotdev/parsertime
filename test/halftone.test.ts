@@ -15,8 +15,7 @@ describe("sampleDots", () => {
   it("emits a dot for a dark cell and skips light cells", () => {
     // 2x2 RGBA, row-major: top-left black, rest white
     const px = new Uint8Array([
-      0, 0, 0, 255, 255, 255, 255, 255,
-      255, 255, 255, 255, 255, 255, 255, 255,
+      0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
     ]);
     const dots = sampleDots(px, 2, 2, 4, opts);
     expect(dots).toHaveLength(1);

@@ -7,7 +7,7 @@ export default async function NotFound() {
   const t = await getTranslations("notFound");
 
   return (
-    <div className="relative min-h-svh bg-background text-foreground">
+    <div className="bg-background text-foreground relative min-h-svh">
       {/* Desktop only: full-width red→chrome bleed behind both columns. */}
       <div
         aria-hidden="true"
@@ -52,7 +52,7 @@ export default async function NotFound() {
               <h1 className="not-found-title mt-4 font-mono text-4xl font-extrabold tracking-tight sm:text-6xl">
                 {t("header")}
               </h1>
-              <p className="not-found-desc mt-6 text-base leading-7 text-muted-foreground">
+              <p className="not-found-desc text-muted-foreground mt-6 text-base leading-7">
                 {t("description")}
               </p>
               <div className="mt-10">
@@ -66,7 +66,7 @@ export default async function NotFound() {
             </div>
           </div>
 
-          <footer className="pt-8 text-sm text-muted-foreground">
+          <footer className="text-muted-foreground pt-8 text-sm">
             <Link href="/contact">{t("contact")}</Link>
           </footer>
         </div>

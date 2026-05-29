@@ -87,29 +87,27 @@ export const make = Effect.gen(function* () {
     return Effect.gen(function* () {
       yield* Effect.annotateCurrentSpan("teamId", teamId);
 
-      const {
-        winrates,
-        banAnalysis,
-        heroPool,
-        mapModePerf,
-        enemyHeroes,
-      } = yield* Effect.all(
-        {
-          winrates: statsService.getTeamWinrates(teamId, dateRange),
-          banAnalysis: banImpactService.getTeamBanImpactAnalysis(
-            teamId,
-            dateRange
-          ),
-          heroPool: heroPoolService.getHeroPoolAnalysis(
-            teamId,
-            dateRange?.from,
-            dateRange?.to
-          ),
-          mapModePerf: mapModeService.getMapModePerformance(teamId, dateRange),
-          enemyHeroes: matchupService.getEnemyHeroAnalysis(teamId, dateRange),
-        },
-        { concurrency: "unbounded" }
-      );
+      const { winrates, banAnalysis, heroPool, mapModePerf, enemyHeroes } =
+        yield* Effect.all(
+          {
+            winrates: statsService.getTeamWinrates(teamId, dateRange),
+            banAnalysis: banImpactService.getTeamBanImpactAnalysis(
+              teamId,
+              dateRange
+            ),
+            heroPool: heroPoolService.getHeroPoolAnalysis(
+              teamId,
+              dateRange?.from,
+              dateRange?.to
+            ),
+            mapModePerf: mapModeService.getMapModePerformance(
+              teamId,
+              dateRange
+            ),
+            enemyHeroes: matchupService.getEnemyHeroAnalysis(teamId, dateRange),
+          },
+          { concurrency: "unbounded" }
+        );
 
       const totalGames = winrates.overallWins + winrates.overallLosses;
       const baseWinrate =

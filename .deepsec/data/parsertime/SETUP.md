@@ -25,7 +25,7 @@ still has placeholder sections.
      `auth.can()`, `isTeamAdmin`). **No line numbers.** Don't enumerate
      more than 5 paths in any list.
    - Skip generic CWE categories — built-in matchers already cover
-     "SSRF", "SQL injection", "XSS". Cover what's *project-specific*:
+     "SSRF", "SQL injection", "XSS". Cover what's _project-specific_:
      internal auth helpers, custom middleware names, fork-specific
      stubs, intended-public endpoints.
    - One short paragraph or 3–5 short bullets per section. Not both.

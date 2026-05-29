@@ -1817,9 +1817,7 @@ export const make = Effect.gen(function* () {
         parsed.tournamentId,
         parsed.tournamentTeamId,
         parsed.locale
-      ).pipe(
-        Effect.tap(() => Metric.increment(ttCacheMissTotal))
-      );
+      ).pipe(Effect.tap(() => Metric.increment(ttCacheMissTotal)));
     },
   });
 

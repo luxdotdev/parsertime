@@ -4,7 +4,9 @@ import type { NextRequest } from "next/server";
 
 function isAuthorizedCronRequest(req: NextRequest) {
   const secret = process.env.CRON_SECRET;
-  return Boolean(secret && req.headers.get("Authorization") === `Bearer ${secret}`);
+  return Boolean(
+    secret && req.headers.get("Authorization") === `Bearer ${secret}`
+  );
 }
 
 async function deleteExpiredTokens() {
