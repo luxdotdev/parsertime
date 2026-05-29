@@ -18,6 +18,7 @@ export const DATASETS = [
   "ult_economy",
   "duel",
   "ability_impact",
+  "swap_impact",
 ] as const;
 export type DatasetId = (typeof DATASETS)[number];
 

@@ -36,6 +36,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   ult_economy: "win_rate",
   duel: "win_rate",
   ability_impact: "win_rate",
+  swap_impact: "win_rate",
 };
 
 const DATASET_HINTS: Record<DatasetId, string[]> = {
@@ -94,6 +95,16 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "amp it up",
     "lamp",
   ],
+  swap_impact: [
+    "swap impact",
+    "swap winrate",
+    "swap win rate",
+    "when we swap",
+    "when swapping",
+    "swap count",
+    "swaps per map",
+    "too many swaps",
+  ],
 };
 
 const METRIC_ALIASES: Record<string, string[]> = {
@@ -131,6 +142,10 @@ const DIMENSION_ALIASES: Record<string, string[]> = {
   side: ["side", "team"],
   used: ["used", "usage"],
   scenario: ["scenario", "used vs not used"],
+  had_swap: ["had swap", "with swaps", "without swaps"],
+  swap_count: ["swap count", "number of swaps"],
+  swap_count_bucket: ["swap count bucket", "swaps"],
+  first_swap_timing: ["first swap timing", "swap timing"],
 };
 
 const FILLER_WORDS = new Set([
@@ -398,7 +413,14 @@ function dedupeMetrics(refs: MetricRef[]): MetricRef[] {
 
 function filterFor(
   dataset: DatasetId,
-  kind: "hero" | "player" | "map_type" | "ability" | "side" | "used",
+  kind:
+    | "hero"
+    | "player"
+    | "map_type"
+    | "ability"
+    | "side"
+    | "used"
+    | "had_swap",
   value: string
 ): QueryFilter | null {
   const candidates: Partial<Record<typeof kind, string[]>> = {
@@ -415,6 +437,7 @@ function filterFor(
     ability: ["ability"],
     side: ["side"],
     used: ["used"],
+    had_swap: ["had_swap"],
   };
   const field = candidates[kind]
     ?.map((id) => getDataset(dataset).filters.find((f) => f.id === id))
@@ -501,6 +524,24 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
   }
 
+  if (dataset === "swap_impact") {
+    if (
+      includesPhrase(normalized, "without swaps") ||
+      includesPhrase(normalized, "no swaps") ||
+      includesPhrase(normalized, "not swap")
+    ) {
+      const filter = filterFor(dataset, "had_swap", "no");
+      if (filter) filters.push(filter);
+    } else if (
+      includesPhrase(normalized, "with swaps") ||
+      includesPhrase(normalized, "when we swap") ||
+      includesPhrase(normalized, "when swapping")
+    ) {
+      const filter = filterFor(dataset, "had_swap", "yes");
+      if (filter) filters.push(filter);
+    }
+  }
+
   return filters.slice(0, 8);
 }
 
@@ -559,6 +600,9 @@ function pickDimensions(
   }
   if (dataset === "ability_impact" && dims.length === 0) {
     add(hasFilter("used") ? "ability" : "used");
+  }
+  if (dataset === "swap_impact" && dims.length === 0) {
+    add(hasFilter("had_swap") ? "swap_count_bucket" : "had_swap");
   }
 
   return dims.slice(0, 4);

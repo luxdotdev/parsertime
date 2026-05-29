@@ -74,4 +74,18 @@ describe("query-builder natural-language planner", () => {
       ],
     });
   });
+
+  it("plans swap-impact questions onto swap buckets", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 3,
+      question: "What is our win rate when we swap?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "swap_impact",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["swap_count_bucket"],
+      filters: [{ field: "had_swap", op: "eq", value: "yes" }],
+    });
+  });
 });

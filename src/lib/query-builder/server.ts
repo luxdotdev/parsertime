@@ -7,6 +7,7 @@ import { aggregateComputed } from "@/lib/query-builder/aggregate";
 import { computeAbilityImpact } from "@/lib/query-builder/compute/ability-impact";
 import { computeDuels } from "@/lib/query-builder/compute/duels";
 import { computeMapResults } from "@/lib/query-builder/compute/map-results";
+import { computeSwapImpact } from "@/lib/query-builder/compute/swap-impact";
 import { computeTeamfights } from "@/lib/query-builder/compute/teamfights";
 import { computeUltEconomy } from "@/lib/query-builder/compute/ult-economy";
 import { getDataset, getFilter } from "@/lib/query-builder/registry";
@@ -232,6 +233,9 @@ async function runComputedQuery(
         break;
       case "ability_impact":
         computedRows = await computeAbilityImpact(spec.teamId, ctx.scrimIds);
+        break;
+      case "swap_impact":
+        computedRows = await computeSwapImpact(spec.teamId, ctx.scrimIds);
         break;
       default:
         return { ok: false, error: "Unknown analysis." };
