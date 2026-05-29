@@ -418,7 +418,11 @@ function ValueSegment({
   const selected = options.filter((o) => values.includes(o.value));
   const display =
     selected.length === 0
-      ? (field.placeholder ?? "Select")
+      ? values.length === 0
+        ? (field.placeholder ?? "Select")
+        : values.length === 1
+          ? String(values[0])
+          : `${values.length} selected`
       : selected.length === 1
         ? selected[0].label
         : `${selected.length} selected`;

@@ -235,4 +235,20 @@ describe("query-builder natural-language planner", () => {
       ],
     });
   });
+
+  it("plans lineup questions onto role trios", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What are our best lineups with PGE?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "role_trio",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["trio"],
+      filters: [{ field: "player", op: "in", value: ["PGE"] }],
+      sort: { key: "ratio__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
 });

@@ -41,6 +41,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   enemy_hero: "win_rate",
   ban_impact: "win_rate_delta",
   ult_combo: "win_rate",
+  role_trio: "win_rate",
 };
 
 const DATASET_HINTS: Record<DatasetId, string[]> = {
@@ -77,6 +78,18 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "counter ultimate",
     "respond to ult",
     "response ult",
+  ],
+  role_trio: [
+    "role trio",
+    "role trios",
+    "lineup",
+    "lineups",
+    "roster combo",
+    "roster combos",
+    "player combination",
+    "player combinations",
+    "five stack",
+    "starting five",
   ],
   map: ["maps played", "opponent", "map count"],
   teamfight: [
@@ -213,6 +226,7 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "combo count",
     "response count",
   ],
+  games: ["games", "maps", "maps played", "sample", "sample size"],
   avg_wasted_ults: ["wasted ult", "wasted ults", "wasted ultimates"],
   win_rate: ["winrate", "winrates", "win rate", "win rates", "wr"],
   fights: ["fights", "teamfights", "team fights"],
@@ -244,6 +258,12 @@ const DIMENSION_ALIASES: Record<string, string[]> = {
   hero_a: ["first hero"],
   hero_b: ["second hero"],
   response_hero: ["response hero", "counter hero"],
+  trio: ["lineup", "role trio", "roster combo", "player combination"],
+  tank: ["tank"],
+  dps1: ["damage 1", "dps 1"],
+  dps2: ["damage 2", "dps 2"],
+  support1: ["support 1"],
+  support2: ["support 2"],
   used: ["used", "usage"],
   scenario: ["scenario", "used vs not used"],
   role: ["role"],
@@ -390,6 +410,9 @@ function findPlayer(question: string, hero: string | null): string | null {
   const candidates = [
     ...question.matchAll(
       /\b(?:for|player|by)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\b/gi
+    ),
+    ...question.matchAll(
+      /\b(?:with|alongside)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\b/gi
     ),
     ...question.matchAll(/\b([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:has|had)\b/gi),
   ];
@@ -837,6 +860,7 @@ function pickDimensions(
       add("combo");
     }
   }
+  if (dataset === "role_trio" && dims.length === 0) add("trio");
 
   return dims.slice(0, 4);
 }

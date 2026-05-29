@@ -10,6 +10,7 @@ import { computeDuels } from "@/lib/query-builder/compute/duels";
 import { computeEnemyHeroMatchups } from "@/lib/query-builder/compute/enemy-hero";
 import { computeHeroPool } from "@/lib/query-builder/compute/hero-pool";
 import { computeMapResults } from "@/lib/query-builder/compute/map-results";
+import { computeRoleTrios } from "@/lib/query-builder/compute/role-trios";
 import { computeSwapImpact } from "@/lib/query-builder/compute/swap-impact";
 import { computeTeamfights } from "@/lib/query-builder/compute/teamfights";
 import { computeUltCombos } from "@/lib/query-builder/compute/ult-combos";
@@ -255,6 +256,9 @@ async function runComputedQuery(
         break;
       case "ult_combo":
         computedRows = await computeUltCombos(spec.teamId, ctx.scrimIds);
+        break;
+      case "role_trio":
+        computedRows = await computeRoleTrios(spec.teamId, ctx.scrimIds);
         break;
       default:
         return { ok: false, error: "Unknown analysis." };
