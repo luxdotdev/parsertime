@@ -1077,6 +1077,65 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans enemy ability-use winrate filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 9,
+      question: "What is our win rate when enemy uses Suzu?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ability_impact",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      filters: [
+        { field: "hero", op: "in", value: ["Kiriko"] },
+        { field: "ability", op: "in", value: ["Protection Suzu"] },
+        { field: "side", op: "eq", value: "enemy" },
+        { field: "used", op: "eq", value: "yes" },
+      ],
+    });
+  });
+
+  it("plans negated enemy ability-use winrate filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 9,
+      question: "What is our win rate when enemy does not use Suzu?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ability_impact",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      filters: [
+        { field: "hero", op: "in", value: ["Kiriko"] },
+        { field: "ability", op: "in", value: ["Protection Suzu"] },
+        { field: "side", op: "eq", value: "enemy" },
+        { field: "used", op: "eq", value: "no" },
+      ],
+    });
+  });
+
+  it("plans enemy ability loss questions after use", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 9,
+      question:
+        "Which enemy abilities do we lose fights after they use the most?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ability_impact",
+      dimensions: ["ability"],
+      filters: [
+        { field: "side", op: "eq", value: "enemy" },
+        { field: "used", op: "eq", value: "yes" },
+      ],
+      sort: { key: "sum__losses", dir: "desc" },
+      limit: 20,
+    });
+    expect(planned?.spec.metrics[0]).toEqual({
+      metric: "losses",
+      agg: "sum",
+    });
+  });
+
   it("plans ability-timing questions by phase", () => {
     const planned = planQueryFromQuestion({
       teamId: 9,

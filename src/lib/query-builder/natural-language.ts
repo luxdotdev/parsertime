@@ -3731,6 +3731,55 @@ function pickConfidenceScope(normalized: string): string | null {
   return null;
 }
 
+function mentionsEnemyAbilityContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "enemy") ||
+    includesPhrase(normalized, "enemies") ||
+    includesPhrase(normalized, "opponent") ||
+    includesPhrase(normalized, "opponents") ||
+    includesPhrase(normalized, "their") ||
+    includesPhrase(normalized, "they")
+  );
+}
+
+function hasNegatedAbilityUse(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "not using") ||
+    includesPhrase(normalized, "not used") ||
+    includesPhrase(normalized, "does not use") ||
+    includesPhrase(normalized, "do not use") ||
+    includesPhrase(normalized, "did not use") ||
+    includesPhrase(normalized, "doesn t use") ||
+    includesPhrase(normalized, "don t use") ||
+    includesPhrase(normalized, "didn t use") ||
+    includesPhrase(normalized, "without") ||
+    includesPhrase(normalized, "no ability") ||
+    includesPhrase(normalized, "no abilities")
+  );
+}
+
+function hasAffirmedAbilityUse(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "using") ||
+    includesPhrase(normalized, "used") ||
+    includesPhrase(normalized, "uses") ||
+    includesPhrase(normalized, "we use") ||
+    includesPhrase(normalized, "they use") ||
+    includesPhrase(normalized, "enemy use") ||
+    includesPhrase(normalized, "enemies use") ||
+    includesPhrase(normalized, "opponent use") ||
+    includesPhrase(normalized, "opponents use") ||
+    includesPhrase(normalized, "use ability") ||
+    includesPhrase(normalized, "use abilities") ||
+    includesPhrase(normalized, "after use") ||
+    includesPhrase(normalized, "after they use") ||
+    includesPhrase(normalized, "after enemy use") ||
+    includesPhrase(normalized, "after enemies use") ||
+    includesPhrase(normalized, "after opponent use") ||
+    includesPhrase(normalized, "after opponents use")
+  );
+}
+
 function pickFightPhase(normalized: string): string | null {
   if (
     includesPhrase(normalized, "pre fight") ||
@@ -4396,7 +4445,7 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   }
 
   if (dataset === "ability_impact") {
-    const side = includesPhrase(normalized, "enemy") ? "enemy" : "us";
+    const side = mentionsEnemyAbilityContext(normalized) ? "enemy" : "us";
     const sideFilter = filterFor(dataset, "side", side);
     if (sideFilter) filters.push(sideFilter);
 
@@ -4406,17 +4455,10 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       includesPhrase(normalized, "compare") ||
       includesPhrase(normalized, "used vs not used");
     if (!wantsComparison) {
-      if (
-        includesPhrase(normalized, "not using") ||
-        includesPhrase(normalized, "not used") ||
-        includesPhrase(normalized, "without")
-      ) {
+      if (hasNegatedAbilityUse(normalized)) {
         const usedFilter = filterFor(dataset, "used", "no");
         if (usedFilter) filters.push(usedFilter);
-      } else if (
-        includesPhrase(normalized, "using") ||
-        includesPhrase(normalized, "used")
-      ) {
+      } else if (hasAffirmedAbilityUse(normalized)) {
         const usedFilter = filterFor(dataset, "used", "yes");
         if (usedFilter) filters.push(usedFilter);
       }
