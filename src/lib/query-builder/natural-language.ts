@@ -1329,6 +1329,9 @@ function findPlayer(question: string, hero: string | null): string | null {
     ...question.matchAll(
       /\b(?:does|did)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:have|has|record|recorded)\b/gi
     ),
+    ...question.matchAll(
+      /\b(?:does|did|has|have)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:play|played)\b/gi
+    ),
     ...question.matchAll(/\b([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:has|had)\b/gi),
     ...question.matchAll(
       /\b([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:dies|died|die|gets|got)\b/gi
@@ -1789,11 +1792,19 @@ function mentionsHeroPickrateContext(normalized: string): boolean {
     includesPhrase(normalized, "pick rate") ||
     includesPhrase(normalized, "pick rates") ||
     includesPhrase(normalized, "hero ownership") ||
+    includesPhrase(normalized, "ownership") ||
     includesPhrase(normalized, "ownership rate") ||
     includesPhrase(normalized, "owns our") ||
     includesPhrase(normalized, "owned by") ||
     includesPhrase(normalized, "player hero share") ||
-    includesPhrase(normalized, "hero pool share")
+    includesPhrase(normalized, "hero pool share") ||
+    ((includesPhrase(normalized, "which hero") ||
+      includesPhrase(normalized, "which heroes")) &&
+      includesPhrase(normalized, "played") &&
+      (includesPhrase(normalized, "map") ||
+        includesPhrase(normalized, "maps") ||
+        includesPhrase(normalized, "game") ||
+        includesPhrase(normalized, "games")))
   );
 }
 
@@ -3343,14 +3354,18 @@ function extractTimePlayedFilter(
 function extractNumericThresholdFilters(
   dataset: DatasetId,
   normalized: string,
-  fields: { field: string; aliases: string[] }[]
+  fields: {
+    field: string;
+    aliases: string[];
+    coerceValue?: (value: number) => number;
+  }[]
 ): QueryFilter[] {
   const filters: QueryFilter[] = [];
   const number = `(${NUMBER_TOKEN})(?:st|nd|rd|th)?`;
   const percent = "\\s*(?:%|percent|percentage)?";
   const seen = new Set<string>();
 
-  for (const { field, aliases } of fields) {
+  for (const { field, aliases, coerceValue } of fields) {
     const def = getDataset(dataset).filters.find(
       (filter) => filter.id === field
     );
@@ -3418,8 +3433,9 @@ function extractNumericThresholdFilters(
       if (!def.operators.includes(op)) continue;
       const match = normalized.match(pattern);
       if (!match) continue;
-      const value = numberFromToken(match[1]);
-      if (value == null) continue;
+      const parsedValue = numberFromToken(match[1]);
+      if (parsedValue == null) continue;
+      const value = coerceValue ? coerceValue(parsedValue) : parsedValue;
       const key = `${field}:${op}:${value}`;
       if (seen.has(key)) continue;
       seen.add(key);
@@ -3429,6 +3445,10 @@ function extractNumericThresholdFilters(
   }
 
   return filters;
+}
+
+function percentFraction(value: number): number {
+  return value > 1 ? value / 100 : value;
 }
 
 function extractOpeningKillTimeFilters(normalized: string): QueryFilter[] {
@@ -4378,6 +4398,32 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     if (confidence) {
       filters.push({ field: "confidence", op: "in", value: [confidence] });
     }
+  }
+
+  if (dataset === "hero_pickrate") {
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "pick_rate",
+          aliases: ["pick rate", "pickrate", "hero pool share"],
+          coerceValue: percentFraction,
+        },
+        {
+          field: "ownership_rate",
+          aliases: [
+            "ownership",
+            "ownership rate",
+            "share of hero",
+            "hero ownership",
+          ],
+          coerceValue: percentFraction,
+        },
+        {
+          field: "games",
+          aliases: ["games", "maps", "maps played"],
+        },
+      ])
+    );
   }
 
   if (dataset === "player_impact") {

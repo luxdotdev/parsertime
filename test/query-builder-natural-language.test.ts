@@ -963,6 +963,57 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans hero ownership threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Which players have at least 40% ownership of Widowmaker?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_pickrate",
+      metrics: [{ metric: "ownership_rate", agg: "ratio" }],
+      dimensions: ["player"],
+      filters: [
+        { field: "hero", op: "in", value: ["Widowmaker"] },
+        { field: "ownership_rate", op: "gte", value: 0.4 },
+      ],
+    });
+  });
+
+  it("plans player pick-rate threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Which heroes does PGE play under 10% pick rate?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_pickrate",
+      metrics: [{ metric: "pick_rate", agg: "ratio" }],
+      dimensions: ["hero"],
+      filters: [
+        { field: "player", op: "in", value: ["PGE"] },
+        { field: "pick_rate", op: "lt", value: 0.1 },
+      ],
+    });
+  });
+
+  it("plans hero-pickrate games threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Which heroes has PGE played on at least 5 maps?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_pickrate",
+      metrics: [{ metric: "games", agg: "sum" }],
+      dimensions: ["hero"],
+      filters: [
+        { field: "player", op: "in", value: ["PGE"] },
+        { field: "games", op: "gte", value: 5 },
+      ],
+    });
+  });
+
   it("plans increasing hero trend questions by map type", () => {
     const planned = planQueryFromQuestion({
       teamId: 2,
