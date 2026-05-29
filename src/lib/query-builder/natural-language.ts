@@ -525,6 +525,11 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "one trick",
     "one-trick",
     "primary hero",
+    "primary heroes",
+    "best hero",
+    "best heroes",
+    "most played hero",
+    "most played heroes",
     "primary time share",
     "hero dependency",
     "hero dependence",
@@ -2051,6 +2056,16 @@ function mentionsPlayerIntelligenceContext(normalized: string): boolean {
     includesPhrase(normalized, "flexible") ||
     includesPhrase(normalized, "one trick") ||
     includesPhrase(normalized, "one-trick") ||
+    includesPhrase(normalized, "primary hero") ||
+    includesPhrase(normalized, "primary heroes") ||
+    includesPhrase(normalized, "most played hero") ||
+    includesPhrase(normalized, "most played heroes") ||
+    includesPhrase(normalized, "most-played hero") ||
+    includesPhrase(normalized, "most-played heroes") ||
+    includesPhrase(normalized, "non primary") ||
+    includesPhrase(normalized, "non-primary") ||
+    includesPhrase(normalized, "secondary hero") ||
+    includesPhrase(normalized, "secondary heroes") ||
     includesPhrase(normalized, "primary time share") ||
     includesPhrase(normalized, "primary share") ||
     includesPhrase(normalized, "hero dependency") ||
@@ -3895,6 +3910,36 @@ function pickFightPhase(normalized: string): string | null {
   return null;
 }
 
+function wantsPrimaryHeroFilter(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "primary hero") ||
+    includesPhrase(normalized, "primary heroes") ||
+    includesPhrase(normalized, "best hero") ||
+    includesPhrase(normalized, "best heroes")
+  );
+}
+
+function wantsMostPlayedHeroFilter(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "most played hero") ||
+    includesPhrase(normalized, "most-played hero") ||
+    includesPhrase(normalized, "most played heroes") ||
+    includesPhrase(normalized, "most-played heroes") ||
+    includesPhrase(normalized, "main hero") ||
+    includesPhrase(normalized, "main heroes")
+  );
+}
+
+function wantsNonPrimaryHeroFilter(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "non primary") ||
+    includesPhrase(normalized, "non-primary") ||
+    includesPhrase(normalized, "not primary") ||
+    includesPhrase(normalized, "secondary hero") ||
+    includesPhrase(normalized, "secondary heroes")
+  );
+}
+
 function pickPlayerTrendMetric(normalized: string): string | null {
   if (
     includesPhrase(normalized, "damage taken") ||
@@ -4641,6 +4686,43 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
   }
 
+  if (dataset === "player_intelligence") {
+    const primaryHeroIntent = wantsPrimaryHeroFilter(normalized);
+    const mostPlayedHeroIntent = wantsMostPlayedHeroFilter(normalized);
+    if (heroes.length > 0 && (primaryHeroIntent || mostPlayedHeroIntent)) {
+      for (let i = filters.length - 1; i >= 0; i--) {
+        if (filters[i].field === "hero") filters.splice(i, 1);
+      }
+      filters.push({
+        field: mostPlayedHeroIntent ? "most_played_hero" : "primary_hero",
+        op: "in",
+        value: heroes,
+      });
+    }
+
+    if (wantsNonPrimaryHeroFilter(normalized)) {
+      filters.push({ field: "is_primary", op: "eq", value: "no" });
+    } else if (
+      primaryHeroIntent &&
+      (includesPhrase(normalized, "which heroes") ||
+        includesPhrase(normalized, "what heroes") ||
+        includesPhrase(normalized, "show heroes") ||
+        includesPhrase(normalized, "by hero"))
+    ) {
+      filters.push({ field: "is_primary", op: "eq", value: "yes" });
+    }
+
+    if (
+      mostPlayedHeroIntent &&
+      (includesPhrase(normalized, "which heroes") ||
+        includesPhrase(normalized, "what heroes") ||
+        includesPhrase(normalized, "show heroes") ||
+        includesPhrase(normalized, "by hero"))
+    ) {
+      filters.push({ field: "is_most_played", op: "eq", value: "yes" });
+    }
+  }
+
   if (dataset === "ban_impact") {
     if (
       includesPhrase(normalized, "banned by us") ||
@@ -5330,6 +5412,12 @@ function pickSort(
         includesPhrase(normalized, "owned by"))
     ) &&
     !(
+      dataset === "player_intelligence" &&
+      (includesPhrase(normalized, "z score") ||
+        includesPhrase(normalized, "z-score") ||
+        includesPhrase(normalized, "composite z score"))
+    ) &&
+    !(
       dataset === "ability_timing" &&
       (includesPhrase(normalized, "when should") ||
         includesPhrase(normalized, "when to use") ||
@@ -5373,7 +5461,11 @@ function pickSort(
     (dataset === "hero_pickrate" &&
       (includesPhrase(normalized, "owns") ||
         includesPhrase(normalized, "ownership") ||
-        includesPhrase(normalized, "owned by")));
+        includesPhrase(normalized, "owned by"))) ||
+    (dataset === "player_intelligence" &&
+      (includesPhrase(normalized, "z score") ||
+        includesPhrase(normalized, "z-score") ||
+        includesPhrase(normalized, "composite z score")));
   const wantsLow =
     includesPhrase(normalized, "lowest") ||
     includesPhrase(normalized, "thinnest") ||

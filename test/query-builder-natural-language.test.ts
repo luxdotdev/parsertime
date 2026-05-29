@@ -1560,6 +1560,53 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans primary-hero ownership questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Who has Tracer as their primary hero?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_intelligence",
+      metrics: [{ metric: "hero_pool_size", agg: "avg" }],
+      dimensions: ["player"],
+      filters: [{ field: "primary_hero", op: "in", value: ["Tracer"] }],
+    });
+  });
+
+  it("plans most-played hero ownership questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which players have Widowmaker as their most played hero?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_intelligence",
+      metrics: [{ metric: "hero_pool_size", agg: "avg" }],
+      dimensions: ["player"],
+      filters: [{ field: "most_played_hero", op: "in", value: ["Widowmaker"] }],
+    });
+  });
+
+  it("plans player-specific non-primary hero drilldowns", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "What are PGE's non-primary heroes by z score?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_intelligence",
+      metrics: [{ metric: "composite_z_score", agg: "max" }],
+      dimensions: ["hero"],
+      filters: [
+        { field: "player", op: "in", value: ["PGE"] },
+        { field: "is_primary", op: "eq", value: "no" },
+      ],
+      sort: { key: "max__composite_z_score", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans player-impact consistency questions", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,
