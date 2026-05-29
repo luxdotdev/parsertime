@@ -46,6 +46,7 @@ const BASE_ALIAS: Record<QuerySpec["dataset"], string> = {
   ban_impact: "bi",
   ult_combo: "uc",
   role_trio: "rt",
+  roster_variant: "rv",
   ult_impact: "ui",
   ult_usage: "uu",
   trend: "tr",

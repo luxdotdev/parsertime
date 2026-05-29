@@ -613,6 +613,41 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans map-specific roster questions onto roster variants", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What is our best roster on King's Row?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "roster_variant",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["roster"],
+      filters: [{ field: "map", op: "in", value: ["King's Row"] }],
+      sort: { key: "ratio__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans map-specific lineup questions with player filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What are our best lineups with PGE on Circuit Royal?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "roster_variant",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["roster"],
+      filters: [
+        { field: "player", op: "in", value: ["PGE"] },
+        { field: "map", op: "in", value: ["Circuit Royal"] },
+      ],
+      sort: { key: "ratio__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans ultimate-impact questions onto hero scenarios", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,

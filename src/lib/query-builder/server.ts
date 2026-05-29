@@ -11,6 +11,7 @@ import { computeEnemyHeroMatchups } from "@/lib/query-builder/compute/enemy-hero
 import { computeHeroPool } from "@/lib/query-builder/compute/hero-pool";
 import { computeMapResults } from "@/lib/query-builder/compute/map-results";
 import { computeRoleTrios } from "@/lib/query-builder/compute/role-trios";
+import { computeRosterVariants } from "@/lib/query-builder/compute/roster-variants";
 import { computeSwapImpact } from "@/lib/query-builder/compute/swap-impact";
 import { computeStreaks } from "@/lib/query-builder/compute/streaks";
 import { computeTeamfights } from "@/lib/query-builder/compute/teamfights";
@@ -263,6 +264,9 @@ async function runComputedQuery(
         break;
       case "role_trio":
         computedRows = await computeRoleTrios(spec.teamId, ctx.scrimIds);
+        break;
+      case "roster_variant":
+        computedRows = await computeRosterVariants(spec.teamId, ctx.scrimIds);
         break;
       case "ult_impact":
         computedRows = await computeUltImpact(spec.teamId, ctx.scrimIds);

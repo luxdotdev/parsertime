@@ -24,6 +24,7 @@ export const DATASETS = [
   "ban_impact",
   "ult_combo",
   "role_trio",
+  "roster_variant",
   "ult_impact",
   "ult_usage",
   "trend",

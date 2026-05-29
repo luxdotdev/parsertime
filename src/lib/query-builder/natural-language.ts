@@ -43,6 +43,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   ban_impact: "win_rate_delta",
   ult_combo: "win_rate",
   role_trio: "win_rate",
+  roster_variant: "win_rate",
   ult_impact: "win_rate",
   ult_usage: "ults_used",
   trend: "win_rate",
@@ -141,6 +142,18 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "player combinations",
     "five stack",
     "starting five",
+  ],
+  roster_variant: [
+    "roster",
+    "rosters",
+    "roster variant",
+    "roster variants",
+    "best roster",
+    "best rosters",
+    "map roster",
+    "map rosters",
+    "lineup by map",
+    "lineups by map",
   ],
   map: ["maps played", "opponent", "map count"],
   trend: [
@@ -414,6 +427,7 @@ const DIMENSION_ALIASES: Record<string, string[]> = {
   side: ["side", "team"],
   type: ["type"],
   combo: ["combo", "ult combo", "ultimate combo"],
+  roster: ["roster", "lineup"],
   hero_a: ["first hero"],
   hero_b: ["second hero"],
   response_hero: ["response hero", "counter hero"],
@@ -716,6 +730,17 @@ function mentionsStreakContext(normalized: string): boolean {
   );
 }
 
+function mentionsRosterContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "roster") ||
+    includesPhrase(normalized, "rosters") ||
+    includesPhrase(normalized, "lineup") ||
+    includesPhrase(normalized, "lineups") ||
+    includesPhrase(normalized, "five stack") ||
+    includesPhrase(normalized, "starting five")
+  );
+}
+
 function mentionsTeamfightUltContext(normalized: string): boolean {
   return (
     includesPhrase(normalized, "first ult") ||
@@ -847,6 +872,10 @@ function pickDataset(question: string): DatasetId {
   }
 
   if (mapName) {
+    if (mentionsRosterContext(normalized)) {
+      return "roster_variant";
+    }
+
     if (
       includesPhrase(normalized, "who") ||
       includesPhrase(normalized, "which player") ||
@@ -1840,6 +1869,7 @@ function pickDimensions(
     }
   }
   if (dataset === "role_trio" && dims.length === 0) add("trio");
+  if (dataset === "roster_variant" && dims.length === 0) add("roster");
   if (dataset === "ult_impact" && dims.length === 0) {
     add(hasFilter("hero") ? "scenario" : "hero");
   }

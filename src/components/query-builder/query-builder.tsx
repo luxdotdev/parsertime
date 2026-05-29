@@ -483,6 +483,7 @@ const DEFAULT_METRIC: Record<DraftSpec["dataset"], string> = {
   ban_impact: "win_rate_delta",
   ult_combo: "win_rate",
   role_trio: "win_rate",
+  roster_variant: "win_rate",
   ult_impact: "win_rate",
   ult_usage: "ults_used",
   trend: "win_rate",
