@@ -163,6 +163,40 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans specific duel matchup questions with both hero sides", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What is our Tracer duel win rate against Widowmaker?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "duel",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: [],
+      filters: [
+        { field: "our_hero", op: "in", value: ["Tracer"] },
+        { field: "enemy_hero", op: "in", value: ["Widowmaker"] },
+      ],
+    });
+  });
+
+  it("plans inverse duel matchup phrasing from the against clause", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "How do we do in duels against Widowmaker as Tracer?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "duel",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: [],
+      filters: [
+        { field: "our_hero", op: "in", value: ["Tracer"] },
+        { field: "enemy_hero", op: "in", value: ["Widowmaker"] },
+      ],
+    });
+  });
+
   it("plans ban weak-point questions onto received ban impact", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,

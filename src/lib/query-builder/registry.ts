@@ -1622,6 +1622,26 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
     ],
     filters: [
       {
+        id: "our_hero",
+        label: "our hero",
+        table: "Duel",
+        column: "our_hero",
+        source: "base",
+        valueType: "hero",
+        operators: ["in", "nin"],
+        enumOptions: HERO_OPTIONS,
+      },
+      {
+        id: "enemy_hero",
+        label: "enemy hero",
+        table: "Duel",
+        column: "enemy_hero",
+        source: "base",
+        valueType: "hero",
+        operators: ["in", "nin"],
+        enumOptions: HERO_OPTIONS,
+      },
+      {
         id: "map_type",
         label: "map type",
         table: "Duel",

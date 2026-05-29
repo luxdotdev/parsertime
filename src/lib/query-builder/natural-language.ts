@@ -466,19 +466,39 @@ const ABILITY_BY_NORMALIZED = new Map(
   )
 );
 
-function findHeroes(question: string): string[] {
+type HeroMention = {
+  hero: string;
+  index: number;
+  aliasLength: number;
+};
+
+function findPhraseIndex(haystack: string, phrase: string): number {
+  const normalized = normalize(phrase);
+  const match = new RegExp(`(^|\\s)${escapeRegExp(normalized)}(?=\\s|$)`).exec(
+    haystack
+  );
+  if (!match) return -1;
+  return match.index + (match[1] ? match[1].length : 0);
+}
+
+function findHeroMentions(question: string): HeroMention[] {
   const normalized = normalize(question);
   const matches = Array.from(HERO_BY_NORMALIZED.entries())
-    .filter(([alias]) => includesPhrase(normalized, alias))
-    .sort((a, b) => b[0].length - a[0].length);
+    .map(([alias, hero]) => ({
+      hero,
+      index: findPhraseIndex(normalized, alias),
+      aliasLength: alias.length,
+    }))
+    .filter((mention) => mention.index >= 0)
+    .sort((a, b) => a.index - b.index || b.aliasLength - a.aliasLength);
   const seen = new Set<string>();
-  const heroes: string[] = [];
-  for (const [, hero] of matches) {
-    if (seen.has(hero)) continue;
-    seen.add(hero);
-    heroes.push(hero);
+  const mentions: HeroMention[] = [];
+  for (const mention of matches) {
+    if (seen.has(mention.hero)) continue;
+    seen.add(mention.hero);
+    mentions.push(mention);
   }
-  return heroes;
+  return mentions;
 }
 
 function findAbility(question: string): string | null {
@@ -527,6 +547,17 @@ function pickDataset(question: string): DatasetId {
     includesPhrase(normalized, "ults") ||
     includesPhrase(normalized, "ultimate") ||
     includesPhrase(normalized, "ultimates");
+
+  if (
+    includesPhrase(normalized, "duel") ||
+    includesPhrase(normalized, "duels") ||
+    includesPhrase(normalized, "1v1") ||
+    includesPhrase(normalized, "1 v 1") ||
+    includesPhrase(normalized, "one v one") ||
+    includesPhrase(normalized, "hero matchup")
+  ) {
+    return "duel";
+  }
 
   if (
     mentionsUlt &&
@@ -671,6 +702,22 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
       a.metric === "ults_per_map" ? -1 : b.metric === "ults_per_map" ? 1 : 0
     );
   }
+  if (dataset === "duel") {
+    const wantsCount =
+      includesPhrase(normalized, "how many") ||
+      includesPhrase(normalized, "number") ||
+      includesPhrase(normalized, "count") ||
+      includesPhrase(normalized, "total");
+    if (!wantsCount) {
+      for (let i = deduped.length - 1; i >= 0; i--) {
+        if (deduped[i].metric === "duels") deduped.splice(i, 1);
+      }
+      if (!deduped.some((ref) => ref.metric === "win_rate")) {
+        const agg = pickMetricAgg(dataset, "win_rate", question);
+        if (agg) deduped.unshift({ metric: "win_rate", agg });
+      }
+    }
+  }
   return deduped.slice(0, 4);
 }
 
@@ -729,31 +776,79 @@ function filterFor(
   };
 }
 
+function pickDuelHeroFilters(heroMentions: HeroMention[], question: string) {
+  const filters: QueryFilter[] = [];
+  if (heroMentions.length === 0) return filters;
+
+  const normalized = normalize(question);
+  const against = /\b(?:against|vs|versus)\s+/g;
+  let enemyHero: string | null = null;
+  for (const match of normalized.matchAll(against)) {
+    const startsAfterAgainst = match.index + match[0].length;
+    const mention = heroMentions.find(
+      (heroMention) => heroMention.index >= startsAfterAgainst
+    );
+    if (mention) {
+      enemyHero = mention.hero;
+      break;
+    }
+  }
+
+  let ourHero: string | null = null;
+  if (enemyHero) {
+    ourHero =
+      heroMentions.find((mention) => mention.hero !== enemyHero)?.hero ?? null;
+  } else if (heroMentions.length >= 2) {
+    ourHero = heroMentions[0].hero;
+    enemyHero = heroMentions[1].hero;
+  } else if (
+    includesPhrase(normalized, "against") ||
+    includesPhrase(normalized, "vs") ||
+    includesPhrase(normalized, "versus") ||
+    includesPhrase(normalized, "enemy")
+  ) {
+    enemyHero = heroMentions[0].hero;
+  } else {
+    ourHero = heroMentions[0].hero;
+  }
+
+  if (ourHero) filters.push({ field: "our_hero", op: "in", value: [ourHero] });
+  if (enemyHero) {
+    filters.push({ field: "enemy_hero", op: "in", value: [enemyHero] });
+  }
+  return filters;
+}
+
 function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   const filters: QueryFilter[] = [];
-  const heroes = findHeroes(question);
+  const heroMentions = findHeroMentions(question);
+  const heroes = heroMentions.map((mention) => mention.hero);
   const hero = heroes[0] ?? null;
   const ability = findAbility(question);
   const player = findPlayer(question, hero);
   const normalized = normalize(question);
 
   if (heroes.length > 0) {
-    const exactUltCombo =
-      dataset === "ult_combo" &&
-      heroes.length === 2 &&
-      (includesPhrase(normalized, "ult combo") ||
-        includesPhrase(normalized, "ult combos") ||
-        includesPhrase(normalized, "ultimate combo") ||
-        includesPhrase(normalized, "ultimate combos") ||
-        includesPhrase(normalized, "combo"));
-
-    if (exactUltCombo) {
-      const [heroA, heroB] = [...heroes].sort((a, b) => a.localeCompare(b));
-      filters.push({ field: "hero_a", op: "in", value: [heroA] });
-      filters.push({ field: "hero_b", op: "in", value: [heroB] });
+    if (dataset === "duel") {
+      filters.push(...pickDuelHeroFilters(heroMentions, question));
     } else {
-      const filter = filterFor(dataset, "hero", heroes);
-      if (filter) filters.push(filter);
+      const exactUltCombo =
+        dataset === "ult_combo" &&
+        heroes.length === 2 &&
+        (includesPhrase(normalized, "ult combo") ||
+          includesPhrase(normalized, "ult combos") ||
+          includesPhrase(normalized, "ultimate combo") ||
+          includesPhrase(normalized, "ultimate combos") ||
+          includesPhrase(normalized, "combo"));
+
+      if (exactUltCombo) {
+        const [heroA, heroB] = [...heroes].sort((a, b) => a.localeCompare(b));
+        filters.push({ field: "hero_a", op: "in", value: [heroA] });
+        filters.push({ field: "hero_b", op: "in", value: [heroB] });
+      } else {
+        const filter = filterFor(dataset, "hero", heroes);
+        if (filter) filters.push(filter);
+      }
     }
   }
   if (player) {
@@ -1081,7 +1176,8 @@ function pickDimensions(
   if (
     (includesPhrase(normalized, "which hero") ||
       includesPhrase(normalized, "by hero")) &&
-    !hasFilter("hero")
+    !hasFilter("hero") &&
+    !hasFilter("our_hero")
   ) {
     add(ds.dimensions.some((d) => d.id === "our_hero") ? "our_hero" : "hero");
   }
@@ -1095,8 +1191,10 @@ function pickDimensions(
   }
   if (dataset === "ult_economy" && dims.length === 0) add("advantage_bucket");
   if (dataset === "duel" && dims.length === 0) {
-    add("our_hero");
-    add("enemy_hero");
+    const hasOurHeroFilter = hasFilter("our_hero");
+    const hasEnemyHeroFilter = hasFilter("enemy_hero");
+    if (!hasOurHeroFilter) add("our_hero");
+    if (!hasEnemyHeroFilter) add("enemy_hero");
   }
   if (dataset === "ability_impact" && dims.length === 0) {
     add(hasFilter("used") ? "ability" : "used");
