@@ -536,6 +536,34 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans team offensive-assist rate comparisons", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Compare our team offensive assists per 10 vs the opponent",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "team_performance",
+      metrics: [{ metric: "offensive_assists_per10", agg: "ratio" }],
+      dimensions: ["side"],
+      filters: [],
+    });
+  });
+
+  it("plans our-team Ajax rate questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "What is our team Ajax per 10?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "team_performance",
+      metrics: [{ metric: "ajax_per10", agg: "ratio" }],
+      dimensions: [],
+      filters: [{ field: "side", op: "in", value: ["our team"] }],
+    });
+  });
+
   it("plans map-type winrate questions onto map results", () => {
     const planned = planQueryFromQuestion({
       teamId: 2,

@@ -859,7 +859,18 @@ const METRIC_ALIASES: Record<string, string[]> = {
   ],
   damage_taken_per10: ["damage taken per 10", "damage taken per 10 minutes"],
   healing_per10: ["healing per 10", "healing per 10 minutes"],
+  healing_received_per10: ["healing received per 10", "heals received per 10"],
   assists_per10: ["assists per 10", "offensive assists per 10"],
+  solo_kills_per10: ["solo kills per 10", "solo kill per 10"],
+  objective_kills_per10: ["objective kills per 10", "objective kill per 10"],
+  offensive_assists_per10: [
+    "offensive assists per 10",
+    "offensive assist per 10",
+  ],
+  defensive_assists_per10: [
+    "defensive assists per 10",
+    "defensive assist per 10",
+  ],
   ults_earned_per10: [
     "ults earned per 10",
     "ultimates earned per 10",
@@ -1399,11 +1410,15 @@ function mentionsTeamPerformanceContext(normalized: string): boolean {
     includesPhrase(normalized, "winrate") ||
     includesPhrase(normalized, "final blows") ||
     includesPhrase(normalized, "eliminations") ||
+    includesPhrase(normalized, "solo kills") ||
+    includesPhrase(normalized, "objective kills") ||
+    includesPhrase(normalized, "assists") ||
     includesPhrase(normalized, "damage") ||
     includesPhrase(normalized, "healing") ||
     includesPhrase(normalized, "deaths") ||
     includesPhrase(normalized, "first pick") ||
     includesPhrase(normalized, "first death") ||
+    includesPhrase(normalized, "ajax") ||
     includesPhrase(normalized, "mvp") ||
     includesPhrase(normalized, "ult") ||
     includesPhrase(normalized, "ultimate");
@@ -1945,6 +1960,7 @@ function pickDataset(question: string): DatasetId {
   const mapName = findMapName(question);
   const heroMentions = findHeroMentions(question);
   const player = findPlayer(question, heroMentions[0]?.hero ?? null);
+  if (mentionsTeamPerformanceContext(normalized)) return "team_performance";
   if (
     mentionsPlayerImpactContext(normalized) &&
     (includesPhrase(normalized, "first picks per 10") ||
@@ -1972,7 +1988,6 @@ function pickDataset(question: string): DatasetId {
   if (mentionsPlayerOutlierContext(normalized)) return "player_outlier";
   if (mentionsPlayerTargetContext(normalized)) return "player_target";
   if (mentionsPlayerImpactContext(normalized)) return "player_impact";
-  if (mentionsTeamPerformanceContext(normalized)) return "team_performance";
   if (
     mentionsFightContext(normalized) &&
     (includesPhrase(normalized, "first pick rate") ||
@@ -2434,10 +2449,20 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
       final_blows_per10: "final_blows",
       deaths_per10: "deaths",
       hero_damage_per10: "hero_damage",
+      all_damage_per10: "all_damage",
       healing_per10: "healing",
+      healing_received_per10: "healing_received",
       damage_taken_per10: "damage_taken",
       damage_blocked_per10: "damage_blocked",
+      ults_earned_per10: "ultimates_earned",
       ults_used_per10: "ultimates_used",
+      solo_kills_per10: "solo_kills",
+      objective_kills_per10: "objective_kills",
+      offensive_assists_per10: "offensive_assists",
+      defensive_assists_per10: "defensive_assists",
+      first_picks_per10: "first_pick_count",
+      first_deaths_per10: "first_death_count",
+      ajax_per10: "ajax_count",
     };
     const per10Metrics = new Set(
       deduped
