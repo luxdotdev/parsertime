@@ -18,6 +18,7 @@ import { computePlayerImpact } from "@/lib/query-builder/compute/player-impact";
 import { computePlayerIntelligence } from "@/lib/query-builder/compute/player-intelligence";
 import { computePlayerMapPerformance } from "@/lib/query-builder/compute/player-map-performance";
 import { computePlayerOutliers } from "@/lib/query-builder/compute/player-outliers";
+import { computePlayerTargets } from "@/lib/query-builder/compute/player-targets";
 import { computePlayerTrends } from "@/lib/query-builder/compute/player-trends";
 import { computeRolePerformance } from "@/lib/query-builder/compute/role-performance";
 import { computeRoleTrios } from "@/lib/query-builder/compute/role-trios";
@@ -273,6 +274,9 @@ async function runComputedQuery(
         break;
       case "player_outlier":
         computedRows = await computePlayerOutliers(spec.teamId, ctx.scrimIds);
+        break;
+      case "player_target":
+        computedRows = await computePlayerTargets(spec.teamId, ctx.scrimIds);
         break;
       case "role_performance":
         computedRows = await computeRolePerformance(spec.teamId, ctx.scrimIds);

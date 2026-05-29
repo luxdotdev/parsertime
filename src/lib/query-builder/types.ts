@@ -23,6 +23,7 @@ export const DATASETS = [
   "player_impact",
   "player_trend",
   "player_outlier",
+  "player_target",
   "role_performance",
   "ult_economy",
   "duel",

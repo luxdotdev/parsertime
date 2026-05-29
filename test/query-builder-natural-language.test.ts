@@ -926,6 +926,51 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans off-track saved player target questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which player targets are off track?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_target",
+      metrics: [{ metric: "progress_percent", agg: "avg" }],
+      dimensions: ["player", "stat"],
+      filters: [{ field: "status", op: "in", value: ["off track"] }],
+    });
+  });
+
+  it("plans player-specific target progress drilldowns", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "What is PGE target progress?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_target",
+      metrics: [{ metric: "progress_percent", agg: "avg" }],
+      dimensions: ["stat"],
+      filters: [{ field: "player", op: "in", value: ["PGE"] }],
+    });
+  });
+
+  it("plans target questions for specific saved goal stats", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which final blow goals are on track?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_target",
+      metrics: [{ metric: "progress_percent", agg: "avg" }],
+      dimensions: ["player", "stat"],
+      filters: [
+        { field: "status", op: "in", value: ["on track"] },
+        { field: "stat", op: "in", value: ["final_blows"] },
+      ],
+    });
+  });
+
   it("plans enemy-hero matchup questions with hero filters", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,

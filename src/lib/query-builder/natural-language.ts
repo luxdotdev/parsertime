@@ -42,6 +42,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   player_impact: "consistency_score",
   player_trend: "improvement_percentage",
   player_outlier: "abs_z_score",
+  player_target: "progress_percent",
   role_performance: "win_rate",
   ult_economy: "win_rate",
   duel: "win_rate",
@@ -344,6 +345,19 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "far below",
     "above baseline",
     "below baseline",
+  ],
+  player_target: [
+    "player target",
+    "player targets",
+    "target progress",
+    "goal progress",
+    "progress toward target",
+    "progress toward goal",
+    "on track",
+    "off track",
+    "stalled target",
+    "saved target",
+    "saved goal",
   ],
   role_performance: [
     "role performance",
@@ -761,6 +775,12 @@ const METRIC_ALIASES: Record<string, string[]> = {
   percentile: ["percentile", "hero percentile"],
   per10_value: ["per 10 value", "actual per 10"],
   baseline_per10: ["baseline", "baseline per 10", "hero baseline"],
+  progress_percent: ["progress", "progress percentage", "progress %"],
+  current_value: ["current value", "current stat", "current"],
+  baseline_value: ["baseline value", "baseline"],
+  target_value: ["target value", "goal value"],
+  gap_to_target: ["gap to target", "remaining", "distance to target"],
+  sample_scrims: ["sample scrims", "scrim sample"],
   consistency_score: [
     "consistency",
     "consistent",
@@ -856,6 +876,8 @@ const DIMENSION_ALIASES: Record<string, string[]> = {
   streak: ["streak"],
   trend: ["trend"],
   direction: ["direction"],
+  trending: ["trending"],
+  status: ["status", "target status", "goal status"],
   confidence: ["confidence", "sample confidence"],
   start_date: ["start date", "started"],
   end_date: ["end date", "ended"],
@@ -1055,7 +1077,35 @@ function findMapName(question: string): string | null {
 function findPlayer(question: string, hero: string | null): string | null {
   const heroWords = new Set(normalize(hero ?? "").split(/\s+/));
   const mapWords = new Set(normalize(findMapName(question) ?? "").split(/\s+/));
-  const nonPlayerWords = new Set(["hero", "map", "role", "team", "player"]);
+  const nonPlayerWords = new Set([
+    "hero",
+    "map",
+    "role",
+    "team",
+    "player",
+    "target",
+    "targets",
+    "goal",
+    "goals",
+    "progress",
+    "status",
+    "track",
+    "final",
+    "blow",
+    "blows",
+    "damage",
+    "healing",
+    "death",
+    "deaths",
+    "elimination",
+    "eliminations",
+    "elim",
+    "elims",
+    "ultimate",
+    "ultimates",
+    "ult",
+    "ults",
+  ]);
   const candidates = [
     ...question.matchAll(
       /\b(?:for|player|by)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\b/gi
@@ -1072,6 +1122,9 @@ function findPlayer(question: string, hero: string | null): string | null {
     ),
     ...question.matchAll(
       /\b([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:improving|improve|improved|declining|decline|declined|trending)\b/gi
+    ),
+    ...question.matchAll(
+      /\b([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:target|targets|goal|goals|progress)\b/gi
     ),
     ...question.matchAll(/\b([A-Za-z][A-Za-z0-9_.-]{1,})'s\s+/gi),
   ];
@@ -1252,6 +1305,23 @@ function mentionsPlayerOutlierContext(normalized: string): boolean {
         includesPhrase(normalized, "players") ||
         includesPhrase(normalized, "who") ||
         includesPhrase(normalized, "whose")))
+  );
+}
+
+function mentionsPlayerTargetContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "player target") ||
+    includesPhrase(normalized, "player targets") ||
+    includesPhrase(normalized, "target progress") ||
+    includesPhrase(normalized, "goal progress") ||
+    includesPhrase(normalized, "progress toward target") ||
+    includesPhrase(normalized, "progress toward goal") ||
+    includesPhrase(normalized, "saved target") ||
+    includesPhrase(normalized, "saved goal") ||
+    includesPhrase(normalized, "on track") ||
+    includesPhrase(normalized, "off track") ||
+    includesPhrase(normalized, "stalled target") ||
+    includesPhrase(normalized, "stalled goal")
   );
 }
 
@@ -1659,6 +1729,7 @@ function pickDataset(question: string): DatasetId {
     return "player_trend";
   }
   if (mentionsPlayerOutlierContext(normalized)) return "player_outlier";
+  if (mentionsPlayerTargetContext(normalized)) return "player_target";
   if (mentionsPlayerImpactContext(normalized)) return "player_impact";
   if (mentionsTeamPerformanceContext(normalized)) return "team_performance";
   if (mentionsCalculatedStatContext(normalized)) return "calculated_stat";
@@ -2610,6 +2681,62 @@ function pickPlayerOutlierStat(normalized: string): string | null {
   return null;
 }
 
+function pickPlayerTargetStat(normalized: string): string | null {
+  if (
+    includesPhrase(normalized, "damage taken") ||
+    includesPhrase(normalized, "taking damage")
+  ) {
+    return "damage_taken";
+  }
+  if (
+    includesPhrase(normalized, "damage blocked") ||
+    includesPhrase(normalized, "mitigation") ||
+    includesPhrase(normalized, "mitigated")
+  ) {
+    return "damage_blocked";
+  }
+  if (
+    includesPhrase(normalized, "hero damage") ||
+    includesPhrase(normalized, "damage dealt") ||
+    includesPhrase(normalized, "damage")
+  ) {
+    return "hero_damage_dealt";
+  }
+  if (
+    includesPhrase(normalized, "healing") ||
+    includesPhrase(normalized, "heals")
+  ) {
+    return "healing_dealt";
+  }
+  if (
+    includesPhrase(normalized, "final blows") ||
+    includesPhrase(normalized, "final blow") ||
+    includesPhrase(normalized, "finals")
+  ) {
+    return "final_blows";
+  }
+  if (
+    includesPhrase(normalized, "ultimates earned") ||
+    includesPhrase(normalized, "ults earned") ||
+    includesPhrase(normalized, "ult charge")
+  ) {
+    return "ultimates_earned";
+  }
+  if (
+    includesPhrase(normalized, "deaths") ||
+    includesPhrase(normalized, "death")
+  ) {
+    return "deaths";
+  }
+  if (
+    includesPhrase(normalized, "eliminations") ||
+    includesPhrase(normalized, "elims")
+  ) {
+    return "eliminations";
+  }
+  return null;
+}
+
 function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   const filters: QueryFilter[] = [];
   const heroMentions = findHeroMentions(question);
@@ -2902,6 +3029,38 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         const filter = filterFor(dataset, "role", role);
         if (filter) filters.push(filter);
       }
+    }
+  }
+
+  if (dataset === "player_target") {
+    if (includesPhrase(normalized, "on track")) {
+      filters.push({ field: "status", op: "in", value: ["on track"] });
+    } else if (includesPhrase(normalized, "off track")) {
+      filters.push({ field: "status", op: "in", value: ["off track"] });
+    } else if (includesPhrase(normalized, "complete")) {
+      filters.push({ field: "status", op: "in", value: ["complete"] });
+    } else if (
+      includesPhrase(normalized, "stalled") ||
+      includesPhrase(normalized, "neutral")
+    ) {
+      filters.push({ field: "status", op: "in", value: ["stalled"] });
+    }
+
+    if (
+      includesPhrase(normalized, "toward") ||
+      includesPhrase(normalized, "improving toward")
+    ) {
+      filters.push({ field: "trending", op: "in", value: ["toward"] });
+    } else if (
+      includesPhrase(normalized, "away") ||
+      includesPhrase(normalized, "moving away")
+    ) {
+      filters.push({ field: "trending", op: "in", value: ["away"] });
+    }
+
+    const targetStat = pickPlayerTargetStat(normalized);
+    if (targetStat) {
+      filters.push({ field: "stat", op: "in", value: [targetStat] });
     }
   }
 
@@ -3465,6 +3624,47 @@ function pickDimensions(
     } else if (!hasFilter("player")) {
       add("player");
     }
+  }
+  if (dataset === "player_target" && dims.length === 0) {
+    if (
+      hasFilter("player") ||
+      includesPhrase(normalized, "which stat") ||
+      includesPhrase(normalized, "which stats") ||
+      includesPhrase(normalized, "what stat") ||
+      includesPhrase(normalized, "what stats")
+    ) {
+      add("stat");
+    } else {
+      if (!hasFilter("player")) add("player");
+      if (
+        includesPhrase(normalized, "target") ||
+        includesPhrase(normalized, "targets") ||
+        includesPhrase(normalized, "goal") ||
+        includesPhrase(normalized, "goals") ||
+        hasFilter("stat")
+      ) {
+        add("stat");
+      } else if (
+        includesPhrase(normalized, "status") ||
+        includesPhrase(normalized, "on track") ||
+        includesPhrase(normalized, "off track")
+      ) {
+        add("status");
+      }
+    }
+  }
+  if (
+    dataset === "player_target" &&
+    dims.length > 0 &&
+    !dims.includes("stat") &&
+    !hasFilter("player") &&
+    (includesPhrase(normalized, "target") ||
+      includesPhrase(normalized, "targets") ||
+      includesPhrase(normalized, "goal") ||
+      includesPhrase(normalized, "goals") ||
+      hasFilter("stat"))
+  ) {
+    add("stat");
   }
   if (dataset === "role_performance" && dims.length === 0) {
     if (!hasFilter("role")) add("role");
