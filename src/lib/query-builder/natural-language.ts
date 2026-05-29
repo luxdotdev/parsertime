@@ -168,6 +168,12 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "wasted ult",
   ],
   map_result: [
+    "best map mode",
+    "best map type",
+    "map mode",
+    "map modes",
+    "map type",
+    "map types",
     "map win",
     "map winrate",
     "map win rate",
@@ -435,6 +441,8 @@ const FILLER_WORDS = new Set([
   "in",
   "it",
   "know",
+  "map",
+  "maps",
   "me",
   "need",
   "number",
@@ -455,6 +463,7 @@ const FILLER_WORDS = new Set([
   "them",
   "time",
   "to",
+  "type",
   "ult",
   "ults",
   "ultimate",
@@ -758,6 +767,17 @@ function pickDataset(question: string): DatasetId {
     mentionsTeamfightUltContext(normalized)
   ) {
     return "teamfight";
+  }
+
+  if (
+    includesPhrase(normalized, "map mode") ||
+    includesPhrase(normalized, "map modes") ||
+    includesPhrase(normalized, "map type") ||
+    includesPhrase(normalized, "map types") ||
+    includesPhrase(normalized, "mode win rate") ||
+    includesPhrase(normalized, "mode winrate")
+  ) {
+    return "map_result";
   }
 
   if (
@@ -1561,6 +1581,15 @@ function pickDimensions(
   }
 
   for (const dim of ds.dimensions) {
+    if (
+      dim.id === "map" &&
+      (includesPhrase(normalized, "map type") ||
+        includesPhrase(normalized, "map types") ||
+        includesPhrase(normalized, "map mode") ||
+        includesPhrase(normalized, "map modes"))
+    ) {
+      continue;
+    }
     const aliases = [
       dim.id.replace(/_/g, " "),
       dim.label,
@@ -1591,12 +1620,41 @@ function pickDimensions(
     add(ds.dimensions.some((d) => d.id === "our_hero") ? "our_hero" : "hero");
   }
   if (
-    includesPhrase(normalized, "which map") ||
-    includesPhrase(normalized, "which maps") ||
-    includesPhrase(normalized, "by map") ||
-    includesPhrase(normalized, "by maps")
+    (includesPhrase(normalized, "which map") ||
+      includesPhrase(normalized, "which maps") ||
+      includesPhrase(normalized, "by map") ||
+      includesPhrase(normalized, "by maps")) &&
+    !includesPhrase(normalized, "map type") &&
+    !includesPhrase(normalized, "map types") &&
+    !includesPhrase(normalized, "map mode") &&
+    !includesPhrase(normalized, "map modes")
   ) {
     add("map");
+  }
+  if (
+    dataset === "map_result" &&
+    (includesPhrase(normalized, "map mode") ||
+      includesPhrase(normalized, "map modes") ||
+      includesPhrase(normalized, "map type") ||
+      includesPhrase(normalized, "map types") ||
+      includesPhrase(normalized, "by mode") ||
+      includesPhrase(normalized, "by map mode") ||
+      includesPhrase(normalized, "by map type") ||
+      includesPhrase(normalized, "per mode") ||
+      includesPhrase(normalized, "per map mode") ||
+      includesPhrase(normalized, "per map type"))
+  ) {
+    add("map_type");
+  }
+  if (
+    dataset === "map_result" &&
+    dims.length === 0 &&
+    (includesPhrase(normalized, "best map mode") ||
+      includesPhrase(normalized, "best map type") ||
+      includesPhrase(normalized, "worst map mode") ||
+      includesPhrase(normalized, "worst map type"))
+  ) {
+    add("map_type");
   }
   if (
     dataset === "ult_economy" &&

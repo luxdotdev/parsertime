@@ -222,6 +222,35 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans map-type winrate questions onto map results", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "What is our win rate by map type?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_result",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["map_type"],
+      filters: [],
+    });
+  });
+
+  it("plans best map-mode questions as ranked map-type winrates", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "What is our best map mode?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_result",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["map_type"],
+      sort: { key: "avg__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans ability-impact questions from ability aliases", () => {
     const planned = planQueryFromQuestion({
       teamId: 9,
