@@ -5126,6 +5126,18 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         precision: 0,
       },
       {
+        id: "losses",
+        label: "losses",
+        description: "Number of timing samples that lost the fight",
+        table: "AbilityTiming",
+        column: "loss",
+        source: "base",
+        allowedAggs: ["sum"],
+        defaultAgg: "sum",
+        precision: 0,
+        lowerIsBetter: true,
+      },
+      {
         id: "overall_win_rate",
         label: "overall win rate",
         description:

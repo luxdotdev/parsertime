@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 
 const ABILITY_TIMING_ROWS: ComputedRow[] = [
   {
+    loss: 0,
     won: 1,
     result: "win",
     hero: "Kiriko",
@@ -21,6 +22,7 @@ const ABILITY_TIMING_ROWS: ComputedRow[] = [
     win_rate_delta: 33.3333,
   },
   {
+    loss: 0,
     won: 1,
     result: "win",
     hero: "Kiriko",
@@ -35,6 +37,7 @@ const ABILITY_TIMING_ROWS: ComputedRow[] = [
     win_rate_delta: 33.3333,
   },
   {
+    loss: 1,
     won: 0,
     result: "loss",
     hero: "Kiriko",
@@ -49,6 +52,7 @@ const ABILITY_TIMING_ROWS: ComputedRow[] = [
     win_rate_delta: -66.6667,
   },
   {
+    loss: 1,
     won: 0,
     result: "loss",
     hero: "Ana",
@@ -63,6 +67,7 @@ const ABILITY_TIMING_ROWS: ComputedRow[] = [
     win_rate_delta: -50,
   },
   {
+    loss: 0,
     won: 1,
     result: "win",
     hero: "Ana",
@@ -124,5 +129,21 @@ describe("computed aggregator (ability timing)", () => {
     ]);
     expect(rows[0]["avg__win_rate_delta"]).toBeCloseTo(33.3333, 4);
     expect(rows[1]["avg__win_rate_delta"]).toBe(-50);
+  });
+
+  it("counts losses by phase for a specific ability", () => {
+    const { rows } = aggregateComputed(
+      ABILITY_TIMING_ROWS,
+      spec({
+        metrics: [{ metric: "losses", agg: "sum" }],
+        dimensions: ["phase"],
+        filters: [{ field: "ability", op: "in", value: ["Protection Suzu"] }],
+        sort: { key: "sum__losses", dir: "desc" },
+      })
+    );
+
+    expect(rows.map((row) => row.phase)).toEqual(["late", "early"]);
+    expect(rows[0]["sum__losses"]).toBe(1);
+    expect(rows[1]["sum__losses"]).toBe(0);
   });
 });

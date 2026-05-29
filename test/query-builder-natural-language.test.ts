@@ -854,6 +854,28 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans ability-timing loss questions by phase", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 9,
+      question: "Which phases do we lose fights after using Suzu the most?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ability_timing",
+      dimensions: ["phase"],
+      filters: [
+        { field: "hero", op: "in", value: ["Kiriko"] },
+        { field: "ability", op: "in", value: ["Protection Suzu"] },
+      ],
+      sort: { key: "sum__losses", dir: "desc" },
+      limit: 20,
+    });
+    expect(planned?.spec.metrics[0]).toEqual({
+      metric: "losses",
+      agg: "sum",
+    });
+  });
+
   it("plans phase-filtered ability-timing questions by ability", () => {
     const planned = planQueryFromQuestion({
       teamId: 9,

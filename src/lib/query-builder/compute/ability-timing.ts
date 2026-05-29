@@ -251,6 +251,7 @@ export async function computeAbilityTiming(
         for (const phase of phases) {
           rows.push({
             ability_key: key,
+            loss: won ? 0 : 1,
             won: won ? 1 : 0,
             result: won ? "win" : "loss",
             hero: abilityInfo.hero,

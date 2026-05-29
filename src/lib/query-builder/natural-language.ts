@@ -1774,6 +1774,8 @@ function mentionsAbilityTimingContext(normalized: string): boolean {
     includesPhrase(normalized, "when should") ||
     includesPhrase(normalized, "when to use") ||
     includesPhrase(normalized, "best phase") ||
+    includesPhrase(normalized, "which phase") ||
+    includesPhrase(normalized, "which phases") ||
     includesPhrase(normalized, "phase timing") ||
     includesPhrase(normalized, "by phase") ||
     includesPhrase(normalized, "per phase");
