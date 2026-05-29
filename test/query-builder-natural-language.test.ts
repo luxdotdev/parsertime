@@ -1297,6 +1297,32 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans ability-impact aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 9,
+      question:
+        "How does using Suzu affect our fight win rate with at least 2 fights and win rate at least 50%?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ability_impact",
+      metrics: [
+        { metric: "win_rate", agg: "avg" },
+        { metric: "fights", agg: "count" },
+      ],
+      dimensions: ["used"],
+    });
+    expect(planned?.spec.filters).toEqual(
+      expect.arrayContaining([
+        { field: "hero", op: "in", value: ["Kiriko"] },
+        { field: "ability", op: "in", value: ["Protection Suzu"] },
+        { field: "side", op: "eq", value: "us" },
+        { field: "fights", op: "gte", value: 2 },
+        { field: "win_rate", op: "gte", value: 50 },
+      ])
+    );
+  });
+
   it("plans enemy ability loss questions after use", () => {
     const planned = planQueryFromQuestion({
       teamId: 9,
@@ -1337,6 +1363,31 @@ describe("query-builder natural-language planner", () => {
       sort: { key: "avg__win_rate", dir: "desc" },
       limit: 20,
     });
+  });
+
+  it("plans ability-timing aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 9,
+      question:
+        "Which phases should we use Suzu when win rate delta over 30 with at least 2 fights?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ability_timing",
+      metrics: [
+        { metric: "fights", agg: "count" },
+        { metric: "win_rate_delta", agg: "avg" },
+      ],
+      dimensions: ["phase"],
+    });
+    expect(planned?.spec.filters).toEqual(
+      expect.arrayContaining([
+        { field: "hero", op: "in", value: ["Kiriko"] },
+        { field: "ability", op: "in", value: ["Protection Suzu"] },
+        { field: "win_rate_delta", op: "gt", value: 30 },
+        { field: "fights", op: "gte", value: 2 },
+      ])
+    );
   });
 
   it("plans ability-timing loss questions by phase", () => {
@@ -1473,6 +1524,27 @@ describe("query-builder natural-language planner", () => {
       metrics: [{ metric: "win_rate", agg: "avg" }],
       dimensions: ["first_swap_timing"],
       filters: [],
+    });
+  });
+
+  it("plans swap-impact aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 3,
+      question:
+        "What is our win rate by swap timing with map win rate at least 50% and at least 2 maps?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "swap_impact",
+      metrics: [
+        { metric: "win_rate", agg: "avg" },
+        { metric: "maps", agg: "count" },
+      ],
+      dimensions: ["first_swap_timing"],
+      filters: [
+        { field: "win_rate", op: "gte", value: 50 },
+        { field: "maps", op: "gte", value: 2 },
+      ],
     });
   });
 

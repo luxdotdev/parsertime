@@ -4983,6 +4983,31 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         if (usedFilter) filters.push(usedFilter);
       }
     }
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "win_rate",
+          aliases: [
+            "win rate",
+            "winrate",
+            "fight win rate",
+            "ability win rate",
+          ],
+        },
+        {
+          field: "fights",
+          aliases: ["fights", "samples", "ability samples", "sample size"],
+        },
+        {
+          field: "wins",
+          aliases: ["wins", "fight wins"],
+        },
+        {
+          field: "losses",
+          aliases: ["losses", "fight losses"],
+        },
+      ])
+    );
   }
 
   if (dataset === "ability_timing") {
@@ -5003,6 +5028,34 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       const filter = filterFor(dataset, "impact_rating", "high");
       if (filter) filters.push(filter);
     }
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "win_rate",
+          aliases: ["win rate", "winrate", "fight win rate", "phase win rate"],
+        },
+        {
+          field: "fights",
+          aliases: ["fights", "samples", "phase samples", "sample size"],
+        },
+        {
+          field: "wins",
+          aliases: ["wins", "fight wins"],
+        },
+        {
+          field: "losses",
+          aliases: ["losses", "fight losses"],
+        },
+        {
+          field: "overall_win_rate",
+          aliases: ["overall win rate", "overall winrate", "baseline"],
+        },
+        {
+          field: "win_rate_delta",
+          aliases: ["win rate delta", "winrate delta", "delta", "lift"],
+        },
+      ])
+    );
   }
 
   if (dataset === "swap_impact") {
@@ -5039,6 +5092,36 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       const filter = filterFor(dataset, "first_swap_timing", firstSwapTiming);
       if (filter) filters.push(filter);
     }
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "win_rate",
+          aliases: ["win rate", "winrate", "map win rate", "swap win rate"],
+        },
+        {
+          field: "maps",
+          aliases: [
+            "maps",
+            "games",
+            "maps played",
+            "games played",
+            "sample size",
+          ],
+        },
+        {
+          field: "wins",
+          aliases: ["wins", "map wins"],
+        },
+        {
+          field: "losses",
+          aliases: ["losses", "map losses"],
+        },
+        {
+          field: "avg_swaps",
+          aliases: ["avg swaps", "average swaps", "swaps per map"],
+        },
+      ])
+    );
   }
 
   if (dataset === "role_performance") {

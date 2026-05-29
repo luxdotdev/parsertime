@@ -106,4 +106,22 @@ describe("computed aggregator (swap impact)", () => {
     ]);
     expect(rows[0]["sum__losses"]).toBe(1);
   });
+
+  it("filters grouped swap metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      MAPS,
+      spec({
+        dimensions: ["had_swap"],
+        filters: [
+          { field: "win_rate", op: "gte", value: 50 },
+          { field: "maps", op: "gte", value: 2 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].had_swap).toBe("yes");
+    expect(rows[0]["avg__win_rate"]).toBe(50);
+    expect(rows[0]["count__maps"]).toBe(2);
+  });
 });

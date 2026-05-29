@@ -134,4 +134,25 @@ describe("computed aggregator (ability impact)", () => {
     expect(rows[0].ability).toBe("Protection Suzu");
     expect(rows[0]["sum__losses"]).toBe(1);
   });
+
+  it("filters grouped ability-impact metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      ABILITY_ROWS,
+      spec({
+        dimensions: ["used"],
+        filters: [
+          { field: "hero", op: "in", value: ["Kiriko"] },
+          { field: "ability", op: "in", value: ["Protection Suzu"] },
+          { field: "side", op: "eq", value: "us" },
+          { field: "win_rate", op: "gte", value: 50 },
+          { field: "fights", op: "gte", value: 2 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].used).toBe("yes");
+    expect(rows[0]["avg__win_rate"]).toBe(50);
+    expect(rows[0]["count__fights"]).toBe(2);
+  });
 });

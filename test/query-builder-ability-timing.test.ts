@@ -146,4 +146,27 @@ describe("computed aggregator (ability timing)", () => {
     expect(rows[0]["sum__losses"]).toBe(1);
     expect(rows[1]["sum__losses"]).toBe(0);
   });
+
+  it("filters grouped ability-timing metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      ABILITY_TIMING_ROWS,
+      spec({
+        metrics: [
+          { metric: "win_rate_delta", agg: "avg" },
+          { metric: "fights", agg: "count" },
+        ],
+        dimensions: ["phase"],
+        filters: [
+          { field: "ability", op: "in", value: ["Protection Suzu"] },
+          { field: "win_rate_delta", op: "gt", value: 30 },
+          { field: "fights", op: "gte", value: 2 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].phase).toBe("early");
+    expect(rows[0]["avg__win_rate_delta"]).toBeCloseTo(33.3333, 4);
+    expect(rows[0]["count__fights"]).toBe(2);
+  });
 });
