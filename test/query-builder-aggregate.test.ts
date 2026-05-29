@@ -236,6 +236,56 @@ describe("computed aggregator (teamfights)", () => {
     expect(rows[0]["count__fights"]).toBe(3);
   });
 
+  it("filters grouped fight ult economy metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      FIGHTS,
+      spec({
+        metrics: [
+          { metric: "avg_wasted_ults", agg: "avg" },
+          { metric: "fights", agg: "count" },
+        ],
+        dimensions: ["map_type"],
+        filters: [
+          { field: "avg_wasted_ults", op: "gt", value: 0.3 },
+          { field: "fights", op: "gte", value: 2 },
+        ],
+      })
+    );
+
+    expect(rows).toEqual([
+      {
+        map_type: "Control",
+        avg__avg_wasted_ults: 1 / 3,
+        count__fights: 3,
+      },
+    ]);
+  });
+
+  it("filters grouped fight duration thresholds after aggregation", () => {
+    const { rows } = aggregateComputed(
+      FIGHTS,
+      spec({
+        metrics: [
+          { metric: "duration", agg: "avg" },
+          { metric: "fights", agg: "count" },
+        ],
+        dimensions: ["map_type"],
+        filters: [
+          { field: "duration", op: "gte", value: 15 },
+          { field: "fights", op: "gte", value: 2 },
+        ],
+      })
+    );
+
+    expect(rows).toEqual([
+      {
+        map_type: "Control",
+        avg__duration: (18 + 24 + 16) / 3,
+        count__fights: 3,
+      },
+    ]);
+  });
+
   it("supports extended fight-context filters and wasted ult metrics", () => {
     const firstDeath = aggregateComputed(
       FIGHTS,

@@ -1163,7 +1163,9 @@ function normalize(value: string): string {
   return value
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
+    .replace(/(\d)\.(\d)/g, "$1DECIMALPOINT$2")
     .replace(/[^a-zA-Z0-9]+/g, " ")
+    .replace(/DECIMALPOINT/g, ".")
     .trim()
     .toLowerCase();
 }
@@ -3912,6 +3914,12 @@ function pickFirstSwapTiming(normalized: string): string | null {
 }
 
 function extractWastedUltFilter(normalized: string): QueryFilter | null {
+  const mentionsWastedUlt =
+    includesPhrase(normalized, "wasted ult") ||
+    includesPhrase(normalized, "wasted ults") ||
+    includesPhrase(normalized, "wasted ultimate") ||
+    includesPhrase(normalized, "wasted ultimates");
+
   if (
     includesPhrase(normalized, "no wasted ults") ||
     includesPhrase(normalized, "no wasted ultimates") ||
@@ -3921,10 +3929,20 @@ function extractWastedUltFilter(normalized: string): QueryFilter | null {
     return { field: "wasted_ults", op: "eq", value: 0 };
   }
   if (
-    includesPhrase(normalized, "wasted ult") ||
-    includesPhrase(normalized, "wasted ults") ||
-    includesPhrase(normalized, "wasted ultimate") ||
-    includesPhrase(normalized, "wasted ultimates") ||
+    mentionsWastedUlt &&
+    (includesPhrase(normalized, "average wasted") ||
+      includesPhrase(normalized, "avg wasted") ||
+      new RegExp(
+        `\\b(?:at\\s+least|minimum|min|more\\s+than|over|above|greater\\s+than|at\\s+most|maximum|max|up\\s+to|less\\s+than|under|below)\\s+(?:${NUMBER_TOKEN})\\s*(?:wasted\\s+ults?|wasted\\s+ultimates?)\\b`
+      ).test(normalized) ||
+      new RegExp(
+        `\\b(?:wasted\\s+ults?|wasted\\s+ultimates?)\\s+(?:is\\s+|are\\s+)?(?:at\\s+least|minimum|min|more\\s+than|over|above|greater\\s+than|at\\s+most|maximum|max|up\\s+to|less\\s+than|under|below)\\s+(?:${NUMBER_TOKEN})\\b`
+      ).test(normalized))
+  ) {
+    return null;
+  }
+  if (
+    mentionsWastedUlt ||
     includesPhrase(normalized, "waste an ult") ||
     includesPhrase(normalized, "waste ult") ||
     includesPhrase(normalized, "waste ults") ||
@@ -4905,6 +4923,121 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
             "team fights",
             "fight sample",
             "sample size",
+          ],
+        },
+        {
+          field: "wins",
+          aliases: ["wins", "fight wins", "fights won"],
+        },
+        {
+          field: "losses",
+          aliases: ["losses", "fight losses", "fights lost"],
+        },
+        {
+          field: "avg_ults",
+          aliases: [
+            "average ults",
+            "avg ults",
+            "average ultimates",
+            "avg ultimates",
+            "average ultimates used",
+            "avg ultimates used",
+          ],
+        },
+        {
+          field: "avg_wasted_ults",
+          aliases: [
+            "average wasted ults",
+            "avg wasted ults",
+            "average wasted ultimates",
+            "avg wasted ultimates",
+            "wasted ultimates",
+          ],
+        },
+        {
+          field: "first_pick_rate",
+          aliases: ["first pick rate", "first-pick rate", "opening pick rate"],
+        },
+        {
+          field: "first_death_rate",
+          aliases: [
+            "first death rate",
+            "first-death rate",
+            "opening death rate",
+          ],
+        },
+        {
+          field: "first_ult_rate",
+          aliases: ["first ult rate", "first ultimate rate"],
+        },
+        {
+          field: "dry_fight_rate",
+          aliases: ["dry fight rate", "dry-fight rate"],
+        },
+        {
+          field: "reversal_rate",
+          aliases: ["reversal rate", "fight reversal rate"],
+        },
+        {
+          field: "dry_fight_reversal_rate",
+          aliases: [
+            "dry fight reversal rate",
+            "dry-fight reversal rate",
+            "dry reversal rate",
+          ],
+        },
+        {
+          field: "non_dry_fight_reversal_rate",
+          aliases: [
+            "non dry fight reversal rate",
+            "non-dry fight reversal rate",
+            "non dry reversal rate",
+          ],
+        },
+        {
+          field: "ultimate_efficiency",
+          aliases: [
+            "ultimate efficiency",
+            "ult efficiency",
+            "fight wins per ultimate",
+            "fight wins per ult",
+          ],
+        },
+        {
+          field: "avg_ults_per_non_dry_fight",
+          aliases: [
+            "average ults per non dry fight",
+            "average ultimates per non dry fight",
+            "ults per non dry fight",
+            "ultimates per non dry fight",
+          ],
+        },
+        {
+          field: "avg_ults_in_won_fights",
+          aliases: [
+            "average ults in won fights",
+            "average ultimates in won fights",
+            "ults in won fights",
+          ],
+        },
+        {
+          field: "avg_ults_in_lost_fights",
+          aliases: [
+            "average ults in lost fights",
+            "average ultimates in lost fights",
+            "ults in lost fights",
+          ],
+        },
+      ]),
+      ...extractDurationThresholdFilters(dataset, normalized, [
+        {
+          field: "duration",
+          aliases: [
+            "duration",
+            "fight duration",
+            "teamfight duration",
+            "team fight duration",
+            "fight length",
           ],
         },
       ])

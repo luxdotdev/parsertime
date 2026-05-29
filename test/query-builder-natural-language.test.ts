@@ -333,6 +333,72 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans grouped fight wasted-ultimate threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "Which map types have average wasted ultimates over 0.3 with at least 2 fights?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      dimensions: ["map_type"],
+    });
+    expect(planned?.spec.filters).toEqual(
+      expect.arrayContaining([
+        { field: "avg_wasted_ults", op: "gt", value: 0.3 },
+        { field: "fights", op: "gte", value: 2 },
+      ])
+    );
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([{ metric: "avg_wasted_ults", agg: "avg" }])
+    );
+    expect(planned?.spec.filters).not.toContainEqual({
+      field: "wasted_ults",
+      op: "gte",
+      value: 1,
+    });
+  });
+
+  it("plans grouped fight duration threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "Which map types have average fight duration at least 15 seconds with at least 2 fights?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "duration", agg: "avg" }],
+      dimensions: ["map_type"],
+    });
+    expect(planned?.spec.filters).toEqual(
+      expect.arrayContaining([
+        { field: "duration", op: "gte", value: 15 },
+        { field: "fights", op: "gte", value: 2 },
+      ])
+    );
+  });
+
+  it("plans grouped fight rate threshold filters without row context", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Which map types have fight first pick rate at least 50%?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "first_pick_rate", agg: "avg" }],
+      dimensions: ["map_type"],
+      filters: [{ field: "first_pick_rate", op: "gte", value: 50 }],
+    });
+    expect(planned?.spec.filters).not.toContainEqual({
+      field: "first_pick",
+      op: "eq",
+      value: "yes",
+    });
+  });
+
   it("plans teamfight ultimate-efficiency questions", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,
