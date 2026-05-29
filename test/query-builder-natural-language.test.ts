@@ -51,6 +51,23 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans scoped accuracy questions onto player stat ratio metrics", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 7,
+      question: "Which players have the highest scoped accuracy on Widowmaker?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_stat",
+      teamId: 7,
+      metrics: [{ metric: "scoped_accuracy", agg: "ratio" }],
+      dimensions: ["player"],
+      filters: [{ field: "hero", op: "in", value: ["Widowmaker"] }],
+      sort: { key: "ratio__scoped_accuracy", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans extended fight winrate questions onto computed teamfight fields", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

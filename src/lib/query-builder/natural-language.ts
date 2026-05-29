@@ -75,6 +75,11 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "deaths",
     "time played",
     "playtime",
+    "accuracy",
+    "weapon accuracy",
+    "critical hit accuracy",
+    "scoped accuracy",
+    "scoped critical hit accuracy",
     "widowmaker versus the time",
   ],
   calculated_stat: [
@@ -613,6 +618,18 @@ const METRIC_ALIASES: Record<string, string[]> = {
   ],
   ultimates_used: ["ults used", "ultimates used", "ultimate usage"],
   ultimates_earned: ["ults earned", "ultimates earned"],
+  weapon_accuracy: ["weapon accuracy", "shot accuracy"],
+  critical_hit_accuracy: [
+    "critical hit accuracy",
+    "crit accuracy",
+    "critical accuracy",
+  ],
+  scoped_accuracy: ["scoped accuracy", "scope accuracy", "scoped acc"],
+  scoped_critical_hit_accuracy: [
+    "scoped critical hit accuracy",
+    "scoped crit accuracy",
+    "scoped critical accuracy",
+  ],
   ult_efficiency: [
     "ultimate efficiency",
     "ult efficiency",
@@ -2138,6 +2155,14 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
       const agg = pickMetricAgg(dataset, metric.id, question);
       if (agg) refs.push({ metric: metric.id, agg });
     }
+  }
+
+  if (
+    dataset === "player_stat" &&
+    refs.length === 0 &&
+    includesPhrase(normalized, "accuracy")
+  ) {
+    refs.push({ metric: "weapon_accuracy", agg: "ratio" });
   }
 
   if (dataset === "teamfight" && includesPhrase(normalized, "wasted ult")) {

@@ -50,6 +50,26 @@ describe("query-builder compiler", () => {
     expect(params).toEqual([10, 11, 12, "Tracer", "Genji", 60]);
   });
 
+  it("computes aggregation-safe player accuracy ratios from shot totals", () => {
+    const spec = parse({
+      dataset: "player_stat",
+      teamId: 5,
+      metrics: [
+        { metric: "weapon_accuracy", agg: "ratio" },
+        { metric: "scoped_accuracy", agg: "ratio" },
+      ],
+      dimensions: ["player"],
+    });
+    const { sql } = toExecutable(buildPlan(spec), [10]);
+
+    expect(sql).toContain(
+      '(SUM(fr."shots_hit")::numeric / NULLIF(SUM(fr."shots_fired"), 0)) * 100'
+    );
+    expect(sql).toContain(
+      '(SUM(fr."scoped_shots_hit")::numeric / NULLIF(SUM(fr."scoped_shots"), 0)) * 100'
+    );
+  });
+
   it("scopes kill queries in the outer WHERE and counts rows", () => {
     const spec = parse({
       dataset: "kill",
