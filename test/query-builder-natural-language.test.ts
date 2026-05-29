@@ -164,6 +164,24 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans negated fight-context filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "What is our fight win rate when we do not get first pick and have no first death?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: [],
+      filters: [
+        { field: "first_death", op: "eq", value: "no" },
+        { field: "first_pick", op: "eq", value: "no" },
+      ],
+    });
+  });
+
   it("plans fight-loss count questions onto computed teamfight fields", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

@@ -3030,6 +3030,21 @@ function extractWastedUltFilter(normalized: string): QueryFilter | null {
   return null;
 }
 
+function hasNegatedFightContext(
+  normalized: string,
+  phrases: string[]
+): boolean {
+  return phrases.some(
+    (phrase) =>
+      includesPhrase(normalized, `no ${phrase}`) ||
+      includesPhrase(normalized, `without ${phrase}`) ||
+      includesPhrase(normalized, `don t ${phrase}`) ||
+      includesPhrase(normalized, `do not ${phrase}`) ||
+      includesPhrase(normalized, `didn t ${phrase}`) ||
+      includesPhrase(normalized, `did not ${phrase}`)
+  );
+}
+
 function pickUltEconomyBucket(normalized: string): string | null {
   if (
     includesPhrase(normalized, "2 behind") ||
@@ -3386,28 +3401,74 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       includesPhrase(normalized, "reversal rate") ||
       includesPhrase(normalized, "fight reversal rate");
 
+    const noFirstDeath = hasNegatedFightContext(normalized, [
+      "first death",
+      "have first death",
+      "opening death",
+      "have opening death",
+    ]);
+    const noFirstPick = hasNegatedFightContext(normalized, [
+      "first pick",
+      "get first pick",
+      "opening pick",
+      "get opening pick",
+    ]);
+    const noFirstUlt = hasNegatedFightContext(normalized, [
+      "first ult",
+      "use first ult",
+      "get first ult",
+      "first ultimate",
+      "use first ultimate",
+      "get first ultimate",
+    ]);
+    const noDryFight = hasNegatedFightContext(normalized, ["dry fight"]);
+    const noReversal = hasNegatedFightContext(normalized, [
+      "reversal",
+      "reverse fight",
+    ]);
+
     if (includesPhrase(normalized, "first death") && !asksFirstDeathRate) {
-      filters.push({ field: "first_death", op: "eq", value: "yes" });
+      filters.push({
+        field: "first_death",
+        op: "eq",
+        value: noFirstDeath ? "no" : "yes",
+      });
     }
     if (includesPhrase(normalized, "first pick") && !asksFirstPickRate) {
-      filters.push({ field: "first_pick", op: "eq", value: "yes" });
+      filters.push({
+        field: "first_pick",
+        op: "eq",
+        value: noFirstPick ? "no" : "yes",
+      });
     }
     if (includesPhrase(normalized, "dry fight") && !asksDryFightRate) {
-      filters.push({ field: "dry_fight", op: "eq", value: "yes" });
+      filters.push({
+        field: "dry_fight",
+        op: "eq",
+        value: noDryFight ? "no" : "yes",
+      });
     }
     if (
       (includesPhrase(normalized, "first ult") ||
         includesPhrase(normalized, "first ultimate")) &&
       !asksFirstUltRate
     ) {
-      filters.push({ field: "first_ult", op: "eq", value: "yes" });
+      filters.push({
+        field: "first_ult",
+        op: "eq",
+        value: noFirstUlt ? "no" : "yes",
+      });
     }
     if (
       (includesPhrase(normalized, "reversal") ||
         includesPhrase(normalized, "reverse fight")) &&
       !asksReversalRate
     ) {
-      filters.push({ field: "reversal", op: "eq", value: "yes" });
+      filters.push({
+        field: "reversal",
+        op: "eq",
+        value: noReversal ? "no" : "yes",
+      });
     }
     const ultCountFilter = extractUltCountFilter(normalized);
     if (ultCountFilter) filters.push(ultCountFilter);
