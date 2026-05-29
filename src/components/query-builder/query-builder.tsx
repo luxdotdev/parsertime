@@ -20,7 +20,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Textarea } from "@/components/ui/textarea";
 import { downloadCsv } from "@/lib/query-builder/format";
+import { planQueryFromQuestion } from "@/lib/query-builder/natural-language";
 import {
   buildPlan,
   renderComputedPlan,
@@ -43,7 +45,13 @@ import type {
   TimeScope,
   ViewableTeam,
 } from "@/lib/query-builder/types";
-import { BookmarkIcon, DownloadIcon, PlayIcon, Trash2Icon } from "lucide-react";
+import {
+  BookmarkIcon,
+  DownloadIcon,
+  PlayIcon,
+  Trash2Icon,
+  WandSparklesIcon,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -81,6 +89,8 @@ export function QueryBuilder({
   const [saveName, setSaveName] = useState("");
   const [saveOpen, setSaveOpen] = useState(false);
   const [filterModel, setFilterModel] = useState<Filter[]>([]);
+  const [question, setQuestion] = useState("");
+  const [plannerError, setPlannerError] = useState<string | null>(null);
 
   const teamName =
     teams.find((tm) => tm.id === draft.teamId)?.name ?? t("yourTeam");
@@ -200,6 +210,35 @@ export function QueryBuilder({
     }
   }
 
+  function planQuestion() {
+    if (!draft.teamId) {
+      setPlannerError(t("needTeam"));
+      return;
+    }
+    const planned = planQueryFromQuestion({
+      question,
+      teamId: draft.teamId,
+    });
+    if (!planned) {
+      setPlannerError(t("planFailed"));
+      return;
+    }
+    setDraft({
+      dataset: planned.spec.dataset,
+      teamId: planned.spec.teamId,
+      metrics: planned.spec.metrics,
+      dimensions: planned.spec.dimensions,
+      timeScope: planned.spec.timeScope,
+      sort: planned.spec.sort,
+      limit: planned.spec.limit,
+    });
+    setFilterModel(querySpecToFilters(planned.spec.filters));
+    setPlannerError(null);
+    setStatus("idle");
+    setResult(null);
+    toast.success(t("plannedQuery"));
+  }
+
   function loadSaved(item: SavedQuerySummary) {
     setDraft({
       dataset: item.spec.dataset,
@@ -254,6 +293,35 @@ export function QueryBuilder({
           {t("subtitle")}
         </p>
       </header>
+
+      <section
+        aria-label={t("plannerLabel")}
+        className="border-border bg-card ring-foreground/5 rounded-xl border p-4 shadow-xs ring-1"
+      >
+        <div className="flex flex-col gap-3 md:flex-row md:items-start">
+          <Textarea
+            value={question}
+            onChange={(event) => {
+              setQuestion(event.target.value);
+              if (plannerError) setPlannerError(null);
+            }}
+            placeholder={t("plannerPlaceholder")}
+            className="min-h-20 resize-y md:min-h-16"
+          />
+          <Button
+            type="button"
+            onClick={planQuestion}
+            disabled={!question.trim()}
+            className="gap-1.5 md:mt-0"
+          >
+            <WandSparklesIcon className="size-4" aria-hidden="true" />
+            {t("planQuestion")}
+          </Button>
+        </div>
+        {plannerError && (
+          <p className="text-destructive mt-2 text-sm">{plannerError}</p>
+        )}
+      </section>
 
       <section
         aria-label={t("sentenceLabel")}

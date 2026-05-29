@@ -2,6 +2,11 @@
   "queryBuilderPage": {
     "title": "쿼리",
     "subtitle": "질문을 한 조각씩 구성하세요. 문장처럼 읽히며 팀 범위로 제한된 실제 쿼리로 실행됩니다. 각 요소에 마우스를 올리면 사용되는 테이블과 컬럼을 확인할 수 있습니다.",
+    "plannerLabel": "질문 플래너",
+    "plannerPlaceholder": "PGE가 Widowmaker로 기록한 결정타 수와 스크림에서 플레이한 시간을 알고 싶어요",
+    "planQuestion": "계획",
+    "plannedQuery": "쿼리 계획됨",
+    "planFailed": "아직 이 질문을 계획할 수 없습니다.",
     "sentenceLabel": "쿼리 문장",
     "yourTeam": "내 팀",
     "clauseFrom": "출처",

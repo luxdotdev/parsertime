@@ -2,6 +2,11 @@
   "queryBuilderPage": {
     "title": "Query",
     "subtitle": "Build a question one piece at a time. It reads like a sentence and runs as a real, team-scoped query. Hover any part to see the tables and columns underneath.",
+    "plannerLabel": "Question planner",
+    "plannerPlaceholder": "I need to know the number of final blows PGE has on Widowmaker versus the time he has played it in scrims",
+    "planQuestion": "Plan",
+    "plannedQuery": "Query planned",
+    "planFailed": "I could not plan that question yet.",
     "sentenceLabel": "Query sentence",
     "yourTeam": "your team",
     "clauseFrom": "from",
