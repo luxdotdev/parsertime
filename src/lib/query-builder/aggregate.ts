@@ -55,7 +55,7 @@ function matchesFilter(
 
 function aggregate(
   values: number[],
-  agg: "sum" | "avg" | "max" | "min" | "count" | "per10",
+  agg: "sum" | "avg" | "max" | "min" | "count" | "per10" | "ratio",
   count: number
 ): number {
   switch (agg) {
@@ -71,9 +71,32 @@ function aggregate(
       return values.length ? Math.max(...values) : 0;
     case "min":
       return values.length ? Math.min(...values) : 0;
+    case "per10":
+    case "ratio":
+      return 0;
     default:
       return 0;
   }
+}
+
+function ratioAggregate(
+  bucket: ComputedRow[],
+  numeratorField: string | null,
+  denominatorField: string | undefined,
+  scale: number
+): number {
+  if (!numeratorField || !denominatorField) return 0;
+
+  let numerator = 0;
+  let denominator = 0;
+  for (const row of bucket) {
+    const n = Number(row[numeratorField]);
+    const d = Number(row[denominatorField]);
+    if (!Number.isNaN(n)) numerator += n;
+    if (!Number.isNaN(d)) denominator += d;
+  }
+
+  return denominator === 0 ? 0 : (numerator / denominator) * scale;
 }
 
 export function aggregateComputed(
@@ -93,6 +116,8 @@ export function aggregateComputed(
         key: metricKey(ref),
         label: def.label,
         field: def.column,
+        denominatorField: def.denominatorColumn,
+        denominatorScale: def.denominatorScale,
         agg: ref.agg,
         scale: def.scale,
         precision: def.precision,
@@ -146,7 +171,15 @@ export function aggregateComputed(
         field === null
           ? []
           : bucket.map((r) => Number(r[field])).filter((n) => !Number.isNaN(n));
-      let value = aggregate(values, m.agg, bucket.length);
+      let value =
+        m.agg === "per10" || m.agg === "ratio"
+          ? ratioAggregate(
+              bucket,
+              field,
+              m.denominatorField,
+              m.denominatorScale ?? (m.agg === "per10" ? 600 : 1)
+            )
+          : aggregate(values, m.agg, bucket.length);
       if (m.scale !== undefined) value *= m.scale;
       row[m.key] = value;
     }

@@ -119,16 +119,37 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "damage heroes",
     "support heroes",
     "tank heroes",
+    "role performance",
+    "by role",
+    "per role",
+    "damage per 10",
+    "healing per 10",
+    "deaths per 10",
+    "ultimate efficiency",
+    "ult efficiency",
   ],
 };
 
 const METRIC_ALIASES: Record<string, string[]> = {
   final_blows: ["final blow", "final blows", "finals"],
+  eliminations: ["eliminations", "elims"],
+  deaths: ["deaths", "deaths per 10"],
+  assists: ["assists", "offensive assists"],
   time_played: ["time played", "playtime", "played it", "played them"],
-  hero_damage: ["hero damage", "damage dealt"],
+  hero_damage: ["hero damage", "damage dealt", "damage per 10"],
   all_damage: ["all damage", "total damage"],
-  healing: ["healing", "heals"],
+  damage_taken: ["damage taken", "damage taken per 10"],
+  healing: ["healing", "heals", "healing per 10"],
   ults_used: ["ults used", "ultimates used", "ultimate usage"],
+  ultimates_used: ["ults used", "ultimates used", "ultimate usage"],
+  ultimates_earned: ["ults earned", "ultimates earned"],
+  ult_efficiency: [
+    "ultimate efficiency",
+    "ult efficiency",
+    "eliminations per ultimate",
+    "elims per ult",
+  ],
+  kd: ["kd", "k d", "final blows per death"],
   avg_wasted_ults: ["wasted ult", "wasted ults", "wasted ultimates"],
   win_rate: ["winrate", "winrates", "win rate", "win rates", "wr"],
   fights: ["fights", "teamfights", "team fights"],
@@ -157,6 +178,7 @@ const DIMENSION_ALIASES: Record<string, string[]> = {
   side: ["side", "team"],
   used: ["used", "usage"],
   scenario: ["scenario", "used vs not used"],
+  role: ["role"],
   had_swap: ["had swap", "with swaps", "without swaps"],
   swap_count: ["swap count", "number of swaps"],
   swap_count_bucket: ["swap count bucket", "swaps"],
@@ -190,6 +212,7 @@ const FILLER_WORDS = new Set([
   "on",
   "our",
   "damage",
+  "role",
   "scrim",
   "scrims",
   "support",
@@ -564,9 +587,12 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
 
   if (dataset === "hero_pool") {
     for (const role of ["Tank", "Damage", "Support"]) {
+      const roleWord = normalize(role);
       if (
-        includesPhrase(normalized, role) ||
-        includesPhrase(normalized, `${role} heroes`)
+        includesPhrase(normalized, `${roleWord} heroes`) ||
+        includesPhrase(normalized, `${roleWord} role`) ||
+        includesPhrase(normalized, `for ${roleWord}`) ||
+        includesPhrase(normalized, `as ${roleWord}`)
       ) {
         const filter = filterFor(dataset, "role", role);
         if (filter) filters.push(filter);

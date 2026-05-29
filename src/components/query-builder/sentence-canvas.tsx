@@ -151,11 +151,16 @@ export function SentenceCanvas({
     const expr =
       m.column === null || ref.agg === "count"
         ? "COUNT(*)"
-        : `${AGG_SQL_LABELS[ref.agg]}(${m.column})`;
+        : (ref.agg === "per10" || ref.agg === "ratio") && m.denominatorColumn
+          ? `SUM(${m.column}) / SUM(${m.denominatorColumn})`
+          : `${AGG_SQL_LABELS[ref.agg]}(${m.column})`;
     return {
       title: m.statType ? `${expr} FILTER (stat = ${m.statType})` : expr,
       tables: [m.table],
-      columns: m.column ? [m.column] : undefined,
+      columns: [
+        ...(m.column ? [m.column] : []),
+        ...(m.denominatorColumn ? [m.denominatorColumn] : []),
+      ],
       note: m.description,
     };
   }

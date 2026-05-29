@@ -108,8 +108,17 @@ function metricExpr(
     return `(COUNT(*)${filter})::float8`;
   }
   const ref = `${baseAlias}.${quoteIdent(metric.column)}`;
+  if (agg === "ratio") {
+    if (!metric.denominatorColumn) return `(0)::float8`;
+    const denom = `${baseAlias}.${quoteIdent(metric.denominatorColumn)}`;
+    const scale = metric.denominatorScale ?? 1;
+    return `((SUM(${ref})::numeric / NULLIF(SUM(${denom}), 0)) * ${scale})::float8`;
+  }
   if (agg === "per10") {
-    return `((SUM(${ref})::numeric / NULLIF(SUM(${baseAlias}."hero_time_played"), 0)) * 600)::float8`;
+    const denominator = metric.denominatorColumn ?? "hero_time_played";
+    const denom = `${baseAlias}.${quoteIdent(denominator)}`;
+    const scale = metric.denominatorScale ?? 600;
+    return `((SUM(${ref})::numeric / NULLIF(SUM(${denom}), 0)) * ${scale})::float8`;
   }
   return `(${agg.toUpperCase()}(${ref}))::float8`;
 }
@@ -411,6 +420,14 @@ export function renderComputedPlan(
     const m = getMetric(spec.dataset, ref.metric);
     if (!m) return ref.metric;
     if (m.column === null || ref.agg === "count") return `COUNT(*) AS ${m.id}`;
+    if (ref.agg === "per10" || ref.agg === "ratio") {
+      const denominator =
+        m.denominatorColumn ?? (ref.agg === "per10" ? "time_played" : null);
+      const scale = m.denominatorScale ?? (ref.agg === "per10" ? 600 : 1);
+      if (denominator) {
+        return `(SUM(${m.column}) / NULLIF(SUM(${denominator}), 0)) * ${scale} AS ${m.id}`;
+      }
+    }
     const scaled = m.scale ? ` * ${m.scale}` : "";
     return `${AGG_SQL_LABELS[ref.agg]}(${m.column})${scaled} AS ${m.id}`;
   });

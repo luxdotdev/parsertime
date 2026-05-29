@@ -30,6 +30,7 @@ export const AGGREGATIONS = [
   "min",
   "count",
   "per10",
+  "ratio",
 ] as const;
 export type Aggregation = (typeof AGGREGATIONS)[number];
 

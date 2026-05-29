@@ -104,4 +104,33 @@ describe("query-builder natural-language planner", () => {
       limit: 20,
     });
   });
+
+  it("plans role-performance per-10 questions onto weighted hero-pool metrics", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "What is our damage per 10 by role?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_pool",
+      metrics: [{ metric: "hero_damage", agg: "per10" }],
+      dimensions: ["role"],
+      filters: [],
+    });
+  });
+
+  it("plans ultimate-efficiency questions onto ratio metrics", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which heroes have the best ultimate efficiency?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_pool",
+      metrics: [{ metric: "ult_efficiency", agg: "ratio" }],
+      dimensions: ["hero"],
+      sort: { key: "ratio__ult_efficiency", dir: "desc" },
+      limit: 20,
+    });
+  });
 });
