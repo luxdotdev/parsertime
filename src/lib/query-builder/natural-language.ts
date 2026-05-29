@@ -38,6 +38,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   ult_economy: "win_rate",
   duel: "win_rate",
   ability_impact: "win_rate",
+  ability_timing: "win_rate",
   swap_impact: "win_rate",
   hero_pool: "win_rate",
   hero_pickrate: "pick_rate",
@@ -251,6 +252,20 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "amp it up",
     "lamp",
   ],
+  ability_timing: [
+    "ability timing",
+    "cooldown timing",
+    "when should",
+    "when to use",
+    "best phase",
+    "phase timing",
+    "pre fight",
+    "pre-fight",
+    "early fight",
+    "mid fight",
+    "late fight",
+    "cleanup",
+  ],
   swap_impact: [
     "swap impact",
     "swap winrate",
@@ -404,8 +419,11 @@ const METRIC_ALIASES: Record<string, string[]> = {
   ban_rate: ["ban rate", "banned rate", "most banned"],
   maps_banned: ["maps banned", "bans", "ban count", "total bans"],
   win_rate_delta: [
+    "delta",
     "win rate delta",
     "winrate delta",
+    "difference",
+    "deviation",
     "impact",
     "weak point",
     "weak points",
@@ -414,6 +432,7 @@ const METRIC_ALIASES: Record<string, string[]> = {
   ],
   win_rate_with: ["win rate with ban", "winrate with ban"],
   win_rate_without: ["win rate without ban", "winrate without ban"],
+  overall_win_rate: ["overall win rate", "overall winrate", "baseline"],
   uses: [
     "uses",
     "used",
@@ -484,6 +503,8 @@ const DIMENSION_ALIASES: Record<string, string[]> = {
   first_ult: ["first ult", "first ultimate"],
   advantage_bucket: ["advantage bucket", "ult advantage"],
   ability: ["ability", "cooldown"],
+  phase: ["phase", "timing", "fight phase"],
+  impact_rating: ["impact rating", "impact"],
   side: ["side", "team"],
   type: ["type"],
   combo: ["combo", "ult combo", "ultimate combo"],
@@ -870,6 +891,45 @@ function mentionsHeroPickrateContext(normalized: string): boolean {
   );
 }
 
+function mentionsAbilityTimingContext(normalized: string): boolean {
+  const abilityContext =
+    includesPhrase(normalized, "ability") ||
+    includesPhrase(normalized, "abilities") ||
+    includesPhrase(normalized, "cooldown") ||
+    includesPhrase(normalized, "cooldowns") ||
+    includesPhrase(normalized, "suzu") ||
+    includesPhrase(normalized, "sleep") ||
+    includesPhrase(normalized, "nade") ||
+    includesPhrase(normalized, "grenade") ||
+    includesPhrase(normalized, "lamp");
+
+  const timingIntent =
+    includesPhrase(normalized, "ability timing") ||
+    includesPhrase(normalized, "cooldown timing") ||
+    includesPhrase(normalized, "when should") ||
+    includesPhrase(normalized, "when to use") ||
+    includesPhrase(normalized, "best phase") ||
+    includesPhrase(normalized, "phase timing") ||
+    includesPhrase(normalized, "by phase") ||
+    includesPhrase(normalized, "per phase");
+
+  const phaseMention =
+    includesPhrase(normalized, "pre fight") ||
+    includesPhrase(normalized, "pre-fight") ||
+    includesPhrase(normalized, "early fight") ||
+    includesPhrase(normalized, "mid fight") ||
+    includesPhrase(normalized, "late fight") ||
+    includesPhrase(normalized, "cleanup") ||
+    /\b(?:early|mid|late)\b.*\b(?:ability|abilities|cooldown|cooldowns|suzu|sleep|nade|grenade|lamp)\b/.test(
+      normalized
+    ) ||
+    /\b(?:ability|abilities|cooldown|cooldowns|suzu|sleep|nade|grenade|lamp)\b.*\b(?:early|mid|late)\b/.test(
+      normalized
+    );
+
+  return (timingIntent && abilityContext) || phaseMention;
+}
+
 function mentionsTeamfightUltContext(normalized: string): boolean {
   return (
     includesPhrase(normalized, "first ult") ||
@@ -952,6 +1012,17 @@ function pickDataset(question: string): DatasetId {
   if (mentionsCalculatedStatContext(normalized)) return "calculated_stat";
   if (mentionsStreakContext(normalized)) return "streak";
   if (mentionsTrendContext(normalized)) return "trend";
+  if (
+    mentionsAbilityTimingContext(normalized) ||
+    (findAbility(question) &&
+      (includesPhrase(normalized, "when should") ||
+        includesPhrase(normalized, "when to use") ||
+        includesPhrase(normalized, "best phase") ||
+        includesPhrase(normalized, "by phase") ||
+        includesPhrase(normalized, "per phase")))
+  ) {
+    return "ability_timing";
+  }
   if (findAbility(question)) return "ability_impact";
 
   const mentionsUlt =
@@ -1365,6 +1436,8 @@ function filterFor(
     | "map"
     | "map_type"
     | "ability"
+    | "phase"
+    | "impact_rating"
     | "side"
     | "used"
     | "had_swap"
@@ -1385,6 +1458,8 @@ function filterFor(
     map: ["map"],
     map_type: ["map_type"],
     ability: ["ability"],
+    phase: ["phase"],
+    impact_rating: ["impact_rating"],
     side: ["side"],
     used: ["used"],
     had_swap: ["had_swap"],
@@ -1576,6 +1651,37 @@ function pickUltEconomyBucket(normalized: string): string | null {
   return null;
 }
 
+function pickFightPhase(normalized: string): string | null {
+  if (
+    includesPhrase(normalized, "pre fight") ||
+    includesPhrase(normalized, "pre-fight") ||
+    includesPhrase(normalized, "before fight")
+  ) {
+    return "pre-fight";
+  }
+  if (
+    includesPhrase(normalized, "early") ||
+    includesPhrase(normalized, "early fight")
+  ) {
+    return "early";
+  }
+  if (
+    includesPhrase(normalized, "mid") ||
+    includesPhrase(normalized, "mid fight") ||
+    includesPhrase(normalized, "middle")
+  ) {
+    return "mid";
+  }
+  if (
+    includesPhrase(normalized, "late") ||
+    includesPhrase(normalized, "late fight")
+  ) {
+    return "late";
+  }
+  if (includesPhrase(normalized, "cleanup")) return "cleanup";
+  return null;
+}
+
 function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   const filters: QueryFilter[] = [];
   const heroMentions = findHeroMentions(question);
@@ -1703,6 +1809,26 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         const usedFilter = filterFor(dataset, "used", "yes");
         if (usedFilter) filters.push(usedFilter);
       }
+    }
+  }
+
+  if (dataset === "ability_timing") {
+    const phase = pickFightPhase(normalized);
+    if (
+      phase &&
+      !includesPhrase(normalized, "by phase") &&
+      !includesPhrase(normalized, "per phase")
+    ) {
+      const filter = filterFor(dataset, "phase", phase);
+      if (filter) filters.push(filter);
+    }
+
+    if (includesPhrase(normalized, "critical")) {
+      const filter = filterFor(dataset, "impact_rating", "critical");
+      if (filter) filters.push(filter);
+    } else if (includesPhrase(normalized, "high impact")) {
+      const filter = filterFor(dataset, "impact_rating", "high");
+      if (filter) filters.push(filter);
     }
   }
 
@@ -2067,6 +2193,16 @@ function pickDimensions(
   if (dataset === "ability_impact" && dims.length === 0) {
     add(hasFilter("used") ? "ability" : "used");
   }
+  if (dataset === "ability_timing" && dims.length === 0) {
+    if (hasFilter("phase")) {
+      add(hasFilter("ability") ? "hero" : "ability");
+    } else if (hasFilter("ability")) {
+      add("phase");
+    } else {
+      add("ability");
+      add("phase");
+    }
+  }
   if (dataset === "swap_impact" && dims.length === 0) {
     add(hasFilter("had_swap") ? "swap_count_bucket" : "had_swap");
   }
@@ -2171,6 +2307,12 @@ function pickSort(
       (includesPhrase(normalized, "owns") ||
         includesPhrase(normalized, "ownership") ||
         includesPhrase(normalized, "owned by"))
+    ) &&
+    !(
+      dataset === "ability_timing" &&
+      (includesPhrase(normalized, "when should") ||
+        includesPhrase(normalized, "when to use") ||
+        includesPhrase(normalized, "best phase"))
     )
   ) {
     return null;
@@ -2181,6 +2323,10 @@ function pickSort(
     includesPhrase(normalized, "most") ||
     includesPhrase(normalized, "highest") ||
     includesPhrase(normalized, "slowest") ||
+    (dataset === "ability_timing" &&
+      (includesPhrase(normalized, "when should") ||
+        includesPhrase(normalized, "when to use") ||
+        includesPhrase(normalized, "best phase"))) ||
     (dataset === "hero_pickrate" &&
       (includesPhrase(normalized, "owns") ||
         includesPhrase(normalized, "ownership") ||

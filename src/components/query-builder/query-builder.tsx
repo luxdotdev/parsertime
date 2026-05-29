@@ -478,6 +478,7 @@ const DEFAULT_METRIC: Record<DraftSpec["dataset"], string> = {
   ult_economy: "win_rate",
   duel: "win_rate",
   ability_impact: "win_rate",
+  ability_timing: "win_rate",
   swap_impact: "win_rate",
   hero_pool: "win_rate",
   hero_pickrate: "pick_rate",

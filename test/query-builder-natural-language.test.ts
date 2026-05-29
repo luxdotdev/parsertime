@@ -487,6 +487,41 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans ability-timing questions by phase", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 9,
+      question: "When should we use Suzu?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ability_timing",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["phase"],
+      filters: [
+        { field: "hero", op: "in", value: ["Kiriko"] },
+        { field: "ability", op: "in", value: ["Protection Suzu"] },
+      ],
+      sort: { key: "avg__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans phase-filtered ability-timing questions by ability", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 9,
+      question: "Which abilities have the best early fight win rate?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ability_timing",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["ability"],
+      filters: [{ field: "phase", op: "in", value: ["early"] }],
+      sort: { key: "avg__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans swap-impact questions onto swap buckets", () => {
     const planned = planQueryFromQuestion({
       teamId: 3,
