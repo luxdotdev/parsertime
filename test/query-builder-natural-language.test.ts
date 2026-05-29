@@ -628,17 +628,46 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
-  it("plans role-performance per-10 questions onto weighted hero-pool metrics", () => {
+  it("plans role-performance per-10 questions onto role metrics", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,
       question: "What is our damage per 10 by role?",
     });
 
     expect(planned?.spec).toMatchObject({
-      dataset: "hero_pool",
-      metrics: [{ metric: "hero_damage", agg: "per10" }],
+      dataset: "role_performance",
+      metrics: [{ metric: "damage_per10", agg: "ratio" }],
       dimensions: ["role"],
       filters: [],
+    });
+  });
+
+  it("plans role-line winrate questions by map type", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "What is our Damage role win rate by map type?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "role_performance",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["map_type"],
+      filters: [{ field: "role", op: "in", value: ["Damage"] }],
+    });
+  });
+
+  it("plans ranked role death-rate questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which role has the highest deaths per 10?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "role_performance",
+      metrics: [{ metric: "deaths_per10", agg: "ratio" }],
+      dimensions: ["role"],
+      sort: { key: "ratio__deaths_per10", dir: "desc" },
+      limit: 20,
     });
   });
 

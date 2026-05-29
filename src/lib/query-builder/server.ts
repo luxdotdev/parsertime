@@ -14,6 +14,7 @@ import { computeHeroPickrate } from "@/lib/query-builder/compute/hero-pickrate";
 import { computeMapResults } from "@/lib/query-builder/compute/map-results";
 import { computeOpeningKills } from "@/lib/query-builder/compute/opening-kills";
 import { computePlayerMapPerformance } from "@/lib/query-builder/compute/player-map-performance";
+import { computeRolePerformance } from "@/lib/query-builder/compute/role-performance";
 import { computeRoleTrios } from "@/lib/query-builder/compute/role-trios";
 import { computeRosterVariants } from "@/lib/query-builder/compute/roster-variants";
 import { computeRotationDeaths } from "@/lib/query-builder/compute/rotation-deaths";
@@ -251,6 +252,9 @@ async function runComputedQuery(
           spec.teamId,
           ctx.scrimIds
         );
+        break;
+      case "role_performance":
+        computedRows = await computeRolePerformance(spec.teamId, ctx.scrimIds);
         break;
       case "ult_economy":
         computedRows = await computeUltEconomy(spec.teamId, ctx.scrimIds);

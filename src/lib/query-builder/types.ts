@@ -18,6 +18,7 @@ export const DATASETS = [
   "rotation_death",
   "map_result",
   "player_map_performance",
+  "role_performance",
   "ult_economy",
   "duel",
   "ability_impact",

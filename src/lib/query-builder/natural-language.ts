@@ -37,6 +37,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   rotation_death: "rotation_deaths",
   map_result: "win_rate",
   player_map_performance: "win_rate",
+  role_performance: "win_rate",
   ult_economy: "win_rate",
   duel: "win_rate",
   ability_impact: "win_rate",
@@ -261,6 +262,21 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "perform best on",
     "performance on",
   ],
+  role_performance: [
+    "role performance",
+    "role stats",
+    "role stat",
+    "role line",
+    "role lines",
+    "by role",
+    "per role",
+    "tank role",
+    "damage role",
+    "support role",
+    "tank line",
+    "damage line",
+    "support line",
+  ],
   ult_economy: [
     "ult economy",
     "ultimate economy",
@@ -320,12 +336,6 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "damage heroes",
     "support heroes",
     "tank heroes",
-    "role performance",
-    "by role",
-    "per role",
-    "damage per 10",
-    "healing per 10",
-    "deaths per 10",
     "ultimate efficiency",
     "ult efficiency",
   ],
@@ -533,6 +543,15 @@ const METRIC_ALIASES: Record<string, string[]> = {
   early_death_rate: ["early death rate", "early fight death rate"],
   pre_fight_damage: ["pre fight damage", "pre-fight damage"],
   kill_distance: ["kill distance", "death distance"],
+  final_blows_per10: ["final blows per 10", "finals per 10"],
+  deaths_per10: ["deaths per 10", "deaths per 10 minutes"],
+  damage_per10: [
+    "damage per 10",
+    "hero damage per 10",
+    "damage per 10 minutes",
+  ],
+  healing_per10: ["healing per 10", "healing per 10 minutes"],
+  damage_taken_per10: ["damage taken per 10", "damage taken per 10 minutes"],
   win_rate: ["winrate", "winrates", "win rate", "win rates", "wr"],
   length: ["length", "streak length", "streak count"],
   fights: ["fights", "teamfights", "team fights"],
@@ -1137,6 +1156,51 @@ function mentionsUltEconomyContext(normalized: string): boolean {
   );
 }
 
+function mentionsRolePerformanceContext(normalized: string): boolean {
+  if (
+    includesPhrase(normalized, "role trio") ||
+    includesPhrase(normalized, "role trios") ||
+    includesPhrase(normalized, "lineup") ||
+    includesPhrase(normalized, "lineups")
+  ) {
+    return false;
+  }
+
+  const roleGrouping =
+    includesPhrase(normalized, "role performance") ||
+    includesPhrase(normalized, "role stats") ||
+    includesPhrase(normalized, "role stat") ||
+    includesPhrase(normalized, "role line") ||
+    includesPhrase(normalized, "role lines") ||
+    includesPhrase(normalized, "which role") ||
+    includesPhrase(normalized, "which roles") ||
+    includesPhrase(normalized, "by role") ||
+    includesPhrase(normalized, "per role");
+
+  const roleSpecific =
+    includesPhrase(normalized, "tank role") ||
+    includesPhrase(normalized, "damage role") ||
+    includesPhrase(normalized, "support role") ||
+    includesPhrase(normalized, "tank line") ||
+    includesPhrase(normalized, "damage line") ||
+    includesPhrase(normalized, "support line");
+
+  const roleMetric =
+    includesPhrase(normalized, "performance") ||
+    includesPhrase(normalized, "stats") ||
+    includesPhrase(normalized, "stat") ||
+    includesPhrase(normalized, "win rate") ||
+    includesPhrase(normalized, "winrate") ||
+    includesPhrase(normalized, "damage") ||
+    includesPhrase(normalized, "healing") ||
+    includesPhrase(normalized, "deaths") ||
+    includesPhrase(normalized, "final blows") ||
+    includesPhrase(normalized, "ult efficiency") ||
+    includesPhrase(normalized, "ultimate efficiency");
+
+  return roleGrouping || (roleSpecific && roleMetric);
+}
+
 function mentionsCalculatedStatContext(normalized: string): boolean {
   const wantsPlayerDuelStat =
     (includesPhrase(normalized, "duel winrate") ||
@@ -1226,6 +1290,15 @@ function pickDataset(question: string): DatasetId {
       includesPhrase(normalized, "opening ultimate"))
   ) {
     return "ult_usage";
+  }
+
+  if (
+    mentionsRolePerformanceContext(normalized) &&
+    !includesPhrase(normalized, "which hero") &&
+    !includesPhrase(normalized, "which heroes") &&
+    !includesPhrase(normalized, "hero win")
+  ) {
+    return "role_performance";
   }
 
   if (
@@ -1467,6 +1540,31 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   }
 
   const deduped = dedupeMetrics(refs);
+  if (dataset === "role_performance") {
+    const per10ToRaw: Record<string, string> = {
+      final_blows_per10: "final_blows",
+      deaths_per10: "deaths",
+      damage_per10: "hero_damage",
+      healing_per10: "healing",
+      damage_taken_per10: "damage_taken",
+    };
+    const per10Metrics = new Set(
+      deduped
+        .filter((ref) => ref.metric.endsWith("_per10"))
+        .map((ref) => ref.metric)
+    );
+    if (per10Metrics.size > 0) {
+      for (let i = deduped.length - 1; i >= 0; i--) {
+        const raw = Array.from(per10Metrics).some(
+          (metric) => per10ToRaw[metric] === deduped[i].metric
+        );
+        if (raw) deduped.splice(i, 1);
+      }
+      deduped.sort((a, b) =>
+        a.metric.endsWith("_per10") ? -1 : b.metric.endsWith("_per10") ? 1 : 0
+      );
+    }
+  }
   if (
     deduped.some((ref) => ref.metric === "win_rate") &&
     (includesPhrase(normalized, "win rate") ||
@@ -2121,6 +2219,21 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
   }
 
+  if (dataset === "role_performance") {
+    for (const role of ["Tank", "Damage", "Support"]) {
+      const roleWord = normalize(role);
+      if (
+        includesPhrase(normalized, `${roleWord} role`) ||
+        includesPhrase(normalized, `${roleWord} line`) ||
+        includesPhrase(normalized, `for ${roleWord}`) ||
+        includesPhrase(normalized, `as ${roleWord}`)
+      ) {
+        const filter = filterFor(dataset, "role", role);
+        if (filter) filters.push(filter);
+      }
+    }
+  }
+
   if (dataset === "hero_pool") {
     for (const role of ["Tank", "Damage", "Support"]) {
       const roleWord = normalize(role);
@@ -2417,6 +2530,13 @@ function pickDimensions(
       add(ds.dimensions.some((d) => d.id === "our_hero") ? "our_hero" : "hero");
   }
   if (
+    (includesPhrase(normalized, "which role") ||
+      includesPhrase(normalized, "which roles")) &&
+    !hasFilter("role")
+  ) {
+    add("role");
+  }
+  if (
     (includesPhrase(normalized, "which map") ||
       includesPhrase(normalized, "which maps") ||
       includesPhrase(normalized, "what map") ||
@@ -2517,6 +2637,9 @@ function pickDimensions(
   if (dataset === "player_map_performance" && dims.length === 0) {
     if (!hasFilter("player")) add("player");
     if (!hasFilter("map")) add("map");
+  }
+  if (dataset === "role_performance" && dims.length === 0) {
+    if (!hasFilter("role")) add("role");
   }
   if (
     dataset === "enemy_hero" &&
