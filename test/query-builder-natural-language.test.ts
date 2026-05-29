@@ -814,6 +814,48 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans hero-pool diversity questions by role", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "How diverse is our hero pool by role?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_diversity",
+      metrics: [{ metric: "diversity_score", agg: "avg" }],
+      dimensions: ["role"],
+      filters: [],
+    });
+  });
+
+  it("plans thin effective hero-pool questions onto role diversity", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which role has the lowest effective hero pool?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_diversity",
+      metrics: [{ metric: "effective_hero_pool", agg: "sum" }],
+      dimensions: ["role"],
+      sort: { key: "sum__effective_hero_pool", dir: "asc" },
+      limit: 20,
+    });
+  });
+
+  it("plans unique hero counts per role", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "How many unique heroes do we play per role?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_diversity",
+      metrics: [{ metric: "unique_heroes", agg: "sum" }],
+      dimensions: ["role"],
+    });
+  });
+
   it("plans player-intelligence questions onto hero depth metrics", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,

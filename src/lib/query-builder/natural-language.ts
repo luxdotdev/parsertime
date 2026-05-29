@@ -50,6 +50,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   ability_timing: "win_rate",
   swap_impact: "win_rate",
   hero_pool: "win_rate",
+  hero_diversity: "diversity_score",
   hero_pickrate: "pick_rate",
   hero_trend: "playtime_trend",
   player_intelligence: "hero_pool_size",
@@ -437,6 +438,20 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "ultimate efficiency",
     "ult efficiency",
   ],
+  hero_diversity: [
+    "hero diversity",
+    "hero pool diversity",
+    "diverse hero pool",
+    "diversity score",
+    "unique heroes",
+    "effective hero pool",
+    "heroes per role",
+    "role hero pool",
+    "thin hero pool",
+    "thinnest hero pool",
+    "shared heroes",
+    "specialist heroes",
+  ],
   hero_pickrate: [
     "hero pickrate",
     "hero pick rate",
@@ -605,6 +620,13 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "elims per ult",
   ],
   kd: ["kd", "k d", "final blows per death"],
+  diversity_score: ["diversity", "diversity score", "hero diversity"],
+  role_coverage: ["role coverage", "coverage"],
+  unique_heroes: ["unique heroes", "hero count", "heroes per role"],
+  effective_hero_pool: ["effective hero pool", "effective heroes"],
+  average_maps_per_hero: ["average maps per hero", "maps per hero"],
+  specialist_heroes: ["specialist heroes", "one player heroes"],
+  shared_heroes: ["shared heroes", "shared hero pool"],
   pick_rate: ["pickrate", "pick rate", "pick rates", "hero pool share"],
   ownership_rate: [
     "ownership",
@@ -1478,6 +1500,28 @@ function mentionsHeroPickrateContext(normalized: string): boolean {
   );
 }
 
+function mentionsHeroDiversityContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "hero diversity") ||
+    includesPhrase(normalized, "hero pool diversity") ||
+    includesPhrase(normalized, "diverse hero pool") ||
+    includesPhrase(normalized, "diversity score") ||
+    includesPhrase(normalized, "unique heroes") ||
+    includesPhrase(normalized, "effective hero pool") ||
+    includesPhrase(normalized, "heroes per role") ||
+    includesPhrase(normalized, "role hero pool") ||
+    includesPhrase(normalized, "thin hero pool") ||
+    includesPhrase(normalized, "thinnest hero pool") ||
+    includesPhrase(normalized, "shared heroes") ||
+    includesPhrase(normalized, "specialist heroes") ||
+    (includesPhrase(normalized, "hero pool") &&
+      (includesPhrase(normalized, "by role") ||
+        includesPhrase(normalized, "per role") ||
+        includesPhrase(normalized, "which role") ||
+        includesPhrase(normalized, "roles")))
+  );
+}
+
 function mentionsRotationDeathContext(normalized: string): boolean {
   return (
     includesPhrase(normalized, "rotation death") ||
@@ -1817,6 +1861,16 @@ function pickDataset(question: string): DatasetId {
     return "ability_timing";
   }
   if (findAbility(question)) return "ability_impact";
+
+  if (
+    mentionsHeroDiversityContext(normalized) &&
+    !includesPhrase(normalized, "who") &&
+    !includesPhrase(normalized, "which player") &&
+    !includesPhrase(normalized, "which players") &&
+    !player
+  ) {
+    return "hero_diversity";
+  }
 
   if (mentionsPlayerIntelligenceContext(normalized)) {
     return "player_intelligence";
@@ -3284,7 +3338,11 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
   }
 
-  if (dataset === "hero_pool" || dataset === "player_intelligence") {
+  if (
+    dataset === "hero_pool" ||
+    dataset === "hero_diversity" ||
+    dataset === "player_intelligence"
+  ) {
     for (const role of ["Tank", "Damage", "Support"]) {
       const roleWord = normalize(role);
       if (
@@ -3702,6 +3760,9 @@ function pickDimensions(
   if (dataset === "hero_pool" && dims.length === 0) {
     add("hero");
   }
+  if (dataset === "hero_diversity" && dims.length === 0) {
+    add("role");
+  }
   if (dataset === "hero_pickrate" && dims.length === 0) {
     if (!hasFilter("player")) add("player");
     if (!hasFilter("hero")) add("hero");
@@ -3901,6 +3962,7 @@ function pickSort(
     !includesPhrase(normalized, "most") &&
     !includesPhrase(normalized, "highest") &&
     !includesPhrase(normalized, "deepest") &&
+    !includesPhrase(normalized, "thinnest") &&
     !includesPhrase(normalized, "best") &&
     !includesPhrase(normalized, "lowest") &&
     !includesPhrase(normalized, "worst") &&
@@ -3974,6 +4036,7 @@ function pickSort(
         includesPhrase(normalized, "owned by")));
   const wantsLow =
     includesPhrase(normalized, "lowest") ||
+    includesPhrase(normalized, "thinnest") ||
     includesPhrase(normalized, "fastest") ||
     includesPhrase(normalized, "declining") ||
     includesPhrase(normalized, "trending down");

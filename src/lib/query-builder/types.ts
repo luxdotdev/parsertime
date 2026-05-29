@@ -31,6 +31,7 @@ export const DATASETS = [
   "ability_timing",
   "swap_impact",
   "hero_pool",
+  "hero_diversity",
   "hero_pickrate",
   "hero_trend",
   "player_intelligence",

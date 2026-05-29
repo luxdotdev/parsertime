@@ -9,6 +9,7 @@ import { computeAbilityTiming } from "@/lib/query-builder/compute/ability-timing
 import { computeBanImpact } from "@/lib/query-builder/compute/ban-impact";
 import { computeDuels } from "@/lib/query-builder/compute/duels";
 import { computeEnemyHeroMatchups } from "@/lib/query-builder/compute/enemy-hero";
+import { computeHeroDiversity } from "@/lib/query-builder/compute/hero-diversity";
 import { computeHeroPool } from "@/lib/query-builder/compute/hero-pool";
 import { computeHeroPickrate } from "@/lib/query-builder/compute/hero-pickrate";
 import { computeHeroTrends } from "@/lib/query-builder/compute/hero-trends";
@@ -299,6 +300,9 @@ async function runComputedQuery(
         break;
       case "hero_pool":
         computedRows = await computeHeroPool(spec.teamId, ctx.scrimIds);
+        break;
+      case "hero_diversity":
+        computedRows = await computeHeroDiversity(spec.teamId, ctx.scrimIds);
         break;
       case "hero_pickrate":
         computedRows = await computeHeroPickrate(spec.teamId, ctx.scrimIds);
