@@ -196,6 +196,20 @@ describe("query-builder natural-language planner", () => {
     expect(planned?.spec.metrics[0]).toEqual({ metric: "losses", agg: "sum" });
   });
 
+  it("plans result-scoped fight metric questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "How many ultimates did we use in lost fights?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "ults_used", agg: "sum" }],
+      dimensions: [],
+      filters: [{ field: "result", op: "eq", value: "loss" }],
+    });
+  });
+
   it("plans teamfight first-pick rate questions without filtering to first picks", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

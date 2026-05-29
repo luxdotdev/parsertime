@@ -1801,6 +1801,12 @@ function mentionsAbilityTimingContext(normalized: string): boolean {
 
 function mentionsTeamfightUltContext(normalized: string): boolean {
   return (
+    includesPhrase(normalized, "ults did we use") ||
+    includesPhrase(normalized, "ultimates did we use") ||
+    includesPhrase(normalized, "ults we use") ||
+    includesPhrase(normalized, "ultimates we use") ||
+    includesPhrase(normalized, "ults used in") ||
+    includesPhrase(normalized, "ultimates used in") ||
     includesPhrase(normalized, "first ult") ||
     includesPhrase(normalized, "first ultimate") ||
     includesPhrase(normalized, "wasted ult") ||
@@ -2390,6 +2396,16 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   }
 
   if (dataset === "teamfight") {
+    if (
+      (includesPhrase(normalized, "ults did we use") ||
+        includesPhrase(normalized, "ultimates did we use") ||
+        includesPhrase(normalized, "ults we use") ||
+        includesPhrase(normalized, "ultimates we use")) &&
+      !refs.some((ref) => ref.metric === "ults_used")
+    ) {
+      refs.push({ metric: "ults_used", agg: "sum" });
+    }
+
     const wantsFightCount =
       includesPhrase(normalized, "how many fights") ||
       includesPhrase(normalized, "number of fights") ||
@@ -2468,6 +2484,18 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   }
 
   const deduped = dedupeMetrics(refs);
+  if (dataset === "teamfight" && pickResultScope(normalized)) {
+    const hasScopedMetric = deduped.some(
+      (ref) => ref.metric !== "wins" && ref.metric !== "losses"
+    );
+    if (hasScopedMetric) {
+      for (let i = deduped.length - 1; i >= 0; i--) {
+        if (deduped[i].metric === "wins" || deduped[i].metric === "losses") {
+          deduped.splice(i, 1);
+        }
+      }
+    }
+  }
   if (dataset === "map_intelligence") {
     const wantsCount =
       includesPhrase(normalized, "how many") ||
@@ -3045,6 +3073,26 @@ function hasNegatedFightContext(
   );
 }
 
+function pickResultScope(normalized: string): "win" | "loss" | null {
+  if (
+    /\b(?:in|during|on|for|from)\s+(?:our\s+)?(?:won|winning)\s+(?:fights?|teamfights?|team fights?|maps?|games?)\b/.test(
+      normalized
+    ) ||
+    /\bwhen\s+we\s+(?:win|won)\b/.test(normalized)
+  ) {
+    return "win";
+  }
+  if (
+    /\b(?:in|during|on|for|from)\s+(?:our\s+)?(?:lost|losing)\s+(?:fights?|teamfights?|team fights?|maps?|games?)\b/.test(
+      normalized
+    ) ||
+    /\bwhen\s+we\s+(?:lose|lost)\b/.test(normalized)
+  ) {
+    return "loss";
+  }
+  return null;
+}
+
 function pickUltEconomyBucket(normalized: string): string | null {
   if (
     includesPhrase(normalized, "2 behind") ||
@@ -3345,6 +3393,14 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       const filter = filterFor(dataset, "map_type", mapType);
       if (filter) filters.push(filter);
     }
+  }
+
+  const resultScope = pickResultScope(normalized);
+  if (
+    resultScope &&
+    getDataset(dataset).filters.some((filter) => filter.id === "result")
+  ) {
+    filters.push({ field: "result", op: "eq", value: resultScope });
   }
 
   if (dataset === "opening_kill") {
