@@ -222,6 +222,7 @@ export async function computeAbilityImpact(
           if (presence.ourTeam) {
             const didUse = (slot === 1 ? used.our1 : used.our2).has(hero);
             rows.push({
+              loss: won ? 0 : 1,
               won: won ? 1 : 0,
               result: won ? "win" : "loss",
               hero,
@@ -239,6 +240,7 @@ export async function computeAbilityImpact(
           if (presence.enemyTeam) {
             const didUse = (slot === 1 ? used.enemy1 : used.enemy2).has(hero);
             rows.push({
+              loss: won ? 0 : 1,
               won: won ? 1 : 0,
               result: won ? "win" : "loss",
               hero,

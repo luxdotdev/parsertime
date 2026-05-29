@@ -813,6 +813,28 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans ability loss questions after using abilities", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 9,
+      question: "Which abilities do we lose fights after using the most?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ability_impact",
+      dimensions: ["ability"],
+      filters: [
+        { field: "side", op: "eq", value: "us" },
+        { field: "used", op: "eq", value: "yes" },
+      ],
+      sort: { key: "sum__losses", dir: "desc" },
+      limit: 20,
+    });
+    expect(planned?.spec.metrics[0]).toEqual({
+      metric: "losses",
+      agg: "sum",
+    });
+  });
+
   it("plans ability-timing questions by phase", () => {
     const planned = planQueryFromQuestion({
       teamId: 9,

@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 
 const ABILITY_ROWS: ComputedRow[] = [
   {
+    loss: 0,
     won: 1,
     result: "win",
     hero: "Kiriko",
@@ -19,6 +20,7 @@ const ABILITY_ROWS: ComputedRow[] = [
     scrim: "A",
   },
   {
+    loss: 1,
     won: 0,
     result: "loss",
     hero: "Kiriko",
@@ -31,6 +33,7 @@ const ABILITY_ROWS: ComputedRow[] = [
     scrim: "B",
   },
   {
+    loss: 1,
     won: 0,
     result: "loss",
     hero: "Kiriko",
@@ -43,6 +46,7 @@ const ABILITY_ROWS: ComputedRow[] = [
     scrim: "C",
   },
   {
+    loss: 0,
     won: 1,
     result: "win",
     hero: "Ana",
@@ -110,5 +114,24 @@ describe("computed aggregator (ability impact)", () => {
     expect(byUsed.yes["avg__win_rate"]).toBe(0);
     expect(byUsed.no["count__fights"]).toBe(1);
     expect(byUsed.no["avg__win_rate"]).toBe(0);
+  });
+
+  it("counts fight losses after ability use", () => {
+    const { rows } = aggregateComputed(
+      ABILITY_ROWS,
+      spec({
+        metrics: [{ metric: "losses", agg: "sum" }],
+        dimensions: ["ability"],
+        filters: [
+          { field: "side", op: "eq", value: "us" },
+          { field: "used", op: "eq", value: "yes" },
+        ],
+        sort: { key: "sum__losses", dir: "desc" },
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].ability).toBe("Protection Suzu");
+    expect(rows[0]["sum__losses"]).toBe(1);
   });
 });
