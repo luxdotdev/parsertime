@@ -289,4 +289,39 @@ describe("query-builder natural-language planner", () => {
       ],
     });
   });
+
+  it("plans player ult-usage questions onto ult usage summaries", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "Who has the most ults per map?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_usage",
+      metrics: [
+        { metric: "ults_per_map", agg: "avg" },
+        { metric: "ults_used", agg: "sum" },
+      ],
+      dimensions: ["player"],
+      filters: [{ field: "row_type", op: "eq", value: "player" }],
+      sort: { key: "avg__ults_per_map", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans fight-opening hero questions onto ult usage summaries", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "Which heroes open fights with ult the most?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_usage",
+      metrics: [{ metric: "fight_openings", agg: "sum" }],
+      dimensions: ["hero"],
+      filters: [{ field: "row_type", op: "eq", value: "fight opening hero" }],
+      sort: { key: "sum__fight_openings", dir: "desc" },
+      limit: 20,
+    });
+  });
 });

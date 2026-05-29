@@ -43,6 +43,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   ult_combo: "win_rate",
   role_trio: "win_rate",
   ult_impact: "win_rate",
+  ult_usage: "ults_used",
 };
 
 const DATASET_HINTS: Record<DatasetId, string[]> = {
@@ -94,6 +95,20 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "when we use ultimate",
     "enemy ult win rate",
     "enemy ultimate win rate",
+  ],
+  ult_usage: [
+    "ult usage",
+    "ultimate usage",
+    "ults per map",
+    "ultimates per map",
+    "most ults",
+    "most ultimates",
+    "fight opener",
+    "fight openers",
+    "open fights with ult",
+    "opens fights with ult",
+    "opening ult",
+    "opening ultimate",
   ],
   role_trio: [
     "role trio",
@@ -210,7 +225,13 @@ const METRIC_ALIASES: Record<string, string[]> = {
   all_damage: ["all damage", "total damage"],
   damage_taken: ["damage taken", "damage taken per 10"],
   healing: ["healing", "heals", "healing per 10"],
-  ults_used: ["ults used", "ultimates used", "ultimate usage"],
+  ults_used: [
+    "ults used",
+    "ultimates used",
+    "ultimate usage",
+    "most ults",
+    "most ultimates",
+  ],
   ultimates_used: ["ults used", "ultimates used", "ultimate usage"],
   ultimates_earned: ["ults earned", "ultimates earned"],
   ult_efficiency: [
@@ -243,6 +264,15 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "response count",
   ],
   games: ["games", "maps", "maps played", "sample", "sample size"],
+  ults_per_map: ["ults per map", "ultimates per map"],
+  fight_openings: [
+    "fight openings",
+    "fight opener",
+    "fight openers",
+    "open fights",
+    "opening ult",
+    "opening ultimate",
+  ],
   avg_wasted_ults: ["wasted ult", "wasted ults", "wasted ultimates"],
   win_rate: ["winrate", "winrates", "win rate", "win rates", "wr"],
   fights: ["fights", "teamfights", "team fights"],
@@ -284,6 +314,8 @@ const DIMENSION_ALIASES: Record<string, string[]> = {
   scenario: ["scenario", "used vs not used"],
   mirrored: ["mirrored", "mirror ult", "mirror ultimate"],
   first_side: ["first ult side", "first ultimate side"],
+  row_type: ["summary type"],
+  top_fight_opening_hero: ["top fight-opening hero", "fight opener"],
   role: ["role"],
   had_swap: ["had swap", "with swaps", "without swaps"],
   swap_count: ["swap count", "number of swaps"],
@@ -331,6 +363,10 @@ const FILLER_WORDS = new Set([
   "them",
   "time",
   "to",
+  "ult",
+  "ults",
+  "ultimate",
+  "ultimates",
   "us",
   "versus",
   "vs",
@@ -599,6 +635,11 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   ) {
     const agg = pickMetricAgg(dataset, "win_rate", question);
     if (agg) deduped.unshift({ metric: "win_rate", agg });
+  }
+  if (dataset === "ult_usage" && includesPhrase(normalized, "per map")) {
+    deduped.sort((a, b) =>
+      a.metric === "ults_per_map" ? -1 : b.metric === "ults_per_map" ? 1 : 0
+    );
   }
   return deduped.slice(0, 4);
 }
@@ -895,6 +936,32 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
   }
 
+  if (dataset === "ult_usage") {
+    if (
+      includesPhrase(normalized, "fight opener") ||
+      includesPhrase(normalized, "fight openers") ||
+      includesPhrase(normalized, "open fights") ||
+      includesPhrase(normalized, "opening ult") ||
+      includesPhrase(normalized, "opening ultimate")
+    ) {
+      if (
+        includesPhrase(normalized, "which hero") ||
+        includesPhrase(normalized, "which heroes") ||
+        includesPhrase(normalized, "by hero")
+      ) {
+        filters.push({
+          field: "row_type",
+          op: "eq",
+          value: "fight opening hero",
+        });
+      } else {
+        filters.push({ field: "row_type", op: "eq", value: "player" });
+      }
+    } else {
+      filters.push({ field: "row_type", op: "eq", value: "player" });
+    }
+  }
+
   return filters.slice(0, 8);
 }
 
@@ -981,6 +1048,12 @@ function pickDimensions(
   if (dataset === "role_trio" && dims.length === 0) add("trio");
   if (dataset === "ult_impact" && dims.length === 0) {
     add(hasFilter("hero") ? "scenario" : "hero");
+  }
+  if (dataset === "ult_usage" && dims.length === 0) {
+    const openingHeroRows = filters.some(
+      (f) => f.field === "row_type" && f.value === "fight opening hero"
+    );
+    add(openingHeroRows ? "hero" : "player");
   }
 
   return dims.slice(0, 4);
