@@ -686,6 +686,52 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans player-intelligence questions onto hero depth metrics", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Who has the deepest hero pool?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_intelligence",
+      metrics: [{ metric: "hero_pool_size", agg: "avg" }],
+      dimensions: ["player"],
+      sort: { key: "avg__hero_pool_size", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans forced-primary substitution questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Who gets forced off their primary hero the most?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_intelligence",
+      metrics: [{ metric: "substitution_rate", agg: "avg" }],
+      dimensions: ["player"],
+      sort: { key: "avg__substitution_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans player-specific z-score hero questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "What are PGE's best heroes by z score?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_intelligence",
+      metrics: [{ metric: "composite_z_score", agg: "max" }],
+      dimensions: ["hero"],
+      filters: [{ field: "player", op: "in", value: ["PGE"] }],
+      sort: { key: "max__composite_z_score", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans enemy-hero matchup questions with hero filters", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,

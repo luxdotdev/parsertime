@@ -13,6 +13,7 @@ import { computeHeroPool } from "@/lib/query-builder/compute/hero-pool";
 import { computeHeroPickrate } from "@/lib/query-builder/compute/hero-pickrate";
 import { computeMapResults } from "@/lib/query-builder/compute/map-results";
 import { computeOpeningKills } from "@/lib/query-builder/compute/opening-kills";
+import { computePlayerIntelligence } from "@/lib/query-builder/compute/player-intelligence";
 import { computePlayerMapPerformance } from "@/lib/query-builder/compute/player-map-performance";
 import { computeRolePerformance } from "@/lib/query-builder/compute/role-performance";
 import { computeRoleTrios } from "@/lib/query-builder/compute/role-trios";
@@ -276,6 +277,12 @@ async function runComputedQuery(
         break;
       case "hero_pickrate":
         computedRows = await computeHeroPickrate(spec.teamId, ctx.scrimIds);
+        break;
+      case "player_intelligence":
+        computedRows = await computePlayerIntelligence(
+          spec.teamId,
+          ctx.scrimIds
+        );
         break;
       case "enemy_hero":
         computedRows = await computeEnemyHeroMatchups(

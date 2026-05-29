@@ -45,6 +45,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   swap_impact: "win_rate",
   hero_pool: "win_rate",
   hero_pickrate: "pick_rate",
+  player_intelligence: "hero_pool_size",
   enemy_hero: "win_rate",
   ban_impact: "win_rate_delta",
   ult_combo: "win_rate",
@@ -352,6 +353,31 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "player hero share",
     "hero pool share",
   ],
+  player_intelligence: [
+    "player intelligence",
+    "hero depth",
+    "hero depths",
+    "hero pool depth",
+    "hero pool size",
+    "deep hero pool",
+    "deepest hero pool",
+    "flexible",
+    "flexibility",
+    "one trick",
+    "one-trick",
+    "primary hero",
+    "primary time share",
+    "hero dependency",
+    "hero dependence",
+    "forced off",
+    "forced maps",
+    "substitution rate",
+    "forced substitution",
+    "forced substitutions",
+    "composite z score",
+    "z score",
+    "z-score",
+  ],
   enemy_hero: [
     "against",
     "against enemy",
@@ -456,6 +482,48 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "owns",
     "owned by",
     "share of hero",
+  ],
+  hero_pool_size: [
+    "hero pool size",
+    "hero depth",
+    "hero depths",
+    "hero pool depth",
+    "deep hero pool",
+    "deepest hero pool",
+    "flexibility",
+    "flexible",
+  ],
+  primary_time_share: [
+    "primary time share",
+    "primary share",
+    "most played share",
+    "one trick",
+    "one-trick",
+    "hero dependency",
+    "hero dependence",
+    "dependent",
+  ],
+  substitution_rate: [
+    "substitution rate",
+    "forced off",
+    "forced substitution",
+    "forced substitutions",
+  ],
+  maps_forced: ["forced maps", "maps forced", "forced off maps"],
+  primary_secondary_delta: [
+    "primary secondary delta",
+    "primary-secondary delta",
+    "secondary delta",
+    "hero depth delta",
+  ],
+  composite_z_score: [
+    "composite z score",
+    "composite z-score",
+    "z score",
+    "z-score",
+    "hero score",
+    "best hero",
+    "best heroes",
   ],
   ban_rate: ["ban rate", "banned rate", "most banned"],
   maps_banned: ["maps banned", "bans", "ban count", "total bans"],
@@ -616,6 +684,10 @@ const DIMENSION_ALIASES: Record<string, string[]> = {
   row_type: ["summary type"],
   top_fight_opening_hero: ["top fight-opening hero", "fight opener"],
   role: ["role"],
+  primary_hero: ["primary hero", "best hero"],
+  most_played_hero: ["most played hero"],
+  is_primary: ["is primary", "primary"],
+  is_most_played: ["is most played", "most played"],
   had_swap: ["had swap", "with swaps", "without swaps"],
   swap_count: ["swap count", "number of swaps"],
   swap_count_bucket: ["swap count bucket", "swaps"],
@@ -1201,6 +1273,34 @@ function mentionsRolePerformanceContext(normalized: string): boolean {
   return roleGrouping || (roleSpecific && roleMetric);
 }
 
+function mentionsPlayerIntelligenceContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "player intelligence") ||
+    includesPhrase(normalized, "hero depth") ||
+    includesPhrase(normalized, "hero depths") ||
+    includesPhrase(normalized, "hero pool depth") ||
+    includesPhrase(normalized, "hero pool size") ||
+    includesPhrase(normalized, "deep hero pool") ||
+    includesPhrase(normalized, "deepest hero pool") ||
+    includesPhrase(normalized, "flexibility") ||
+    includesPhrase(normalized, "flexible") ||
+    includesPhrase(normalized, "one trick") ||
+    includesPhrase(normalized, "one-trick") ||
+    includesPhrase(normalized, "primary time share") ||
+    includesPhrase(normalized, "primary share") ||
+    includesPhrase(normalized, "hero dependency") ||
+    includesPhrase(normalized, "hero dependence") ||
+    includesPhrase(normalized, "forced off") ||
+    includesPhrase(normalized, "forced maps") ||
+    includesPhrase(normalized, "substitution rate") ||
+    includesPhrase(normalized, "forced substitution") ||
+    includesPhrase(normalized, "forced substitutions") ||
+    includesPhrase(normalized, "composite z score") ||
+    includesPhrase(normalized, "z score") ||
+    includesPhrase(normalized, "z-score")
+  );
+}
+
 function mentionsCalculatedStatContext(normalized: string): boolean {
   const wantsPlayerDuelStat =
     (includesPhrase(normalized, "duel winrate") ||
@@ -1261,6 +1361,10 @@ function pickDataset(question: string): DatasetId {
     return "ability_timing";
   }
   if (findAbility(question)) return "ability_impact";
+
+  if (mentionsPlayerIntelligenceContext(normalized)) {
+    return "player_intelligence";
+  }
 
   const mentionsUlt =
     includesPhrase(normalized, "ult") ||
@@ -2234,11 +2338,13 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
   }
 
-  if (dataset === "hero_pool") {
+  if (dataset === "hero_pool" || dataset === "player_intelligence") {
     for (const role of ["Tank", "Damage", "Support"]) {
       const roleWord = normalize(role);
       if (
         includesPhrase(normalized, `${roleWord} heroes`) ||
+        includesPhrase(normalized, `${roleWord} players`) ||
+        includesPhrase(normalized, `${roleWord}s`) ||
         includesPhrase(normalized, `${roleWord} role`) ||
         includesPhrase(normalized, `for ${roleWord}`) ||
         includesPhrase(normalized, `as ${roleWord}`)
@@ -2634,6 +2740,20 @@ function pickDimensions(
     if (!hasFilter("player")) add("player");
     if (!hasFilter("hero")) add("hero");
   }
+  if (dataset === "player_intelligence" && dims.length === 0) {
+    if (
+      hasFilter("player") ||
+      includesPhrase(normalized, "which hero") ||
+      includesPhrase(normalized, "which heroes") ||
+      includesPhrase(normalized, "best hero") ||
+      includesPhrase(normalized, "best heroes") ||
+      includesPhrase(normalized, "by hero")
+    ) {
+      if (!hasFilter("hero")) add("hero");
+    } else {
+      if (!hasFilter("player")) add("player");
+    }
+  }
   if (dataset === "player_map_performance" && dims.length === 0) {
     if (!hasFilter("player")) add("player");
     if (!hasFilter("map")) add("map");
@@ -2726,11 +2846,15 @@ function pickSort(
     !includesPhrase(normalized, "top") &&
     !includesPhrase(normalized, "most") &&
     !includesPhrase(normalized, "highest") &&
+    !includesPhrase(normalized, "deepest") &&
     !includesPhrase(normalized, "best") &&
     !includesPhrase(normalized, "lowest") &&
     !includesPhrase(normalized, "worst") &&
     !includesPhrase(normalized, "fastest") &&
     !includesPhrase(normalized, "slowest") &&
+    !includesPhrase(normalized, "one trick") &&
+    !includesPhrase(normalized, "one-trick") &&
+    !includesPhrase(normalized, "forced off") &&
     !(
       dataset === "hero_pickrate" &&
       (includesPhrase(normalized, "owns") ||
@@ -2756,7 +2880,11 @@ function pickSort(
     includesPhrase(normalized, "top") ||
     includesPhrase(normalized, "most") ||
     includesPhrase(normalized, "highest") ||
+    includesPhrase(normalized, "deepest") ||
     includesPhrase(normalized, "slowest") ||
+    includesPhrase(normalized, "one trick") ||
+    includesPhrase(normalized, "one-trick") ||
+    includesPhrase(normalized, "forced off") ||
     (dataset === "ability_timing" &&
       (includesPhrase(normalized, "when should") ||
         includesPhrase(normalized, "when to use") ||
