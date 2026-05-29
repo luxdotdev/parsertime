@@ -2808,6 +2808,20 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   }
   if (
     dataset === "rotation_death" &&
+    extractRotationDeathSignalFilters(normalized).length > 0 &&
+    deduped.some((ref) => ref.metric === "rotation_deaths")
+  ) {
+    for (let i = deduped.length - 1; i >= 0; i--) {
+      if (
+        deduped[i].metric === "pre_fight_damage" ||
+        deduped[i].metric === "kill_distance"
+      ) {
+        deduped.splice(i, 1);
+      }
+    }
+  }
+  if (
+    dataset === "rotation_death" &&
     deduped.some((ref) => ref.metric === "rotation_death_rate") &&
     (includesPhrase(normalized, "rate") ||
       includesPhrase(normalized, "percentage") ||
@@ -3209,6 +3223,100 @@ function extractOpeningKillTimeFilters(normalized: string): QueryFilter[] {
         value: seconds,
       });
     }
+  }
+
+  return filters;
+}
+
+function extractRotationDeathSignalFilters(normalized: string): QueryFilter[] {
+  const filters: QueryFilter[] = [];
+  const number = `(${NUMBER_TOKEN})`;
+  const preFightDamage = "(?:pre\\s+fight|pre-fight)\\s+damage(?:\\s+events?)?";
+  const distance = "(?:kill\\s+distance|death\\s+distance|meters?|metres?)";
+  const patterns: [RegExp, QueryFilter["op"], QueryFilter["field"]][] = [
+    [
+      new RegExp(
+        `\\b(?:at\\s+most|maximum|max|up\\s+to)\\s+${number}\\s+${preFightDamage}\\b`
+      ),
+      "lte",
+      "pre_fight_damage",
+    ],
+    [
+      new RegExp(
+        `\\b(?:less\\s+than|under)\\s+${number}\\s+${preFightDamage}\\b`
+      ),
+      "lt",
+      "pre_fight_damage",
+    ],
+    [
+      new RegExp(
+        `\\b(?:at\\s+least|minimum|min)\\s+${number}\\s+${preFightDamage}\\b`
+      ),
+      "gte",
+      "pre_fight_damage",
+    ],
+    [
+      new RegExp(
+        `\\b(?:more\\s+than|over)\\s+${number}\\s+${preFightDamage}\\b`
+      ),
+      "gt",
+      "pre_fight_damage",
+    ],
+    [
+      new RegExp(`\\b${preFightDamage}\\s+(?:at\\s+most|max)\\s+${number}\\b`),
+      "lte",
+      "pre_fight_damage",
+    ],
+    [
+      new RegExp(
+        `\\b${preFightDamage}\\s+(?:under|less\\s+than)\\s+${number}\\b`
+      ),
+      "lt",
+      "pre_fight_damage",
+    ],
+    [
+      new RegExp(
+        `\\b(?:from\\s+)?(?:more\\s+than|over)\\s+${number}\\s+${distance}(?:\\s+away)?\\b`
+      ),
+      "gt",
+      "kill_distance",
+    ],
+    [
+      new RegExp(
+        `\\b(?:from\\s+)?(?:at\\s+least|minimum|min)\\s+${number}\\s+${distance}(?:\\s+away)?\\b`
+      ),
+      "gte",
+      "kill_distance",
+    ],
+    [
+      new RegExp(
+        `\\b(?:within|under|less\\s+than)\\s+${number}\\s+${distance}(?:\\s+away)?\\b`
+      ),
+      "lt",
+      "kill_distance",
+    ],
+    [
+      new RegExp(`\\b${distance}\\s+(?:over|more\\s+than)\\s+${number}\\b`),
+      "gt",
+      "kill_distance",
+    ],
+    [
+      new RegExp(`\\b${distance}\\s+(?:under|less\\s+than)\\s+${number}\\b`),
+      "lt",
+      "kill_distance",
+    ],
+  ];
+
+  const seen = new Set<string>();
+  for (const [pattern, op, field] of patterns) {
+    const match = normalized.match(pattern);
+    if (!match) continue;
+    const value = numberFromToken(match[1]);
+    if (value == null) continue;
+    const key = `${field}:${op}:${value}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    filters.push({ field, op, value });
   }
 
   return filters;
@@ -3795,6 +3903,8 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         if (filters[i].field === "hero") filters.splice(i, 1);
       }
     }
+
+    filters.push(...extractRotationDeathSignalFilters(normalized));
   }
 
   if (dataset === "map_result") {
@@ -4371,6 +4481,7 @@ function pickDimensions(
   }
   if (
     (includesPhrase(normalized, "which hero") ||
+      includesPhrase(normalized, "which heroes") ||
       includesPhrase(normalized, "by hero")) &&
     !hasFilter("hero") &&
     !hasFilter("our_hero")

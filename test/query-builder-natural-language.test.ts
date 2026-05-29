@@ -398,6 +398,46 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans rotation-death pre-fight damage thresholds", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "Which players have the most rotation deaths with at most 2 pre-fight damage events?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "rotation_death",
+      metrics: [{ metric: "rotation_deaths", agg: "sum" }],
+      dimensions: ["player"],
+      filters: [
+        { field: "side", op: "eq", value: "us" },
+        { field: "pre_fight_damage", op: "lte", value: 2 },
+      ],
+      sort: { key: "sum__rotation_deaths", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans rotation-death distance thresholds", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "Which heroes have the most rotation deaths from more than 20 meters away?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "rotation_death",
+      metrics: [{ metric: "rotation_deaths", agg: "sum" }],
+      dimensions: ["hero"],
+      filters: [
+        { field: "side", op: "eq", value: "us" },
+        { field: "kill_distance", op: "gt", value: 20 },
+      ],
+      sort: { key: "sum__rotation_deaths", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans specific-map enemy hero questions onto enemy matchups", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,
