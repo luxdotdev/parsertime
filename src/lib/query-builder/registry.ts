@@ -2325,6 +2325,15 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         operators: ["in", "nin"],
       },
       {
+        id: "map",
+        label: "map",
+        table: "HeroPool",
+        column: "map",
+        source: "base",
+        valueType: "text",
+        operators: ["in", "nin"],
+      },
+      {
         id: "map_type",
         label: "map type",
         table: "HeroPool",

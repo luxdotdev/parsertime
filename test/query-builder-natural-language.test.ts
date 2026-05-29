@@ -251,6 +251,36 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans specific-map winrate questions onto map results", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "What is our win rate on King's Row?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_result",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: [],
+      filters: [{ field: "map", op: "in", value: ["King's Row"] }],
+    });
+  });
+
+  it("plans player map-specialist questions onto hero-pool winrates", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Which players perform best on Circuit Royal?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_pool",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["player"],
+      filters: [{ field: "map", op: "in", value: ["Circuit Royal"] }],
+      sort: { key: "avg__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans ability-impact questions from ability aliases", () => {
     const planned = planQueryFromQuestion({
       teamId: 9,

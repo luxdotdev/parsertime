@@ -118,4 +118,19 @@ describe("computed aggregator (hero pool)", () => {
     expect(rows[0]["per10__deaths"]).toBeCloseTo(((3 + 5) / (300 + 240)) * 600);
     expect(rows[0]["ratio__ult_efficiency"]).toBe((20 + 15) / (3 + 2));
   });
+
+  it("filters player winrates to a specific map", () => {
+    const { rows } = aggregateComputed(
+      HERO_ROWS,
+      spec({
+        dimensions: ["player"],
+        filters: [{ field: "map", op: "in", value: ["Circuit Royal"] }],
+        sort: { key: "avg__win_rate", dir: "desc" },
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].player).toBe("PGE");
+    expect(rows[0]["avg__win_rate"]).toBe(100);
+  });
 });

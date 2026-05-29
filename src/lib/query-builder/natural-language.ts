@@ -1,4 +1,5 @@
 import { allHeroes } from "@/types/heroes";
+import { mapNameToMapTypeMapping } from "@/types/map";
 import {
   getDataset,
   getMetric,
@@ -554,6 +555,12 @@ const ABILITY_BY_NORMALIZED = new Map(
   )
 );
 
+const MAP_BY_NORMALIZED = new Map(
+  Object.keys(mapNameToMapTypeMapping).map(
+    (mapName) => [normalize(mapName), mapName] as const
+  )
+);
+
 type HeroMention = {
   hero: string;
   index: number;
@@ -592,6 +599,14 @@ function findHeroMentions(question: string): HeroMention[] {
 function findAbility(question: string): string | null {
   const normalized = normalize(question);
   const matches = Array.from(ABILITY_BY_NORMALIZED.entries())
+    .filter(([alias]) => includesPhrase(normalized, alias))
+    .sort((a, b) => b[0].length - a[0].length);
+  return matches[0]?.[1] ?? null;
+}
+
+function findMapName(question: string): string | null {
+  const normalized = normalize(question);
+  const matches = Array.from(MAP_BY_NORMALIZED.entries())
     .filter(([alias]) => includesPhrase(normalized, alias))
     .sort((a, b) => b[0].length - a[0].length);
   return matches[0]?.[1] ?? null;
@@ -729,6 +744,7 @@ function mentionsCalculatedStatContext(normalized: string): boolean {
 
 function pickDataset(question: string): DatasetId {
   const normalized = normalize(question);
+  const mapName = findMapName(question);
   if (mentionsCalculatedStatContext(normalized)) return "calculated_stat";
   if (findAbility(question)) return "ability_impact";
 
@@ -778,6 +794,30 @@ function pickDataset(question: string): DatasetId {
     includesPhrase(normalized, "mode winrate")
   ) {
     return "map_result";
+  }
+
+  if (mapName) {
+    if (
+      includesPhrase(normalized, "who") ||
+      includesPhrase(normalized, "which player") ||
+      includesPhrase(normalized, "which players") ||
+      includesPhrase(normalized, "which hero") ||
+      includesPhrase(normalized, "which heroes") ||
+      includesPhrase(normalized, "perform") ||
+      includesPhrase(normalized, "performance")
+    ) {
+      return "hero_pool";
+    }
+
+    if (
+      includesPhrase(normalized, "win rate") ||
+      includesPhrase(normalized, "winrate") ||
+      includesPhrase(normalized, "record") ||
+      includesPhrase(normalized, "wins") ||
+      includesPhrase(normalized, "losses")
+    ) {
+      return "map_result";
+    }
   }
 
   if (
@@ -999,6 +1039,7 @@ function filterFor(
   kind:
     | "hero"
     | "player"
+    | "map"
     | "map_type"
     | "ability"
     | "side"
@@ -1018,6 +1059,7 @@ function filterFor(
       "from_hero",
     ],
     player: ["player", "attacker"],
+    map: ["map"],
     map_type: ["map_type"],
     ability: ["ability"],
     side: ["side"],
@@ -1217,6 +1259,7 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   const heroes = heroMentions.map((mention) => mention.hero);
   const hero = heroes[0] ?? null;
   const ability = findAbility(question);
+  const mapName = findMapName(question);
   const player = findPlayer(question, hero);
   const normalized = normalize(question);
 
@@ -1249,6 +1292,10 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   }
   if (ability) {
     const filter = filterFor(dataset, "ability", ability);
+    if (filter) filters.push(filter);
+  }
+  if (mapName) {
+    const filter = filterFor(dataset, "map", mapName);
     if (filter) filters.push(filter);
   }
 
