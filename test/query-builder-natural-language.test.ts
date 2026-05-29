@@ -893,6 +893,35 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans ranked role assist-rate questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which role has the highest assists per 10?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "role_performance",
+      metrics: [{ metric: "assists_per10", agg: "ratio" }],
+      dimensions: ["role"],
+      sort: { key: "ratio__assists_per10", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans role ultimate usage rate questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "What are ultimates used per 10 by role?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "role_performance",
+      metrics: [{ metric: "ults_used_per10", agg: "ratio" }],
+      dimensions: ["role"],
+      filters: [],
+    });
+  });
+
   it("plans ultimate-efficiency questions onto ratio metrics", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,

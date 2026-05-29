@@ -18,8 +18,10 @@ const ROLE_ROWS: ComputedRow[] = [
     hero_damage: 9000,
     damage_taken: 3000,
     healing: 0,
+    ultimates_earned: 5,
     ultimates_used: 4,
     eliminations: 24,
+    assists: 7,
     map: "King's Row",
     map_type: "Hybrid",
     scrim: "A",
@@ -36,8 +38,10 @@ const ROLE_ROWS: ComputedRow[] = [
     hero_damage: 3000,
     damage_taken: 2400,
     healing: 0,
+    ultimates_earned: 2,
     ultimates_used: 2,
     eliminations: 8,
+    assists: 3,
     map: "Lijiang Tower",
     map_type: "Control",
     scrim: "B",
@@ -54,8 +58,10 @@ const ROLE_ROWS: ComputedRow[] = [
     hero_damage: 2500,
     damage_taken: 2200,
     healing: 11000,
+    ultimates_earned: 4,
     ultimates_used: 3,
     eliminations: 12,
+    assists: 18,
     map: "King's Row",
     map_type: "Hybrid",
     scrim: "A",
@@ -104,6 +110,28 @@ describe("computed aggregator (role performance)", () => {
 
     expect(rows).toHaveLength(1);
     expect(rows[0]["ratio__damage_per10"]).toBe(8000);
+  });
+
+  it("uses weighted role utility rates across grouped role rows", () => {
+    const { rows } = aggregateComputed(
+      ROLE_ROWS,
+      spec({
+        metrics: [
+          { metric: "eliminations_per10", agg: "ratio" },
+          { metric: "assists_per10", agg: "ratio" },
+          { metric: "ults_earned_per10", agg: "ratio" },
+          { metric: "ults_used_per10", agg: "ratio" },
+        ],
+        dimensions: ["role"],
+        filters: [{ field: "role", op: "in", value: ["Damage"] }],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]["ratio__eliminations_per10"]).toBeCloseTo(21.333, 3);
+    expect(rows[0]["ratio__assists_per10"]).toBeCloseTo(6.667, 3);
+    expect(rows[0]["ratio__ults_earned_per10"]).toBeCloseTo(4.667, 3);
+    expect(rows[0]["ratio__ults_used_per10"]).toBe(4);
   });
 
   it("filters role performance by map type", () => {

@@ -845,6 +845,7 @@ const METRIC_ALIASES: Record<string, string[]> = {
   pre_fight_damage: ["pre fight damage", "pre-fight damage"],
   kill_distance: ["kill distance", "death distance"],
   final_blows_per10: ["final blows per 10", "finals per 10"],
+  eliminations_per10: ["eliminations per 10", "elims per 10", "kills per 10"],
   hero_damage_per10: [
     "hero damage per 10",
     "damage per 10",
@@ -858,6 +859,12 @@ const METRIC_ALIASES: Record<string, string[]> = {
   ],
   damage_taken_per10: ["damage taken per 10", "damage taken per 10 minutes"],
   healing_per10: ["healing per 10", "healing per 10 minutes"],
+  assists_per10: ["assists per 10", "offensive assists per 10"],
+  ults_earned_per10: [
+    "ults earned per 10",
+    "ultimates earned per 10",
+    "ult charge per 10",
+  ],
   ults_used_per10: [
     "ults used per 10",
     "ultimates used per 10",
@@ -2557,10 +2564,14 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   if (dataset === "role_performance") {
     const per10ToRaw: Record<string, string> = {
       final_blows_per10: "final_blows",
+      eliminations_per10: "eliminations",
+      assists_per10: "assists",
       deaths_per10: "deaths",
       damage_per10: "hero_damage",
       healing_per10: "healing",
       damage_taken_per10: "damage_taken",
+      ults_earned_per10: "ultimates_earned",
+      ults_used_per10: "ultimates_used",
     };
     const per10Metrics = new Set(
       deduped
