@@ -324,4 +324,34 @@ describe("query-builder natural-language planner", () => {
       limit: 20,
     });
   });
+
+  it("plans recent-form questions onto trend buckets", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What is our win rate over the last 10 maps?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "trend",
+      metrics: [
+        { metric: "win_rate", agg: "avg" },
+        { metric: "maps", agg: "count" },
+      ],
+      dimensions: [],
+      filters: [{ field: "recent_bucket", op: "eq", value: "last 10" }],
+    });
+  });
+
+  it("plans weekly trend questions onto week groups", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "Show our weekly win rate over time",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "trend",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["week"],
+    });
+  });
 });

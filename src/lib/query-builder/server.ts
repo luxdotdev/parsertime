@@ -13,6 +13,7 @@ import { computeMapResults } from "@/lib/query-builder/compute/map-results";
 import { computeRoleTrios } from "@/lib/query-builder/compute/role-trios";
 import { computeSwapImpact } from "@/lib/query-builder/compute/swap-impact";
 import { computeTeamfights } from "@/lib/query-builder/compute/teamfights";
+import { computeTrends } from "@/lib/query-builder/compute/trends";
 import { computeUltCombos } from "@/lib/query-builder/compute/ult-combos";
 import { computeUltEconomy } from "@/lib/query-builder/compute/ult-economy";
 import { computeUltImpact } from "@/lib/query-builder/compute/ult-impact";
@@ -267,6 +268,9 @@ async function runComputedQuery(
         break;
       case "ult_usage":
         computedRows = await computeUltUsage(spec.teamId, ctx.scrimIds);
+        break;
+      case "trend":
+        computedRows = await computeTrends(spec.teamId, ctx.scrimIds);
         break;
       default:
         return { ok: false, error: "Unknown analysis." };

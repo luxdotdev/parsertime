@@ -44,6 +44,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   role_trio: "win_rate",
   ult_impact: "win_rate",
   ult_usage: "ults_used",
+  trend: "win_rate",
 };
 
 const DATASET_HINTS: Record<DatasetId, string[]> = {
@@ -123,6 +124,23 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "starting five",
   ],
   map: ["maps played", "opponent", "map count"],
+  trend: [
+    "trend",
+    "trends",
+    "over time",
+    "recent form",
+    "last 5 maps",
+    "last 10 maps",
+    "last 20 maps",
+    "last five",
+    "last ten",
+    "weekly",
+    "by week",
+    "monthly",
+    "by month",
+    "day of week",
+    "by day",
+  ],
   teamfight: [
     "fight",
     "teamfight",
@@ -291,6 +309,11 @@ const DIMENSION_ALIASES: Record<string, string[]> = {
   map_type: ["map type", "mode"],
   opponent: ["opponent"],
   scrim: ["scrim", "scrims"],
+  date: ["date"],
+  week: ["week", "weekly"],
+  month: ["month", "monthly"],
+  day_of_week: ["day", "day of week"],
+  recent_bucket: ["recent bucket", "recent form"],
   result: ["result", "win loss"],
   dry_fight: ["dry fight"],
   first_pick: ["first pick"],
@@ -962,6 +985,39 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
   }
 
+  if (dataset === "trend") {
+    const lastMatch = normalized.match(/\blast\s+(\d{1,2})\s+maps?\b/);
+    const lastWord = includesPhrase(normalized, "last five")
+      ? 5
+      : includesPhrase(normalized, "last ten")
+        ? 10
+        : includesPhrase(normalized, "last twenty")
+          ? 20
+          : null;
+    const recent = lastMatch ? Number(lastMatch[1]) : lastWord;
+    if (recent && recent <= 5) {
+      filters.push({ field: "recent_bucket", op: "eq", value: "last 5" });
+    } else if (recent && recent <= 10) {
+      filters.push({ field: "recent_bucket", op: "eq", value: "last 10" });
+    } else if (recent && recent <= 20) {
+      filters.push({ field: "recent_bucket", op: "eq", value: "last 20" });
+    }
+
+    for (const day of [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ]) {
+      if (includesPhrase(normalized, day)) {
+        filters.push({ field: "day_of_week", op: "in", value: [day] });
+      }
+    }
+  }
+
   return filters.slice(0, 8);
 }
 
@@ -1054,6 +1110,27 @@ function pickDimensions(
       (f) => f.field === "row_type" && f.value === "fight opening hero"
     );
     add(openingHeroRows ? "hero" : "player");
+  }
+  if (dataset === "trend" && dims.length === 0) {
+    if (
+      includesPhrase(normalized, "weekly") ||
+      includesPhrase(normalized, "by week") ||
+      includesPhrase(normalized, "over time")
+    ) {
+      add("week");
+    } else if (
+      includesPhrase(normalized, "monthly") ||
+      includesPhrase(normalized, "by month")
+    ) {
+      add("month");
+    } else if (
+      includesPhrase(normalized, "day of week") ||
+      includesPhrase(normalized, "by day")
+    ) {
+      add("day_of_week");
+    } else if (!hasFilter("recent_bucket")) {
+      add("date");
+    }
   }
 
   return dims.slice(0, 4);

@@ -55,6 +55,8 @@ const FIELD_ICONS: Record<string, React.ReactNode> = {
   attacker: <UserIcon />,
   in_game_team: <UsersIcon />,
   map_type: <MapIcon />,
+  day_of_week: <ClockIcon />,
+  recent_bucket: <ClockIcon />,
   role: <ShieldIcon />,
   enemy_role: <ShieldIcon />,
   ability: <ZapIcon />,

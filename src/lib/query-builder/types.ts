@@ -26,6 +26,7 @@ export const DATASETS = [
   "role_trio",
   "ult_impact",
   "ult_usage",
+  "trend",
 ] as const;
 export type DatasetId = (typeof DATASETS)[number];
 
