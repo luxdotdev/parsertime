@@ -2820,6 +2820,31 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans ult-usage aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question:
+        "Which players have the most ults per map with at least 2 ults per map and at least 4 maps?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_usage",
+      dimensions: ["player"],
+      sort: { key: "avg__ults_per_map", dir: "desc" },
+      limit: 20,
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([{ metric: "ults_per_map", agg: "avg" }])
+    );
+    expect(planned?.spec.filters).toEqual(
+      expect.arrayContaining([
+        { field: "row_type", op: "eq", value: "player" },
+        { field: "maps_played", op: "gte", value: 4 },
+        { field: "ults_per_map", op: "gte", value: 2 },
+      ])
+    );
+  });
+
   it("plans recent-form questions onto trend buckets", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,
@@ -2885,6 +2910,27 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans trend aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question:
+        "Show weekly win rate over time with win rate at least 60% and at least 2 maps",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "trend",
+      metrics: [
+        { metric: "win_rate", agg: "avg" },
+        { metric: "maps", agg: "count" },
+      ],
+      dimensions: ["week"],
+      filters: [
+        { field: "win_rate", op: "gte", value: 60 },
+        { field: "maps", op: "gte", value: 2 },
+      ],
+    });
+  });
+
   it("plans current streak questions onto streak summaries", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,
@@ -2896,6 +2942,20 @@ describe("query-builder natural-language planner", () => {
       metrics: [{ metric: "length", agg: "max" }],
       dimensions: ["result"],
       filters: [{ field: "streak", op: "eq", value: "current streak" }],
+    });
+  });
+
+  it("plans streak aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "Which streaks are at least 3 games long?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "streak",
+      metrics: [{ metric: "length", agg: "max" }],
+      dimensions: ["streak"],
+      filters: [{ field: "length", op: "gte", value: 3 }],
     });
   });
 

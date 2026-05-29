@@ -98,4 +98,22 @@ describe("computed aggregator (trends)", () => {
     expect(rows.map((row) => row.week)).toEqual(["May 18", "May 4"]);
     expect(rows[0]["avg__win_rate"]).toBe(50);
   });
+
+  it("filters grouped trend metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      TREND_ROWS,
+      spec({
+        dimensions: ["week"],
+        filters: [
+          { field: "win_rate", op: "gte", value: 60 },
+          { field: "maps", op: "gte", value: 1 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].week).toBe("May 4");
+    expect(rows[0]["avg__win_rate"]).toBe(100);
+    expect(rows[0]["count__maps"]).toBe(1);
+  });
 });

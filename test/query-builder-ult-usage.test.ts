@@ -62,6 +62,24 @@ describe("computed aggregator (ult usage)", () => {
     expect(rows[0]["avg__ults_per_map"]).toBe(2);
   });
 
+  it("filters grouped ult-usage metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      ULT_USAGE_ROWS,
+      spec({
+        dimensions: ["player"],
+        filters: [
+          { field: "row_type", op: "eq", value: "player" },
+          { field: "ults_per_map", op: "gte", value: 2 },
+          { field: "maps_played", op: "gte", value: 4 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].player).toBe("PGE");
+    expect(rows[0]["avg__ults_per_map"]).toBe(2);
+  });
+
   it("ranks fight-opening heroes", () => {
     const { rows } = aggregateComputed(
       ULT_USAGE_ROWS,

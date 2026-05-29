@@ -61,4 +61,21 @@ describe("computed aggregator (streaks)", () => {
 
     expect(rows).toEqual([{ max__length: 2 }]);
   });
+
+  it("filters grouped streak metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      STREAK_ROWS,
+      spec({
+        dimensions: ["streak"],
+        filters: [{ field: "length", op: "gte", value: 3 }],
+        sort: { key: "max__length", dir: "desc" },
+      })
+    );
+
+    expect(rows.map((row) => row.streak)).toEqual([
+      "longest win streak",
+      "current streak",
+    ]);
+    expect(rows.map((row) => row["max__length"])).toEqual([5, 3]);
+  });
 });

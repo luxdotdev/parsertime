@@ -3131,6 +3131,20 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
     );
   }
   if (
+    dataset === "streak" &&
+    (includesPhrase(normalized, "streak length") ||
+      includesPhrase(normalized, "games long") ||
+      includesPhrase(normalized, "maps long"))
+  ) {
+    for (let i = deduped.length - 1; i >= 0; i--) {
+      if (deduped[i].metric === "streaks") deduped.splice(i, 1);
+    }
+    if (!deduped.some((ref) => ref.metric === "length")) {
+      const agg = pickMetricAgg(dataset, "length", question);
+      if (agg) deduped.unshift({ metric: "length", agg });
+    }
+  }
+  if (
     dataset === "hero_trend" &&
     deduped.some((ref) => ref.metric === "pick_rate_trend")
   ) {
@@ -5764,6 +5778,45 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     } else {
       filters.push({ field: "row_type", op: "eq", value: "player" });
     }
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "ults_used",
+          aliases: [
+            "ults used",
+            "ultimates used",
+            "ultimate uses",
+            "total ults",
+            "total ultimates",
+          ],
+        },
+        {
+          field: "maps_played",
+          aliases: ["maps", "maps played", "games", "sample size"],
+        },
+        {
+          field: "ults_per_map",
+          aliases: ["ults per map", "ultimates per map", "ult rate"],
+        },
+        {
+          field: "fight_openings",
+          aliases: [
+            "fight openings",
+            "opening ults",
+            "opening ultimates",
+            "fight-opening ults",
+          ],
+        },
+        {
+          field: "fight_openings_per_map",
+          aliases: [
+            "fight openings per map",
+            "opening ults per map",
+            "opening ultimates per map",
+          ],
+        },
+      ])
+    );
   }
 
   if (dataset === "trend") {
@@ -5799,6 +5852,26 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         filters.push({ field: "day_of_week", op: "in", value: [day] });
       }
     }
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "win_rate",
+          aliases: ["win rate", "winrate", "map win rate"],
+        },
+        {
+          field: "maps",
+          aliases: ["maps", "games", "maps played", "sample size"],
+        },
+        {
+          field: "wins",
+          aliases: ["wins", "map wins"],
+        },
+        {
+          field: "losses",
+          aliases: ["losses", "map losses"],
+        },
+      ])
+    );
   }
 
   if (dataset === "streak") {
@@ -5822,6 +5895,18 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         value: "longest win streak",
       });
     }
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "length",
+          aliases: ["streak length", "length", "maps", "games"],
+        },
+        {
+          field: "streaks",
+          aliases: ["streak count", "number of streaks"],
+        },
+      ])
+    );
   }
 
   return filters.slice(0, 8);
