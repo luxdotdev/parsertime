@@ -46,6 +46,7 @@ const BASE_ALIAS: Record<QuerySpec["dataset"], string> = {
   ban_impact: "bi",
   ult_combo: "uc",
   role_trio: "rt",
+  ult_impact: "ui",
 };
 
 const ENUM_TEXT_COLUMNS = new Set(["map_type", "role"]);

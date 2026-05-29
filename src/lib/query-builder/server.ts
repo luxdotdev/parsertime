@@ -15,6 +15,7 @@ import { computeSwapImpact } from "@/lib/query-builder/compute/swap-impact";
 import { computeTeamfights } from "@/lib/query-builder/compute/teamfights";
 import { computeUltCombos } from "@/lib/query-builder/compute/ult-combos";
 import { computeUltEconomy } from "@/lib/query-builder/compute/ult-economy";
+import { computeUltImpact } from "@/lib/query-builder/compute/ult-impact";
 import { getDataset, getFilter } from "@/lib/query-builder/registry";
 import {
   buildPlan,
@@ -259,6 +260,9 @@ async function runComputedQuery(
         break;
       case "role_trio":
         computedRows = await computeRoleTrios(spec.teamId, ctx.scrimIds);
+        break;
+      case "ult_impact":
+        computedRows = await computeUltImpact(spec.teamId, ctx.scrimIds);
         break;
       default:
         return { ok: false, error: "Unknown analysis." };

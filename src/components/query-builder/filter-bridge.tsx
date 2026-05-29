@@ -64,6 +64,8 @@ const FIELD_ICONS: Record<string, React.ReactNode> = {
   tag: <TagIcon />,
   used: <ZapIcon />,
   scenario: <TagIcon />,
+  mirrored: <RotateCcwIcon />,
+  first_side: <ZapIcon />,
   had_swap: <RotateCcwIcon />,
   swap_count: <RotateCcwIcon />,
   swap_count_bucket: <RotateCcwIcon />,

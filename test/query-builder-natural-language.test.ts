@@ -251,4 +251,42 @@ describe("query-builder natural-language planner", () => {
       limit: 20,
     });
   });
+
+  it("plans ultimate-impact questions onto hero scenarios", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What is our win rate when we use Genji ult?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_impact",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["scenario"],
+      filters: [
+        { field: "hero", op: "in", value: ["Genji"] },
+        { field: "side", op: "in", value: ["us", "both"] },
+      ],
+    });
+  });
+
+  it("plans mirrored enemy ultimate questions onto first-side filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What happens in mirror ult fights when enemy ults first?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_impact",
+      metrics: [
+        { metric: "win_rate", agg: "ratio" },
+        { metric: "fights", agg: "sum" },
+      ],
+      dimensions: ["hero"],
+      filters: [
+        { field: "side", op: "in", value: ["enemy", "both"] },
+        { field: "mirrored", op: "eq", value: "yes" },
+        { field: "first_side", op: "eq", value: "enemy" },
+      ],
+    });
+  });
 });

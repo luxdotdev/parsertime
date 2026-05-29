@@ -42,6 +42,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   ban_impact: "win_rate_delta",
   ult_combo: "win_rate",
   role_trio: "win_rate",
+  ult_impact: "win_rate",
 };
 
 const DATASET_HINTS: Record<DatasetId, string[]> = {
@@ -78,6 +79,21 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "counter ultimate",
     "respond to ult",
     "response ult",
+  ],
+  ult_impact: [
+    "ult impact",
+    "ultimate impact",
+    "uncontested ult",
+    "uncontested ultimate",
+    "mirror ult",
+    "mirror ultimate",
+    "mirrored ult",
+    "mirrored ultimate",
+    "when we ult",
+    "when we use ult",
+    "when we use ultimate",
+    "enemy ult win rate",
+    "enemy ultimate win rate",
   ],
   role_trio: [
     "role trio",
@@ -266,6 +282,8 @@ const DIMENSION_ALIASES: Record<string, string[]> = {
   support2: ["support 2"],
   used: ["used", "usage"],
   scenario: ["scenario", "used vs not used"],
+  mirrored: ["mirrored", "mirror ult", "mirror ultimate"],
+  first_side: ["first ult side", "first ultimate side"],
   role: ["role"],
   had_swap: ["had swap", "with swaps", "without swaps"],
   swap_count: ["swap count", "number of swaps"],
@@ -438,6 +456,34 @@ function pickDataset(question: string): DatasetId {
   if (findAbility(question)) return "ability_impact";
 
   const normalized = normalize(question);
+  const mentionsUlt =
+    includesPhrase(normalized, "ult") ||
+    includesPhrase(normalized, "ults") ||
+    includesPhrase(normalized, "ultimate") ||
+    includesPhrase(normalized, "ultimates");
+
+  if (
+    mentionsUlt &&
+    (includesPhrase(normalized, "counter ult") ||
+      includesPhrase(normalized, "counter ultimate") ||
+      includesPhrase(normalized, "response ult") ||
+      includesPhrase(normalized, "ult combo") ||
+      includesPhrase(normalized, "ultimate combo"))
+  ) {
+    return "ult_combo";
+  }
+
+  if (
+    mentionsUlt &&
+    (includesPhrase(normalized, "mirror") ||
+      includesPhrase(normalized, "mirrored") ||
+      includesPhrase(normalized, "uncontested") ||
+      includesPhrase(normalized, "when") ||
+      includesPhrase(normalized, "impact"))
+  ) {
+    return "ult_impact";
+  }
+
   let best: { dataset: DatasetId; score: number } = {
     dataset: "player_stat",
     score: 0,
@@ -541,6 +587,18 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
     deduped.sort((a, b) =>
       a.metric === "win_rate_delta" ? -1 : b.metric === "win_rate_delta" ? 1 : 0
     );
+  }
+  if (
+    dataset === "ult_impact" &&
+    !deduped.some((ref) => ref.metric === "win_rate") &&
+    (includesPhrase(normalized, "what happens") ||
+      includesPhrase(normalized, "impact") ||
+      includesPhrase(normalized, "mirror") ||
+      includesPhrase(normalized, "mirrored") ||
+      includesPhrase(normalized, "uncontested"))
+  ) {
+    const agg = pickMetricAgg(dataset, "win_rate", question);
+    if (agg) deduped.unshift({ metric: "win_rate", agg });
   }
   return deduped.slice(0, 4);
 }
@@ -777,6 +835,66 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
   }
 
+  if (dataset === "ult_impact") {
+    if (
+      includesPhrase(normalized, "enemy ult") ||
+      includesPhrase(normalized, "enemy ults") ||
+      includesPhrase(normalized, "enemy ultimate") ||
+      includesPhrase(normalized, "enemy ultimates") ||
+      includesPhrase(normalized, "their ult") ||
+      includesPhrase(normalized, "their ults") ||
+      includesPhrase(normalized, "their ultimate") ||
+      /\benemy\s+ults?\b/.test(normalized)
+    ) {
+      filters.push({ field: "side", op: "in", value: ["enemy", "both"] });
+    } else if (
+      includesPhrase(normalized, "we ult") ||
+      includesPhrase(normalized, "we ults") ||
+      includesPhrase(normalized, "we use ult") ||
+      includesPhrase(normalized, "we used ult") ||
+      includesPhrase(normalized, "our ult") ||
+      includesPhrase(normalized, "our ultimate") ||
+      /\bwe\s+(?:use|used)\b.*\b(?:ult|ults|ultimate|ultimates)\b/.test(
+        normalized
+      )
+    ) {
+      filters.push({ field: "side", op: "in", value: ["us", "both"] });
+    }
+
+    if (
+      includesPhrase(normalized, "uncontested ult") ||
+      includesPhrase(normalized, "uncontested ultimate") ||
+      includesPhrase(normalized, "not mirrored") ||
+      includesPhrase(normalized, "without mirror")
+    ) {
+      filters.push({ field: "mirrored", op: "eq", value: "no" });
+    } else if (
+      includesPhrase(normalized, "mirror ult") ||
+      includesPhrase(normalized, "mirror ultimate") ||
+      includesPhrase(normalized, "mirrored ult") ||
+      includesPhrase(normalized, "mirrored ultimate")
+    ) {
+      filters.push({ field: "mirrored", op: "eq", value: "yes" });
+    }
+
+    if (
+      includesPhrase(normalized, "we first") ||
+      includesPhrase(normalized, "ours first") ||
+      includesPhrase(normalized, "our ult first") ||
+      includesPhrase(normalized, "we ult first")
+    ) {
+      filters.push({ field: "first_side", op: "eq", value: "us" });
+    } else if (
+      includesPhrase(normalized, "enemy first") ||
+      includesPhrase(normalized, "they first") ||
+      includesPhrase(normalized, "enemy ult first") ||
+      includesPhrase(normalized, "enemy ults first") ||
+      includesPhrase(normalized, "they ult first")
+    ) {
+      filters.push({ field: "first_side", op: "eq", value: "enemy" });
+    }
+  }
+
   return filters.slice(0, 8);
 }
 
@@ -861,6 +979,9 @@ function pickDimensions(
     }
   }
   if (dataset === "role_trio" && dims.length === 0) add("trio");
+  if (dataset === "ult_impact" && dims.length === 0) {
+    add(hasFilter("hero") ? "scenario" : "hero");
+  }
 
   return dims.slice(0, 4);
 }
