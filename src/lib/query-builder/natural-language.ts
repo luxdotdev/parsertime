@@ -1350,6 +1350,67 @@ function findPlayer(question: string, hero: string | null): string | null {
   return null;
 }
 
+function parsePlayerList(value: string): string[] {
+  const normalizedValue = value
+    .replace(/\b(?:and|or)\b/gi, ",")
+    .split(",")
+    .map((part) => part.trim())
+    .filter(Boolean);
+  const players: string[] = [];
+  for (const part of normalizedValue) {
+    const match = part.match(/^[A-Za-z][A-Za-z0-9_.-]{1,}$/);
+    if (!match) continue;
+    const normalized = normalize(match[0]);
+    if (FILLER_WORDS.has(normalized)) continue;
+    const player =
+      match[0] === match[0].toUpperCase() ? match[0] : titleCase(match[0]);
+    if (!players.includes(player)) players.push(player);
+  }
+  return players;
+}
+
+function extractPlayerListAfter(
+  question: string,
+  starters: string[]
+): string[] {
+  const starter = starters.map(escapeRegExp).join("|");
+  const pattern = new RegExp(
+    `\\b(?:${starter})\\s+([A-Za-z0-9_.\\-,\\s]+?)(?=\\s+(?:on|in|for|by|per|against|versus|vs|when|where|over|across|with|without|excluding|except|but)\\b|[?.!]|$)`,
+    "gi"
+  );
+  const players: string[] = [];
+  for (const match of question.matchAll(pattern)) {
+    for (const player of parsePlayerList(match[1])) {
+      if (!players.includes(player)) players.push(player);
+    }
+  }
+  return players;
+}
+
+function extractLineupPlayerFilters(question: string): QueryFilter[] {
+  const includePlayers = extractPlayerListAfter(question, [
+    "with",
+    "alongside",
+    "including",
+    "featuring",
+  ]);
+  const excludePlayers = extractPlayerListAfter(question, [
+    "without",
+    "excluding",
+    "except",
+    "minus",
+  ]);
+
+  const filters: QueryFilter[] = [];
+  for (const player of includePlayers) {
+    filters.push({ field: "player", op: "eq", value: player });
+  }
+  for (const player of excludePlayers) {
+    filters.push({ field: "player", op: "neq", value: player });
+  }
+  return filters;
+}
+
 function formatEntityName(value: string): string {
   const trimmed = value.trim().replace(/\s+/g, " ");
   if (!trimmed) return "";
@@ -4625,6 +4686,16 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         includesPhrase(normalized, "respond to"))
     ) {
       filters.push({ field: "enemy_hero", op: "in", value: [hero] });
+    }
+  }
+
+  if (dataset === "role_trio" || dataset === "roster_variant") {
+    const lineupPlayerFilters = extractLineupPlayerFilters(question);
+    if (lineupPlayerFilters.length > 0) {
+      for (let i = filters.length - 1; i >= 0; i--) {
+        if (filters[i].field === "player") filters.splice(i, 1);
+      }
+      filters.push(...lineupPlayerFilters);
     }
   }
 

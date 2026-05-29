@@ -320,3 +320,50 @@ describe("computed aggregator (teamfights)", () => {
     expect(rows[0]["ratio__avg_ults_in_lost_fights"]).toBe(1);
   });
 });
+
+describe("computed aggregator (roster membership)", () => {
+  const rows: ComputedRow[] = [
+    {
+      roster: "PGE / Rupal / Vega / Someone / Else",
+      player: "Else|PGE|Rupal|Someone|Vega",
+      games: 3,
+      wins: 2,
+      losses: 1,
+    },
+    {
+      roster: "PGE / Vega / Other / Someone / Else",
+      player: "Else|Other|PGE|Someone|Vega",
+      games: 2,
+      wins: 1,
+      losses: 1,
+    },
+    {
+      roster: "Rupal / Vega / Other / Someone / Else",
+      player: "Else|Other|Rupal|Someone|Vega",
+      games: 1,
+      wins: 0,
+      losses: 1,
+    },
+  ];
+
+  it("applies repeated membership filters as contains-all constraints", () => {
+    const result = aggregateComputed(
+      rows,
+      querySpecSchema.parse({
+        dataset: "roster_variant",
+        teamId: 1,
+        metrics: [{ metric: "games", agg: "sum" }],
+        dimensions: ["roster"],
+        filters: [
+          { field: "player", op: "eq", value: "PGE" },
+          { field: "player", op: "eq", value: "Vega" },
+          { field: "player", op: "neq", value: "Rupal" },
+        ],
+      })
+    );
+
+    expect(result.rows).toHaveLength(1);
+    expect(result.rows[0].roster).toBe("PGE / Vega / Other / Someone / Else");
+    expect(result.rows[0]["sum__games"]).toBe(2);
+  });
+});

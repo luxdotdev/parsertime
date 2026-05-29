@@ -2056,7 +2056,45 @@ describe("query-builder natural-language planner", () => {
       dataset: "role_trio",
       metrics: [{ metric: "win_rate", agg: "ratio" }],
       dimensions: ["trio"],
-      filters: [{ field: "player", op: "in", value: ["PGE"] }],
+      filters: [{ field: "player", op: "eq", value: "PGE" }],
+      sort: { key: "ratio__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans multi-player lineup membership filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What are our best lineups with PGE and Rupal?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "role_trio",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["trio"],
+      filters: [
+        { field: "player", op: "eq", value: "PGE" },
+        { field: "player", op: "eq", value: "Rupal" },
+      ],
+      sort: { key: "ratio__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans excluded-player lineup filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What are our best lineups with PGE but without Rupal?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "role_trio",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["trio"],
+      filters: [
+        { field: "player", op: "eq", value: "PGE" },
+        { field: "player", op: "neq", value: "Rupal" },
+      ],
       sort: { key: "ratio__win_rate", dir: "desc" },
       limit: 20,
     });
@@ -2089,8 +2127,30 @@ describe("query-builder natural-language planner", () => {
       metrics: [{ metric: "win_rate", agg: "ratio" }],
       dimensions: ["roster"],
       filters: [
-        { field: "player", op: "in", value: ["PGE"] },
         { field: "map", op: "in", value: ["Circuit Royal"] },
+        { field: "player", op: "eq", value: "PGE" },
+      ],
+      sort: { key: "ratio__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans map-specific roster questions with multiple player filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question:
+        "What are our best lineups with PGE and Vega on Circuit Royal without Rupal?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "roster_variant",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["roster"],
+      filters: [
+        { field: "map", op: "in", value: ["Circuit Royal"] },
+        { field: "player", op: "eq", value: "PGE" },
+        { field: "player", op: "eq", value: "Vega" },
+        { field: "player", op: "neq", value: "Rupal" },
       ],
       sort: { key: "ratio__win_rate", dir: "desc" },
       limit: 20,
