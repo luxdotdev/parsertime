@@ -1,12 +1,14 @@
 import "server-only";
 
 import type { ComputedRow } from "@/lib/query-builder/aggregate";
+import prisma from "@/lib/prisma";
 import { AppRuntime } from "@/data/runtime";
 import { findTeamNameForMapInMemory } from "@/data/team/shared-core";
 import { TeamSharedDataService } from "@/data/team/shared-data-service";
 import { calculateWinner } from "@/lib/winrate";
 import type {
   MatchStart,
+  MatchEnd,
   ObjectiveCaptured,
   PayloadProgress,
   PointProgress,
@@ -49,6 +51,10 @@ export async function computeMapResults(
   const capturesByMap = byMap<ObjectiveCaptured>(data.captures);
   const payloadByMap = byMap<PayloadProgress>(data.payloadProgresses);
   const pointByMap = byMap<PointProgress>(data.pointProgresses);
+  const matchEnds = await prisma.matchEnd.findMany({
+    where: { MapDataId: { in: data.mapDataIds } },
+  });
+  const matchEndByMap = byMap<MatchEnd>(matchEnds);
 
   const rows: ComputedRow[] = [];
   for (const mapDataId of data.mapDataIds) {
@@ -90,13 +96,16 @@ export async function computeMapResults(
 
     const scrim = data.mapDataRecords.find((r) => r.id === mapDataId)?.Scrim
       ?.name;
+    const matchTime = matchEndByMap.get(mapDataId)?.[0]?.match_time ?? 0;
     rows.push({
       won: winner === ourTeam ? 1 : 0,
+      lost: winner === ourTeam ? 0 : 1,
       result: winner === ourTeam ? "win" : "loss",
       map: matchStart.map_name,
       map_type: matchStart.map_type,
       opponent: ourTeam === t1 ? t2 : t1,
       scrim: scrim ?? "Scrim",
+      playtime: matchTime,
     });
   }
 

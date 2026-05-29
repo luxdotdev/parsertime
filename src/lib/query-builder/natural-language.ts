@@ -197,6 +197,11 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
   map_result: [
     "best map mode",
     "best map type",
+    "map playtime",
+    "map time played",
+    "maps played most",
+    "most played maps",
+    "played maps most",
     "map mode",
     "map modes",
     "map type",
@@ -384,6 +389,16 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "response count",
   ],
   games: ["games", "maps", "maps played", "sample", "sample size"],
+  playtime: [
+    "playtime",
+    "time played",
+    "map playtime",
+    "map time played",
+    "most played",
+    "most time",
+    "played most",
+    "played the most",
+  ],
   ults_per_map: ["ults per map", "ultimates per map"],
   fight_openings: [
     "fight openings",
@@ -741,6 +756,32 @@ function mentionsRosterContext(normalized: string): boolean {
   );
 }
 
+function mentionsMapPlaytimeContext(normalized: string): boolean {
+  const mapContext =
+    includesPhrase(normalized, "map") ||
+    includesPhrase(normalized, "maps") ||
+    includesPhrase(normalized, "map type") ||
+    includesPhrase(normalized, "map mode");
+  const playtimeIntent =
+    includesPhrase(normalized, "map playtime") ||
+    includesPhrase(normalized, "map time played") ||
+    includesPhrase(normalized, "time played") ||
+    includesPhrase(normalized, "playtime") ||
+    includesPhrase(normalized, "played most") ||
+    includesPhrase(normalized, "played the most") ||
+    includesPhrase(normalized, "most time") ||
+    includesPhrase(normalized, "most played") ||
+    /\btime\b.*\bplayed\b/.test(normalized) ||
+    /\bplayed\b.*\btime\b/.test(normalized);
+
+  return (
+    playtimeIntent &&
+    (mapContext ||
+      includesPhrase(normalized, "played on") ||
+      includesPhrase(normalized, "time on"))
+  );
+}
+
 function mentionsTeamfightUltContext(normalized: string): boolean {
   return (
     includesPhrase(normalized, "first ult") ||
@@ -818,6 +859,8 @@ function mentionsCalculatedStatContext(normalized: string): boolean {
 function pickDataset(question: string): DatasetId {
   const normalized = normalize(question);
   const mapName = findMapName(question);
+  const heroMentions = findHeroMentions(question);
+  const player = findPlayer(question, heroMentions[0]?.hero ?? null);
   if (mentionsCalculatedStatContext(normalized)) return "calculated_stat";
   if (mentionsStreakContext(normalized)) return "streak";
   if (mentionsTrendContext(normalized)) return "trend";
@@ -867,6 +910,14 @@ function pickDataset(question: string): DatasetId {
     includesPhrase(normalized, "map types") ||
     includesPhrase(normalized, "mode win rate") ||
     includesPhrase(normalized, "mode winrate")
+  ) {
+    return "map_result";
+  }
+
+  if (
+    mentionsMapPlaytimeContext(normalized) &&
+    heroMentions.length === 0 &&
+    !player
   ) {
     return "map_result";
   }
@@ -1078,6 +1129,30 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   }
   if (
     dataset === "map_result" &&
+    mentionsMapPlaytimeContext(normalized) &&
+    !deduped.some((ref) => ref.metric === "playtime")
+  ) {
+    const agg = pickMetricAgg(dataset, "playtime", question);
+    if (agg) deduped.unshift({ metric: "playtime", agg });
+  }
+  if (dataset === "map_result" && mentionsMapPlaytimeContext(normalized)) {
+    deduped.sort((a, b) =>
+      a.metric === "playtime" ? -1 : b.metric === "playtime" ? 1 : 0
+    );
+    const wantsWinRate =
+      includesPhrase(normalized, "win rate") ||
+      includesPhrase(normalized, "win rates") ||
+      includesPhrase(normalized, "winrate") ||
+      includesPhrase(normalized, "winrates") ||
+      includesPhrase(normalized, "record");
+    if (!wantsWinRate) {
+      for (let i = deduped.length - 1; i >= 0; i--) {
+        if (deduped[i].metric !== "playtime") deduped.splice(i, 1);
+      }
+    }
+  }
+  if (
+    dataset === "map_result" &&
     (includesPhrase(normalized, "best") ||
       includesPhrase(normalized, "worst") ||
       includesPhrase(normalized, "top") ||
@@ -1090,7 +1165,8 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
       includesPhrase(normalized, "count") ||
       includesPhrase(normalized, "total") ||
       includesPhrase(normalized, "most maps");
-    if (!wantsCount) {
+    const wantsPlaytime = deduped.some((ref) => ref.metric === "playtime");
+    if (!wantsCount && !wantsPlaytime) {
       for (let i = deduped.length - 1; i >= 0; i--) {
         if (deduped[i].metric === "maps") deduped.splice(i, 1);
       }
@@ -1794,6 +1870,8 @@ function pickDimensions(
   if (
     (includesPhrase(normalized, "which map") ||
       includesPhrase(normalized, "which maps") ||
+      includesPhrase(normalized, "what map") ||
+      includesPhrase(normalized, "what maps") ||
       includesPhrase(normalized, "by map") ||
       includesPhrase(normalized, "by maps")) &&
     !includesPhrase(normalized, "map type") &&

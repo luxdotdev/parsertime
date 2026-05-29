@@ -8,27 +8,33 @@ import { describe, expect, it } from "vitest";
 const MAP_RESULTS: ComputedRow[] = [
   {
     won: 1,
+    lost: 0,
     result: "win",
     map: "Circuit Royal",
     map_type: "Escort",
     opponent: "NRG",
     scrim: "A",
+    playtime: 720,
   },
   {
     won: 0,
+    lost: 1,
     result: "loss",
     map: "King's Row",
     map_type: "Hybrid",
     opponent: "NRG",
     scrim: "B",
+    playtime: 960,
   },
   {
     won: 1,
+    lost: 0,
     result: "win",
     map: "Lijiang Tower",
     map_type: "Control",
     opponent: "Team Peps",
     scrim: "C",
+    playtime: 540,
   },
 ];
 
@@ -69,5 +75,23 @@ describe("computed aggregator (map results)", () => {
     );
 
     expect(rows.map((row) => row.map)).toEqual(["Circuit Royal", "King's Row"]);
+  });
+
+  it("ranks maps by computed match playtime", () => {
+    const { rows } = aggregateComputed(
+      MAP_RESULTS,
+      spec({
+        metrics: [{ metric: "playtime", agg: "sum" }],
+        dimensions: ["map"],
+        sort: { key: "sum__playtime", dir: "desc" },
+      })
+    );
+
+    expect(rows.map((row) => row.map)).toEqual([
+      "King's Row",
+      "Circuit Royal",
+      "Lijiang Tower",
+    ]);
+    expect(rows[0]["sum__playtime"]).toBe(960);
   });
 });

@@ -331,6 +331,35 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans top played map questions onto map result playtime", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Which maps have we played the most?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_result",
+      metrics: [{ metric: "playtime", agg: "sum" }],
+      dimensions: ["map"],
+      sort: { key: "sum__playtime", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans specific-map time questions onto map result playtime", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "How much time have we played on King's Row?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_result",
+      metrics: [{ metric: "playtime", agg: "sum" }],
+      dimensions: [],
+      filters: [{ field: "map", op: "in", value: ["King's Row"] }],
+    });
+  });
+
   it("plans player map-specialist questions onto hero-pool winrates", () => {
     const planned = planQueryFromQuestion({
       teamId: 2,
