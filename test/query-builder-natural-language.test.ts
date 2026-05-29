@@ -88,4 +88,20 @@ describe("query-builder natural-language planner", () => {
       filters: [{ field: "had_swap", op: "eq", value: "yes" }],
     });
   });
+
+  it("plans hero-pool questions onto hero winrates", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "What are our top hero win rates for Damage heroes?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_pool",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["hero"],
+      filters: [{ field: "role", op: "in", value: ["Damage"] }],
+      sort: { key: "avg__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
 });

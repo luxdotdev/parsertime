@@ -37,6 +37,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   duel: "win_rate",
   ability_impact: "win_rate",
   swap_impact: "win_rate",
+  hero_pool: "win_rate",
 };
 
 const DATASET_HINTS: Record<DatasetId, string[]> = {
@@ -104,6 +105,20 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "swap count",
     "swaps per map",
     "too many swaps",
+  ],
+  hero_pool: [
+    "hero pool",
+    "hero winrate",
+    "hero win rate",
+    "hero winrates",
+    "hero win rates",
+    "top heroes",
+    "best heroes",
+    "most played hero",
+    "most played heroes",
+    "damage heroes",
+    "support heroes",
+    "tank heroes",
   ],
 };
 
@@ -174,10 +189,13 @@ const FILLER_WORDS = new Set([
   "of",
   "on",
   "our",
+  "damage",
   "scrim",
   "scrims",
+  "support",
   "stat",
   "stats",
+  "tank",
   "team",
   "the",
   "their",
@@ -420,7 +438,8 @@ function filterFor(
     | "ability"
     | "side"
     | "used"
-    | "had_swap",
+    | "had_swap"
+    | "role",
   value: string
 ): QueryFilter | null {
   const candidates: Partial<Record<typeof kind, string[]>> = {
@@ -438,6 +457,7 @@ function filterFor(
     side: ["side"],
     used: ["used"],
     had_swap: ["had_swap"],
+    role: ["role"],
   };
   const field = candidates[kind]
     ?.map((id) => getDataset(dataset).filters.find((f) => f.id === id))
@@ -542,6 +562,18 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
   }
 
+  if (dataset === "hero_pool") {
+    for (const role of ["Tank", "Damage", "Support"]) {
+      if (
+        includesPhrase(normalized, role) ||
+        includesPhrase(normalized, `${role} heroes`)
+      ) {
+        const filter = filterFor(dataset, "role", role);
+        if (filter) filters.push(filter);
+      }
+    }
+  }
+
   return filters.slice(0, 8);
 }
 
@@ -603,6 +635,9 @@ function pickDimensions(
   }
   if (dataset === "swap_impact" && dims.length === 0) {
     add(hasFilter("had_swap") ? "swap_count_bucket" : "had_swap");
+  }
+  if (dataset === "hero_pool" && dims.length === 0) {
+    add("hero");
   }
 
   return dims.slice(0, 4);

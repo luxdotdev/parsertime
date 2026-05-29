@@ -6,6 +6,7 @@ import prisma from "@/lib/prisma";
 import { aggregateComputed } from "@/lib/query-builder/aggregate";
 import { computeAbilityImpact } from "@/lib/query-builder/compute/ability-impact";
 import { computeDuels } from "@/lib/query-builder/compute/duels";
+import { computeHeroPool } from "@/lib/query-builder/compute/hero-pool";
 import { computeMapResults } from "@/lib/query-builder/compute/map-results";
 import { computeSwapImpact } from "@/lib/query-builder/compute/swap-impact";
 import { computeTeamfights } from "@/lib/query-builder/compute/teamfights";
@@ -236,6 +237,9 @@ async function runComputedQuery(
         break;
       case "swap_impact":
         computedRows = await computeSwapImpact(spec.teamId, ctx.scrimIds);
+        break;
+      case "hero_pool":
+        computedRows = await computeHeroPool(spec.teamId, ctx.scrimIds);
         break;
       default:
         return { ok: false, error: "Unknown analysis." };
