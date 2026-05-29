@@ -2608,10 +2608,8 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
       );
     }
   }
-  if (
-    dataset === "player_stat" &&
-    mentionsStatVersusPlaytimeContext(normalized)
-  ) {
+  if (mentionsStatVersusPlaytimeContext(normalized)) {
+    const hasTimePlayedMetric = Boolean(getMetric(dataset, "time_played"));
     for (const ref of deduped) {
       if (ref.metric === "time_played" || ref.metric === "maps") continue;
       const metric = getMetric(dataset, ref.metric);
@@ -2633,8 +2631,19 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
         deduped.push({ metric: ref.metric, agg: "per10" });
       }
     }
-    if (!deduped.some((ref) => ref.metric === "time_played")) {
+    if (
+      hasTimePlayedMetric &&
+      !deduped.some((ref) => ref.metric === "time_played")
+    ) {
       deduped.push({ metric: "time_played", agg: "sum" });
+    }
+    if (hasTimePlayedMetric && rateableRefs.length > 0) {
+      deduped.sort((a, b) => {
+        function priority(ref: MetricRef) {
+          return ref.metric === "time_played" ? 1 : ref.agg === "per10" ? 2 : 0;
+        }
+        return priority(a) - priority(b);
+      });
     }
   }
   if (
