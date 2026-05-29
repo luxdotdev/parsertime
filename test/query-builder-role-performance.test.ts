@@ -149,4 +149,26 @@ describe("computed aggregator (role performance)", () => {
     expect(rows[0]["ratio__deaths_per10"]).toBe(5);
     expect(rows[1]["ratio__deaths_per10"]).toBe(3);
   });
+
+  it("filters grouped role metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      ROLE_ROWS,
+      spec({
+        metrics: [
+          { metric: "damage_per10", agg: "ratio" },
+          { metric: "maps", agg: "count" },
+        ],
+        dimensions: ["role"],
+        filters: [
+          { field: "damage_per10", op: "gte", value: 8000 },
+          { field: "maps", op: "gte", value: 2 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].role).toBe("Damage");
+    expect(rows[0]["ratio__damage_per10"]).toBe(8000);
+    expect(rows[0]["count__maps"]).toBe(2);
+  });
 });

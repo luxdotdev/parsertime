@@ -151,4 +151,26 @@ describe("computed aggregator (team performance)", () => {
       { side: "opponent", avg__first_death_percentage: 58 },
     ]);
   });
+
+  it("filters grouped team metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      TEAM_PERFORMANCE_ROWS,
+      spec({
+        metrics: [
+          { metric: "final_blows_per10", agg: "ratio" },
+          { metric: "maps", agg: "sum" },
+        ],
+        dimensions: ["side"],
+        filters: [
+          { field: "final_blows_per10", op: "gte", value: 7.5 },
+          { field: "maps", op: "gte", value: 5 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].side).toBe("our team");
+    expect(rows[0]["ratio__final_blows_per10"]).toBe(7.6);
+    expect(rows[0]["sum__maps"]).toBe(5);
+  });
 });

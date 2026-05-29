@@ -4487,6 +4487,42 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     );
   }
 
+  if (dataset === "player_map_performance") {
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "win_rate",
+          aliases: [
+            "win rate",
+            "winrate",
+            "map win rate",
+            "map winrate",
+            "player map win rate",
+            "player map winrate",
+          ],
+        },
+        {
+          field: "games",
+          aliases: [
+            "games",
+            "maps",
+            "maps played",
+            "games played",
+            "sample size",
+          ],
+        },
+        {
+          field: "wins",
+          aliases: ["wins", "map wins"],
+        },
+        {
+          field: "losses",
+          aliases: ["losses", "map losses"],
+        },
+      ])
+    );
+  }
+
   if (dataset === "team_performance") {
     const wantsSideComparison =
       includesPhrase(normalized, "vs") ||
@@ -4510,6 +4546,67 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     ) {
       filters.push({ field: "side", op: "in", value: ["our team"] });
     }
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "win_rate",
+          aliases: ["win rate", "winrate", "team win rate", "team winrate"],
+        },
+        {
+          field: "maps",
+          aliases: [
+            "maps",
+            "games",
+            "maps played",
+            "games played",
+            "sample size",
+          ],
+        },
+        {
+          field: "final_blows_per10",
+          aliases: ["final blows per 10", "finals per 10"],
+        },
+        {
+          field: "deaths_per10",
+          aliases: ["deaths per 10", "death rate"],
+        },
+        {
+          field: "hero_damage_per10",
+          aliases: ["hero damage per 10", "damage per 10"],
+        },
+        {
+          field: "healing_per10",
+          aliases: ["healing per 10", "heals per 10"],
+        },
+        {
+          field: "first_pick_percentage",
+          aliases: ["first pick rate", "first pick percentage"],
+        },
+        {
+          field: "first_death_percentage",
+          aliases: ["first death rate", "first death percentage"],
+        },
+        {
+          field: "ajax_per10",
+          aliases: ["ajax per 10", "ajaxes per 10"],
+        },
+        {
+          field: "kills_per_ultimate",
+          aliases: ["kills per ult", "kills per ultimate"],
+        },
+      ]),
+      ...extractDurationThresholdFilters(dataset, normalized, [
+        {
+          field: "average_ult_charge_time",
+          aliases: [
+            "ult charge time",
+            "ultimate charge time",
+            "average ult charge time",
+            "average ultimate charge time",
+          ],
+        },
+      ])
+    );
   }
 
   if (dataset === "map_intelligence") {
@@ -4957,6 +5054,42 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         if (filter) filters.push(filter);
       }
     }
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "win_rate",
+          aliases: ["win rate", "winrate", "role win rate", "role winrate"],
+        },
+        {
+          field: "maps",
+          aliases: ["maps", "games", "role maps", "sample size"],
+        },
+        {
+          field: "final_blows_per10",
+          aliases: ["final blows per 10", "finals per 10"],
+        },
+        {
+          field: "deaths_per10",
+          aliases: ["deaths per 10", "death rate"],
+        },
+        {
+          field: "damage_per10",
+          aliases: ["damage per 10", "hero damage per 10"],
+        },
+        {
+          field: "healing_per10",
+          aliases: ["healing per 10", "heals per 10"],
+        },
+        {
+          field: "ults_used_per10",
+          aliases: ["ults used per 10", "ultimates used per 10"],
+        },
+        {
+          field: "ult_efficiency",
+          aliases: ["ult efficiency", "ultimate efficiency", "kills per ult"],
+        },
+      ])
+    );
   }
 
   if (
@@ -4978,6 +5111,51 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         if (filter) filters.push(filter);
       }
     }
+  }
+
+  if (dataset === "hero_pool") {
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "win_rate",
+          aliases: ["win rate", "winrate", "hero win rate", "hero winrate"],
+        },
+        {
+          field: "appearances",
+          aliases: [
+            "appearances",
+            "hero appearances",
+            "maps",
+            "games",
+            "sample size",
+          ],
+        },
+        {
+          field: "final_blows",
+          aliases: ["final blows", "finals"],
+        },
+        {
+          field: "eliminations",
+          aliases: ["eliminations", "elims"],
+        },
+        {
+          field: "deaths",
+          aliases: ["deaths"],
+        },
+        {
+          field: "hero_damage",
+          aliases: ["hero damage", "damage"],
+        },
+        {
+          field: "healing",
+          aliases: ["healing", "heals"],
+        },
+        {
+          field: "ult_efficiency",
+          aliases: ["ult efficiency", "ultimate efficiency", "kills per ult"],
+        },
+      ])
+    );
   }
 
   if (dataset === "player_intelligence") {

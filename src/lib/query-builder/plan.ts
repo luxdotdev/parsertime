@@ -533,6 +533,19 @@ export function renderComputedPlan(
     if (metric.column === null || fd.aggregate === "count") {
       return [`COUNT(*) ${OP_SYMBOLS[f.op] ?? f.op} ${value}`];
     }
+    if (fd.aggregate === "ratio" || fd.aggregate === "per10") {
+      const denominator =
+        metric.denominatorColumn ??
+        (fd.aggregate === "per10" ? "time_played" : null);
+      const scale =
+        (metric.denominatorScale ?? (fd.aggregate === "per10" ? 600 : 1)) *
+        (metric.scale ?? 1);
+      if (denominator) {
+        return [
+          `(SUM(${metric.column}) / NULLIF(SUM(${denominator}), 0)) * ${scale} ${OP_SYMBOLS[f.op] ?? f.op} ${value}`,
+        ];
+      }
+    }
     const scaled = metric.scale ? ` * ${metric.scale}` : "";
     return [
       `${AGG_SQL_LABELS[fd.aggregate]}(${metric.column})${scaled} ${OP_SYMBOLS[f.op] ?? f.op} ${value}`,

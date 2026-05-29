@@ -72,4 +72,26 @@ describe("computed aggregator (player map performance)", () => {
     expect(rows.map((row) => row.map)).toEqual(["Circuit Royal", "King's Row"]);
     expect(rows[0]["ratio__win_rate"]).toBe(75);
   });
+
+  it("filters grouped player-map metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      PLAYER_MAP_ROWS,
+      spec({
+        metrics: [
+          { metric: "win_rate", agg: "ratio" },
+          { metric: "games", agg: "sum" },
+        ],
+        dimensions: ["player"],
+        filters: [
+          { field: "win_rate", op: "gte", value: 60 },
+          { field: "games", op: "gte", value: 6 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].player).toBe("PGE");
+    expect(rows[0]["ratio__win_rate"]).toBeCloseTo((4 / 6) * 100);
+    expect(rows[0]["sum__games"]).toBe(6);
+  });
 });

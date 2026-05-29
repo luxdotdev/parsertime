@@ -803,6 +803,21 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans grouped team-performance metric thresholds", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Compare our team with more than 40 final blows per 10 vs the opponent",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "team_performance",
+      metrics: [{ metric: "final_blows_per10", agg: "ratio" }],
+      dimensions: ["side"],
+      filters: [{ field: "final_blows_per10", op: "gt", value: 40 }],
+    });
+  });
+
   it("plans our-team calculated aggregate questions", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,
@@ -1024,6 +1039,27 @@ describe("query-builder natural-language planner", () => {
       metrics: [{ metric: "win_rate", agg: "ratio" }],
       dimensions: ["map"],
       filters: [{ field: "player", op: "in", value: ["PGE"] }],
+    });
+  });
+
+  it("plans player-map metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question:
+        "Which players have player map win rate under 45% with at least 4 games?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_map_performance",
+      metrics: [
+        { metric: "win_rate", agg: "ratio" },
+        { metric: "games", agg: "sum" },
+      ],
+      dimensions: ["player"],
+      filters: [
+        { field: "win_rate", op: "lt", value: 45 },
+        { field: "games", op: "gte", value: 4 },
+      ],
     });
   });
 
@@ -1533,6 +1569,27 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans hero-pool aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Which heroes have hero win rate over 55% with at least 3 appearances?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_pool",
+      metrics: [
+        { metric: "win_rate", agg: "avg" },
+        { metric: "appearances", agg: "count" },
+      ],
+      dimensions: ["hero"],
+      filters: [
+        { field: "win_rate", op: "gt", value: 55 },
+        { field: "appearances", op: "gte", value: 3 },
+      ],
+    });
+  });
+
   it("plans role-performance per-10 questions onto role metrics", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,
@@ -1589,6 +1646,28 @@ describe("query-builder natural-language planner", () => {
       sort: { key: "ratio__assists_per10", dir: "desc" },
       limit: 20,
     });
+  });
+
+  it("plans role-performance aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which roles have damage per 10 over 8000 and at least 2 maps?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "role_performance",
+      metrics: [
+        { metric: "damage_per10", agg: "ratio" },
+        { metric: "maps", agg: "count" },
+      ],
+      dimensions: ["role"],
+    });
+    expect(planned?.spec.filters).toEqual(
+      expect.arrayContaining([
+        { field: "damage_per10", op: "gt", value: 8000 },
+        { field: "maps", op: "gte", value: 2 },
+      ])
+    );
   });
 
   it("plans role ultimate usage rate questions", () => {

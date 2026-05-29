@@ -596,6 +596,27 @@ const calculatedStatFilters: FilterDef[] = CALC_METRICS.map((c) => ({
   aggregate: c.agg,
 }));
 
+function metricAggregateFilter(args: {
+  id: string;
+  label: string;
+  table: string;
+  column: string;
+  aggregate: Aggregation;
+  unit?: string;
+}): FilterDef {
+  return {
+    id: args.id,
+    label: args.label,
+    table: args.table,
+    column: args.column,
+    source: "base",
+    valueType: "number",
+    operators: ["gte", "gt", "lte", "lt"],
+    unit: args.unit,
+    aggregate: args.aggregate,
+  };
+}
+
 // --- Kill metrics -----------------------------------------------------------
 const killMetrics: MetricDef[] = [
   {
@@ -2934,6 +2955,91 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
           { value: "opponent", label: "opponent" },
         ],
       },
+      metricAggregateFilter({
+        id: "win_rate",
+        label: "win rate",
+        table: "TeamPerformance",
+        column: "wins",
+        aggregate: "ratio",
+        unit: "%",
+      }),
+      metricAggregateFilter({
+        id: "maps",
+        label: "maps",
+        table: "TeamPerformance",
+        column: "maps",
+        aggregate: "sum",
+      }),
+      metricAggregateFilter({
+        id: "final_blows_per10",
+        label: "final blows per 10",
+        table: "TeamPerformance",
+        column: "final_blows",
+        aggregate: "ratio",
+        unit: "/10m",
+      }),
+      metricAggregateFilter({
+        id: "deaths_per10",
+        label: "deaths per 10",
+        table: "TeamPerformance",
+        column: "deaths",
+        aggregate: "ratio",
+        unit: "/10m",
+      }),
+      metricAggregateFilter({
+        id: "hero_damage_per10",
+        label: "hero damage per 10",
+        table: "TeamPerformance",
+        column: "hero_damage",
+        aggregate: "ratio",
+        unit: "/10m",
+      }),
+      metricAggregateFilter({
+        id: "healing_per10",
+        label: "healing per 10",
+        table: "TeamPerformance",
+        column: "healing",
+        aggregate: "ratio",
+        unit: "/10m",
+      }),
+      metricAggregateFilter({
+        id: "first_pick_percentage",
+        label: "first pick %",
+        table: "TeamPerformance",
+        column: "first_pick_percentage",
+        aggregate: "avg",
+        unit: "%",
+      }),
+      metricAggregateFilter({
+        id: "first_death_percentage",
+        label: "first death %",
+        table: "TeamPerformance",
+        column: "first_death_percentage",
+        aggregate: "avg",
+        unit: "%",
+      }),
+      metricAggregateFilter({
+        id: "ajax_per10",
+        label: "Ajax per 10",
+        table: "TeamPerformance",
+        column: "ajax_count",
+        aggregate: "ratio",
+      }),
+      metricAggregateFilter({
+        id: "average_ult_charge_time",
+        label: "average ult charge time",
+        table: "TeamPerformance",
+        column: "average_ult_charge_time",
+        aggregate: "avg",
+        unit: "s",
+      }),
+      metricAggregateFilter({
+        id: "kills_per_ultimate",
+        label: "kills per ultimate",
+        table: "TeamPerformance",
+        column: "kills_per_ultimate",
+        aggregate: "avg",
+      }),
     ],
   },
   map_intelligence: {
@@ -3245,6 +3351,35 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         operators: ["in", "nin"],
         enumOptions: MAP_TYPES.map((v) => ({ value: v, label: v })),
       },
+      metricAggregateFilter({
+        id: "win_rate",
+        label: "win rate",
+        table: "PlayerMapPerformance",
+        column: "wins",
+        aggregate: "ratio",
+        unit: "%",
+      }),
+      metricAggregateFilter({
+        id: "games",
+        label: "games",
+        table: "PlayerMapPerformance",
+        column: "games",
+        aggregate: "sum",
+      }),
+      metricAggregateFilter({
+        id: "wins",
+        label: "wins",
+        table: "PlayerMapPerformance",
+        column: "wins",
+        aggregate: "sum",
+      }),
+      metricAggregateFilter({
+        id: "losses",
+        label: "losses",
+        table: "PlayerMapPerformance",
+        column: "losses",
+        aggregate: "sum",
+      }),
     ],
   },
   player_impact: {
@@ -4734,6 +4869,68 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
           { value: "loss", label: "loss" },
         ],
       },
+      metricAggregateFilter({
+        id: "win_rate",
+        label: "win rate",
+        table: "RolePerformance",
+        column: "won",
+        aggregate: "avg",
+        unit: "%",
+      }),
+      metricAggregateFilter({
+        id: "maps",
+        label: "maps",
+        table: "RolePerformance",
+        column: "maps",
+        aggregate: "count",
+      }),
+      metricAggregateFilter({
+        id: "final_blows_per10",
+        label: "final blows per 10",
+        table: "RolePerformance",
+        column: "final_blows",
+        aggregate: "ratio",
+        unit: "/10m",
+      }),
+      metricAggregateFilter({
+        id: "deaths_per10",
+        label: "deaths per 10",
+        table: "RolePerformance",
+        column: "deaths",
+        aggregate: "ratio",
+        unit: "/10m",
+      }),
+      metricAggregateFilter({
+        id: "damage_per10",
+        label: "hero damage per 10",
+        table: "RolePerformance",
+        column: "hero_damage",
+        aggregate: "ratio",
+        unit: "/10m",
+      }),
+      metricAggregateFilter({
+        id: "healing_per10",
+        label: "healing per 10",
+        table: "RolePerformance",
+        column: "healing",
+        aggregate: "ratio",
+        unit: "/10m",
+      }),
+      metricAggregateFilter({
+        id: "ults_used_per10",
+        label: "ultimates used per 10",
+        table: "RolePerformance",
+        column: "ultimates_used",
+        aggregate: "ratio",
+        unit: "/10m",
+      }),
+      metricAggregateFilter({
+        id: "ult_efficiency",
+        label: "ult efficiency",
+        table: "RolePerformance",
+        column: "eliminations",
+        aggregate: "ratio",
+      }),
     ],
   },
   ult_economy: {
@@ -6007,6 +6204,63 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
           { value: "loss", label: "loss" },
         ],
       },
+      metricAggregateFilter({
+        id: "win_rate",
+        label: "win rate",
+        table: "HeroPool",
+        column: "won",
+        aggregate: "avg",
+        unit: "%",
+      }),
+      metricAggregateFilter({
+        id: "appearances",
+        label: "appearances",
+        table: "HeroPool",
+        column: "appearances",
+        aggregate: "count",
+      }),
+      metricAggregateFilter({
+        id: "final_blows",
+        label: "final blows",
+        table: "HeroPool",
+        column: "final_blows",
+        aggregate: "sum",
+      }),
+      metricAggregateFilter({
+        id: "eliminations",
+        label: "eliminations",
+        table: "HeroPool",
+        column: "eliminations",
+        aggregate: "sum",
+      }),
+      metricAggregateFilter({
+        id: "deaths",
+        label: "deaths",
+        table: "HeroPool",
+        column: "deaths",
+        aggregate: "sum",
+      }),
+      metricAggregateFilter({
+        id: "hero_damage",
+        label: "hero damage",
+        table: "HeroPool",
+        column: "hero_damage",
+        aggregate: "sum",
+      }),
+      metricAggregateFilter({
+        id: "healing",
+        label: "healing dealt",
+        table: "HeroPool",
+        column: "healing",
+        aggregate: "sum",
+      }),
+      metricAggregateFilter({
+        id: "ult_efficiency",
+        label: "ultimate efficiency",
+        table: "HeroPool",
+        column: "eliminations",
+        aggregate: "ratio",
+      }),
     ],
   },
   hero_diversity: {

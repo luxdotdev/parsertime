@@ -154,4 +154,26 @@ describe("computed aggregator (hero pool)", () => {
     expect(rows[0].player).toBe("PGE");
     expect(rows[0]["avg__win_rate"]).toBe(100);
   });
+
+  it("filters grouped hero metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      HERO_ROWS,
+      spec({
+        metrics: [
+          { metric: "win_rate", agg: "avg" },
+          { metric: "appearances", agg: "count" },
+        ],
+        dimensions: ["hero"],
+        filters: [
+          { field: "win_rate", op: "gte", value: 50 },
+          { field: "appearances", op: "gte", value: 2 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].hero).toBe("Widowmaker");
+    expect(rows[0]["avg__win_rate"]).toBe(50);
+    expect(rows[0]["count__appearances"]).toBe(2);
+  });
 });
