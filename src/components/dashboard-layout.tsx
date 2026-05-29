@@ -16,6 +16,7 @@ import {
   aiChat,
   coachingCanvas,
   dataLabeling,
+  queryBuilder,
   scoutingTool,
   tournament,
 } from "@/lib/flags";
@@ -35,6 +36,7 @@ export async function DashboardLayout({
     dataToolsEnabled,
     tournamentEnabled,
     coachingCanvasEnabled,
+    queryBuilderEnabled,
   ] = await Promise.all([
     auth(),
     scoutingTool(),
@@ -42,6 +44,7 @@ export async function DashboardLayout({
     dataLabeling(),
     tournament(),
     coachingCanvas(),
+    queryBuilder(),
   ]);
   const user = await AppRuntime.runPromise(
     UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
@@ -65,6 +68,7 @@ export async function DashboardLayout({
               dataToolsEnabled={dataToolsEnabled}
               tournamentEnabled={tournamentEnabled}
               coachingCanvasEnabled={coachingCanvasEnabled}
+              queryBuilderEnabled={queryBuilderEnabled}
               className="mx-6 hidden lg:block"
             />
             <MobileNav

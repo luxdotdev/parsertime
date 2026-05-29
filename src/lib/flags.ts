@@ -220,3 +220,15 @@ export const coachingCanvas = flag<boolean, Entities>({
   description: "Enable or disable the coaching canvas tool",
   identify,
 });
+
+export const queryBuilder = flag<boolean, Entities>({
+  key: "query-builder",
+  adapter: vercelAdapter(),
+  options: [
+    { value: true, label: "Enabled" },
+    { value: false, label: "Disabled" },
+  ],
+  defaultValue: false,
+  description: "Enable or disable the read-only query builder",
+  identify,
+});

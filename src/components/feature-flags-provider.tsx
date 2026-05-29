@@ -16,6 +16,7 @@ const defaultFlags: FeatureFlags = {
   positionalDataEnabled: false,
   tournamentEnabled: false,
   coachingCanvasEnabled: false,
+  queryBuilderEnabled: false,
 };
 
 const FeatureFlagsContext = createContext<FeatureFlags>(defaultFlags);

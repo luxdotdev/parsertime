@@ -32,6 +32,7 @@ export function MainNav({
   dataToolsEnabled,
   tournamentEnabled,
   coachingCanvasEnabled,
+  queryBuilderEnabled,
   className,
 }: React.HTMLAttributes<HTMLElement> & {
   scoutingEnabled: boolean;
@@ -39,6 +40,7 @@ export function MainNav({
   dataToolsEnabled?: boolean;
   tournamentEnabled?: boolean;
   coachingCanvasEnabled?: boolean;
+  queryBuilderEnabled?: boolean;
 }) {
   const pathname = usePathname();
   const t = useTranslations("dashboard.mainNav");
@@ -203,6 +205,19 @@ export function MainNav({
             </div>
           </div>
         </li>
+        {queryBuilderEnabled && (
+          <li>
+            <Link
+              href={"/query" as Route}
+              className={cn(
+                navLinkStyles,
+                pathname.startsWith("/query") && "text-primary"
+              )}
+            >
+              {t("query")}
+            </Link>
+          </li>
+        )}
         {tournamentEnabled && (
           <li>
             <Link

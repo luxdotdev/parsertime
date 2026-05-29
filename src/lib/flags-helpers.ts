@@ -6,6 +6,7 @@ import {
   newLandingPage,
   overviewCard,
   positionalData,
+  queryBuilder,
   scoutingTool,
   simulationTool,
   tempoChart,
@@ -26,6 +27,7 @@ export type FeatureFlags = {
   positionalDataEnabled: boolean;
   tournamentEnabled: boolean;
   coachingCanvasEnabled: boolean;
+  queryBuilderEnabled: boolean;
 };
 
 export async function resolveAllFlags(): Promise<FeatureFlags> {
@@ -42,6 +44,7 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     positionalDataEnabled,
     tournamentEnabled,
     coachingCanvasEnabled,
+    queryBuilderEnabled,
   ] = await Promise.all([
     scoutingTool(),
     mapComparison(),
@@ -55,6 +58,7 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     positionalData(),
     tournament(),
     coachingCanvas(),
+    queryBuilder(),
   ]);
 
   return {
@@ -70,6 +74,7 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     positionalDataEnabled,
     tournamentEnabled,
     coachingCanvasEnabled,
+    queryBuilderEnabled,
   };
 }
 
@@ -87,5 +92,6 @@ export function toFlagValues(flags: FeatureFlags): Record<string, boolean> {
     "positional-data": flags.positionalDataEnabled,
     tournament: flags.tournamentEnabled,
     "coaching-canvas": flags.coachingCanvasEnabled,
+    "query-builder": flags.queryBuilderEnabled,
   };
 }

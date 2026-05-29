@@ -295,6 +295,19 @@ model MapGroup {
   @@index([createdBy])
 }
 
+model SavedQuery {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  teamId    Int
+  spec      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([teamId])
+}
+
 model Scrim {
   id                  Int              @id @default(autoincrement())
   name                String
