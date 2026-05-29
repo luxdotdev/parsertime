@@ -763,6 +763,46 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans aggregate fight-relative opening-pick timing filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "Which players get first picks with average time into fight under 5 seconds?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "opening_kill",
+      dimensions: ["attacker"],
+      filters: [
+        { field: "attacker_side", op: "eq", value: "us" },
+        { field: "avg_fight_time", op: "lt", value: 5 },
+      ],
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([
+        { metric: "first_picks", agg: "sum" },
+        { metric: "fight_time", agg: "avg" },
+      ])
+    );
+    expect(planned?.spec.filters).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ field: "fight_time" })])
+    );
+  });
+
+  it("plans aggregate map-relative opening-kill timing filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Which maps have average opening kill time under 90 seconds?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "opening_kill",
+      metrics: [{ metric: "kill_time", agg: "avg" }],
+      dimensions: ["map"],
+      filters: [{ field: "avg_kill_time", op: "lt", value: 90 }],
+    });
+  });
+
   it("plans player-specific dies-first winrate questions", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

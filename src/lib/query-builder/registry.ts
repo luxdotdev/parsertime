@@ -69,6 +69,8 @@ export type FilterDef = {
   statType?: string;
   /** CalculatedStat metric filters: compare the grouped aggregate value. */
   aggregate?: Aggregation;
+  /** computed aggregate filters: compare this metric when it differs from id */
+  metric?: string;
 };
 
 export type DatasetDef = {
@@ -598,6 +600,7 @@ const calculatedStatFilters: FilterDef[] = CALC_METRICS.map((c) => ({
 
 function metricAggregateFilter(args: {
   id: string;
+  metric?: string;
   label: string;
   table: string;
   column: string;
@@ -614,6 +617,7 @@ function metricAggregateFilter(args: {
     operators: ["gte", "gt", "lte", "lt"],
     unit: args.unit,
     aggregate: args.aggregate,
+    metric: args.metric,
   };
 }
 
@@ -2138,6 +2142,24 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         table: "OpeningKill",
         column: "lost",
         aggregate: "sum",
+      }),
+      metricAggregateFilter({
+        id: "avg_kill_time",
+        metric: "kill_time",
+        label: "average opening kill time",
+        table: "OpeningKill",
+        column: "kill_time",
+        aggregate: "avg",
+        unit: "s",
+      }),
+      metricAggregateFilter({
+        id: "avg_fight_time",
+        metric: "fight_time",
+        label: "average time into fight",
+        table: "OpeningKill",
+        column: "fight_time",
+        aggregate: "avg",
+        unit: "s",
       }),
     ],
   },

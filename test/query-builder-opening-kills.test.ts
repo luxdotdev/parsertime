@@ -167,4 +167,41 @@ describe("computed aggregator (opening kills)", () => {
     expect(rows[0]["sum__first_deaths"]).toBe(2);
     expect(rows[0]["avg__win_rate"]).toBe(50);
   });
+
+  it("filters grouped opening-pick timing after aggregation", () => {
+    const { rows } = aggregateComputed(
+      OPENING_KILLS,
+      spec({
+        metrics: [
+          { metric: "first_picks", agg: "sum" },
+          { metric: "fight_time", agg: "avg" },
+        ],
+        dimensions: ["attacker"],
+        filters: [
+          { field: "attacker_side", op: "eq", value: "us" },
+          { field: "avg_fight_time", op: "lt", value: 5 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].attacker).toBe("Landon");
+    expect(rows[0]["sum__first_picks"]).toBe(1);
+    expect(rows[0]["avg__fight_time"]).toBe(4);
+  });
+
+  it("filters grouped opening-kill match timing after aggregation", () => {
+    const { rows } = aggregateComputed(
+      OPENING_KILLS,
+      spec({
+        metrics: [{ metric: "kill_time", agg: "avg" }],
+        dimensions: ["map"],
+        filters: [{ field: "avg_kill_time", op: "gt", value: 100 }],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].map).toBe("Lijiang Tower");
+    expect(rows[0]["avg__kill_time"]).toBe(139);
+  });
 });

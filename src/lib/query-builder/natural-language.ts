@@ -612,6 +612,17 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "first death rate",
     "opening death rate",
   ],
+  kill_time: [
+    "opening kill time",
+    "average opening kill time",
+    "opening kill timing",
+  ],
+  fight_time: [
+    "time into fight",
+    "average time into fight",
+    "opening pick timing",
+    "opening kill fight timing",
+  ],
   ajax_count: ["ajax", "ajaxes", "ajax count"],
   ult_charge_time: [
     "ult charge time",
@@ -1335,6 +1346,14 @@ function findPlayer(question: string, hero: string | null): string | null {
     "games",
     "sample",
     "size",
+    "average",
+    "avg",
+    "time",
+    "timing",
+    "second",
+    "seconds",
+    "minute",
+    "minutes",
     "rate",
     "rates",
     "win",
@@ -4450,6 +4469,28 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       });
     }
     filters.push(...extractOpeningKillTimeFilters(normalized));
+    filters.push(
+      ...extractDurationThresholdFilters(dataset, normalized, [
+        {
+          field: "avg_kill_time",
+          aliases: [
+            "average opening kill time",
+            "avg opening kill time",
+            "opening kill timing",
+          ],
+        },
+        {
+          field: "avg_fight_time",
+          aliases: [
+            "average time into fight",
+            "avg time into fight",
+            "average fight time",
+            "opening pick timing",
+            "opening kill fight timing",
+          ],
+        },
+      ])
+    );
     filters.push(
       ...extractNumericThresholdFilters(dataset, normalized, [
         {

@@ -196,7 +196,7 @@ export function aggregateComputed(
   for (const f of spec.filters) {
     const def = getFilter(spec.dataset, f.field);
     if (def?.aggregate) {
-      const metric = getMetric(spec.dataset, f.field);
+      const metric = getMetric(spec.dataset, def.metric ?? f.field);
       if (metric) {
         aggregateFilters.push({ filter: f, metric, agg: def.aggregate });
         continue;
