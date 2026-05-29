@@ -428,6 +428,16 @@ function titleCase(value: string): string {
     .join(" ");
 }
 
+const NUMBER_WORDS: Record<string, number> = {
+  zero: 0,
+  one: 1,
+  two: 2,
+  three: 3,
+  four: 4,
+  five: 5,
+  six: 6,
+};
+
 const HERO_BY_NORMALIZED = new Map(
   allHeroes.flatMap((hero) => {
     const base = normalize(hero.name);
@@ -538,6 +548,53 @@ function findPlayer(question: string, hero: string | null): string | null {
   return null;
 }
 
+function mentionsFightContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "fight") ||
+    includesPhrase(normalized, "fights") ||
+    includesPhrase(normalized, "teamfight") ||
+    includesPhrase(normalized, "teamfights") ||
+    includesPhrase(normalized, "team fight") ||
+    includesPhrase(normalized, "team fights")
+  );
+}
+
+function mentionsTeamfightUltContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "first ult") ||
+    includesPhrase(normalized, "first ultimate") ||
+    includesPhrase(normalized, "wasted ult") ||
+    includesPhrase(normalized, "wasted ults") ||
+    includesPhrase(normalized, "wasted ultimate") ||
+    includesPhrase(normalized, "wasted ultimates") ||
+    includesPhrase(normalized, "dry fight") ||
+    includesPhrase(normalized, "reversal") ||
+    includesPhrase(normalized, "reverse fight") ||
+    includesPhrase(normalized, "ults used") ||
+    includesPhrase(normalized, "ultimates used") ||
+    /\b(?:use|used|using|spend|spent|with|without|no|zero|one|two|three|four|five|six|\d+)\s+(?:ult|ults|ultimate|ultimates)\b/.test(
+      normalized
+    )
+  );
+}
+
+function mentionsUltEconomyContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "ult economy") ||
+    includesPhrase(normalized, "ultimate economy") ||
+    includesPhrase(normalized, "ult advantage") ||
+    includesPhrase(normalized, "ultimate advantage") ||
+    includesPhrase(normalized, "ult bank") ||
+    includesPhrase(normalized, "ultimate bank") ||
+    /\b(?:ahead|behind|even)\b.*\b(?:ult|ults|ultimate|ultimates)\b/.test(
+      normalized
+    ) ||
+    /\b(?:ult|ults|ultimate|ultimates)\b.*\b(?:ahead|behind|even)\b/.test(
+      normalized
+    )
+  );
+}
+
 function pickDataset(question: string): DatasetId {
   if (findAbility(question)) return "ability_impact";
 
@@ -557,6 +614,26 @@ function pickDataset(question: string): DatasetId {
     includesPhrase(normalized, "hero matchup")
   ) {
     return "duel";
+  }
+
+  if (mentionsUltEconomyContext(normalized)) return "ult_economy";
+
+  if (
+    mentionsUlt &&
+    (includesPhrase(normalized, "fight opener") ||
+      includesPhrase(normalized, "fight openers") ||
+      includesPhrase(normalized, "open fights") ||
+      includesPhrase(normalized, "opening ult") ||
+      includesPhrase(normalized, "opening ultimate"))
+  ) {
+    return "ult_usage";
+  }
+
+  if (
+    mentionsFightContext(normalized) &&
+    mentionsTeamfightUltContext(normalized)
+  ) {
+    return "teamfight";
   }
 
   if (
@@ -819,6 +896,137 @@ function pickDuelHeroFilters(heroMentions: HeroMention[], question: string) {
   return filters;
 }
 
+function numberFromToken(token: string): number | null {
+  const normalized = normalize(token);
+  if (/^\d+$/.test(normalized)) return Number(normalized);
+  return NUMBER_WORDS[normalized] ?? null;
+}
+
+function extractUltCountFilter(normalized: string): QueryFilter | null {
+  if (
+    includesPhrase(normalized, "no ults") ||
+    includesPhrase(normalized, "no ultimates") ||
+    includesPhrase(normalized, "without ults") ||
+    includesPhrase(normalized, "without ultimates") ||
+    includesPhrase(normalized, "zero ults") ||
+    includesPhrase(normalized, "zero ultimates")
+  ) {
+    return { field: "ults_used", op: "eq", value: 0 };
+  }
+
+  const patterns: [RegExp, QueryFilter["op"]][] = [
+    [
+      /\b(?:exactly|use|used|using|spend|spent|with)\s+(\d+|zero|one|two|three|four|five|six)\s+(?:ult|ults|ultimate|ultimates)\b/,
+      "eq",
+    ],
+    [
+      /\bat\s+least\s+(\d+|one|two|three|four|five|six)\s+(?:ult|ults|ultimate|ultimates)\b/,
+      "gte",
+    ],
+    [
+      /\b(?:more\s+than|over)\s+(\d+|zero|one|two|three|four|five|six)\s+(?:ult|ults|ultimate|ultimates)\b/,
+      "gt",
+    ],
+    [
+      /\b(?:at\s+most|up\s+to)\s+(\d+|zero|one|two|three|four|five|six)\s+(?:ult|ults|ultimate|ultimates)\b/,
+      "lte",
+    ],
+    [
+      /\b(?:less\s+than|under)\s+(\d+|one|two|three|four|five|six)\s+(?:ult|ults|ultimate|ultimates)\b/,
+      "lt",
+    ],
+  ];
+
+  for (const [pattern, op] of patterns) {
+    const match = normalized.match(pattern);
+    if (!match) continue;
+    const value = numberFromToken(match[1]);
+    if (value == null) continue;
+    return { field: "ults_used", op, value };
+  }
+
+  return null;
+}
+
+function extractWastedUltFilter(normalized: string): QueryFilter | null {
+  if (
+    includesPhrase(normalized, "no wasted ults") ||
+    includesPhrase(normalized, "no wasted ultimates") ||
+    includesPhrase(normalized, "without wasted ults") ||
+    includesPhrase(normalized, "without wasted ultimates")
+  ) {
+    return { field: "wasted_ults", op: "eq", value: 0 };
+  }
+  if (
+    includesPhrase(normalized, "wasted ult") ||
+    includesPhrase(normalized, "wasted ults") ||
+    includesPhrase(normalized, "wasted ultimate") ||
+    includesPhrase(normalized, "wasted ultimates") ||
+    includesPhrase(normalized, "waste an ult") ||
+    includesPhrase(normalized, "waste ult") ||
+    includesPhrase(normalized, "waste ults") ||
+    includesPhrase(normalized, "waste ultimate") ||
+    includesPhrase(normalized, "waste ultimates")
+  ) {
+    return { field: "wasted_ults", op: "gte", value: 1 };
+  }
+  return null;
+}
+
+function pickUltEconomyBucket(normalized: string): string | null {
+  if (
+    includesPhrase(normalized, "2 behind") ||
+    includesPhrase(normalized, "two behind") ||
+    includesPhrase(normalized, "2 ults behind") ||
+    includesPhrase(normalized, "two ults behind") ||
+    includesPhrase(normalized, "2+ behind") ||
+    includesPhrase(normalized, "down 2") ||
+    includesPhrase(normalized, "down two")
+  ) {
+    return "2+ behind";
+  }
+  if (
+    includesPhrase(normalized, "1 behind") ||
+    includesPhrase(normalized, "one behind") ||
+    includesPhrase(normalized, "1 ult behind") ||
+    includesPhrase(normalized, "one ult behind") ||
+    includesPhrase(normalized, "down 1") ||
+    includesPhrase(normalized, "down one")
+  ) {
+    return "1 behind";
+  }
+  if (
+    includesPhrase(normalized, "2 ahead") ||
+    includesPhrase(normalized, "two ahead") ||
+    includesPhrase(normalized, "2 ults ahead") ||
+    includesPhrase(normalized, "two ults ahead") ||
+    includesPhrase(normalized, "2+ ahead") ||
+    includesPhrase(normalized, "up 2") ||
+    includesPhrase(normalized, "up two")
+  ) {
+    return "2+ ahead";
+  }
+  if (
+    includesPhrase(normalized, "1 ahead") ||
+    includesPhrase(normalized, "one ahead") ||
+    includesPhrase(normalized, "1 ult ahead") ||
+    includesPhrase(normalized, "one ult ahead") ||
+    includesPhrase(normalized, "up 1") ||
+    includesPhrase(normalized, "up one")
+  ) {
+    return "1 ahead";
+  }
+  if (
+    includesPhrase(normalized, "even ults") ||
+    includesPhrase(normalized, "even ultimates") ||
+    includesPhrase(normalized, "even ult economy") ||
+    includesPhrase(normalized, "even ultimate economy")
+  ) {
+    return "even";
+  }
+  return null;
+}
+
 function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   const filters: QueryFilter[] = [];
   const heroMentions = findHeroMentions(question);
@@ -883,6 +1091,29 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
     if (includesPhrase(normalized, "dry fight")) {
       filters.push({ field: "dry_fight", op: "eq", value: "yes" });
+    }
+    if (
+      includesPhrase(normalized, "first ult") ||
+      includesPhrase(normalized, "first ultimate")
+    ) {
+      filters.push({ field: "first_ult", op: "eq", value: "yes" });
+    }
+    if (
+      includesPhrase(normalized, "reversal") ||
+      includesPhrase(normalized, "reverse fight")
+    ) {
+      filters.push({ field: "reversal", op: "eq", value: "yes" });
+    }
+    const ultCountFilter = extractUltCountFilter(normalized);
+    if (ultCountFilter) filters.push(ultCountFilter);
+    const wastedUltFilter = extractWastedUltFilter(normalized);
+    if (wastedUltFilter) filters.push(wastedUltFilter);
+  }
+
+  if (dataset === "ult_economy") {
+    const bucket = pickUltEconomyBucket(normalized);
+    if (bucket) {
+      filters.push({ field: "advantage_bucket", op: "in", value: [bucket] });
     }
   }
 
@@ -1189,7 +1420,13 @@ function pickDimensions(
   ) {
     add("map");
   }
-  if (dataset === "ult_economy" && dims.length === 0) add("advantage_bucket");
+  if (
+    dataset === "ult_economy" &&
+    dims.length === 0 &&
+    !hasFilter("advantage_bucket")
+  ) {
+    add("advantage_bucket");
+  }
   if (dataset === "duel" && dims.length === 0) {
     const hasOurHeroFilter = hasFilter("our_hero");
     const hasEnemyHeroFilter = hasFilter("enemy_hero");

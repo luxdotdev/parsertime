@@ -43,6 +43,66 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans exact ultimate-count fight winrate questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "What is our fight win rate when we use exactly 2 ultimates?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: [],
+      filters: [{ field: "ults_used", op: "eq", value: 2 }],
+    });
+  });
+
+  it("plans threshold ultimate-count fight winrate questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "What is our fight win rate when we use at least one ult?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: [],
+      filters: [{ field: "ults_used", op: "gte", value: 1 }],
+    });
+  });
+
+  it("plans first-ult and wasted-ult fight context questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "What is our fight win rate when we get first ult and waste an ult?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: [],
+      filters: [
+        { field: "first_ult", op: "eq", value: "yes" },
+        { field: "wasted_ults", op: "gte", value: 1 },
+      ],
+    });
+  });
+
+  it("plans ult-economy advantage questions onto advantage buckets", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "What is our fight win rate when we are one ult ahead?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_economy",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: [],
+      filters: [{ field: "advantage_bucket", op: "in", value: ["1 ahead"] }],
+    });
+  });
+
   it("plans ranked map-result questions with grouping, sorting, and limits", () => {
     const planned = planQueryFromQuestion({
       teamId: 2,
