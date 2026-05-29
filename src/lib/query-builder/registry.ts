@@ -2486,6 +2486,15 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         })),
       },
       {
+        id: "map",
+        label: "map",
+        table: "EnemyHeroMatchup",
+        column: "map",
+        source: "base",
+        valueType: "text",
+        operators: ["in", "nin"],
+      },
+      {
         id: "map_type",
         label: "map type",
         table: "EnemyHeroMatchup",

@@ -61,6 +61,22 @@ describe("computed aggregator (enemy hero matchups)", () => {
     expect(rows[0]["count__maps"]).toBe(2);
   });
 
+  it("filters enemy hero matchup questions to a specific map", () => {
+    const { rows } = aggregateComputed(
+      ENEMY_ROWS,
+      spec({
+        filters: [
+          { field: "enemy_hero", op: "in", value: ["Tracer"] },
+          { field: "map", op: "in", value: ["King's Row"] },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]["avg__win_rate"]).toBe(0);
+    expect(rows[0]["count__maps"]).toBe(1);
+  });
+
   it("ranks enemy heroes by matchup win rate", () => {
     const { rows } = aggregateComputed(
       ENEMY_ROWS,

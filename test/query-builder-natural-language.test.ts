@@ -107,6 +107,23 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans specific-map enemy hero questions onto enemy matchups", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "What is our win rate against Tracer on King's Row?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "enemy_hero",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: [],
+      filters: [
+        { field: "enemy_hero", op: "in", value: ["Tracer"] },
+        { field: "map", op: "in", value: ["King's Row"] },
+      ],
+    });
+  });
+
   it("plans ult-economy advantage questions onto advantage buckets", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

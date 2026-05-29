@@ -814,6 +814,16 @@ function pickDataset(question: string): DatasetId {
     }
 
     if (
+      findHeroMentions(question).length > 0 &&
+      (includesPhrase(normalized, "against") ||
+        includesPhrase(normalized, "versus") ||
+        includesPhrase(normalized, "vs") ||
+        includesPhrase(normalized, "enemy"))
+    ) {
+      return "enemy_hero";
+    }
+
+    if (
       includesPhrase(normalized, "win rate") ||
       includesPhrase(normalized, "winrate") ||
       includesPhrase(normalized, "record") ||
