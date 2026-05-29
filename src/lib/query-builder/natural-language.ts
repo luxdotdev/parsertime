@@ -809,6 +809,10 @@ function pickDataset(question: string): DatasetId {
       return "hero_pool";
     }
 
+    if (mentionsFightContext(normalized)) {
+      return "teamfight";
+    }
+
     if (
       includesPhrase(normalized, "win rate") ||
       includesPhrase(normalized, "winrate") ||

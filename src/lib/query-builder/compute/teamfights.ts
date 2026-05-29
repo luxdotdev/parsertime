@@ -50,7 +50,13 @@ export async function computeTeamfights(
   // Per-map lookups: which in-game team is ours, the map type, and the scrim.
   const mapMeta = new Map<
     number,
-    { ourTeam: string | null; mapType: string; scrim: string; scrimId: number }
+    {
+      ourTeam: string | null;
+      map: string;
+      mapType: string;
+      scrim: string;
+      scrimId: number;
+    }
   >();
   for (const record of data.mapDataRecords) {
     mapMeta.set(record.id, {
@@ -59,6 +65,7 @@ export async function computeTeamfights(
         data.allPlayerStats,
         data.teamRosterSet
       ),
+      map: record.name ?? "Unknown",
       mapType: "Unknown",
       scrim: record.Scrim?.name ?? "Scrim",
       scrimId: record.Scrim?.id ?? scrimByMap.get(record.id) ?? -1,
@@ -67,7 +74,10 @@ export async function computeTeamfights(
   for (const ms of data.matchStarts) {
     if (ms.MapDataId == null) continue;
     const meta = mapMeta.get(ms.MapDataId);
-    if (meta) meta.mapType = ms.map_type;
+    if (meta) {
+      meta.map = ms.map_name;
+      meta.mapType = ms.map_type;
+    }
   }
 
   // Bucket raw events by map.
@@ -111,6 +121,7 @@ export async function computeTeamfights(
         first_ult: yesNo(analysis.usedFirstUlt),
         dry_fight: yesNo(analysis.isDryFight),
         reversal: yesNo(analysis.isReversal),
+        map: meta.map,
         map_type: meta.mapType,
         scrim: meta.scrim,
       });

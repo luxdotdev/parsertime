@@ -89,6 +89,24 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans specific-map fight winrate questions onto teamfights", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "What is our fight win rate on King's Row when we get first pick?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: [],
+      filters: [
+        { field: "map", op: "in", value: ["King's Row"] },
+        { field: "first_pick", op: "eq", value: "yes" },
+      ],
+    });
+  });
+
   it("plans ult-economy advantage questions onto advantage buckets", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

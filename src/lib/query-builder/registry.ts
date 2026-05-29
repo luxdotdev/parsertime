@@ -1175,6 +1175,13 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         source: "base",
       },
       {
+        id: "map",
+        label: "map",
+        table: "Teamfight",
+        column: "map",
+        source: "base",
+      },
+      {
         id: "map_type",
         label: "map type",
         table: "Teamfight",
@@ -1217,6 +1224,15 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         valueType: "enum",
         operators: ["in", "nin"],
         enumOptions: MAP_TYPES.map((v) => ({ value: v, label: v })),
+      },
+      {
+        id: "map",
+        label: "map",
+        table: "Teamfight",
+        column: "map",
+        source: "base",
+        valueType: "text",
+        operators: ["in", "nin"],
       },
       {
         id: "result",

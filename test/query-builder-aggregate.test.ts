@@ -13,6 +13,7 @@ const FIGHTS: ComputedRow[] = [
     result: "win",
     first_death: "no",
     dry_fight: "no",
+    map: "Lijiang Tower",
     map_type: "Control",
     scrim: "A",
   },
@@ -23,6 +24,7 @@ const FIGHTS: ComputedRow[] = [
     result: "loss",
     first_death: "yes",
     dry_fight: "no",
+    map: "Lijiang Tower",
     map_type: "Control",
     scrim: "A",
   },
@@ -33,6 +35,7 @@ const FIGHTS: ComputedRow[] = [
     result: "win",
     first_death: "no",
     dry_fight: "no",
+    map: "King's Row",
     map_type: "Hybrid",
     scrim: "B",
   },
@@ -43,6 +46,7 @@ const FIGHTS: ComputedRow[] = [
     result: "loss",
     first_death: "yes",
     dry_fight: "yes",
+    map: "Lijiang Tower",
     map_type: "Control",
     scrim: "A",
   },
@@ -53,6 +57,7 @@ const FIGHTS: ComputedRow[] = [
     result: "win",
     first_death: "no",
     dry_fight: "no",
+    map: "Colosseo",
     map_type: "Push",
     scrim: "C",
   },
@@ -164,5 +169,22 @@ describe("computed aggregator (teamfights)", () => {
       })
     );
     expect(wasted.rows[0]["sum__avg_wasted_ults"]).toBe(1);
+  });
+
+  it("filters fight win rate to a specific map", () => {
+    const { rows } = aggregateComputed(
+      FIGHTS,
+      spec({
+        metrics: [
+          { metric: "win_rate", agg: "avg" },
+          { metric: "fights", agg: "count" },
+        ],
+        filters: [{ field: "map", op: "in", value: ["King's Row"] }],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]["count__fights"]).toBe(1);
+    expect(rows[0]["avg__win_rate"]).toBe(100);
   });
 });
