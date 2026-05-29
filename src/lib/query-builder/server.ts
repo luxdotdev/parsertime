@@ -10,6 +10,7 @@ import { computeDuels } from "@/lib/query-builder/compute/duels";
 import { computeEnemyHeroMatchups } from "@/lib/query-builder/compute/enemy-hero";
 import { computeHeroPool } from "@/lib/query-builder/compute/hero-pool";
 import { computeMapResults } from "@/lib/query-builder/compute/map-results";
+import { computePlayerMapPerformance } from "@/lib/query-builder/compute/player-map-performance";
 import { computeRoleTrios } from "@/lib/query-builder/compute/role-trios";
 import { computeRosterVariants } from "@/lib/query-builder/compute/roster-variants";
 import { computeSwapImpact } from "@/lib/query-builder/compute/swap-impact";
@@ -234,6 +235,12 @@ async function runComputedQuery(
         break;
       case "map_result":
         computedRows = await computeMapResults(spec.teamId, ctx.scrimIds);
+        break;
+      case "player_map_performance":
+        computedRows = await computePlayerMapPerformance(
+          spec.teamId,
+          ctx.scrimIds
+        );
         break;
       case "ult_economy":
         computedRows = await computeUltEconomy(spec.teamId, ctx.scrimIds);

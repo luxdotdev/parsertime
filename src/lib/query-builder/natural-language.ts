@@ -34,6 +34,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   map: "maps",
   teamfight: "win_rate",
   map_result: "win_rate",
+  player_map_performance: "win_rate",
   ult_economy: "win_rate",
   duel: "win_rate",
   ability_impact: "win_rate",
@@ -214,6 +215,18 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "record versus",
     "map record",
     "match record",
+  ],
+  player_map_performance: [
+    "player map performance",
+    "player map winrate",
+    "player map win rate",
+    "map performance",
+    "players by map",
+    "player by map",
+    "best player on map",
+    "best players on map",
+    "perform best on",
+    "performance on",
   ],
   ult_economy: [
     "ult economy",
@@ -669,6 +682,7 @@ function findMapName(question: string): string | null {
 
 function findPlayer(question: string, hero: string | null): string | null {
   const heroWords = new Set(normalize(hero ?? "").split(/\s+/));
+  const mapWords = new Set(normalize(findMapName(question) ?? "").split(/\s+/));
   const candidates = [
     ...question.matchAll(
       /\b(?:for|player|by)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\b/gi
@@ -677,6 +691,7 @@ function findPlayer(question: string, hero: string | null): string | null {
       /\b(?:with|alongside)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\b/gi
     ),
     ...question.matchAll(/\b([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:has|had)\b/gi),
+    ...question.matchAll(/\b([A-Za-z][A-Za-z0-9_.-]{1,})'s\s+/gi),
   ];
 
   for (const match of candidates) {
@@ -685,7 +700,8 @@ function findPlayer(question: string, hero: string | null): string | null {
     if (
       !normalized ||
       FILLER_WORDS.has(normalized) ||
-      heroWords.has(normalized)
+      heroWords.has(normalized) ||
+      mapWords.has(normalized)
     ) {
       continue;
     }
@@ -788,6 +804,28 @@ function mentionsMapPlaytimeContext(normalized: string): boolean {
     (mapContext ||
       includesPhrase(normalized, "played on") ||
       includesPhrase(normalized, "time on"))
+  );
+}
+
+function mentionsPlayerMapPerformanceContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "player map performance") ||
+    includesPhrase(normalized, "player map winrate") ||
+    includesPhrase(normalized, "player map win rate") ||
+    includesPhrase(normalized, "map performance") ||
+    includesPhrase(normalized, "players by map") ||
+    includesPhrase(normalized, "player by map") ||
+    includesPhrase(normalized, "perform best on") ||
+    includesPhrase(normalized, "performance on") ||
+    ((includesPhrase(normalized, "who") ||
+      includesPhrase(normalized, "which player") ||
+      includesPhrase(normalized, "which players") ||
+      includesPhrase(normalized, "player") ||
+      includesPhrase(normalized, "players")) &&
+      (includesPhrase(normalized, "best") ||
+        includesPhrase(normalized, "worst") ||
+        includesPhrase(normalized, "perform") ||
+        includesPhrase(normalized, "performance")))
   );
 }
 
@@ -944,19 +982,37 @@ function pickDataset(question: string): DatasetId {
     return "map_result";
   }
 
+  if (
+    mentionsPlayerMapPerformanceContext(normalized) &&
+    !includesPhrase(normalized, "which hero") &&
+    !includesPhrase(normalized, "which heroes") &&
+    heroMentions.length === 0
+  ) {
+    return "player_map_performance";
+  }
+
   if (mapName) {
     if (mentionsRosterContext(normalized)) {
       return "roster_variant";
     }
 
     if (
-      includesPhrase(normalized, "who") ||
-      includesPhrase(normalized, "which player") ||
-      includesPhrase(normalized, "which players") ||
+      !includesPhrase(normalized, "which hero") &&
+      !includesPhrase(normalized, "which heroes") &&
+      (includesPhrase(normalized, "who") ||
+        includesPhrase(normalized, "which player") ||
+        includesPhrase(normalized, "which players") ||
+        includesPhrase(normalized, "player") ||
+        includesPhrase(normalized, "players") ||
+        includesPhrase(normalized, "perform") ||
+        includesPhrase(normalized, "performance"))
+    ) {
+      return heroMentions.length > 0 ? "hero_pool" : "player_map_performance";
+    }
+
+    if (
       includesPhrase(normalized, "which hero") ||
-      includesPhrase(normalized, "which heroes") ||
-      includesPhrase(normalized, "perform") ||
-      includesPhrase(normalized, "performance")
+      includesPhrase(normalized, "which heroes")
     ) {
       return "hero_pool";
     }
@@ -1949,6 +2005,10 @@ function pickDimensions(
   }
   if (dataset === "hero_pool" && dims.length === 0) {
     add("hero");
+  }
+  if (dataset === "player_map_performance" && dims.length === 0) {
+    if (!hasFilter("player")) add("player");
+    if (!hasFilter("map")) add("map");
   }
   if (
     dataset === "enemy_hero" &&

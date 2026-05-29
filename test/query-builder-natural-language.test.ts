@@ -373,19 +373,33 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
-  it("plans player map-specialist questions onto hero-pool winrates", () => {
+  it("plans player map-specialist questions onto player-map performance", () => {
     const planned = planQueryFromQuestion({
       teamId: 2,
       question: "Which players perform best on Circuit Royal?",
     });
 
     expect(planned?.spec).toMatchObject({
-      dataset: "hero_pool",
-      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dataset: "player_map_performance",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
       dimensions: ["player"],
       filters: [{ field: "map", op: "in", value: ["Circuit Royal"] }],
-      sort: { key: "avg__win_rate", dir: "desc" },
+      sort: { key: "ratio__win_rate", dir: "desc" },
       limit: 20,
+    });
+  });
+
+  it("plans player-filtered map performance questions by map", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "What is PGE's map performance by map?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_map_performance",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["map"],
+      filters: [{ field: "player", op: "in", value: ["PGE"] }],
     });
   });
 

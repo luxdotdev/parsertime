@@ -15,6 +15,7 @@ export const DATASETS = [
   "map",
   "teamfight",
   "map_result",
+  "player_map_performance",
   "ult_economy",
   "duel",
   "ability_impact",
