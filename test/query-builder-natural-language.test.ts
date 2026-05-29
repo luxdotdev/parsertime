@@ -51,6 +51,47 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans player-stat time-played threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 7,
+      question:
+        "Show PGE's hero damage per 10 on Tracer with at least 10 minutes played",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_stat",
+      teamId: 7,
+      metrics: [{ metric: "hero_damage", agg: "per10" }],
+      dimensions: [],
+      filters: [
+        { field: "hero", op: "in", value: ["Tracer"] },
+        { field: "player", op: "in", value: ["PGE"] },
+        { field: "min_time_played", op: "gte", value: 600 },
+      ],
+    });
+  });
+
+  it("plans computed hero-pool time-played threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "How many final blows does PGE have on Widowmaker in won maps with at least 5 minutes played?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_pool",
+      teamId: 5,
+      metrics: [{ metric: "final_blows", agg: "sum" }],
+      dimensions: [],
+      filters: [
+        { field: "hero", op: "in", value: ["Widowmaker"] },
+        { field: "player", op: "in", value: ["PGE"] },
+        { field: "time_played", op: "gte", value: 300 },
+        { field: "result", op: "eq", value: "win" },
+      ],
+    });
+  });
+
   it("plans scoped accuracy questions onto player stat ratio metrics", () => {
     const planned = planQueryFromQuestion({
       teamId: 7,

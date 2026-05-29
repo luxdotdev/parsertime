@@ -5850,6 +5850,16 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         operators: ["in", "nin"],
       },
       {
+        id: "time_played",
+        label: "time played",
+        table: "HeroPool",
+        column: "time_played",
+        source: "base",
+        valueType: "number",
+        operators: ["gte", "gt", "lte", "lt"],
+        unit: "s",
+      },
+      {
         id: "map",
         label: "map",
         table: "HeroPool",

@@ -1062,6 +1062,7 @@ const FILLER_WORDS = new Set([
   "and",
   "are",
   "as",
+  "at",
   "by",
   "data",
   "find",
@@ -1076,14 +1077,19 @@ const FILLER_WORDS = new Set([
   "it",
   "is",
   "know",
+  "least",
+  "less",
   "map",
   "maps",
   "me",
+  "minimum",
+  "more",
   "need",
   "number",
   "of",
   "on",
   "our",
+  "over",
   "damage",
   "role",
   "scrim",
@@ -1099,10 +1105,13 @@ const FILLER_WORDS = new Set([
   "time",
   "to",
   "type",
+  "than",
   "ult",
   "ults",
   "ultimate",
   "ultimates",
+  "under",
+  "up",
   "us",
   "versus",
   "vs",
@@ -3015,8 +3024,107 @@ function pickDuelHeroFilters(heroMentions: HeroMention[], question: string) {
 
 function numberFromToken(token: string): number | null {
   const normalized = normalize(token);
-  if (/^\d+$/.test(normalized)) return Number(normalized);
+  if (/^\d+(?:\.\d+)?$/.test(normalized)) return Number(normalized);
   return NUMBER_WORDS[normalized] ?? null;
+}
+
+function durationSeconds(value: string, unit: string): number | null {
+  const amount = numberFromToken(value);
+  if (amount == null) return null;
+  const normalizedUnit = normalize(unit);
+  let scale = 1;
+  if (
+    normalizedUnit.startsWith("hour") ||
+    normalizedUnit.startsWith("hr") ||
+    normalizedUnit.startsWith("h")
+  ) {
+    scale = 3600;
+  } else if (normalizedUnit.startsWith("min") || normalizedUnit === "m") {
+    scale = 60;
+  }
+  return Math.round(amount * scale);
+}
+
+function extractTimePlayedFilter(
+  dataset: DatasetId,
+  normalized: string
+): QueryFilter | null {
+  const field = getDataset(dataset).filters.find(
+    (filter) => filter.id === "min_time_played" || filter.id === "time_played"
+  );
+  if (!field) return null;
+
+  const timeIntent =
+    includesPhrase(normalized, "time played") ||
+    includesPhrase(normalized, "playtime") ||
+    includesPhrase(normalized, "minutes played") ||
+    includesPhrase(normalized, "minute played") ||
+    includesPhrase(normalized, "seconds played") ||
+    includesPhrase(normalized, "second played");
+  if (!timeIntent) return null;
+
+  const duration = "(\\d+(?:\\.\\d+)?|one|two|three|four|five|six)";
+  const unit = "(seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h)";
+  const patterns: [RegExp, QueryFilter["op"]][] = [
+    [
+      new RegExp(
+        `\\b(?:at\\s+least|minimum|min)\\s+${duration}\\s*${unit}\\s+(?:of\\s+)?(?:time\\s+played|playtime|played)\\b`
+      ),
+      "gte",
+    ],
+    [
+      new RegExp(
+        `\\b(?:more\\s+than|over)\\s+${duration}\\s*${unit}\\s+(?:of\\s+)?(?:time\\s+played|playtime|played)\\b`
+      ),
+      "gt",
+    ],
+    [
+      new RegExp(
+        `\\b(?:at\\s+most|maximum|max|up\\s+to)\\s+${duration}\\s*${unit}\\s+(?:of\\s+)?(?:time\\s+played|playtime|played)\\b`
+      ),
+      "lte",
+    ],
+    [
+      new RegExp(
+        `\\b(?:less\\s+than|under)\\s+${duration}\\s*${unit}\\s+(?:of\\s+)?(?:time\\s+played|playtime|played)\\b`
+      ),
+      "lt",
+    ],
+    [
+      new RegExp(
+        `\\b(?:time\\s+played|playtime)\\s+(?:of\\s+)?(?:at\\s+least|minimum|min)\\s+${duration}\\s*${unit}\\b`
+      ),
+      "gte",
+    ],
+    [
+      new RegExp(
+        `\\b(?:time\\s+played|playtime)\\s+(?:of\\s+)?(?:more\\s+than|over)\\s+${duration}\\s*${unit}\\b`
+      ),
+      "gt",
+    ],
+    [
+      new RegExp(
+        `\\b(?:time\\s+played|playtime)\\s+(?:of\\s+)?(?:at\\s+most|maximum|max|up\\s+to)\\s+${duration}\\s*${unit}\\b`
+      ),
+      "lte",
+    ],
+    [
+      new RegExp(
+        `\\b(?:time\\s+played|playtime)\\s+(?:of\\s+)?(?:less\\s+than|under)\\s+${duration}\\s*${unit}\\b`
+      ),
+      "lt",
+    ],
+  ];
+
+  for (const [pattern, op] of patterns) {
+    const match = normalized.match(pattern);
+    if (!match || !field.operators.includes(op)) continue;
+    const seconds = durationSeconds(match[1], match[2]);
+    if (seconds == null) continue;
+    return { field: field.id, op, value: seconds };
+  }
+
+  return null;
 }
 
 function extractUltCountFilter(normalized: string): QueryFilter | null {
@@ -3426,6 +3534,9 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       if (filter) filters.push(filter);
     }
   }
+
+  const timePlayedFilter = extractTimePlayedFilter(dataset, normalized);
+  if (timePlayedFilter) filters.push(timePlayedFilter);
 
   const resultScope = pickResultScope(normalized);
   if (
