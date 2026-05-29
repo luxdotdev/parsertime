@@ -7542,6 +7542,18 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         defaultAgg: "sum",
         precision: 0,
       },
+      {
+        id: "fight_openings_per_map",
+        label: "fight openings per map",
+        description: "Fight-opening ultimates per map",
+        table: "UltUsage",
+        column: "fight_openings",
+        source: "base",
+        allowedAggs: ["ratio"],
+        defaultAgg: "ratio",
+        precision: 2,
+        denominatorColumn: "maps_played",
+      },
     ],
     dimensions: [
       {

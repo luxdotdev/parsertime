@@ -78,4 +78,21 @@ describe("computed aggregator (ult usage)", () => {
       sum__fight_openings: 3,
     });
   });
+
+  it("ranks fight-opening heroes per map", () => {
+    const { rows } = aggregateComputed(
+      ULT_USAGE_ROWS,
+      spec({
+        metrics: [{ metric: "fight_openings_per_map", agg: "ratio" }],
+        dimensions: ["hero"],
+        filters: [{ field: "row_type", op: "eq", value: "fight opening hero" }],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({
+      hero: "Widowmaker",
+      ratio__fight_openings_per_map: 0.75,
+    });
+  });
 });

@@ -155,6 +155,8 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "opens fights with ult",
     "opening ult",
     "opening ultimate",
+    "fight openings per map",
+    "opening ults per map",
   ],
   role_trio: [
     "role trio",
@@ -762,6 +764,14 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "open fights",
     "opening ult",
     "opening ultimate",
+  ],
+  fight_openings_per_map: [
+    "fight openings per map",
+    "fight opener per map",
+    "fight openers per map",
+    "opening ults per map",
+    "opening ultimates per map",
+    "open fights with ult per map",
   ],
   avg_wasted_ults: ["wasted ult", "wasted ults", "wasted ultimates"],
   first_pick_rate: ["first pick rate", "first-pick rate", "opening pick rate"],
@@ -2737,8 +2747,13 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
     }
   }
   if (dataset === "ult_usage" && includesPhrase(normalized, "per map")) {
+    const priority = deduped.some(
+      (ref) => ref.metric === "fight_openings_per_map"
+    )
+      ? "fight_openings_per_map"
+      : "ults_per_map";
     deduped.sort((a, b) =>
-      a.metric === "ults_per_map" ? -1 : b.metric === "ults_per_map" ? 1 : 0
+      a.metric === priority ? -1 : b.metric === priority ? 1 : 0
     );
   }
   if (
@@ -3813,6 +3828,7 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
 
   if (dataset === "ult_usage") {
     if (
+      includesPhrase(normalized, "fight openings") ||
       includesPhrase(normalized, "fight opener") ||
       includesPhrase(normalized, "fight openers") ||
       includesPhrase(normalized, "open fights") ||

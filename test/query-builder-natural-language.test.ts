@@ -1543,6 +1543,22 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans fight-opening hero per-map questions onto ult usage summaries", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "Which heroes have the most fight openings per map?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_usage",
+      metrics: [{ metric: "fight_openings_per_map", agg: "ratio" }],
+      dimensions: ["hero"],
+      filters: [{ field: "row_type", op: "eq", value: "fight opening hero" }],
+      sort: { key: "ratio__fight_openings_per_map", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans recent-form questions onto trend buckets", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,
