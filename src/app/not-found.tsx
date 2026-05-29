@@ -7,15 +7,25 @@ export default async function NotFound() {
   const t = await getTranslations("notFound");
 
   return (
-    <div className="min-h-svh bg-background text-foreground">
-      <div className="grid min-h-svh grid-rows-[auto_1fr] lg:grid-cols-2 lg:grid-rows-1">
-        {/* Art panel — constant red poster. Shown on all sizes; first on mobile. */}
+    <div className="relative min-h-svh bg-background text-foreground">
+      {/* Desktop only: full-width red→chrome bleed behind both columns. */}
+      <div
+        aria-hidden="true"
+        className="not-found-canvas pointer-events-none absolute inset-0 hidden lg:block"
+      >
+        <div className="not-found-grain not-found-grain-right absolute inset-0" />
+      </div>
+
+      <div className="relative z-10 grid min-h-svh grid-rows-[auto_1fr] lg:grid-cols-2 lg:grid-rows-1">
+        {/* Art panel — red poster. Solid red on mobile; on desktop it's
+            transparent and the canvas behind supplies the red. First on mobile. */}
         <div
           aria-hidden="true"
-          className="order-first flex min-h-[40svh] items-center justify-center overflow-hidden bg-[#ee1c25] p-8 text-black sm:p-12 lg:order-last lg:min-h-svh"
+          className="not-found-art relative order-first flex min-h-[40svh] items-center justify-center overflow-hidden p-8 text-black sm:p-12 lg:order-last lg:min-h-svh"
         >
+          <div className="not-found-grain lg:hidden" />
           <div
-            className="not-found-figure w-full max-w-md [&_svg]:h-auto [&_svg]:w-full"
+            className="not-found-figure relative mx-auto w-full max-w-md [&_svg]:mx-auto [&_svg]:h-[40svh] [&_svg]:w-auto lg:[&_svg]:h-auto lg:[&_svg]:w-full"
             dangerouslySetInnerHTML={{ __html: fallingHalftoneSvg }}
           />
         </div>
