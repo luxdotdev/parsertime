@@ -4,6 +4,7 @@ import { canViewTeam, getCurrentUser, isAdminUser } from "@/lib/auth";
 import { queryBuilder } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { aggregateComputed } from "@/lib/query-builder/aggregate";
+import { computeAbilityImpact } from "@/lib/query-builder/compute/ability-impact";
 import { computeDuels } from "@/lib/query-builder/compute/duels";
 import { computeMapResults } from "@/lib/query-builder/compute/map-results";
 import { computeTeamfights } from "@/lib/query-builder/compute/teamfights";
@@ -228,6 +229,9 @@ async function runComputedQuery(
         break;
       case "duel":
         computedRows = await computeDuels(spec.teamId, ctx.scrimIds);
+        break;
+      case "ability_impact":
+        computedRows = await computeAbilityImpact(spec.teamId, ctx.scrimIds);
         break;
       default:
         return { ok: false, error: "Unknown analysis." };

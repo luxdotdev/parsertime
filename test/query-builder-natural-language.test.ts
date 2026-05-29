@@ -56,4 +56,22 @@ describe("query-builder natural-language planner", () => {
       limit: 5,
     });
   });
+
+  it("plans ability-impact questions from ability aliases", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 9,
+      question: "How does using Suzu affect our fight win rate?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ability_impact",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["used"],
+      filters: [
+        { field: "hero", op: "in", value: ["Kiriko"] },
+        { field: "ability", op: "in", value: ["Protection Suzu"] },
+        { field: "side", op: "eq", value: "us" },
+      ],
+    });
+  });
 });

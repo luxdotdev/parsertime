@@ -35,6 +35,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   map_result: "win_rate",
   ult_economy: "win_rate",
   duel: "win_rate",
+  ability_impact: "win_rate",
 };
 
 const DATASET_HINTS: Record<DatasetId, string[]> = {
@@ -80,6 +81,19 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "behind an ult",
   ],
   duel: ["duel", "duels", "matchup", "hero matchup", "enemy hero"],
+  ability_impact: [
+    "ability",
+    "abilities",
+    "cooldown",
+    "used ability",
+    "using ability",
+    "suzu",
+    "sleep dart",
+    "biotic grenade",
+    "teleporter",
+    "amp it up",
+    "lamp",
+  ],
 };
 
 const METRIC_ALIASES: Record<string, string[]> = {
@@ -113,6 +127,10 @@ const DIMENSION_ALIASES: Record<string, string[]> = {
   first_death: ["first death"],
   first_ult: ["first ult", "first ultimate"],
   advantage_bucket: ["advantage bucket", "ult advantage"],
+  ability: ["ability", "cooldown"],
+  side: ["side", "team"],
+  used: ["used", "usage"],
+  scenario: ["scenario", "used vs not used"],
 };
 
 const FILLER_WORDS = new Set([
@@ -191,7 +209,18 @@ function titleCase(value: string): string {
 const HERO_BY_NORMALIZED = new Map(
   allHeroes.flatMap((hero) => {
     const base = normalize(hero.name);
-    const aliases = [base];
+    const abilityAliases = [hero.ability1.name, hero.ability2.name].flatMap(
+      (name) => {
+        const normalized = normalize(name);
+        return [
+          normalized,
+          ...normalized
+            .split(/\s+/)
+            .filter((word) => word.length > 3 && !FILLER_WORDS.has(word)),
+        ];
+      }
+    );
+    const aliases = [base, ...abilityAliases];
     if (base === "soldier 76") aliases.push("soldier", "soldier76");
     if (base === "wrecking ball") aliases.push("ball", "hammond");
     if (base === "junker queen") aliases.push("jq");
@@ -200,9 +229,32 @@ const HERO_BY_NORMALIZED = new Map(
   })
 );
 
+const ABILITY_BY_NORMALIZED = new Map(
+  allHeroes.flatMap((hero) =>
+    [hero.ability1.name, hero.ability2.name].flatMap((name) => {
+      const normalized = normalize(name);
+      return [
+        [normalized, name] as const,
+        ...normalized
+          .split(/\s+/)
+          .filter((word) => word.length > 3 && !FILLER_WORDS.has(word))
+          .map((word) => [word, name] as const),
+      ];
+    })
+  )
+);
+
 function findHero(question: string): string | null {
   const normalized = normalize(question);
   const matches = Array.from(HERO_BY_NORMALIZED.entries())
+    .filter(([alias]) => includesPhrase(normalized, alias))
+    .sort((a, b) => b[0].length - a[0].length);
+  return matches[0]?.[1] ?? null;
+}
+
+function findAbility(question: string): string | null {
+  const normalized = normalize(question);
+  const matches = Array.from(ABILITY_BY_NORMALIZED.entries())
     .filter(([alias]) => includesPhrase(normalized, alias))
     .sort((a, b) => b[0].length - a[0].length);
   return matches[0]?.[1] ?? null;
@@ -235,6 +287,8 @@ function findPlayer(question: string, hero: string | null): string | null {
 }
 
 function pickDataset(question: string): DatasetId {
+  if (findAbility(question)) return "ability_impact";
+
   const normalized = normalize(question);
   let best: { dataset: DatasetId; score: number } = {
     dataset: "player_stat",
@@ -344,7 +398,7 @@ function dedupeMetrics(refs: MetricRef[]): MetricRef[] {
 
 function filterFor(
   dataset: DatasetId,
-  kind: "hero" | "player" | "map_type",
+  kind: "hero" | "player" | "map_type" | "ability" | "side" | "used",
   value: string
 ): QueryFilter | null {
   const candidates: Partial<Record<typeof kind, string[]>> = {
@@ -358,6 +412,9 @@ function filterFor(
     ],
     player: ["player", "attacker"],
     map_type: ["map_type"],
+    ability: ["ability"],
+    side: ["side"],
+    used: ["used"],
   };
   const field = candidates[kind]
     ?.map((id) => getDataset(dataset).filters.find((f) => f.id === id))
@@ -373,6 +430,7 @@ function filterFor(
 function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   const filters: QueryFilter[] = [];
   const hero = findHero(question);
+  const ability = findAbility(question);
   const player = findPlayer(question, hero);
   const normalized = normalize(question);
 
@@ -382,6 +440,10 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   }
   if (player) {
     const filter = filterFor(dataset, "player", player);
+    if (filter) filters.push(filter);
+  }
+  if (ability) {
+    const filter = filterFor(dataset, "ability", ability);
     if (filter) filters.push(filter);
   }
 
@@ -408,6 +470,34 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
     if (includesPhrase(normalized, "dry fight")) {
       filters.push({ field: "dry_fight", op: "eq", value: "yes" });
+    }
+  }
+
+  if (dataset === "ability_impact") {
+    const side = includesPhrase(normalized, "enemy") ? "enemy" : "us";
+    const sideFilter = filterFor(dataset, "side", side);
+    if (sideFilter) filters.push(sideFilter);
+
+    const wantsComparison =
+      includesPhrase(normalized, "affect") ||
+      includesPhrase(normalized, "impact") ||
+      includesPhrase(normalized, "compare") ||
+      includesPhrase(normalized, "used vs not used");
+    if (!wantsComparison) {
+      if (
+        includesPhrase(normalized, "not using") ||
+        includesPhrase(normalized, "not used") ||
+        includesPhrase(normalized, "without")
+      ) {
+        const usedFilter = filterFor(dataset, "used", "no");
+        if (usedFilter) filters.push(usedFilter);
+      } else if (
+        includesPhrase(normalized, "using") ||
+        includesPhrase(normalized, "used")
+      ) {
+        const usedFilter = filterFor(dataset, "used", "yes");
+        if (usedFilter) filters.push(usedFilter);
+      }
     }
   }
 
@@ -466,6 +556,9 @@ function pickDimensions(
   if (dataset === "duel" && dims.length === 0) {
     add("our_hero");
     add("enemy_hero");
+  }
+  if (dataset === "ability_impact" && dims.length === 0) {
+    add(hasFilter("used") ? "ability" : "used");
   }
 
   return dims.slice(0, 4);

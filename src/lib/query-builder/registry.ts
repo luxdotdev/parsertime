@@ -1,4 +1,5 @@
 import type { Aggregation, DatasetId } from "@/lib/query-builder/types";
+import { allHeroes } from "@/types/heroes";
 
 /**
  * The query-builder registry. This is the single source of truth that drives
@@ -93,6 +94,15 @@ const MAP_TYPES = [
   "Push",
 ];
 const ROLES = ["TANK", "DAMAGE", "SUPPORT"];
+const HERO_OPTIONS = allHeroes.map((hero) => ({
+  value: hero.name,
+  label: hero.name,
+}));
+const ABILITY_OPTIONS = Array.from(
+  new Set(allHeroes.flatMap((hero) => [hero.ability1.name, hero.ability2.name]))
+)
+  .sort((a, b) => a.localeCompare(b))
+  .map((ability) => ({ value: ability, label: ability }));
 
 const RATEABLE_AGGS: Aggregation[] = ["sum", "avg", "per10", "max", "min"];
 const COUNTLESS_AGGS: Aggregation[] = ["sum", "avg", "max", "min"];
@@ -1611,6 +1621,186 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         id: "map_type",
         label: "map type",
         table: "Duel",
+        column: "map_type",
+        source: "base",
+        valueType: "enum",
+        operators: ["in", "nin"],
+        enumOptions: MAP_TYPES.map((v) => ({ value: v, label: v })),
+      },
+    ],
+  },
+  ability_impact: {
+    id: "ability_impact",
+    label: "Ability impact",
+    noun: "ability impact",
+    description:
+      "Fight win rate when specific hero abilities are or are not used by your team or the enemy.",
+    table: "AbilityImpact",
+    kind: "computed",
+    sourceTables: ["Kill", "MercyRez", "Ability1Used", "Ability2Used"],
+    grainNote:
+      "One row per fight, hero, ability, and side. Ability usage is matched to fights with the same pre/post fight window as the team ability-impact dashboard, then aggregated in memory.",
+    metrics: [
+      {
+        id: "win_rate",
+        label: "win rate",
+        description: "Share of fights won (avg of won × 100)",
+        table: "AbilityImpact",
+        column: "won",
+        source: "base",
+        allowedAggs: ["avg"],
+        defaultAgg: "avg",
+        unit: "%",
+        precision: 1,
+        scale: 100,
+      },
+      {
+        id: "fights",
+        label: "fights",
+        description: "Number of fight/ability samples",
+        table: "AbilityImpact",
+        column: null,
+        source: "base",
+        allowedAggs: ["count"],
+        defaultAgg: "count",
+        precision: 0,
+      },
+      {
+        id: "wins",
+        label: "wins",
+        description: "Number of fights won",
+        table: "AbilityImpact",
+        column: "won",
+        source: "base",
+        allowedAggs: ["sum"],
+        defaultAgg: "sum",
+        precision: 0,
+      },
+    ],
+    dimensions: [
+      {
+        id: "hero",
+        label: "hero",
+        table: "AbilityImpact",
+        column: "hero",
+        source: "base",
+      },
+      {
+        id: "ability",
+        label: "ability",
+        table: "AbilityImpact",
+        column: "ability",
+        source: "base",
+      },
+      {
+        id: "side",
+        label: "side",
+        table: "AbilityImpact",
+        column: "side",
+        source: "base",
+      },
+      {
+        id: "used",
+        label: "used",
+        table: "AbilityImpact",
+        column: "used",
+        source: "base",
+      },
+      {
+        id: "scenario",
+        label: "scenario",
+        table: "AbilityImpact",
+        column: "scenario",
+        source: "base",
+      },
+      {
+        id: "result",
+        label: "result",
+        table: "AbilityImpact",
+        column: "result",
+        source: "base",
+      },
+      {
+        id: "map_type",
+        label: "map type",
+        table: "AbilityImpact",
+        column: "map_type",
+        source: "base",
+      },
+      {
+        id: "scrim",
+        label: "scrim",
+        table: "AbilityImpact",
+        column: "scrim",
+        source: "base",
+      },
+    ],
+    filters: [
+      {
+        id: "hero",
+        label: "hero",
+        table: "AbilityImpact",
+        column: "hero",
+        source: "base",
+        valueType: "hero",
+        operators: ["in", "nin"],
+        enumOptions: HERO_OPTIONS,
+      },
+      {
+        id: "ability",
+        label: "ability",
+        table: "AbilityImpact",
+        column: "ability",
+        source: "base",
+        valueType: "text",
+        operators: ["in", "nin"],
+        enumOptions: ABILITY_OPTIONS,
+      },
+      {
+        id: "side",
+        label: "side",
+        table: "AbilityImpact",
+        column: "side",
+        source: "base",
+        valueType: "enum",
+        operators: ["eq", "neq"],
+        enumOptions: [
+          { value: "us", label: "us" },
+          { value: "enemy", label: "enemy" },
+        ],
+      },
+      {
+        id: "used",
+        label: "used",
+        table: "AbilityImpact",
+        column: "used",
+        source: "base",
+        valueType: "enum",
+        operators: ["eq"],
+        enumOptions: [
+          { value: "yes", label: "yes" },
+          { value: "no", label: "no" },
+        ],
+      },
+      {
+        id: "scenario",
+        label: "scenario",
+        table: "AbilityImpact",
+        column: "scenario",
+        source: "base",
+        valueType: "enum",
+        operators: ["eq", "neq"],
+        enumOptions: [
+          { value: "used by us", label: "used by us" },
+          { value: "not used by us", label: "not used by us" },
+          { value: "used by enemy", label: "used by enemy" },
+          { value: "not used by enemy", label: "not used by enemy" },
+        ],
+      },
+      {
+        id: "map_type",
+        label: "map type",
+        table: "AbilityImpact",
         column: "map_type",
         source: "base",
         valueType: "enum",
