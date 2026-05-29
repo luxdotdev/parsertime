@@ -214,6 +214,28 @@ describe("computed aggregator (teamfights)", () => {
     expect(onlyWins.rows[0]["count__fights"]).toBe(3);
   });
 
+  it("filters grouped fight win rates and sample sizes after aggregation", () => {
+    const { rows } = aggregateComputed(
+      FIGHTS,
+      spec({
+        metrics: [
+          { metric: "win_rate", agg: "avg" },
+          { metric: "fights", agg: "count" },
+        ],
+        dimensions: ["ults_used"],
+        filters: [
+          { field: "win_rate", op: "gte", value: 60 },
+          { field: "fights", op: "gte", value: 2 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].ults_used).toBe(2);
+    expect(rows[0]["avg__win_rate"]).toBeCloseTo(66.666, 1);
+    expect(rows[0]["count__fights"]).toBe(3);
+  });
+
   it("supports extended fight-context filters and wasted ult metrics", () => {
     const firstDeath = aggregateComputed(
       FIGHTS,

@@ -1,5 +1,6 @@
 import {
   buildPlan,
+  renderComputedPlan,
   renderDisplaySql,
   toExecutable,
 } from "@/lib/query-builder/plan";
@@ -244,5 +245,29 @@ describe("query-builder compiler", () => {
     expect(display).toContain("/* Cloud9: 3 scrims */");
     // The display preview inlines values for readability.
     expect(display).toContain("'Tracer'");
+  });
+
+  it("renders computed aggregate filters as HAVING", () => {
+    const spec = parse({
+      dataset: "map_result",
+      teamId: 5,
+      metrics: [
+        { metric: "win_rate", agg: "avg" },
+        { metric: "maps", agg: "count" },
+      ],
+      dimensions: ["map_type"],
+      filters: [
+        { field: "win_rate", op: "gte", value: 55 },
+        { field: "maps", op: "gte", value: 3 },
+      ],
+    });
+    const display = renderComputedPlan(spec, {
+      teamName: "Cloud9",
+      scrimCount: 4,
+    });
+
+    expect(display).toContain("GROUP BY map_type");
+    expect(display).toContain("HAVING AVG(won) * 100 >= 55");
+    expect(display).toContain("COUNT(*) >= 3");
   });
 });

@@ -315,6 +315,24 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans grouped fight win-rate threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "Which map types have fight win rate over 60% with at least 2 fights?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["map_type"],
+      filters: [
+        { field: "win_rate", op: "gt", value: 60 },
+        { field: "fights", op: "gte", value: 2 },
+      ],
+    });
+  });
+
   it("plans teamfight ultimate-efficiency questions", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,
@@ -748,6 +766,26 @@ describe("query-builder natural-language planner", () => {
       filters: [{ field: "opponent", op: "in", value: ["Team Peps"] }],
       sort: { key: "avg__win_rate", dir: "desc" },
       limit: 20,
+    });
+  });
+
+  it("plans grouped map win-rate threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Which map types have map win rate at least 55% over 3 maps?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_result",
+      metrics: [
+        { metric: "win_rate", agg: "avg" },
+        { metric: "maps", agg: "count" },
+      ],
+      dimensions: ["map_type"],
+      filters: [
+        { field: "win_rate", op: "gte", value: 55 },
+        { field: "maps", op: "gt", value: 3 },
+      ],
     });
   });
 

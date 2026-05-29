@@ -2363,6 +2363,16 @@ function pickDataset(question: string): DatasetId {
   }
 
   if (
+    mentionsFightContext(normalized) &&
+    (includesPhrase(normalized, "win rate") ||
+      includesPhrase(normalized, "winrate") ||
+      includesPhrase(normalized, "wins") ||
+      includesPhrase(normalized, "losses"))
+  ) {
+    return "teamfight";
+  }
+
+  if (
     includesPhrase(normalized, "map mode") ||
     includesPhrase(normalized, "map modes") ||
     includesPhrase(normalized, "map type") ||
@@ -4457,6 +4467,24 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     if (opponent) {
       filters.push({ field: "opponent", op: "in", value: [opponent] });
     }
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "win_rate",
+          aliases: ["win rate", "winrate", "map win rate", "map winrate"],
+        },
+        {
+          field: "maps",
+          aliases: [
+            "maps",
+            "games",
+            "maps played",
+            "games played",
+            "sample size",
+          ],
+        },
+      ])
+    );
   }
 
   if (dataset === "team_performance") {
@@ -4496,6 +4524,34 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     if (confidence) {
       filters.push({ field: "confidence", op: "in", value: [confidence] });
     }
+  }
+
+  if (dataset === "teamfight") {
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "win_rate",
+          aliases: [
+            "win rate",
+            "winrate",
+            "fight win rate",
+            "fight winrate",
+            "teamfight win rate",
+            "teamfight winrate",
+          ],
+        },
+        {
+          field: "fights",
+          aliases: [
+            "fights",
+            "teamfights",
+            "team fights",
+            "fight sample",
+            "sample size",
+          ],
+        },
+      ])
+    );
   }
 
   if (dataset === "calculated_stat") {
@@ -5322,6 +5378,15 @@ function pickDimensions(
     !includesPhrase(normalized, "map modes")
   ) {
     add("map");
+  }
+  if (
+    (includesPhrase(normalized, "which map type") ||
+      includesPhrase(normalized, "which map types") ||
+      includesPhrase(normalized, "what map type") ||
+      includesPhrase(normalized, "what map types")) &&
+    !hasFilter("map_type")
+  ) {
+    add("map_type");
   }
   if (
     dataset === "map_result" &&

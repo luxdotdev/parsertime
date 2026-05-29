@@ -2,9 +2,11 @@ import {
   getDimension,
   getFilter,
   getMetric,
+  type MetricDef,
 } from "@/lib/query-builder/registry";
 import {
   metricKey,
+  type Aggregation,
   type QueryFilter,
   type QuerySpec,
   type ResultColumn,
@@ -107,6 +109,60 @@ function ratioAggregate(
   return denominator === 0 ? 0 : (numerator / denominator) * scale;
 }
 
+function aggregateMetricValue(
+  bucket: ComputedRow[],
+  metric: MetricDef,
+  agg: Aggregation
+): number {
+  const field = metric.column;
+  const values =
+    field === null
+      ? []
+      : bucket.map((r) => Number(r[field])).filter((n) => !Number.isNaN(n));
+  let value =
+    agg === "per10" || agg === "ratio"
+      ? ratioAggregate(
+          bucket,
+          field,
+          metric.denominatorColumn,
+          metric.denominatorScale ?? (agg === "per10" ? 600 : 1)
+        )
+      : aggregate(values, agg, bucket.length);
+  if (metric.scale !== undefined) value *= metric.scale;
+  return value;
+}
+
+function matchesAggregateFilter(
+  bucket: ComputedRow[],
+  metric: MetricDef,
+  filter: QueryFilter,
+  agg: Aggregation
+): boolean {
+  const value = aggregateMetricValue(bucket, metric, agg);
+  if (filter.op === "in" || filter.op === "nin") {
+    const values = Array.isArray(filter.value) ? filter.value : [filter.value];
+    const hit = values.some((target) => value === Number(target));
+    return filter.op === "in" ? hit : !hit;
+  }
+  const target = Array.isArray(filter.value) ? filter.value[0] : filter.value;
+  switch (filter.op) {
+    case "eq":
+      return value === Number(target);
+    case "neq":
+      return value !== Number(target);
+    case "gt":
+      return value > Number(target);
+    case "gte":
+      return value >= Number(target);
+    case "lt":
+      return value < Number(target);
+    case "lte":
+      return value <= Number(target);
+    default:
+      return true;
+  }
+}
+
 export function aggregateComputed(
   rows: ComputedRow[],
   spec: QuerySpec
@@ -121,22 +177,37 @@ export function aggregateComputed(
     if (!def) return [];
     return [
       {
+        metric: def,
         key: metricKey(ref),
         label: def.label,
-        field: def.column,
-        denominatorField: def.denominatorColumn,
-        denominatorScale: def.denominatorScale,
         agg: ref.agg,
-        scale: def.scale,
         precision: def.precision,
         unit: def.unit,
       },
     ];
   });
 
-  // Apply filters.
-  let filtered = rows;
+  const rowFilters: QueryFilter[] = [];
+  const aggregateFilters: {
+    filter: QueryFilter;
+    metric: MetricDef;
+    agg: Aggregation;
+  }[] = [];
   for (const f of spec.filters) {
+    const def = getFilter(spec.dataset, f.field);
+    if (def?.aggregate) {
+      const metric = getMetric(spec.dataset, f.field);
+      if (metric) {
+        aggregateFilters.push({ filter: f, metric, agg: def.aggregate });
+        continue;
+      }
+    }
+    rowFilters.push(f);
+  }
+
+  // Apply row filters before grouping.
+  let filtered = rows;
+  for (const f of rowFilters) {
     const def = getFilter(spec.dataset, f.field);
     if (!def) continue;
     filtered = filtered.filter((row) => matchesFilter(row, f, def.column));
@@ -168,28 +239,21 @@ export function aggregateComputed(
 
   const resultRows: ResultRow[] = [];
   for (const bucket of groups.values()) {
+    if (
+      aggregateFilters.some(
+        ({ filter, metric, agg }) =>
+          !matchesAggregateFilter(bucket, metric, filter, agg)
+      )
+    ) {
+      continue;
+    }
     const row: ResultRow = {};
     for (const d of dims) {
       const value = bucket[0][d.field];
       row[d.id] = value === undefined ? null : value;
     }
     for (const m of metrics) {
-      const field = m.field;
-      const values =
-        field === null
-          ? []
-          : bucket.map((r) => Number(r[field])).filter((n) => !Number.isNaN(n));
-      let value =
-        m.agg === "per10" || m.agg === "ratio"
-          ? ratioAggregate(
-              bucket,
-              field,
-              m.denominatorField,
-              m.denominatorScale ?? (m.agg === "per10" ? 600 : 1)
-            )
-          : aggregate(values, m.agg, bucket.length);
-      if (m.scale !== undefined) value *= m.scale;
-      row[m.key] = value;
+      row[m.key] = aggregateMetricValue(bucket, m.metric, m.agg);
     }
     resultRows.push(row);
   }

@@ -516,16 +516,33 @@ export function renderComputedPlan(
 
   const whereExprs = spec.filters.flatMap((f) => {
     const fd = getFilter(spec.dataset, f.field);
-    if (!fd) return [];
+    if (!fd || fd.aggregate) return [];
     const value = Array.isArray(f.value)
       ? `(${f.value.map((v) => literal(v)).join(", ")})`
       : literal(f.value);
     return [`${fd.column} ${OP_SYMBOLS[f.op] ?? f.op} ${value}`];
   });
+  const havingExprs = spec.filters.flatMap((f) => {
+    const fd = getFilter(spec.dataset, f.field);
+    if (!fd?.aggregate) return [];
+    const metric = getMetric(spec.dataset, f.field);
+    if (!metric) return [];
+    const value = Array.isArray(f.value)
+      ? `(${f.value.map((v) => literal(v)).join(", ")})`
+      : literal(f.value);
+    if (metric.column === null || fd.aggregate === "count") {
+      return [`COUNT(*) ${OP_SYMBOLS[f.op] ?? f.op} ${value}`];
+    }
+    const scaled = metric.scale ? ` * ${metric.scale}` : "";
+    return [
+      `${AGG_SQL_LABELS[fd.aggregate]}(${metric.column})${scaled} ${OP_SYMBOLS[f.op] ?? f.op} ${value}`,
+    ];
+  });
 
   let out = `ANALYZE ${ds.noun} ${scope}\nFROM ${(ds.sourceTables ?? [ds.table]).join(", ")}`;
   if (whereExprs.length) out += `\nWHERE ${whereExprs.join("\n  AND ")}`;
   if (groupExprs.length) out += `\nGROUP BY ${groupExprs.join(", ")}`;
+  if (havingExprs.length) out += `\nHAVING ${havingExprs.join("\n  AND ")}`;
   out += `\nSELECT ${selects.join(", ")}`;
   if (spec.sort) {
     out += `\nORDER BY ${spec.sort.key} ${spec.sort.dir.toUpperCase()}`;

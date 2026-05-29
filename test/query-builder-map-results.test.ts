@@ -77,6 +77,23 @@ describe("computed aggregator (map results)", () => {
     expect(rows.map((row) => row.map)).toEqual(["Circuit Royal", "King's Row"]);
   });
 
+  it("filters grouped map win rates and sample sizes after aggregation", () => {
+    const { rows } = aggregateComputed(
+      MAP_RESULTS,
+      spec({
+        dimensions: ["map_type"],
+        filters: [
+          { field: "win_rate", op: "gte", value: 50 },
+          { field: "maps", op: "gte", value: 1 },
+        ],
+        sort: { key: "avg__win_rate", dir: "desc" },
+      })
+    );
+
+    expect(rows.map((row) => row.map_type)).toEqual(["Escort", "Control"]);
+    expect(rows.every((row) => Number(row["avg__win_rate"]) >= 50)).toBe(true);
+  });
+
   it("ranks maps by computed match playtime", () => {
     const { rows } = aggregateComputed(
       MAP_RESULTS,
