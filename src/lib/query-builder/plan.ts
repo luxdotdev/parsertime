@@ -39,6 +39,7 @@ const BASE_ALIAS: Record<QuerySpec["dataset"], string> = {
   opening_kill: "ok",
   rotation_death: "rd",
   map_result: "mr",
+  map_intelligence: "mi",
   player_map_performance: "pmp",
   role_performance: "rp",
   ult_economy: "ue",

@@ -36,6 +36,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   opening_kill: "first_deaths",
   rotation_death: "rotation_deaths",
   map_result: "win_rate",
+  map_intelligence: "weighted_win_rate",
   player_map_performance: "win_rate",
   role_performance: "win_rate",
   ult_economy: "win_rate",
@@ -250,6 +251,23 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "record versus",
     "map record",
     "match record",
+  ],
+  map_intelligence: [
+    "map intelligence",
+    "weighted map win rate",
+    "weighted win rate by map",
+    "strength weighted",
+    "time weighted",
+    "time-decayed",
+    "decayed win rate",
+    "map trend",
+    "map trends",
+    "improving maps",
+    "declining maps",
+    "map type dependency",
+    "map type dependencies",
+    "best weighted maps",
+    "worst weighted maps",
   ],
   player_map_performance: [
     "player map performance",
@@ -621,6 +639,15 @@ const METRIC_ALIASES: Record<string, string[]> = {
   healing_per10: ["healing per 10", "healing per 10 minutes"],
   damage_taken_per10: ["damage taken per 10", "damage taken per 10 minutes"],
   win_rate: ["winrate", "winrates", "win rate", "win rates", "wr"],
+  weighted_win_rate: [
+    "weighted win rate",
+    "time weighted win rate",
+    "time-decayed win rate",
+    "decayed win rate",
+    "strength weighted",
+  ],
+  recent_win_rate: ["recent win rate", "recent form", "last 10 win rate"],
+  trend_delta: ["trend delta", "recent delta", "change", "improvement"],
   length: ["length", "streak length", "streak count"],
   fights: ["fights", "teamfights", "team fights"],
   duration: [
@@ -693,6 +720,8 @@ const DIMENSION_ALIASES: Record<string, string[]> = {
   swap_count_bucket: ["swap count bucket", "swaps"],
   first_swap_timing: ["first swap timing", "swap timing"],
   streak: ["streak"],
+  trend: ["trend"],
+  confidence: ["confidence", "sample confidence"],
   start_date: ["start date", "started"],
   end_date: ["end date", "ended"],
 };
@@ -968,6 +997,30 @@ function mentionsTrendContext(normalized: string): boolean {
     includesPhrase(normalized, "by month") ||
     includesPhrase(normalized, "day of week") ||
     includesPhrase(normalized, "by day")
+  );
+}
+
+function mentionsMapIntelligenceContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "map intelligence") ||
+    includesPhrase(normalized, "weighted map win rate") ||
+    includesPhrase(normalized, "weighted win rate by map") ||
+    includesPhrase(normalized, "strength weighted") ||
+    includesPhrase(normalized, "time weighted") ||
+    includesPhrase(normalized, "time-decayed") ||
+    includesPhrase(normalized, "decayed win rate") ||
+    includesPhrase(normalized, "map trend") ||
+    includesPhrase(normalized, "map trends") ||
+    includesPhrase(normalized, "improving maps") ||
+    includesPhrase(normalized, "maps are improving") ||
+    includesPhrase(normalized, "declining maps") ||
+    includesPhrase(normalized, "maps are declining") ||
+    ((includesPhrase(normalized, "improving") ||
+      includesPhrase(normalized, "declining")) &&
+      (includesPhrase(normalized, "map") ||
+        includesPhrase(normalized, "maps"))) ||
+    includesPhrase(normalized, "map type dependency") ||
+    includesPhrase(normalized, "map type dependencies")
   );
 }
 
@@ -1347,6 +1400,7 @@ function pickDataset(question: string): DatasetId {
   if (mentionsOpeningKillContext(normalized)) return "opening_kill";
   if (mentionsCalculatedStatContext(normalized)) return "calculated_stat";
   if (mentionsStreakContext(normalized)) return "streak";
+  if (mentionsMapIntelligenceContext(normalized)) return "map_intelligence";
   if (mentionsTrendContext(normalized)) return "trend";
   if (mentionsRotationDeathContext(normalized)) return "rotation_death";
   if (
@@ -1629,6 +1683,17 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
     refs.push({ metric: "avg_wasted_ults", agg: "avg" });
   }
 
+  if (
+    dataset === "map_intelligence" &&
+    (includesPhrase(normalized, "improving") ||
+      includesPhrase(normalized, "declining") ||
+      includesPhrase(normalized, "map trend") ||
+      includesPhrase(normalized, "map trends") ||
+      includesPhrase(normalized, "trend delta"))
+  ) {
+    refs.unshift({ metric: "trend_delta", agg: "avg" });
+  }
+
   if (dataset === "opening_kill") {
     if (mentionsFirstPickAttribution(normalized)) {
       refs.unshift({ metric: "first_picks", agg: "sum" });
@@ -1644,6 +1709,29 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   }
 
   const deduped = dedupeMetrics(refs);
+  if (dataset === "map_intelligence") {
+    const wantsCount =
+      includesPhrase(normalized, "how many") ||
+      includesPhrase(normalized, "number") ||
+      includesPhrase(normalized, "count") ||
+      includesPhrase(normalized, "total");
+    const hasWeighted = deduped.some(
+      (ref) => ref.metric === "weighted_win_rate"
+    );
+    const hasTrendDelta = deduped.some((ref) => ref.metric === "trend_delta");
+    for (let i = deduped.length - 1; i >= 0; i--) {
+      if (!wantsCount && ["maps", "wins", "losses"].includes(deduped[i].metric))
+        deduped.splice(i, 1);
+      else if (hasWeighted && deduped[i].metric === "win_rate")
+        deduped.splice(i, 1);
+    }
+    if (hasTrendDelta || hasWeighted) {
+      const priority = hasTrendDelta ? "trend_delta" : "weighted_win_rate";
+      deduped.sort((a, b) =>
+        a.metric === priority ? -1 : b.metric === priority ? 1 : 0
+      );
+    }
+  }
   if (dataset === "role_performance") {
     const per10ToRaw: Record<string, string> = {
       final_blows_per10: "final_blows",
@@ -2250,6 +2338,16 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
   }
 
+  if (dataset === "map_intelligence") {
+    if (includesPhrase(normalized, "improving")) {
+      filters.push({ field: "trend", op: "in", value: ["improving"] });
+    } else if (includesPhrase(normalized, "declining")) {
+      filters.push({ field: "trend", op: "in", value: ["declining"] });
+    } else if (includesPhrase(normalized, "stable")) {
+      filters.push({ field: "trend", op: "in", value: ["stable"] });
+    }
+  }
+
   if (dataset === "ult_economy") {
     const bucket = pickUltEconomyBucket(normalized);
     if (bucket) {
@@ -2681,6 +2779,18 @@ function pickDimensions(
   ) {
     add("map_type");
   }
+  if (dataset === "map_intelligence" && dims.length === 0) {
+    if (
+      includesPhrase(normalized, "map type") ||
+      includesPhrase(normalized, "map types") ||
+      includesPhrase(normalized, "map type dependency") ||
+      includesPhrase(normalized, "map type dependencies")
+    ) {
+      add("map_type");
+    } else {
+      add("map");
+    }
+  }
   if (
     dataset === "ult_economy" &&
     dims.length === 0 &&
@@ -2855,6 +2965,8 @@ function pickSort(
     !includesPhrase(normalized, "one trick") &&
     !includesPhrase(normalized, "one-trick") &&
     !includesPhrase(normalized, "forced off") &&
+    !includesPhrase(normalized, "improving") &&
+    !includesPhrase(normalized, "declining") &&
     !(
       dataset === "hero_pickrate" &&
       (includesPhrase(normalized, "owns") ||
@@ -2885,6 +2997,7 @@ function pickSort(
     includesPhrase(normalized, "one trick") ||
     includesPhrase(normalized, "one-trick") ||
     includesPhrase(normalized, "forced off") ||
+    includesPhrase(normalized, "improving") ||
     (dataset === "ability_timing" &&
       (includesPhrase(normalized, "when should") ||
         includesPhrase(normalized, "when to use") ||
@@ -2898,7 +3011,8 @@ function pickSort(
         includesPhrase(normalized, "owned by")));
   const wantsLow =
     includesPhrase(normalized, "lowest") ||
-    includesPhrase(normalized, "fastest");
+    includesPhrase(normalized, "fastest") ||
+    includesPhrase(normalized, "declining");
   const wantsBest = includesPhrase(normalized, "best");
   const wantsWorst = includesPhrase(normalized, "worst");
   const dir = wantsHigh

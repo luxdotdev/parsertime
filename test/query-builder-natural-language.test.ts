@@ -420,6 +420,50 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans weighted map intelligence questions by map", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Which maps have our best time-decayed win rate?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_intelligence",
+      metrics: [{ metric: "weighted_win_rate", agg: "ratio" }],
+      dimensions: ["map"],
+      sort: { key: "ratio__weighted_win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans map trend questions onto trend delta", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Which maps are improving?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_intelligence",
+      metrics: [{ metric: "trend_delta", agg: "avg" }],
+      dimensions: ["map"],
+      filters: [{ field: "trend", op: "in", value: ["improving"] }],
+      sort: { key: "avg__trend_delta", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans map-type dependency questions by map type", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "What are our map type dependencies?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_intelligence",
+      metrics: [{ metric: "weighted_win_rate", agg: "ratio" }],
+      dimensions: ["map_type"],
+    });
+  });
+
   it("plans specific-map winrate questions onto map results", () => {
     const planned = planQueryFromQuestion({
       teamId: 2,

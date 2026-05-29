@@ -17,6 +17,7 @@ export const DATASETS = [
   "opening_kill",
   "rotation_death",
   "map_result",
+  "map_intelligence",
   "player_map_performance",
   "role_performance",
   "ult_economy",

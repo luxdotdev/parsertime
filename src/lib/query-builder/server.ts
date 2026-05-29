@@ -11,6 +11,7 @@ import { computeDuels } from "@/lib/query-builder/compute/duels";
 import { computeEnemyHeroMatchups } from "@/lib/query-builder/compute/enemy-hero";
 import { computeHeroPool } from "@/lib/query-builder/compute/hero-pool";
 import { computeHeroPickrate } from "@/lib/query-builder/compute/hero-pickrate";
+import { computeMapIntelligence } from "@/lib/query-builder/compute/map-intelligence";
 import { computeMapResults } from "@/lib/query-builder/compute/map-results";
 import { computeOpeningKills } from "@/lib/query-builder/compute/opening-kills";
 import { computePlayerIntelligence } from "@/lib/query-builder/compute/player-intelligence";
@@ -247,6 +248,9 @@ async function runComputedQuery(
         break;
       case "map_result":
         computedRows = await computeMapResults(spec.teamId, ctx.scrimIds);
+        break;
+      case "map_intelligence":
+        computedRows = await computeMapIntelligence(spec.teamId, ctx.scrimIds);
         break;
       case "player_map_performance":
         computedRows = await computePlayerMapPerformance(
