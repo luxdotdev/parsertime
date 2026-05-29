@@ -476,6 +476,7 @@ const DEFAULT_METRIC: Record<DraftSpec["dataset"], string> = {
   opening_kill: "first_deaths",
   rotation_death: "rotation_deaths",
   map_result: "win_rate",
+  team_performance: "win_rate",
   map_intelligence: "weighted_win_rate",
   player_map_performance: "win_rate",
   player_impact: "consistency_score",

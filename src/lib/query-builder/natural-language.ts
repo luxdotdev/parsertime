@@ -36,6 +36,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   opening_kill: "first_deaths",
   rotation_death: "rotation_deaths",
   map_result: "win_rate",
+  team_performance: "win_rate",
   map_intelligence: "weighted_win_rate",
   player_map_performance: "win_rate",
   player_impact: "consistency_score",
@@ -254,6 +255,19 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "record versus",
     "map record",
     "match record",
+  ],
+  team_performance: [
+    "team performance",
+    "team stats",
+    "team stat",
+    "team aggregate",
+    "team comparison",
+    "our team",
+    "opponent team",
+    "enemy team",
+    "us versus them",
+    "us vs them",
+    "we compared to them",
   ],
   map_intelligence: [
     "map intelligence",
@@ -489,6 +503,12 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "opening pick rate",
   ],
   first_pick_count: ["first picks", "first pick count", "opening picks"],
+  first_pick_percentage: [
+    "first pick",
+    "first pick percentage",
+    "first pick rate",
+    "opening pick rate",
+  ],
   first_death_pct: [
     "first death",
     "first death percentage",
@@ -496,8 +516,20 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "opening death rate",
   ],
   first_death_count: ["first deaths", "first death count", "opening deaths"],
+  first_death_percentage: [
+    "first death",
+    "first death percentage",
+    "first death rate",
+    "opening death rate",
+  ],
   ajax_count: ["ajax", "ajaxes", "ajax count"],
   ult_charge_time: [
+    "ult charge time",
+    "ultimate charge time",
+    "average ult charge time",
+    "average ultimate charge time",
+  ],
+  average_ult_charge_time: [
     "ult charge time",
     "ultimate charge time",
     "average ult charge time",
@@ -680,14 +712,24 @@ const METRIC_ALIASES: Record<string, string[]> = {
   pre_fight_damage: ["pre fight damage", "pre-fight damage"],
   kill_distance: ["kill distance", "death distance"],
   final_blows_per10: ["final blows per 10", "finals per 10"],
+  hero_damage_per10: [
+    "hero damage per 10",
+    "damage per 10",
+    "damage dealt per 10",
+  ],
   deaths_per10: ["deaths per 10", "deaths per 10 minutes"],
+  damage_taken_per10: ["damage taken per 10", "damage taken per 10 minutes"],
+  healing_per10: ["healing per 10", "healing per 10 minutes"],
+  ults_used_per10: [
+    "ults used per 10",
+    "ultimates used per 10",
+    "ult usage per 10",
+  ],
   damage_per10: [
     "damage per 10",
     "hero damage per 10",
     "damage per 10 minutes",
   ],
-  healing_per10: ["healing per 10", "healing per 10 minutes"],
-  damage_taken_per10: ["damage taken per 10", "damage taken per 10 minutes"],
   win_rate: ["winrate", "winrates", "win rate", "win rates", "wr"],
   weighted_win_rate: [
     "weighted win rate",
@@ -1122,6 +1164,45 @@ function mentionsMapIntelligenceContext(normalized: string): boolean {
     includesPhrase(normalized, "map type dependency") ||
     includesPhrase(normalized, "map type dependencies")
   );
+}
+
+function mentionsTeamPerformanceContext(normalized: string): boolean {
+  if (
+    includesPhrase(normalized, "teamfight") ||
+    includesPhrase(normalized, "teamfights") ||
+    includesPhrase(normalized, "team fight") ||
+    includesPhrase(normalized, "team fights")
+  ) {
+    return false;
+  }
+
+  const teamContext =
+    includesPhrase(normalized, "team performance") ||
+    includesPhrase(normalized, "team stats") ||
+    includesPhrase(normalized, "team stat") ||
+    includesPhrase(normalized, "team aggregate") ||
+    includesPhrase(normalized, "team comparison") ||
+    includesPhrase(normalized, "our team") ||
+    includesPhrase(normalized, "opponent team") ||
+    includesPhrase(normalized, "enemy team") ||
+    includesPhrase(normalized, "us vs them") ||
+    includesPhrase(normalized, "us versus them") ||
+    includesPhrase(normalized, "we compared to them");
+  const teamMetric =
+    includesPhrase(normalized, "win rate") ||
+    includesPhrase(normalized, "winrate") ||
+    includesPhrase(normalized, "final blows") ||
+    includesPhrase(normalized, "eliminations") ||
+    includesPhrase(normalized, "damage") ||
+    includesPhrase(normalized, "healing") ||
+    includesPhrase(normalized, "deaths") ||
+    includesPhrase(normalized, "first pick") ||
+    includesPhrase(normalized, "first death") ||
+    includesPhrase(normalized, "mvp") ||
+    includesPhrase(normalized, "ult") ||
+    includesPhrase(normalized, "ultimate");
+
+  return teamContext && teamMetric;
 }
 
 function mentionsPlayerTrendContext(normalized: string): boolean {
@@ -1579,6 +1660,7 @@ function pickDataset(question: string): DatasetId {
   }
   if (mentionsPlayerOutlierContext(normalized)) return "player_outlier";
   if (mentionsPlayerImpactContext(normalized)) return "player_impact";
+  if (mentionsTeamPerformanceContext(normalized)) return "team_performance";
   if (mentionsCalculatedStatContext(normalized)) return "calculated_stat";
   if (mentionsStreakContext(normalized)) return "streak";
   if (mentionsMapIntelligenceContext(normalized)) return "map_intelligence";
@@ -1912,6 +1994,58 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
         a.metric === priority ? -1 : b.metric === priority ? 1 : 0
       );
     }
+  }
+  if (dataset === "team_performance") {
+    const per10ToRaw: Record<string, string> = {
+      eliminations_per10: "eliminations",
+      final_blows_per10: "final_blows",
+      deaths_per10: "deaths",
+      hero_damage_per10: "hero_damage",
+      healing_per10: "healing",
+      damage_taken_per10: "damage_taken",
+      damage_blocked_per10: "damage_blocked",
+      ults_used_per10: "ultimates_used",
+    };
+    const per10Metrics = new Set(
+      deduped
+        .filter((ref) => ref.metric.endsWith("_per10"))
+        .map((ref) => ref.metric)
+    );
+    if (per10Metrics.size > 0) {
+      for (let i = deduped.length - 1; i >= 0; i--) {
+        const raw = Array.from(per10Metrics).some(
+          (metric) => per10ToRaw[metric] === deduped[i].metric
+        );
+        if (raw) deduped.splice(i, 1);
+      }
+      deduped.sort((a, b) =>
+        a.metric.endsWith("_per10") ? -1 : b.metric.endsWith("_per10") ? 1 : 0
+      );
+    }
+  }
+  if (
+    dataset === "player_impact" &&
+    (includesPhrase(normalized, "volatile") ||
+      includesPhrase(normalized, "volatility") ||
+      includesPhrase(normalized, "variance") ||
+      includesPhrase(normalized, "standard deviation") ||
+      includesPhrase(normalized, "stddev"))
+  ) {
+    const volatilityMetrics = new Set([
+      "eliminations_per10_stddev",
+      "deaths_per10_stddev",
+      "all_damage_per10_stddev",
+    ]);
+    for (let i = deduped.length - 1; i >= 0; i--) {
+      if (!volatilityMetrics.has(deduped[i].metric)) deduped.splice(i, 1);
+    }
+    deduped.sort((a, b) =>
+      volatilityMetrics.has(a.metric)
+        ? -1
+        : volatilityMetrics.has(b.metric)
+          ? 1
+          : 0
+    );
   }
   if (
     dataset === "player_outlier" &&
@@ -2640,6 +2774,31 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
   }
 
+  if (dataset === "team_performance") {
+    const wantsSideComparison =
+      includesPhrase(normalized, "vs") ||
+      includesPhrase(normalized, "versus") ||
+      includesPhrase(normalized, "compared to") ||
+      includesPhrase(normalized, "compare");
+    if (
+      !wantsSideComparison &&
+      (includesPhrase(normalized, "opponent") ||
+        includesPhrase(normalized, "opponents") ||
+        includesPhrase(normalized, "enemy") ||
+        includesPhrase(normalized, "their team") ||
+        includesPhrase(normalized, "them"))
+    ) {
+      filters.push({ field: "side", op: "in", value: ["opponent"] });
+    } else if (
+      !wantsSideComparison &&
+      (includesPhrase(normalized, "our team") ||
+        includesPhrase(normalized, "we") ||
+        includesPhrase(normalized, "us"))
+    ) {
+      filters.push({ field: "side", op: "in", value: ["our team"] });
+    }
+  }
+
   if (dataset === "map_intelligence") {
     if (includesPhrase(normalized, "improving")) {
       filters.push({ field: "trend", op: "in", value: ["improving"] });
@@ -3177,6 +3336,13 @@ function pickDimensions(
       includesPhrase(normalized, "worst map type"))
   ) {
     add("map_type");
+  }
+  if (
+    dataset === "team_performance" &&
+    dims.length === 0 &&
+    !hasFilter("side")
+  ) {
+    add("side");
   }
   if (dataset === "map_intelligence" && dims.length === 0) {
     if (

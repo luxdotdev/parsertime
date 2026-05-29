@@ -26,6 +26,7 @@ import { computeRotationDeaths } from "@/lib/query-builder/compute/rotation-deat
 import { computeSwapImpact } from "@/lib/query-builder/compute/swap-impact";
 import { computeStreaks } from "@/lib/query-builder/compute/streaks";
 import { computeTeamfights } from "@/lib/query-builder/compute/teamfights";
+import { computeTeamPerformance } from "@/lib/query-builder/compute/team-performance";
 import { computeTrends } from "@/lib/query-builder/compute/trends";
 import { computeUltCombos } from "@/lib/query-builder/compute/ult-combos";
 import { computeUltEconomy } from "@/lib/query-builder/compute/ult-economy";
@@ -251,6 +252,9 @@ async function runComputedQuery(
         break;
       case "map_result":
         computedRows = await computeMapResults(spec.teamId, ctx.scrimIds);
+        break;
+      case "team_performance":
+        computedRows = await computeTeamPerformance(spec.teamId, ctx.scrimIds);
         break;
       case "map_intelligence":
         computedRows = await computeMapIntelligence(spec.teamId, ctx.scrimIds);

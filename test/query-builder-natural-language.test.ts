@@ -391,6 +391,34 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans team-vs-opponent performance comparisons", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Compare our team final blows per 10 vs the opponent",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "team_performance",
+      metrics: [{ metric: "final_blows_per10", agg: "ratio" }],
+      dimensions: ["side"],
+      filters: [],
+    });
+  });
+
+  it("plans our-team calculated aggregate questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "What is our team first pick rate?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "team_performance",
+      metrics: [{ metric: "first_pick_percentage", agg: "avg" }],
+      dimensions: [],
+      filters: [{ field: "side", op: "in", value: ["our team"] }],
+    });
+  });
+
   it("plans map-type winrate questions onto map results", () => {
     const planned = planQueryFromQuestion({
       teamId: 2,
