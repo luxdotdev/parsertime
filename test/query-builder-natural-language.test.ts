@@ -940,6 +940,24 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans hero loss questions onto hero-pool loss counts", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which heroes do we have the most losses on?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_pool",
+      dimensions: ["hero"],
+      sort: { key: "sum__losses", dir: "desc" },
+      limit: 20,
+    });
+    expect(planned?.spec.metrics[0]).toEqual({
+      metric: "losses",
+      agg: "sum",
+    });
+  });
+
   it("plans role-performance per-10 questions onto role metrics", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,

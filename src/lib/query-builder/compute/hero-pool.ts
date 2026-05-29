@@ -77,6 +77,7 @@ export async function computeHeroPool(
       if (role !== "Tank" && role !== "Damage" && role !== "Support") continue;
 
       rows.push({
+        loss: won ? 0 : 1,
         won: won ? 1 : 0,
         result: won ? "win" : "loss",
         player: stat.player_name,

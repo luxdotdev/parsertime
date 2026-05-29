@@ -7,6 +7,7 @@ import { describe, expect, it } from "vitest";
 
 const HERO_ROWS: ComputedRow[] = [
   {
+    loss: 0,
     won: 1,
     result: "win",
     player: "PGE",
@@ -27,6 +28,7 @@ const HERO_ROWS: ComputedRow[] = [
     scrim: "A",
   },
   {
+    loss: 1,
     won: 0,
     result: "loss",
     player: "PGE",
@@ -47,6 +49,7 @@ const HERO_ROWS: ComputedRow[] = [
     scrim: "B",
   },
   {
+    loss: 0,
     won: 1,
     result: "win",
     player: "Landon",
@@ -117,6 +120,24 @@ describe("computed aggregator (hero pool)", () => {
     );
     expect(rows[0]["per10__deaths"]).toBeCloseTo(((3 + 5) / (300 + 240)) * 600);
     expect(rows[0]["ratio__ult_efficiency"]).toBe((20 + 15) / (3 + 2));
+  });
+
+  it("counts hero wins and losses by hero", () => {
+    const { rows } = aggregateComputed(
+      HERO_ROWS,
+      spec({
+        metrics: [
+          { metric: "wins", agg: "sum" },
+          { metric: "losses", agg: "sum" },
+        ],
+        dimensions: ["hero"],
+        sort: { key: "sum__losses", dir: "desc" },
+      })
+    );
+
+    expect(rows.map((row) => row.hero)).toEqual(["Widowmaker", "Ana"]);
+    expect(rows[0]["sum__wins"]).toBe(1);
+    expect(rows[0]["sum__losses"]).toBe(1);
   });
 
   it("filters player winrates to a specific map", () => {

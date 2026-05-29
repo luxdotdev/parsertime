@@ -450,6 +450,8 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "hero win rate",
     "hero winrates",
     "hero win rates",
+    "hero wins",
+    "hero losses",
     "top heroes",
     "best heroes",
     "most played hero",
@@ -1991,6 +1993,20 @@ function pickDataset(question: string): DatasetId {
       includesPhrase(normalized, "swap counts"))
   ) {
     return "swap_impact";
+  }
+  if (
+    (includesPhrase(normalized, "which heroes") ||
+      includesPhrase(normalized, "which hero") ||
+      includesPhrase(normalized, "hero wins") ||
+      includesPhrase(normalized, "hero losses")) &&
+    (includesPhrase(normalized, "win rate") ||
+      includesPhrase(normalized, "winrate") ||
+      includesPhrase(normalized, "wins") ||
+      includesPhrase(normalized, "losses") ||
+      includesPhrase(normalized, "lose") ||
+      includesPhrase(normalized, "lost"))
+  ) {
+    return "hero_pool";
   }
   if (mentionsTeamPerformanceContext(normalized)) return "team_performance";
   if (
