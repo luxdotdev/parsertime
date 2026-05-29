@@ -177,6 +177,10 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "roster variants",
     "best roster",
     "best rosters",
+    "best roster for each map",
+    "best rosters by map",
+    "best lineup for each map",
+    "best lineups by map",
     "map roster",
     "map rosters",
     "lineup by map",
@@ -1069,6 +1073,8 @@ const FILLER_WORDS = new Set([
   "at",
   "by",
   "data",
+  "each",
+  "every",
   "find",
   "for",
   "has",
@@ -1409,6 +1415,23 @@ function extractLineupPlayerFilters(question: string): QueryFilter[] {
     filters.push({ field: "player", op: "neq", value: player });
   }
   return filters;
+}
+
+function asksBestRosterForEachMap(normalized: string): boolean {
+  return (
+    (includesPhrase(normalized, "best roster") ||
+      includesPhrase(normalized, "best rosters") ||
+      includesPhrase(normalized, "top roster") ||
+      includesPhrase(normalized, "top rosters") ||
+      includesPhrase(normalized, "best lineup") ||
+      includesPhrase(normalized, "best lineups")) &&
+    (includesPhrase(normalized, "for each map") ||
+      includesPhrase(normalized, "for every map") ||
+      includesPhrase(normalized, "by map") ||
+      includesPhrase(normalized, "per map") ||
+      includesPhrase(normalized, "on each map") ||
+      includesPhrase(normalized, "on every map"))
+  );
 }
 
 function formatEntityName(value: string): string {
@@ -4699,6 +4722,10 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
   }
 
+  if (dataset === "roster_variant" && asksBestRosterForEachMap(normalized)) {
+    filters.push({ field: "is_best_for_map", op: "eq", value: "yes" });
+  }
+
   if (dataset === "ult_impact") {
     if (
       includesPhrase(normalized, "enemy ult") ||
@@ -5198,7 +5225,12 @@ function pickDimensions(
     }
   }
   if (dataset === "role_trio" && dims.length === 0) add("trio");
-  if (dataset === "roster_variant" && dims.length === 0) add("roster");
+  if (dataset === "roster_variant" && dims.length === 0) {
+    if (asksBestRosterForEachMap(normalized)) {
+      add("map");
+    }
+    add("roster");
+  }
   if (dataset === "ult_impact" && dims.length === 0) {
     add(hasFilter("hero") ? "scenario" : "hero");
   }

@@ -2116,6 +2116,22 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans best-roster-for-each-map questions onto roster variants", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What are our best rosters for each map?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "roster_variant",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["map", "roster"],
+      filters: [{ field: "is_best_for_map", op: "eq", value: "yes" }],
+      sort: { key: "ratio__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans map-specific lineup questions with player filters", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,
