@@ -2083,6 +2083,55 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans primary-time-share threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which players have primary time share at least 70%?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_intelligence",
+      metrics: [{ metric: "primary_time_share", agg: "ratio" }],
+      dimensions: ["player"],
+      filters: [{ field: "primary_time_share", op: "gte", value: 70 }],
+    });
+  });
+
+  it("plans player-intelligence per-10 aggregate thresholds", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Which players have player intelligence damage per 10 above 8000 and at least 8 maps played?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_intelligence",
+      dimensions: ["player"],
+      filters: [
+        { field: "maps_played", op: "gte", value: 8 },
+        { field: "damage_per10", op: "gt", value: 8000 },
+      ],
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([{ metric: "damage_per10", agg: "avg" }])
+    );
+  });
+
+  it("plans player-intelligence duration threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Which players have hero depth with at least 10 minutes played?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_intelligence",
+      metrics: [{ metric: "hero_pool_size", agg: "avg" }],
+      dimensions: ["player"],
+      filters: [{ field: "time_played", op: "gte", value: 600 }],
+    });
+  });
+
   it("plans player-impact consistency questions", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,

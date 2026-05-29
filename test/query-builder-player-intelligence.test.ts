@@ -131,4 +131,54 @@ describe("computed aggregator (player intelligence)", () => {
     expect(rows.map((row) => row.hero)).toEqual(["Widowmaker", "Tracer"]);
     expect(rows[0]["max__composite_z_score"]).toBe(1.2);
   });
+
+  it("applies grouped metric filters to hero dependency", () => {
+    const { rows } = aggregateComputed(
+      PLAYER_INTELLIGENCE_ROWS,
+      spec({
+        metrics: [
+          { metric: "hero_pool_size", agg: "avg" },
+          { metric: "primary_time_share", agg: "ratio" },
+        ],
+        dimensions: ["player"],
+        filters: [
+          { field: "hero_pool_size", op: "gte", value: 2 },
+          { field: "primary_time_share", op: "gte", value: 70 },
+        ],
+      })
+    );
+
+    expect(rows).toEqual([
+      {
+        player: "PGE",
+        avg__hero_pool_size: 2,
+        ratio__primary_time_share: 75,
+      },
+    ]);
+  });
+
+  it("applies grouped metric filters to qualified hero scores", () => {
+    const { rows } = aggregateComputed(
+      PLAYER_INTELLIGENCE_ROWS,
+      spec({
+        metrics: [
+          { metric: "damage_per10", agg: "avg" },
+          { metric: "maps_played", agg: "sum" },
+        ],
+        dimensions: ["player"],
+        filters: [
+          { field: "damage_per10", op: "gt", value: 8000 },
+          { field: "maps_played", op: "gte", value: 8 },
+        ],
+      })
+    );
+
+    expect(rows).toEqual([
+      {
+        player: "PGE",
+        avg__damage_per10: 8100,
+        sum__maps_played: 8,
+      },
+    ]);
+  });
 });

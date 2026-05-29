@@ -1314,6 +1314,7 @@ function findPlayer(question: string, hero: string | null): string | null {
     "goals",
     "progress",
     "improvement",
+    "intelligence",
     "percentage",
     "percent",
     "status",
@@ -5017,12 +5018,6 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
             "sample size",
           ],
         },
-      ]),
-      ...extractDurationThresholdFilters(dataset, normalized, [
-        {
-          field: "time_played",
-          aliases: ["time played", "playtime", "played"],
-        },
       ])
     );
   }
@@ -5405,12 +5400,6 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         {
           field: "appearances",
           aliases: ["appearances", "hero appearances", "samples"],
-        },
-      ]),
-      ...extractDurationThresholdFilters(dataset, normalized, [
-        {
-          field: "time_played",
-          aliases: ["time played", "playtime", "played"],
         },
       ])
     );
@@ -5811,6 +5800,16 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
           aliases: ["hero pool size", "hero pool", "heroes"],
         },
         {
+          field: "primary_time_share",
+          aliases: [
+            "primary time share",
+            "primary share",
+            "most played share",
+            "hero dependency",
+            "hero dependence",
+          ],
+        },
+        {
           field: "substitution_rate",
           aliases: [
             "substitution rate",
@@ -5837,11 +5836,27 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         },
         {
           field: "maps_played",
-          aliases: ["maps played", "maps", "sample maps"],
+          aliases: ["maps played", "maps", "sample maps", "sample size"],
         },
         {
           field: "time_played",
-          aliases: ["time played", "playtime"],
+          aliases: ["seconds played"],
+        },
+        {
+          field: "elims_per10",
+          aliases: ["eliminations per 10", "elims per 10"],
+        },
+        {
+          field: "deaths_per10",
+          aliases: ["deaths per 10", "death rate"],
+        },
+        {
+          field: "damage_per10",
+          aliases: ["damage per 10", "hero damage per 10"],
+        },
+        {
+          field: "healing_per10",
+          aliases: ["healing per 10", "heals per 10"],
         },
       ])
     );
