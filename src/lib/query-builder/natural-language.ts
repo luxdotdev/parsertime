@@ -4721,6 +4721,48 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     ) {
       filters.push({ field: "is_most_played", op: "eq", value: "yes" });
     }
+
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "hero_pool_size",
+          aliases: ["hero pool size", "hero pool", "heroes"],
+        },
+        {
+          field: "substitution_rate",
+          aliases: [
+            "substitution rate",
+            "forced substitution rate",
+            "forced off rate",
+          ],
+        },
+        {
+          field: "maps_forced",
+          aliases: ["forced maps", "maps forced", "forced off maps"],
+        },
+        {
+          field: "primary_secondary_delta",
+          aliases: [
+            "primary secondary delta",
+            "primary-secondary delta",
+            "primary gap",
+            "hero gap",
+          ],
+        },
+        {
+          field: "composite_z_score",
+          aliases: ["composite z score", "z score", "z-score"],
+        },
+        {
+          field: "maps_played",
+          aliases: ["maps played", "maps", "sample maps"],
+        },
+        {
+          field: "time_played",
+          aliases: ["time played", "playtime"],
+        },
+      ])
+    );
   }
 
   if (dataset === "ban_impact") {

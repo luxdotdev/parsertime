@@ -1607,6 +1607,48 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans hero-pool-size threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Who has hero pool size at least 4?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_intelligence",
+      metrics: [{ metric: "hero_pool_size", agg: "avg" }],
+      dimensions: ["player"],
+      filters: [{ field: "hero_pool_size", op: "gte", value: 4 }],
+    });
+  });
+
+  it("plans substitution-rate threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which players have substitution rate above 25%?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_intelligence",
+      metrics: [{ metric: "substitution_rate", agg: "avg" }],
+      dimensions: ["player"],
+      filters: [{ field: "substitution_rate", op: "gt", value: 25 }],
+    });
+  });
+
+  it("plans forced-map threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Who has more than 2 forced maps?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_intelligence",
+      metrics: [{ metric: "maps_forced", agg: "max" }],
+      dimensions: ["player"],
+      filters: [{ field: "maps_forced", op: "gt", value: 2 }],
+    });
+  });
+
   it("plans player-impact consistency questions", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,
