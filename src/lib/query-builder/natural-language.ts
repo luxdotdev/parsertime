@@ -2821,6 +2821,15 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
     }
   }
   if (
+    dataset === "swap_impact" &&
+    extractSwapCountFilter(normalized) &&
+    deduped.some((ref) => ref.metric === "win_rate")
+  ) {
+    for (let i = deduped.length - 1; i >= 0; i--) {
+      if (deduped[i].metric === "maps") deduped.splice(i, 1);
+    }
+  }
+  if (
     dataset === "rotation_death" &&
     deduped.some((ref) => ref.metric === "rotation_death_rate") &&
     (includesPhrase(normalized, "rate") ||
@@ -3363,6 +3372,49 @@ function extractUltCountFilter(normalized: string): QueryFilter | null {
     const value = numberFromToken(match[1]);
     if (value == null) continue;
     return { field: "ults_used", op, value };
+  }
+
+  return null;
+}
+
+function extractSwapCountFilter(normalized: string): QueryFilter | null {
+  const patterns: [RegExp, QueryFilter["op"]][] = [
+    [
+      new RegExp(
+        `\\b(?:exactly|with|have|had|make|made|after)\\s+(${INTEGER_TOKEN})\\s+(?:swap|swaps)\\b`
+      ),
+      "eq",
+    ],
+    [
+      new RegExp(`\\bat\\s+least\\s+(${INTEGER_TOKEN})\\s+(?:swap|swaps)\\b`),
+      "gte",
+    ],
+    [
+      new RegExp(
+        `\\b(?:more\\s+than|over)\\s+(${INTEGER_TOKEN})\\s+(?:swap|swaps)\\b`
+      ),
+      "gt",
+    ],
+    [
+      new RegExp(
+        `\\b(?:at\\s+most|up\\s+to)\\s+(${INTEGER_TOKEN})\\s+(?:swap|swaps)\\b`
+      ),
+      "lte",
+    ],
+    [
+      new RegExp(
+        `\\b(?:less\\s+than|under)\\s+(${INTEGER_TOKEN})\\s+(?:swap|swaps)\\b`
+      ),
+      "lt",
+    ],
+  ];
+
+  for (const [pattern, op] of patterns) {
+    const match = normalized.match(pattern);
+    if (!match) continue;
+    const value = numberFromToken(match[1]);
+    if (value == null) continue;
+    return { field: "swap_count", op, value };
   }
 
   return null;
@@ -4153,12 +4205,16 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   }
 
   if (dataset === "swap_impact") {
+    const swapCountFilter = extractSwapCountFilter(normalized);
     if (
       includesPhrase(normalized, "without swaps") ||
       includesPhrase(normalized, "no swaps") ||
       includesPhrase(normalized, "not swap")
     ) {
       const filter = filterFor(dataset, "had_swap", "no");
+      if (filter) filters.push(filter);
+    } else if (swapCountFilter && swapCountFilter.value !== 0) {
+      const filter = filterFor(dataset, "had_swap", "yes");
       if (filter) filters.push(filter);
     } else if (
       includesPhrase(normalized, "with swaps") ||
@@ -4168,6 +4224,7 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       const filter = filterFor(dataset, "had_swap", "yes");
       if (filter) filters.push(filter);
     }
+    if (swapCountFilter) filters.push(swapCountFilter);
   }
 
   if (dataset === "role_performance") {
@@ -4623,7 +4680,9 @@ function pickDimensions(
     }
   }
   if (dataset === "swap_impact" && dims.length === 0) {
-    if (
+    if (hasFilter("swap_count") || hasFilter("swap_count_bucket")) {
+      // The count is already scoped exactly/thresholded; don't re-split it.
+    } else if (
       hasFilter("had_swap") ||
       includesPhrase(normalized, "swap count") ||
       includesPhrase(normalized, "swap counts") ||

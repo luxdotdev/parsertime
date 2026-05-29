@@ -1132,6 +1132,40 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans exact swap-count filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 3,
+      question: "What is our win rate when we make exactly 2 swaps?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "swap_impact",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: [],
+      filters: [
+        { field: "had_swap", op: "eq", value: "yes" },
+        { field: "swap_count", op: "eq", value: 2 },
+      ],
+    });
+  });
+
+  it("plans threshold swap-count filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 3,
+      question: "What is our win rate on maps with at least three swaps?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "swap_impact",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: [],
+      filters: [
+        { field: "had_swap", op: "eq", value: "yes" },
+        { field: "swap_count", op: "gte", value: 3 },
+      ],
+    });
+  });
+
   it("plans swap-count loss questions onto swap buckets", () => {
     const planned = planQueryFromQuestion({
       teamId: 3,
