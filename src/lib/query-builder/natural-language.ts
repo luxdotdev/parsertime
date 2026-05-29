@@ -3004,6 +3004,7 @@ function filterFor(
     | "attacker_side"
     | "used"
     | "had_swap"
+    | "first_swap_timing"
     | "role",
   value: string | string[]
 ): QueryFilter | null {
@@ -3029,6 +3030,7 @@ function filterFor(
     attacker_side: ["attacker_side"],
     used: ["used"],
     had_swap: ["had_swap"],
+    first_swap_timing: ["first_swap_timing"],
     role: ["role", "enemy_role"],
   };
   const field = candidates[kind]
@@ -3417,6 +3419,36 @@ function extractSwapCountFilter(normalized: string): QueryFilter | null {
     return { field: "swap_count", op, value };
   }
 
+  return null;
+}
+
+function pickFirstSwapTiming(normalized: string): string | null {
+  if (
+    includesPhrase(normalized, "early swap") ||
+    includesPhrase(normalized, "early swaps") ||
+    includesPhrase(normalized, "early first swap") ||
+    includesPhrase(normalized, "first swap early")
+  ) {
+    return "early";
+  }
+  if (
+    includesPhrase(normalized, "mid swap") ||
+    includesPhrase(normalized, "mid swaps") ||
+    includesPhrase(normalized, "mid first swap") ||
+    includesPhrase(normalized, "first swap mid") ||
+    includesPhrase(normalized, "middle swap") ||
+    includesPhrase(normalized, "middle first swap")
+  ) {
+    return "mid";
+  }
+  if (
+    includesPhrase(normalized, "late swap") ||
+    includesPhrase(normalized, "late swaps") ||
+    includesPhrase(normalized, "late first swap") ||
+    includesPhrase(normalized, "first swap late")
+  ) {
+    return "late";
+  }
   return null;
 }
 
@@ -4206,6 +4238,7 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
 
   if (dataset === "swap_impact") {
     const swapCountFilter = extractSwapCountFilter(normalized);
+    const firstSwapTiming = pickFirstSwapTiming(normalized);
     if (
       includesPhrase(normalized, "without swaps") ||
       includesPhrase(normalized, "no swaps") ||
@@ -4213,7 +4246,10 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     ) {
       const filter = filterFor(dataset, "had_swap", "no");
       if (filter) filters.push(filter);
-    } else if (swapCountFilter && swapCountFilter.value !== 0) {
+    } else if (
+      (swapCountFilter && swapCountFilter.value !== 0) ||
+      firstSwapTiming
+    ) {
       const filter = filterFor(dataset, "had_swap", "yes");
       if (filter) filters.push(filter);
     } else if (
@@ -4225,6 +4261,15 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       if (filter) filters.push(filter);
     }
     if (swapCountFilter) filters.push(swapCountFilter);
+    if (
+      firstSwapTiming &&
+      !includesPhrase(normalized, "by swap timing") &&
+      !includesPhrase(normalized, "per swap timing") &&
+      !includesPhrase(normalized, "swap timing")
+    ) {
+      const filter = filterFor(dataset, "first_swap_timing", firstSwapTiming);
+      if (filter) filters.push(filter);
+    }
   }
 
   if (dataset === "role_performance") {

@@ -1166,6 +1166,37 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans first-swap timing filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 3,
+      question: "What is our win rate when we make a late first swap?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "swap_impact",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["swap_count_bucket"],
+      filters: [
+        { field: "had_swap", op: "eq", value: "yes" },
+        { field: "first_swap_timing", op: "eq", value: "late" },
+      ],
+    });
+  });
+
+  it("plans first-swap timing grouping", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 3,
+      question: "What is our win rate by swap timing?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "swap_impact",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["first_swap_timing"],
+      filters: [],
+    });
+  });
+
   it("plans swap-count loss questions onto swap buckets", () => {
     const planned = planQueryFromQuestion({
       teamId: 3,
