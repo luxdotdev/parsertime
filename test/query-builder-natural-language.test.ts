@@ -1632,6 +1632,41 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans percentile-threshold player outlier questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which hero damage outliers are above 90th percentile?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_outlier",
+      metrics: [{ metric: "percentile", agg: "avg" }],
+      dimensions: ["player"],
+      filters: [
+        { field: "outlier", op: "eq", value: "yes" },
+        { field: "stat", op: "in", value: ["hero_damage_dealt"] },
+        { field: "percentile", op: "gt", value: 90 },
+      ],
+    });
+  });
+
+  it("plans z-score threshold baseline drilldowns", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which hero-baseline stats does PGE have a z score over 2 on?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_outlier",
+      metrics: [{ metric: "z_score", agg: "avg" }],
+      dimensions: ["stat"],
+      filters: [
+        { field: "player", op: "in", value: ["PGE"] },
+        { field: "z_score", op: "gt", value: 2 },
+      ],
+    });
+  });
+
   it("plans off-track saved player target questions", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,
@@ -1673,6 +1708,41 @@ describe("query-builder natural-language planner", () => {
       filters: [
         { field: "status", op: "in", value: ["on track"] },
         { field: "stat", op: "in", value: ["final_blows"] },
+      ],
+    });
+  });
+
+  it("plans progress-threshold saved player target questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which final blow goals are under 50% progress?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_target",
+      metrics: [{ metric: "progress_percent", agg: "avg" }],
+      dimensions: ["player", "stat"],
+      filters: [
+        { field: "stat", op: "in", value: ["final_blows"] },
+        { field: "progress_percent", op: "lt", value: 50 },
+      ],
+    });
+  });
+
+  it("plans target gap and sample-size threshold questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Which player goals have gap to target over 3 with at least 4 sample scrims?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_target",
+      metrics: [{ metric: "gap_to_target", agg: "avg" }],
+      dimensions: ["player", "stat"],
+      filters: [
+        { field: "gap_to_target", op: "gt", value: 3 },
+        { field: "sample_scrims", op: "gte", value: 4 },
       ],
     });
   });

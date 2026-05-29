@@ -1561,16 +1561,29 @@ function mentionsPlayerTargetContext(normalized: string): boolean {
   return (
     includesPhrase(normalized, "player target") ||
     includesPhrase(normalized, "player targets") ||
+    includesPhrase(normalized, "gap to target") ||
+    includesPhrase(normalized, "gap to goal") ||
     includesPhrase(normalized, "target progress") ||
     includesPhrase(normalized, "goal progress") ||
     includesPhrase(normalized, "progress toward target") ||
     includesPhrase(normalized, "progress toward goal") ||
+    includesPhrase(normalized, "sample scrims") ||
+    includesPhrase(normalized, "scrim sample") ||
     includesPhrase(normalized, "saved target") ||
     includesPhrase(normalized, "saved goal") ||
     includesPhrase(normalized, "on track") ||
     includesPhrase(normalized, "off track") ||
     includesPhrase(normalized, "stalled target") ||
-    includesPhrase(normalized, "stalled goal")
+    includesPhrase(normalized, "stalled goal") ||
+    ((includesPhrase(normalized, "goal") ||
+      includesPhrase(normalized, "goals") ||
+      includesPhrase(normalized, "target") ||
+      includesPhrase(normalized, "targets")) &&
+      (includesPhrase(normalized, "progress") ||
+        includesPhrase(normalized, "gap") ||
+        includesPhrase(normalized, "status") ||
+        includesPhrase(normalized, "sampled") ||
+        includesPhrase(normalized, "scrims")))
   );
 }
 
@@ -2728,6 +2741,7 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
     dataset === "player_outlier" &&
     (includesPhrase(normalized, "outlier") ||
       includesPhrase(normalized, "outliers") ||
+      includesPhrase(normalized, "hero baseline") ||
       includesPhrase(normalized, "far above") ||
       includesPhrase(normalized, "far below") ||
       includesPhrase(normalized, "above baseline") ||
@@ -2736,13 +2750,36 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
     for (let i = deduped.length - 1; i >= 0; i--) {
       if (deduped[i].metric === "baseline_per10") deduped.splice(i, 1);
     }
-    if (!deduped.some((ref) => ref.metric === "abs_z_score")) {
+    const hasSpecificOutlierMetric = deduped.some((ref) =>
+      ["z_score", "percentile", "per10_value"].includes(ref.metric)
+    );
+    if (hasSpecificOutlierMetric) {
+      for (let i = deduped.length - 1; i >= 0; i--) {
+        if (deduped[i].metric === "abs_z_score") deduped.splice(i, 1);
+      }
+    }
+    if (
+      !hasSpecificOutlierMetric &&
+      !deduped.some((ref) => ref.metric === "abs_z_score")
+    ) {
       const agg = pickMetricAgg(dataset, "abs_z_score", question);
       if (agg) deduped.unshift({ metric: "abs_z_score", agg });
     }
     deduped.sort((a, b) =>
       a.metric === "abs_z_score" ? -1 : b.metric === "abs_z_score" ? 1 : 0
     );
+  }
+  if (dataset === "player_target") {
+    const hasPrimaryTargetMetric = deduped.some(
+      (ref) => !["sample_scrims", "scrim_window"].includes(ref.metric)
+    );
+    if (hasPrimaryTargetMetric) {
+      for (let i = deduped.length - 1; i >= 0; i--) {
+        if (["sample_scrims", "scrim_window"].includes(deduped[i].metric)) {
+          deduped.splice(i, 1);
+        }
+      }
+    }
   }
   if (dataset === "role_performance") {
     const per10ToRaw: Record<string, string> = {
@@ -3191,6 +3228,97 @@ function extractTimePlayedFilter(
   }
 
   return null;
+}
+
+function extractNumericThresholdFilters(
+  dataset: DatasetId,
+  normalized: string,
+  fields: { field: string; aliases: string[] }[]
+): QueryFilter[] {
+  const filters: QueryFilter[] = [];
+  const number = `(${NUMBER_TOKEN})(?:st|nd|rd|th)?`;
+  const percent = "\\s*(?:%|percent|percentage)?";
+  const seen = new Set<string>();
+
+  for (const { field, aliases } of fields) {
+    const def = getDataset(dataset).filters.find(
+      (filter) => filter.id === field
+    );
+    if (!def) continue;
+
+    const aliasPattern = aliases
+      .map((alias) => normalize(alias))
+      .filter(Boolean)
+      .map(escapeRegExp)
+      .join("|");
+    if (!aliasPattern) continue;
+
+    const patterns: [RegExp, QueryFilter["op"]][] = [
+      [
+        new RegExp(
+          `\\b(?:at\\s+least|minimum|min|no\\s+less\\s+than)\\s+${number}${percent}\\s+(?:${aliasPattern})\\b`
+        ),
+        "gte",
+      ],
+      [
+        new RegExp(
+          `\\b(?:more\\s+than|over|above|greater\\s+than)\\s+${number}${percent}\\s+(?:${aliasPattern})\\b`
+        ),
+        "gt",
+      ],
+      [
+        new RegExp(
+          `\\b(?:at\\s+most|maximum|max|up\\s+to|no\\s+more\\s+than)\\s+${number}${percent}\\s+(?:${aliasPattern})\\b`
+        ),
+        "lte",
+      ],
+      [
+        new RegExp(
+          `\\b(?:less\\s+than|under|below)\\s+${number}${percent}\\s+(?:${aliasPattern})\\b`
+        ),
+        "lt",
+      ],
+      [
+        new RegExp(
+          `\\b(?:${aliasPattern})\\s+(?:is\\s+|are\\s+)?(?:at\\s+least|minimum|min|no\\s+less\\s+than)\\s+${number}${percent}\\b`
+        ),
+        "gte",
+      ],
+      [
+        new RegExp(
+          `\\b(?:${aliasPattern})\\s+(?:is\\s+|are\\s+)?(?:more\\s+than|over|above|greater\\s+than)\\s+${number}${percent}\\b`
+        ),
+        "gt",
+      ],
+      [
+        new RegExp(
+          `\\b(?:${aliasPattern})\\s+(?:is\\s+|are\\s+)?(?:at\\s+most|maximum|max|up\\s+to|no\\s+more\\s+than)\\s+${number}${percent}\\b`
+        ),
+        "lte",
+      ],
+      [
+        new RegExp(
+          `\\b(?:${aliasPattern})\\s+(?:is\\s+|are\\s+)?(?:less\\s+than|under|below)\\s+${number}${percent}\\b`
+        ),
+        "lt",
+      ],
+    ];
+
+    for (const [pattern, op] of patterns) {
+      if (!def.operators.includes(op)) continue;
+      const match = normalized.match(pattern);
+      if (!match) continue;
+      const value = numberFromToken(match[1]);
+      if (value == null) continue;
+      const key = `${field}:${op}:${value}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      filters.push({ field, op, value });
+      break;
+    }
+  }
+
+  return filters;
 }
 
 function extractOpeningKillTimeFilters(normalized: string): QueryFilter[] {
@@ -4113,6 +4241,21 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     if (outlierStat) {
       filters.push({ field: "stat", op: "in", value: [outlierStat] });
     }
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "abs_z_score",
+          aliases: [
+            "absolute z score",
+            "absolute z-score",
+            "outlier score",
+            "distance from baseline",
+          ],
+        },
+        { field: "z_score", aliases: ["z score", "z-score"] },
+        { field: "percentile", aliases: ["percentile", "hero percentile"] },
+      ])
+    );
 
     for (const role of ["Tank", "Damage", "Support"]) {
       const roleWord = normalize(role);
@@ -4159,6 +4302,29 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     if (targetStat) {
       filters.push({ field: "stat", op: "in", value: [targetStat] });
     }
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "progress_percent",
+          aliases: ["progress", "progress percent", "progress percentage"],
+        },
+        {
+          field: "gap_to_target",
+          aliases: [
+            "gap to target",
+            "gap to goal",
+            "remaining gap",
+            "remaining",
+            "distance to target",
+            "distance to goal",
+          ],
+        },
+        {
+          field: "sample_scrims",
+          aliases: ["sample scrims", "scrim sample", "scrims sampled"],
+        },
+      ])
+    );
   }
 
   if (dataset === "hero_trend") {
