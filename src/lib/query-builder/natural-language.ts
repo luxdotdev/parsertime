@@ -466,12 +466,19 @@ const ABILITY_BY_NORMALIZED = new Map(
   )
 );
 
-function findHero(question: string): string | null {
+function findHeroes(question: string): string[] {
   const normalized = normalize(question);
   const matches = Array.from(HERO_BY_NORMALIZED.entries())
     .filter(([alias]) => includesPhrase(normalized, alias))
     .sort((a, b) => b[0].length - a[0].length);
-  return matches[0]?.[1] ?? null;
+  const seen = new Set<string>();
+  const heroes: string[] = [];
+  for (const [, hero] of matches) {
+    if (seen.has(hero)) continue;
+    seen.add(hero);
+    heroes.push(hero);
+  }
+  return heroes;
 }
 
 function findAbility(question: string): string | null {
@@ -690,7 +697,7 @@ function filterFor(
     | "used"
     | "had_swap"
     | "role",
-  value: string
+  value: string | string[]
 ): QueryFilter | null {
   const candidates: Partial<Record<typeof kind, string[]>> = {
     hero: [
@@ -714,23 +721,40 @@ function filterFor(
     ?.map((id) => getDataset(dataset).filters.find((f) => f.id === id))
     .find((f): f is FilterDef => Boolean(f));
   if (!field) return null;
+  const values = Array.isArray(value) ? value : [value];
   return {
     field: field.id,
     op: field.operators.includes("in") ? "in" : "eq",
-    value: field.operators.includes("in") ? [value] : value,
+    value: field.operators.includes("in") ? values : values[0],
   };
 }
 
 function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   const filters: QueryFilter[] = [];
-  const hero = findHero(question);
+  const heroes = findHeroes(question);
+  const hero = heroes[0] ?? null;
   const ability = findAbility(question);
   const player = findPlayer(question, hero);
   const normalized = normalize(question);
 
-  if (hero) {
-    const filter = filterFor(dataset, "hero", hero);
-    if (filter) filters.push(filter);
+  if (heroes.length > 0) {
+    const exactUltCombo =
+      dataset === "ult_combo" &&
+      heroes.length === 2 &&
+      (includesPhrase(normalized, "ult combo") ||
+        includesPhrase(normalized, "ult combos") ||
+        includesPhrase(normalized, "ultimate combo") ||
+        includesPhrase(normalized, "ultimate combos") ||
+        includesPhrase(normalized, "combo"));
+
+    if (exactUltCombo) {
+      const [heroA, heroB] = [...heroes].sort((a, b) => a.localeCompare(b));
+      filters.push({ field: "hero_a", op: "in", value: [heroA] });
+      filters.push({ field: "hero_b", op: "in", value: [heroB] });
+    } else {
+      const filter = filterFor(dataset, "hero", heroes);
+      if (filter) filters.push(filter);
+    }
   }
   if (player) {
     const filter = filterFor(dataset, "player", player);

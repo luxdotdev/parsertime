@@ -218,6 +218,24 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans exact two-hero ult-combo questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What is the win rate for Genji and Zarya ult combos?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_combo",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["combo"],
+      filters: [
+        { field: "hero_a", op: "in", value: ["Genji"] },
+        { field: "hero_b", op: "in", value: ["Zarya"] },
+        { field: "type", op: "eq", value: "combo" },
+      ],
+    });
+  });
+
   it("plans counter-ult response questions onto response rows", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,
