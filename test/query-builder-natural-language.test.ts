@@ -456,6 +456,29 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans rotation-death aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "Which players have the highest rotation death rate with rotation death rate at least 75% and at least 1 death?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "rotation_death",
+      dimensions: ["player"],
+      filters: expect.arrayContaining([
+        { field: "side", op: "eq", value: "us" },
+        { field: "rotation_death_rate", op: "gte", value: 75 },
+        { field: "deaths", op: "gte", value: 1 },
+      ]),
+      sort: { key: "avg__rotation_death_rate", dir: "desc" },
+      limit: 20,
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([{ metric: "rotation_death_rate", agg: "avg" }])
+    );
+  });
+
   it("plans specific-map enemy hero questions onto enemy matchups", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,
@@ -693,6 +716,34 @@ describe("query-builder natural-language planner", () => {
       metric: "win_rate",
       agg: "avg",
     });
+  });
+
+  it("plans opening-kill aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "Which players have the most first deaths with at least 2 first deaths and win rate at most 50%?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "opening_kill",
+      dimensions: ["player"],
+      sort: { key: "sum__first_deaths", dir: "desc" },
+      limit: 20,
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([
+        { metric: "first_deaths", agg: "sum" },
+        { metric: "win_rate", agg: "avg" },
+      ])
+    );
+    expect(planned?.spec.filters).toEqual(
+      expect.arrayContaining([
+        { field: "side", op: "eq", value: "us" },
+        { field: "first_deaths", op: "gte", value: 2 },
+        { field: "win_rate", op: "lte", value: 50 },
+      ])
+    );
   });
 
   it("plans fastest ultimate-charge questions as lower-is-better stats", () => {
@@ -2344,6 +2395,27 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans enemy-hero aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question:
+        "Which enemy heroes have win rate at most 50% with at least 2 maps?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "enemy_hero",
+      metrics: [
+        { metric: "win_rate", agg: "avg" },
+        { metric: "maps", agg: "count" },
+      ],
+      dimensions: ["enemy_hero"],
+      filters: [
+        { field: "win_rate", op: "lte", value: 50 },
+        { field: "maps", op: "gte", value: 2 },
+      ],
+    });
+  });
+
   it("plans specific duel matchup questions with both hero sides", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,
@@ -2374,6 +2446,27 @@ describe("query-builder natural-language planner", () => {
       filters: [
         { field: "our_hero", op: "in", value: ["Tracer"] },
         { field: "enemy_hero", op: "in", value: ["Widowmaker"] },
+      ],
+    });
+  });
+
+  it("plans duel aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question:
+        "Which enemy heroes have duel win rate under 50% with at least 2 duels?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "duel",
+      metrics: [
+        { metric: "win_rate", agg: "avg" },
+        { metric: "duels", agg: "count" },
+      ],
+      dimensions: ["enemy_hero"],
+      filters: [
+        { field: "win_rate", op: "lt", value: 50 },
+        { field: "duels", op: "gte", value: 2 },
       ],
     });
   });

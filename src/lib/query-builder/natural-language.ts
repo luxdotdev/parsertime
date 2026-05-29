@@ -860,6 +860,7 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "got first pick",
   ],
   losses: ["losses", "lost", "lose"],
+  duels: ["duels", "duel count", "duel sample"],
   rotation_deaths: [
     "rotation death",
     "rotation deaths",
@@ -1314,6 +1315,8 @@ function findPlayer(question: string, hero: string | null): string | null {
     "progress",
     "status",
     "track",
+    "rotation",
+    "rotational",
     "game",
     "games",
     "sample",
@@ -2987,6 +2990,25 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
       a.metric === "win_rate" ? -1 : b.metric === "win_rate" ? 1 : 0
     );
   }
+  if (dataset === "opening_kill") {
+    const wantsOpeningRanking =
+      includesPhrase(normalized, "most") ||
+      includesPhrase(normalized, "top") ||
+      includesPhrase(normalized, "highest") ||
+      includesPhrase(normalized, "worst");
+    const priority = wantsOpeningRanking
+      ? mentionsFirstPickAttribution(normalized)
+        ? "first_picks"
+        : mentionsFirstDeathAttribution(normalized)
+          ? "first_deaths"
+          : null
+      : null;
+    if (priority) {
+      deduped.sort((a, b) =>
+        a.metric === priority ? -1 : b.metric === priority ? 1 : 0
+      );
+    }
+  }
   if (
     deduped.some((ref) => ref.metric === "losses") &&
     (includesPhrase(normalized, "losses") ||
@@ -3160,11 +3182,22 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
     );
   }
   if (dataset === "duel") {
+    const wantsDuelSample =
+      includesPhrase(normalized, "duels") &&
+      (includesPhrase(normalized, "at least") ||
+        includesPhrase(normalized, "minimum") ||
+        includesPhrase(normalized, "min") ||
+        includesPhrase(normalized, "more than") ||
+        includesPhrase(normalized, "over") ||
+        includesPhrase(normalized, "at most") ||
+        includesPhrase(normalized, "maximum") ||
+        includesPhrase(normalized, "under"));
     const wantsCount =
       includesPhrase(normalized, "how many") ||
       includesPhrase(normalized, "number") ||
       includesPhrase(normalized, "count") ||
-      includesPhrase(normalized, "total");
+      includesPhrase(normalized, "total") ||
+      wantsDuelSample;
     const wantsLosses =
       includesPhrase(normalized, "losses") ||
       includesPhrase(normalized, "lost") ||
@@ -4280,6 +4313,8 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   if (heroes.length > 0) {
     if (dataset === "duel") {
       filters.push(...pickDuelHeroFilters(heroMentions, question));
+    } else if (dataset === "enemy_hero") {
+      filters.push({ field: "enemy_hero", op: "in", value: heroes });
     } else {
       const exactUltCombo =
         dataset === "ult_combo" &&
@@ -4379,6 +4414,47 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       });
     }
     filters.push(...extractOpeningKillTimeFilters(normalized));
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "first_events",
+          aliases: [
+            "opening kills",
+            "opening kill events",
+            "first kills",
+            "first events",
+            "fights",
+            "sample size",
+          ],
+        },
+        {
+          field: "first_deaths",
+          aliases: ["first deaths", "opening deaths", "first death count"],
+        },
+        {
+          field: "first_picks",
+          aliases: ["first picks", "opening picks", "first pick count"],
+        },
+        {
+          field: "win_rate",
+          aliases: [
+            "win rate",
+            "winrate",
+            "opening kill win rate",
+            "first death win rate",
+            "first pick win rate",
+          ],
+        },
+        {
+          field: "wins",
+          aliases: ["wins", "fight wins"],
+        },
+        {
+          field: "losses",
+          aliases: ["losses", "fight losses"],
+        },
+      ])
+    );
   }
 
   if (dataset === "teamfight") {
@@ -4509,6 +4585,86 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
 
     filters.push(...extractRotationDeathSignalFilters(normalized));
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "rotation_deaths",
+          aliases: [
+            "rotation deaths",
+            "rotational deaths",
+            "caught on rotation",
+            "rotation death count",
+          ],
+        },
+        {
+          field: "deaths",
+          aliases: ["death", "deaths", "death count", "sample size"],
+        },
+        {
+          field: "rotation_death_rate",
+          aliases: [
+            "rotation death rate",
+            "rotational death rate",
+            "rotation rate",
+          ],
+        },
+        {
+          field: "early_death_rate",
+          aliases: ["early death rate", "early-fight death rate"],
+        },
+      ])
+    );
+  }
+
+  if (dataset === "duel") {
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "win_rate",
+          aliases: ["win rate", "winrate", "duel win rate", "duel winrate"],
+        },
+        {
+          field: "duels",
+          aliases: ["duels", "duel count", "sample size"],
+        },
+        {
+          field: "wins",
+          aliases: ["wins", "duel wins", "duels won"],
+        },
+        {
+          field: "losses",
+          aliases: ["losses", "duel losses", "duels lost"],
+        },
+      ])
+    );
+  }
+
+  if (dataset === "enemy_hero") {
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "win_rate",
+          aliases: [
+            "win rate",
+            "winrate",
+            "enemy hero win rate",
+            "matchup win rate",
+          ],
+        },
+        {
+          field: "maps",
+          aliases: ["maps", "games", "maps played", "sample size"],
+        },
+        {
+          field: "wins",
+          aliases: ["wins", "map wins"],
+        },
+        {
+          field: "losses",
+          aliases: ["losses", "map losses"],
+        },
+      ])
+    );
   }
 
   if (dataset === "map_result") {

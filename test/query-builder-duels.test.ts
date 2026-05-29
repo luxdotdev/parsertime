@@ -88,4 +88,22 @@ describe("computed aggregator (duel matchups)", () => {
     expect(rows[0].enemy_hero).toBe("Widowmaker");
     expect(rows[0]["sum__losses"]).toBe(1);
   });
+
+  it("filters grouped duel metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      DUEL_ROWS,
+      spec({
+        dimensions: ["our_hero"],
+        filters: [
+          { field: "win_rate", op: "gte", value: 60 },
+          { field: "duels", op: "gte", value: 1 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].our_hero).toBe("Genji");
+    expect(rows[0]["avg__win_rate"]).toBe(100);
+    expect(rows[0]["count__duels"]).toBe(1);
+  });
 });

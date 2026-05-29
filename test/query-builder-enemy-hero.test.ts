@@ -106,4 +106,22 @@ describe("computed aggregator (enemy hero matchups)", () => {
     expect(rows.map((row) => row.enemy_hero)).toEqual(["Tracer", "Winston"]);
     expect(rows[0]["sum__losses"]).toBe(1);
   });
+
+  it("filters grouped enemy-hero metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      ENEMY_ROWS,
+      spec({
+        dimensions: ["enemy_hero"],
+        filters: [
+          { field: "win_rate", op: "lte", value: 50 },
+          { field: "maps", op: "gte", value: 2 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].enemy_hero).toBe("Tracer");
+    expect(rows[0]["avg__win_rate"]).toBe(50);
+    expect(rows[0]["count__maps"]).toBe(2);
+  });
 });

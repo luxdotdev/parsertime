@@ -137,4 +137,27 @@ describe("computed aggregator (rotation deaths)", () => {
     expect(rows[0].attacker_hero).toBe("Tracer");
     expect(rows[0]["sum__rotation_deaths"]).toBe(2);
   });
+
+  it("filters grouped rotation-death metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      ROTATION_DEATH_ROWS,
+      spec({
+        metrics: [
+          { metric: "rotation_death_rate", agg: "avg" },
+          { metric: "deaths", agg: "count" },
+        ],
+        dimensions: ["player"],
+        filters: [
+          { field: "side", op: "eq", value: "us" },
+          { field: "rotation_death_rate", op: "gte", value: 75 },
+          { field: "deaths", op: "gte", value: 1 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].player).toBe("Landon");
+    expect(rows[0]["avg__rotation_death_rate"]).toBe(100);
+    expect(rows[0]["count__deaths"]).toBe(1);
+  });
 });

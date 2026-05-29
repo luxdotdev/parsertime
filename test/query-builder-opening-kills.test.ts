@@ -144,4 +144,27 @@ describe("computed aggregator (opening kills)", () => {
     expect(rows[0]["count__first_events"]).toBe(2);
     expect(rows[0]["avg__win_rate"]).toBe(50);
   });
+
+  it("filters grouped opening-kill metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      OPENING_KILLS,
+      spec({
+        metrics: [
+          { metric: "first_deaths", agg: "sum" },
+          { metric: "win_rate", agg: "avg" },
+        ],
+        dimensions: ["player"],
+        filters: [
+          { field: "side", op: "eq", value: "us" },
+          { field: "first_deaths", op: "gte", value: 2 },
+          { field: "win_rate", op: "lte", value: 50 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].player).toBe("PGE");
+    expect(rows[0]["sum__first_deaths"]).toBe(2);
+    expect(rows[0]["avg__win_rate"]).toBe(50);
+  });
 });
