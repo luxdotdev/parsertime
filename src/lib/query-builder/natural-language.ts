@@ -33,6 +33,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   ultimate: "ultimates",
   map: "maps",
   teamfight: "win_rate",
+  opening_kill: "first_deaths",
   rotation_death: "rotation_deaths",
   map_result: "win_rate",
   player_map_performance: "win_rate",
@@ -197,6 +198,24 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "first death",
     "dry fight",
     "wasted ult",
+  ],
+  opening_kill: [
+    "opening kill",
+    "opening kills",
+    "opening pick",
+    "opening picks",
+    "opening death",
+    "opening deaths",
+    "first kill",
+    "first kills",
+    "dies first",
+    "died first",
+    "die first",
+    "first to die",
+    "gets first pick",
+    "got first pick",
+    "first picked",
+    "picked first",
   ],
   rotation_death: [
     "rotation death",
@@ -475,6 +494,28 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "opening ultimate",
   ],
   avg_wasted_ults: ["wasted ult", "wasted ults", "wasted ultimates"],
+  first_events: ["opening kill", "opening kills", "first kill", "first kills"],
+  first_deaths: [
+    "first death",
+    "first deaths",
+    "opening death",
+    "opening deaths",
+    "dies first",
+    "died first",
+    "die first",
+    "first to die",
+    "picked first",
+    "first picked",
+  ],
+  first_picks: [
+    "first pick",
+    "first picks",
+    "opening pick",
+    "opening picks",
+    "opening kills secured",
+    "gets first pick",
+    "got first pick",
+  ],
   losses: ["losses", "lost", "lose"],
   rotation_deaths: [
     "rotation death",
@@ -767,6 +808,9 @@ function findPlayer(question: string, hero: string | null): string | null {
       /\b(?:with|alongside)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\b/gi
     ),
     ...question.matchAll(/\b([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:has|had)\b/gi),
+    ...question.matchAll(
+      /\b([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:dies|died|die|gets|got)\b/gi
+    ),
     ...question.matchAll(/\b([A-Za-z][A-Za-z0-9_.-]{1,})'s\s+/gi),
   ];
 
@@ -936,6 +980,88 @@ function mentionsRotationDeathContext(normalized: string): boolean {
   );
 }
 
+function mentionsFirstPickAttribution(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "opening pick") ||
+    includesPhrase(normalized, "opening picks") ||
+    includesPhrase(normalized, "first pick") ||
+    includesPhrase(normalized, "first picks") ||
+    includesPhrase(normalized, "gets first pick") ||
+    includesPhrase(normalized, "got first pick") ||
+    includesPhrase(normalized, "get first pick") ||
+    includesPhrase(normalized, "secured first pick") ||
+    includesPhrase(normalized, "secures first pick")
+  );
+}
+
+function mentionsFirstDeathAttribution(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "opening death") ||
+    includesPhrase(normalized, "opening deaths") ||
+    includesPhrase(normalized, "first death") ||
+    includesPhrase(normalized, "first deaths") ||
+    includesPhrase(normalized, "dies first") ||
+    includesPhrase(normalized, "died first") ||
+    includesPhrase(normalized, "die first") ||
+    includesPhrase(normalized, "first to die") ||
+    includesPhrase(normalized, "gets picked first") ||
+    includesPhrase(normalized, "got picked first") ||
+    includesPhrase(normalized, "picked first") ||
+    includesPhrase(normalized, "first picked")
+  );
+}
+
+function mentionsOpeningKillContext(normalized: string): boolean {
+  if (
+    includesPhrase(normalized, "first pick rate") ||
+    includesPhrase(normalized, "first pick percentage") ||
+    includesPhrase(normalized, "first death rate") ||
+    includesPhrase(normalized, "first death percentage")
+  ) {
+    return false;
+  }
+
+  const teamScenario =
+    includesPhrase(normalized, "we get first pick") ||
+    includesPhrase(normalized, "we got first pick") ||
+    includesPhrase(normalized, "we have first pick") ||
+    includesPhrase(normalized, "we get first death") ||
+    includesPhrase(normalized, "we got first death") ||
+    includesPhrase(normalized, "we have first death");
+  const attributionIntent =
+    includesPhrase(normalized, "who") ||
+    includesPhrase(normalized, "which player") ||
+    includesPhrase(normalized, "which players") ||
+    includesPhrase(normalized, "which hero") ||
+    includesPhrase(normalized, "which heroes") ||
+    includesPhrase(normalized, "by player") ||
+    includesPhrase(normalized, "by hero") ||
+    includesPhrase(normalized, "attacker") ||
+    includesPhrase(normalized, "killer") ||
+    includesPhrase(normalized, "victim");
+
+  return (
+    !teamScenario &&
+    (includesPhrase(normalized, "opening kill") ||
+      includesPhrase(normalized, "opening kills") ||
+      includesPhrase(normalized, "first kill") ||
+      includesPhrase(normalized, "first kills") ||
+      includesPhrase(normalized, "dies first") ||
+      includesPhrase(normalized, "died first") ||
+      includesPhrase(normalized, "die first") ||
+      includesPhrase(normalized, "first to die") ||
+      includesPhrase(normalized, "gets picked first") ||
+      includesPhrase(normalized, "got picked first") ||
+      includesPhrase(normalized, "picked first") ||
+      includesPhrase(normalized, "first picked") ||
+      includesPhrase(normalized, "gets first pick") ||
+      includesPhrase(normalized, "got first pick") ||
+      ((mentionsFirstPickAttribution(normalized) ||
+        mentionsFirstDeathAttribution(normalized)) &&
+        attributionIntent))
+  );
+}
+
 function mentionsAbilityTimingContext(normalized: string): boolean {
   const abilityContext =
     includesPhrase(normalized, "ability") ||
@@ -1054,6 +1180,7 @@ function pickDataset(question: string): DatasetId {
   const mapName = findMapName(question);
   const heroMentions = findHeroMentions(question);
   const player = findPlayer(question, heroMentions[0]?.hero ?? null);
+  if (mentionsOpeningKillContext(normalized)) return "opening_kill";
   if (mentionsCalculatedStatContext(normalized)) return "calculated_stat";
   if (mentionsStreakContext(normalized)) return "streak";
   if (mentionsTrendContext(normalized)) return "trend";
@@ -1323,6 +1450,14 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
 
   if (dataset === "teamfight" && includesPhrase(normalized, "wasted ult")) {
     refs.push({ metric: "avg_wasted_ults", agg: "avg" });
+  }
+
+  if (dataset === "opening_kill") {
+    if (mentionsFirstPickAttribution(normalized)) {
+      refs.unshift({ metric: "first_picks", agg: "sum" });
+    } else if (mentionsFirstDeathAttribution(normalized)) {
+      refs.unshift({ metric: "first_deaths", agg: "sum" });
+    }
   }
 
   if (refs.length === 0) {
@@ -1809,6 +1944,41 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
   }
 
+  if (dataset === "opening_kill") {
+    const firstPickIntent =
+      mentionsFirstPickAttribution(normalized) &&
+      !mentionsFirstDeathAttribution(normalized);
+    const enemyContext =
+      includesPhrase(normalized, "enemy") ||
+      includesPhrase(normalized, "their") ||
+      includesPhrase(normalized, "opponent");
+
+    if (firstPickIntent) {
+      for (let i = filters.length - 1; i >= 0; i--) {
+        if (filters[i].field === "player" || filters[i].field === "hero") {
+          filters.splice(i, 1);
+        }
+      }
+      if (player) {
+        filters.push({ field: "attacker", op: "in", value: [player] });
+      }
+      if (heroes.length > 0) {
+        filters.push({ field: "attacker_hero", op: "in", value: heroes });
+      }
+      filters.push({
+        field: "attacker_side",
+        op: "eq",
+        value: enemyContext ? "enemy" : "us",
+      });
+    } else if (mentionsFirstDeathAttribution(normalized)) {
+      filters.push({
+        field: "side",
+        op: "eq",
+        value: enemyContext ? "enemy" : "us",
+      });
+    }
+  }
+
   if (dataset === "teamfight") {
     if (includesPhrase(normalized, "first death")) {
       filters.push({ field: "first_death", op: "eq", value: "yes" });
@@ -2229,7 +2399,11 @@ function pickDimensions(
       includesPhrase(normalized, "which players")) &&
     !hasFilter("player")
   ) {
-    add("player");
+    add(
+      dataset === "opening_kill" && mentionsFirstPickAttribution(normalized)
+        ? "attacker"
+        : "player"
+    );
   }
   if (
     (includesPhrase(normalized, "which hero") ||
@@ -2237,7 +2411,10 @@ function pickDimensions(
     !hasFilter("hero") &&
     !hasFilter("our_hero")
   ) {
-    add(ds.dimensions.some((d) => d.id === "our_hero") ? "our_hero" : "hero");
+    if (dataset === "opening_kill" && mentionsFirstPickAttribution(normalized))
+      add("attacker_hero");
+    else
+      add(ds.dimensions.some((d) => d.id === "our_hero") ? "our_hero" : "hero");
   }
   if (
     (includesPhrase(normalized, "which map") ||
@@ -2298,6 +2475,20 @@ function pickDimensions(
       add("player");
     } else {
       add("player");
+    }
+  }
+  if (dataset === "opening_kill" && dims.length === 0) {
+    if (mentionsFirstPickAttribution(normalized)) {
+      if (!hasFilter("attacker") && !hasFilter("attacker_hero")) {
+        add("attacker");
+      }
+    } else if (mentionsFirstDeathAttribution(normalized)) {
+      if (!hasFilter("player") && !hasFilter("hero")) {
+        add("player");
+      }
+    } else {
+      add("player");
+      add("attacker");
     }
   }
   if (dataset === "ability_impact" && dims.length === 0) {
@@ -2428,6 +2619,11 @@ function pickSort(
       (includesPhrase(normalized, "when should") ||
         includesPhrase(normalized, "when to use") ||
         includesPhrase(normalized, "best phase"))
+    ) &&
+    !(
+      dataset === "opening_kill" &&
+      (mentionsFirstPickAttribution(normalized) ||
+        mentionsFirstDeathAttribution(normalized))
     )
   ) {
     return null;
@@ -2442,6 +2638,9 @@ function pickSort(
       (includesPhrase(normalized, "when should") ||
         includesPhrase(normalized, "when to use") ||
         includesPhrase(normalized, "best phase"))) ||
+    (dataset === "opening_kill" &&
+      (mentionsFirstPickAttribution(normalized) ||
+        mentionsFirstDeathAttribution(normalized))) ||
     (dataset === "hero_pickrate" &&
       (includesPhrase(normalized, "owns") ||
         includesPhrase(normalized, "ownership") ||

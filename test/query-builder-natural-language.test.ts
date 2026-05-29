@@ -264,18 +264,56 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
-  it("plans first-death count questions onto calculated stats", () => {
+  it("plans first-death count questions onto opening kills", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,
       question: "Which players have the most first deaths?",
     });
 
     expect(planned?.spec).toMatchObject({
-      dataset: "calculated_stat",
-      metrics: [{ metric: "first_death_count", agg: "sum" }],
+      dataset: "opening_kill",
+      metrics: [{ metric: "first_deaths", agg: "sum" }],
       dimensions: ["player"],
-      sort: { key: "sum__first_death_count", dir: "desc" },
+      filters: [{ field: "side", op: "eq", value: "us" }],
+      sort: { key: "sum__first_deaths", dir: "desc" },
       limit: 20,
+    });
+  });
+
+  it("plans first-pick attribution questions onto opening kills", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Who gets first pick most?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "opening_kill",
+      metrics: [{ metric: "first_picks", agg: "sum" }],
+      dimensions: ["attacker"],
+      filters: [{ field: "attacker_side", op: "eq", value: "us" }],
+      sort: { key: "sum__first_picks", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans player-specific dies-first winrate questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "What is our win rate when PGE dies first on Widowmaker?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "opening_kill",
+      dimensions: [],
+      filters: [
+        { field: "hero", op: "in", value: ["Widowmaker"] },
+        { field: "player", op: "in", value: ["PGE"] },
+        { field: "side", op: "eq", value: "us" },
+      ],
+    });
+    expect(planned?.spec.metrics[0]).toEqual({
+      metric: "win_rate",
+      agg: "avg",
     });
   });
 

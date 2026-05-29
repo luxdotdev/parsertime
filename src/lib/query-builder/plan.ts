@@ -36,6 +36,7 @@ const BASE_ALIAS: Record<QuerySpec["dataset"], string> = {
   map: "m",
   // computed datasets never use the SQL planner, but the map must be total
   teamfight: "tf",
+  opening_kill: "ok",
   rotation_death: "rd",
   map_result: "mr",
   player_map_performance: "pmp",

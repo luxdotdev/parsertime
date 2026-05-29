@@ -473,6 +473,7 @@ const DEFAULT_METRIC: Record<DraftSpec["dataset"], string> = {
   ultimate: "ultimates",
   map: "maps",
   teamfight: "win_rate",
+  opening_kill: "first_deaths",
   rotation_death: "rotation_deaths",
   map_result: "win_rate",
   player_map_performance: "win_rate",

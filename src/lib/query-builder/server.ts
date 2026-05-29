@@ -12,6 +12,7 @@ import { computeEnemyHeroMatchups } from "@/lib/query-builder/compute/enemy-hero
 import { computeHeroPool } from "@/lib/query-builder/compute/hero-pool";
 import { computeHeroPickrate } from "@/lib/query-builder/compute/hero-pickrate";
 import { computeMapResults } from "@/lib/query-builder/compute/map-results";
+import { computeOpeningKills } from "@/lib/query-builder/compute/opening-kills";
 import { computePlayerMapPerformance } from "@/lib/query-builder/compute/player-map-performance";
 import { computeRoleTrios } from "@/lib/query-builder/compute/role-trios";
 import { computeRosterVariants } from "@/lib/query-builder/compute/roster-variants";
@@ -235,6 +236,9 @@ async function runComputedQuery(
     switch (spec.dataset) {
       case "teamfight":
         computedRows = await computeTeamfights(spec.teamId, ctx.scrimIds);
+        break;
+      case "opening_kill":
+        computedRows = await computeOpeningKills(spec.teamId, ctx.scrimIds);
         break;
       case "rotation_death":
         computedRows = await computeRotationDeaths(spec.teamId, ctx.scrimIds);
