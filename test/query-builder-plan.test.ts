@@ -120,6 +120,22 @@ describe("query-builder compiler", () => {
     );
   });
 
+  it("scopes calculated-stat metric filters to their stat type", () => {
+    const spec = parse({
+      dataset: "calculated_stat",
+      teamId: 3,
+      metrics: [{ metric: "first_pick_pct", agg: "avg" }],
+      dimensions: ["player"],
+      filters: [{ field: "first_pick_pct", op: "gt", value: 25 }],
+    });
+    const { sql, params } = toExecutable(buildPlan(spec), [1]);
+
+    expect(sql).toContain(
+      `cs."stat" = 'FIRST_PICK_PERCENTAGE'::"CalculatedStatType" AND cs."value" > $2`
+    );
+    expect(params).toEqual([1, 25]);
+  });
+
   it("joins MatchStart for map-type dimensions and casts the enum to text", () => {
     const spec = parse({
       dataset: "player_stat",

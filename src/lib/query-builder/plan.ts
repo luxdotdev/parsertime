@@ -153,12 +153,18 @@ function buildWhereClause(
   baseAlias: string
 ): WhereClause {
   const ref = columnRef(filter.source, filter.column, baseAlias);
+  const statScope = filter.statType
+    ? `${baseAlias}."stat" = '${filter.statType}'::"CalculatedStatType" AND `
+    : "";
   if (spec.op === "in" || spec.op === "nin") {
     const values = Array.isArray(spec.value) ? spec.value : [spec.value];
     if (values.length === 0) return { sql: "TRUE", params: [] };
     const placeholders = values.map(() => "?").join(", ");
     const keyword = spec.op === "nin" ? "NOT IN" : "IN";
-    return { sql: `${ref} ${keyword} (${placeholders})`, params: values };
+    return {
+      sql: `${statScope}${ref} ${keyword} (${placeholders})`,
+      params: values,
+    };
   }
   const single = Array.isArray(spec.value) ? spec.value[0] : spec.value;
   const opSql: Record<string, string> = {
@@ -169,7 +175,7 @@ function buildWhereClause(
     lt: "<",
     lte: "<=",
   };
-  return { sql: `${ref} ${opSql[spec.op]} ?`, params: [single] };
+  return { sql: `${statScope}${ref} ${opSql[spec.op]} ?`, params: [single] };
 }
 
 export function buildPlan(spec: QuerySpec): QueryPlan {

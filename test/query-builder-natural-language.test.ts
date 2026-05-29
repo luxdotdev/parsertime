@@ -515,6 +515,48 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans calculated-stat percentage threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Which players have first pick rate over 25%?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "calculated_stat",
+      metrics: [{ metric: "first_pick_pct", agg: "avg" }],
+      dimensions: ["player"],
+      filters: [{ field: "first_pick_pct", op: "gt", value: 25 }],
+    });
+  });
+
+  it("plans calculated-stat duration threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Which players average ult charge time under 90 seconds?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "calculated_stat",
+      metrics: [{ metric: "ult_charge_time", agg: "avg" }],
+      dimensions: ["player"],
+      filters: [{ field: "ult_charge_time", op: "lt", value: 90 }],
+    });
+  });
+
+  it("plans calculated-stat ratio-like threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Which players have at least 2 kills per ultimate?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "calculated_stat",
+      metrics: [{ metric: "kills_per_ult", agg: "avg" }],
+      dimensions: ["player"],
+      filters: [{ field: "kills_per_ult", op: "gte", value: 2 }],
+    });
+  });
+
   it("plans worst first-death rate questions as high lower-is-better stats", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

@@ -1188,6 +1188,7 @@ const NUMBER_WORD_TOKEN =
   "zero|one|two|three|four|five|six|seven|eight|nine|ten|twenty";
 const NUMBER_TOKEN = `\\d+(?:\\.\\d+)?|${NUMBER_WORD_TOKEN}`;
 const INTEGER_TOKEN = `\\d{1,3}|${NUMBER_WORD_TOKEN}`;
+const NON_HERO_ABILITY_ALIAS_WORDS = new Set(["charge"]);
 
 const HERO_BY_NORMALIZED = new Map(
   allHeroes.flatMap((hero) => {
@@ -1195,11 +1196,17 @@ const HERO_BY_NORMALIZED = new Map(
     const abilityAliases = [hero.ability1.name, hero.ability2.name].flatMap(
       (name) => {
         const normalized = normalize(name);
+        if (NON_HERO_ABILITY_ALIAS_WORDS.has(normalized)) return [];
         return [
           normalized,
           ...normalized
             .split(/\s+/)
-            .filter((word) => word.length > 3 && !FILLER_WORDS.has(word)),
+            .filter(
+              (word) =>
+                word.length > 3 &&
+                !FILLER_WORDS.has(word) &&
+                !NON_HERO_ABILITY_ALIAS_WORDS.has(word)
+            ),
         ];
       }
     );
@@ -3447,6 +3454,97 @@ function extractNumericThresholdFilters(
   return filters;
 }
 
+function extractDurationThresholdFilters(
+  dataset: DatasetId,
+  normalized: string,
+  fields: { field: string; aliases: string[] }[]
+): QueryFilter[] {
+  const filters: QueryFilter[] = [];
+  const duration = `(${NUMBER_TOKEN})`;
+  const unit = "(seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h)";
+  const seen = new Set<string>();
+
+  for (const { field, aliases } of fields) {
+    const def = getDataset(dataset).filters.find(
+      (filter) => filter.id === field
+    );
+    if (!def) continue;
+
+    const aliasPattern = aliases
+      .map((alias) => normalize(alias))
+      .filter(Boolean)
+      .map(escapeRegExp)
+      .join("|");
+    if (!aliasPattern) continue;
+
+    const patterns: [RegExp, QueryFilter["op"]][] = [
+      [
+        new RegExp(
+          `\\b(?:at\\s+least|minimum|min|no\\s+less\\s+than)\\s+${duration}\\s*${unit}\\s+(?:${aliasPattern})\\b`
+        ),
+        "gte",
+      ],
+      [
+        new RegExp(
+          `\\b(?:more\\s+than|over|above|greater\\s+than)\\s+${duration}\\s*${unit}\\s+(?:${aliasPattern})\\b`
+        ),
+        "gt",
+      ],
+      [
+        new RegExp(
+          `\\b(?:at\\s+most|maximum|max|up\\s+to|no\\s+more\\s+than)\\s+${duration}\\s*${unit}\\s+(?:${aliasPattern})\\b`
+        ),
+        "lte",
+      ],
+      [
+        new RegExp(
+          `\\b(?:less\\s+than|under|below)\\s+${duration}\\s*${unit}\\s+(?:${aliasPattern})\\b`
+        ),
+        "lt",
+      ],
+      [
+        new RegExp(
+          `\\b(?:${aliasPattern})\\s+(?:is\\s+|are\\s+)?(?:at\\s+least|minimum|min|no\\s+less\\s+than)\\s+${duration}\\s*${unit}\\b`
+        ),
+        "gte",
+      ],
+      [
+        new RegExp(
+          `\\b(?:${aliasPattern})\\s+(?:is\\s+|are\\s+)?(?:more\\s+than|over|above|greater\\s+than)\\s+${duration}\\s*${unit}\\b`
+        ),
+        "gt",
+      ],
+      [
+        new RegExp(
+          `\\b(?:${aliasPattern})\\s+(?:is\\s+|are\\s+)?(?:at\\s+most|maximum|max|up\\s+to|no\\s+more\\s+than)\\s+${duration}\\s*${unit}\\b`
+        ),
+        "lte",
+      ],
+      [
+        new RegExp(
+          `\\b(?:${aliasPattern})\\s+(?:is\\s+|are\\s+)?(?:less\\s+than|under|below)\\s+${duration}\\s*${unit}\\b`
+        ),
+        "lt",
+      ],
+    ];
+
+    for (const [pattern, op] of patterns) {
+      if (!def.operators.includes(op)) continue;
+      const match = normalized.match(pattern);
+      if (!match) continue;
+      const value = durationSeconds(match[1], match[2]);
+      if (value == null) continue;
+      const key = `${field}:${op}:${value}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      filters.push({ field, op, value });
+      break;
+    }
+  }
+
+  return filters;
+}
+
 function percentFraction(value: number): number {
   return value > 1 ? value / 100 : value;
 }
@@ -4398,6 +4496,100 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     if (confidence) {
       filters.push({ field: "confidence", op: "in", value: [confidence] });
     }
+  }
+
+  if (dataset === "calculated_stat") {
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "mvp_score",
+          aliases: ["mvp", "mvp score", "average mvp score"],
+        },
+        {
+          field: "map_mvp_count",
+          aliases: ["map mvps", "map mvp count"],
+        },
+        {
+          field: "fleta_deadlift",
+          aliases: ["fleta", "fleta deadlift", "deadlift"],
+        },
+        {
+          field: "first_pick_pct",
+          aliases: [
+            "first pick",
+            "first pick percentage",
+            "first pick rate",
+            "opening pick rate",
+          ],
+        },
+        {
+          field: "first_pick_count",
+          aliases: ["first picks", "first pick count", "opening picks"],
+        },
+        {
+          field: "first_death_pct",
+          aliases: [
+            "first death",
+            "first death percentage",
+            "first death rate",
+            "opening death rate",
+          ],
+        },
+        {
+          field: "first_death_count",
+          aliases: ["first deaths", "first death count", "opening deaths"],
+        },
+        {
+          field: "ajax_count",
+          aliases: ["ajax", "ajaxes", "ajax count"],
+        },
+        {
+          field: "kills_per_ult",
+          aliases: [
+            "kills per ult",
+            "kills per ultimate",
+            "elims per ult",
+            "eliminations per ultimate",
+          ],
+        },
+        {
+          field: "duel_winrate",
+          aliases: ["duel winrate", "duel win rate", "duel rate"],
+        },
+        {
+          field: "fight_reversal",
+          aliases: [
+            "fight reversal",
+            "fight reversal percentage",
+            "fight reversal rate",
+          ],
+        },
+      ]),
+      ...extractDurationThresholdFilters(dataset, normalized, [
+        {
+          field: "ult_charge_time",
+          aliases: [
+            "ult charge time",
+            "ultimate charge time",
+            "average ult charge time",
+            "average ultimate charge time",
+          ],
+        },
+        {
+          field: "time_to_use_ult",
+          aliases: [
+            "time to use ult",
+            "time to use ultimate",
+            "average time to use ult",
+            "average time to use ultimate",
+          ],
+        },
+        {
+          field: "drought_time",
+          aliases: ["drought time", "average drought time"],
+        },
+      ])
+    );
   }
 
   if (dataset === "hero_pickrate") {

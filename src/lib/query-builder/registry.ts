@@ -65,6 +65,8 @@ export type FilterDef = {
   optionsColumn?: string;
   optionsSource?: ColumnSource;
   unit?: string;
+  /** CalculatedStat metric filters: constrain value comparisons to this stat. */
+  statType?: string;
 };
 
 export type DatasetDef = {
@@ -579,6 +581,18 @@ const calculatedStatMetrics: MetricDef[] = CALC_METRICS.map((c) => ({
   statType: c.statType,
 }));
 
+const calculatedStatFilters: FilterDef[] = CALC_METRICS.map((c) => ({
+  id: c.id,
+  label: c.label,
+  table: "CalculatedStat",
+  column: "value",
+  source: "base",
+  valueType: "number",
+  operators: ["gte", "gt", "lte", "lt"],
+  unit: c.unit,
+  statType: c.statType,
+}));
+
 // --- Kill metrics -----------------------------------------------------------
 const killMetrics: MetricDef[] = [
   {
@@ -805,6 +819,7 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         optionsSource: "base",
       },
       mapTypeFilter,
+      ...calculatedStatFilters,
     ],
   },
   kill: {
