@@ -1438,6 +1438,41 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans quick-wins last-game phrasing onto trend buckets", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What is our win rate over the last 10 games?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "trend",
+      metrics: [
+        { metric: "win_rate", agg: "avg" },
+        { metric: "maps", agg: "count" },
+      ],
+      dimensions: [],
+      filters: [{ field: "recent_bucket", op: "eq", value: "last 10" }],
+    });
+  });
+
+  it("plans best day-of-week questions onto trend groups", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What is our best day of week?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "trend",
+      metrics: [
+        { metric: "win_rate", agg: "avg" },
+        { metric: "maps", agg: "count" },
+      ],
+      dimensions: ["day_of_week"],
+      sort: { key: "avg__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans weekly trend questions onto week groups", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,

@@ -184,8 +184,12 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "last 5 maps",
     "last 10 maps",
     "last 20 maps",
+    "last 5 games",
+    "last 10 games",
+    "last 20 games",
     "last five",
     "last ten",
+    "recent games",
     "weekly",
     "by week",
     "monthly",
@@ -1288,8 +1292,12 @@ function mentionsTrendContext(normalized: string): boolean {
     includesPhrase(normalized, "last 5 maps") ||
     includesPhrase(normalized, "last 10 maps") ||
     includesPhrase(normalized, "last 20 maps") ||
+    includesPhrase(normalized, "last 5 games") ||
+    includesPhrase(normalized, "last 10 games") ||
+    includesPhrase(normalized, "last 20 games") ||
     includesPhrase(normalized, "last five") ||
     includesPhrase(normalized, "last ten") ||
+    includesPhrase(normalized, "recent games") ||
     includesPhrase(normalized, "weekly") ||
     includesPhrase(normalized, "by week") ||
     includesPhrase(normalized, "monthly") ||
@@ -2289,6 +2297,21 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
     const fallback = DEFAULT_METRIC[dataset];
     const agg = pickMetricAgg(dataset, fallback, question);
     if (agg) refs.push({ metric: fallback, agg });
+  }
+
+  if (
+    dataset === "trend" &&
+    refs.some((ref) => ref.metric === "win_rate") &&
+    !refs.some((ref) => ref.metric === "maps") &&
+    (includesPhrase(normalized, "last 5 games") ||
+      includesPhrase(normalized, "last 10 games") ||
+      includesPhrase(normalized, "last 20 games") ||
+      includesPhrase(normalized, "recent games") ||
+      includesPhrase(normalized, "day of week") ||
+      includesPhrase(normalized, "best day") ||
+      includesPhrase(normalized, "worst day"))
+  ) {
+    refs.push({ metric: "maps", agg: "count" });
   }
 
   const deduped = dedupeMetrics(refs);
@@ -3665,7 +3688,9 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   }
 
   if (dataset === "trend") {
-    const lastMatch = normalized.match(/\blast\s+(\d{1,2})\s+maps?\b/);
+    const lastMatch = normalized.match(
+      /\blast\s+(\d{1,2})\s+(?:maps?|games?)\b/
+    );
     const lastWord = includesPhrase(normalized, "last five")
       ? 5
       : includesPhrase(normalized, "last ten")
