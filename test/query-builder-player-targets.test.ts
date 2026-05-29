@@ -88,4 +88,54 @@ describe("computed aggregator (player targets)", () => {
 
     expect(rows).toEqual([{ stat: "Final Blows/10", avg__gap_to_target: 1 }]);
   });
+
+  it("applies grouped metric filters to target progress thresholds", () => {
+    const { rows } = aggregateComputed(
+      PLAYER_TARGET_ROWS,
+      spec({
+        metrics: [
+          { metric: "progress_percent", agg: "avg" },
+          { metric: "sample_scrims", agg: "max" },
+        ],
+        dimensions: ["player"],
+        filters: [
+          { field: "progress_percent", op: "gte", value: 50 },
+          { field: "sample_scrims", op: "gte", value: 5 },
+        ],
+      })
+    );
+
+    expect(rows).toEqual([
+      {
+        player: "PGE",
+        avg__progress_percent: 66.6667,
+        max__sample_scrims: 5,
+      },
+    ]);
+  });
+
+  it("applies grouped metric filters to target value thresholds", () => {
+    const { rows } = aggregateComputed(
+      PLAYER_TARGET_ROWS,
+      spec({
+        metrics: [
+          { metric: "target_value", agg: "avg" },
+          { metric: "scrim_window", agg: "max" },
+        ],
+        dimensions: ["player"],
+        filters: [
+          { field: "target_value", op: "gte", value: 8 },
+          { field: "scrim_window", op: "gte", value: 10 },
+        ],
+      })
+    );
+
+    expect(rows).toEqual([
+      {
+        player: "PGE",
+        avg__target_value: 9,
+        max__scrim_window: 10,
+      },
+    ]);
+  });
 });

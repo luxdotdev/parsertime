@@ -2407,6 +2407,50 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans player-outlier baseline sample threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Which damage outliers have percentile at least 90 and at least 70 sample players?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_outlier",
+      dimensions: ["player"],
+      filters: [
+        { field: "outlier", op: "eq", value: "yes" },
+        { field: "stat", op: "in", value: ["hero_damage_dealt"] },
+        { field: "percentile", op: "gte", value: 90 },
+        { field: "sample_players", op: "gte", value: 70 },
+      ],
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([{ metric: "percentile", agg: "avg" }])
+    );
+  });
+
+  it("plans player-outlier per-10 and duration thresholds", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Which damage outliers have per 10 value over 9000 with at least 20 minutes hero time played?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_outlier",
+      dimensions: ["player"],
+      filters: [
+        { field: "outlier", op: "eq", value: "yes" },
+        { field: "stat", op: "in", value: ["hero_damage_dealt"] },
+        { field: "per10_value", op: "gt", value: 9000 },
+        { field: "hero_time_played", op: "gte", value: 1200 },
+      ],
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([{ metric: "per10_value", agg: "avg" }])
+    );
+  });
+
   it("plans off-track saved player target questions", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,
@@ -2485,6 +2529,47 @@ describe("query-builder natural-language planner", () => {
         { field: "sample_scrims", op: "gte", value: 4 },
       ],
     });
+  });
+
+  it("plans saved target value and window thresholds", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Which player goals have target value at least 8 with scrim window at least 10?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_target",
+      dimensions: ["player", "stat"],
+      filters: [
+        { field: "target_value", op: "gte", value: 8 },
+        { field: "scrim_window", op: "gte", value: 10 },
+      ],
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([{ metric: "target_value", agg: "avg" }])
+    );
+  });
+
+  it("plans saved target current and baseline thresholds", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Which final blow goals have current value over 7 and baseline value at least 5?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_target",
+      dimensions: ["player", "stat"],
+      filters: [
+        { field: "stat", op: "in", value: ["final_blows"] },
+        { field: "current_value", op: "gt", value: 7 },
+        { field: "baseline_value", op: "gte", value: 5 },
+      ],
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([{ metric: "current_value", agg: "avg" }])
+    );
   });
 
   it("plans enemy-hero matchup questions with hero filters", () => {

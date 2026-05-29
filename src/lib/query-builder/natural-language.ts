@@ -381,10 +381,18 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
   player_target: [
     "player target",
     "player targets",
+    "player goal",
+    "player goals",
     "target progress",
     "goal progress",
     "progress toward target",
     "progress toward goal",
+    "current value",
+    "baseline value",
+    "target value",
+    "goal value",
+    "scrim window",
+    "target window",
     "on track",
     "off track",
     "stalled target",
@@ -1701,6 +1709,14 @@ function mentionsPlayerTargetContext(normalized: string): boolean {
     includesPhrase(normalized, "goal progress") ||
     includesPhrase(normalized, "progress toward target") ||
     includesPhrase(normalized, "progress toward goal") ||
+    includesPhrase(normalized, "current value") ||
+    includesPhrase(normalized, "baseline value") ||
+    includesPhrase(normalized, "target value") ||
+    includesPhrase(normalized, "goal value") ||
+    includesPhrase(normalized, "target percent") ||
+    includesPhrase(normalized, "target percentage") ||
+    includesPhrase(normalized, "scrim window") ||
+    includesPhrase(normalized, "target window") ||
     includesPhrase(normalized, "sample scrims") ||
     includesPhrase(normalized, "scrim sample") ||
     includesPhrase(normalized, "saved target") ||
@@ -1716,6 +1732,8 @@ function mentionsPlayerTargetContext(normalized: string): boolean {
       (includesPhrase(normalized, "progress") ||
         includesPhrase(normalized, "gap") ||
         includesPhrase(normalized, "status") ||
+        includesPhrase(normalized, "value") ||
+        includesPhrase(normalized, "window") ||
         includesPhrase(normalized, "sampled") ||
         includesPhrase(normalized, "scrims")))
   );
@@ -5278,6 +5296,39 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         },
         { field: "z_score", aliases: ["z score", "z-score"] },
         { field: "percentile", aliases: ["percentile", "hero percentile"] },
+        {
+          field: "per10_value",
+          aliases: [
+            "per 10 value",
+            "per-10 value",
+            "player per 10",
+            "player value",
+            "current value",
+          ],
+        },
+        {
+          field: "baseline_per10",
+          aliases: ["baseline per 10", "baseline value", "hero baseline"],
+        },
+        {
+          field: "maps",
+          aliases: ["maps", "maps played", "sample maps", "sample size"],
+        },
+        {
+          field: "sample_players",
+          aliases: [
+            "sample players",
+            "baseline players",
+            "player sample",
+            "sample size",
+          ],
+        },
+      ]),
+      ...extractDurationThresholdFilters(dataset, normalized, [
+        {
+          field: "hero_time_played",
+          aliases: ["time played", "hero time played", "playtime", "played"],
+        },
       ])
     );
 
@@ -5333,6 +5384,18 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
           aliases: ["progress", "progress percent", "progress percentage"],
         },
         {
+          field: "current_value",
+          aliases: ["current value", "recent value", "current per 10"],
+        },
+        {
+          field: "baseline_value",
+          aliases: ["baseline value", "starting value", "baseline per 10"],
+        },
+        {
+          field: "target_value",
+          aliases: ["target value", "goal value", "target per 10"],
+        },
+        {
           field: "gap_to_target",
           aliases: [
             "gap to target",
@@ -5344,8 +5407,16 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
           ],
         },
         {
+          field: "target_percent",
+          aliases: ["target percent", "target percentage", "target change"],
+        },
+        {
           field: "sample_scrims",
           aliases: ["sample scrims", "scrim sample", "scrims sampled"],
+        },
+        {
+          field: "scrim_window",
+          aliases: ["scrim window", "target window", "window"],
         },
       ])
     );

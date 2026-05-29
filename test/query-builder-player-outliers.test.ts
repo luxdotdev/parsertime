@@ -112,4 +112,56 @@ describe("computed aggregator (player outliers)", () => {
 
     expect(rows.map((row) => row.stat)).toEqual(["Hero damage", "Deaths"]);
   });
+
+  it("applies grouped metric filters to baseline thresholds", () => {
+    const { rows } = aggregateComputed(
+      PLAYER_OUTLIER_ROWS,
+      spec({
+        metrics: [
+          { metric: "percentile", agg: "avg" },
+          { metric: "sample_players", agg: "max" },
+        ],
+        dimensions: ["player"],
+        filters: [
+          { field: "stat", op: "in", value: ["hero_damage_dealt"] },
+          { field: "percentile", op: "gte", value: 90 },
+          { field: "sample_players", op: "gte", value: 70 },
+        ],
+      })
+    );
+
+    expect(rows).toEqual([
+      {
+        player: "PGE",
+        avg__percentile: 99.3,
+        max__sample_players: 80,
+      },
+    ]);
+  });
+
+  it("applies grouped metric filters to per-10 and playtime thresholds", () => {
+    const { rows } = aggregateComputed(
+      PLAYER_OUTLIER_ROWS,
+      spec({
+        metrics: [
+          { metric: "per10_value", agg: "avg" },
+          { metric: "hero_time_played", agg: "sum" },
+        ],
+        dimensions: ["player"],
+        filters: [
+          { field: "stat", op: "in", value: ["hero_damage_dealt"] },
+          { field: "per10_value", op: "gte", value: 9000 },
+          { field: "hero_time_played", op: "gte", value: 1200 },
+        ],
+      })
+    );
+
+    expect(rows).toEqual([
+      {
+        player: "PGE",
+        avg__per10_value: 9800,
+        sum__hero_time_played: 1500,
+      },
+    ]);
+  });
 });
