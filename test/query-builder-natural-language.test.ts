@@ -92,6 +92,42 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans word-number recent scrim scopes", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 7,
+      question:
+        "How many final blows does PGE have on Widowmaker over the last five scrims?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_stat",
+      teamId: 7,
+      metrics: [{ metric: "final_blows", agg: "sum" }],
+      dimensions: [],
+      filters: [
+        { field: "hero", op: "in", value: ["Widowmaker"] },
+        { field: "player", op: "in", value: ["PGE"] },
+      ],
+      timeScope: { kind: "lastN", lastN: 5 },
+    });
+  });
+
+  it("plans alternate recent scrim phrasing across computed datasets", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "What is our fight win rate when we have first death over the past 3 scrims?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: [],
+      filters: [{ field: "first_death", op: "eq", value: "yes" }],
+      timeScope: { kind: "lastN", lastN: 3 },
+    });
+  });
+
   it("plans scoped accuracy questions onto player stat ratio metrics", () => {
     const planned = planQueryFromQuestion({
       teamId: 7,

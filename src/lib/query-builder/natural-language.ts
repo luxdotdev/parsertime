@@ -1158,7 +1158,17 @@ const NUMBER_WORDS: Record<string, number> = {
   four: 4,
   five: 5,
   six: 6,
+  seven: 7,
+  eight: 8,
+  nine: 9,
+  ten: 10,
+  twenty: 20,
 };
+
+const NUMBER_WORD_TOKEN =
+  "zero|one|two|three|four|five|six|seven|eight|nine|ten|twenty";
+const NUMBER_TOKEN = `\\d+(?:\\.\\d+)?|${NUMBER_WORD_TOKEN}`;
+const INTEGER_TOKEN = `\\d{1,3}|${NUMBER_WORD_TOKEN}`;
 
 const HERO_BY_NORMALIZED = new Map(
   allHeroes.flatMap((hero) => {
@@ -1522,6 +1532,24 @@ function mentionsStatVersusPlaytimeContext(normalized: string): boolean {
       includesPhrase(normalized, "played it") ||
       includesPhrase(normalized, "played them") ||
       includesPhrase(normalized, "time"))
+  );
+}
+
+function mentionsPlayerStatMetricContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "final blow") ||
+    includesPhrase(normalized, "final blows") ||
+    includesPhrase(normalized, "eliminations") ||
+    includesPhrase(normalized, "elims") ||
+    includesPhrase(normalized, "deaths") ||
+    includesPhrase(normalized, "assists") ||
+    includesPhrase(normalized, "damage") ||
+    includesPhrase(normalized, "healing") ||
+    includesPhrase(normalized, "time played") ||
+    includesPhrase(normalized, "playtime") ||
+    includesPhrase(normalized, "accuracy") ||
+    includesPhrase(normalized, "best multikill") ||
+    includesPhrase(normalized, "multikill best")
   );
 }
 
@@ -2092,6 +2120,15 @@ function pickDataset(question: string): DatasetId {
   if (mentionsHeroTrendContext(normalized)) return "hero_trend";
   if (mentionsStreakContext(normalized)) return "streak";
   if (mentionsMapIntelligenceContext(normalized)) return "map_intelligence";
+  if (
+    (heroMentions.length > 0 || player) &&
+    mentionsPlayerStatMetricContext(normalized) &&
+    new RegExp(
+      `\\b(?:last|past|recent)\\s+(?:${INTEGER_TOKEN})\\s+scrims?\\b`
+    ).test(normalized)
+  ) {
+    return "player_stat";
+  }
   if (mentionsTrendContext(normalized)) return "trend";
   if (mentionsRotationDeathContext(normalized)) return "rotation_death";
   if (
@@ -3063,7 +3100,7 @@ function extractTimePlayedFilter(
     includesPhrase(normalized, "second played");
   if (!timeIntent) return null;
 
-  const duration = "(\\d+(?:\\.\\d+)?|one|two|three|four|five|six)";
+  const duration = `(${NUMBER_TOKEN})`;
   const unit = "(seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h)";
   const patterns: [RegExp, QueryFilter["op"]][] = [
     [
@@ -4623,8 +4660,13 @@ function pickTimeScope(
 ): QuerySpec["timeScope"] {
   const normalized = normalize(question);
   if (includesPhrase(normalized, "all scrims")) return { kind: "all" };
-  const lastN = normalized.match(/\blast\s+(\d{1,3})\s+scrims?\b/);
-  if (lastN) return { kind: "lastN", lastN: Number(lastN[1]) };
+  const lastN = normalized.match(
+    new RegExp(`\\b(?:last|past|recent)\\s+(${INTEGER_TOKEN})\\s+scrims?\\b`)
+  );
+  if (lastN) {
+    const value = numberFromToken(lastN[1]);
+    if (value != null) return { kind: "lastN", lastN: value };
+  }
   if (dataset === "rotation_death") return { kind: "lastN", lastN: 5 };
   return { kind: "all" };
 }
