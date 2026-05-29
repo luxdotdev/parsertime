@@ -15,23 +15,19 @@ import {
   AGG_LABELS,
   getDataset,
   type DimensionDef,
-  type FilterDef,
   type MetricDef,
 } from "@/lib/query-builder/registry";
 import {
   DATASETS,
   type Aggregation,
   type DatasetId,
-  type FilterOperator,
   type MetricRef,
-  type QueryFilter,
   type TimeScope,
   type ViewableTeam,
 } from "@/lib/query-builder/types";
 import { cn } from "@/lib/utils";
 import { CheckIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
 
 const editorListClass = "max-h-64";
 
@@ -54,16 +50,19 @@ export function DatasetEditor({
   onChange: (id: DatasetId) => void;
   close: () => void;
 }) {
+  const t = useTranslations("queryBuilderPage");
   return (
     <Command>
+      <CommandInput placeholder={t("pickDataset")} />
       <CommandList className={editorListClass}>
+        <CommandEmpty>{t("noResults")}</CommandEmpty>
         <CommandGroup>
           {DATASETS.map((id) => {
             const ds = getDataset(id);
             return (
               <CommandItem
                 key={id}
-                value={ds.label}
+                value={`${ds.label} ${ds.description}`}
                 onSelect={() => {
                   onChange(id);
                   close();
@@ -262,187 +261,6 @@ export function DimensionEditor({
         </CommandGroup>
       </CommandList>
     </Command>
-  );
-}
-
-// --- Filters ----------------------------------------------------------------
-const OP_LABEL_KEYS: Record<FilterOperator, string> = {
-  eq: "opEq",
-  neq: "opNeq",
-  in: "opIn",
-  gt: "opGt",
-  gte: "opGte",
-  lt: "opLt",
-  lte: "opLte",
-};
-
-export function FilterAddEditor({
-  dataset,
-  onPick,
-  close,
-}: {
-  dataset: DatasetId;
-  onPick: (filter: FilterDef) => void;
-  close: () => void;
-}) {
-  const t = useTranslations("queryBuilderPage");
-  const def = getDataset(dataset);
-  return (
-    <Command>
-      <CommandInput placeholder={t("pickFilter")} />
-      <CommandList className={editorListClass}>
-        <CommandEmpty>{t("noResults")}</CommandEmpty>
-        <CommandGroup>
-          {def.filters.map((filter) => (
-            <CommandItem
-              key={filter.id}
-              value={filter.label}
-              onSelect={() => {
-                onPick(filter);
-                close();
-              }}
-            >
-              {filter.label}
-            </CommandItem>
-          ))}
-        </CommandGroup>
-      </CommandList>
-    </Command>
-  );
-}
-
-export function FilterEditor({
-  filter,
-  value,
-  onChange,
-  fetchOptions,
-}: {
-  filter: FilterDef;
-  value: QueryFilter;
-  onChange: (next: QueryFilter) => void;
-  fetchOptions: (filterId: string) => Promise<string[]>;
-}) {
-  const t = useTranslations("queryBuilderPage");
-  const [options, setOptions] = useState<string[]>(
-    filter.enumOptions?.map((o) => o.value) ?? []
-  );
-  const [loading, setLoading] = useState(false);
-  const isDynamic = !filter.enumOptions && filter.valueType !== "number";
-  const isMulti = value.op === "in";
-
-  useEffect(() => {
-    let active = true;
-    if (isDynamic) {
-      setLoading(true);
-      void fetchOptions(filter.id).then((opts) => {
-        if (active) {
-          setOptions(opts);
-          setLoading(false);
-        }
-      });
-    }
-    return () => {
-      active = false;
-    };
-  }, [filter.id, isDynamic, fetchOptions]);
-
-  const selectedValues = Array.isArray(value.value)
-    ? value.value.map(String)
-    : value.value !== "" && value.value !== undefined
-      ? [String(value.value)]
-      : [];
-
-  function setOp(op: FilterOperator) {
-    if (op === "in") {
-      onChange({ ...value, op, value: selectedValues });
-    } else {
-      onChange({ ...value, op, value: selectedValues[0] ?? "" });
-    }
-  }
-
-  function toggleValue(v: string) {
-    if (isMulti) {
-      const set = new Set(selectedValues);
-      if (set.has(v)) set.delete(v);
-      else set.add(v);
-      onChange({ ...value, value: Array.from(set) });
-    } else {
-      onChange({ ...value, value: v });
-    }
-  }
-
-  function optionLabel(v: string) {
-    return filter.enumOptions?.find((o) => o.value === v)?.label ?? v;
-  }
-
-  return (
-    <div className="space-y-2 p-2">
-      <div className="flex flex-wrap gap-1">
-        {filter.operators.map((op) => (
-          <button
-            key={op}
-            type="button"
-            onClick={() => setOp(op)}
-            className={cn(
-              "rounded-md px-2 py-1 text-xs transition-colors",
-              value.op === op
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:text-foreground"
-            )}
-          >
-            {t(OP_LABEL_KEYS[op])}
-          </button>
-        ))}
-      </div>
-
-      {filter.valueType === "number" ? (
-        <div className="space-y-1.5">
-          <Label htmlFor={`filter-${filter.id}`} className="text-xs">
-            {filter.label}
-            {filter.unit ? ` (${filter.unit})` : ""}
-          </Label>
-          <Input
-            id={`filter-${filter.id}`}
-            type="number"
-            inputMode="decimal"
-            value={
-              typeof value.value === "number" || typeof value.value === "string"
-                ? String(value.value)
-                : ""
-            }
-            onChange={(e) =>
-              onChange({
-                ...value,
-                value: e.target.value === "" ? "" : Number(e.target.value),
-              })
-            }
-          />
-        </div>
-      ) : (
-        <Command>
-          {options.length > 8 && (
-            <CommandInput placeholder={t("searchPlaceholder")} />
-          )}
-          <CommandList className="max-h-52">
-            <CommandEmpty>
-              {loading ? t("loadingOptions") : t("noOptions")}
-            </CommandEmpty>
-            <CommandGroup>
-              {options.map((opt) => (
-                <CommandItem
-                  key={opt}
-                  value={optionLabel(opt)}
-                  onSelect={() => toggleValue(opt)}
-                >
-                  {optionLabel(opt)}
-                  <CheckRow selected={selectedValues.includes(opt)} />
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      )}
-    </div>
   );
 }
 

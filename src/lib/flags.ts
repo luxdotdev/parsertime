@@ -228,7 +228,9 @@ export const queryBuilder = flag<boolean, Entities>({
     { value: true, label: "Enabled" },
     { value: false, label: "Disabled" },
   ],
-  defaultValue: false,
+  // Defaulted on while the feature is in active development. Flip back to
+  // false (or drive it from the Vercel dashboard) before it ships broadly.
+  defaultValue: true,
   description: "Enable or disable the read-only query builder",
   identify,
 });

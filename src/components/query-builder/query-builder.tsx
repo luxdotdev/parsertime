@@ -1,12 +1,18 @@
 "use client";
 
 import { CompiledQuery } from "@/components/query-builder/compiled-query";
+import {
+  buildFilterFields,
+  filtersToQuerySpec,
+  querySpecToFilters,
+} from "@/components/query-builder/filter-bridge";
 import { QueryResults } from "@/components/query-builder/query-results";
 import {
   SentenceCanvas,
   type DraftActions,
   type DraftSpec,
 } from "@/components/query-builder/sentence-canvas";
+import type { Filter } from "@/components/reui/filters";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -43,7 +49,6 @@ function initialDraft(defaultTeamId: number | null): DraftSpec {
     teamId: defaultTeamId,
     metrics: [{ metric: "eliminations", agg: "avg" }],
     dimensions: ["player"],
-    filters: [],
     timeScope: { kind: "all" },
     sort: { key: "avg__eliminations", dir: "desc" },
     limit: 20,
@@ -70,23 +75,25 @@ export function QueryBuilder({
   const [saved, setSaved] = useState<SavedQuerySummary[]>(initialSaved);
   const [saveName, setSaveName] = useState("");
   const [saveOpen, setSaveOpen] = useState(false);
+  const [filterModel, setFilterModel] = useState<Filter[]>([]);
 
   const teamName =
     teams.find((tm) => tm.id === draft.teamId)?.name ?? t("yourTeam");
 
   const actions: DraftActions = {
-    setDataset: (dataset) =>
+    setDataset: (dataset) => {
+      // dataset-specific selections (incl. filters) reset on switch
+      setFilterModel([]);
       setDraft((d) => ({
         ...d,
         dataset,
-        // dataset-specific selections reset on switch
         metrics: [
           { metric: defaultMetricFor(dataset), agg: defaultAggFor(dataset) },
         ],
         dimensions: [],
-        filters: [],
         sort: null,
-      })),
+      }));
+    },
     setTeamId: (teamId) => setDraft((d) => ({ ...d, teamId })),
     addMetric: (metric, agg) =>
       setDraft((d) =>
@@ -111,18 +118,6 @@ export function QueryBuilder({
           ? d.dimensions.filter((x) => x !== id)
           : [...d.dimensions, id],
       })),
-    addFilter: (filter) =>
-      setDraft((d) => ({ ...d, filters: [...d.filters, filter] })),
-    updateFilter: (index, filter) =>
-      setDraft((d) => ({
-        ...d,
-        filters: d.filters.map((f, i) => (i === index ? filter : f)),
-      })),
-    removeFilter: (index) =>
-      setDraft((d) => ({
-        ...d,
-        filters: d.filters.filter((_, i) => i !== index),
-      })),
     setTimeScope: (timeScope: TimeScope) =>
       setDraft((d) => ({ ...d, timeScope })),
     setSort: (sort: QuerySort | null) => setDraft((d) => ({ ...d, sort })),
@@ -137,18 +132,23 @@ export function QueryBuilder({
     [draft.teamId, draft.dataset]
   );
 
+  const filterFields = useMemo(
+    () => buildFilterFields(draft.dataset, fetchOptions),
+    [draft.dataset, fetchOptions]
+  );
+
   const candidateSpec: QuerySpec = useMemo(
     () => ({
       dataset: draft.dataset,
       teamId: draft.teamId ?? 0,
       metrics: draft.metrics,
       dimensions: draft.dimensions,
-      filters: draft.filters,
+      filters: filtersToQuerySpec(filterModel),
       timeScope: draft.timeScope,
       sort: draft.sort,
       limit: draft.limit,
     }),
-    [draft]
+    [draft, filterModel]
   );
 
   const previewSql = useMemo(() => {
@@ -198,11 +198,11 @@ export function QueryBuilder({
         : defaultTeamId,
       metrics: item.spec.metrics,
       dimensions: item.spec.dimensions,
-      filters: item.spec.filters,
       timeScope: item.spec.timeScope,
       sort: item.spec.sort,
       limit: item.spec.limit,
     });
+    setFilterModel(querySpecToFilters(item.spec.filters));
     setStatus("idle");
     setResult(null);
     toast.success(t("loadedQuery", { name: item.name }));
@@ -253,7 +253,9 @@ export function QueryBuilder({
           draft={draft}
           actions={actions}
           teams={teams}
-          fetchOptions={fetchOptions}
+          filterModel={filterModel}
+          onFilterModelChange={setFilterModel}
+          filterFields={filterFields}
         />
       </section>
 
@@ -385,13 +387,21 @@ function SavedMenu({
   );
 }
 
+const DEFAULT_METRIC: Record<DraftSpec["dataset"], string> = {
+  player_stat: "eliminations",
+  calculated_stat: "mvp_score",
+  kill: "kills",
+  hero_swap: "swaps",
+  ultimate: "ultimates",
+  map: "maps",
+};
+
 function defaultMetricFor(dataset: DraftSpec["dataset"]): string {
-  if (dataset === "kill") return "kills";
-  if (dataset === "calculated_stat") return "mvp_score";
-  return "eliminations";
+  return DEFAULT_METRIC[dataset];
 }
 
 function defaultAggFor(dataset: DraftSpec["dataset"]): MetricRef["agg"] {
-  if (dataset === "kill") return "count";
-  return "avg";
+  return dataset === "player_stat" || dataset === "calculated_stat"
+    ? "avg"
+    : "count";
 }

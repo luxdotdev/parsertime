@@ -6,7 +6,14 @@ import { z } from "zod";
  * UI and the server compiler.
  */
 
-export const DATASETS = ["player_stat", "calculated_stat", "kill"] as const;
+export const DATASETS = [
+  "player_stat",
+  "calculated_stat",
+  "kill",
+  "hero_swap",
+  "ultimate",
+  "map",
+] as const;
 export type DatasetId = (typeof DATASETS)[number];
 
 export const AGGREGATIONS = [
@@ -23,6 +30,7 @@ export const FILTER_OPERATORS = [
   "eq",
   "neq",
   "in",
+  "nin",
   "gt",
   "gte",
   "lt",

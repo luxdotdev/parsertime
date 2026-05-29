@@ -120,6 +120,51 @@ describe("query-builder compiler", () => {
     expect(params).toEqual([-1]);
   });
 
+  it("counts hero swaps and joins MatchStart for the map-type grouping", () => {
+    const spec = parse({
+      dataset: "hero_swap",
+      teamId: 4,
+      metrics: [{ metric: "swaps", agg: "count" }],
+      dimensions: ["to_hero", "map_type"],
+    });
+    const plan = buildPlan(spec);
+    const { sql, params } = toExecutable(plan, [10, 11]);
+    expect(sql).toContain('FROM "HeroSwap" hs');
+    expect(sql).toContain('WHERE hs."scrimId" IN ($1, $2)');
+    expect(sql).toContain("(COUNT(*))::float8");
+    expect(sql).toContain('hs."player_hero" AS "to_hero"');
+    expect(sql).toContain('FROM "MatchStart") ms ON ms."MapDataId" = hs."MapDataId"');
+    expect(sql).toContain('ms."map_type"::text AS "map_type"');
+    expect(params).toEqual([10, 11]);
+  });
+
+  it("treats map_type as a base column for the maps dataset (no join)", () => {
+    const spec = parse({
+      dataset: "map",
+      teamId: 4,
+      metrics: [{ metric: "maps", agg: "count" }],
+      dimensions: ["map_type"],
+    });
+    const plan = buildPlan(spec);
+    const { sql } = toExecutable(plan, [1]);
+    expect(sql).toContain('FROM "MatchStart" m');
+    expect(sql).toContain('m."map_type"::text AS "map_type"');
+    expect(sql).not.toContain("LEFT JOIN"); // base table already is MatchStart
+    expect(plan.tables).toEqual(["MatchStart"]);
+  });
+
+  it("counts ultimates from UltimateEnd", () => {
+    const spec = parse({
+      dataset: "ultimate",
+      teamId: 4,
+      metrics: [{ metric: "ultimates", agg: "count" }],
+      dimensions: ["hero"],
+    });
+    const { sql } = toExecutable(buildPlan(spec), [1]);
+    expect(sql).toContain('FROM "UltimateEnd" u');
+    expect(sql).toContain('u."player_hero" AS "hero"');
+  });
+
   it("renders a readable display query with the team scope annotated", () => {
     const spec = parse({
       dataset: "player_stat",

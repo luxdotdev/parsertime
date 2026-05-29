@@ -1,10 +1,13 @@
 "use client";
 
 import {
+  Filters,
+  type Filter,
+  type FilterFieldsConfig,
+} from "@/components/reui/filters";
+import {
   DatasetEditor,
   DimensionEditor,
-  FilterAddEditor,
-  FilterEditor,
   LimitEditor,
   MetricAddEditor,
   MetricEditor,
@@ -16,6 +19,7 @@ import {
   QueryToken,
   type TokenTech,
 } from "@/components/query-builder/query-token";
+import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
@@ -25,20 +29,17 @@ import {
   AGG_LABELS,
   AGG_SQL_LABELS,
   getDataset,
-  getFilter,
   getMetric,
-  type FilterDef,
 } from "@/lib/query-builder/registry";
 import {
   metricKey,
   type DatasetId,
   type MetricRef,
-  type QueryFilter,
   type QuerySort,
   type TimeScope,
   type ViewableTeam,
 } from "@/lib/query-builder/types";
-import { PlusIcon } from "lucide-react";
+import { ListFilterIcon, PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -47,7 +48,6 @@ export type DraftSpec = {
   teamId: number | null;
   metrics: MetricRef[];
   dimensions: string[];
-  filters: QueryFilter[];
   timeScope: TimeScope;
   sort: QuerySort | null;
   limit: number | null;
@@ -60,22 +60,9 @@ export type DraftActions = {
   updateMetric: (index: number, ref: MetricRef) => void;
   removeMetric: (index: number) => void;
   toggleDimension: (id: string) => void;
-  addFilter: (filter: QueryFilter) => void;
-  updateFilter: (index: number, filter: QueryFilter) => void;
-  removeFilter: (index: number) => void;
   setTimeScope: (ts: TimeScope) => void;
   setSort: (sort: QuerySort | null) => void;
   setLimit: (n: number | null) => void;
-};
-
-const OP_WORDS: Record<string, string> = {
-  eq: "is",
-  neq: "is not",
-  in: "is",
-  gt: ">",
-  gte: "≥",
-  lt: "<",
-  lte: "≤",
 };
 
 function Connective({ children }: { children: React.ReactNode }) {
@@ -116,12 +103,16 @@ export function SentenceCanvas({
   draft,
   actions,
   teams,
-  fetchOptions,
+  filterModel,
+  onFilterModelChange,
+  filterFields,
 }: {
   draft: DraftSpec;
   actions: DraftActions;
   teams: ViewableTeam[];
-  fetchOptions: (filterId: string) => Promise<string[]>;
+  filterModel: Filter[];
+  onFilterModelChange: (filters: Filter[]) => void;
+  filterFields: FilterFieldsConfig;
 }) {
   const t = useTranslations("queryBuilderPage");
   const dataset = getDataset(draft.dataset);
@@ -167,25 +158,6 @@ export function SentenceCanvas({
       columns: m.column ? [m.column] : undefined,
       note: m.description,
     };
-  }
-
-  function filterLabel(filter: FilterDef, f: QueryFilter): string {
-    const values = Array.isArray(f.value) ? f.value : [f.value];
-    function labelFor(v: string | number) {
-      return (
-        filter.enumOptions?.find((o) => o.value === String(v))?.label ??
-        String(v)
-      );
-    }
-    const shown =
-      values.length === 0 || values[0] === ""
-        ? t("filterAny")
-        : values.length <= 2
-          ? values.map(labelFor).join(", ")
-          : `${labelFor(values[0])} +${values.length - 1}`;
-    const unit =
-      filter.valueType === "number" && filter.unit ? filter.unit : "";
-    return `${filter.label} ${OP_WORDS[f.op]} ${shown}${unit}`;
   }
 
   function timeScopeLabel(ts: TimeScope): string {
@@ -316,53 +288,39 @@ export function SentenceCanvas({
 
       {/* WHERE filters */}
       <Connective>{t("clauseWhere")}</Connective>
-      <span className="inline-flex flex-wrap items-center gap-1">
-        {draft.filters.length === 0 && (
-          <span className="text-muted-foreground italic">{t("noFilters")}</span>
-        )}
-        {draft.filters.map((f, i) => {
-          const filter = getFilter(draft.dataset, f.field);
-          if (!filter) return null;
-          return (
-            <QueryToken
-              key={`${f.field}-${f.op}-${JSON.stringify(f.value)}`}
-              ariaLabel={t("editFilter")}
-              tech={{
-                title: `WHERE ${filter.column} ${f.op}`,
-                tables: [filter.table],
-                columns: [filter.column],
-              }}
-              removable
-              onRemove={() => actions.removeFilter(i)}
-              editor={() => (
-                <FilterEditor
-                  filter={filter}
-                  value={f}
-                  onChange={(next) => actions.updateFilter(i, next)}
-                  fetchOptions={fetchOptions}
-                />
-              )}
+      <Filters
+        filters={filterModel}
+        fields={filterFields}
+        onChange={onFilterModelChange}
+        enableShortcut
+        shortcutKey="f"
+        shortcutLabel="F"
+        searchPlaceholder={t("searchFields")}
+        emptyText={t("noResults")}
+        noOptionsText={t("noOptions")}
+        addFilterLabel={t("addFilter")}
+        trigger={
+          filterModel.length === 0 ? (
+            <button
+              type="button"
+              className="border-border text-muted-foreground hover:border-primary/40 hover:text-foreground focus-visible:ring-ring/50 inline-flex items-center gap-1 rounded-md border border-dashed px-2 py-0.5 text-sm transition-colors focus-visible:ring-[3px] focus-visible:outline-none"
             >
-              {filterLabel(filter, f)}
-            </QueryToken>
-          );
-        })}
-        <AddButton label={t("addFilter")}>
-          {(close) => (
-            <FilterAddEditor
-              dataset={draft.dataset}
-              onPick={(filter) =>
-                actions.addFilter({
-                  field: filter.id,
-                  op: filter.operators[0],
-                  value: filter.operators[0] === "in" ? [] : "",
-                })
-              }
-              close={close}
-            />
-          )}
-        </AddButton>
-      </span>
+              <ListFilterIcon className="size-3.5" aria-hidden="true" />
+              {t("addFilter")}
+            </button>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              size="icon-sm"
+              aria-label={t("addFilter")}
+              className="border-dashed"
+            >
+              <PlusIcon className="size-4" aria-hidden="true" />
+            </Button>
+          )
+        }
+      />
 
       {/* ACROSS time scope */}
       <Connective>{t("clauseAcross")}</Connective>

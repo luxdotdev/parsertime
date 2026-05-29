@@ -31,6 +31,9 @@ const BASE_ALIAS: Record<QuerySpec["dataset"], string> = {
   player_stat: "fr",
   kill: "k",
   calculated_stat: "cs",
+  hero_swap: "hs",
+  ultimate: "u",
+  map: "m",
 };
 
 const ENUM_TEXT_COLUMNS = new Set(["map_type", "role"]);
@@ -109,11 +112,12 @@ function buildWhereClause(
   baseAlias: string
 ): WhereClause {
   const ref = columnRef(filter.source, filter.column, baseAlias);
-  if (spec.op === "in") {
+  if (spec.op === "in" || spec.op === "nin") {
     const values = Array.isArray(spec.value) ? spec.value : [spec.value];
     if (values.length === 0) return { sql: "TRUE", params: [] };
     const placeholders = values.map(() => "?").join(", ");
-    return { sql: `${ref} IN (${placeholders})`, params: values };
+    const keyword = spec.op === "nin" ? "NOT IN" : "IN";
+    return { sql: `${ref} ${keyword} (${placeholders})`, params: values };
   }
   const single = Array.isArray(spec.value) ? spec.value[0] : spec.value;
   const opSql: Record<string, string> = {
