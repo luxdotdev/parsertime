@@ -31,6 +31,8 @@ export type MetricDef = {
   statType?: string;
   /** restrict a count to rows matching this SQL predicate (FILTER clause) */
   countFilter?: string;
+  /** computed datasets only: multiply the aggregate (e.g. avg(won) × 100 = win %) */
+  scale?: number;
 };
 
 export type DimensionDef = {
@@ -72,6 +74,14 @@ export type DatasetDef = {
   metrics: MetricDef[];
   dimensions: DimensionDef[];
   filters: FilterDef[];
+  /**
+   * "sql" (default) compiles to a team-scoped SQL query. "computed" runs a
+   * server post-processing function (fight detection, win calc, ...) that SQL
+   * can't express, then aggregates the result rows in memory.
+   */
+  kind?: "sql" | "computed";
+  /** computed datasets: the raw tables the post-processing reads, for display */
+  sourceTables?: string[];
 };
 
 const MAP_TYPES = [
@@ -934,6 +944,148 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         valueType: "enum",
         operators: ["in", "nin"],
         enumOptions: MAP_TYPES.map((v) => ({ value: v, label: v })),
+      },
+    ],
+  },
+  teamfight: {
+    id: "teamfight",
+    label: "Teamfights",
+    noun: "teamfights",
+    description:
+      "Every teamfight, with who won, how many ultimates your team spent, and tempo context.",
+    table: "Teamfight",
+    kind: "computed",
+    sourceTables: ["Kill", "MercyRez", "UltimateStart", "MatchStart"],
+    grainNote:
+      "Kills, resurrections, and ultimates are clustered into fights (15-second gaps). Each fight's winner and your ultimates spent are computed in a post-processing step, since no SQL query can express it.",
+    metrics: [
+      {
+        id: "fights",
+        label: "fights",
+        description: "Number of teamfights",
+        table: "Teamfight",
+        column: null,
+        source: "base",
+        allowedAggs: ["count"],
+        defaultAgg: "count",
+        precision: 0,
+      },
+      {
+        id: "win_rate",
+        label: "win rate",
+        description: "Share of fights won (avg of won × 100)",
+        table: "Teamfight",
+        column: "won",
+        source: "base",
+        allowedAggs: ["avg"],
+        defaultAgg: "avg",
+        unit: "%",
+        precision: 1,
+        scale: 100,
+      },
+      {
+        id: "wins",
+        label: "wins",
+        description: "Number of fights won",
+        table: "Teamfight",
+        column: "won",
+        source: "base",
+        allowedAggs: ["sum"],
+        defaultAgg: "sum",
+        precision: 0,
+      },
+      {
+        id: "avg_ults",
+        label: "avg ultimates used",
+        description: "Average ultimates your team spent per fight",
+        table: "Teamfight",
+        column: "ults_used",
+        source: "base",
+        allowedAggs: ["avg", "max", "min"],
+        defaultAgg: "avg",
+        precision: 2,
+      },
+    ],
+    dimensions: [
+      { id: "ults_used", label: "team ultimates used", table: "Teamfight", column: "ults_used", source: "base" },
+      { id: "result", label: "result", table: "Teamfight", column: "result", source: "base" },
+      { id: "first_pick", label: "first pick", table: "Teamfight", column: "first_pick", source: "base" },
+      { id: "first_ult", label: "first ult", table: "Teamfight", column: "first_ult", source: "base" },
+      { id: "reversal", label: "reversal", table: "Teamfight", column: "reversal", source: "base" },
+      { id: "map_type", label: "map type", table: "Teamfight", column: "map_type", source: "base" },
+      { id: "scrim", label: "scrim", table: "Teamfight", column: "scrim", source: "base" },
+    ],
+    filters: [
+      {
+        id: "ults_used",
+        label: "team ultimates used",
+        table: "Teamfight",
+        column: "ults_used",
+        source: "base",
+        valueType: "number",
+        operators: ["eq", "gte", "lte", "gt", "lt"],
+      },
+      {
+        id: "map_type",
+        label: "map type",
+        table: "Teamfight",
+        column: "map_type",
+        source: "base",
+        valueType: "enum",
+        operators: ["in", "nin"],
+        enumOptions: MAP_TYPES.map((v) => ({ value: v, label: v })),
+      },
+      {
+        id: "result",
+        label: "result",
+        table: "Teamfight",
+        column: "result",
+        source: "base",
+        valueType: "enum",
+        operators: ["eq", "neq"],
+        enumOptions: [
+          { value: "win", label: "win" },
+          { value: "loss", label: "loss" },
+        ],
+      },
+      {
+        id: "first_pick",
+        label: "first pick",
+        table: "Teamfight",
+        column: "first_pick",
+        source: "base",
+        valueType: "enum",
+        operators: ["eq"],
+        enumOptions: [
+          { value: "yes", label: "yes" },
+          { value: "no", label: "no" },
+        ],
+      },
+      {
+        id: "first_ult",
+        label: "first ult",
+        table: "Teamfight",
+        column: "first_ult",
+        source: "base",
+        valueType: "enum",
+        operators: ["eq"],
+        enumOptions: [
+          { value: "yes", label: "yes" },
+          { value: "no", label: "no" },
+        ],
+      },
+      {
+        id: "reversal",
+        label: "reversal",
+        table: "Teamfight",
+        column: "reversal",
+        source: "base",
+        valueType: "enum",
+        operators: ["eq"],
+        enumOptions: [
+          { value: "yes", label: "yes" },
+          { value: "no", label: "no" },
+        ],
       },
     ],
   },

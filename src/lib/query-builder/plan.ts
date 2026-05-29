@@ -34,6 +34,8 @@ const BASE_ALIAS: Record<QuerySpec["dataset"], string> = {
   hero_swap: "hs",
   ultimate: "u",
   map: "m",
+  // computed datasets never use the SQL planner, but the map must be total
+  teamfight: "tf",
 };
 
 const ENUM_TEXT_COLUMNS = new Set(["map_type", "role"]);
@@ -371,4 +373,63 @@ export function renderDisplaySql(
 /** A compact, human-readable summary of one selection for the hover layer. */
 export function describeAggregation(agg: Aggregation): string {
   return AGG_SQL_LABELS[agg];
+}
+
+const OP_SYMBOLS: Record<string, string> = {
+  eq: "=",
+  neq: "<>",
+  in: "IN",
+  nin: "NOT IN",
+  gt: ">",
+  gte: ">=",
+  lt: "<",
+  lte: "<=",
+};
+
+/**
+ * Render a computed dataset's plan as readable pseudo-SQL for the underlay.
+ * Computed analyses don't run as SQL, but expressing the post-processing this
+ * way keeps the technical layer honest about what's grouped and filtered.
+ */
+export function renderComputedPlan(
+  spec: QuerySpec,
+  opts: { teamName: string; scrimCount?: number }
+): string {
+  const ds = getDataset(spec.dataset);
+  const scope =
+    opts.scrimCount !== undefined
+      ? `/* ${opts.teamName}: ${opts.scrimCount} scrim${opts.scrimCount === 1 ? "" : "s"} */`
+      : `/* ${opts.teamName} */`;
+
+  const selects = spec.metrics.map((ref) => {
+    const m = getMetric(spec.dataset, ref.metric);
+    if (!m) return ref.metric;
+    if (m.column === null || ref.agg === "count") return `COUNT(*) AS ${m.id}`;
+    const scaled = m.scale ? ` * ${m.scale}` : "";
+    return `${AGG_SQL_LABELS[ref.agg]}(${m.column})${scaled} AS ${m.id}`;
+  });
+
+  const groupExprs = spec.dimensions.flatMap((id) => {
+    const d = getDimension(spec.dataset, id);
+    return d ? [d.column] : [];
+  });
+
+  const whereExprs = spec.filters.flatMap((f) => {
+    const fd = getFilter(spec.dataset, f.field);
+    if (!fd) return [];
+    const value = Array.isArray(f.value)
+      ? `(${f.value.map((v) => literal(v)).join(", ")})`
+      : literal(f.value);
+    return [`${fd.column} ${OP_SYMBOLS[f.op] ?? f.op} ${value}`];
+  });
+
+  let out = `ANALYZE ${ds.noun} ${scope}\nFROM ${(ds.sourceTables ?? [ds.table]).join(", ")}`;
+  if (whereExprs.length) out += `\nWHERE ${whereExprs.join("\n  AND ")}`;
+  if (groupExprs.length) out += `\nGROUP BY ${groupExprs.join(", ")}`;
+  out += `\nSELECT ${selects.join(", ")}`;
+  if (spec.sort) {
+    out += `\nORDER BY ${spec.sort.key} ${spec.sort.dir.toUpperCase()}`;
+  }
+  out += `\nLIMIT ${spec.limit ?? 1000}`;
+  return out;
 }

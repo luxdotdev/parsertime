@@ -17,9 +17,11 @@ import {
   ClockIcon,
   CrosshairIcon,
   MapIcon,
+  RotateCcwIcon,
   ShieldIcon,
   SwordsIcon,
   TagIcon,
+  TrophyIcon,
   UserIcon,
   UsersIcon,
   ZapIcon,
@@ -48,6 +50,11 @@ const FIELD_ICONS: Record<string, React.ReactNode> = {
   ability: <ZapIcon />,
   critical: <CrosshairIcon />,
   min_time_played: <ClockIcon />,
+  ults_used: <ZapIcon />,
+  result: <TrophyIcon />,
+  first_pick: <CrosshairIcon />,
+  first_ult: <ZapIcon />,
+  reversal: <RotateCcwIcon />,
 };
 
 function fieldType(filter: FilterDef): FilterFieldConfig["type"] {

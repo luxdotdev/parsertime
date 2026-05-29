@@ -21,7 +21,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { downloadCsv } from "@/lib/query-builder/format";
-import { buildPlan, renderDisplaySql } from "@/lib/query-builder/plan";
+import {
+  buildPlan,
+  renderComputedPlan,
+  renderDisplaySql,
+} from "@/lib/query-builder/plan";
+import { getDataset, getMetric } from "@/lib/query-builder/registry";
 import {
   deleteSavedQuery,
   getFieldOptions,
@@ -154,20 +159,25 @@ export function QueryBuilder({
   const previewSql = useMemo(() => {
     if (draft.metrics.length === 0) return null;
     try {
+      if (getDataset(draft.dataset).kind === "computed") {
+        return renderComputedPlan(candidateSpec, { teamName });
+      }
       return renderDisplaySql(buildPlan(candidateSpec), { teamName });
     } catch {
       return null;
     }
-  }, [candidateSpec, teamName, draft.metrics.length]);
+  }, [candidateSpec, teamName, draft.metrics.length, draft.dataset]);
 
   const previewTables = useMemo(() => {
     if (draft.metrics.length === 0) return [];
     try {
+      const ds = getDataset(draft.dataset);
+      if (ds.kind === "computed") return ds.sourceTables ?? [ds.table];
       return buildPlan(candidateSpec).tables;
     } catch {
       return [];
     }
-  }, [candidateSpec, draft.metrics.length]);
+  }, [candidateSpec, draft.metrics.length, draft.dataset]);
 
   const canRun = draft.teamId !== null && draft.metrics.length > 0;
   const runHint = !draft.teamId
@@ -394,6 +404,7 @@ const DEFAULT_METRIC: Record<DraftSpec["dataset"], string> = {
   hero_swap: "swaps",
   ultimate: "ultimates",
   map: "maps",
+  teamfight: "win_rate",
 };
 
 function defaultMetricFor(dataset: DraftSpec["dataset"]): string {
@@ -401,7 +412,7 @@ function defaultMetricFor(dataset: DraftSpec["dataset"]): string {
 }
 
 function defaultAggFor(dataset: DraftSpec["dataset"]): MetricRef["agg"] {
-  return dataset === "player_stat" || dataset === "calculated_stat"
-    ? "avg"
-    : "count";
+  // Seed with the metric's own default aggregation so locked metrics
+  // (e.g. win rate is avg-only) are always valid.
+  return getMetric(dataset, defaultMetricFor(dataset))?.defaultAgg ?? "count";
 }

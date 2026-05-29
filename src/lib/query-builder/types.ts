@@ -13,6 +13,7 @@ export const DATASETS = [
   "hero_swap",
   "ultimate",
   "map",
+  "teamfight",
 ] as const;
 export type DatasetId = (typeof DATASETS)[number];
 

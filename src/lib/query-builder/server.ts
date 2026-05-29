@@ -3,9 +3,12 @@
 import { canViewTeam, getCurrentUser, isAdminUser } from "@/lib/auth";
 import { queryBuilder } from "@/lib/flags";
 import prisma from "@/lib/prisma";
+import { aggregateComputed } from "@/lib/query-builder/aggregate";
+import { computeTeamfights } from "@/lib/query-builder/compute/teamfights";
 import { getDataset, getFilter } from "@/lib/query-builder/registry";
 import {
   buildPlan,
+  renderComputedPlan,
   renderDisplaySql,
   toExecutable,
 } from "@/lib/query-builder/plan";
@@ -135,6 +138,18 @@ export async function runQuery(rawSpec: unknown): Promise<RunQueryResponse> {
   });
   if (!team) return { ok: false, error: "Team not found." };
 
+  const dataset = getDataset(spec.dataset);
+  const scrimIds = await resolveScrimIds(spec.teamId, spec.timeScope);
+
+  // Computed datasets run a post-processing step instead of SQL.
+  if (dataset.kind === "computed") {
+    return runComputedQuery(spec, {
+      teamName: team.name,
+      scrimIds,
+      started,
+    });
+  }
+
   let plan;
   try {
     plan = buildPlan(spec);
@@ -142,7 +157,6 @@ export async function runQuery(rawSpec: unknown): Promise<RunQueryResponse> {
     return { ok: false, error: "That query is not valid yet." };
   }
 
-  const scrimIds = await resolveScrimIds(spec.teamId, spec.timeScope);
   const { sql, params } = toExecutable(plan, scrimIds);
 
   let rawRows: Record<string, unknown>[];
@@ -188,6 +202,50 @@ export async function runQuery(rawSpec: unknown): Promise<RunQueryResponse> {
       scrimCount: scrimIds.length,
       durationMs: Date.now() - started,
       truncated: rows.length >= plan.limit,
+    },
+  };
+  return { ok: true, result };
+}
+
+async function runComputedQuery(
+  spec: QuerySpec,
+  ctx: { teamName: string; scrimIds: number[]; started: number }
+): Promise<RunQueryResponse> {
+  let computedRows;
+  try {
+    switch (spec.dataset) {
+      case "teamfight":
+        computedRows = await computeTeamfights(spec.teamId, ctx.scrimIds);
+        break;
+      default:
+        return { ok: false, error: "Unknown analysis." };
+    }
+  } catch {
+    return {
+      ok: false,
+      error: "The analysis could not be run. Try adjusting it.",
+    };
+  }
+
+  const { columns, rows } = aggregateComputed(computedRows, spec);
+  const dataset = getDataset(spec.dataset);
+  const limit = spec.limit ?? 1000;
+
+  const result: QueryResult = {
+    columns,
+    rows,
+    sql: renderComputedPlan(spec, {
+      teamName: ctx.teamName,
+      scrimCount: ctx.scrimIds.length,
+    }),
+    tables: dataset.sourceTables ?? [dataset.table],
+    meta: {
+      rowCount: rows.length,
+      teamId: spec.teamId,
+      teamName: ctx.teamName,
+      scrimCount: ctx.scrimIds.length,
+      durationMs: Date.now() - ctx.started,
+      truncated: rows.length >= limit,
     },
   };
   return { ok: true, result };

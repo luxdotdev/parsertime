@@ -134,9 +134,9 @@ export function SentenceCanvas({
   function aggPrefix(ref: MetricRef): string {
     const m = getMetric(draft.dataset, ref.metric);
     if (!m) return "";
-    const pureCount =
-      m.allowedAggs.length === 1 && m.allowedAggs[0] === "count";
-    return pureCount ? "" : `${AGG_LABELS[ref.agg]} `;
+    // No prefix when there's no choice of aggregation (e.g. count-only or a
+    // locked metric like win rate). The label already carries the meaning.
+    return m.allowedAggs.length <= 1 ? "" : `${AGG_LABELS[ref.agg]} `;
   }
 
   function metricLabel(ref: MetricRef): string {
