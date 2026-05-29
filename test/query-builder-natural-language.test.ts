@@ -990,6 +990,24 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans result-scoped hero stat questions onto hero pool", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "How many final blows does PGE have on Widowmaker in won maps?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_pool",
+      metrics: [{ metric: "final_blows", agg: "sum" }],
+      dimensions: [],
+      filters: [
+        { field: "hero", op: "in", value: ["Widowmaker"] },
+        { field: "player", op: "in", value: ["PGE"] },
+        { field: "result", op: "eq", value: "win" },
+      ],
+    });
+  });
+
   it("plans role-performance per-10 questions onto role metrics", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,

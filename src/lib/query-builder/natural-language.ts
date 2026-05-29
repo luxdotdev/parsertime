@@ -1288,6 +1288,9 @@ function findPlayer(question: string, hero: string | null): string | null {
     ...question.matchAll(
       /\b(?:is|was|are|were)\s+([A-Z][A-Za-z0-9_.-]{1,})\b/g
     ),
+    ...question.matchAll(
+      /\b(?:does|did)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:have|has|record|recorded)\b/gi
+    ),
     ...question.matchAll(/\b([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:has|had)\b/gi),
     ...question.matchAll(
       /\b([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:dies|died|die|gets|got)\b/gi
@@ -2011,6 +2014,23 @@ function pickDataset(question: string): DatasetId {
       includesPhrase(normalized, "losses") ||
       includesPhrase(normalized, "lose") ||
       includesPhrase(normalized, "lost"))
+  ) {
+    return "hero_pool";
+  }
+  if (
+    pickResultScope(normalized) &&
+    (heroMentions.length > 0 || player) &&
+    (includesPhrase(normalized, "final blow") ||
+      includesPhrase(normalized, "final blows") ||
+      includesPhrase(normalized, "eliminations") ||
+      includesPhrase(normalized, "elims") ||
+      includesPhrase(normalized, "deaths") ||
+      includesPhrase(normalized, "assists") ||
+      includesPhrase(normalized, "damage") ||
+      includesPhrase(normalized, "healing") ||
+      includesPhrase(normalized, "time played") ||
+      includesPhrase(normalized, "playtime") ||
+      includesPhrase(normalized, "ultimates"))
   ) {
     return "hero_pool";
   }
@@ -4295,7 +4315,7 @@ function pickDimensions(
     }
   }
   if (dataset === "hero_pool" && dims.length === 0) {
-    add("hero");
+    if (!hasFilter("hero")) add("hero");
   }
   if (dataset === "hero_diversity" && dims.length === 0) {
     add("role");

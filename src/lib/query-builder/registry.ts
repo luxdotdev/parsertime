@@ -5842,6 +5842,19 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         operators: ["in", "nin"],
         enumOptions: MAP_TYPES.map((v) => ({ value: v, label: v })),
       },
+      {
+        id: "result",
+        label: "result",
+        table: "HeroPool",
+        column: "result",
+        source: "base",
+        valueType: "enum",
+        operators: ["eq", "neq"],
+        enumOptions: [
+          { value: "win", label: "win" },
+          { value: "loss", label: "loss" },
+        ],
+      },
     ],
   },
   hero_diversity: {
