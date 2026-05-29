@@ -2504,7 +2504,10 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   }
 
   const deduped = dedupeMetrics(refs);
-  if (dataset === "teamfight" && pickResultScope(normalized)) {
+  if (
+    pickResultScope(normalized) &&
+    getDataset(dataset).filters.some((filter) => filter.id === "result")
+  ) {
     const hasScopedMetric = deduped.some(
       (ref) => ref.metric !== "wins" && ref.metric !== "losses"
     );

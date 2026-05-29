@@ -5058,6 +5058,19 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         ],
       },
       {
+        id: "result",
+        label: "result",
+        table: "AbilityImpact",
+        column: "result",
+        source: "base",
+        valueType: "enum",
+        operators: ["eq", "neq"],
+        enumOptions: [
+          { value: "win", label: "win" },
+          { value: "loss", label: "loss" },
+        ],
+      },
+      {
         id: "map",
         label: "map",
         table: "AbilityImpact",
@@ -5493,6 +5506,19 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
           { value: "early", label: "early" },
           { value: "mid", label: "mid" },
           { value: "late", label: "late" },
+        ],
+      },
+      {
+        id: "result",
+        label: "result",
+        table: "SwapImpact",
+        column: "result",
+        source: "base",
+        valueType: "enum",
+        operators: ["eq", "neq"],
+        enumOptions: [
+          { value: "win", label: "win" },
+          { value: "loss", label: "loss" },
         ],
       },
       {
@@ -6759,6 +6785,19 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
           value: role,
           label: role,
         })),
+      },
+      {
+        id: "result",
+        label: "result",
+        table: "EnemyHeroMatchup",
+        column: "result",
+        source: "base",
+        valueType: "enum",
+        operators: ["eq", "neq"],
+        enumOptions: [
+          { value: "win", label: "win" },
+          { value: "loss", label: "loss" },
+        ],
       },
       {
         id: "map",

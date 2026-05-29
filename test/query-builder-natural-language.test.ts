@@ -867,6 +867,28 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans result-scoped ability-impact questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 9,
+      question: "What is our win rate when using Suzu in lost fights?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ability_impact",
+      filters: [
+        { field: "hero", op: "in", value: ["Kiriko"] },
+        { field: "ability", op: "in", value: ["Protection Suzu"] },
+        { field: "result", op: "eq", value: "loss" },
+        { field: "side", op: "eq", value: "us" },
+        { field: "used", op: "eq", value: "yes" },
+      ],
+    });
+    expect(planned?.spec.metrics[0]).toEqual({
+      metric: "win_rate",
+      agg: "avg",
+    });
+  });
+
   it("plans ability-timing questions by phase", () => {
     const planned = planQueryFromQuestion({
       teamId: 9,
@@ -935,6 +957,26 @@ describe("query-builder natural-language planner", () => {
       metrics: [{ metric: "win_rate", agg: "avg" }],
       dimensions: ["swap_count_bucket"],
       filters: [{ field: "had_swap", op: "eq", value: "yes" }],
+    });
+  });
+
+  it("plans result-scoped swap-impact questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 3,
+      question: "What is our win rate when we swap in lost maps?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "swap_impact",
+      dimensions: ["swap_count_bucket"],
+      filters: [
+        { field: "result", op: "eq", value: "loss" },
+        { field: "had_swap", op: "eq", value: "yes" },
+      ],
+    });
+    expect(planned?.spec.metrics[0]).toEqual({
+      metric: "win_rate",
+      agg: "avg",
     });
   });
 
@@ -1462,6 +1504,23 @@ describe("query-builder natural-language planner", () => {
     expect(planned?.spec.metrics[0]).toEqual({
       metric: "losses",
       agg: "sum",
+    });
+  });
+
+  it("plans result-scoped enemy hero matchup questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question:
+        "Which enemy heroes do we have the most maps against in lost maps?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "enemy_hero",
+      metrics: [{ metric: "maps", agg: "count" }],
+      dimensions: ["enemy_hero"],
+      filters: [{ field: "result", op: "eq", value: "loss" }],
+      sort: { key: "count__maps", dir: "desc" },
+      limit: 20,
     });
   });
 
