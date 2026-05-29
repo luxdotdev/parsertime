@@ -40,6 +40,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   ability_impact: "win_rate",
   swap_impact: "win_rate",
   hero_pool: "win_rate",
+  hero_pickrate: "pick_rate",
   enemy_hero: "win_rate",
   ban_impact: "win_rate_delta",
   ult_combo: "win_rate",
@@ -282,6 +283,19 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "ultimate efficiency",
     "ult efficiency",
   ],
+  hero_pickrate: [
+    "hero pickrate",
+    "hero pick rate",
+    "pickrate",
+    "pick rate",
+    "pick rates",
+    "hero ownership",
+    "ownership rate",
+    "owns our",
+    "owned by",
+    "player hero share",
+    "hero pool share",
+  ],
   enemy_hero: [
     "against",
     "against enemy",
@@ -379,6 +393,14 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "elims per ult",
   ],
   kd: ["kd", "k d", "final blows per death"],
+  pick_rate: ["pickrate", "pick rate", "pick rates", "hero pool share"],
+  ownership_rate: [
+    "ownership",
+    "ownership rate",
+    "owns",
+    "owned by",
+    "share of hero",
+  ],
   ban_rate: ["ban rate", "banned rate", "most banned"],
   maps_banned: ["maps banned", "bans", "ban count", "total bans"],
   win_rate_delta: [
@@ -684,6 +706,7 @@ function findMapName(question: string): string | null {
 function findPlayer(question: string, hero: string | null): string | null {
   const heroWords = new Set(normalize(hero ?? "").split(/\s+/));
   const mapWords = new Set(normalize(findMapName(question) ?? "").split(/\s+/));
+  const nonPlayerWords = new Set(["hero", "map", "role", "team", "player"]);
   const candidates = [
     ...question.matchAll(
       /\b(?:for|player|by)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\b/gi
@@ -701,6 +724,7 @@ function findPlayer(question: string, hero: string | null): string | null {
     if (
       !normalized ||
       FILLER_WORDS.has(normalized) ||
+      nonPlayerWords.has(normalized) ||
       heroWords.has(normalized) ||
       mapWords.has(normalized)
     ) {
@@ -827,6 +851,22 @@ function mentionsPlayerMapPerformanceContext(normalized: string): boolean {
         includesPhrase(normalized, "worst") ||
         includesPhrase(normalized, "perform") ||
         includesPhrase(normalized, "performance")))
+  );
+}
+
+function mentionsHeroPickrateContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "hero pickrate") ||
+    includesPhrase(normalized, "hero pick rate") ||
+    includesPhrase(normalized, "pickrate") ||
+    includesPhrase(normalized, "pick rate") ||
+    includesPhrase(normalized, "pick rates") ||
+    includesPhrase(normalized, "hero ownership") ||
+    includesPhrase(normalized, "ownership rate") ||
+    includesPhrase(normalized, "owns our") ||
+    includesPhrase(normalized, "owned by") ||
+    includesPhrase(normalized, "player hero share") ||
+    includesPhrase(normalized, "hero pool share")
   );
 }
 
@@ -990,6 +1030,10 @@ function pickDataset(question: string): DatasetId {
     heroMentions.length === 0
   ) {
     return "player_map_performance";
+  }
+
+  if (mentionsHeroPickrateContext(normalized)) {
+    return "hero_pickrate";
   }
 
   if (mapName) {
@@ -1190,6 +1234,18 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   ) {
     deduped.sort((a, b) =>
       a.metric === "losses" ? -1 : b.metric === "losses" ? 1 : 0
+    );
+  }
+  if (
+    dataset === "hero_pickrate" &&
+    deduped.some((ref) => ref.metric === "ownership_rate") &&
+    (includesPhrase(normalized, "ownership") ||
+      includesPhrase(normalized, "owns") ||
+      includesPhrase(normalized, "owned by") ||
+      includesPhrase(normalized, "share of hero"))
+  ) {
+    deduped.sort((a, b) =>
+      a.metric === "ownership_rate" ? -1 : b.metric === "ownership_rate" ? 1 : 0
     );
   }
   if (
@@ -2017,6 +2073,10 @@ function pickDimensions(
   if (dataset === "hero_pool" && dims.length === 0) {
     add("hero");
   }
+  if (dataset === "hero_pickrate" && dims.length === 0) {
+    if (!hasFilter("player")) add("player");
+    if (!hasFilter("hero")) add("hero");
+  }
   if (dataset === "player_map_performance" && dims.length === 0) {
     if (!hasFilter("player")) add("player");
     if (!hasFilter("map")) add("map");
@@ -2105,7 +2165,13 @@ function pickSort(
     !includesPhrase(normalized, "lowest") &&
     !includesPhrase(normalized, "worst") &&
     !includesPhrase(normalized, "fastest") &&
-    !includesPhrase(normalized, "slowest")
+    !includesPhrase(normalized, "slowest") &&
+    !(
+      dataset === "hero_pickrate" &&
+      (includesPhrase(normalized, "owns") ||
+        includesPhrase(normalized, "ownership") ||
+        includesPhrase(normalized, "owned by"))
+    )
   ) {
     return null;
   }
@@ -2114,7 +2180,11 @@ function pickSort(
     includesPhrase(normalized, "top") ||
     includesPhrase(normalized, "most") ||
     includesPhrase(normalized, "highest") ||
-    includesPhrase(normalized, "slowest");
+    includesPhrase(normalized, "slowest") ||
+    (dataset === "hero_pickrate" &&
+      (includesPhrase(normalized, "owns") ||
+        includesPhrase(normalized, "ownership") ||
+        includesPhrase(normalized, "owned by")));
   const wantsLow =
     includesPhrase(normalized, "lowest") ||
     includesPhrase(normalized, "fastest");

@@ -9,6 +9,7 @@ import { computeBanImpact } from "@/lib/query-builder/compute/ban-impact";
 import { computeDuels } from "@/lib/query-builder/compute/duels";
 import { computeEnemyHeroMatchups } from "@/lib/query-builder/compute/enemy-hero";
 import { computeHeroPool } from "@/lib/query-builder/compute/hero-pool";
+import { computeHeroPickrate } from "@/lib/query-builder/compute/hero-pickrate";
 import { computeMapResults } from "@/lib/query-builder/compute/map-results";
 import { computePlayerMapPerformance } from "@/lib/query-builder/compute/player-map-performance";
 import { computeRoleTrios } from "@/lib/query-builder/compute/role-trios";
@@ -256,6 +257,9 @@ async function runComputedQuery(
         break;
       case "hero_pool":
         computedRows = await computeHeroPool(spec.teamId, ctx.scrimIds);
+        break;
+      case "hero_pickrate":
+        computedRows = await computeHeroPickrate(spec.teamId, ctx.scrimIds);
         break;
       case "enemy_hero":
         computedRows = await computeEnemyHeroMatchups(

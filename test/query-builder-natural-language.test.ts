@@ -417,6 +417,39 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans player hero-pickrate questions by hero", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "What is PGE's hero pickrate by hero?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_pickrate",
+      metrics: [{ metric: "pick_rate", agg: "ratio" }],
+      dimensions: ["hero"],
+      filters: [{ field: "player", op: "in", value: ["PGE"] }],
+    });
+  });
+
+  it("plans hero ownership questions by player", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Who owns our Widowmaker playtime?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_pickrate",
+      dimensions: ["player"],
+      filters: [{ field: "hero", op: "in", value: ["Widowmaker"] }],
+      sort: { key: "ratio__ownership_rate", dir: "desc" },
+      limit: 20,
+    });
+    expect(planned?.spec.metrics[0]).toEqual({
+      metric: "ownership_rate",
+      agg: "ratio",
+    });
+  });
+
   it("plans ability-impact questions from ability aliases", () => {
     const planned = planQueryFromQuestion({
       teamId: 9,
