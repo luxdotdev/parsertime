@@ -405,6 +405,7 @@ const DEFAULT_METRIC: Record<DraftSpec["dataset"], string> = {
   ultimate: "ultimates",
   map: "maps",
   teamfight: "win_rate",
+  map_result: "win_rate",
 };
 
 function defaultMetricFor(dataset: DraftSpec["dataset"]): string {
