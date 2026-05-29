@@ -51,6 +51,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   swap_impact: "win_rate",
   hero_pool: "win_rate",
   hero_pickrate: "pick_rate",
+  hero_trend: "playtime_trend",
   player_intelligence: "hero_pool_size",
   enemy_hero: "win_rate",
   ban_impact: "win_rate_delta",
@@ -449,6 +450,21 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "player hero share",
     "hero pool share",
   ],
+  hero_trend: [
+    "hero trend",
+    "hero trends",
+    "hero usage trend",
+    "hero usage trends",
+    "hero pick trend",
+    "hero pick trends",
+    "pick rate trend",
+    "playtime trend",
+    "trending hero",
+    "trending heroes",
+    "heroes trending",
+    "hero meta",
+    "meta trend",
+  ],
   player_intelligence: [
     "player intelligence",
     "hero depth",
@@ -754,6 +770,8 @@ const METRIC_ALIASES: Record<string, string[]> = {
   ],
   recent_win_rate: ["recent win rate", "recent form", "last 10 win rate"],
   trend_delta: ["trend delta", "recent delta", "change", "improvement"],
+  playtime_trend: ["playtime trend", "usage trend", "hero usage trend"],
+  pick_rate_trend: ["pick rate trend", "pickrate trend", "pick trend"],
   improvement_percentage: [
     "improvement percentage",
     "improvement %",
@@ -1350,6 +1368,30 @@ function mentionsPlayerTargetContext(normalized: string): boolean {
   );
 }
 
+function mentionsHeroTrendContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "hero trend") ||
+    includesPhrase(normalized, "hero trends") ||
+    includesPhrase(normalized, "hero usage trend") ||
+    includesPhrase(normalized, "hero usage trends") ||
+    includesPhrase(normalized, "hero pick trend") ||
+    includesPhrase(normalized, "hero pick trends") ||
+    includesPhrase(normalized, "pick rate trend") ||
+    includesPhrase(normalized, "pickrate trend") ||
+    includesPhrase(normalized, "playtime trend") ||
+    includesPhrase(normalized, "trending hero") ||
+    includesPhrase(normalized, "trending heroes") ||
+    includesPhrase(normalized, "heroes trending") ||
+    includesPhrase(normalized, "hero meta") ||
+    includesPhrase(normalized, "meta trend") ||
+    (includesPhrase(normalized, "which heroes") &&
+      (includesPhrase(normalized, "trending up") ||
+        includesPhrase(normalized, "trending down") ||
+        includesPhrase(normalized, "increasing") ||
+        includesPhrase(normalized, "declining")))
+  );
+}
+
 function mentionsStreakContext(normalized: string): boolean {
   return (
     includesPhrase(normalized, "streak") ||
@@ -1758,6 +1800,7 @@ function pickDataset(question: string): DatasetId {
   if (mentionsPlayerImpactContext(normalized)) return "player_impact";
   if (mentionsTeamPerformanceContext(normalized)) return "team_performance";
   if (mentionsCalculatedStatContext(normalized)) return "calculated_stat";
+  if (mentionsHeroTrendContext(normalized)) return "hero_trend";
   if (mentionsStreakContext(normalized)) return "streak";
   if (mentionsMapIntelligenceContext(normalized)) return "map_intelligence";
   if (mentionsTrendContext(normalized)) return "trend";
@@ -2341,6 +2384,21 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   if (dataset === "ult_usage" && includesPhrase(normalized, "per map")) {
     deduped.sort((a, b) =>
       a.metric === "ults_per_map" ? -1 : b.metric === "ults_per_map" ? 1 : 0
+    );
+  }
+  if (
+    dataset === "hero_trend" &&
+    deduped.some((ref) => ref.metric === "pick_rate_trend")
+  ) {
+    for (let i = deduped.length - 1; i >= 0; i--) {
+      if (deduped[i].metric === "pick_rate") deduped.splice(i, 1);
+    }
+    deduped.sort((a, b) =>
+      a.metric === "pick_rate_trend"
+        ? -1
+        : b.metric === "pick_rate_trend"
+          ? 1
+          : 0
     );
   }
   if (dataset === "duel") {
@@ -3118,6 +3176,26 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
   }
 
+  if (dataset === "hero_trend") {
+    if (
+      includesPhrase(normalized, "trending up") ||
+      includesPhrase(normalized, "increasing") ||
+      includesPhrase(normalized, "rising") ||
+      includesPhrase(normalized, "more popular")
+    ) {
+      filters.push({ field: "trend", op: "in", value: ["increasing"] });
+    } else if (
+      includesPhrase(normalized, "trending down") ||
+      includesPhrase(normalized, "declining") ||
+      includesPhrase(normalized, "falling") ||
+      includesPhrase(normalized, "less popular")
+    ) {
+      filters.push({ field: "trend", op: "in", value: ["declining"] });
+    } else if (includesPhrase(normalized, "stable")) {
+      filters.push({ field: "trend", op: "in", value: ["stable"] });
+    }
+  }
+
   if (dataset === "ult_economy") {
     const bucket = pickUltEconomyBucket(normalized);
     if (bucket) {
@@ -3628,6 +3706,20 @@ function pickDimensions(
     if (!hasFilter("player")) add("player");
     if (!hasFilter("hero")) add("hero");
   }
+  if (dataset === "hero_trend" && dims.length === 0) {
+    if (
+      includesPhrase(normalized, "which map") ||
+      includesPhrase(normalized, "which maps") ||
+      includesPhrase(normalized, "by map")
+    ) {
+      if (!hasFilter("map")) add("map");
+    } else {
+      if (!hasFilter("hero")) add("hero");
+      if (includesPhrase(normalized, "by map type") && !hasFilter("map_type")) {
+        add("map_type");
+      }
+    }
+  }
   if (dataset === "player_intelligence" && dims.length === 0) {
     if (
       hasFilter("player") ||
@@ -3818,7 +3910,10 @@ function pickSort(
     !includesPhrase(normalized, "one-trick") &&
     !includesPhrase(normalized, "forced off") &&
     !includesPhrase(normalized, "improving") &&
+    !includesPhrase(normalized, "increasing") &&
     !includesPhrase(normalized, "declining") &&
+    !includesPhrase(normalized, "trending up") &&
+    !includesPhrase(normalized, "trending down") &&
     !includesPhrase(normalized, "outlier") &&
     !includesPhrase(normalized, "outliers") &&
     !includesPhrase(normalized, "far above") &&
@@ -3857,6 +3952,8 @@ function pickSort(
     includesPhrase(normalized, "one-trick") ||
     includesPhrase(normalized, "forced off") ||
     includesPhrase(normalized, "improving") ||
+    includesPhrase(normalized, "increasing") ||
+    includesPhrase(normalized, "trending up") ||
     includesPhrase(normalized, "outlier") ||
     includesPhrase(normalized, "outliers") ||
     includesPhrase(normalized, "far above") ||
@@ -3878,7 +3975,8 @@ function pickSort(
   const wantsLow =
     includesPhrase(normalized, "lowest") ||
     includesPhrase(normalized, "fastest") ||
-    includesPhrase(normalized, "declining");
+    includesPhrase(normalized, "declining") ||
+    includesPhrase(normalized, "trending down");
   const wantsBest = includesPhrase(normalized, "best");
   const wantsWorst = includesPhrase(normalized, "worst");
   const dir = wantsHigh

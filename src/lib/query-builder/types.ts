@@ -32,6 +32,7 @@ export const DATASETS = [
   "swap_impact",
   "hero_pool",
   "hero_pickrate",
+  "hero_trend",
   "player_intelligence",
   "enemy_hero",
   "ban_impact",

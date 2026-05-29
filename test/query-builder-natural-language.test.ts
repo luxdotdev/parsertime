@@ -621,6 +621,39 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans increasing hero trend questions by map type", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Which heroes are trending up on Control?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_trend",
+      metrics: [{ metric: "playtime_trend", agg: "avg" }],
+      dimensions: ["hero"],
+      filters: [
+        { field: "map_type", op: "in", value: ["Control"] },
+        { field: "trend", op: "in", value: ["increasing"] },
+      ],
+      sort: { key: "avg__playtime_trend", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans map-specific hero pick-rate trend questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "What is our hero pick rate trend on King's Row?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_trend",
+      metrics: [{ metric: "pick_rate_trend", agg: "avg" }],
+      dimensions: ["hero"],
+      filters: [{ field: "map", op: "in", value: ["King's Row"] }],
+    });
+  });
+
   it("plans ability-impact questions from ability aliases", () => {
     const planned = planQueryFromQuestion({
       teamId: 9,

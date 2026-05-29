@@ -491,6 +491,7 @@ const DEFAULT_METRIC: Record<DraftSpec["dataset"], string> = {
   swap_impact: "win_rate",
   hero_pool: "win_rate",
   hero_pickrate: "pick_rate",
+  hero_trend: "playtime_trend",
   player_intelligence: "hero_pool_size",
   enemy_hero: "win_rate",
   ban_impact: "win_rate_delta",

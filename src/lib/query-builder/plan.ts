@@ -54,6 +54,7 @@ const BASE_ALIAS: Record<QuerySpec["dataset"], string> = {
   swap_impact: "si",
   hero_pool: "hp",
   hero_pickrate: "hpr",
+  hero_trend: "ht",
   player_intelligence: "pi",
   enemy_hero: "eh",
   ban_impact: "bi",
