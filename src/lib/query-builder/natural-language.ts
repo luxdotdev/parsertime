@@ -61,11 +61,28 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
   ],
   calculated_stat: [
     "mvp",
+    "map mvp",
+    "map mvps",
     "fleta",
     "first pick percentage",
+    "first pick rate",
+    "first picks",
     "first death percentage",
+    "first death rate",
+    "first deaths",
     "duel winrate",
+    "duel win rate",
     "ult charge time",
+    "ultimate charge time",
+    "time to use ult",
+    "time to use ultimate",
+    "drought time",
+    "kills per ult",
+    "kills per ultimate",
+    "ajax",
+    "ajaxes",
+    "fight reversal percentage",
+    "fight reversal rate",
   ],
   kill: ["kill feed", "kills by", "killed", "critical kill", "victim"],
   hero_swap: ["swap", "swaps", "swapped", "hero swap"],
@@ -238,6 +255,49 @@ const METRIC_ALIASES: Record<string, string[]> = {
   eliminations: ["eliminations", "elims"],
   deaths: ["deaths", "deaths per 10"],
   assists: ["assists", "offensive assists"],
+  mvp_score: ["mvp", "mvp score", "average mvp score"],
+  map_mvp_count: ["map mvps", "map mvp count"],
+  fleta_deadlift: ["fleta", "fleta deadlift", "deadlift"],
+  first_pick_pct: [
+    "first pick",
+    "first pick percentage",
+    "first pick rate",
+    "opening pick rate",
+  ],
+  first_pick_count: ["first picks", "first pick count", "opening picks"],
+  first_death_pct: [
+    "first death",
+    "first death percentage",
+    "first death rate",
+    "opening death rate",
+  ],
+  first_death_count: ["first deaths", "first death count", "opening deaths"],
+  ajax_count: ["ajax", "ajaxes", "ajax count"],
+  ult_charge_time: [
+    "ult charge time",
+    "ultimate charge time",
+    "average ult charge time",
+    "average ultimate charge time",
+  ],
+  time_to_use_ult: [
+    "time to use ult",
+    "time to use ultimate",
+    "average time to use ult",
+    "average time to use ultimate",
+  ],
+  drought_time: ["drought time", "average drought time"],
+  kills_per_ult: [
+    "kills per ult",
+    "kills per ultimate",
+    "elims per ult",
+    "eliminations per ultimate",
+  ],
+  duel_winrate: ["duel winrate", "duel win rate", "duel rate"],
+  fight_reversal: [
+    "fight reversal",
+    "fight reversal percentage",
+    "fight reversal rate",
+  ],
   time_played: ["time played", "playtime", "played it", "played them"],
   hero_damage: ["hero damage", "damage dealt", "damage per 10"],
   all_damage: ["all damage", "total damage"],
@@ -595,10 +655,49 @@ function mentionsUltEconomyContext(normalized: string): boolean {
   );
 }
 
+function mentionsCalculatedStatContext(normalized: string): boolean {
+  const wantsPlayerDuelStat =
+    (includesPhrase(normalized, "duel winrate") ||
+      includesPhrase(normalized, "duel win rate")) &&
+    (includesPhrase(normalized, "who") ||
+      includesPhrase(normalized, "which player") ||
+      includesPhrase(normalized, "which players") ||
+      includesPhrase(normalized, "by player") ||
+      includesPhrase(normalized, "per player")) &&
+    !includesPhrase(normalized, "against") &&
+    !includesPhrase(normalized, "vs") &&
+    !includesPhrase(normalized, "versus");
+
+  return (
+    wantsPlayerDuelStat ||
+    includesPhrase(normalized, "mvp") ||
+    includesPhrase(normalized, "map mvp") ||
+    includesPhrase(normalized, "fleta") ||
+    includesPhrase(normalized, "first pick percentage") ||
+    includesPhrase(normalized, "first pick rate") ||
+    includesPhrase(normalized, "first picks") ||
+    includesPhrase(normalized, "first death percentage") ||
+    includesPhrase(normalized, "first death rate") ||
+    includesPhrase(normalized, "first deaths") ||
+    includesPhrase(normalized, "ult charge time") ||
+    includesPhrase(normalized, "ultimate charge time") ||
+    includesPhrase(normalized, "time to use ult") ||
+    includesPhrase(normalized, "time to use ultimate") ||
+    includesPhrase(normalized, "drought time") ||
+    includesPhrase(normalized, "kills per ult") ||
+    includesPhrase(normalized, "kills per ultimate") ||
+    includesPhrase(normalized, "ajax") ||
+    includesPhrase(normalized, "ajaxes") ||
+    includesPhrase(normalized, "fight reversal percentage") ||
+    includesPhrase(normalized, "fight reversal rate")
+  );
+}
+
 function pickDataset(question: string): DatasetId {
+  const normalized = normalize(question);
+  if (mentionsCalculatedStatContext(normalized)) return "calculated_stat";
   if (findAbility(question)) return "ability_impact";
 
-  const normalized = normalize(question);
   const mentionsUlt =
     includesPhrase(normalized, "ult") ||
     includesPhrase(normalized, "ults") ||
@@ -1403,7 +1502,14 @@ function pickDimensions(
     }
   }
 
-  if (includesPhrase(normalized, "who") && !hasFilter("player")) add("player");
+  if (
+    (includesPhrase(normalized, "who") ||
+      includesPhrase(normalized, "which player") ||
+      includesPhrase(normalized, "which players")) &&
+    !hasFilter("player")
+  ) {
+    add("player");
+  }
   if (
     (includesPhrase(normalized, "which hero") ||
       includesPhrase(normalized, "by hero")) &&
@@ -1516,14 +1622,38 @@ function pickSort(
     !includesPhrase(normalized, "highest") &&
     !includesPhrase(normalized, "best") &&
     !includesPhrase(normalized, "lowest") &&
-    !includesPhrase(normalized, "worst")
+    !includesPhrase(normalized, "worst") &&
+    !includesPhrase(normalized, "fastest") &&
+    !includesPhrase(normalized, "slowest")
   ) {
     return null;
   }
   const metric = getMetric(dataset, metrics[0].metric);
+  const wantsHigh =
+    includesPhrase(normalized, "top") ||
+    includesPhrase(normalized, "most") ||
+    includesPhrase(normalized, "highest") ||
+    includesPhrase(normalized, "slowest");
   const wantsLow =
-    includesPhrase(normalized, "lowest") || includesPhrase(normalized, "worst");
-  const dir = wantsLow || metric?.lowerIsBetter ? "asc" : "desc";
+    includesPhrase(normalized, "lowest") ||
+    includesPhrase(normalized, "fastest");
+  const wantsBest = includesPhrase(normalized, "best");
+  const wantsWorst = includesPhrase(normalized, "worst");
+  const dir = wantsHigh
+    ? "desc"
+    : wantsLow
+      ? "asc"
+      : wantsBest
+        ? metric?.lowerIsBetter
+          ? "asc"
+          : "desc"
+        : wantsWorst
+          ? metric?.lowerIsBetter
+            ? "desc"
+            : "asc"
+          : metric?.lowerIsBetter
+            ? "asc"
+            : "desc";
   return { key: metricKey(metrics[0]), dir };
 }
 

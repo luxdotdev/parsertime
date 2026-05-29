@@ -103,6 +103,81 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans per-player first-pick rate questions onto calculated stats", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Who has the highest first pick rate?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "calculated_stat",
+      metrics: [{ metric: "first_pick_pct", agg: "avg" }],
+      dimensions: ["player"],
+      sort: { key: "avg__first_pick_pct", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans worst first-death rate questions as high lower-is-better stats", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Which players have the worst first death rate?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "calculated_stat",
+      metrics: [{ metric: "first_death_pct", agg: "avg" }],
+      dimensions: ["player"],
+      sort: { key: "avg__first_death_pct", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans first-death count questions onto calculated stats", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Which players have the most first deaths?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "calculated_stat",
+      metrics: [{ metric: "first_death_count", agg: "sum" }],
+      dimensions: ["player"],
+      sort: { key: "sum__first_death_count", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans fastest ultimate-charge questions as lower-is-better stats", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Which players have the fastest ult charge time?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "calculated_stat",
+      metrics: [{ metric: "ult_charge_time", agg: "avg" }],
+      dimensions: ["player"],
+      sort: { key: "avg__ult_charge_time", dir: "asc" },
+      limit: 20,
+    });
+  });
+
+  it("plans per-player duel winrate questions onto calculated stats", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Who has the highest duel winrate?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "calculated_stat",
+      metrics: [{ metric: "duel_winrate", agg: "avg" }],
+      dimensions: ["player"],
+      sort: { key: "avg__duel_winrate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans ranked map-result questions with grouping, sorting, and limits", () => {
     const planned = planQueryFromQuestion({
       teamId: 2,
