@@ -6,11 +6,56 @@ import { querySpecSchema, type QuerySpec } from "@/lib/query-builder/types";
 import { describe, expect, it } from "vitest";
 
 const FIGHTS: ComputedRow[] = [
-  { won: 1, ults_used: 2, result: "win", map_type: "Control", scrim: "A" },
-  { won: 0, ults_used: 2, result: "loss", map_type: "Control", scrim: "A" },
-  { won: 1, ults_used: 2, result: "win", map_type: "Hybrid", scrim: "B" },
-  { won: 0, ults_used: 0, result: "loss", map_type: "Control", scrim: "A" },
-  { won: 1, ults_used: 1, result: "win", map_type: "Push", scrim: "C" },
+  {
+    won: 1,
+    ults_used: 2,
+    wasted_ults: 0,
+    result: "win",
+    first_death: "no",
+    dry_fight: "no",
+    map_type: "Control",
+    scrim: "A",
+  },
+  {
+    won: 0,
+    ults_used: 2,
+    wasted_ults: 1,
+    result: "loss",
+    first_death: "yes",
+    dry_fight: "no",
+    map_type: "Control",
+    scrim: "A",
+  },
+  {
+    won: 1,
+    ults_used: 2,
+    wasted_ults: 0,
+    result: "win",
+    first_death: "no",
+    dry_fight: "no",
+    map_type: "Hybrid",
+    scrim: "B",
+  },
+  {
+    won: 0,
+    ults_used: 0,
+    wasted_ults: 0,
+    result: "loss",
+    first_death: "yes",
+    dry_fight: "yes",
+    map_type: "Control",
+    scrim: "A",
+  },
+  {
+    won: 1,
+    ults_used: 1,
+    wasted_ults: 0,
+    result: "win",
+    first_death: "no",
+    dry_fight: "no",
+    map_type: "Push",
+    scrim: "C",
+  },
 ];
 
 function spec(partial: Partial<QuerySpec>): QuerySpec {
@@ -87,5 +132,37 @@ describe("computed aggregator (teamfights)", () => {
       })
     );
     expect(onlyWins.rows[0]["count__fights"]).toBe(3);
+  });
+
+  it("supports extended fight-context filters and wasted ult metrics", () => {
+    const firstDeath = aggregateComputed(
+      FIGHTS,
+      spec({
+        metrics: [
+          { metric: "win_rate", agg: "avg" },
+          { metric: "fights", agg: "count" },
+        ],
+        filters: [{ field: "first_death", op: "eq", value: "yes" }],
+      })
+    );
+    expect(firstDeath.rows[0]["count__fights"]).toBe(2);
+    expect(firstDeath.rows[0]["avg__win_rate"]).toBe(0);
+
+    const dry = aggregateComputed(
+      FIGHTS,
+      spec({
+        metrics: [{ metric: "fights", agg: "count" }],
+        filters: [{ field: "dry_fight", op: "eq", value: "yes" }],
+      })
+    );
+    expect(dry.rows[0]["count__fights"]).toBe(1);
+
+    const wasted = aggregateComputed(
+      FIGHTS,
+      spec({
+        metrics: [{ metric: "avg_wasted_ults", agg: "sum" }],
+      })
+    );
+    expect(wasted.rows[0]["sum__avg_wasted_ults"]).toBe(1);
   });
 });

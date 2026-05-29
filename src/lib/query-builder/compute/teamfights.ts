@@ -104,9 +104,12 @@ export async function computeTeamfights(
       rows.push({
         won: analysis.won ? 1 : 0,
         ults_used: analysis.ultCount,
+        wasted_ults: analysis.wastedUlts,
         result: analysis.won ? "win" : "loss",
         first_pick: yesNo(analysis.hadFirstPick),
+        first_death: yesNo(analysis.hadFirstDeath),
         first_ult: yesNo(analysis.usedFirstUlt),
+        dry_fight: yesNo(analysis.isDryFight),
         reversal: yesNo(analysis.isReversal),
         map_type: meta.mapType,
         scrim: meta.scrim,
