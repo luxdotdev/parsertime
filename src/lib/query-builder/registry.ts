@@ -1391,6 +1391,24 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
     ],
     filters: [
       {
+        id: "map",
+        label: "map",
+        table: "MapResult",
+        column: "map",
+        source: "base",
+        valueType: "text",
+        operators: ["in", "nin"],
+      },
+      {
+        id: "opponent",
+        label: "opponent",
+        table: "MapResult",
+        column: "opponent",
+        source: "base",
+        valueType: "text",
+        operators: ["in", "nin"],
+      },
+      {
         id: "map_type",
         label: "map type",
         table: "MapResult",

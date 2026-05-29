@@ -167,7 +167,16 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "dry fight",
     "wasted ult",
   ],
-  map_result: ["map win", "map winrate", "map win rate", "record by map"],
+  map_result: [
+    "map win",
+    "map winrate",
+    "map win rate",
+    "record by map",
+    "record against",
+    "record versus",
+    "map record",
+    "match record",
+  ],
   ult_economy: [
     "ult economy",
     "ultimate economy",
@@ -608,6 +617,22 @@ function findPlayer(question: string, hero: string | null): string | null {
   return null;
 }
 
+function formatEntityName(value: string): string {
+  const trimmed = value.trim().replace(/\s+/g, " ");
+  if (!trimmed) return "";
+  return trimmed === trimmed.toUpperCase() ? trimmed : titleCase(trimmed);
+}
+
+function findOpponent(question: string): string | null {
+  const match = question.match(
+    /\b(?:against|vs|versus)\s+([A-Za-z0-9][A-Za-z0-9_.&' -]*?)(?=\s+(?:on|by|per|with|in|over|for|across|when|where)\b|[?.!,]|$)/i
+  );
+  if (!match) return null;
+  const opponent = formatEntityName(match[1]);
+  if (!opponent || FILLER_WORDS.has(normalize(opponent))) return null;
+  return opponent;
+}
+
 function mentionsFightContext(normalized: string): boolean {
   return (
     includesPhrase(normalized, "fight") ||
@@ -733,6 +758,22 @@ function pickDataset(question: string): DatasetId {
     mentionsTeamfightUltContext(normalized)
   ) {
     return "teamfight";
+  }
+
+  if (
+    (includesPhrase(normalized, "which map") ||
+      includesPhrase(normalized, "which maps") ||
+      includesPhrase(normalized, "map win") ||
+      includesPhrase(normalized, "map win rate") ||
+      includesPhrase(normalized, "map record") ||
+      includesPhrase(normalized, "match record") ||
+      includesPhrase(normalized, "record against") ||
+      includesPhrase(normalized, "record versus")) &&
+    (includesPhrase(normalized, "against") ||
+      includesPhrase(normalized, "versus") ||
+      includesPhrase(normalized, "vs"))
+  ) {
+    return "map_result";
   }
 
   if (
@@ -872,6 +913,30 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   ) {
     const agg = pickMetricAgg(dataset, "win_rate", question);
     if (agg) deduped.unshift({ metric: "win_rate", agg });
+  }
+  if (
+    dataset === "map_result" &&
+    (includesPhrase(normalized, "best") ||
+      includesPhrase(normalized, "worst") ||
+      includesPhrase(normalized, "top") ||
+      includesPhrase(normalized, "highest") ||
+      includesPhrase(normalized, "lowest"))
+  ) {
+    const wantsCount =
+      includesPhrase(normalized, "how many") ||
+      includesPhrase(normalized, "number") ||
+      includesPhrase(normalized, "count") ||
+      includesPhrase(normalized, "total") ||
+      includesPhrase(normalized, "most maps");
+    if (!wantsCount) {
+      for (let i = deduped.length - 1; i >= 0; i--) {
+        if (deduped[i].metric === "maps") deduped.splice(i, 1);
+      }
+      if (!deduped.some((ref) => ref.metric === "win_rate")) {
+        const agg = pickMetricAgg(dataset, "win_rate", question);
+        if (agg) deduped.unshift({ metric: "win_rate", agg });
+      }
+    }
   }
   if (dataset === "ult_usage" && includesPhrase(normalized, "per map")) {
     deduped.sort((a, b) =>
@@ -1207,6 +1272,13 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     if (ultCountFilter) filters.push(ultCountFilter);
     const wastedUltFilter = extractWastedUltFilter(normalized);
     if (wastedUltFilter) filters.push(wastedUltFilter);
+  }
+
+  if (dataset === "map_result") {
+    const opponent = findOpponent(question);
+    if (opponent) {
+      filters.push({ field: "opponent", op: "in", value: [opponent] });
+    }
   }
 
   if (dataset === "ult_economy") {

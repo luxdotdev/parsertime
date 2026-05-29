@@ -192,6 +192,36 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans opponent-filtered map-result questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "What is our map win rate against NRG?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_result",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: [],
+      filters: [{ field: "opponent", op: "in", value: ["NRG"] }],
+    });
+  });
+
+  it("plans best maps against an opponent", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Which maps are best against team peps?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_result",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["map"],
+      filters: [{ field: "opponent", op: "in", value: ["Team Peps"] }],
+      sort: { key: "avg__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans ability-impact questions from ability aliases", () => {
     const planned = planQueryFromQuestion({
       teamId: 9,
