@@ -198,4 +198,41 @@ describe("query-builder natural-language planner", () => {
       limit: 20,
     });
   });
+
+  it("plans ult-combo questions onto weighted combo win rates", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What are our best ult combos with Zarya?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_combo",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["combo"],
+      filters: [
+        { field: "hero", op: "in", value: ["Zarya"] },
+        { field: "type", op: "eq", value: "combo" },
+      ],
+      sort: { key: "ratio__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans counter-ult response questions onto response rows", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "How often do we counter ult against Reinhardt?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_combo",
+      metrics: [{ metric: "uses", agg: "sum" }],
+      dimensions: ["enemy_hero", "response_hero"],
+      filters: [
+        { field: "hero", op: "in", value: ["Reinhardt"] },
+        { field: "type", op: "eq", value: "response" },
+        { field: "enemy_hero", op: "in", value: ["Reinhardt"] },
+      ],
+    });
+  });
 });

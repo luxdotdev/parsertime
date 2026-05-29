@@ -26,20 +26,28 @@ function matchesFilter(
   field: string
 ): boolean {
   const cell = row[field];
+  const cellValues =
+    typeof cell === "string" && cell.includes("|") ? cell.split("|") : null;
   if (filter.op === "in" || filter.op === "nin") {
     const values = (
       Array.isArray(filter.value) ? filter.value : [filter.value]
     ).map(String);
     if (values.length === 0) return true;
-    const hit = values.includes(String(cell));
+    const hit = cellValues
+      ? values.some((value) => cellValues.includes(value))
+      : values.includes(String(cell));
     return filter.op === "in" ? hit : !hit;
   }
   const target = Array.isArray(filter.value) ? filter.value[0] : filter.value;
   switch (filter.op) {
     case "eq":
-      return String(cell) === String(target);
+      return cellValues
+        ? cellValues.includes(String(target))
+        : String(cell) === String(target);
     case "neq":
-      return String(cell) !== String(target);
+      return cellValues
+        ? !cellValues.includes(String(target))
+        : String(cell) !== String(target);
     case "gt":
       return Number(cell) > Number(target);
     case "gte":

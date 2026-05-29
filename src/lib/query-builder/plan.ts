@@ -44,6 +44,7 @@ const BASE_ALIAS: Record<QuerySpec["dataset"], string> = {
   hero_pool: "hp",
   enemy_hero: "eh",
   ban_impact: "bi",
+  ult_combo: "uc",
 };
 
 const ENUM_TEXT_COLUMNS = new Set(["map_type", "role"]);
@@ -425,7 +426,9 @@ export function renderComputedPlan(
     if (ref.agg === "per10" || ref.agg === "ratio") {
       const denominator =
         m.denominatorColumn ?? (ref.agg === "per10" ? "time_played" : null);
-      const scale = m.denominatorScale ?? (ref.agg === "per10" ? 600 : 1);
+      const scale =
+        (m.denominatorScale ?? (ref.agg === "per10" ? 600 : 1)) *
+        (m.scale ?? 1);
       if (denominator) {
         return `(SUM(${m.column}) / NULLIF(SUM(${denominator}), 0)) * ${scale} AS ${m.id}`;
       }

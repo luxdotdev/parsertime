@@ -40,6 +40,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   hero_pool: "win_rate",
   enemy_hero: "win_rate",
   ban_impact: "win_rate_delta",
+  ult_combo: "win_rate",
 };
 
 const DATASET_HINTS: Record<DatasetId, string[]> = {
@@ -65,6 +66,18 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
   kill: ["kill feed", "kills by", "killed", "critical kill", "victim"],
   hero_swap: ["swap", "swaps", "swapped", "hero swap"],
   ultimate: ["ultimate used", "ultimates used", "ults used"],
+  ult_combo: [
+    "ult combo",
+    "ult combos",
+    "ultimate combo",
+    "ultimate combos",
+    "combo win rate",
+    "combo winrate",
+    "counter ult",
+    "counter ultimate",
+    "respond to ult",
+    "response ult",
+  ],
   map: ["maps played", "opponent", "map count"],
   teamfight: [
     "fight",
@@ -191,6 +204,15 @@ const METRIC_ALIASES: Record<string, string[]> = {
   ],
   win_rate_with: ["win rate with ban", "winrate with ban"],
   win_rate_without: ["win rate without ban", "winrate without ban"],
+  uses: [
+    "uses",
+    "used",
+    "usage",
+    "how often",
+    "most common",
+    "combo count",
+    "response count",
+  ],
   avg_wasted_ults: ["wasted ult", "wasted ults", "wasted ultimates"],
   win_rate: ["winrate", "winrates", "win rate", "win rates", "wr"],
   fights: ["fights", "teamfights", "team fights"],
@@ -217,6 +239,11 @@ const DIMENSION_ALIASES: Record<string, string[]> = {
   advantage_bucket: ["advantage bucket", "ult advantage"],
   ability: ["ability", "cooldown"],
   side: ["side", "team"],
+  type: ["type"],
+  combo: ["combo", "ult combo", "ultimate combo"],
+  hero_a: ["first hero"],
+  hero_b: ["second hero"],
+  response_hero: ["response hero", "counter hero"],
   used: ["used", "usage"],
   scenario: ["scenario", "used vs not used"],
   role: ["role"],
@@ -429,6 +456,7 @@ function pickMetricAgg(dataset: DatasetId, metricId: string, question: string) {
     (includesPhrase(normalized, "number") ||
       includesPhrase(normalized, "total") ||
       includesPhrase(normalized, "how many") ||
+      includesPhrase(normalized, "how often") ||
       includesPhrase(normalized, "most")) &&
     metric.allowedAggs.includes("sum")
   ) {
@@ -693,6 +721,39 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
   }
 
+  if (dataset === "ult_combo") {
+    if (
+      includesPhrase(normalized, "counter ult") ||
+      includesPhrase(normalized, "counter ultimate") ||
+      includesPhrase(normalized, "response ult") ||
+      includesPhrase(normalized, "respond to ult") ||
+      includesPhrase(normalized, "respond to ultimate") ||
+      includesPhrase(normalized, "answer ult") ||
+      includesPhrase(normalized, "answer ultimate")
+    ) {
+      filters.push({ field: "type", op: "eq", value: "response" });
+    } else if (
+      includesPhrase(normalized, "ult combo") ||
+      includesPhrase(normalized, "ult combos") ||
+      includesPhrase(normalized, "ultimate combo") ||
+      includesPhrase(normalized, "ultimate combos") ||
+      includesPhrase(normalized, "combo win rate") ||
+      includesPhrase(normalized, "combo winrate")
+    ) {
+      filters.push({ field: "type", op: "eq", value: "combo" });
+    }
+
+    if (
+      hero &&
+      (includesPhrase(normalized, "enemy ult") ||
+        includesPhrase(normalized, "enemy ultimate") ||
+        includesPhrase(normalized, "against") ||
+        includesPhrase(normalized, "respond to"))
+    ) {
+      filters.push({ field: "enemy_hero", op: "in", value: [hero] });
+    }
+  }
+
   return filters.slice(0, 8);
 }
 
@@ -767,6 +828,14 @@ function pickDimensions(
   }
   if (dataset === "ban_impact" && dims.length === 0 && !hasFilter("hero")) {
     add("hero");
+  }
+  if (dataset === "ult_combo" && dims.length === 0) {
+    if (hasFilter("type") && filters.some((f) => f.value === "response")) {
+      add("enemy_hero");
+      add("response_hero");
+    } else {
+      add("combo");
+    }
   }
 
   return dims.slice(0, 4);
