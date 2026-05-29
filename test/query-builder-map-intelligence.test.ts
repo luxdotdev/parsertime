@@ -114,4 +114,26 @@ describe("computed aggregator (map intelligence)", () => {
     expect(rows[0].map).toBe("Circuit Royal");
     expect(rows[0]["avg__trend_delta"]).toBe(-15);
   });
+
+  it("filters grouped map-intelligence metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      MAP_INTELLIGENCE_ROWS,
+      spec({
+        metrics: [
+          { metric: "weighted_win_rate", agg: "ratio" },
+          { metric: "maps", agg: "sum" },
+        ],
+        dimensions: ["map_type"],
+        filters: [
+          { field: "weighted_win_rate", op: "gte", value: 70 },
+          { field: "maps", op: "gte", value: 3 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].map_type).toBe("Hybrid");
+    expect(rows[0]["ratio__weighted_win_rate"]).toBeCloseTo(73.2558);
+    expect(rows[0]["sum__maps"]).toBe(12);
+  });
 });

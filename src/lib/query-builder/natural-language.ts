@@ -1313,6 +1313,9 @@ function findPlayer(question: string, hero: string | null): string | null {
     "goal",
     "goals",
     "progress",
+    "improvement",
+    "percentage",
+    "percent",
     "status",
     "track",
     "rotation",
@@ -4826,6 +4829,43 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     if (confidence) {
       filters.push({ field: "confidence", op: "in", value: [confidence] });
     }
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "win_rate",
+          aliases: ["map win rate", "overall win rate", "overall winrate"],
+        },
+        {
+          field: "weighted_win_rate",
+          aliases: [
+            "weighted win rate",
+            "time weighted win rate",
+            "time-decayed win rate",
+            "decayed win rate",
+          ],
+        },
+        {
+          field: "recent_win_rate",
+          aliases: ["recent win rate", "recent form win rate"],
+        },
+        {
+          field: "trend_delta",
+          aliases: ["trend delta", "recent delta", "delta", "improvement"],
+        },
+        {
+          field: "maps",
+          aliases: ["maps", "games", "maps played", "sample size"],
+        },
+        {
+          field: "wins",
+          aliases: ["wins", "map wins"],
+        },
+        {
+          field: "losses",
+          aliases: ["losses", "map losses"],
+        },
+      ])
+    );
   }
 
   if (dataset === "teamfight") {
@@ -5151,6 +5191,47 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         if (filter) filters.push(filter);
       }
     }
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "improvement_percentage",
+          aliases: [
+            "improvement percentage",
+            "improvement percent",
+            "improvement %",
+            "trend percentage",
+          ],
+        },
+        {
+          field: "improvement",
+          aliases: ["improvement", "trend improvement"],
+        },
+        {
+          field: "raw_change",
+          aliases: ["raw change", "change"],
+        },
+        {
+          field: "early_value",
+          aliases: ["early value", "first half value"],
+        },
+        {
+          field: "late_value",
+          aliases: ["late value", "second half value"],
+        },
+        {
+          field: "maps",
+          aliases: ["maps", "games", "maps played", "sample size"],
+        },
+        {
+          field: "early_maps",
+          aliases: ["early maps", "first half maps"],
+        },
+        {
+          field: "late_maps",
+          aliases: ["late maps", "second half maps"],
+        },
+      ])
+    );
   }
 
   if (dataset === "player_outlier") {

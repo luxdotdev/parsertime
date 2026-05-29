@@ -109,4 +109,27 @@ describe("computed aggregator (player trends)", () => {
       "Deaths per 10",
     ]);
   });
+
+  it("filters grouped player-trend metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      PLAYER_TREND_ROWS,
+      spec({
+        metrics: [
+          { metric: "improvement_percentage", agg: "avg" },
+          { metric: "maps", agg: "max" },
+        ],
+        dimensions: ["player"],
+        filters: [
+          { field: "direction", op: "in", value: ["improving"] },
+          { field: "improvement_percentage", op: "gte", value: 30 },
+          { field: "maps", op: "gte", value: 8 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].player).toBe("Landon");
+    expect(rows[0]["avg__improvement_percentage"]).toBe(50);
+    expect(rows[0]["max__maps"]).toBe(8);
+  });
 });

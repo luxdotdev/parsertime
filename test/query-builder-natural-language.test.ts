@@ -1007,6 +1007,26 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans map-intelligence aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question:
+        "Which map types have time-decayed weighted win rate at least 70% with at least 3 maps?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_intelligence",
+      dimensions: ["map_type"],
+      filters: [
+        { field: "weighted_win_rate", op: "gte", value: 70 },
+        { field: "maps", op: "gte", value: 3 },
+      ],
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([{ metric: "weighted_win_rate", agg: "ratio" }])
+    );
+  });
+
   it("plans map-type dependency questions by map type", () => {
     const planned = planQueryFromQuestion({
       teamId: 2,
@@ -2138,6 +2158,29 @@ describe("query-builder natural-language planner", () => {
       sort: { key: "avg__improvement_percentage", dir: "desc" },
       limit: 20,
     });
+  });
+
+  it("plans player-trend aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Which players are improving the most with improvement percentage at least 30% and sample size at least 8?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_trend",
+      dimensions: ["player"],
+      filters: [
+        { field: "direction", op: "in", value: ["improving"] },
+        { field: "improvement_percentage", op: "gte", value: 30 },
+        { field: "maps", op: "gte", value: 8 },
+      ],
+      sort: { key: "avg__improvement_percentage", dir: "desc" },
+      limit: 20,
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([{ metric: "improvement_percentage", agg: "avg" }])
+    );
   });
 
   it("plans player trend decline questions for a specific metric", () => {
