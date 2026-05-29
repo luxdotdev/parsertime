@@ -839,6 +839,11 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "damage standard deviation",
     "volatile damage",
   ],
+  healing_per10_stddev: [
+    "healing volatility",
+    "healing standard deviation",
+    "volatile healing",
+  ],
   map_mvp_rate: ["map mvp rate", "map mvp percentage"],
   fleta_deadlift_percentage: ["fleta deadlift", "fleta deadlift percentage"],
   fight_reversal_percentage: ["fight reversal", "fight reversal percentage"],
@@ -2257,6 +2262,7 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
       "eliminations_per10_stddev",
       "deaths_per10_stddev",
       "all_damage_per10_stddev",
+      "healing_per10_stddev",
     ]);
     for (let i = deduped.length - 1; i >= 0; i--) {
       if (!volatilityMetrics.has(deduped[i].metric)) deduped.splice(i, 1);

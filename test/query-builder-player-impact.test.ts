@@ -28,6 +28,7 @@ const PLAYER_IMPACT_ROWS: ComputedRow[] = [
     fleta_deadlift_percentage: 27,
     all_damage_per10_stddev: 900,
     deaths_per10_stddev: 1.2,
+    healing_per10_stddev: 0,
   },
   {
     player: "Landon",
@@ -51,6 +52,7 @@ const PLAYER_IMPACT_ROWS: ComputedRow[] = [
     fleta_deadlift_percentage: 10,
     all_damage_per10_stddev: 300,
     deaths_per10_stddev: 0.6,
+    healing_per10_stddev: 1800,
   },
 ];
 
@@ -102,5 +104,19 @@ describe("computed aggregator (player impact)", () => {
 
     expect(rows.map((row) => row.player)).toEqual(["PGE"]);
     expect(rows[0]["avg__kills_per_ultimate"]).toBe(2.8);
+  });
+
+  it("answers healing volatility from map-level variance", () => {
+    const { rows } = aggregateComputed(
+      PLAYER_IMPACT_ROWS,
+      spec({
+        metrics: [{ metric: "healing_per10_stddev", agg: "avg" }],
+        dimensions: ["player"],
+        sort: { key: "avg__healing_per10_stddev", dir: "desc" },
+      })
+    );
+
+    expect(rows.map((row) => row.player)).toEqual(["Landon", "PGE"]);
+    expect(rows[0]["avg__healing_per10_stddev"]).toBe(1800);
   });
 });

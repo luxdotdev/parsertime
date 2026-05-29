@@ -3020,6 +3020,18 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         precision: 0,
         lowerIsBetter: true,
       },
+      {
+        id: "healing_per10_stddev",
+        label: "healing volatility",
+        description: "Standard deviation of map-level healing per 10",
+        table: "PlayerImpact",
+        column: "healing_per10_stddev",
+        source: "base",
+        allowedAggs: ["avg", "max", "min"],
+        defaultAgg: "avg",
+        precision: 0,
+        lowerIsBetter: true,
+      },
     ],
     dimensions: [
       {

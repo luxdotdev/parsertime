@@ -932,6 +932,21 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans player-impact healing volatility questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which players have the most volatile healing per 10?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_impact",
+      metrics: [{ metric: "healing_per10_stddev", agg: "avg" }],
+      dimensions: ["player"],
+      sort: { key: "avg__healing_per10_stddev", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans player trend improvement questions", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,
