@@ -79,4 +79,30 @@ describe("computed aggregator (hero pickrate)", () => {
     expect(rows.map((row) => row.player)).toEqual(["PGE", "Landon"]);
     expect(rows[0]["ratio__ownership_rate"]).toBe(80);
   });
+
+  it("applies grouped metric filters to ownership thresholds", () => {
+    const { rows } = aggregateComputed(
+      HERO_PICKRATES,
+      spec({
+        metrics: [
+          { metric: "ownership_rate", agg: "ratio" },
+          { metric: "games", agg: "sum" },
+        ],
+        dimensions: ["player"],
+        filters: [
+          { field: "hero", op: "in", value: ["Widowmaker"] },
+          { field: "ownership_rate", op: "gte", value: 40 },
+          { field: "games", op: "gte", value: 1 },
+        ],
+      })
+    );
+
+    expect(rows).toEqual([
+      {
+        player: "PGE",
+        ratio__ownership_rate: 80,
+        sum__games: 3,
+      },
+    ]);
+  });
 });

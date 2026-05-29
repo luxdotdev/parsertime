@@ -105,4 +105,29 @@ describe("computed aggregator (hero diversity)", () => {
     expect(rows[0]["avg__average_maps_per_hero"]).toBe(3);
     expect(rows[0]["sum__shared_heroes"]).toBe(2);
   });
+
+  it("applies grouped metric filters to diversity thresholds", () => {
+    const { rows } = aggregateComputed(
+      HERO_DIVERSITY_ROWS,
+      spec({
+        metrics: [
+          { metric: "diversity_score", agg: "avg" },
+          { metric: "maps_played", agg: "sum" },
+        ],
+        dimensions: ["role"],
+        filters: [
+          { field: "diversity_score", op: "gte", value: 45 },
+          { field: "maps_played", op: "gte", value: 5 },
+        ],
+      })
+    );
+
+    expect(rows).toEqual([
+      {
+        role: "Support",
+        avg__diversity_score: 50,
+        sum__maps_played: 5,
+      },
+    ]);
+  });
 });

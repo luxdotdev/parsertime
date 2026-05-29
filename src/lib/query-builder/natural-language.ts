@@ -3633,10 +3633,6 @@ function extractDurationThresholdFilters(
   return filters;
 }
 
-function percentFraction(value: number): number {
-  return value > 1 ? value / 100 : value;
-}
-
 function extractOpeningKillTimeFilters(normalized: string): QueryFilter[] {
   const duration = `(${NUMBER_TOKEN})`;
   const unit = "(seconds?|secs?|s|minutes?|mins?|m)";
@@ -4996,7 +4992,6 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         {
           field: "pick_rate",
           aliases: ["pick rate", "pickrate", "hero pool share"],
-          coerceValue: percentFraction,
         },
         {
           field: "ownership_rate",
@@ -5006,11 +5001,27 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
             "share of hero",
             "hero ownership",
           ],
-          coerceValue: percentFraction,
+        },
+        {
+          field: "time_played",
+          aliases: ["seconds played"],
         },
         {
           field: "games",
-          aliases: ["games", "maps", "maps played"],
+          aliases: [
+            "game",
+            "games",
+            "map",
+            "maps",
+            "maps played",
+            "sample size",
+          ],
+        },
+      ]),
+      ...extractDurationThresholdFilters(dataset, normalized, [
+        {
+          field: "time_played",
+          aliases: ["time played", "playtime", "played"],
         },
       ])
     );
@@ -5363,6 +5374,46 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     } else if (includesPhrase(normalized, "stable")) {
       filters.push({ field: "trend", op: "in", value: ["stable"] });
     }
+
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "playtime_trend",
+          aliases: ["playtime trend", "time played trend", "time trend"],
+        },
+        {
+          field: "pick_rate_trend",
+          aliases: [
+            "pick rate trend",
+            "pick-rate trend",
+            "pickrate trend",
+            "usage trend",
+          ],
+        },
+        {
+          field: "pick_rate",
+          aliases: ["pick rate", "pickrate", "hero pick rate"],
+        },
+        {
+          field: "win_rate",
+          aliases: ["win rate", "winrate", "map win rate"],
+        },
+        {
+          field: "maps_played",
+          aliases: ["maps played", "maps", "games", "sample size"],
+        },
+        {
+          field: "appearances",
+          aliases: ["appearances", "hero appearances", "samples"],
+        },
+      ]),
+      ...extractDurationThresholdFilters(dataset, normalized, [
+        {
+          field: "time_played",
+          aliases: ["time played", "playtime", "played"],
+        },
+      ])
+    );
   }
 
   if (dataset === "ult_economy") {
@@ -5586,6 +5637,7 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   if (
     dataset === "hero_pool" ||
     dataset === "hero_diversity" ||
+    dataset === "hero_trend" ||
     dataset === "player_intelligence"
   ) {
     for (const role of ["Tank", "Damage", "Support"]) {
@@ -5602,6 +5654,73 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         if (filter) filters.push(filter);
       }
     }
+  }
+
+  if (dataset === "hero_diversity") {
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "diversity_score",
+          aliases: [
+            "diversity",
+            "diversity score",
+            "hero diversity",
+            "hero diversity score",
+          ],
+        },
+        {
+          field: "role_coverage",
+          aliases: ["role coverage", "coverage"],
+        },
+        {
+          field: "unique_heroes",
+          aliases: ["unique heroes", "heroes", "hero count"],
+        },
+        {
+          field: "effective_hero_pool",
+          aliases: [
+            "effective hero pool",
+            "effective heroes",
+            "hero pool",
+            "pool size",
+          ],
+        },
+        {
+          field: "role_capacity",
+          aliases: ["role capacity", "available heroes"],
+        },
+        {
+          field: "maps_played",
+          aliases: ["maps played", "maps", "games", "sample size"],
+        },
+        {
+          field: "appearances",
+          aliases: ["appearances", "samples"],
+        },
+        {
+          field: "average_maps_per_hero",
+          aliases: [
+            "average maps per hero",
+            "avg maps per hero",
+            "maps per hero",
+          ],
+        },
+        {
+          field: "specialist_heroes",
+          aliases: ["specialist heroes", "specialists"],
+        },
+        {
+          field: "shared_heroes",
+          aliases: ["shared heroes", "shared hero count"],
+        },
+      ]),
+      ...extractDurationThresholdFilters(dataset, normalized, [
+        {
+          field: "total_playtime",
+          aliases: ["total playtime", "time played", "playtime", "played"],
+        },
+      ])
+    );
   }
 
   if (dataset === "hero_pool") {

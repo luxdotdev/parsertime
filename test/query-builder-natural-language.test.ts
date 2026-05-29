@@ -1179,7 +1179,7 @@ describe("query-builder natural-language planner", () => {
       dimensions: ["player"],
       filters: [
         { field: "hero", op: "in", value: ["Widowmaker"] },
-        { field: "ownership_rate", op: "gte", value: 0.4 },
+        { field: "ownership_rate", op: "gte", value: 40 },
       ],
     });
   });
@@ -1196,7 +1196,7 @@ describe("query-builder natural-language planner", () => {
       dimensions: ["hero"],
       filters: [
         { field: "player", op: "in", value: ["PGE"] },
-        { field: "pick_rate", op: "lt", value: 0.1 },
+        { field: "pick_rate", op: "lt", value: 10 },
       ],
     });
   });
@@ -1216,6 +1216,27 @@ describe("query-builder natural-language planner", () => {
         { field: "games", op: "gte", value: 5 },
       ],
     });
+  });
+
+  it("plans hero-pickrate aggregate threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question:
+        "Which players have at least 40% ownership of Widowmaker with at least 1 game?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_pickrate",
+      metrics: [{ metric: "ownership_rate", agg: "ratio" }],
+      dimensions: ["player"],
+    });
+    expect(planned?.spec.filters).toEqual(
+      expect.arrayContaining([
+        { field: "hero", op: "in", value: ["Widowmaker"] },
+        { field: "ownership_rate", op: "gte", value: 40 },
+        { field: "games", op: "gte", value: 1 },
+      ])
+    );
   });
 
   it("plans increasing hero trend questions by map type", () => {
@@ -1249,6 +1270,29 @@ describe("query-builder natural-language planner", () => {
       dimensions: ["hero"],
       filters: [{ field: "map", op: "in", value: ["King's Row"] }],
     });
+  });
+
+  it("plans hero trend aggregate threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question:
+        "Which damage heroes have hero trend pick rate trend at least 10 and at least 2 maps played?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_trend",
+      dimensions: ["hero"],
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([{ metric: "pick_rate_trend", agg: "avg" }])
+    );
+    expect(planned?.spec.filters).toEqual(
+      expect.arrayContaining([
+        { field: "role", op: "in", value: ["Damage"] },
+        { field: "pick_rate_trend", op: "gte", value: 10 },
+        { field: "maps_played", op: "gte", value: 2 },
+      ])
+    );
   });
 
   it("plans ability-impact questions from ability aliases", () => {
@@ -1854,6 +1898,26 @@ describe("query-builder natural-language planner", () => {
       dimensions: ["role"],
       filters: [],
     });
+  });
+
+  it("plans hero-pool diversity aggregate threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Which roles have diversity score at least 45% and at least 5 maps played?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_diversity",
+      dimensions: ["role"],
+      filters: [
+        { field: "diversity_score", op: "gte", value: 45 },
+        { field: "maps_played", op: "gte", value: 5 },
+      ],
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([{ metric: "diversity_score", agg: "avg" }])
+    );
   });
 
   it("plans thin effective hero-pool questions onto role diversity", () => {

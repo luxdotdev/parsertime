@@ -112,4 +112,30 @@ describe("computed aggregator (hero trends)", () => {
       },
     ]);
   });
+
+  it("applies grouped metric filters to hero trend thresholds", () => {
+    const { rows } = aggregateComputed(
+      HERO_TREND_ROWS,
+      spec({
+        metrics: [
+          { metric: "pick_rate", agg: "ratio" },
+          { metric: "maps_played", agg: "sum" },
+        ],
+        dimensions: ["hero"],
+        filters: [
+          { field: "role", op: "in", value: ["Damage"] },
+          { field: "pick_rate", op: "gte", value: 50 },
+          { field: "maps_played", op: "gte", value: 2 },
+        ],
+      })
+    );
+
+    expect(rows).toEqual([
+      {
+        hero: "Tracer",
+        ratio__pick_rate: 75,
+        sum__maps_played: 3,
+      },
+    ]);
+  });
 });
