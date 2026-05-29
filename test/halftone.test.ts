@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { luminance, renderHalftoneSvg, sampleDots } from "@/lib/halftone";
+import { fallingHalftoneSvg } from "@/app/falling-halftone";
 
 describe("luminance", () => {
   it("returns 0 for black and ~1 for white", () => {
@@ -60,5 +61,14 @@ describe("renderHalftoneSvg", () => {
     const svg = renderHalftoneSvg([]);
     expect(svg.startsWith("<svg")).toBe(true);
     expect(svg).not.toContain("<circle");
+  });
+});
+
+describe("generated falling-halftone", () => {
+  it("exports a non-trivial inline svg using currentColor", () => {
+    expect(fallingHalftoneSvg.startsWith("<svg")).toBe(true);
+    expect(fallingHalftoneSvg).toContain('fill="currentColor"');
+    expect(fallingHalftoneSvg).toContain("<circle");
+    expect(fallingHalftoneSvg.length).toBeGreaterThan(500);
   });
 });
