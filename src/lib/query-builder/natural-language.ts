@@ -298,6 +298,10 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "decayed win rate",
     "map trend",
     "map trends",
+    "high confidence maps",
+    "low confidence maps",
+    "medium confidence maps",
+    "insufficient confidence maps",
     "improving maps",
     "declining maps",
     "map type dependency",
@@ -1408,6 +1412,13 @@ function mentionsMapIntelligenceContext(normalized: string): boolean {
     includesPhrase(normalized, "decayed win rate") ||
     includesPhrase(normalized, "map trend") ||
     includesPhrase(normalized, "map trends") ||
+    ((includesPhrase(normalized, "confidence") ||
+      includesPhrase(normalized, "confident") ||
+      includesPhrase(normalized, "thin sample") ||
+      includesPhrase(normalized, "small sample") ||
+      includesPhrase(normalized, "not enough data")) &&
+      (includesPhrase(normalized, "map") ||
+        includesPhrase(normalized, "maps"))) ||
     includesPhrase(normalized, "improving maps") ||
     includesPhrase(normalized, "maps are improving") ||
     includesPhrase(normalized, "declining maps") ||
@@ -3694,6 +3705,32 @@ function pickUltEconomyBucket(normalized: string): string | null {
   return null;
 }
 
+function pickConfidenceScope(normalized: string): string | null {
+  if (
+    includesPhrase(normalized, "high confidence") ||
+    includesPhrase(normalized, "confident")
+  ) {
+    return "high";
+  }
+  if (includesPhrase(normalized, "medium confidence")) return "medium";
+  if (
+    includesPhrase(normalized, "low confidence") ||
+    includesPhrase(normalized, "thin sample") ||
+    includesPhrase(normalized, "small sample")
+  ) {
+    return "low";
+  }
+  if (
+    includesPhrase(normalized, "insufficient confidence") ||
+    includesPhrase(normalized, "insufficient sample") ||
+    includesPhrase(normalized, "not enough data") ||
+    includesPhrase(normalized, "no confidence")
+  ) {
+    return "insufficient";
+  }
+  return null;
+}
+
 function pickFightPhase(normalized: string): string | null {
   if (
     includesPhrase(normalized, "pre fight") ||
@@ -4158,6 +4195,10 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       filters.push({ field: "trend", op: "in", value: ["declining"] });
     } else if (includesPhrase(normalized, "stable")) {
       filters.push({ field: "trend", op: "in", value: ["stable"] });
+    }
+    const confidence = pickConfidenceScope(normalized);
+    if (confidence) {
+      filters.push({ field: "confidence", op: "in", value: [confidence] });
     }
   }
 

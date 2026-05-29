@@ -808,6 +808,42 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans confidence-scoped map intelligence questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Which high confidence maps are improving?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_intelligence",
+      metrics: [{ metric: "trend_delta", agg: "avg" }],
+      dimensions: ["map"],
+      filters: [
+        { field: "trend", op: "in", value: ["improving"] },
+        { field: "confidence", op: "in", value: ["high"] },
+      ],
+      sort: { key: "avg__trend_delta", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans insufficient-sample map intelligence questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question:
+        "Which maps have the best weighted win rate with not enough data?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_intelligence",
+      metrics: [{ metric: "weighted_win_rate", agg: "ratio" }],
+      dimensions: ["map"],
+      filters: [{ field: "confidence", op: "in", value: ["insufficient"] }],
+      sort: { key: "ratio__weighted_win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans map-type dependency questions by map type", () => {
     const planned = planQueryFromQuestion({
       teamId: 2,
