@@ -64,4 +64,22 @@ describe("computed aggregator (role trios)", () => {
     expect(rows[0]["ratio__win_rate"]).toBe(80);
     expect(rows[1]["sum__games"]).toBe(4);
   });
+
+  it("filters grouped role-trio metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      ROLE_TRIO_ROWS,
+      spec({
+        dimensions: ["trio"],
+        filters: [
+          { field: "win_rate", op: "gte", value: 75 },
+          { field: "games", op: "gte", value: 5 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].trio).toBe("TankA / DpsA / DpsB / SupportA / SupportB");
+    expect(rows[0]["ratio__win_rate"]).toBe(80);
+    expect(rows[0]["sum__games"]).toBe(5);
+  });
 });

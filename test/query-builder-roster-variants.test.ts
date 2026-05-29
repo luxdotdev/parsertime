@@ -88,4 +88,23 @@ describe("computed aggregator (roster variants)", () => {
     expect(rows[0].roster).toBe("TankA / DpsA / DpsB / SupportA / SupportB");
     expect(rows[0]["ratio__win_rate"]).toBe(75);
   });
+
+  it("filters grouped roster metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      ROSTER_ROWS,
+      spec({
+        dimensions: ["roster"],
+        filters: [
+          { field: "player", op: "in", value: ["DpsA"] },
+          { field: "win_rate", op: "gte", value: 75 },
+          { field: "games", op: "gte", value: 3 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].roster).toBe("TankA / DpsA / DpsB / SupportA / SupportB");
+    expect(rows[0]["ratio__win_rate"]).toBe(75);
+    expect(rows[0]["sum__games"]).toBe(4);
+  });
 });

@@ -1314,6 +1314,16 @@ function findPlayer(question: string, hero: string | null): string | null {
     "progress",
     "status",
     "track",
+    "game",
+    "games",
+    "sample",
+    "size",
+    "rate",
+    "rates",
+    "win",
+    "wins",
+    "loss",
+    "losses",
     "final",
     "blow",
     "blows",
@@ -5612,6 +5622,37 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       }
       filters.push(...lineupPlayerFilters);
     }
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "win_rate",
+          aliases: [
+            "win rate",
+            "winrate",
+            "lineup win rate",
+            "roster win rate",
+          ],
+        },
+        {
+          field: "games",
+          aliases: [
+            "games",
+            "maps",
+            "games played",
+            "maps played",
+            "sample size",
+          ],
+        },
+        {
+          field: "wins",
+          aliases: ["wins", "map wins"],
+        },
+        {
+          field: "losses",
+          aliases: ["losses", "map losses"],
+        },
+      ])
+    );
   }
 
   if (dataset === "roster_variant" && asksBestRosterForEachMap(normalized)) {

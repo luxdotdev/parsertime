@@ -2587,6 +2587,29 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans role-trio aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question:
+        "What are our best role trios with win rate at least 75% and at least 5 games?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "role_trio",
+      metrics: [
+        { metric: "win_rate", agg: "ratio" },
+        { metric: "games", agg: "sum" },
+      ],
+      dimensions: ["trio"],
+      filters: [
+        { field: "win_rate", op: "gte", value: 75 },
+        { field: "games", op: "gte", value: 5 },
+      ],
+      sort: { key: "ratio__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans map-specific roster questions onto roster variants", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,
@@ -2632,6 +2655,30 @@ describe("query-builder natural-language planner", () => {
       filters: [
         { field: "map", op: "in", value: ["Circuit Royal"] },
         { field: "player", op: "eq", value: "PGE" },
+      ],
+      sort: { key: "ratio__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans roster aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question:
+        "What are our best lineups on Circuit Royal with win rate at least 75% and at least 3 games?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "roster_variant",
+      metrics: [
+        { metric: "win_rate", agg: "ratio" },
+        { metric: "games", agg: "sum" },
+      ],
+      dimensions: ["roster"],
+      filters: [
+        { field: "map", op: "in", value: ["Circuit Royal"] },
+        { field: "win_rate", op: "gte", value: 75 },
+        { field: "games", op: "gte", value: 3 },
       ],
       sort: { key: "ratio__win_rate", dir: "desc" },
       limit: 20,
