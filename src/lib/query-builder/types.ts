@@ -14,6 +14,7 @@ export const DATASETS = [
   "ultimate",
   "map",
   "teamfight",
+  "rotation_death",
   "map_result",
   "player_map_performance",
   "ult_economy",

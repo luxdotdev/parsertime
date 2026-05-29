@@ -134,6 +134,44 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans ranked rotation-death questions by player", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Who has the most rotation deaths?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "rotation_death",
+      dimensions: ["player"],
+      filters: [{ field: "side", op: "eq", value: "us" }],
+      sort: { key: "sum__rotation_deaths", dir: "desc" },
+      limit: 20,
+    });
+    expect(planned?.spec.metrics[0]).toEqual({
+      metric: "rotation_deaths",
+      agg: "sum",
+    });
+  });
+
+  it("plans rotation-death rate questions by map", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Which maps have the highest rotation death rate?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "rotation_death",
+      dimensions: ["map"],
+      filters: [{ field: "side", op: "eq", value: "us" }],
+      sort: { key: "avg__rotation_death_rate", dir: "desc" },
+      limit: 20,
+    });
+    expect(planned?.spec.metrics[0]).toEqual({
+      metric: "rotation_death_rate",
+      agg: "avg",
+    });
+  });
+
   it("plans specific-map enemy hero questions onto enemy matchups", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

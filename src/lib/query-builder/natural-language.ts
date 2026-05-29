@@ -33,6 +33,7 @@ const DEFAULT_METRIC: Record<DatasetId, string> = {
   ultimate: "ultimates",
   map: "maps",
   teamfight: "win_rate",
+  rotation_death: "rotation_deaths",
   map_result: "win_rate",
   player_map_performance: "win_rate",
   ult_economy: "win_rate",
@@ -196,6 +197,17 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "first death",
     "dry fight",
     "wasted ult",
+  ],
+  rotation_death: [
+    "rotation death",
+    "rotation deaths",
+    "rotational death",
+    "rotational deaths",
+    "caught rotating",
+    "caught on rotation",
+    "died rotating",
+    "dies rotating",
+    "early death with low damage",
   ],
   map_result: [
     "best map mode",
@@ -464,6 +476,22 @@ const METRIC_ALIASES: Record<string, string[]> = {
   ],
   avg_wasted_ults: ["wasted ult", "wasted ults", "wasted ultimates"],
   losses: ["losses", "lost", "lose"],
+  rotation_deaths: [
+    "rotation death",
+    "rotation deaths",
+    "rotational death",
+    "rotational deaths",
+    "caught rotating",
+  ],
+  rotation_death_rate: [
+    "rotation death rate",
+    "rotation deaths rate",
+    "rotational death rate",
+    "rotation rate",
+  ],
+  early_death_rate: ["early death rate", "early fight death rate"],
+  pre_fight_damage: ["pre fight damage", "pre-fight damage"],
+  kill_distance: ["kill distance", "death distance"],
   win_rate: ["winrate", "winrates", "win rate", "win rates", "wr"],
   length: ["length", "streak length", "streak count"],
   fights: ["fights", "teamfights", "team fights"],
@@ -506,6 +534,9 @@ const DIMENSION_ALIASES: Record<string, string[]> = {
   phase: ["phase", "timing", "fight phase"],
   impact_rating: ["impact rating", "impact"],
   side: ["side", "team"],
+  death_type: ["death type", "rotation death"],
+  attacker: ["attacker", "killer"],
+  attacker_side: ["attacker side", "killer side"],
   type: ["type"],
   combo: ["combo", "ult combo", "ultimate combo"],
   roster: ["roster", "lineup"],
@@ -891,6 +922,20 @@ function mentionsHeroPickrateContext(normalized: string): boolean {
   );
 }
 
+function mentionsRotationDeathContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "rotation death") ||
+    includesPhrase(normalized, "rotation deaths") ||
+    includesPhrase(normalized, "rotational death") ||
+    includesPhrase(normalized, "rotational deaths") ||
+    includesPhrase(normalized, "caught rotating") ||
+    includesPhrase(normalized, "caught on rotation") ||
+    includesPhrase(normalized, "died rotating") ||
+    includesPhrase(normalized, "dies rotating") ||
+    includesPhrase(normalized, "early death with low damage")
+  );
+}
+
 function mentionsAbilityTimingContext(normalized: string): boolean {
   const abilityContext =
     includesPhrase(normalized, "ability") ||
@@ -1012,6 +1057,7 @@ function pickDataset(question: string): DatasetId {
   if (mentionsCalculatedStatContext(normalized)) return "calculated_stat";
   if (mentionsStreakContext(normalized)) return "streak";
   if (mentionsTrendContext(normalized)) return "trend";
+  if (mentionsRotationDeathContext(normalized)) return "rotation_death";
   if (
     mentionsAbilityTimingContext(normalized) ||
     (findAbility(question) &&
@@ -1320,6 +1366,21 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
     );
   }
   if (
+    dataset === "rotation_death" &&
+    deduped.some((ref) => ref.metric === "rotation_death_rate") &&
+    (includesPhrase(normalized, "rate") ||
+      includesPhrase(normalized, "percentage") ||
+      includesPhrase(normalized, "pct"))
+  ) {
+    deduped.sort((a, b) =>
+      a.metric === "rotation_death_rate"
+        ? -1
+        : b.metric === "rotation_death_rate"
+          ? 1
+          : 0
+    );
+  }
+  if (
     dataset === "ban_impact" &&
     (includesPhrase(normalized, "weak point") ||
       includesPhrase(normalized, "weak points") ||
@@ -1439,6 +1500,9 @@ function filterFor(
     | "phase"
     | "impact_rating"
     | "side"
+    | "death_type"
+    | "attacker_hero"
+    | "attacker_side"
     | "used"
     | "had_swap"
     | "role",
@@ -1461,6 +1525,9 @@ function filterFor(
     phase: ["phase"],
     impact_rating: ["impact_rating"],
     side: ["side"],
+    death_type: ["death_type"],
+    attacker_hero: ["attacker_hero"],
+    attacker_side: ["attacker_side"],
     used: ["used"],
     had_swap: ["had_swap"],
     role: ["role", "enemy_role"],
@@ -1768,6 +1835,40 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     if (ultCountFilter) filters.push(ultCountFilter);
     const wastedUltFilter = extractWastedUltFilter(normalized);
     if (wastedUltFilter) filters.push(wastedUltFilter);
+  }
+
+  if (dataset === "rotation_death") {
+    const enemySide =
+      includesPhrase(normalized, "enemy rotation") ||
+      includesPhrase(normalized, "enemy deaths") ||
+      includesPhrase(normalized, "their rotation") ||
+      includesPhrase(normalized, "their deaths") ||
+      includesPhrase(normalized, "opponent rotation") ||
+      includesPhrase(normalized, "opponent deaths");
+    const sideFilter = filterFor(dataset, "side", enemySide ? "enemy" : "us");
+    if (sideFilter) filters.push(sideFilter);
+
+    if (
+      includesPhrase(normalized, "normal deaths") ||
+      includesPhrase(normalized, "non rotation") ||
+      includesPhrase(normalized, "non-rotation")
+    ) {
+      const typeFilter = filterFor(dataset, "death_type", "normal");
+      if (typeFilter) filters.push(typeFilter);
+    }
+
+    if (
+      hero &&
+      (includesPhrase(normalized, "killed by") ||
+        includesPhrase(normalized, "dying to") ||
+        includesPhrase(normalized, "died to") ||
+        includesPhrase(normalized, "against"))
+    ) {
+      filters.push({ field: "attacker_hero", op: "in", value: [hero] });
+      for (let i = filters.length - 1; i >= 0; i--) {
+        if (filters[i].field === "hero") filters.splice(i, 1);
+      }
+    }
   }
 
   if (dataset === "map_result") {
@@ -2190,6 +2291,15 @@ function pickDimensions(
     if (!hasOurHeroFilter) add("our_hero");
     if (!hasEnemyHeroFilter) add("enemy_hero");
   }
+  if (dataset === "rotation_death" && dims.length === 0) {
+    if (hasFilter("player")) {
+      add("map");
+    } else if (hasFilter("hero")) {
+      add("player");
+    } else {
+      add("player");
+    }
+  }
   if (dataset === "ability_impact" && dims.length === 0) {
     add(hasFilter("used") ? "ability" : "used");
   }
@@ -2278,10 +2388,15 @@ function pickDimensions(
   return dims.slice(0, 4);
 }
 
-function pickTimeScope(question: string): QuerySpec["timeScope"] {
+function pickTimeScope(
+  question: string,
+  dataset: DatasetId
+): QuerySpec["timeScope"] {
   const normalized = normalize(question);
+  if (includesPhrase(normalized, "all scrims")) return { kind: "all" };
   const lastN = normalized.match(/\blast\s+(\d{1,3})\s+scrims?\b/);
   if (lastN) return { kind: "lastN", lastN: Number(lastN[1]) };
+  if (dataset === "rotation_death") return { kind: "lastN", lastN: 5 };
   return { kind: "all" };
 }
 
@@ -2380,7 +2495,7 @@ export function planQueryFromQuestion({
     metrics,
     dimensions,
     filters,
-    timeScope: pickTimeScope(trimmed),
+    timeScope: pickTimeScope(trimmed, dataset),
     sort,
     limit,
   } satisfies QuerySpec;

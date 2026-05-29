@@ -15,6 +15,7 @@ import { computeMapResults } from "@/lib/query-builder/compute/map-results";
 import { computePlayerMapPerformance } from "@/lib/query-builder/compute/player-map-performance";
 import { computeRoleTrios } from "@/lib/query-builder/compute/role-trios";
 import { computeRosterVariants } from "@/lib/query-builder/compute/roster-variants";
+import { computeRotationDeaths } from "@/lib/query-builder/compute/rotation-deaths";
 import { computeSwapImpact } from "@/lib/query-builder/compute/swap-impact";
 import { computeStreaks } from "@/lib/query-builder/compute/streaks";
 import { computeTeamfights } from "@/lib/query-builder/compute/teamfights";
@@ -234,6 +235,9 @@ async function runComputedQuery(
     switch (spec.dataset) {
       case "teamfight":
         computedRows = await computeTeamfights(spec.teamId, ctx.scrimIds);
+        break;
+      case "rotation_death":
+        computedRows = await computeRotationDeaths(spec.teamId, ctx.scrimIds);
         break;
       case "map_result":
         computedRows = await computeMapResults(spec.teamId, ctx.scrimIds);
