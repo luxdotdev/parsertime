@@ -98,4 +98,23 @@ describe("computed aggregator (ult combos)", () => {
       ratio__win_rate: 100,
     });
   });
+
+  it("filters grouped ult-combo metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      ULT_COMBO_ROWS,
+      spec({
+        dimensions: ["combo"],
+        filters: [
+          { field: "type", op: "eq", value: "combo" },
+          { field: "win_rate", op: "gte", value: 50 },
+          { field: "uses", op: "gte", value: 2 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].combo).toBe("Genji + Zarya");
+    expect(rows[0]["ratio__win_rate"]).toBe(50);
+    expect(rows[0]["sum__uses"]).toBe(2);
+  });
 });

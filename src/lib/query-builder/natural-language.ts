@@ -2177,6 +2177,22 @@ function pickDataset(question: string): DatasetId {
     includesPhrase(normalized, "swaps") ||
     includesPhrase(normalized, "swapped") ||
     includesPhrase(normalized, "swapping");
+  const mentionsUlt =
+    includesPhrase(normalized, "ult") ||
+    includesPhrase(normalized, "ults") ||
+    includesPhrase(normalized, "ultimate") ||
+    includesPhrase(normalized, "ultimates");
+  if (
+    mentionsUlt &&
+    (includesPhrase(normalized, "ult impact") ||
+      includesPhrase(normalized, "ultimate impact") ||
+      ((includesPhrase(normalized, "which heroes") ||
+        includesPhrase(normalized, "which hero")) &&
+        (includesPhrase(normalized, "ult win rate") ||
+          includesPhrase(normalized, "ultimate win rate"))))
+  ) {
+    return "ult_impact";
+  }
   if (
     mentionsSwap &&
     (includesPhrase(normalized, "win rate") ||
@@ -2193,6 +2209,7 @@ function pickDataset(question: string): DatasetId {
     return "swap_impact";
   }
   if (
+    !mentionsUlt &&
     (includesPhrase(normalized, "which heroes") ||
       includesPhrase(normalized, "which hero") ||
       includesPhrase(normalized, "hero wins") ||
@@ -2309,12 +2326,6 @@ function pickDataset(question: string): DatasetId {
   if (mentionsPlayerIntelligenceContext(normalized)) {
     return "player_intelligence";
   }
-
-  const mentionsUlt =
-    includesPhrase(normalized, "ult") ||
-    includesPhrase(normalized, "ults") ||
-    includesPhrase(normalized, "ultimate") ||
-    includesPhrase(normalized, "ultimates");
 
   if (
     includesPhrase(normalized, "duel") ||
@@ -5463,7 +5474,8 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       includesPhrase(normalized, "we banned") ||
       includesPhrase(normalized, "by us") ||
       includesPhrase(normalized, "our bans") ||
-      includesPhrase(normalized, "strong ban")
+      includesPhrase(normalized, "strong ban") ||
+      includesPhrase(normalized, "strong bans")
     ) {
       const sideFilter = filterFor(dataset, "side", "banned by us");
       if (sideFilter) filters.push(sideFilter);
@@ -5492,6 +5504,39 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     ) {
       filters.push({ field: "tag", op: "eq", value: "strong ban" });
     }
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "ban_rate",
+          aliases: ["ban rate", "banned rate"],
+        },
+        {
+          field: "maps_banned",
+          aliases: ["maps banned", "bans", "ban count", "total bans"],
+        },
+        {
+          field: "maps_played",
+          aliases: [
+            "maps analyzed",
+            "maps played",
+            "sample maps",
+            "sample size",
+          ],
+        },
+        {
+          field: "win_rate_with",
+          aliases: ["win rate with ban", "winrate with ban"],
+        },
+        {
+          field: "win_rate_without",
+          aliases: ["win rate without ban", "winrate without ban"],
+        },
+        {
+          field: "win_rate_delta",
+          aliases: ["win rate delta", "winrate delta", "impact", "delta"],
+        },
+      ])
+    );
   }
 
   if (dataset === "ult_combo") {
@@ -5525,6 +5570,38 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     ) {
       filters.push({ field: "enemy_hero", op: "in", value: [hero] });
     }
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "win_rate",
+          aliases: [
+            "win rate",
+            "winrate",
+            "combo win rate",
+            "response win rate",
+          ],
+        },
+        {
+          field: "uses",
+          aliases: [
+            "uses",
+            "usage",
+            "fights",
+            "combo count",
+            "response count",
+            "sample size",
+          ],
+        },
+        {
+          field: "wins",
+          aliases: ["wins", "fight wins"],
+        },
+        {
+          field: "losses",
+          aliases: ["losses", "fight losses"],
+        },
+      ])
+    );
   }
 
   if (dataset === "role_trio" || dataset === "roster_variant") {
@@ -5599,6 +5676,26 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     ) {
       filters.push({ field: "first_side", op: "eq", value: "enemy" });
     }
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "win_rate",
+          aliases: ["win rate", "winrate", "ult win rate", "ultimate win rate"],
+        },
+        {
+          field: "fights",
+          aliases: ["fights", "ult fights", "ultimate fights", "sample size"],
+        },
+        {
+          field: "wins",
+          aliases: ["wins", "fight wins"],
+        },
+        {
+          field: "losses",
+          aliases: ["losses", "fight losses"],
+        },
+      ])
+    );
   }
 
   if (dataset === "ult_usage") {

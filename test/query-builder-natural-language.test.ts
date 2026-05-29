@@ -2429,6 +2429,31 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans ban-impact aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question:
+        "Which strong bans have win rate delta over 20 with at least 4 maps banned?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ban_impact",
+      metrics: [
+        { metric: "win_rate_delta", agg: "avg" },
+        { metric: "maps_banned", agg: "sum" },
+      ],
+      dimensions: ["hero"],
+    });
+    expect(planned?.spec.filters).toEqual(
+      expect.arrayContaining([
+        { field: "side", op: "eq", value: "banned by us" },
+        { field: "tag", op: "eq", value: "strong ban" },
+        { field: "win_rate_delta", op: "gt", value: 20 },
+        { field: "maps_banned", op: "gte", value: 4 },
+      ])
+    );
+  });
+
   it("plans ult-combo questions onto weighted combo win rates", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,
@@ -2446,6 +2471,30 @@ describe("query-builder natural-language planner", () => {
       sort: { key: "ratio__win_rate", dir: "desc" },
       limit: 20,
     });
+  });
+
+  it("plans ult-combo aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question:
+        "Which ult combos have win rate at least 50% with at least 2 uses?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_combo",
+      metrics: [
+        { metric: "win_rate", agg: "ratio" },
+        { metric: "uses", agg: "sum" },
+      ],
+      dimensions: ["combo"],
+    });
+    expect(planned?.spec.filters).toEqual(
+      expect.arrayContaining([
+        { field: "type", op: "eq", value: "combo" },
+        { field: "win_rate", op: "gte", value: 50 },
+        { field: "uses", op: "gte", value: 2 },
+      ])
+    );
   });
 
   it("plans exact two-hero ult-combo questions", () => {
@@ -2626,6 +2675,30 @@ describe("query-builder natural-language planner", () => {
         { field: "side", op: "in", value: ["us", "both"] },
       ],
     });
+  });
+
+  it("plans ultimate-impact aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question:
+        "Which heroes have ult win rate at least 60% with at least 3 fights when we use ult?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_impact",
+      metrics: [
+        { metric: "win_rate", agg: "ratio" },
+        { metric: "fights", agg: "sum" },
+      ],
+      dimensions: ["hero"],
+    });
+    expect(planned?.spec.filters).toEqual(
+      expect.arrayContaining([
+        { field: "side", op: "in", value: ["us", "both"] },
+        { field: "win_rate", op: "gte", value: 60 },
+        { field: "fights", op: "gte", value: 3 },
+      ])
+    );
   });
 
   it("plans mirrored enemy ultimate questions onto first-side filters", () => {

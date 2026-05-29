@@ -88,4 +88,27 @@ describe("computed aggregator (ban impact)", () => {
     expect(rows.map((row) => row.hero)).toEqual(["Tracer", "Sombra"]);
     expect(rows[0]["avg__ban_rate"]).toBe(40);
   });
+
+  it("filters grouped ban-impact metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      BAN_ROWS,
+      spec({
+        metrics: [
+          { metric: "win_rate_delta", agg: "avg" },
+          { metric: "maps_banned", agg: "sum" },
+        ],
+        dimensions: ["hero"],
+        filters: [
+          { field: "side", op: "eq", value: "banned by us" },
+          { field: "win_rate_delta", op: "gt", value: 20 },
+          { field: "maps_banned", op: "gte", value: 4 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].hero).toBe("Tracer");
+    expect(rows[0]["avg__win_rate_delta"]).toBe(30);
+    expect(rows[0]["sum__maps_banned"]).toBe(4);
+  });
 });

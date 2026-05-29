@@ -85,4 +85,23 @@ describe("computed aggregator (ult impact)", () => {
     expect(rows[0]["ratio__win_rate"]).toBe(75);
     expect(rows[1]["sum__fights"]).toBe(3);
   });
+
+  it("filters grouped ult-impact metrics after aggregation", () => {
+    const { rows } = aggregateComputed(
+      ULT_IMPACT_ROWS,
+      spec({
+        dimensions: ["hero"],
+        filters: [
+          { field: "side", op: "in", value: ["us"] },
+          { field: "win_rate", op: "gte", value: 50 },
+          { field: "fights", op: "gte", value: 4 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].hero).toBe("Genji");
+    expect(rows[0]["ratio__win_rate"]).toBe(75);
+    expect(rows[0]["sum__fights"]).toBe(4);
+  });
 });
