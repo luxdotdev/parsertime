@@ -330,6 +330,12 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "swingy",
     "streaky",
     "map mvp rate",
+    "first picks per 10",
+    "first deaths per 10",
+    "ajax per 10",
+    "all damage per 10",
+    "damage taken per 10",
+    "ultimates used per 10",
     "kills per ultimate",
     "kills per ult",
   ],
@@ -845,6 +851,11 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "damage dealt per 10",
   ],
   deaths_per10: ["deaths per 10", "deaths per 10 minutes"],
+  all_damage_per10: [
+    "all damage per 10",
+    "total damage per 10",
+    "all damage per 10 minutes",
+  ],
   damage_taken_per10: ["damage taken per 10", "damage taken per 10 minutes"],
   healing_per10: ["healing per 10", "healing per 10 minutes"],
   ults_used_per10: [
@@ -852,6 +863,17 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "ultimates used per 10",
     "ult usage per 10",
   ],
+  first_picks_per10: [
+    "first picks per 10",
+    "opening picks per 10",
+    "first pick count per 10",
+  ],
+  first_deaths_per10: [
+    "first deaths per 10",
+    "opening deaths per 10",
+    "first death count per 10",
+  ],
+  ajax_per10: ["ajax per 10", "ajaxes per 10", "ajax count per 10"],
   damage_per10: [
     "damage per 10",
     "hero damage per 10",
@@ -1863,7 +1885,13 @@ function mentionsPlayerImpactContext(normalized: string): boolean {
     includesPhrase(normalized, "stddev") ||
     includesPhrase(normalized, "swingy") ||
     includesPhrase(normalized, "streaky") ||
-    includesPhrase(normalized, "map mvp rate")
+    includesPhrase(normalized, "map mvp rate") ||
+    includesPhrase(normalized, "first picks per 10") ||
+    includesPhrase(normalized, "first pick count per 10") ||
+    includesPhrase(normalized, "first deaths per 10") ||
+    includesPhrase(normalized, "first death count per 10") ||
+    includesPhrase(normalized, "ajax per 10") ||
+    includesPhrase(normalized, "ajaxes per 10")
   );
 }
 
@@ -1910,6 +1938,17 @@ function pickDataset(question: string): DatasetId {
   const mapName = findMapName(question);
   const heroMentions = findHeroMentions(question);
   const player = findPlayer(question, heroMentions[0]?.hero ?? null);
+  if (
+    mentionsPlayerImpactContext(normalized) &&
+    (includesPhrase(normalized, "first picks per 10") ||
+      includesPhrase(normalized, "first pick count per 10") ||
+      includesPhrase(normalized, "first deaths per 10") ||
+      includesPhrase(normalized, "first death count per 10") ||
+      includesPhrase(normalized, "ajax per 10") ||
+      includesPhrase(normalized, "ajaxes per 10"))
+  ) {
+    return "player_impact";
+  }
   if (mentionsOpeningKillContext(normalized)) return "opening_kill";
   if (
     mentionsPlayerTrendContext(normalized) ||
@@ -2392,6 +2431,37 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
       damage_taken_per10: "damage_taken",
       damage_blocked_per10: "damage_blocked",
       ults_used_per10: "ultimates_used",
+    };
+    const per10Metrics = new Set(
+      deduped
+        .filter((ref) => ref.metric.endsWith("_per10"))
+        .map((ref) => ref.metric)
+    );
+    if (per10Metrics.size > 0) {
+      for (let i = deduped.length - 1; i >= 0; i--) {
+        const raw = Array.from(per10Metrics).some(
+          (metric) => per10ToRaw[metric] === deduped[i].metric
+        );
+        if (raw) deduped.splice(i, 1);
+      }
+      deduped.sort((a, b) =>
+        a.metric.endsWith("_per10") ? -1 : b.metric.endsWith("_per10") ? 1 : 0
+      );
+    }
+  }
+  if (dataset === "player_impact") {
+    const per10ToRaw: Record<string, string> = {
+      eliminations_per10: "eliminations",
+      final_blows_per10: "final_blows",
+      deaths_per10: "deaths",
+      hero_damage_per10: "hero_damage",
+      all_damage_per10: "all_damage",
+      healing_per10: "healing",
+      damage_taken_per10: "damage_taken",
+      ults_used_per10: "ultimates_used",
+      first_picks_per10: "first_pick_count",
+      first_deaths_per10: "first_death_count",
+      ajax_per10: "ajax_count",
     };
     const per10Metrics = new Set(
       deduped

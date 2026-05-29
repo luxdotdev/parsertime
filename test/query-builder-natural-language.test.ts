@@ -1041,6 +1041,36 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans player-impact first-pick rate questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Who has the most first picks per 10?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_impact",
+      metrics: [{ metric: "first_picks_per10", agg: "ratio" }],
+      dimensions: ["player"],
+      sort: { key: "ratio__first_picks_per10", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans player-impact Ajax rate questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which players have the most Ajax per 10?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_impact",
+      metrics: [{ metric: "ajax_per10", agg: "ratio" }],
+      dimensions: ["player"],
+      sort: { key: "ratio__ajax_per10", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans player trend improvement questions", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,
