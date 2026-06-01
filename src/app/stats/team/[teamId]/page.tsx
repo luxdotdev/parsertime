@@ -56,13 +56,14 @@ import {
   TeamUltService,
 } from "@/data/team";
 import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { auth, canManageTeam } from "@/lib/auth";
 import { simulationTool, ultimateImpactTool } from "@/lib/flags";
 import { calculateHeroPickrateMatrix } from "@/lib/hero-pickrate-utils";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { isValidTimeframe, type Timeframe } from "@/lib/timeframe";
-import { computeTeamTsr } from "@/lib/tsr/team";
+import { computeTeamTsr, matchesAnyName } from "@/lib/tsr/team";
+import { getTeamSubstituteNames } from "@/data/team/substitutes";
 import { getMapNames } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
@@ -169,6 +170,11 @@ export default async function TeamStatsPage(
 
   const userIsMember = team.users.some((teamUser) => teamUser.id === user.id);
   if (!userIsMember && user.role !== $Enums.UserRole.ADMIN) notFound();
+
+  const [isManager, substituteNames] = await Promise.all([
+    canManageTeam(teamId, user),
+    getTeamSubstituteNames(teamId),
+  ]);
 
   const totalScrimCount = await prisma.scrim.count({ where: { teamId } });
 
@@ -367,11 +373,14 @@ export default async function TeamStatsPage(
       .findMany({ where: { teamId }, select: { id: true } })
       .then((rows) =>
         computeTeamTsr(
-          team.users.map((u) => ({
-            id: u.id,
-            name: u.name,
-            battletag: u.battletag,
-          })),
+          team.users
+            .map((u) => ({
+              id: u.id,
+              name: u.name,
+              battletag: u.battletag,
+            }))
+            // Substitutes are excluded from the team's aggregate skill rating.
+            .filter((u) => !matchesAnyName(u, substituteNames)),
           rows.map((r) => r.id)
         )
       ),
@@ -508,7 +517,12 @@ export default async function TeamStatsPage(
             mapNames={mapNames}
           />
 
-          <TeamRosterGrid roster={teamRoster} teamId={teamId} />
+          <TeamRosterGrid
+            roster={teamRoster}
+            teamId={teamId}
+            isManager={isManager}
+            substitutes={[...substituteNames]}
+          />
         </TabsContent>
 
         {/* Performance Tab */}

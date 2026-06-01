@@ -332,6 +332,8 @@ export default async function TournamentTeamStatsPage(props: {
             <TeamRosterGrid
               roster={teamRoster}
               teamId={tournamentTeam.team?.id ?? tournamentTeamId}
+              isManager={false}
+              substitutes={[]}
             />
             <RecentActivityCalendar scrims={scrims} />
           </div>

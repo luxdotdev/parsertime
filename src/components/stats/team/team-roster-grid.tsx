@@ -1,6 +1,8 @@
 import { PlayerHoverCard } from "@/components/player/hover-card";
 import { SectionHeader } from "@/components/stats/team/section-header";
+import { SubstituteToggle } from "@/components/stats/team/substitute-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Link } from "@/components/ui/link";
 import prisma from "@/lib/prisma";
 import { Target } from "lucide-react";
@@ -10,6 +12,8 @@ import { getTranslations } from "next-intl/server";
 type TeamRosterGridProps = {
   roster: string[];
   teamId: number;
+  isManager: boolean;
+  substitutes: string[];
 };
 
 async function getPlayerData(playerName: string) {
@@ -30,8 +34,14 @@ async function getPlayerData(playerName: string) {
   return user;
 }
 
-export async function TeamRosterGrid({ roster, teamId }: TeamRosterGridProps) {
+export async function TeamRosterGrid({
+  roster,
+  teamId,
+  isManager,
+  substitutes,
+}: TeamRosterGridProps) {
   const t = await getTranslations("teamStatsPage.teamRosterGrid");
+  const subSet = new Set(substitutes);
 
   const playerTargetsLink = (
     <Link
@@ -63,6 +73,7 @@ export async function TeamRosterGrid({ roster, teamId }: TeamRosterGridProps) {
         name: playerName,
         image: userData?.image ?? null,
         displayName: userData?.name ?? userData?.battletag ?? playerName,
+        isSubstitute: subSet.has(playerName),
       };
     })
   );
@@ -76,23 +87,43 @@ export async function TeamRosterGrid({ roster, teamId }: TeamRosterGridProps) {
       />
       <div className="flex flex-wrap gap-x-6 gap-y-2">
         {playersData.map((player) => (
-          <PlayerHoverCard key={player.name} player={player.name}>
-            <Link
-              href={`/stats/${encodeURIComponent(player.name)}` as Route}
-              className="hover:bg-muted/50 flex items-center gap-3 rounded-md px-2 py-1.5 transition-colors"
-            >
-              <Avatar className="h-10 w-10">
-                <AvatarImage
-                  src={player.image ?? undefined}
-                  alt={player.displayName}
-                />
-                <AvatarFallback className="text-sm font-bold">
-                  {player.displayName.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <span className="text-sm font-medium">{player.displayName}</span>
-            </Link>
-          </PlayerHoverCard>
+          <div key={player.name} className="flex items-center gap-1">
+            <PlayerHoverCard player={player.name}>
+              <Link
+                href={`/stats/${encodeURIComponent(player.name)}` as Route}
+                className="hover:bg-muted/50 flex items-center gap-3 rounded-md px-2 py-1.5 transition-colors"
+              >
+                <Avatar className="h-10 w-10">
+                  <AvatarImage
+                    src={player.image ?? undefined}
+                    alt={player.displayName}
+                  />
+                  <AvatarFallback className="text-sm font-bold">
+                    {player.displayName.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="text-sm font-medium">
+                  {player.displayName}
+                </span>
+                {player.isSubstitute && (
+                  <Badge
+                    variant="secondary"
+                    className="font-mono text-[10px] tracking-[0.12em] uppercase"
+                  >
+                    {t("subBadge")}
+                  </Badge>
+                )}
+              </Link>
+            </PlayerHoverCard>
+            {isManager && (
+              <SubstituteToggle
+                teamId={teamId}
+                playerName={player.name}
+                displayName={player.displayName}
+                isSubstitute={player.isSubstitute}
+              />
+            )}
+          </div>
         ))}
       </div>
     </section>
