@@ -6127,8 +6127,40 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
           aliases: ["maps", "games", "role maps", "sample size"],
         },
         {
+          field: "wins",
+          aliases: ["wins", "map wins"],
+        },
+        {
+          field: "losses",
+          aliases: ["losses", "map losses"],
+        },
+        {
+          field: "eliminations",
+          aliases: ["total eliminations", "total elims", "elimination count"],
+        },
+        {
+          field: "eliminations_per10",
+          aliases: ["eliminations per 10", "elims per 10"],
+        },
+        {
+          field: "final_blows",
+          aliases: ["total final blows", "total finals", "final blow count"],
+        },
+        {
           field: "final_blows_per10",
           aliases: ["final blows per 10", "finals per 10"],
+        },
+        {
+          field: "assists",
+          aliases: ["total assists", "assist count"],
+        },
+        {
+          field: "assists_per10",
+          aliases: ["assists per 10", "offensive assists per 10"],
+        },
+        {
+          field: "deaths",
+          aliases: ["total deaths", "death count"],
         },
         {
           field: "deaths_per10",
@@ -6143,12 +6175,48 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
           aliases: ["healing per 10", "heals per 10"],
         },
         {
+          field: "damage_taken_per10",
+          aliases: ["damage taken per 10", "damage taken rate"],
+        },
+        {
+          field: "ultimates_earned",
+          aliases: [
+            "total ults earned",
+            "total ultimates earned",
+            "ultimates earned count",
+          ],
+        },
+        {
+          field: "ults_earned_per10",
+          aliases: [
+            "ults earned per 10",
+            "ultimates earned per 10",
+            "ult charge per 10",
+          ],
+        },
+        {
+          field: "ultimates_used",
+          aliases: [
+            "total ults used",
+            "total ultimates used",
+            "ultimates used count",
+          ],
+        },
+        {
           field: "ults_used_per10",
           aliases: ["ults used per 10", "ultimates used per 10"],
         },
         {
           field: "ult_efficiency",
           aliases: ["ult efficiency", "ultimate efficiency", "kills per ult"],
+        },
+      ])
+    );
+    filters.push(
+      ...extractDurationThresholdFilters(dataset, normalized, [
+        {
+          field: "time_played",
+          aliases: ["time played", "playtime", "role time played", "played"],
         },
       ])
     );

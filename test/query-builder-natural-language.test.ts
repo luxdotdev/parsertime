@@ -2107,6 +2107,32 @@ describe("query-builder natural-language planner", () => {
     );
   });
 
+  it("plans extended role-performance aggregate thresholds", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Which roles have damage taken per 10 under 6500, at least 3 ultimates earned per 10, and at least 30 minutes played?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "role_performance",
+      dimensions: ["role"],
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([
+        { metric: "damage_taken_per10", agg: "ratio" },
+        { metric: "ults_earned_per10", agg: "ratio" },
+      ])
+    );
+    expect(planned?.spec.filters).toEqual(
+      expect.arrayContaining([
+        { field: "damage_taken_per10", op: "lt", value: 6500 },
+        { field: "ults_earned_per10", op: "gte", value: 3 },
+        { field: "time_played", op: "gte", value: 1800 },
+      ])
+    );
+  });
+
   it("plans role ultimate usage rate questions", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,
