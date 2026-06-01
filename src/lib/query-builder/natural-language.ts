@@ -294,6 +294,10 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "first death",
     "dry fight",
     "wasted ult",
+    "comeback",
+    "comeback rate",
+    "turn fight around",
+    "turn fights around",
   ],
   opening_kill: [
     "opening kill",
@@ -980,16 +984,27 @@ const METRIC_ALIASES: Record<string, string[]> = {
   ],
   first_ult_rate: ["first ult rate", "first ultimate rate"],
   dry_fight_rate: ["dry fight rate", "dry-fight rate"],
-  reversal_rate: ["reversal rate", "fight reversal rate"],
+  reversal_rate: [
+    "reversal rate",
+    "fight reversal rate",
+    "comeback rate",
+    "comeback win rate",
+    "turnaround rate",
+  ],
   dry_fight_reversal_rate: [
     "dry fight reversal rate",
     "dry-fight reversal rate",
     "dry reversal rate",
+    "dry fight comeback rate",
+    "dry comeback rate",
   ],
   non_dry_fight_reversal_rate: [
     "non dry fight reversal rate",
     "non-dry fight reversal rate",
     "non dry reversal rate",
+    "non dry fight comeback rate",
+    "non-dry fight comeback rate",
+    "non dry comeback rate",
   ],
   ultimate_efficiency: [
     "ultimate efficiency",
@@ -1301,10 +1316,13 @@ const FILLER_WORDS = new Set([
   "data",
   "decrease",
   "each",
+  "eight",
   "enemy",
   "every",
   "find",
+  "five",
   "for",
+  "four",
   "from",
   "goal",
   "goals",
@@ -1329,9 +1347,11 @@ const FILLER_WORDS = new Set([
   "minimum",
   "more",
   "need",
+  "nine",
   "number",
   "of",
   "on",
+  "one",
   "our",
   "over",
   "damage",
@@ -1342,6 +1362,8 @@ const FILLER_WORDS = new Set([
   "targets",
   "scrim",
   "scrims",
+  "seven",
+  "six",
   "support",
   "stat",
   "stats",
@@ -1350,10 +1372,13 @@ const FILLER_WORDS = new Set([
   "the",
   "their",
   "them",
+  "three",
   "time",
   "to",
+  "two",
   "type",
   "than",
+  "ten",
   "ult",
   "ults",
   "ultimate",
@@ -1370,6 +1395,7 @@ const FILLER_WORDS = new Set([
   "who",
   "with",
   "you",
+  "zero",
 ]);
 
 function normalize(value: string): string {
@@ -2782,6 +2808,46 @@ function mentionsTeamfightUltContext(normalized: string): boolean {
   );
 }
 
+function mentionsFightComebackContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "comeback") ||
+    includesPhrase(normalized, "comebacks") ||
+    includesPhrase(normalized, "come back") ||
+    includesPhrase(normalized, "comes back") ||
+    includesPhrase(normalized, "came back") ||
+    includesPhrase(normalized, "turnaround") ||
+    includesPhrase(normalized, "turn around") ||
+    includesPhrase(normalized, "turns around") ||
+    includesPhrase(normalized, "turned around") ||
+    includesPhrase(normalized, "turn fight around") ||
+    includesPhrase(normalized, "turn fights around") ||
+    includesPhrase(normalized, "clutch fight") ||
+    includesPhrase(normalized, "clutch fights") ||
+    /\b(?:win|wins|won|winning)\b.*\b(?:after|when|while)\b.*\b(?:down|behind)\b.*\b(?:two|2)\b/.test(
+      normalized
+    ) ||
+    /\b(?:down|behind)\b.*\b(?:two|2)\b.*\b(?:kills?|players?)\b/.test(
+      normalized
+    )
+  );
+}
+
+function mentionsFightComebackRateContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "reversal rate") ||
+    includesPhrase(normalized, "fight reversal rate") ||
+    includesPhrase(normalized, "comeback rate") ||
+    includesPhrase(normalized, "comeback win rate") ||
+    includesPhrase(normalized, "turnaround rate") ||
+    (mentionsFightComebackContext(normalized) &&
+      (includesPhrase(normalized, "how often") ||
+        includesPhrase(normalized, "rate") ||
+        includesPhrase(normalized, "percentage") ||
+        includesPhrase(normalized, "percent") ||
+        includesPhrase(normalized, "win rate")))
+  );
+}
+
 function mentionsUltEconomyContext(normalized: string): boolean {
   return (
     includesPhrase(normalized, "ult economy") ||
@@ -3520,6 +3586,16 @@ function pickDataset(question: string): DatasetId {
     return "ult_impact";
   }
 
+  const asksPlayerScopedComeback =
+    includesPhrase(normalized, "who") ||
+    includesPhrase(normalized, "which player") ||
+    includesPhrase(normalized, "which players") ||
+    includesPhrase(normalized, "by player") ||
+    includesPhrase(normalized, "per player");
+  if (mentionsFightComebackContext(normalized) && !asksPlayerScopedComeback) {
+    return "teamfight";
+  }
+
   if (asksBestRosterForEachMap(normalized)) {
     return "roster_variant";
   }
@@ -3745,18 +3821,25 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
     const preferredTeamfightMetric =
       includesPhrase(normalized, "non dry fight reversal rate") ||
       includesPhrase(normalized, "non-dry fight reversal rate") ||
-      includesPhrase(normalized, "non dry reversal rate")
+      includesPhrase(normalized, "non dry reversal rate") ||
+      includesPhrase(normalized, "non dry fight comeback rate") ||
+      includesPhrase(normalized, "non-dry fight comeback rate") ||
+      includesPhrase(normalized, "non dry comeback rate")
         ? "non_dry_fight_reversal_rate"
         : includesPhrase(normalized, "dry fight reversal rate") ||
             includesPhrase(normalized, "dry-fight reversal rate") ||
-            includesPhrase(normalized, "dry reversal rate")
+            includesPhrase(normalized, "dry reversal rate") ||
+            includesPhrase(normalized, "dry fight comeback rate") ||
+            includesPhrase(normalized, "dry comeback rate")
           ? "dry_fight_reversal_rate"
-          : includesPhrase(normalized, "ultimate efficiency") ||
-              includesPhrase(normalized, "ult efficiency") ||
-              includesPhrase(normalized, "fight wins per ultimate") ||
-              includesPhrase(normalized, "fight wins per ult")
-            ? "ultimate_efficiency"
-            : null;
+          : mentionsFightComebackRateContext(normalized)
+            ? "reversal_rate"
+            : includesPhrase(normalized, "ultimate efficiency") ||
+                includesPhrase(normalized, "ult efficiency") ||
+                includesPhrase(normalized, "fight wins per ultimate") ||
+                includesPhrase(normalized, "fight wins per ult")
+              ? "ultimate_efficiency"
+              : null;
     if (preferredTeamfightMetric) {
       for (let i = refs.length - 1; i >= 0; i--) {
         if (refs[i].metric !== preferredTeamfightMetric) refs.splice(i, 1);
@@ -6277,10 +6360,10 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       includesPhrase(normalized, "dry fight rate") ||
       includesPhrase(normalized, "dry-fight rate") ||
       includesPhrase(normalized, "dry fight reversal rate") ||
-      includesPhrase(normalized, "dry-fight reversal rate");
-    const asksReversalRate =
-      includesPhrase(normalized, "reversal rate") ||
-      includesPhrase(normalized, "fight reversal rate");
+      includesPhrase(normalized, "dry-fight reversal rate") ||
+      includesPhrase(normalized, "dry fight comeback rate") ||
+      includesPhrase(normalized, "dry comeback rate");
+    const asksReversalRate = mentionsFightComebackRateContext(normalized);
 
     const noFirstDeath = hasNegatedFightContext(normalized, [
       "first death",
@@ -6328,6 +6411,9 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     const noReversal = hasNegatedFightContext(normalized, [
       "reversal",
       "reverse fight",
+      "comeback",
+      "come back",
+      "turn around",
     ]);
     const comparisonDimension = pickTeamfightComparisonDimension(normalized);
 
@@ -6387,7 +6473,8 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
     if (
       (includesPhrase(normalized, "reversal") ||
-        includesPhrase(normalized, "reverse fight")) &&
+        includesPhrase(normalized, "reverse fight") ||
+        mentionsFightComebackContext(normalized)) &&
       !asksReversalRate
     ) {
       filters.push({
@@ -6996,7 +7083,13 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         },
         {
           field: "reversal_rate",
-          aliases: ["reversal rate", "fight reversal rate"],
+          aliases: [
+            "reversal rate",
+            "fight reversal rate",
+            "comeback rate",
+            "comeback win rate",
+            "turnaround rate",
+          ],
         },
         {
           field: "dry_fight_reversal_rate",
@@ -7004,6 +7097,8 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
             "dry fight reversal rate",
             "dry-fight reversal rate",
             "dry reversal rate",
+            "dry fight comeback rate",
+            "dry comeback rate",
           ],
         },
         {
@@ -7012,6 +7107,9 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
             "non dry fight reversal rate",
             "non-dry fight reversal rate",
             "non dry reversal rate",
+            "non dry fight comeback rate",
+            "non-dry fight comeback rate",
+            "non dry comeback rate",
           ],
         },
         {

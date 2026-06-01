@@ -809,6 +809,56 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans natural fight comeback questions onto reversal rate", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "How often do we win fights after going down two kills?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "reversal_rate", agg: "avg" }],
+      dimensions: [],
+      filters: [],
+      sort: null,
+      limit: null,
+    });
+  });
+
+  it("plans dry-fight comeback rate questions onto dry reversals", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "What is our dry fight comeback rate?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "dry_fight_reversal_rate", agg: "ratio" }],
+      dimensions: [],
+      filters: [],
+    });
+  });
+
+  it("plans comeback-rate aggregate threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "Which maps have the best comeback rate over 15% with at least 5 fights?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "reversal_rate", agg: "avg" }],
+      dimensions: ["map"],
+      filters: expect.arrayContaining([
+        { field: "reversal_rate", op: "gt", value: 15 },
+        { field: "fights", op: "gte", value: 5 },
+      ]),
+      sort: { key: "avg__reversal_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans grouped fight win-rate threshold filters", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,
