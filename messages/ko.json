@@ -936,7 +936,10 @@
       "autoAssignTeamNamesDescription": "팀 이름을 자동으로 바꾸고 팀 위치를 정규화하여 내 팀이 항상 Team 1이 되도록 합니다.",
       "autoAssignDisabledDescription": "자동 할당을 활성화하려면 팀을 선택하세요.",
       "opponentName": "OWCS 상대",
-      "opponentDescription": "선택 사항입니다. OWCS 스카우팅 분석에 연결합니다."
+      "opponentDescription": "선택 사항입니다. OWCS 스카우팅 분석에 연결합니다.",
+      "linkedRequestLabel": "연결된 매치메이커 요청",
+      "linkedRequestNone": "매치메이커 요청에서 온 스크림이 아닙니다",
+      "linkedRequestDescription": "이 스크림이 매치메이커 요청에서 온 경우, 연결하면 스크림 후 피드백을 사용할 수 있습니다."
     }
   },
   "updateModal": {

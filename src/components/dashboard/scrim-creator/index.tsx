@@ -2,6 +2,7 @@
 
 import type { GetScoutingTeamsResponse } from "@/app/api/scouting/get-teams/route";
 import type { GetTeamsResponse } from "@/app/api/team/get-teams/route";
+import type { RecentRequestsResponse } from "@/app/api/team-ops/recent-requests/route";
 import { useFeatureFlags } from "@/components/feature-flags-provider";
 import {
   runSequentialUpload,
@@ -63,6 +64,7 @@ export function ScrimCreationForm({
     team: z.string({ error: t("teamRequiredError") }),
     date: z.date({ error: t("dateRequiredError") }),
     opponentTeamAbbr: z.string().nullable().optional(),
+    scrimRequestId: z.string().nullable().optional(),
   });
 
   const { data: teams } = useQuery({
@@ -97,17 +99,34 @@ export function ScrimCreationForm({
     defaultValues: {
       date: new Date(),
       opponentTeamAbbr: null,
+      scrimRequestId: null,
     },
   });
 
   const selectedTeam = form.watch("team");
   const isIndividual = selectedTeam === "0";
 
+  const { data: linkableRequests = [] } = useQuery({
+    queryKey: ["recent-requests", selectedTeam],
+    queryFn: async () => {
+      const res = await fetch(`/api/team-ops/recent-requests?teamId=${selectedTeam}`);
+      if (!res.ok) return [];
+      const data = (await res.json()) as RecentRequestsResponse;
+      return data.requests;
+    },
+    enabled: !!selectedTeam && selectedTeam !== "0",
+    staleTime: 60_000,
+  });
+
   useEffect(() => {
     if (isIndividual) {
       scrimCreatorStore.trigger.autoAssignChanged({ value: false });
     }
   }, [isIndividual]);
+
+  useEffect(() => {
+    form.setValue("scrimRequestId", null);
+  }, [selectedTeam, form]);
 
   const usableMaps = pendingMaps.filter((m) => !m.parseFailed);
 
@@ -127,6 +146,10 @@ export function ScrimCreationForm({
       autoAssignTeamNames && data.opponentTeamAbbr
         ? (scoutingTeams.find((s) => s.abbreviation === data.opponentTeamAbbr)
             ?.fullName ?? null)
+        : null;
+    const linked =
+      data.scrimRequestId && data.scrimRequestId !== "none"
+        ? linkableRequests.find((r) => r.scrimRequestId === data.scrimRequestId)
         : null;
 
     const { scrimId, allSucceeded } = await runSequentialUpload({
@@ -150,6 +173,8 @@ export function ScrimCreationForm({
               team1Name: resolvedTeam1Name,
               team2Name: resolvedTeam2Name,
               heroBans: map.heroBans,
+              scrimRequestId: linked?.scrimRequestId ?? null,
+              opponentTeamId: linked?.opponentTeamId ?? null,
             },
             reportProgress
           );
@@ -193,7 +218,7 @@ export function ScrimCreationForm({
   }
 
   function handleCreateAnother() {
-    form.reset({ date: new Date(), opponentTeamAbbr: null });
+    form.reset({ date: new Date(), opponentTeamAbbr: null, scrimRequestId: null });
     resetMaps();
     scrimIdRef.current = null;
     scrimCreatorStore.trigger.reset();
@@ -228,6 +253,7 @@ export function ScrimCreationForm({
             teams={teams}
             scoutingTeams={scoutingTeams}
             showOpponent={showOpponent}
+            linkableRequests={linkableRequests}
             autoAssignTeamNames={autoAssignTeamNames}
             setAutoAssignTeamNames={(value) =>
               scrimCreatorStore.trigger.autoAssignChanged({ value })

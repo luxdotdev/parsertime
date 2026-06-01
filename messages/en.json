@@ -936,7 +936,10 @@
       "autoAssignTeamNamesDescription": "Automatically rename teams and normalize team positions so your team is always Team 1.",
       "autoAssignDisabledDescription": "Select a team to enable auto-assign.",
       "opponentName": "OWCS opponent",
-      "opponentDescription": "Optional. Links to OWCS scouting analytics."
+      "opponentDescription": "Optional. Links to OWCS scouting analytics.",
+      "linkedRequestLabel": "Linked matchmaker request",
+      "linkedRequestNone": "Not from a matchmaker request",
+      "linkedRequestDescription": "If this scrim came from a matchmaker request, link it to enable post-scrim feedback."
     }
   },
   "updateModal": {

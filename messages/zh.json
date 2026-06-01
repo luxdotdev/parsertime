@@ -936,7 +936,10 @@
       "autoAssignTeamNamesDescription": "自动重命名队伍并规范队伍位置，使你的队伍始终为 Team 1。",
       "autoAssignDisabledDescription": "选择队伍以启用自动分配。",
       "opponentName": "OWCS 对手",
-      "opponentDescription": "可选。关联到 OWCS 侦察分析。"
+      "opponentDescription": "可选。关联到 OWCS 侦察分析。",
+      "linkedRequestLabel": "关联的配对请求",
+      "linkedRequestNone": "非配对请求产生的训练赛",
+      "linkedRequestDescription": "如果此训练赛来自配对请求，请关联以启用赛后反馈功能。"
     }
   },
   "updateModal": {

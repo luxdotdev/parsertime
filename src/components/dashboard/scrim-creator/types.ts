@@ -7,6 +7,13 @@ export type FormValues = {
   team: string;
   date: Date;
   opponentTeamAbbr?: string | null;
+  scrimRequestId?: string | null;
+};
+
+export type LinkableRequestOption = {
+  scrimRequestId: string;
+  opponentTeamId: number;
+  opponentTeamName: string;
 };
 
 export type ScoutingTeam = GetScoutingTeamsResponse["teams"][number];

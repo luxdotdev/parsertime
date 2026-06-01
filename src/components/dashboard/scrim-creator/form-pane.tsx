@@ -30,7 +30,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller, type UseFormReturn } from "react-hook-form";
-import type { FormValues, ScoutingTeam, TeamOption } from "./types";
+import type { FormValues, LinkableRequestOption, ScoutingTeam, TeamOption } from "./types";
 
 type Props = {
   form: UseFormReturn<FormValues>;
@@ -39,6 +39,7 @@ type Props = {
   teams: TeamOption[] | undefined;
   scoutingTeams: ScoutingTeam[];
   showOpponent: boolean;
+  linkableRequests: LinkableRequestOption[];
   autoAssignTeamNames: boolean;
   setAutoAssignTeamNames: (value: boolean) => void;
   selectedTeam: string | undefined;
@@ -55,6 +56,7 @@ export function FormPane({
   teams,
   scoutingTeams,
   showOpponent,
+  linkableRequests,
   autoAssignTeamNames,
   setAutoAssignTeamNames,
   selectedTeam,
@@ -206,6 +208,34 @@ export function FormPane({
                     onChange={field.onChange}
                   />
                   <FieldDescription>{t("opponentDescription")}</FieldDescription>
+                </Field>
+              )}
+            />
+          </div>
+        )}
+
+        {linkableRequests.length > 0 && (
+          <div className="mt-5">
+            <Controller
+              control={form.control}
+              name="scrimRequestId"
+              render={({ field }) => (
+                <Field>
+                  <FieldLabel htmlFor={field.name}>{t("linkedRequestLabel")}</FieldLabel>
+                  <Select onValueChange={field.onChange} value={field.value ?? "none"}>
+                    <SelectTrigger id={field.name} className="w-full">
+                      <SelectValue placeholder={t("linkedRequestNone")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">{t("linkedRequestNone")}</SelectItem>
+                      {linkableRequests.map((r) => (
+                        <SelectItem key={r.scrimRequestId} value={r.scrimRequestId}>
+                          {r.opponentTeamName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FieldDescription>{t("linkedRequestDescription")}</FieldDescription>
                 </Field>
               )}
             />
