@@ -303,6 +303,39 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans raw ultimate event counts by player and hero", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 1,
+      question: "How many raw ultimate events did PGE use on Kiriko?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ultimate",
+      metrics: [{ metric: "ultimates", agg: "count" }],
+      dimensions: [],
+      filters: [
+        { field: "hero", op: "in", value: ["Kiriko"] },
+        { field: "player", op: "in", value: ["PGE"] },
+      ],
+    });
+  });
+
+  it("plans ranked raw ultimate usage questions by hero", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 1,
+      question: "Which heroes have the most raw ults used?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ultimate",
+      metrics: [{ metric: "ultimates", agg: "count" }],
+      dimensions: ["hero"],
+      filters: [],
+      sort: { key: "count__ultimates", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans extended fight winrate questions onto computed teamfight fields", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

@@ -142,7 +142,19 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "swap onto",
     "time before swap",
   ],
-  ultimate: ["ultimate used", "ultimates used", "ults used"],
+  ultimate: [
+    "ultimate event",
+    "ultimate events",
+    "ult event",
+    "ult events",
+    "ultimate used",
+    "ultimates used",
+    "ults used",
+    "raw ult",
+    "raw ults",
+    "raw ultimate",
+    "raw ultimates",
+  ],
   ult_combo: [
     "ult combo",
     "ult combos",
@@ -738,6 +750,14 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "time before swapping",
     "average time before swap",
     "average time before swapping",
+  ],
+  ultimates: [
+    "ultimates",
+    "ultimates used",
+    "ults",
+    "ults used",
+    "ultimate events",
+    "ult events",
   ],
   multikill_best: ["best multikill", "biggest multikill", "multikill best"],
   ults_used: [
@@ -1513,6 +1533,9 @@ function findPlayer(question: string, hero: string | null): string | null {
       /\b(?:does|did)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:get|gets|kill|kills|killed)\b/gi
     ),
     ...question.matchAll(
+      /\b(?:does|did)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:use|uses|used)\b/gi
+    ),
+    ...question.matchAll(
       /\b(?:does|did|has|have)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:play|played)\b/gi
     ),
     ...question.matchAll(
@@ -2242,6 +2265,53 @@ function mentionsRawHeroSwapEventContext(normalized: string): boolean {
   );
 }
 
+function mentionsRawUltimateEventContext(normalized: string): boolean {
+  if (
+    includesPhrase(normalized, "ult impact") ||
+    includesPhrase(normalized, "ultimate impact") ||
+    includesPhrase(normalized, "ult economy") ||
+    includesPhrase(normalized, "ultimate economy") ||
+    includesPhrase(normalized, "ult advantage") ||
+    includesPhrase(normalized, "ultimate advantage") ||
+    includesPhrase(normalized, "ult combo") ||
+    includesPhrase(normalized, "ultimate combo") ||
+    includesPhrase(normalized, "counter ult") ||
+    includesPhrase(normalized, "counter ultimate") ||
+    includesPhrase(normalized, "fight opener") ||
+    includesPhrase(normalized, "fight openers") ||
+    includesPhrase(normalized, "opening ult") ||
+    includesPhrase(normalized, "opening ultimate") ||
+    includesPhrase(normalized, "first ult") ||
+    includesPhrase(normalized, "first ultimate") ||
+    includesPhrase(normalized, "wasted ult") ||
+    includesPhrase(normalized, "wasted ultimate") ||
+    mentionsFightContext(normalized)
+  ) {
+    return false;
+  }
+
+  const explicitRawOrEvent =
+    includesPhrase(normalized, "ultimate event") ||
+    includesPhrase(normalized, "ultimate events") ||
+    includesPhrase(normalized, "ult event") ||
+    includesPhrase(normalized, "ult events") ||
+    includesPhrase(normalized, "raw ult") ||
+    includesPhrase(normalized, "raw ults") ||
+    includesPhrase(normalized, "raw ultimate") ||
+    includesPhrase(normalized, "raw ultimates");
+  const namedPlayerUsage =
+    /\b(?:did|does)\s+[a-z0-9_.-]+\s+(?:use|uses|used)\b/.test(normalized) ||
+    /\bby\s+(?!role\b|roles\b|hero\b|heroes\b|player\b|players\b|map\b|maps\b|type\b|mode\b)[a-z0-9_.-]+\b/.test(
+      normalized
+    );
+
+  return (
+    explicitRawOrEvent ||
+    (includesPhrase(normalized, "ultimates used") && namedPlayerUsage) ||
+    (includesPhrase(normalized, "ults used") && namedPlayerUsage)
+  );
+}
+
 function mentionsAbilityTimingContext(normalized: string): boolean {
   const abilityContext =
     includesPhrase(normalized, "ability") ||
@@ -2497,6 +2567,9 @@ function pickDataset(question: string): DatasetId {
   }
   if (mentionsRawHeroSwapEventContext(normalized)) {
     return "hero_swap";
+  }
+  if (mentionsUlt && mentionsRawUltimateEventContext(normalized)) {
+    return "ultimate";
   }
   if (
     mentionsSwap &&
@@ -7766,6 +7839,26 @@ function pickDimensions(
       add("to_hero");
     } else if (!hasFilter("to_hero")) {
       add("to_hero");
+    }
+  }
+  if (dataset === "ultimate" && dims.length === 0) {
+    if (
+      includesPhrase(normalized, "which player") ||
+      includesPhrase(normalized, "which players") ||
+      includesPhrase(normalized, "who") ||
+      includesPhrase(normalized, "by player")
+    ) {
+      if (!hasFilter("player")) add("player");
+    } else if (
+      includesPhrase(normalized, "which hero") ||
+      includesPhrase(normalized, "which heroes") ||
+      includesPhrase(normalized, "by hero")
+    ) {
+      if (!hasFilter("hero")) add("hero");
+    } else if (!hasFilter("player")) {
+      add("player");
+    } else if (!hasFilter("hero")) {
+      add("hero");
     }
   }
   if (
