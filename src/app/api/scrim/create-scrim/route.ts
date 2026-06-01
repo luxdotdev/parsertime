@@ -14,6 +14,8 @@ import { Logger } from "@/lib/logger";
 import { createNewScrimFromParsedData } from "@/lib/parser";
 import { Permission } from "@/lib/permissions";
 import { normalizeMapForScrim } from "@/lib/team-normalization";
+import prisma from "@/lib/prisma";
+import { resolveScrimLink } from "@/lib/team-ops/scrim-feedback";
 import {
   newSuspiciousActivityWebhookConstructor,
   sendDiscordWebhook,
@@ -42,6 +44,8 @@ export type CreateScrimRequestData = {
     team: string;
     banPosition: number;
   }[];
+  scrimRequestId?: string | null;
+  opponentTeamId?: number | null;
 };
 
 const parserDataSchema = z.custom<ParserData>((value) => {
@@ -81,6 +85,8 @@ export const createScrimSchema = z.object({
       })
     )
     .default([]),
+  scrimRequestId: z.string().min(1).nullable().optional(),
+  opponentTeamId: z.number().int().positive().nullable().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -235,6 +241,31 @@ export async function POST(request: NextRequest) {
         event.scrim_id = newScrimId;
         event.outcome = "success";
         event.status_code = 200;
+
+        // Linking is best-effort: the scrim is already created, so a failed
+        // link update must not turn a successful creation into a 500.
+        if (teamId && data.scrimRequestId && data.opponentTeamId) {
+          try {
+            const link = await resolveScrimLink({
+              teamId,
+              scrimRequestId: data.scrimRequestId,
+              opponentTeamId: data.opponentTeamId,
+            });
+            if (link) {
+              await prisma.scrim.update({
+                where: { id: newScrimId },
+                data: {
+                  scrimRequestId: link.scrimRequestId,
+                  opponentTeamId: link.opponentTeamId,
+                },
+              });
+              event.linked_request = true;
+            }
+          } catch (linkErr) {
+            event.link_error =
+              linkErr instanceof Error ? linkErr.message : String(linkErr);
+          }
+        }
 
         after(async () => {
           await auditLog.createAuditLog({

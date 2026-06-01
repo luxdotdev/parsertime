@@ -13,6 +13,8 @@ import { createNewScrimFromParsedData } from "@/lib/parser";
 import { Permission } from "@/lib/permissions";
 import { createNdjsonStream } from "@/lib/progress-stream";
 import { normalizeMapForScrim } from "@/lib/team-normalization";
+import { resolveScrimLink } from "@/lib/team-ops/scrim-feedback";
+import prisma from "@/lib/prisma";
 import { Ratelimit } from "@upstash/ratelimit";
 import { ipAddress } from "@vercel/functions";
 import { kv } from "@vercel/kv";
@@ -100,6 +102,32 @@ export async function POST(request: NextRequest) {
       const parseDuration = performance.now() - parseStart;
       scrimParsingDuration.record(parseDuration);
       scrimCreatedCounter.add(1);
+
+      // Linking is best-effort: the scrim is already created, so a failed link
+      // update must not surface as a creation error (which would prompt a retry
+      // and a duplicate scrim).
+      if (teamId && data.scrimRequestId && data.opponentTeamId) {
+        try {
+          const link = await resolveScrimLink({
+            teamId,
+            scrimRequestId: data.scrimRequestId,
+            opponentTeamId: data.opponentTeamId,
+          });
+          if (link) {
+            await prisma.scrim.update({
+              where: { id: newScrimId },
+              data: {
+                scrimRequestId: link.scrimRequestId,
+                opponentTeamId: link.opponentTeamId,
+              },
+            });
+            event.linked_request = true;
+          }
+        } catch (linkErr) {
+          event.link_error =
+            linkErr instanceof Error ? linkErr.message : String(linkErr);
+        }
+      }
 
       emit({ type: "done", scrimId: newScrimId });
       event.outcome = "success";
