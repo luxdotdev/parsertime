@@ -1427,6 +1427,57 @@ const ABILITY_BY_NORMALIZED = new Map(
   )
 );
 
+const ULTIMATE_HERO_ALIASES: Array<[string, string[]]> = [
+  ["Ana", ["nano boost", "nano"]],
+  ["Ashe", ["b o b", "bob"]],
+  ["Baptiste", ["amplification matrix", "amp matrix", "window"]],
+  ["Bastion", ["configuration artillery", "artillery"]],
+  ["Brigitte", ["rally"]],
+  ["Cassidy", ["deadeye", "high noon"]],
+  ["Doomfist", ["meteor strike", "meteor"]],
+  ["D.Va", ["self destruct", "self-destruct", "bomb", "dva bomb"]],
+  ["Echo", ["duplicate", "copy"]],
+  ["Genji", ["dragonblade", "blade", "blades", "blading"]],
+  ["Hanzo", ["dragonstrike", "dragon strike", "dragons"]],
+  ["Hazard", ["downpour"]],
+  ["Illari", ["captive sun", "sun"]],
+  ["Junker Queen", ["rampage"]],
+  ["Junkrat", ["rip tire", "riptire", "tire"]],
+  ["Juno", ["orbital ray", "ray"]],
+  ["Kiriko", ["kitsune rush", "kitsune", "rush"]],
+  ["Lifeweaver", ["tree of life", "tree"]],
+  ["Lúcio", ["sound barrier", "beat", "barrier"]],
+  ["Mauga", ["cage fight", "cage"]],
+  ["Mei", ["blizzard"]],
+  ["Mercy", ["valkyrie", "valk"]],
+  ["Moira", ["coalescence", "coal"]],
+  ["Orisa", ["terra surge", "surge"]],
+  ["Pharah", ["barrage"]],
+  ["Ramattra", ["annihilation"]],
+  ["Reaper", ["death blossom", "blossom"]],
+  ["Reinhardt", ["earthshatter", "shatter"]],
+  ["Roadhog", ["whole hog"]],
+  ["Sigma", ["gravitic flux", "flux"]],
+  ["Sojourn", ["overclock"]],
+  ["Soldier: 76", ["tactical visor", "visor"]],
+  ["Sombra", ["emp"]],
+  ["Symmetra", ["photon barrier", "sym wall"]],
+  ["Torbjörn", ["molten core", "molten"]],
+  ["Tracer", ["pulse bomb", "pulse"]],
+  ["Venture", ["tectonic shock"]],
+  ["Widowmaker", ["infra sight", "infra-sight", "infrasight", "walls"]],
+  ["Winston", ["primal rage", "primal"]],
+  ["Wrecking Ball", ["minefield", "mines"]],
+  ["Zarya", ["graviton surge", "grav"]],
+  ["Zenyatta", ["transcendence", "trans"]],
+];
+
+const ULTIMATE_HERO_BY_NORMALIZED = new Map(
+  ULTIMATE_HERO_ALIASES.flatMap(([hero, aliases]) =>
+    aliases.map((alias) => [normalize(alias), hero] as const)
+  )
+);
+
 const MAP_BY_NORMALIZED = new Map(
   Object.keys(mapNameToMapTypeMapping).map(
     (mapName) => [normalize(mapName), mapName] as const
@@ -1460,9 +1511,33 @@ function findPhraseIndex(haystack: string, phrase: string): number {
   return match.index + (match[1] ? match[1].length : 0);
 }
 
+function mentionsOverlap(a: HeroMention, b: HeroMention): boolean {
+  return a.index < b.index + b.aliasLength && b.index < a.index + a.aliasLength;
+}
+
 function findHeroMentions(question: string): HeroMention[] {
   const normalized = normalize(question);
   const matches = Array.from(HERO_BY_NORMALIZED.entries())
+    .map(([alias, hero]) => ({
+      hero,
+      index: findPhraseIndex(normalized, alias),
+      aliasLength: alias.length,
+    }))
+    .filter((mention) => mention.index >= 0)
+    .sort((a, b) => a.index - b.index || b.aliasLength - a.aliasLength);
+  const seen = new Set<string>();
+  const mentions: HeroMention[] = [];
+  for (const mention of matches) {
+    if (seen.has(mention.hero)) continue;
+    seen.add(mention.hero);
+    mentions.push(mention);
+  }
+  return mentions;
+}
+
+function findUltimateHeroMentions(question: string): HeroMention[] {
+  const normalized = normalize(question);
+  const matches = Array.from(ULTIMATE_HERO_BY_NORMALIZED.entries())
     .map(([alias, hero]) => ({
       hero,
       index: findPhraseIndex(normalized, alias),
@@ -2714,6 +2789,26 @@ function mentionsUltSideComparison(normalized: string): boolean {
   );
 }
 
+function mentionsNamedUltimateImpactContext(
+  normalized: string,
+  hasNamedUltimate: boolean
+): boolean {
+  if (!hasNamedUltimate) return false;
+  return (
+    includesPhrase(normalized, "win rate") ||
+    includesPhrase(normalized, "winrate") ||
+    includesPhrase(normalized, "fight win rate") ||
+    includesPhrase(normalized, "fight winrate") ||
+    includesPhrase(normalized, "fights") ||
+    includesPhrase(normalized, "fight") ||
+    includesPhrase(normalized, "wins") ||
+    includesPhrase(normalized, "losses") ||
+    includesPhrase(normalized, "uncontested") ||
+    includesPhrase(normalized, "mirror") ||
+    includesPhrase(normalized, "mirrored")
+  );
+}
+
 function mentionsWithWithoutBanComparison(normalized: string): boolean {
   const mentionsBan =
     includesPhrase(normalized, "ban") ||
@@ -2906,6 +3001,7 @@ function pickDataset(question: string): DatasetId {
   const normalized = normalize(question);
   const mapName = findMapName(question);
   const heroMentions = findHeroMentions(question);
+  const namedUltimateHeroMentions = findUltimateHeroMentions(question);
   const player = findPlayer(question, heroMentions[0]?.hero ?? null);
   const mentionsSwap =
     includesPhrase(normalized, "swap") ||
@@ -2937,6 +3033,14 @@ function pickDataset(question: string): DatasetId {
   }
   if (mentionsWonLostFightUltComparison(normalized)) {
     return "teamfight";
+  }
+  if (
+    mentionsNamedUltimateImpactContext(
+      normalized,
+      namedUltimateHeroMentions.length > 0
+    )
+  ) {
+    return "ult_impact";
   }
   if (mentionsEnemyRoleMatchupContext(normalized)) {
     return "enemy_hero";
@@ -5761,7 +5865,28 @@ function pickPlayerTargetDirection(normalized: string): string | null {
 
 function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   const filters: QueryFilter[] = [];
-  const heroMentions = findHeroMentions(question);
+  const explicitHeroMentions = findHeroMentions(question);
+  const namedUltimateHeroMentions =
+    dataset === "ult_impact" || dataset === "ultimate"
+      ? findUltimateHeroMentions(question)
+      : [];
+  const nonOverlappingHeroMentions =
+    namedUltimateHeroMentions.length > 0
+      ? explicitHeroMentions.filter((mention) =>
+          namedUltimateHeroMentions.every(
+            (ultimateMention) => !mentionsOverlap(mention, ultimateMention)
+          )
+        )
+      : explicitHeroMentions;
+  const seenHeroes = new Set<string>();
+  const heroMentions = [
+    ...nonOverlappingHeroMentions,
+    ...namedUltimateHeroMentions,
+  ].filter((mention) => {
+    if (seenHeroes.has(mention.hero)) return false;
+    seenHeroes.add(mention.hero);
+    return true;
+  });
   const heroes = heroMentions.map((mention) => mention.hero);
   const hero = heroes[0] ?? null;
   const abilityMentions = findAbilityMentions(question);
@@ -8230,6 +8355,21 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       filters.push({ field: "side", op: "in", value: ["enemy", "both"] });
     } else if (mentionsOurUltSide(normalized)) {
       filters.push({ field: "side", op: "in", value: ["us", "both"] });
+    } else if (namedUltimateHeroMentions.length > 0) {
+      if (
+        /\b(?:enemy|their|they|them)\b.*\b(?:use|uses|used|with)\b/.test(
+          normalized
+        )
+      ) {
+        filters.push({ field: "side", op: "in", value: ["enemy", "both"] });
+      } else if (
+        player ||
+        includesPhrase(normalized, "our win rate") ||
+        includesPhrase(normalized, "we win") ||
+        /\b(?:we|our|us)\b/.test(normalized)
+      ) {
+        filters.push({ field: "side", op: "in", value: ["us", "both"] });
+      }
     }
 
     if (

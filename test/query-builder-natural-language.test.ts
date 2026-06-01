@@ -4346,6 +4346,57 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans friendly named-ultimate questions onto ultimate impact", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What is our win rate when PGE uses blade?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_impact",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["scenario"],
+      filters: [
+        { field: "hero", op: "in", value: ["Genji"] },
+        { field: "side", op: "in", value: ["us", "both"] },
+      ],
+    });
+  });
+
+  it("plans enemy named-ultimate questions onto ultimate impact", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What is our win rate when enemy uses dragonblade?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_impact",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["scenario"],
+      filters: [
+        { field: "hero", op: "in", value: ["Genji"] },
+        { field: "side", op: "in", value: ["enemy", "both"] },
+      ],
+    });
+  });
+
+  it("plans named support ultimate questions onto ultimate impact", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What is our fight win rate with kitsune rush?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_impact",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["scenario"],
+      filters: [
+        { field: "hero", op: "in", value: ["Kiriko"] },
+        { field: "side", op: "in", value: ["us", "both"] },
+      ],
+    });
+  });
+
   it("plans ultimate-impact aggregate metric threshold filters", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,
