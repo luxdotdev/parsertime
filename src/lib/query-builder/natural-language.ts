@@ -3824,6 +3824,94 @@ function extractDurationThresholdFilters(
   return filters;
 }
 
+function aggregateThresholdAliases(
+  dataset: DatasetId,
+  filter: FilterDef
+): string[] {
+  const metricId = filter.metric ?? filter.id;
+  const metric = getMetric(dataset, metricId);
+  const aliases = new Set<string>();
+
+  for (const alias of [
+    filter.id.replace(/_/g, " "),
+    filter.label,
+    filter.id === metricId ? metricId.replace(/_/g, " ") : null,
+    filter.id === metricId ? metric?.label : null,
+  ]) {
+    const normalizedAlias = alias ? normalize(alias) : "";
+    if (normalizedAlias) aliases.add(normalizedAlias);
+  }
+
+  if (filter.aggregate === "per10" && metric) {
+    aliases.add(`${normalize(metric.label)} per 10`);
+    aliases.add(`${metric.id.replace(/_/g, " ")} per 10`);
+  }
+  if (filter.aggregate === "sum") {
+    aliases.add(`total ${normalize(filter.label)}`);
+    aliases.add(`${normalize(filter.label)} count`);
+  }
+
+  return Array.from(aliases).sort((a, b) => b.length - a.length);
+}
+
+function extractGenericAggregateThresholdFilters(
+  dataset: DatasetId,
+  normalized: string,
+  existing: QueryFilter[]
+): QueryFilter[] {
+  const existingFields = new Set(existing.map((filter) => filter.field));
+  const aggregateFilters = getDataset(dataset).filters.filter(
+    (filter) =>
+      filter.valueType === "number" &&
+      filter.aggregate &&
+      !existingFields.has(filter.id)
+  );
+  const seen = new Set(
+    existing.map((filter) => `${filter.field}:${filter.op}:${filter.value}`)
+  );
+  const seenThresholds = new Set(
+    existing
+      .filter((filter) => typeof filter.value === "number")
+      .map((filter) => `${filter.op}:${filter.value}`)
+  );
+  const generated: QueryFilter[] = [];
+  const candidates = aggregateFilters
+    .map((filter) => {
+      const aliases = aggregateThresholdAliases(dataset, filter);
+      const matchLength = aliases.reduce(
+        (best, alias) =>
+          includesPhrase(normalized, alias)
+            ? Math.max(best, alias.length)
+            : best,
+        0
+      );
+      return { filter, aliases, matchLength };
+    })
+    .filter((candidate) => candidate.matchLength > 0)
+    .sort((a, b) => b.matchLength - a.matchLength);
+
+  for (const { filter, aliases } of candidates) {
+    const extracted =
+      filter.unit === "s"
+        ? extractDurationThresholdFilters(dataset, normalized, [
+            { field: filter.id, aliases },
+          ])
+        : extractNumericThresholdFilters(dataset, normalized, [
+            { field: filter.id, aliases },
+          ]);
+    const [threshold] = extracted;
+    if (!threshold || typeof threshold.value !== "number") continue;
+    const key = `${threshold.field}:${threshold.op}:${threshold.value}`;
+    const thresholdKey = `${threshold.op}:${threshold.value}`;
+    if (seen.has(key) || seenThresholds.has(thresholdKey)) continue;
+    seen.add(key);
+    seenThresholds.add(thresholdKey);
+    generated.push(threshold);
+  }
+
+  return generated;
+}
+
 function extractOpeningKillTimeFilters(normalized: string): QueryFilter[] {
   const duration = `(${NUMBER_TOKEN})`;
   const unit = "(seconds?|secs?|s|minutes?|mins?|m)";
@@ -7116,6 +7204,10 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       ])
     );
   }
+
+  filters.push(
+    ...extractGenericAggregateThresholdFilters(dataset, normalized, filters)
+  );
 
   return filters.slice(0, 8);
 }

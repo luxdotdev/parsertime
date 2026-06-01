@@ -1387,6 +1387,19 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans registry-derived aggregate threshold aliases", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "Which ult combos have over 4 total uses?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_combo",
+      dimensions: ["combo"],
+      filters: expect.arrayContaining([{ field: "uses", op: "gt", value: 4 }]),
+    });
+  });
+
   it("plans player map-specialist questions onto player-map performance", () => {
     const planned = planQueryFromQuestion({
       teamId: 2,
