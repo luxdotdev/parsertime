@@ -52,7 +52,9 @@ export async function addBlacklistEntry(input: {
   });
   await prisma.teamBlacklist.upsert({
     where: { ownerTeamId_blockedKey: { ownerTeamId: input.ownerTeamId, blockedKey: key } },
-    update: { reason: input.reason },
+    // Re-blocking an existing entry (e.g. a POST_SCRIM verdict over a prior
+    // manual block) should not wipe an existing reason with a null one.
+    update: input.reason != null ? { reason: input.reason } : {},
     create: {
       ownerTeamId: input.ownerTeamId,
       blockedTeamId: input.blockedTeamId,
