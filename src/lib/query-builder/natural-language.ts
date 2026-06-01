@@ -2661,6 +2661,25 @@ function mentionsUltSideComparison(normalized: string): boolean {
   );
 }
 
+function mentionsWithWithoutBanComparison(normalized: string): boolean {
+  const mentionsBan =
+    includesPhrase(normalized, "ban") ||
+    includesPhrase(normalized, "bans") ||
+    includesPhrase(normalized, "banned") ||
+    includesPhrase(normalized, "available");
+
+  return (
+    mentionsBan &&
+    (includesPhrase(normalized, "with and without") ||
+      includesPhrase(normalized, "with vs without") ||
+      includesPhrase(normalized, "with versus without") ||
+      includesPhrase(normalized, "banned vs available") ||
+      includesPhrase(normalized, "banned versus available") ||
+      includesPhrase(normalized, "available vs banned") ||
+      includesPhrase(normalized, "available versus banned"))
+  );
+}
+
 function mentionsRolePerformanceContext(normalized: string): boolean {
   if (
     includesPhrase(normalized, "role trio") ||
@@ -3838,6 +3857,25 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
     deduped.sort((a, b) =>
       a.metric === "win_rate_delta" ? -1 : b.metric === "win_rate_delta" ? 1 : 0
     );
+  }
+  if (
+    dataset === "ban_impact" &&
+    mentionsWithWithoutBanComparison(normalized)
+  ) {
+    for (const metric of [
+      "win_rate_with",
+      "win_rate_without",
+      "win_rate_delta",
+    ]) {
+      const agg = pickMetricAgg(dataset, metric, question);
+      if (agg && !deduped.some((ref) => ref.metric === metric)) {
+        deduped.push({ metric, agg });
+      }
+    }
+    deduped.sort((a, b) => {
+      const priority = ["win_rate_with", "win_rate_without", "win_rate_delta"];
+      return priority.indexOf(a.metric) - priority.indexOf(b.metric);
+    });
   }
   if (
     dataset === "ult_impact" &&

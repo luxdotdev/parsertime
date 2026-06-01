@@ -3737,6 +3737,27 @@ describe("query-builder natural-language planner", () => {
     );
   });
 
+  it("plans with-and-without ban win-rate comparisons", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "Compare win rate with and without Tracer banned by enemy",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ban_impact",
+      metrics: [
+        { metric: "win_rate_with", agg: "avg" },
+        { metric: "win_rate_without", agg: "avg" },
+        { metric: "win_rate_delta", agg: "avg" },
+      ],
+      dimensions: [],
+      filters: [
+        { field: "hero", op: "in", value: ["Tracer"] },
+        { field: "side", op: "eq", value: "banned by enemy" },
+      ],
+    });
+  });
+
   it("plans ult-combo questions onto weighted combo win rates", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,
