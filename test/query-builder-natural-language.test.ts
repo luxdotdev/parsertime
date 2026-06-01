@@ -1322,6 +1322,21 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans player comeback questions onto calculated fight reversal", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Which players have the highest fight comeback rate?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "calculated_stat",
+      metrics: [{ metric: "fight_reversal", agg: "avg" }],
+      dimensions: ["player"],
+      sort: { key: "avg__fight_reversal", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans calculated-stat percentage threshold filters", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,
@@ -1333,6 +1348,20 @@ describe("query-builder natural-language planner", () => {
       metrics: [{ metric: "first_pick_pct", agg: "avg" }],
       dimensions: ["player"],
       filters: [{ field: "first_pick_pct", op: "gt", value: 25 }],
+    });
+  });
+
+  it("plans calculated-stat comeback threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Which players have comeback rate over 20%?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "calculated_stat",
+      metrics: [{ metric: "fight_reversal", agg: "avg" }],
+      dimensions: ["player"],
+      filters: [{ field: "fight_reversal", op: "gt", value: 20 }],
     });
   });
 
@@ -3569,6 +3598,30 @@ describe("query-builder natural-language planner", () => {
       expect.arrayContaining([
         { field: "duel_winrate_percentage", op: "gt", value: 55 },
         { field: "average_drought_time", op: "lt", value: 40 },
+      ])
+    );
+  });
+
+  it("plans player-impact comeback threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Which players have player impact comeback rate over 20% with at least 30 minutes played?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_impact",
+      dimensions: ["player"],
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([
+        { metric: "fight_reversal_percentage", agg: "avg" },
+      ])
+    );
+    expect(planned?.spec.filters).toEqual(
+      expect.arrayContaining([
+        { field: "fight_reversal_percentage", op: "gt", value: 20 },
+        { field: "hero_time_played", op: "gte", value: 1800 },
       ])
     );
   });

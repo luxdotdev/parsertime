@@ -757,6 +757,10 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "fight reversal",
     "fight reversal percentage",
     "fight reversal rate",
+    "fight comeback",
+    "fight comeback rate",
+    "comeback rate",
+    "comeback percentage",
   ],
   time_played: ["time played", "playtime", "played it", "played them"],
   hero_time_played: ["time played", "playtime", "hero time played"],
@@ -1215,7 +1219,15 @@ const METRIC_ALIASES: Record<string, string[]> = {
   ],
   map_mvp_rate: ["map mvp rate", "map mvp percentage"],
   fleta_deadlift_percentage: ["fleta deadlift", "fleta deadlift percentage"],
-  fight_reversal_percentage: ["fight reversal", "fight reversal percentage"],
+  fight_reversal_percentage: [
+    "fight reversal",
+    "fight reversal percentage",
+    "fight reversal rate",
+    "fight comeback",
+    "fight comeback rate",
+    "comeback rate",
+    "comeback percentage",
+  ],
   length: ["length", "streak length", "streak count"],
   fights: ["fights", "teamfights", "team fights"],
   duration: [
@@ -3592,6 +3604,9 @@ function pickDataset(question: string): DatasetId {
     includesPhrase(normalized, "which players") ||
     includesPhrase(normalized, "by player") ||
     includesPhrase(normalized, "per player");
+  if (mentionsFightComebackContext(normalized) && asksPlayerScopedComeback) {
+    return "calculated_stat";
+  }
   if (mentionsFightComebackContext(normalized) && !asksPlayerScopedComeback) {
     return "teamfight";
   }
@@ -5959,7 +5974,10 @@ function pickPlayerTrendMetric(normalized: string): string | null {
   if (includesPhrase(normalized, "mvp")) return "mvp_score";
   if (
     includesPhrase(normalized, "fight reversal") ||
-    includesPhrase(normalized, "reversal")
+    includesPhrase(normalized, "reversal") ||
+    includesPhrase(normalized, "fight comeback") ||
+    includesPhrase(normalized, "comeback rate") ||
+    includesPhrase(normalized, "comeback percentage")
   ) {
     return "fight_reversal_percentage";
   }
@@ -6927,7 +6945,15 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         },
         {
           field: "fight_reversal_percentage",
-          aliases: ["fight reversal", "fight reversal percentage"],
+          aliases: [
+            "fight reversal",
+            "fight reversal percentage",
+            "fight reversal rate",
+            "fight comeback",
+            "fight comeback rate",
+            "comeback rate",
+            "comeback percentage",
+          ],
         },
       ]),
       ...extractDurationThresholdFilters(dataset, normalized, [
@@ -7226,6 +7252,10 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
             "fight reversal",
             "fight reversal percentage",
             "fight reversal rate",
+            "fight comeback",
+            "fight comeback rate",
+            "comeback rate",
+            "comeback percentage",
           ],
         },
       ]),
@@ -7413,7 +7443,14 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         },
         {
           field: "fight_reversal_percentage",
-          aliases: ["fight reversal", "fight reversal rate"],
+          aliases: [
+            "fight reversal",
+            "fight reversal rate",
+            "fight comeback",
+            "fight comeback rate",
+            "comeback rate",
+            "comeback percentage",
+          ],
         },
         {
           field: "fleta_deadlift_percentage",
