@@ -1541,6 +1541,9 @@ function findPlayer(question: string, hero: string | null): string | null {
       /\b(?:does|did|has|have)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:play|played)\b/gi
     ),
     ...question.matchAll(
+      /\bcompare\s+([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:final|blow|blows|death|deaths|elimination|eliminations|elim|elims|hero|all|damage|healing|scoped|accuracy|ult|ults|ultimate|ultimates|kill|kills|assist|assists)\b/gi
+    ),
+    ...question.matchAll(
       /\b([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:kill|kills|killed)\b/gi
     ),
     ...question.matchAll(
@@ -1625,7 +1628,12 @@ function parsePlayerList(value: string): string[] {
     const match = part.match(/^[A-Za-z][A-Za-z0-9_.-]{1,}$/);
     if (!match) continue;
     const normalized = normalize(match[0]);
-    if (FILLER_WORDS.has(normalized) || PLAYER_PARSE_STOP_WORDS.has(normalized))
+    if (
+      FILLER_WORDS.has(normalized) ||
+      PLAYER_PARSE_STOP_WORDS.has(normalized) ||
+      HERO_BY_NORMALIZED.has(normalized) ||
+      MAP_BY_NORMALIZED.has(normalized)
+    )
       continue;
     const player =
       match[0] === match[0].toUpperCase() ? match[0] : titleCase(match[0]);
@@ -7943,6 +7951,15 @@ function pickDimensions(
 
   if (hasMultiValueFilter("player")) {
     add("player");
+  }
+  if (hasMultiValueFilter("hero")) {
+    add("hero");
+  }
+  if (hasMultiValueFilter("our_hero")) {
+    add("our_hero");
+  }
+  if (hasMultiValueFilter("enemy_hero")) {
+    add("enemy_hero");
   }
 
   if (

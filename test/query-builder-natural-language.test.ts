@@ -274,6 +274,24 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans hero-vs-hero player stat comparisons with grouped hero output", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 7,
+      question: "Compare PGE final blows per 10 on Tracer and Widowmaker",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_stat",
+      teamId: 7,
+      metrics: [{ metric: "final_blows", agg: "per10" }],
+      dimensions: ["hero"],
+      filters: [
+        { field: "hero", op: "in", value: ["Tracer", "Widowmaker"] },
+        { field: "player", op: "in", value: ["PGE"] },
+      ],
+    });
+  });
+
   it("plans metric-first player comparisons from for-phrasing", () => {
     const planned = planQueryFromQuestion({
       teamId: 7,
@@ -2376,6 +2394,20 @@ describe("query-builder natural-language planner", () => {
         { field: "player", op: "in", value: ["PGE"] },
         { field: "result", op: "eq", value: "win" },
       ],
+    });
+  });
+
+  it("plans multi-hero hero-pool comparisons with grouped hero output", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Compare hero win rates for Tracer and Widowmaker",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_pool",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["hero"],
+      filters: [{ field: "hero", op: "in", value: ["Tracer", "Widowmaker"] }],
     });
   });
 
