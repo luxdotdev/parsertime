@@ -76,16 +76,20 @@ export async function getViewableTeams(): Promise<ViewableTeam[]> {
   const user = await getCurrentUser();
   if (!user) return [];
 
+  const accessWhere = isAdminUser(user)
+    ? {}
+    : {
+        OR: [
+          { ownerId: user.id },
+          { users: { some: { id: user.id } } },
+          { managers: { some: { userId: user.id } } },
+        ],
+      };
+
   const teams = await prisma.team.findMany({
-    where: isAdminUser(user)
-      ? {}
-      : {
-          OR: [
-            { ownerId: user.id },
-            { users: { some: { id: user.id } } },
-            { managers: { some: { userId: user.id } } },
-          ],
-        },
+    // Only teams with at least one uploaded scrim are worth querying; an empty
+    // team would always return zero rows and shouldn't clutter the picker.
+    where: { ...accessWhere, scrims: { some: {} } },
     select: { id: true, name: true },
     orderBy: { name: "asc" },
   });
