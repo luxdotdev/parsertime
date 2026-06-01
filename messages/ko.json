@@ -5810,6 +5810,27 @@
       "owcs": "OWCS"
     }
   },
+  "teamOps": {
+    "title": "팀 운영",
+    "blacklist": {
+      "subtitle": "스크림을 원하지 않는 팀입니다. 블랙리스트에 등록된 팀이 Parsertime에도 있는 경우, 매치메이커에서 서로에게 숨겨지며 어느 쪽도 스크림 요청을 보낼 수 없습니다.",
+      "heading": "블랙리스트",
+      "addPlaceholder": "블랙리스트에 팀 추가",
+      "searchPlaceholder": "팀 검색 또는 이름 입력",
+      "noMatches": "일치하는 팀이 없습니다",
+      "blockOffPlatform": "\"{name}\" 차단",
+      "offPlatform": "플랫폼 외부",
+      "onPlatform": "Parsertime 등록",
+      "blocking": "{name} 차단 중",
+      "reasonPlaceholder": "사유 (선택)",
+      "confirmAdd": "블랙리스트에 추가",
+      "cancel": "취소",
+      "empty": "아직 블랙리스트에 등록된 팀이 없습니다. 위에서 추가하면 해당 팀과 매칭되지 않습니다.",
+      "removeNamed": "{name}을(를) 블랙리스트에서 제거",
+      "addError": "팀을 추가하지 못했습니다. 다시 시도해 주세요.",
+      "removeError": "팀을 제거하지 못했습니다. 다시 시도해 주세요."
+    }
+  },
   "teamStatsPage": {
     "layoutMetadata": {
       "defaultTeam": "팀",

@@ -5810,6 +5810,27 @@
       "owcs": "OWCS"
     }
   },
+  "teamOps": {
+    "title": "队伍管理",
+    "blacklist": {
+      "subtitle": "你不想约训练赛的队伍。当黑名单中的队伍也在 Parsertime 时，双方在匹配工具中互相隐藏，且均无法发送训练赛请求。",
+      "heading": "黑名单",
+      "addPlaceholder": "将队伍添加到黑名单",
+      "searchPlaceholder": "搜索队伍或输入名称",
+      "noMatches": "没有匹配的队伍",
+      "blockOffPlatform": "屏蔽\"{name}\"",
+      "offPlatform": "平台外",
+      "onPlatform": "已在 Parsertime",
+      "blocking": "正在屏蔽 {name}",
+      "reasonPlaceholder": "原因（可选）",
+      "confirmAdd": "加入黑名单",
+      "cancel": "取消",
+      "empty": "暂无黑名单队伍。在上方添加后，系统将不再为你匹配该队伍。",
+      "removeNamed": "将 {name} 从黑名单中移除",
+      "addError": "无法添加该队伍，请重试。",
+      "removeError": "无法移除该队伍，请重试。"
+    }
+  },
   "teamStatsPage": {
     "layoutMetadata": {
       "defaultTeam": "团队",

@@ -5430,6 +5430,27 @@
       "owcs": "OWCS"
     }
   },
+  "teamOps": {
+    "title": "Team ops",
+    "blacklist": {
+      "subtitle": "Teams you don't want to scrim. When a blacklisted team is also on Parsertime, you're hidden from each other in the matchmaker and neither can send a scrim request.",
+      "heading": "Blacklist",
+      "addPlaceholder": "Add a team to your blacklist",
+      "searchPlaceholder": "Search teams, or type a name",
+      "noMatches": "No matching teams",
+      "blockOffPlatform": "Block \"{name}\"",
+      "offPlatform": "Off-platform",
+      "onPlatform": "On Parsertime",
+      "blocking": "Blocking {name}",
+      "reasonPlaceholder": "Reason (optional)",
+      "confirmAdd": "Add to blacklist",
+      "cancel": "Cancel",
+      "empty": "No teams blacklisted yet. Add one above and you'll stop matching with them.",
+      "removeNamed": "Remove {name} from blacklist",
+      "addError": "Couldn't add that team. Try again.",
+      "removeError": "Couldn't remove that team. Try again."
+    }
+  },
   "dataCorruption": {
     "warning": {
       "title": "Data Corruption Detected",
