@@ -339,8 +339,17 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "pre fight deaths",
     "pre-fight death",
     "pre-fight deaths",
+    "die early",
+    "dies early",
+    "died early",
+    "die early in fight",
+    "die early in fights",
+    "dies early in fight",
+    "dies early in fights",
     "early fight death",
     "early fight deaths",
+    "early death rate",
+    "early deaths",
     "early death with low damage",
   ],
   map_result: [
@@ -1125,6 +1134,13 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "early fight death rate",
     "pre fight death rate",
     "pre-fight death rate",
+    "die early",
+    "dies early",
+    "died early",
+    "die early in fights",
+    "dies early in fights",
+    "early deaths",
+    "early fight deaths",
   ],
   pre_fight_damage: [
     "pre fight damage",
@@ -2602,8 +2618,17 @@ function mentionsRotationDeathContext(normalized: string): boolean {
     includesPhrase(normalized, "pre fight deaths") ||
     includesPhrase(normalized, "pre-fight death") ||
     includesPhrase(normalized, "pre-fight deaths") ||
+    includesPhrase(normalized, "die early") ||
+    includesPhrase(normalized, "dies early") ||
+    includesPhrase(normalized, "died early") ||
+    includesPhrase(normalized, "die early in fight") ||
+    includesPhrase(normalized, "die early in fights") ||
+    includesPhrase(normalized, "dies early in fight") ||
+    includesPhrase(normalized, "dies early in fights") ||
     includesPhrase(normalized, "early fight death") ||
     includesPhrase(normalized, "early fight deaths") ||
+    includesPhrase(normalized, "early death rate") ||
+    includesPhrase(normalized, "early deaths") ||
     includesPhrase(normalized, "early death with low damage")
   );
 }
@@ -6778,6 +6803,13 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
             "early-fight death rate",
             "pre fight death rate",
             "pre-fight death rate",
+            "die early",
+            "dies early",
+            "died early",
+            "die early in fights",
+            "dies early in fights",
+            "early deaths",
+            "early fight deaths",
           ],
         },
       ])

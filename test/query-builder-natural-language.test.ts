@@ -1103,6 +1103,39 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans natural early-fight death rate questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Which players die early in fights the most?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "rotation_death",
+      metrics: [{ metric: "early_death_rate", agg: "avg" }],
+      dimensions: ["player"],
+      filters: [{ field: "side", op: "eq", value: "us" }],
+      sort: { key: "avg__early_death_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans early-death rate threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Which maps have early death rate over 30%?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "rotation_death",
+      metrics: [{ metric: "early_death_rate", agg: "avg" }],
+      dimensions: ["map"],
+      filters: [
+        { field: "side", op: "eq", value: "us" },
+        { field: "early_death_rate", op: "gt", value: 30 },
+      ],
+    });
+  });
+
   it("plans enemy caught-rotating questions onto enemy-side deaths", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,
