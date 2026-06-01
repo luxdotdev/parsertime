@@ -481,6 +481,42 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans natural ultimate count questions by player and hero", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 1,
+      question: "How many ultimates did PGE use on Kiriko?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ultimate",
+      metrics: [{ metric: "ultimates", agg: "count" }],
+      dimensions: [],
+      filters: [
+        { field: "hero", op: "in", value: ["Kiriko"] },
+        { field: "player", op: "in", value: ["PGE"] },
+      ],
+      sort: null,
+      limit: null,
+    });
+  });
+
+  it("plans natural used-ults count questions by player and hero", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 1,
+      question: "How many ults has PGE used on Kiriko?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ultimate",
+      metrics: [{ metric: "ultimates", agg: "count" }],
+      dimensions: [],
+      filters: [
+        { field: "hero", op: "in", value: ["Kiriko"] },
+        { field: "player", op: "in", value: ["PGE"] },
+      ],
+    });
+  });
+
   it("plans ranked raw ultimate usage questions by hero", () => {
     const planned = planQueryFromQuestion({
       teamId: 1,

@@ -1614,6 +1614,9 @@ function findPlayer(question: string, hero: string | null): string | null {
       /\b(?:does|did)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:use|uses|used)\b/gi
     ),
     ...question.matchAll(
+      /\b(?:has|have)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\s+used\b/gi
+    ),
+    ...question.matchAll(
       /\b(?:does|did|has|have)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:play|played)\b/gi
     ),
     ...question.matchAll(
@@ -2564,9 +2567,14 @@ function mentionsRawUltimateEventContext(normalized: string): boolean {
     /\bby\s+(?!role\b|roles\b|hero\b|heroes\b|player\b|players\b|map\b|maps\b|type\b|mode\b)[a-z0-9_.-]+\b/.test(
       normalized
     );
+  const namedPlayerUltimateCount =
+    /\b(?:how many|number of|count of)\s+(?:ults|ultimates)\s+(?:did|does|has|have)\s+[a-z0-9_.-]+\s+(?:use|uses|used)\b/.test(
+      normalized
+    );
 
   return (
     explicitRawOrEvent ||
+    namedPlayerUltimateCount ||
     (includesPhrase(normalized, "ultimates used") && namedPlayerUsage) ||
     (includesPhrase(normalized, "ults used") && namedPlayerUsage)
   );
