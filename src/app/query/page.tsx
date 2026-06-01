@@ -22,14 +22,16 @@ export default async function QueryPage() {
   if (teams.length === 0) {
     return (
       <DashboardLayout>
-        <div className="mx-auto w-full max-w-[1400px] flex-1 space-y-6 p-4 md:p-8">
-          <header className="space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
-            <p className="text-muted-foreground max-w-2xl text-sm">
+        <div className="px-6 pt-8 pb-16 sm:px-10">
+          <header className="border-border border-b pb-6">
+            <h1 className="text-4xl leading-none font-semibold tracking-tight">
+              {t("title")}
+            </h1>
+            <p className="text-muted-foreground mt-3 max-w-2xl text-sm">
               {t("subtitle")}
             </p>
           </header>
-          <div className="border-border flex flex-col items-center justify-center rounded-lg border border-dashed px-6 py-20 text-center">
+          <div className="border-border mt-8 flex flex-col items-center justify-center rounded-lg border border-dashed px-6 py-20 text-center">
             <p className="text-foreground text-base font-medium">
               {t("noAccessTitle")}
             </p>

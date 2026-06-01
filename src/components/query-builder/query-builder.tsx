@@ -1,12 +1,12 @@
 "use client";
 
-import { CompiledQuery } from "@/components/query-builder/compiled-query";
 import {
   buildFilterFields,
   filtersToQuerySpec,
   querySpecToFilters,
 } from "@/components/query-builder/filter-bridge";
 import { QueryResults } from "@/components/query-builder/query-results";
+import { SectionHeader } from "@/components/section-header";
 import {
   SentenceCanvas,
   type DraftActions,
@@ -336,102 +336,28 @@ export function QueryBuilder({
     );
   }
 
+  const datasetLabel = getDataset(draft.dataset).label;
+
   return (
-    <div className="mx-auto w-full max-w-[1400px] flex-1 space-y-6 p-4 md:p-8">
-      <header className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
-        <p className="text-muted-foreground max-w-2xl text-sm">
-          {t("subtitle")}
-        </p>
-      </header>
-
-      <section
-        aria-label={t("plannerLabel")}
-        className="border-border bg-card ring-foreground/5 rounded-xl border p-4 shadow-xs ring-1"
-      >
-        <div className="flex flex-col gap-3 md:flex-row md:items-start">
-          <Textarea
-            value={question}
-            onChange={(event) => {
-              setQuestion(event.target.value);
-              if (plannerError) setPlannerError(null);
-              if (plannerInterpretation) setPlannerInterpretation(null);
-            }}
-            placeholder={t("plannerPlaceholder")}
-            className="min-h-20 resize-y md:min-h-16"
-          />
-          <Button
-            type="button"
-            onClick={planQuestion}
-            disabled={!question.trim()}
-            className="gap-1.5 md:mt-0"
-          >
-            <WandSparklesIcon className="size-4" aria-hidden="true" />
-            {t("planQuestion")}
-          </Button>
+    <div className="px-6 pt-8 pb-16 sm:px-10">
+      <header className="border-border flex flex-wrap items-end justify-between gap-x-10 gap-y-4 border-b pb-6">
+        <div>
+          <p className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
+            {teamName} · {datasetLabel}
+          </p>
+          <h1 className="mt-3 text-4xl leading-none font-semibold tracking-tight">
+            {t("title")}
+          </h1>
+          <p className="text-muted-foreground mt-3 max-w-2xl text-sm">
+            {t("subtitle")}
+          </p>
         </div>
-        {plannerError && (
-          <p className="text-destructive mt-2 text-sm">{plannerError}</p>
-        )}
-        {plannerInterpretation && (
-          <div className="border-border/80 bg-muted/40 mt-3 rounded-lg border p-3">
-            <div className="text-muted-foreground flex items-center gap-2 text-xs font-medium tracking-wide uppercase">
-              <WandSparklesIcon className="size-3.5" aria-hidden="true" />
-              {t("plannerInterpreted")}
-            </div>
-            <p className="mt-1 text-sm">{plannerInterpretation.summary}</p>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              <Badge variant="secondary">
-                {t("plannerDataset", {
-                  dataset: plannerInterpretation.dataset,
-                })}
-              </Badge>
-              {plannerInterpretation.metrics.map((metric) => (
-                <Badge key={metric.key} variant="outline">
-                  {metric.label}
-                </Badge>
-              ))}
-              <Badge variant="outline">
-                {t("plannerFilterCount", {
-                  count: plannerInterpretation.filterCount,
-                })}
-              </Badge>
-            </div>
-          </div>
-        )}
-      </section>
-
-      <section
-        aria-label={t("sentenceLabel")}
-        className="border-border bg-card ring-foreground/5 rounded-xl border p-5 shadow-xs ring-1"
-      >
-        <SentenceCanvas
-          draft={draft}
-          actions={actions}
-          teams={teams}
-          filterModel={filterModel}
-          onFilterModelChange={setFilters}
-          filterFields={filterFields}
-        />
-      </section>
-
-      <CompiledQuery sql={previewSql} tables={previewTables} />
-
-      <div className="flex flex-wrap items-center gap-2">
-        <Button
-          type="button"
-          onClick={run}
-          disabled={!canRun}
-          className="gap-1.5"
-        >
-          <PlayIcon className="size-4" aria-hidden="true" />
-          {status === "loading" ? t("running") : t("run")}
-        </Button>
-        {runHint && (
-          <span className="text-muted-foreground text-xs">{runHint}</span>
-        )}
-
-        <div className="ml-auto flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {runHint && (
+            <span className="text-muted-foreground mr-1 text-xs">
+              {runHint}
+            </span>
+          )}
           <SavedMenu items={saved} onLoad={loadSaved} onRemove={remove} />
           <Popover open={saveOpen} onOpenChange={setSaveOpen}>
             <PopoverTrigger asChild>
@@ -478,10 +404,111 @@ export function QueryBuilder({
             <DownloadIcon className="size-4" aria-hidden="true" />
             {t("export")}
           </Button>
+          <Button
+            type="button"
+            size="sm"
+            onClick={run}
+            disabled={!canRun}
+            className="gap-1.5"
+          >
+            <PlayIcon className="size-4" aria-hidden="true" />
+            {status === "loading" ? t("running") : t("run")}
+          </Button>
         </div>
-      </div>
+      </header>
 
-      <QueryResults status={status} result={result} error={error} />
+      <div className="mt-8 space-y-10">
+        <section
+          aria-label={t("sentenceLabel")}
+          className="border-border bg-card ring-foreground/5 overflow-hidden rounded-xl border shadow-xs ring-1"
+        >
+          {/* Ask: plain-language accelerator */}
+          <div className="space-y-2.5 p-4 sm:p-5">
+            <div className="text-muted-foreground flex items-center gap-1.5 font-mono text-[11px] tracking-[0.16em] uppercase">
+              <WandSparklesIcon className="size-3.5" aria-hidden="true" />
+              {t("askEyebrow")}
+            </div>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
+              <Textarea
+                value={question}
+                onChange={(event) => {
+                  setQuestion(event.target.value);
+                  if (plannerError) setPlannerError(null);
+                  if (plannerInterpretation) setPlannerInterpretation(null);
+                }}
+                placeholder={t("plannerPlaceholder")}
+                className="min-h-16 resize-y"
+              />
+              <Button
+                type="button"
+                onClick={planQuestion}
+                disabled={!question.trim()}
+                className="gap-1.5 sm:w-auto"
+              >
+                <WandSparklesIcon className="size-4" aria-hidden="true" />
+                {t("planQuestion")}
+              </Button>
+            </div>
+            {plannerError && (
+              <p className="text-destructive text-sm">{plannerError}</p>
+            )}
+            {plannerInterpretation && (
+              <div className="border-border/80 bg-muted/40 rounded-lg border p-3">
+                <div className="text-muted-foreground flex items-center gap-1.5 font-mono text-[11px] tracking-[0.16em] uppercase">
+                  <WandSparklesIcon className="size-3.5" aria-hidden="true" />
+                  {t("plannerInterpreted")}
+                </div>
+                <p className="mt-1.5 text-sm">
+                  {plannerInterpretation.summary}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  <Badge variant="secondary">
+                    {t("plannerDataset", {
+                      dataset: plannerInterpretation.dataset,
+                    })}
+                  </Badge>
+                  {plannerInterpretation.metrics.map((metric) => (
+                    <Badge key={metric.key} variant="outline">
+                      {metric.label}
+                    </Badge>
+                  ))}
+                  <Badge variant="outline">
+                    {t("plannerFilterCount", {
+                      count: plannerInterpretation.filterCount,
+                    })}
+                  </Badge>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Build: the editable sentence is the source of truth */}
+          <div className="border-border bg-muted/20 space-y-3 border-t p-4 sm:p-5">
+            <div className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+              {t("sentenceEyebrow")}
+            </div>
+            <SentenceCanvas
+              draft={draft}
+              actions={actions}
+              teams={teams}
+              filterModel={filterModel}
+              onFilterModelChange={setFilters}
+              filterFields={filterFields}
+            />
+          </div>
+        </section>
+
+        <section className="space-y-4">
+          <SectionHeader id="query-output" title={t("outputEyebrow")} />
+          <QueryResults
+            status={status}
+            result={result}
+            error={error}
+            sql={previewSql}
+            tables={previewTables}
+          />
+        </section>
+      </div>
     </div>
   );
 }
