@@ -3,19 +3,23 @@ import prisma from "@/lib/prisma";
 import {
   type FaceitClientOptions,
   type FaceitMatchDetail,
+  type FaceitMatchRosterPlayer,
+  type FaceitMatchStats,
   type FaceitPlayerLookupResult,
   getMatch,
+  getMatchStats,
   getPlayerById,
   getPlayerHistory,
   iterateChampionshipMatches,
   listOrganizerChampionships,
 } from "@/lib/tsr/faceit-client";
 import { TRACKED_ORGANIZERS, isTrackedOrganizer } from "@/lib/tsr/organizers";
+import { buildFaceitScoutingSnapshot } from "@/lib/tsr/scouting-normalizer";
 import { classifyTier, inferRegion } from "@/lib/tsr/tiers";
 import {
   FaceitMatchStatus,
   FaceitTier,
-  type Prisma,
+  Prisma,
   TsrRegion,
 } from "@prisma/client";
 
@@ -79,19 +83,33 @@ export async function upsertFullPlayer(
   });
 }
 
+function toInputJson(value: unknown): Prisma.InputJsonValue {
+  return value as Prisma.InputJsonValue;
+}
+
+function toNullableJson(
+  value: unknown
+): Prisma.InputJsonValue | typeof Prisma.JsonNull {
+  return value == null ? Prisma.JsonNull : toInputJson(value);
+}
+
 async function upsertRosterPlayer(
   tx: Prisma.TransactionClient,
-  playerId: string,
-  nickname: string
+  player: FaceitMatchRosterPlayer
 ): Promise<void> {
+  const battletag = player.game_player_name?.trim() || null;
   await tx.faceitPlayer.upsert({
-    where: { faceitPlayerId: playerId },
+    where: { faceitPlayerId: player.player_id },
     create: {
-      faceitPlayerId: playerId,
-      faceitNickname: nickname,
+      faceitPlayerId: player.player_id,
+      faceitNickname: player.nickname,
+      battletag,
+      ow2SkillLevel: player.game_skill_level ?? null,
     },
     update: {
-      faceitNickname: nickname,
+      faceitNickname: player.nickname,
+      battletag: battletag ?? undefined,
+      ow2SkillLevel: player.game_skill_level ?? undefined,
     },
   });
 }
@@ -126,10 +144,12 @@ export type UpsertMatchResult = {
   ingested: boolean;
   reason?: string;
   affectedPlayerIds: string[];
+  mapsIngested?: number;
 };
 
 export async function upsertMatch(
-  match: FaceitMatchDetail
+  match: FaceitMatchDetail,
+  stats?: FaceitMatchStats | null
 ): Promise<UpsertMatchResult> {
   const f1 = match.teams?.faction1?.roster ?? [];
   const f2 = match.teams?.faction2?.roster ?? [];
@@ -206,9 +226,11 @@ export async function upsertMatch(
     await upsertChampionshipFromMatch(tx, match);
 
     for (const r of allRoster) {
-      await upsertRosterPlayer(tx, r.player_id, r.nickname);
+      await upsertRosterPlayer(tx, r);
     }
 
+    const team1 = match.teams?.faction1;
+    const team2 = match.teams?.faction2;
     await tx.faceitMatch.upsert({
       where: { faceitMatchId: match.match_id },
       create: {
@@ -216,6 +238,10 @@ export async function upsertMatch(
         championshipId: competitionId,
         organizerId: match.organizer_id!,
         bestOf,
+        team1FaceitTeamId: team1?.faction_id ?? null,
+        team2FaceitTeamId: team2?.faction_id ?? null,
+        team1Name: team1?.name ?? null,
+        team2Name: team2?.name ?? null,
         team1Score: s1 ?? 0,
         team2Score: s2 ?? 0,
         winnerFaction,
@@ -224,11 +250,17 @@ export async function upsertMatch(
           (finishedAt ?? Math.floor(Date.now() / 1000)) * 1000
         ),
         rawRegion: match.region ?? "",
+        rawDetails: toInputJson(match),
+        rawVoting: toNullableJson(match.voting),
       },
       update: {
         championshipId: competitionId,
         organizerId: match.organizer_id!,
         bestOf,
+        team1FaceitTeamId: team1?.faction_id ?? null,
+        team2FaceitTeamId: team2?.faction_id ?? null,
+        team1Name: team1?.name ?? null,
+        team2Name: team2?.name ?? null,
         team1Score: s1 ?? 0,
         team2Score: s2 ?? 0,
         winnerFaction,
@@ -237,8 +269,12 @@ export async function upsertMatch(
           (finishedAt ?? Math.floor(Date.now() / 1000)) * 1000
         ),
         rawRegion: match.region ?? "",
+        rawDetails: toInputJson(match),
+        rawVoting: toNullableJson(match.voting),
       },
     });
+
+    await upsertScoutingData(tx, match, stats ?? null);
 
     await tx.faceitMatchRoster.deleteMany({
       where: { matchId: match.match_id },
@@ -266,7 +302,194 @@ export async function upsertMatch(
     matchId: match.match_id,
     ingested: true,
     affectedPlayerIds: affected,
+    mapsIngested: buildFaceitScoutingSnapshot(match, stats ?? null).maps.length,
   };
+}
+
+async function upsertScoutingData(
+  tx: Prisma.TransactionClient,
+  match: FaceitMatchDetail,
+  stats: FaceitMatchStats | null
+): Promise<void> {
+  const snapshot = buildFaceitScoutingSnapshot(match, stats);
+
+  for (const team of snapshot.teams) {
+    if (!team.faceitTeamId) continue;
+    await tx.faceitTeam.upsert({
+      where: { faceitTeamId: team.faceitTeamId },
+      create: {
+        faceitTeamId: team.faceitTeamId,
+        name: team.name,
+        avatar: team.avatar,
+        type: team.type,
+      },
+      update: {
+        name: team.name,
+        avatar: team.avatar,
+        type: team.type,
+        lastSyncedAt: new Date(),
+      },
+    });
+  }
+
+  await tx.faceitMatchTeam.deleteMany({
+    where: { matchId: match.match_id },
+  });
+  await tx.faceitMatchTeam.createMany({
+    data: snapshot.teams.map((team) => ({
+      matchId: match.match_id,
+      teamSide: team.side,
+      faceitTeamId: team.faceitTeamId,
+      teamName: team.name,
+      score: team.score,
+      winner: team.winner,
+    })),
+  });
+
+  for (const playerStats of snapshot.maps.flatMap((map) => map.playerStats)) {
+    await tx.faceitPlayer.upsert({
+      where: { faceitPlayerId: playerStats.faceitPlayerId },
+      create: {
+        faceitPlayerId: playerStats.faceitPlayerId,
+        faceitNickname: playerStats.nickname,
+      },
+      update: {
+        faceitNickname: playerStats.nickname,
+      },
+    });
+  }
+
+  const gameNumbers = snapshot.maps.map((map) => map.gameNumber);
+  await tx.faceitMatchMap.deleteMany({
+    where: gameNumbers.length
+      ? { matchId: match.match_id, gameNumber: { notIn: gameNumbers } }
+      : { matchId: match.match_id },
+  });
+
+  for (const map of snapshot.maps) {
+    const mapRow = await tx.faceitMatchMap.upsert({
+      where: {
+        matchId_gameNumber: {
+          matchId: match.match_id,
+          gameNumber: map.gameNumber,
+        },
+      },
+      create: {
+        matchId: match.match_id,
+        gameNumber: map.gameNumber,
+        mapGuid: map.mapGuid,
+        mapName: map.mapName,
+        mapType: map.mapType,
+        attackingFirstFaction: map.attackingFirstFaction,
+        winnerFaction: map.winnerFaction,
+        winnerFaceitTeamId: map.winnerFaceitTeamId,
+        team1Score: map.team1Score,
+        team2Score: map.team2Score,
+        scoreSummary: map.scoreSummary,
+        played: map.played,
+        rawRoundStats: toNullableJson(map.rawRoundStats),
+        rawDetailedResult: toNullableJson(map.rawDetailedResult),
+      },
+      update: {
+        mapGuid: map.mapGuid,
+        mapName: map.mapName,
+        mapType: map.mapType,
+        attackingFirstFaction: map.attackingFirstFaction,
+        winnerFaction: map.winnerFaction,
+        winnerFaceitTeamId: map.winnerFaceitTeamId,
+        team1Score: map.team1Score,
+        team2Score: map.team2Score,
+        scoreSummary: map.scoreSummary,
+        played: map.played,
+        rawRoundStats: toNullableJson(map.rawRoundStats),
+        rawDetailedResult: toNullableJson(map.rawDetailedResult),
+      },
+    });
+
+    await tx.faceitHeroBan.deleteMany({ where: { faceitMapId: mapRow.id } });
+    await tx.faceitMapTeamStats.deleteMany({
+      where: { faceitMapId: mapRow.id },
+    });
+    await tx.faceitMapPlayerStats.deleteMany({
+      where: { faceitMapId: mapRow.id },
+    });
+
+    if (map.heroBans.length > 0) {
+      await tx.faceitHeroBan.createMany({
+        data: map.heroBans.map((ban) => ({
+          faceitMapId: mapRow.id,
+          heroGuid: ban.heroGuid,
+          heroName: ban.heroName,
+          role: ban.role,
+          banOrder: ban.banOrder,
+          bannedByFaction: ban.bannedByFaction,
+          source: ban.source,
+          rawEntity: ban.rawEntity ? toInputJson(ban.rawEntity) : undefined,
+        })),
+      });
+    }
+
+    if (map.teamStats.length > 0) {
+      await tx.faceitMapTeamStats.createMany({
+        data: map.teamStats.map((teamStats) => ({
+          faceitMapId: mapRow.id,
+          teamSide: teamStats.teamSide,
+          faceitTeamId: teamStats.faceitTeamId,
+          teamName: teamStats.teamName,
+          score: teamStats.score,
+          won: teamStats.won,
+          eliminations: teamStats.eliminations,
+          deaths: teamStats.deaths,
+          finalBlows: teamStats.finalBlows,
+          objectiveTime: teamStats.objectiveTime,
+          timePlayed: teamStats.timePlayed,
+          rawStats: toInputJson(teamStats.rawStats),
+        })),
+      });
+    }
+
+    if (map.playerStats.length > 0) {
+      await tx.faceitMapPlayerStats.createMany({
+        data: map.playerStats.map((playerStats) => ({
+          faceitMapId: mapRow.id,
+          teamSide: playerStats.teamSide,
+          faceitPlayerId: playerStats.faceitPlayerId,
+          nickname: playerStats.nickname,
+          role: playerStats.role,
+          result: playerStats.result,
+          eliminations: playerStats.eliminations,
+          assists: playerStats.assists,
+          deaths: playerStats.deaths,
+          finalBlows: playerStats.finalBlows,
+          soloKills: playerStats.soloKills,
+          multiKills: playerStats.multiKills,
+          environmentalKills: playerStats.environmentalKills,
+          damageDealt: playerStats.damageDealt,
+          healingDone: playerStats.healingDone,
+          damageMitigated: playerStats.damageMitigated,
+          objectiveTime: playerStats.objectiveTime,
+          timePlayed: playerStats.timePlayed,
+          rawStats: toInputJson(playerStats.rawStats),
+        })),
+      });
+    }
+  }
+}
+
+async function getMatchStatsForIngest(
+  matchId: string,
+  opts?: FaceitClientOptions
+): Promise<FaceitMatchStats | null> {
+  try {
+    return await getMatchStats(matchId, opts);
+  } catch (err) {
+    Logger.warn({
+      event: "tsr.ingest.match_stats_failed",
+      faceit_match_id: matchId,
+      error_message: err instanceof Error ? err.message : "unknown",
+    });
+    return null;
+  }
 }
 
 export async function ingestMatchById(
@@ -274,7 +497,8 @@ export async function ingestMatchById(
   opts?: FaceitClientOptions
 ): Promise<UpsertMatchResult> {
   const md = await getMatch(matchId, opts);
-  return upsertMatch(md);
+  const stats = await getMatchStatsForIngest(matchId, opts);
+  return upsertMatch(md, stats);
 }
 
 export type IngestPlayerHistoryResult = {
@@ -299,8 +523,7 @@ export async function ingestPlayerHistory(
   let skipped = 0;
   for (const item of champOnly) {
     try {
-      const md = await getMatch(item.match_id, opts);
-      const res = await upsertMatch(md);
+      const res = await ingestMatchById(item.match_id, opts);
       if (res.ingested) {
         ingested += 1;
         for (const pid of res.affectedPlayerIds) affected.add(pid);
@@ -512,8 +735,7 @@ export async function ingestChampionshipMatches(
   for await (const item of iterateChampionshipMatches(championshipId, opts)) {
     scanned += 1;
     try {
-      const md = await getMatch(item.match_id, opts);
-      const res = await upsertMatch(md);
+      const res = await ingestMatchById(item.match_id, opts);
       if (res.ingested) ingested += 1;
       else skipped += 1;
     } catch (err) {

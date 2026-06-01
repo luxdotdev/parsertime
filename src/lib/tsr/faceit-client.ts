@@ -177,6 +177,7 @@ export async function getPlayerHistory(
 
 export type FaceitMatchDetail = {
   match_id: string;
+  game?: string;
   competition_id?: string;
   competition_type?: string;
   competition_name?: string;
@@ -190,16 +191,67 @@ export type FaceitMatchDetail = {
     winner?: string;
     score?: { faction1?: number; faction2?: number };
   };
+  detailed_results?: {
+    asc_score?: boolean;
+    winner?: string;
+    factions?: {
+      faction1?: { score?: number };
+      faction2?: { score?: number };
+    };
+  }[];
+  voting?: FaceitMatchVoting;
   teams?: {
     faction1?: {
       name?: string;
-      roster?: { player_id: string; nickname: string }[];
+      faction_id?: string;
+      avatar?: string;
+      type?: string;
+      roster?: FaceitMatchRosterPlayer[];
     };
     faction2?: {
       name?: string;
-      roster?: { player_id: string; nickname: string }[];
+      faction_id?: string;
+      avatar?: string;
+      type?: string;
+      roster?: FaceitMatchRosterPlayer[];
     };
   };
+};
+
+export type FaceitMatchRosterPlayer = {
+  player_id: string;
+  nickname: string;
+  avatar?: string;
+  membership?: string;
+  game_player_id?: string;
+  game_player_name?: string;
+  game_skill_level?: number;
+  anticheat_required?: boolean;
+};
+
+export type FaceitVotingEntity = {
+  id?: string;
+  guid?: string;
+  name?: string;
+  class_name?: string;
+  game_map_id?: string;
+  game_heroes_id?: string;
+  game_attacking_first_id?: string;
+  filters?: { voting_tags?: string[] };
+  image_lg?: string;
+  image_sm?: string;
+};
+
+export type FaceitVoteBlock = {
+  entities?: FaceitVotingEntity[];
+  pick?: unknown;
+};
+
+export type FaceitMatchVoting = {
+  voted_entity_types?: string[];
+  map?: FaceitVoteBlock;
+  heroes?: FaceitVoteBlock;
+  attacking_first?: FaceitVoteBlock;
 };
 
 export async function getMatch(
@@ -207,6 +259,42 @@ export async function getMatch(
   opts?: FaceitClientOptions
 ): Promise<FaceitMatchDetail> {
   return faceitFetch<FaceitMatchDetail>(`/matches/${matchId}`, opts);
+}
+
+export type FaceitMatchStatsPlayer = {
+  player_id?: string;
+  nickname?: string;
+  player_stats?: Record<string, string | number | null>;
+};
+
+export type FaceitMatchStatsTeam = {
+  team_id?: string;
+  premade?: boolean;
+  team_stats?: Record<string, string | number | null>;
+  players?: FaceitMatchStatsPlayer[];
+};
+
+export type FaceitMatchStatsRound = {
+  best_of?: string | number | null;
+  competition_id?: string | null;
+  game_id?: string | null;
+  game_mode?: string | null;
+  match_id?: string | null;
+  match_round?: string | number | null;
+  played?: string | number | boolean | null;
+  round_stats?: Record<string, string | number | null>;
+  teams?: FaceitMatchStatsTeam[];
+};
+
+export type FaceitMatchStats = {
+  rounds?: FaceitMatchStatsRound[];
+};
+
+export async function getMatchStats(
+  matchId: string,
+  opts?: FaceitClientOptions
+): Promise<FaceitMatchStats> {
+  return faceitFetch<FaceitMatchStats>(`/matches/${matchId}/stats`, opts);
 }
 
 export type FaceitChampionshipListItem = {
