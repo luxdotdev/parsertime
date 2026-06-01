@@ -254,6 +254,46 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans player-vs-player stat comparisons with grouped player output", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 7,
+      question: "Compare PGE and Seeker final blows per 10 on Widowmaker",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_stat",
+      teamId: 7,
+      metrics: [{ metric: "final_blows", agg: "per10" }],
+      dimensions: ["player"],
+      filters: [
+        { field: "hero", op: "in", value: ["Widowmaker"] },
+        { field: "player", op: "in", value: ["PGE", "Seeker"] },
+      ],
+      sort: null,
+      limit: null,
+    });
+  });
+
+  it("plans metric-first player comparisons from for-phrasing", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 7,
+      question:
+        "Compare scoped accuracy for PGE and Seeker on Widowmaker with at least 5 minutes played",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_stat",
+      teamId: 7,
+      metrics: [{ metric: "scoped_accuracy", agg: "ratio" }],
+      dimensions: ["player"],
+      filters: [
+        { field: "hero", op: "in", value: ["Widowmaker"] },
+        { field: "player", op: "in", value: ["PGE", "Seeker"] },
+        { field: "min_time_played", op: "gte", value: 300 },
+      ],
+    });
+  });
+
   it("plans environmental death rate questions by player", () => {
     const planned = planQueryFromQuestion({
       teamId: 7,

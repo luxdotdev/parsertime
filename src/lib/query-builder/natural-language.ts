@@ -1578,6 +1578,42 @@ function findPlayer(question: string, hero: string | null): string | null {
   return null;
 }
 
+const PLAYER_PARSE_STOP_WORDS = new Set([
+  "opponent",
+  "opponents",
+  "enemy",
+  "enemies",
+  "them",
+  "they",
+  "versus",
+  "compare",
+  "scoped",
+  "accuracy",
+  "final",
+  "blow",
+  "blows",
+  "damage",
+  "healing",
+  "death",
+  "deaths",
+  "elimination",
+  "eliminations",
+  "elim",
+  "elims",
+  "ultimate",
+  "ultimates",
+  "ult",
+  "ults",
+  "kill",
+  "kills",
+  "assist",
+  "assists",
+  "win",
+  "wins",
+  "rate",
+  "rates",
+]);
+
 function parsePlayerList(value: string): string[] {
   const normalizedValue = value
     .replace(/\b(?:and|or)\b/gi, ",")
@@ -1589,12 +1625,28 @@ function parsePlayerList(value: string): string[] {
     const match = part.match(/^[A-Za-z][A-Za-z0-9_.-]{1,}$/);
     if (!match) continue;
     const normalized = normalize(match[0]);
-    if (FILLER_WORDS.has(normalized)) continue;
+    if (FILLER_WORDS.has(normalized) || PLAYER_PARSE_STOP_WORDS.has(normalized))
+      continue;
     const player =
       match[0] === match[0].toUpperCase() ? match[0] : titleCase(match[0]);
     if (!players.includes(player)) players.push(player);
   }
   return players;
+}
+
+function parsePlayerToken(value: string): string | null {
+  const token = value.trim();
+  if (!/^[A-Za-z][A-Za-z0-9_.-]{1,}$/.test(token)) return null;
+  const normalized = normalize(token);
+  if (
+    FILLER_WORDS.has(normalized) ||
+    PLAYER_PARSE_STOP_WORDS.has(normalized) ||
+    HERO_BY_NORMALIZED.has(normalized) ||
+    MAP_BY_NORMALIZED.has(normalized)
+  ) {
+    return null;
+  }
+  return token === token.toUpperCase() ? token : titleCase(token);
 }
 
 function extractPlayerListAfter(
@@ -1613,6 +1665,64 @@ function extractPlayerListAfter(
     }
   }
   return players;
+}
+
+function extractComparedPlayers(question: string): string[] {
+  const normalized = normalize(question);
+  const hasCompareContext =
+    includesPhrase(normalized, "compare") ||
+    includesPhrase(normalized, "comparison") ||
+    includesPhrase(normalized, "between") ||
+    includesPhrase(normalized, " vs ") ||
+    includesPhrase(normalized, "versus");
+  if (!hasCompareContext) return [];
+
+  const players: string[] = [];
+  const add = (player: string | null) => {
+    if (player && !players.includes(player)) players.push(player);
+  };
+  const playerToken = "[A-Za-z][A-Za-z0-9_.-]{1,}";
+  const metricBoundary =
+    "final\\s+blows?|deaths?|eliminations?|elims?|damage|healing|accuracy|ults?|ultimates?|kills?|assists?|stats?|win\\s+rates?|winrates?";
+
+  const listPatterns = [
+    new RegExp(
+      `\\bcompare\\s+(.+?)(?=\\s+(?:on|in|for|by|per|with|without|over|under|above|below|at|when|where|across|${metricBoundary})\\b|[?.!]|$)`,
+      "i"
+    ),
+    new RegExp(
+      `\\bfor\\s+(.+?)(?=\\s+(?:on|in|by|per|with|without|over|under|above|below|at|when|where|across|${metricBoundary})\\b|[?.!]|$)`,
+      "i"
+    ),
+  ];
+  for (const pattern of listPatterns) {
+    const match = question.match(pattern);
+    if (!match) continue;
+    for (const player of parsePlayerList(match[1])) add(player);
+  }
+
+  for (const match of question.matchAll(
+    new RegExp(
+      `\\b(${playerToken})\\s+(?:and|vs|versus|against)\\s+(${playerToken})\\b`,
+      "gi"
+    )
+  )) {
+    add(parsePlayerToken(match[1]));
+    add(parsePlayerToken(match[2]));
+  }
+
+  const between = question.match(
+    new RegExp(
+      `\\bbetween\\s+(${playerToken})\\s+and\\s+(${playerToken})\\b`,
+      "i"
+    )
+  );
+  if (between) {
+    add(parsePlayerToken(between[1]));
+    add(parsePlayerToken(between[2]));
+  }
+
+  return players.length >= 2 ? players : [];
 }
 
 function extractLineupPlayerFilters(question: string): QueryFilter[] {
@@ -5147,6 +5257,7 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   const ability = findAbility(question);
   const mapName = findMapName(question);
   const player = findPlayer(question, hero);
+  const comparedPlayers = extractComparedPlayers(question);
   const normalized = normalize(question);
 
   if (heroes.length > 0) {
@@ -5176,7 +5287,10 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       }
     }
   }
-  if (
+  if (comparedPlayers.length >= 2) {
+    const filter = filterFor(dataset, "player", comparedPlayers);
+    if (filter) filters.push(filter);
+  } else if (
     player &&
     !(
       dataset === "player_impact" &&
@@ -7793,6 +7907,12 @@ function pickDimensions(
     return filters.some((f) => f.field === field);
   }
 
+  function hasMultiValueFilter(field: string): boolean {
+    return filters.some(
+      (f) => f.field === field && Array.isArray(f.value) && f.value.length > 1
+    );
+  }
+
   function add(id: string) {
     if (dims.includes(id)) return;
     if (ds.dimensions.some((d) => d.id === id)) dims.push(id);
@@ -7819,6 +7939,10 @@ function pickDimensions(
     ) {
       add(dim.id);
     }
+  }
+
+  if (hasMultiValueFilter("player")) {
+    add("player");
   }
 
   if (
