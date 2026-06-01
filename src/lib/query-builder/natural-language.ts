@@ -651,6 +651,12 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "average time to use ult",
     "average time to use ultimate",
   ],
+  average_time_to_use_ult: [
+    "time to use ult",
+    "time to use ultimate",
+    "average time to use ult",
+    "average time to use ultimate",
+  ],
   drought_time: ["drought time", "average drought time"],
   kills_per_ult: [
     "kills per ult",
@@ -5004,8 +5010,32 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
           ],
         },
         {
+          field: "wins",
+          aliases: ["wins", "map wins"],
+        },
+        {
+          field: "losses",
+          aliases: ["losses", "map losses"],
+        },
+        {
+          field: "eliminations",
+          aliases: ["total eliminations", "total elims", "elimination count"],
+        },
+        {
+          field: "eliminations_per10",
+          aliases: ["eliminations per 10", "elims per 10", "kills per 10"],
+        },
+        {
+          field: "final_blows",
+          aliases: ["total final blows", "total finals", "final blow count"],
+        },
+        {
           field: "final_blows_per10",
           aliases: ["final blows per 10", "finals per 10"],
+        },
+        {
+          field: "deaths",
+          aliases: ["total deaths", "death count"],
         },
         {
           field: "deaths_per10",
@@ -5016,16 +5046,96 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
           aliases: ["hero damage per 10", "damage per 10"],
         },
         {
+          field: "all_damage_per10",
+          aliases: ["all damage per 10", "total damage per 10"],
+        },
+        {
           field: "healing_per10",
           aliases: ["healing per 10", "heals per 10"],
+        },
+        {
+          field: "healing_received_per10",
+          aliases: ["healing received per 10", "heals received per 10"],
+        },
+        {
+          field: "damage_taken_per10",
+          aliases: ["damage taken per 10", "damage taken rate"],
+        },
+        {
+          field: "damage_blocked_per10",
+          aliases: ["damage blocked per 10", "mitigation per 10"],
+        },
+        {
+          field: "ults_earned_per10",
+          aliases: [
+            "ults earned per 10",
+            "ultimates earned per 10",
+            "ult charge per 10",
+          ],
+        },
+        {
+          field: "ults_used_per10",
+          aliases: [
+            "ults used per 10",
+            "ultimates used per 10",
+            "ult usage per 10",
+          ],
+        },
+        {
+          field: "solo_kills_per10",
+          aliases: ["solo kills per 10", "solo kill per 10"],
+        },
+        {
+          field: "objective_kills_per10",
+          aliases: ["objective kills per 10", "objective kill per 10"],
+        },
+        {
+          field: "offensive_assists_per10",
+          aliases: ["offensive assists per 10", "offensive assist per 10"],
+        },
+        {
+          field: "defensive_assists_per10",
+          aliases: ["defensive assists per 10", "defensive assist per 10"],
         },
         {
           field: "first_pick_percentage",
           aliases: ["first pick rate", "first pick percentage"],
         },
         {
+          field: "first_pick_count",
+          aliases: ["first picks", "first pick count"],
+        },
+        {
+          field: "first_picks_per10",
+          aliases: ["first picks per 10", "opening picks per 10"],
+        },
+        {
           field: "first_death_percentage",
           aliases: ["first death rate", "first death percentage"],
+        },
+        {
+          field: "first_death_count",
+          aliases: ["first deaths", "first death count"],
+        },
+        {
+          field: "first_deaths_per10",
+          aliases: ["first deaths per 10", "opening deaths per 10"],
+        },
+        {
+          field: "mvp_score",
+          aliases: ["mvp", "mvp score", "average mvp score"],
+        },
+        {
+          field: "map_mvp_rate",
+          aliases: ["map mvp rate", "map mvp percentage"],
+        },
+        {
+          field: "map_mvp_count",
+          aliases: ["map mvps", "map mvp count"],
+        },
+        {
+          field: "ajax_count",
+          aliases: ["ajax", "ajaxes", "ajax count"],
         },
         {
           field: "ajax_per10",
@@ -5035,8 +5145,16 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
           field: "kills_per_ultimate",
           aliases: ["kills per ult", "kills per ultimate"],
         },
+        {
+          field: "fight_reversal_percentage",
+          aliases: ["fight reversal", "fight reversal percentage"],
+        },
       ]),
       ...extractDurationThresholdFilters(dataset, normalized, [
+        {
+          field: "hero_time_played",
+          aliases: ["time played", "playtime", "hero time played"],
+        },
         {
           field: "average_ult_charge_time",
           aliases: [
@@ -5044,6 +5162,15 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
             "ultimate charge time",
             "average ult charge time",
             "average ultimate charge time",
+          ],
+        },
+        {
+          field: "average_time_to_use_ult",
+          aliases: [
+            "time to use ult",
+            "time to use ultimate",
+            "average time to use ult",
+            "average time to use ultimate",
           ],
         },
       ])

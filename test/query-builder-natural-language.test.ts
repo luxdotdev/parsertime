@@ -1041,6 +1041,42 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans extended team-performance aggregate thresholds", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Compare our team damage taken per 10 vs the opponent with damage taken per 10 under 6500 and at least 2 map MVPs",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "team_performance",
+      metrics: [
+        { metric: "damage_taken_per10", agg: "ratio" },
+        { metric: "map_mvp_count", agg: "sum" },
+      ],
+      dimensions: ["side"],
+      filters: [
+        { field: "damage_taken_per10", op: "lt", value: 6500 },
+        { field: "map_mvp_count", op: "gte", value: 2 },
+      ],
+    });
+  });
+
+  it("plans team-performance ult-use timing thresholds", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Compare our team average time to use ult vs the opponent with time to use ult under 20 seconds",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "team_performance",
+      metrics: [{ metric: "average_time_to_use_ult", agg: "avg" }],
+      dimensions: ["side"],
+      filters: [{ field: "average_time_to_use_ult", op: "lt", value: 20 }],
+    });
+  });
+
   it("plans our-team calculated aggregate questions", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,
