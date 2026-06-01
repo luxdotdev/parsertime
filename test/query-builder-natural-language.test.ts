@@ -185,6 +185,23 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("normalizes word-number per-ten player-stat leaderboards", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 7,
+      question: "Who leads final blows per ten on Widowmaker?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_stat",
+      teamId: 7,
+      metrics: [{ metric: "final_blows", agg: "per10" }],
+      dimensions: ["player"],
+      filters: [{ field: "hero", op: "in", value: ["Widowmaker"] }],
+      sort: { key: "per10__final_blows", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans ranked-by phrasing onto grouped player stat leaderboards", () => {
     const planned = planQueryFromQuestion({
       teamId: 7,
@@ -1513,6 +1530,20 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("normalizes word-number per-ten team-performance comparisons", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Compare our team damage per ten vs the opponent",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "team_performance",
+      metrics: [{ metric: "hero_damage_per10", agg: "ratio" }],
+      dimensions: ["side"],
+      filters: [],
+    });
+  });
+
   it("plans our-team Ajax rate questions", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,
@@ -2561,6 +2592,25 @@ describe("query-builder natural-language planner", () => {
     );
   });
 
+  it("normalizes word-number per-ten hero-pool thresholds", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which Damage heroes have final blows per ten over 8?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_pool",
+      dimensions: ["hero"],
+      filters: expect.arrayContaining([
+        { field: "role", op: "in", value: ["Damage"] },
+        { field: "final_blows_per10", op: "gt", value: 8 },
+      ]),
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([{ metric: "final_blows", agg: "per10" }])
+    );
+  });
+
   it("plans hero-pool ratio and result-count thresholds", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,
@@ -3028,6 +3078,21 @@ describe("query-builder natural-language planner", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,
       question: "Who has the most first picks per 10?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_impact",
+      metrics: [{ metric: "first_picks_per10", agg: "ratio" }],
+      dimensions: ["player"],
+      sort: { key: "ratio__first_picks_per10", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("normalizes word-number per-ten player-impact rate questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which players have the most first picks per ten?",
     });
 
     expect(planned?.spec).toMatchObject({

@@ -1332,7 +1332,8 @@ function normalize(value: string): string {
     .replace(/[^a-zA-Z0-9]+/g, " ")
     .replace(/DECIMALPOINT/g, ".")
     .trim()
-    .toLowerCase();
+    .toLowerCase()
+    .replace(/\bper ten(?: minutes?| mins?)?\b/g, "per 10");
 }
 
 function includesPhrase(haystack: string, phrase: string): boolean {
