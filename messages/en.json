@@ -5297,6 +5297,7 @@
       "emptyTitle": "You're not on any teams yet",
       "emptyDescription": "Join or create a team first, then return here to find scrim partners.",
       "manageTeams": "Manage teams →",
+      "manageBlacklist": "Manage blacklist",
       "bracketWithBand": "{band} {tier}",
       "bands": {
         "low": "Low",

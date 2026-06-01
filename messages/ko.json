@@ -5677,6 +5677,7 @@
       "emptyTitle": "아직 소속된 팀이 없습니다",
       "emptyDescription": "먼저 팀에 가입하거나 팀을 만든 뒤 이곳으로 돌아와 스크림 상대를 찾으세요.",
       "manageTeams": "팀 관리 →",
+      "manageBlacklist": "블랙리스트 관리",
       "bracketWithBand": "{band} {tier}",
       "bands": {
         "low": "하위",

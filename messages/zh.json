@@ -5677,6 +5677,7 @@
       "emptyTitle": "你还不在任何队伍中",
       "emptyDescription": "先加入或创建一支队伍，然后回到这里寻找训练赛伙伴。",
       "manageTeams": "管理队伍 →",
+      "manageBlacklist": "管理黑名单",
       "bracketWithBand": "{band}{tier}",
       "bands": {
         "low": "低",

@@ -142,24 +142,32 @@ function TeamRow({ team }: { team: HubTeam }) {
           </div>
         )}
       </div>
-      {eligible ? (
-        <Button asChild size="sm" className="h-9 rounded-md px-3 text-sm">
-          <Link href={href}>
-            {t("searchAs", { teamName: team.name })}
-            <ArrowRightIcon className="ml-1.5 size-3.5" aria-hidden />
-          </Link>
-        </Button>
-      ) : (
-        <Button
-          variant="outline"
-          size="sm"
-          disabled
-          className="h-9 rounded-md px-3 text-sm"
-          title={t("ineligibleTitle")}
+      <div className="flex flex-col items-end gap-1.5">
+        {eligible ? (
+          <Button asChild size="sm" className="h-9 rounded-md px-3 text-sm">
+            <Link href={href}>
+              {t("searchAs", { teamName: team.name })}
+              <ArrowRightIcon className="ml-1.5 size-3.5" aria-hidden />
+            </Link>
+          </Button>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            disabled
+            className="h-9 rounded-md px-3 text-sm"
+            title={t("ineligibleTitle")}
+          >
+            {t("notEligible")}
+          </Button>
+        )}
+        <Link
+          href={`/${team.id}/ops` as Route}
+          className="text-muted-foreground font-mono text-[11px] tracking-[0.12em] uppercase hover:underline"
         >
-          {t("notEligible")}
-        </Button>
-      )}
+          {t("manageBlacklist")}
+        </Link>
+      </div>
     </li>
   );
 }
