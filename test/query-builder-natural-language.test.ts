@@ -820,6 +820,51 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans won-versus-lost fight ultimate usage comparisons", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "How many ults do we use in won fights versus lost fights?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      dimensions: [],
+      filters: [],
+    });
+    expect(planned?.spec.metrics).toEqual([
+      { metric: "avg_ults_in_won_fights", agg: "ratio" },
+      { metric: "avg_ults_in_lost_fights", agg: "ratio" },
+    ]);
+  });
+
+  it("plans non-dry fight ultimate usage metrics without dry-fight filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "How many ults per non dry fight do we use?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "avg_ults_per_non_dry_fight", agg: "ratio" }],
+      dimensions: [],
+      filters: [],
+    });
+  });
+
+  it("plans non-dry fight win-rate filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "What is our fight win rate in non dry fights?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: [],
+      filters: [{ field: "dry_fight", op: "eq", value: "no" }],
+    });
+  });
+
   it("plans specific-map fight winrate questions onto teamfights", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

@@ -2884,6 +2884,9 @@ function pickDataset(question: string): DatasetId {
   if (mentionsUlt && mentionsRawUltimateEventContext(normalized)) {
     return "ultimate";
   }
+  if (mentionsWonLostFightUltComparison(normalized)) {
+    return "teamfight";
+  }
   if (mentionsEnemyRoleMatchupContext(normalized)) {
     return "enemy_hero";
   }
@@ -3474,6 +3477,25 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
       if (!refs.some((ref) => ref.metric === preferredTeamfightMetric)) {
         const agg = pickMetricAgg(dataset, preferredTeamfightMetric, question);
         if (agg) refs.push({ metric: preferredTeamfightMetric, agg });
+      }
+    }
+    if (mentionsWonLostFightUltComparison(normalized)) {
+      for (let i = refs.length - 1; i >= 0; i--) {
+        if (
+          !["avg_ults_in_won_fights", "avg_ults_in_lost_fights"].includes(
+            refs[i].metric
+          )
+        ) {
+          refs.splice(i, 1);
+        }
+      }
+      for (const metric of [
+        "avg_ults_in_won_fights",
+        "avg_ults_in_lost_fights",
+      ]) {
+        if (refs.some((ref) => ref.metric === metric)) continue;
+        const agg = pickMetricAgg(dataset, metric, question);
+        if (agg) refs.push({ metric, agg });
       }
     }
   }
@@ -5015,6 +5037,37 @@ function mentionsDryFightComparison(normalized: string): boolean {
   return mentionsDry && mentionsNonDry && hasComparisonCue(normalized);
 }
 
+function mentionsWonLostFightUltComparison(normalized: string): boolean {
+  const mentionsWonFights =
+    includesPhrase(normalized, "won fights") ||
+    includesPhrase(normalized, "winning fights") ||
+    includesPhrase(normalized, "fights won");
+  const mentionsLostFights =
+    includesPhrase(normalized, "lost fights") ||
+    includesPhrase(normalized, "losing fights") ||
+    includesPhrase(normalized, "fights lost");
+  const mentionsUlt =
+    includesPhrase(normalized, "ult") ||
+    includesPhrase(normalized, "ults") ||
+    includesPhrase(normalized, "ultimate") ||
+    includesPhrase(normalized, "ultimates");
+
+  return mentionsWonFights && mentionsLostFights && mentionsUlt;
+}
+
+function mentionsNonDryFightAggregateMetric(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "ults per non dry fight") ||
+    includesPhrase(normalized, "ults per non-dry fight") ||
+    includesPhrase(normalized, "ultimates per non dry fight") ||
+    includesPhrase(normalized, "ultimates per non-dry fight") ||
+    includesPhrase(normalized, "average ults per non dry fight") ||
+    includesPhrase(normalized, "average ults per non-dry fight") ||
+    includesPhrase(normalized, "average ultimates per non dry fight") ||
+    includesPhrase(normalized, "average ultimates per non-dry fight")
+  );
+}
+
 function pickTeamfightComparisonDimension(normalized: string): string | null {
   if (
     mentionsBooleanFightComparison(normalized, [
@@ -5722,6 +5775,9 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   const resultScope = pickResultScope(normalized);
   if (
     resultScope &&
+    !(
+      dataset === "teamfight" && mentionsWonLostFightUltComparison(normalized)
+    ) &&
     getDataset(dataset).filters.some((filter) => filter.id === "result")
   ) {
     filters.push({ field: "result", op: "eq", value: resultScope });
@@ -5884,7 +5940,10 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       "opening ult",
       "opening ultimate",
     ]);
-    const noDryFight = hasNegatedFightContext(normalized, ["dry fight"]);
+    const noDryFight =
+      hasNegatedFightContext(normalized, ["dry fight"]) ||
+      includesPhrase(normalized, "non dry") ||
+      includesPhrase(normalized, "non-dry");
     const noReversal = hasNegatedFightContext(normalized, [
       "reversal",
       "reverse fight",
@@ -5921,8 +5980,10 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       });
     }
     if (
-      includesPhrase(normalized, "dry fight") &&
+      (includesPhrase(normalized, "dry fight") ||
+        includesPhrase(normalized, "dry fights")) &&
       !asksDryFightRate &&
+      !mentionsNonDryFightAggregateMetric(normalized) &&
       comparisonDimension !== "dry_fight"
     ) {
       filters.push({
