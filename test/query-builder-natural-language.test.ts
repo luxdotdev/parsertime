@@ -255,6 +255,54 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans raw hero-swap events with from/to hero filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 1,
+      question: "How many hero swaps by PGE from Tracer to Widowmaker?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_swap",
+      metrics: [{ metric: "swaps", agg: "count" }],
+      dimensions: [],
+      filters: [
+        { field: "from_hero", op: "in", value: ["Tracer"] },
+        { field: "to_hero", op: "in", value: ["Widowmaker"] },
+        { field: "player", op: "in", value: ["PGE"] },
+      ],
+    });
+  });
+
+  it("plans ranked raw hero-swap questions by player", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 1,
+      question: "Which players swapped to Widowmaker the most?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_swap",
+      metrics: [{ metric: "swaps", agg: "count" }],
+      dimensions: ["player"],
+      filters: [{ field: "to_hero", op: "in", value: ["Widowmaker"] }],
+      sort: { key: "count__swaps", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans raw hero-swap timing questions by destination hero", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 1,
+      question: "What is the average time before swap from Tracer?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_swap",
+      metrics: [{ metric: "time_before_swap", agg: "avg" }],
+      dimensions: ["to_hero"],
+      filters: [{ field: "from_hero", op: "in", value: ["Tracer"] }],
+    });
+  });
+
   it("plans extended fight winrate questions onto computed teamfight fields", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

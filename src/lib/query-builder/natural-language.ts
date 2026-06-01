@@ -127,7 +127,21 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "victim",
     "victims",
   ],
-  hero_swap: ["swap", "swaps", "swapped", "hero swap"],
+  hero_swap: [
+    "hero swap",
+    "hero swaps",
+    "swap event",
+    "swap events",
+    "swapped from",
+    "swapped off",
+    "swapped to",
+    "swapped onto",
+    "swap from",
+    "swap off",
+    "swap to",
+    "swap onto",
+    "time before swap",
+  ],
   ultimate: ["ultimate used", "ultimates used", "ults used"],
   ult_combo: [
     "ult combo",
@@ -717,6 +731,13 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "killing blow damage",
     "average kill damage",
     "average killing blow damage",
+  ],
+  swaps: ["swaps", "hero swaps", "swap events"],
+  time_before_swap: [
+    "time before swap",
+    "time before swapping",
+    "average time before swap",
+    "average time before swapping",
   ],
   multikill_best: ["best multikill", "biggest multikill", "multikill best"],
   ults_used: [
@@ -2197,6 +2218,30 @@ function isKillVictimPlayerContext(
   );
 }
 
+function mentionsRawHeroSwapEventContext(normalized: string): boolean {
+  if (
+    includesPhrase(normalized, "swap impact") ||
+    includesPhrase(normalized, "swap win rate") ||
+    includesPhrase(normalized, "swap winrate") ||
+    includesPhrase(normalized, "too many swaps") ||
+    includesPhrase(normalized, "when we swap") ||
+    includesPhrase(normalized, "when swapping")
+  ) {
+    return false;
+  }
+
+  return (
+    includesPhrase(normalized, "hero swap") ||
+    includesPhrase(normalized, "hero swaps") ||
+    includesPhrase(normalized, "swap event") ||
+    includesPhrase(normalized, "swap events") ||
+    includesPhrase(normalized, "time before swap") ||
+    includesPhrase(normalized, "time before swapping") ||
+    /\bswapp?ed\s+(?:from|off|to|onto|into)\b/.test(normalized) ||
+    /\bswaps?\s+(?:from|off|to|onto|into)\b/.test(normalized)
+  );
+}
+
 function mentionsAbilityTimingContext(normalized: string): boolean {
   const abilityContext =
     includesPhrase(normalized, "ability") ||
@@ -2449,6 +2494,9 @@ function pickDataset(question: string): DatasetId {
           includesPhrase(normalized, "ultimate win rate"))))
   ) {
     return "ult_impact";
+  }
+  if (mentionsRawHeroSwapEventContext(normalized)) {
+    return "hero_swap";
   }
   if (
     mentionsSwap &&
@@ -3564,6 +3612,8 @@ function filterFor(
     | "death_type"
     | "attacker_hero"
     | "attacker_side"
+    | "from_hero"
+    | "to_hero"
     | "victim"
     | "used"
     | "had_swap"
@@ -3591,6 +3641,8 @@ function filterFor(
     death_type: ["death_type"],
     attacker_hero: ["attacker_hero"],
     attacker_side: ["attacker_side"],
+    from_hero: ["from_hero"],
+    to_hero: ["to_hero"],
     victim: ["victim"],
     used: ["used"],
     had_swap: ["had_swap"],
@@ -3607,6 +3659,66 @@ function filterFor(
     op: field.operators.includes("in") ? "in" : "eq",
     value: field.operators.includes("in") ? values : values[0],
   };
+}
+
+function heroMentionHasPrefix(
+  normalized: string,
+  mention: HeroMention,
+  prefixes: RegExp[]
+): boolean {
+  const before = normalized.slice(
+    Math.max(0, mention.index - 32),
+    mention.index
+  );
+  return prefixes.some((prefix) => prefix.test(before));
+}
+
+function pickHeroSwapHeroFilters(
+  heroMentions: HeroMention[],
+  question: string
+): QueryFilter[] {
+  const filters: QueryFilter[] = [];
+  if (heroMentions.length === 0) return filters;
+
+  const normalized = normalize(question);
+  const fromHeroes = heroMentions
+    .filter((mention) =>
+      heroMentionHasPrefix(normalized, mention, [
+        /\bfrom\s+$/,
+        /\boff\s+$/,
+        /\boff\s+of\s+$/,
+      ])
+    )
+    .map((mention) => mention.hero);
+  const toHeroes = heroMentions
+    .filter((mention) =>
+      heroMentionHasPrefix(normalized, mention, [
+        /\bto\s+$/,
+        /\bonto\s+$/,
+        /\binto\s+$/,
+      ])
+    )
+    .map((mention) => mention.hero);
+
+  if (fromHeroes.length > 0) {
+    filters.push({ field: "from_hero", op: "in", value: fromHeroes });
+  }
+  if (toHeroes.length > 0) {
+    filters.push({ field: "to_hero", op: "in", value: toHeroes });
+  }
+
+  if (filters.length === 0 && heroMentions.length === 1) {
+    const kind =
+      includesPhrase(normalized, "swapped from") ||
+      includesPhrase(normalized, "swap from") ||
+      includesPhrase(normalized, "swapped off") ||
+      includesPhrase(normalized, "swap off")
+        ? "from_hero"
+        : "to_hero";
+    filters.push({ field: kind, op: "in", value: [heroMentions[0].hero] });
+  }
+
+  return filters;
 }
 
 function pickDuelHeroFilters(heroMentions: HeroMention[], question: string) {
@@ -4886,7 +4998,9 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   const normalized = normalize(question);
 
   if (heroes.length > 0) {
-    if (dataset === "duel") {
+    if (dataset === "hero_swap") {
+      filters.push(...pickHeroSwapHeroFilters(heroMentions, question));
+    } else if (dataset === "duel") {
       filters.push(...pickDuelHeroFilters(heroMentions, question));
     } else if (dataset === "enemy_hero") {
       filters.push({ field: "enemy_hero", op: "in", value: heroes });
@@ -7637,6 +7751,21 @@ function pickDimensions(
       add("attacker");
     } else if (!hasFilter("attacker_hero")) {
       add("attacker_hero");
+    }
+  }
+  if (dataset === "hero_swap" && dims.length === 0) {
+    if (
+      includesPhrase(normalized, "who") ||
+      includesPhrase(normalized, "which player") ||
+      includesPhrase(normalized, "which players")
+    ) {
+      if (!hasFilter("player")) add("player");
+    } else if (hasFilter("to_hero") && !hasFilter("from_hero")) {
+      add("from_hero");
+    } else if (hasFilter("from_hero") && !hasFilter("to_hero")) {
+      add("to_hero");
+    } else if (!hasFilter("to_hero")) {
+      add("to_hero");
     }
   }
   if (
