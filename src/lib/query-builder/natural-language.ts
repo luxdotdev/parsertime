@@ -6802,10 +6802,21 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   }
 
   if (dataset === "player_target") {
+    const neutralTrendIntent =
+      includesPhrase(normalized, "neutral trend") ||
+      includesPhrase(normalized, "neutral trends") ||
+      includesPhrase(normalized, "neutral trending") ||
+      includesPhrase(normalized, "trending neutral");
+
     if (includesPhrase(normalized, "on track")) {
       filters.push({ field: "status", op: "in", value: ["on track"] });
     } else if (includesPhrase(normalized, "off track")) {
       filters.push({ field: "status", op: "in", value: ["off track"] });
+    } else if (
+      includesPhrase(normalized, "no data") ||
+      includesPhrase(normalized, "missing data")
+    ) {
+      filters.push({ field: "status", op: "in", value: ["no data"] });
     } else if (
       includesPhrase(normalized, "complete") ||
       includesPhrase(normalized, "completed")
@@ -6813,7 +6824,7 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       filters.push({ field: "status", op: "in", value: ["complete"] });
     } else if (
       includesPhrase(normalized, "stalled") ||
-      includesPhrase(normalized, "neutral")
+      (includesPhrase(normalized, "neutral") && !neutralTrendIntent)
     ) {
       filters.push({ field: "status", op: "in", value: ["stalled"] });
     }
@@ -6828,6 +6839,8 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       includesPhrase(normalized, "moving away")
     ) {
       filters.push({ field: "trending", op: "in", value: ["away"] });
+    } else if (neutralTrendIntent) {
+      filters.push({ field: "trending", op: "in", value: ["neutral"] });
     }
 
     const targetDirection = pickPlayerTargetDirection(normalized);

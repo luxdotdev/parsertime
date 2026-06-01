@@ -3493,6 +3493,34 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans neutral-trending target questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which player targets have a neutral trend?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_target",
+      metrics: [{ metric: "progress_percent", agg: "avg" }],
+      dimensions: ["player", "stat"],
+      filters: [{ field: "trending", op: "in", value: ["neutral"] }],
+    });
+  });
+
+  it("plans no-data target status questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which player targets have no data?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_target",
+      metrics: [{ metric: "progress_percent", agg: "avg" }],
+      dimensions: ["player", "stat"],
+      filters: [{ field: "status", op: "in", value: ["no data"] }],
+    });
+  });
+
   it("plans enemy-hero matchup questions with hero filters", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,
