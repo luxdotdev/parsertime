@@ -1803,13 +1803,33 @@ function formatEntityName(value: string): string {
 }
 
 function findOpponent(question: string): string | null {
+  return findOpponents(question)[0] ?? null;
+}
+
+function findOpponents(question: string): string[] {
   const match = question.match(
     /\b(?:against|vs|versus)\s+([A-Za-z0-9][A-Za-z0-9_.&' -]*?)(?=\s+(?:on|by|per|with|in|over|for|across|when|where)\b|[?.!,]|$)/i
   );
-  if (!match) return null;
-  const opponent = formatEntityName(match[1]);
-  if (!opponent || FILLER_WORDS.has(normalize(opponent))) return null;
-  return opponent;
+  if (!match) return [];
+
+  const opponents: string[] = [];
+  const parts = match[1]
+    .replace(/\b(?:and|or)\b/gi, ",")
+    .split(",")
+    .map((part) => formatEntityName(part))
+    .filter(Boolean);
+  for (const opponent of parts) {
+    const normalized = normalize(opponent);
+    if (
+      FILLER_WORDS.has(normalized) ||
+      HERO_BY_NORMALIZED.has(normalized) ||
+      MAP_BY_NORMALIZED.has(normalized)
+    ) {
+      continue;
+    }
+    if (!opponents.includes(opponent)) opponents.push(opponent);
+  }
+  return opponents;
 }
 
 function mentionsFightContext(normalized: string): boolean {
@@ -5756,9 +5776,9 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   }
 
   if (dataset === "map_result") {
-    const opponent = findOpponent(question);
-    if (opponent) {
-      filters.push({ field: "opponent", op: "in", value: [opponent] });
+    const opponents = findOpponents(question);
+    if (opponents.length > 0) {
+      filters.push({ field: "opponent", op: "in", value: opponents });
     }
     filters.push(
       ...extractDurationThresholdFilters(dataset, normalized, [
@@ -7987,6 +8007,9 @@ function pickDimensions(
   }
   if (hasMultiValueFilter("map")) {
     add("map");
+  }
+  if (hasMultiValueFilter("opponent")) {
+    add("opponent");
   }
 
   if (

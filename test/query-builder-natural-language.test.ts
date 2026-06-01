@@ -1354,6 +1354,20 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans multi-opponent map-result comparisons with grouped opponent output", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Compare our map win rate against NRG and Team Peps",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_result",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["opponent"],
+      filters: [{ field: "opponent", op: "in", value: ["NRG", "Team Peps"] }],
+    });
+  });
+
   it("plans multi-map comparisons with grouped map output", () => {
     const planned = planQueryFromQuestion({
       teamId: 2,
