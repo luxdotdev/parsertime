@@ -3,31 +3,25 @@
 import type { GetScoutingTeamsResponse } from "@/app/api/scouting/get-teams/route";
 import type { GetTeamsResponse } from "@/app/api/team/get-teams/route";
 import { useFeatureFlags } from "@/components/feature-flags-provider";
-import { parseData } from "@/lib/parser-client";
-import { detectFileCorruption } from "@/lib/utils";
-import { scrimCreatorStore } from "@/stores/scrim-creator-store";
 import {
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+  runSequentialUpload,
+  uploadMapStream,
+} from "@/components/map/bulk-upload/sequential-upload";
+import { useBulkMapUpload } from "@/components/map/bulk-upload/use-bulk-map-upload";
+import { scrimCreatorStore } from "@/stores/scrim-creator-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "@xstate/store/react";
 import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useEffect, useId } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import { ErrorPane } from "./error-pane";
 import { FormPane } from "./form-pane";
-import { SubmittingPane } from "./submitting-pane";
 import { SuccessPane } from "./success-pane";
-import { ACCEPTED_FILE_TYPES, MAX_FILE_SIZE, type FormValues } from "./types";
+import type { FormValues } from "./types";
 
 export function ScrimCreationForm({
   setOpen,
@@ -35,23 +29,9 @@ export function ScrimCreationForm({
   setOpen: (open: boolean) => void;
 }) {
   const { scoutingEnabled } = useFeatureFlags();
-  const mapData = useSelector(scrimCreatorStore, (s) => s.context.mapData);
-  const selectedFile = useSelector(
-    scrimCreatorStore,
-    (s) => s.context.selectedFile
-  );
-  const parsing = useSelector(scrimCreatorStore, (s) => s.context.parsing);
-  const hasCorruptedData = useSelector(
-    scrimCreatorStore,
-    (s) => s.context.hasCorruptedData
-  );
   const submitState = useSelector(
     scrimCreatorStore,
     (s) => s.context.submitState
-  );
-  const errorCause = useSelector(
-    scrimCreatorStore,
-    (s) => s.context.errorCause
   );
   const autoAssignTeamNames = useSelector(
     scrimCreatorStore,
@@ -61,15 +41,13 @@ export function ScrimCreationForm({
   const router = useRouter();
   const queryClient = useQueryClient();
   const t = useTranslations("dashboard.scrimCreationForm");
+  const tb = useTranslations("bulkUpload");
 
-  const fileInputId = useId();
-
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
+  const upload = useBulkMapUpload();
+  const { pendingMaps, isParsing, failedCount, reset: resetMaps, patchMap } =
+    upload;
+  const scrimIdRef = useRef<number | null>(null);
+  const [busy, setBusy] = useState(false);
 
   // Reset the singleton store each time the form mounts so a fresh open
   // doesn't inherit state from the previous session.
@@ -84,17 +62,7 @@ export function ScrimCreationForm({
       .max(30, { message: t("scrimMaxMessage") }),
     team: z.string({ error: t("teamRequiredError") }),
     date: z.date({ error: t("dateRequiredError") }),
-    map: z.any(),
     opponentTeamAbbr: z.string().nullable().optional(),
-    heroBans: z.array(
-      z.object({
-        hero: z.string().min(1, { message: t("heroBanRequiredError") }),
-        team: z.string().min(1, { message: t("teamRequiredError") }),
-        banPosition: z.number().min(1, {
-          message: t("banPositionRequiredError"),
-        }),
-      })
-    ),
   });
 
   const { data: teams } = useQuery({
@@ -129,7 +97,6 @@ export function ScrimCreationForm({
     defaultValues: {
       date: new Date(),
       opponentTeamAbbr: null,
-      heroBans: [],
     },
   });
 
@@ -142,133 +109,102 @@ export function ScrimCreationForm({
     }
   }, [isIndividual]);
 
-  async function handleFile(file: File | null) {
-    if (!file) {
-      scrimCreatorStore.trigger.fileCleared();
-      form.setValue("map", undefined);
-      return;
-    }
-
-    if (file.size > MAX_FILE_SIZE && !scoutingEnabled) {
-      toast.error(t("fileSize.title"), {
-        duration: 5000,
-        description: t("fileSize.description"),
-      });
-      return;
-    }
-
-    if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
-      toast.error(t("fileType.title"), {
-        duration: 5000,
-        description: t("fileType.description"),
-      });
-      return;
-    }
-
-    scrimCreatorStore.trigger.fileSelected({ file });
-    form.setValue("map", undefined);
-
-    try {
-      const corruption = await detectFileCorruption(file);
-
-      if (corruption.isCorrupted) {
-        let warningMessage = t("dataCorruption.warning.baseDescription");
-        if (corruption.hasInvalidMercyRez) {
-          warningMessage += `\n${t("dataCorruption.warning.invalidMercyRez")}`;
-        }
-        if (corruption.hasAsterisks) {
-          warningMessage += `\n${t("dataCorruption.warning.asteriskValues")}`;
-        }
-        toast.warning(t("dataCorruption.warning.title"), {
-          description: warningMessage,
-          duration: 8000,
-        });
-      }
-
-      const parsed = await parseData(file);
-      scrimCreatorStore.trigger.parsingFinished({
-        mapData: parsed,
-        hasCorruption: corruption.isCorrupted,
-      });
-      form.setValue("map", parsed, { shouldValidate: true });
-    } catch {
-      scrimCreatorStore.trigger.parsingFailed();
-      form.setValue("map", undefined);
-      toast.error(t("createdScrim.errorFallback"));
-    }
-  }
+  const usableMaps = pendingMaps.filter((m) => !m.parseFailed);
 
   async function onSubmit(data: FormValues) {
-    if (!mapData) {
-      scrimCreatorStore.trigger.submitFailed({
-        cause: t("createdScrim.errorFallback"),
-      });
+    if (usableMaps.length === 0) {
+      toast.error(tb("noMapsTitle"), { description: tb("noMapsDescription") });
       return;
     }
 
-    data.map = mapData;
-    data.name = data.name.trim();
-    scrimCreatorStore.trigger.submitStarted();
+    setBusy(true);
 
     const resolvedTeam1Name =
       autoAssignTeamNames && !isIndividual
-        ? (teams?.find((t) => t.value === data.team)?.label ?? null)
+        ? (teams?.find((opt) => opt.value === data.team)?.label ?? null)
         : null;
-
     const resolvedTeam2Name =
       autoAssignTeamNames && data.opponentTeamAbbr
-        ? (scoutingTeams.find((t) => t.abbreviation === data.opponentTeamAbbr)
+        ? (scoutingTeams.find((s) => s.abbreviation === data.opponentTeamAbbr)
             ?.fullName ?? null)
         : null;
 
-    try {
-      const res = await fetch("/api/scrim/create-scrim", {
-        method: "POST",
-        body: JSON.stringify({
-          ...data,
-          autoAssignTeamNames,
-          team1Name: resolvedTeam1Name,
-          team2Name: resolvedTeam2Name,
-        }),
-      });
+    const { scrimId, allSucceeded } = await runSequentialUpload({
+      maps: usableMaps,
+      patchMap,
+      baseOrder: 0,
+      initialScrimId: scrimIdRef.current,
+      uploadMap: async (map, order, sid, reportProgress) => {
+        if (sid === null) {
+          // First map creates the scrim (and is map order 0 server-side).
+          const { scrimId } = await uploadMapStream(
+            "/api/scrim/create-scrim-stream",
+            {
+              name: data.name.trim(),
+              team: data.team,
+              date: data.date.toISOString(),
+              map: map.parsedData,
+              replayCode: "",
+              opponentTeamAbbr: data.opponentTeamAbbr ?? null,
+              autoAssignTeamNames,
+              team1Name: resolvedTeam1Name,
+              team2Name: resolvedTeam2Name,
+              heroBans: map.heroBans,
+            },
+            reportProgress
+          );
+          if (scrimId == null) {
+            throw new Error("Server did not return a scrim id");
+          }
+          return scrimId;
+        }
 
-      if (res.ok) {
-        void queryClient.invalidateQueries({ queryKey: ["scrims"] });
-        router.refresh();
-        scrimCreatorStore.trigger.submitSucceeded();
-      } else {
-        const text = (await res.text()).trim();
-        const detail = text.length > 0 ? text : t("createdScrim.errorFallback");
-        scrimCreatorStore.trigger.submitFailed({
-          cause: `${detail} (${res.status})`,
-        });
-      }
-    } catch (e) {
-      scrimCreatorStore.trigger.submitFailed({
-        cause:
-          e instanceof Error
-            ? e.message
-            : "We couldn't reach our servers. Your network may have dropped.",
+        await uploadMapStream(
+          `/api/scrim/add-map-stream?id=${sid}`,
+          {
+            map: map.parsedData,
+            order,
+            heroBans: map.heroBans.length > 0 ? map.heroBans : undefined,
+          },
+          reportProgress
+        );
+        return sid;
+      },
+    });
+
+    scrimIdRef.current = scrimId;
+    setBusy(false);
+
+    if (allSucceeded) {
+      void queryClient.invalidateQueries({ queryKey: ["scrims"] });
+      router.refresh();
+      scrimCreatorStore.trigger.submitSucceeded();
+    } else if (scrimId === null) {
+      // The first map failed; nothing was created. Per-map error is shown
+      // inline and the user can retry.
+      toast.error(tb("partialFailureTitle"), {
+        description: tb("createFirstMapFailed"),
+      });
+    } else {
+      toast.error(tb("partialFailureTitle"), {
+        description: tb("partialFailureDescription"),
       });
     }
   }
 
   function handleCreateAnother() {
-    form.reset({
-      date: new Date(),
-      opponentTeamAbbr: null,
-      heroBans: [],
-    });
+    form.reset({ date: new Date(), opponentTeamAbbr: null });
+    resetMaps();
+    scrimIdRef.current = null;
     scrimCreatorStore.trigger.reset();
   }
 
-  function handleBackToForm() {
-    scrimCreatorStore.trigger.backToForm();
-  }
-
   const showOpponent = scoutingEnabled && scoutingTeams.length > 0;
-  const isLocked = submitState !== "idle";
-  const isSubmitDisabled = isLocked || parsing || !mapData;
+  const submitLabel =
+    failedCount > 0
+      ? tb("retryFailed", { count: failedCount })
+      : tb("createScrimWithMaps", { count: usableMaps.length });
+  const isSubmitDisabled = busy || isParsing || usableMaps.length === 0;
 
   return (
     <form
@@ -276,16 +212,19 @@ export function ScrimCreationForm({
       className="flex min-h-0 flex-1 flex-col"
     >
       <AnimatePresence mode="wait" initial={false}>
-        {submitState === "idle" && (
+        {submitState === "success" ? (
+          <SuccessPane
+            key="success"
+            hasCorruptedData={pendingMaps.some((m) => m.hasCorruption)}
+            onClose={() => setOpen(false)}
+            onCreateAnother={handleCreateAnother}
+          />
+        ) : (
           <FormPane
             key="form"
             form={form}
-            fileInputId={fileInputId}
-            selectedFile={selectedFile}
-            mapData={mapData}
-            parsing={parsing}
-            hasCorruptedData={hasCorruptedData}
-            onFile={handleFile}
+            upload={upload}
+            busy={busy}
             teams={teams}
             scoutingTeams={scoutingTeams}
             showOpponent={showOpponent}
@@ -295,26 +234,9 @@ export function ScrimCreationForm({
             }
             selectedTeam={selectedTeam}
             isIndividual={isIndividual}
-            sensors={sensors}
-            isLocked={isLocked}
+            submitLabel={submitLabel}
             isSubmitDisabled={isSubmitDisabled}
             onCancel={() => setOpen(false)}
-          />
-        )}
-        {submitState === "submitting" && <SubmittingPane key="submitting" />}
-        {submitState === "success" && (
-          <SuccessPane
-            key="success"
-            hasCorruptedData={hasCorruptedData}
-            onClose={() => setOpen(false)}
-            onCreateAnother={handleCreateAnother}
-          />
-        )}
-        {submitState === "error" && (
-          <ErrorPane
-            key="error"
-            errorCause={errorCause}
-            onBack={handleBackToForm}
           />
         )}
       </AnimatePresence>

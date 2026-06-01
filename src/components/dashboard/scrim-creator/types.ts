@@ -1,5 +1,4 @@
 import type { GetScoutingTeamsResponse } from "@/app/api/scouting/get-teams/route";
-import type { ParserData } from "@/types/parser";
 
 export type HeroBan = { hero: string; team: string; banPosition: number };
 
@@ -7,9 +6,7 @@ export type FormValues = {
   name: string;
   team: string;
   date: Date;
-  map: ParserData | undefined;
   opponentTeamAbbr?: string | null;
-  heroBans: HeroBan[];
 };
 
 export type ScoutingTeam = GetScoutingTeamsResponse["teams"][number];

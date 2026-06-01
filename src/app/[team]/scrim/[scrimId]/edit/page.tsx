@@ -44,13 +44,12 @@ export default async function EditScrimPage(
     ]
   );
 
-  const maps = (
-    await prisma.map.findMany({
-      where: {
-        scrimId: scrim.id,
-      },
-    })
-  ).sort((a, b) => a.id - b.id);
+  const maps = await prisma.map.findMany({
+    where: {
+      scrimId: scrim.id,
+    },
+    orderBy: [{ order: "asc" }, { id: "asc" }],
+  });
 
   const [heroBansByMap, teamNamesByMap] = await Promise.all([
     Promise.all(

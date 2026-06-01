@@ -1,14 +1,11 @@
 "use client";
 
+import { MapUploadList } from "@/components/map/bulk-upload/map-upload-list";
+import type { BulkMapUpload } from "@/components/map/bulk-upload/use-bulk-map-upload";
 import { OpponentSearchField } from "@/components/scrim/opponent-search-field";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -25,28 +22,20 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import type { ParserData } from "@/types/parser";
-import type { useSensors } from "@dnd-kit/core";
 import { CalendarIcon } from "@radix-ui/react-icons";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { track } from "@vercel/analytics";
 import { format } from "date-fns";
 import { motion, useReducedMotion } from "framer-motion";
 import { FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { startTransition } from "react";
 import { Controller, type UseFormReturn } from "react-hook-form";
-import { FileDropZone } from "./file-drop-zone";
-import { HeroBansField } from "./hero-bans-field";
 import type { FormValues, ScoutingTeam, TeamOption } from "./types";
 
 type Props = {
   form: UseFormReturn<FormValues>;
-  fileInputId: string;
-  selectedFile: File | null;
-  mapData: ParserData | undefined;
-  parsing: boolean;
-  hasCorruptedData: boolean;
-  onFile: (file: File | null) => Promise<void> | void;
+  upload: BulkMapUpload;
+  busy: boolean;
   teams: TeamOption[] | undefined;
   scoutingTeams: ScoutingTeam[];
   showOpponent: boolean;
@@ -54,20 +43,15 @@ type Props = {
   setAutoAssignTeamNames: (value: boolean) => void;
   selectedTeam: string | undefined;
   isIndividual: boolean;
-  sensors: ReturnType<typeof useSensors>;
-  isLocked: boolean;
+  submitLabel: string;
   isSubmitDisabled: boolean;
   onCancel: () => void;
 };
 
 export function FormPane({
   form,
-  fileInputId,
-  selectedFile,
-  mapData,
-  parsing,
-  hasCorruptedData,
-  onFile,
+  upload,
+  busy,
   teams,
   scoutingTeams,
   showOpponent,
@@ -75,12 +59,12 @@ export function FormPane({
   setAutoAssignTeamNames,
   selectedTeam,
   isIndividual,
-  sensors,
-  isLocked,
+  submitLabel,
   isSubmitDisabled,
   onCancel,
 }: Props) {
   const t = useTranslations("dashboard.scrimCreationForm");
+  const tb = useTranslations("bulkUpload");
   const prefersReducedMotion = useReducedMotion();
 
   return (
@@ -92,54 +76,21 @@ export function FormPane({
       className="flex min-h-0 flex-1 flex-col"
     >
       <div className="overflow-y-auto px-6 py-5">
-        <Controller
-          control={form.control}
-          name="map"
-          render={({ field, fieldState }) => (
-            <FileDropZone
-              inputName={field.name}
-              inputId={fileInputId}
-              invalid={fieldState.invalid}
-              file={selectedFile}
-              parsing={parsing}
-              mapData={mapData}
-              hasCorruption={hasCorruptedData}
-              onFile={(f) => {
-                startTransition(() => {
-                  void onFile(f);
-                });
-              }}
-              description={t("mapDescription")}
-              dropTitle={t("mapDropTitle")}
-              dropSubtitle={t("mapDropSubtitle")}
-              parsedLabel={t("mapDropParsed")}
-              parsingLabel={t("mapDropParsing")}
-              replaceLabel={t("mapDropReplace")}
-              versusLabel={t("mapDropTeamSeparator")}
-            />
-          )}
-        />
+        <MapUploadList upload={upload} busy={busy} />
 
         <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Controller
             control={form.control}
             name="name"
             render={({ field, fieldState }) => (
-              <Field
-                data-invalid={fieldState.invalid}
-                className="sm:col-span-2"
-              >
-                <div id="docs-demo-step3">
-                  <FieldLabel htmlFor={field.name}>{t("scrimName")}</FieldLabel>
-                  <Input
-                    {...field}
-                    aria-invalid={fieldState.invalid}
-                    placeholder={t("scrimPlaceholder")}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </div>
+              <Field data-invalid={fieldState.invalid} className="sm:col-span-2">
+                <FieldLabel htmlFor={field.name}>{t("scrimName")}</FieldLabel>
+                <Input
+                  {...field}
+                  aria-invalid={fieldState.invalid}
+                  placeholder={t("scrimPlaceholder")}
+                />
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
           />
@@ -147,12 +98,9 @@ export function FormPane({
             control={form.control}
             name="team"
             render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid} id="docs-demo-step4">
+              <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>{t("teamName")}</FieldLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <SelectTrigger
                     id={field.name}
                     aria-invalid={fieldState.invalid}
@@ -173,9 +121,7 @@ export function FormPane({
                     )}
                   </SelectContent>
                 </Select>
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
           />
@@ -183,7 +129,7 @@ export function FormPane({
             control={form.control}
             name="date"
             render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid} id="docs-demo-step5">
+              <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>{t("dateName")}</FieldLabel>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -215,9 +161,7 @@ export function FormPane({
                     />
                   </PopoverContent>
                 </Popover>
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
           />
@@ -228,9 +172,7 @@ export function FormPane({
             htmlFor="auto-assign-team-names"
             className={cn(
               "text-sm",
-              isIndividual || !selectedTeam
-                ? "text-muted-foreground"
-                : undefined
+              isIndividual || !selectedTeam ? "text-muted-foreground" : undefined
             )}
           >
             {t("autoAssignTeamNames")}
@@ -256,62 +198,43 @@ export function FormPane({
               name="opponentTeamAbbr"
               render={({ field }) => (
                 <Field>
-                  <FieldLabel htmlFor={field.name}>
-                    {t("opponentName")}
-                  </FieldLabel>
+                  <FieldLabel htmlFor={field.name}>{t("opponentName")}</FieldLabel>
                   <OpponentSearchField
                     id={field.name}
                     options={scoutingTeams}
                     value={field.value ?? null}
                     onChange={field.onChange}
                   />
-                  <FieldDescription>
-                    {t("opponentDescription")}
-                  </FieldDescription>
+                  <FieldDescription>{t("opponentDescription")}</FieldDescription>
                 </Field>
               )}
             />
           </div>
         )}
-
-        <div className="mt-6">
-          <Controller
-            control={form.control}
-            name="heroBans"
-            render={({ field, fieldState }) => (
-              <HeroBansField
-                field={field}
-                invalid={fieldState.invalid}
-                error={fieldState.error}
-                mapData={mapData}
-                sensors={sensors}
-              />
-            )}
-          />
-        </div>
       </div>
 
       <div className="border-border/60 bg-background flex items-center justify-between gap-2 border-t px-6 py-3">
         <div className="text-muted-foreground/70 hidden items-center gap-1.5 font-mono text-[0.6875rem] tracking-[0.04em] uppercase sm:flex">
           <FileText className="size-3" aria-hidden="true" />
-          <span>.xlsx · .txt</span>
+          <span>.txt</span>
         </div>
         <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={onCancel}
-            disabled={isLocked}
-          >
+          <Button type="button" variant="ghost" onClick={onCancel} disabled={busy}>
             {t("cancel")}
           </Button>
           <Button
             type="submit"
-            id="docs-demo-step8"
             onClick={() => track("Create Scrim", { location: "Dashboard" })}
             disabled={isSubmitDisabled}
           >
-            {t("submit")}
+            {busy ? (
+              <>
+                <ReloadIcon className="mr-2 size-4 animate-spin" />
+                {tb("uploading")}
+              </>
+            ) : (
+              submitLabel
+            )}
           </Button>
         </div>
       </div>

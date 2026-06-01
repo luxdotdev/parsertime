@@ -94,13 +94,12 @@ export default async function ScrimDashboardPage(
 
   const teamId = scrim.teamId;
 
-  const maps = (
-    await prisma.map.findMany({
-      where: {
-        scrimId: id,
-      },
-    })
-  ).sort((a, b) => a.id - b.id);
+  const maps = await prisma.map.findMany({
+    where: {
+      scrimId: id,
+    },
+    orderBy: [{ order: "asc" }, { id: "asc" }],
+  });
 
   const user = await AppRuntime.runPromise(
     UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
@@ -278,7 +277,7 @@ export default async function ScrimDashboardPage(
 
           {hasPerms && (
             <div className="mt-6">
-              <AddMapCard />
+              <AddMapCard scrimId={id} existingMapCount={maps.length} />
             </div>
           )}
 
