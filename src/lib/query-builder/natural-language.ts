@@ -324,8 +324,23 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "rotational deaths",
     "caught rotating",
     "caught on rotation",
+    "caught out",
+    "caught out before fight",
+    "caught out before fights",
+    "picked while rotating",
+    "picked on rotation",
+    "picked before fight",
+    "picked before fights",
     "died rotating",
     "dies rotating",
+    "died before fight",
+    "dies before fight",
+    "pre fight death",
+    "pre fight deaths",
+    "pre-fight death",
+    "pre-fight deaths",
+    "early fight death",
+    "early fight deaths",
     "early death with low damage",
   ],
   map_result: [
@@ -1084,14 +1099,33 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "rotational death",
     "rotational deaths",
     "caught rotating",
+    "caught out",
+    "caught-out death",
+    "caught-out deaths",
+    "picked while rotating",
+    "picked on rotation",
+    "picked before fight",
+    "picked before fights",
+    "pre fight death",
+    "pre fight deaths",
+    "pre-fight death",
+    "pre-fight deaths",
   ],
   rotation_death_rate: [
     "rotation death rate",
     "rotation deaths rate",
     "rotational death rate",
     "rotation rate",
+    "caught out rate",
+    "caught-out death rate",
+    "caught out death rate",
   ],
-  early_death_rate: ["early death rate", "early fight death rate"],
+  early_death_rate: [
+    "early death rate",
+    "early fight death rate",
+    "pre fight death rate",
+    "pre-fight death rate",
+  ],
   pre_fight_damage: [
     "pre fight damage",
     "pre-fight damage",
@@ -2554,8 +2588,22 @@ function mentionsRotationDeathContext(normalized: string): boolean {
     includesPhrase(normalized, "rotational deaths") ||
     includesPhrase(normalized, "caught rotating") ||
     includesPhrase(normalized, "caught on rotation") ||
+    includesPhrase(normalized, "caught out") ||
+    includesPhrase(normalized, "caught-out") ||
+    includesPhrase(normalized, "picked while rotating") ||
+    includesPhrase(normalized, "picked on rotation") ||
+    includesPhrase(normalized, "picked before fight") ||
+    includesPhrase(normalized, "picked before fights") ||
     includesPhrase(normalized, "died rotating") ||
     includesPhrase(normalized, "dies rotating") ||
+    includesPhrase(normalized, "died before fight") ||
+    includesPhrase(normalized, "dies before fight") ||
+    includesPhrase(normalized, "pre fight death") ||
+    includesPhrase(normalized, "pre fight deaths") ||
+    includesPhrase(normalized, "pre-fight death") ||
+    includesPhrase(normalized, "pre-fight deaths") ||
+    includesPhrase(normalized, "early fight death") ||
+    includesPhrase(normalized, "early fight deaths") ||
     includesPhrase(normalized, "early death with low damage")
   );
 }
@@ -6607,10 +6655,18 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     const enemySide =
       includesPhrase(normalized, "enemy rotation") ||
       includesPhrase(normalized, "enemy deaths") ||
+      includesPhrase(normalized, "enemy caught") ||
+      includesPhrase(normalized, "enemy caught out") ||
+      includesPhrase(normalized, "enemy players") ||
+      includesPhrase(normalized, "enemy heroes") ||
       includesPhrase(normalized, "their rotation") ||
       includesPhrase(normalized, "their deaths") ||
+      includesPhrase(normalized, "their players") ||
+      includesPhrase(normalized, "their heroes") ||
       includesPhrase(normalized, "opponent rotation") ||
-      includesPhrase(normalized, "opponent deaths");
+      includesPhrase(normalized, "opponent deaths") ||
+      includesPhrase(normalized, "opponent players") ||
+      includesPhrase(normalized, "opponent heroes");
     const sideFilter = filterFor(dataset, "side", enemySide ? "enemy" : "us");
     if (sideFilter) filters.push(sideFilter);
 
@@ -6689,6 +6745,14 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
             "rotation deaths",
             "rotational deaths",
             "caught on rotation",
+            "caught out",
+            "caught-out deaths",
+            "picked while rotating",
+            "picked on rotation",
+            "picked before fight",
+            "picked before fights",
+            "pre fight deaths",
+            "pre-fight deaths",
             "rotation death count",
           ],
         },
@@ -6702,11 +6766,19 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
             "rotation death rate",
             "rotational death rate",
             "rotation rate",
+            "caught out rate",
+            "caught-out death rate",
+            "caught out death rate",
           ],
         },
         {
           field: "early_death_rate",
-          aliases: ["early death rate", "early-fight death rate"],
+          aliases: [
+            "early death rate",
+            "early-fight death rate",
+            "pre fight death rate",
+            "pre-fight death rate",
+          ],
         },
       ])
     );

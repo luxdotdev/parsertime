@@ -1052,6 +1052,22 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans caught-out pre-fight death questions as rotation deaths", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Who gets caught out before fights the most?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "rotation_death",
+      metrics: [{ metric: "rotation_deaths", agg: "sum" }],
+      dimensions: ["player"],
+      filters: [{ field: "side", op: "eq", value: "us" }],
+      sort: { key: "sum__rotation_deaths", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans rotation-death rate questions by map", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,
@@ -1071,6 +1087,38 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans caught-out death rate questions by map", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Which maps have the highest caught-out death rate?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "rotation_death",
+      metrics: [{ metric: "rotation_death_rate", agg: "avg" }],
+      dimensions: ["map"],
+      filters: [{ field: "side", op: "eq", value: "us" }],
+      sort: { key: "avg__rotation_death_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans enemy caught-rotating questions onto enemy-side deaths", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Which enemy players get picked while rotating the most?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "rotation_death",
+      metrics: [{ metric: "rotation_deaths", agg: "sum" }],
+      dimensions: ["player"],
+      filters: [{ field: "side", op: "eq", value: "enemy" }],
+      sort: { key: "sum__rotation_deaths", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans rotation-death pre-fight damage thresholds", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,
@@ -1085,6 +1133,26 @@ describe("query-builder natural-language planner", () => {
       filters: [
         { field: "side", op: "eq", value: "us" },
         { field: "pre_fight_damage", op: "lte", value: 2 },
+      ],
+      sort: { key: "sum__rotation_deaths", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans pre-fight death phrasing with low-damage thresholds", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "Which heroes have the most pre-fight deaths with less than 3 pre-fight damage?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "rotation_death",
+      metrics: [{ metric: "rotation_deaths", agg: "sum" }],
+      dimensions: ["hero"],
+      filters: [
+        { field: "side", op: "eq", value: "us" },
+        { field: "pre_fight_damage", op: "lt", value: 3 },
       ],
       sort: { key: "sum__rotation_deaths", dir: "desc" },
       limit: 20,
