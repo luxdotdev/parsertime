@@ -111,4 +111,34 @@ describe("computed aggregator (map results)", () => {
     ]);
     expect(rows[0]["sum__playtime"]).toBe(960);
   });
+
+  it("filters grouped map playtime after aggregation", () => {
+    const { rows } = aggregateComputed(
+      MAP_RESULTS,
+      spec({
+        metrics: [{ metric: "playtime", agg: "sum" }],
+        dimensions: ["map_type"],
+        filters: [{ field: "playtime", op: "gt", value: 900 }],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].map_type).toBe("Hybrid");
+    expect(rows[0]["sum__playtime"]).toBe(960);
+  });
+
+  it("filters grouped average map duration after aggregation", () => {
+    const { rows } = aggregateComputed(
+      MAP_RESULTS,
+      spec({
+        metrics: [{ metric: "playtime", agg: "avg" }],
+        dimensions: ["opponent"],
+        filters: [{ field: "avg_playtime", op: "lt", value: 600 }],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].opponent).toBe("Team Peps");
+    expect(rows[0]["avg__playtime"]).toBe(540);
+  });
 });

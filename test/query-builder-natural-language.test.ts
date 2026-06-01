@@ -1232,6 +1232,34 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans map-result playtime threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Which map types have more than 15 minutes of playtime?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_result",
+      metrics: [{ metric: "playtime", agg: "sum" }],
+      dimensions: ["map_type"],
+      filters: [{ field: "playtime", op: "gt", value: 900 }],
+    });
+  });
+
+  it("plans average map-duration threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Which opponents have average map duration under 10 minutes?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_result",
+      metrics: [{ metric: "playtime", agg: "avg" }],
+      dimensions: ["opponent"],
+      filters: [{ field: "avg_playtime", op: "lt", value: 600 }],
+    });
+  });
+
   it("plans player map-specialist questions onto player-map performance", () => {
     const planned = planQueryFromQuestion({
       teamId: 2,

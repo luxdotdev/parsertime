@@ -261,6 +261,9 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
   map_result: [
     "best map mode",
     "best map type",
+    "map duration",
+    "map durations",
+    "average map duration",
     "map playtime",
     "map time played",
     "maps played most",
@@ -792,6 +795,9 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "time played",
     "map playtime",
     "map time played",
+    "map duration",
+    "map durations",
+    "average map duration",
     "most played",
     "most time",
     "played most",
@@ -1048,7 +1054,7 @@ const DIMENSION_ALIASES: Record<string, string[]> = {
   victim_hero: ["victim hero", "death hero"],
   map: ["map", "maps"],
   map_type: ["map type", "mode"],
-  opponent: ["opponent"],
+  opponent: ["opponent", "opponents"],
   scrim: ["scrim", "scrims"],
   date: ["date"],
   week: ["week", "weekly"],
@@ -3443,7 +3449,10 @@ function extractTimePlayedFilter(
   normalized: string
 ): QueryFilter | null {
   const field = getDataset(dataset).filters.find(
-    (filter) => filter.id === "min_time_played" || filter.id === "time_played"
+    (filter) =>
+      filter.id === "min_time_played" ||
+      filter.id === "time_played" ||
+      filter.id === "playtime"
   );
   if (!field) return null;
 
@@ -4840,6 +4849,20 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     if (opponent) {
       filters.push({ field: "opponent", op: "in", value: [opponent] });
     }
+    filters.push(
+      ...extractDurationThresholdFilters(dataset, normalized, [
+        {
+          field: "avg_playtime",
+          aliases: [
+            "average map duration",
+            "avg map duration",
+            "average map playtime",
+            "avg map playtime",
+            "average map time played",
+          ],
+        },
+      ])
+    );
     filters.push(
       ...extractNumericThresholdFilters(dataset, normalized, [
         {
@@ -6714,6 +6737,15 @@ function pickDimensions(
     !hasFilter("map_type")
   ) {
     add("map_type");
+  }
+  if (
+    (includesPhrase(normalized, "which opponent") ||
+      includesPhrase(normalized, "which opponents") ||
+      includesPhrase(normalized, "what opponent") ||
+      includesPhrase(normalized, "what opponents")) &&
+    !hasFilter("opponent")
+  ) {
+    add("opponent");
   }
   if (
     dataset === "map_result" &&

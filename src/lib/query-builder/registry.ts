@@ -2665,6 +2665,23 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         operators: ["gte", "gt", "lte", "lt"],
         aggregate: "count",
       },
+      metricAggregateFilter({
+        id: "playtime",
+        label: "map playtime",
+        table: "MapResult",
+        column: "playtime",
+        aggregate: "sum",
+        unit: "s",
+      }),
+      metricAggregateFilter({
+        id: "avg_playtime",
+        metric: "playtime",
+        label: "average map duration",
+        table: "MapResult",
+        column: "playtime",
+        aggregate: "avg",
+        unit: "s",
+      }),
     ],
   },
   team_performance: {
