@@ -2135,6 +2135,10 @@ function mentionsPlayerOutlierContext(normalized: string): boolean {
     includesPhrase(normalized, "below baseline") ||
     includesPhrase(normalized, "far above") ||
     includesPhrase(normalized, "far below") ||
+    includesPhrase(normalized, "overperforming") ||
+    includesPhrase(normalized, "over performing") ||
+    includesPhrase(normalized, "underperforming") ||
+    includesPhrase(normalized, "under performing") ||
     (includesPhrase(normalized, "percentile") &&
       (includesPhrase(normalized, "player") ||
         includesPhrase(normalized, "players") ||
@@ -3585,6 +3589,10 @@ function mentionsHighRankingIntent(normalized: string): boolean {
     includesPhrase(normalized, "deepest") ||
     includesPhrase(normalized, "longest") ||
     includesPhrase(normalized, "slowest") ||
+    includesPhrase(normalized, "overperforming") ||
+    includesPhrase(normalized, "over performing") ||
+    includesPhrase(normalized, "underperforming") ||
+    includesPhrase(normalized, "under performing") ||
     includesPhrase(normalized, "one trick") ||
     includesPhrase(normalized, "one-trick") ||
     includesPhrase(normalized, "forced off") ||
@@ -6035,6 +6043,8 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       filters.push(...pickDuelHeroFilters(heroMentions, question));
     } else if (dataset === "enemy_hero") {
       filters.push({ field: "enemy_hero", op: "in", value: heroes });
+    } else if (dataset === "player_outlier") {
+      filters.push({ field: "primary_hero", op: "in", value: heroes });
     } else {
       const exactUltCombo =
         dataset === "ult_combo" &&
@@ -7390,12 +7400,16 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     if (
       includesPhrase(normalized, "above baseline") ||
       includesPhrase(normalized, "far above") ||
+      includesPhrase(normalized, "overperforming") ||
+      includesPhrase(normalized, "over performing") ||
       includesPhrase(normalized, "high")
     ) {
       filters.push({ field: "direction", op: "in", value: ["high"] });
     } else if (
       includesPhrase(normalized, "below baseline") ||
       includesPhrase(normalized, "far below") ||
+      includesPhrase(normalized, "underperforming") ||
+      includesPhrase(normalized, "under performing") ||
       includesPhrase(normalized, "low")
     ) {
       filters.push({ field: "direction", op: "in", value: ["low"] });

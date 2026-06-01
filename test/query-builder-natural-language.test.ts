@@ -3688,6 +3688,55 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans overperforming hero-baseline questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Who is overperforming their hero baseline?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_outlier",
+      metrics: [{ metric: "abs_z_score", agg: "max" }],
+      dimensions: ["player"],
+      filters: [{ field: "direction", op: "in", value: ["high"] }],
+      sort: { key: "max__abs_z_score", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans underperforming hero-baseline questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Who is underperforming their hero baseline?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_outlier",
+      metrics: [{ metric: "abs_z_score", agg: "max" }],
+      dimensions: ["player"],
+      filters: [{ field: "direction", op: "in", value: ["low"] }],
+      sort: { key: "max__abs_z_score", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans hero-scoped baseline questions onto primary hero filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which players are above baseline on Tracer?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_outlier",
+      metrics: [{ metric: "z_score", agg: "avg" }],
+      dimensions: ["player"],
+      filters: [
+        { field: "primary_hero", op: "in", value: ["Tracer"] },
+        { field: "direction", op: "in", value: ["high"] },
+      ],
+    });
+  });
+
   it("plans percentile-threshold player outlier questions", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,
