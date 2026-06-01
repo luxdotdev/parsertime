@@ -213,8 +213,16 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "role trios",
     "lineup",
     "lineups",
+    "comp",
+    "comps",
+    "composition",
+    "compositions",
     "roster combo",
     "roster combos",
+    "team comp",
+    "team comps",
+    "team composition",
+    "team compositions",
     "player combination",
     "player combinations",
     "five stack",
@@ -231,10 +239,18 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "best rosters by map",
     "best lineup for each map",
     "best lineups by map",
+    "best comp for each map",
+    "best comps by map",
+    "best composition for each map",
+    "best compositions by map",
     "map roster",
     "map rosters",
     "lineup by map",
     "lineups by map",
+    "comp by map",
+    "comps by map",
+    "composition by map",
+    "compositions by map",
   ],
   map: ["maps played", "opponent", "map count"],
   trend: [
@@ -1231,11 +1247,18 @@ const DIMENSION_ALIASES: Record<string, string[]> = {
   attacker_side: ["attacker side", "killer side"],
   type: ["type"],
   combo: ["combo", "ult combo", "ultimate combo"],
-  roster: ["roster", "lineup"],
+  roster: ["roster", "lineup", "comp", "composition"],
   hero_a: ["first hero"],
   hero_b: ["second hero"],
   response_hero: ["response hero", "counter hero"],
-  trio: ["lineup", "role trio", "roster combo", "player combination"],
+  trio: [
+    "lineup",
+    "comp",
+    "composition",
+    "role trio",
+    "roster combo",
+    "player combination",
+  ],
   tank: ["tank"],
   dps1: ["damage 1", "dps 1"],
   dps2: ["damage 2", "dps 2"],
@@ -1938,7 +1961,13 @@ function asksBestRosterForEachMap(normalized: string): boolean {
       includesPhrase(normalized, "top roster") ||
       includesPhrase(normalized, "top rosters") ||
       includesPhrase(normalized, "best lineup") ||
-      includesPhrase(normalized, "best lineups")) &&
+      includesPhrase(normalized, "best lineups") ||
+      includesPhrase(normalized, "best comp") ||
+      includesPhrase(normalized, "best comps") ||
+      includesPhrase(normalized, "top comp") ||
+      includesPhrase(normalized, "top comps") ||
+      includesPhrase(normalized, "best composition") ||
+      includesPhrase(normalized, "best compositions")) &&
     (includesPhrase(normalized, "for each map") ||
       includesPhrase(normalized, "for every map") ||
       includesPhrase(normalized, "by map") ||
@@ -2324,6 +2353,14 @@ function mentionsRosterContext(normalized: string): boolean {
     includesPhrase(normalized, "rosters") ||
     includesPhrase(normalized, "lineup") ||
     includesPhrase(normalized, "lineups") ||
+    includesPhrase(normalized, "comp") ||
+    includesPhrase(normalized, "comps") ||
+    includesPhrase(normalized, "composition") ||
+    includesPhrase(normalized, "compositions") ||
+    includesPhrase(normalized, "team comp") ||
+    includesPhrase(normalized, "team comps") ||
+    includesPhrase(normalized, "team composition") ||
+    includesPhrase(normalized, "team compositions") ||
     includesPhrase(normalized, "five stack") ||
     includesPhrase(normalized, "starting five")
   );
@@ -2907,7 +2944,11 @@ function mentionsRolePerformanceContext(normalized: string): boolean {
     includesPhrase(normalized, "role trio") ||
     includesPhrase(normalized, "role trios") ||
     includesPhrase(normalized, "lineup") ||
-    includesPhrase(normalized, "lineups")
+    includesPhrase(normalized, "lineups") ||
+    includesPhrase(normalized, "comp") ||
+    includesPhrase(normalized, "comps") ||
+    includesPhrase(normalized, "composition") ||
+    includesPhrase(normalized, "compositions")
   ) {
     return false;
   }
@@ -3477,6 +3518,10 @@ function pickDataset(question: string): DatasetId {
       includesPhrase(normalized, "impact"))
   ) {
     return "ult_impact";
+  }
+
+  if (asksBestRosterForEachMap(normalized)) {
+    return "roster_variant";
   }
 
   let best: { dataset: DatasetId; score: number } = {
@@ -8461,6 +8506,8 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
             "winrate",
             "lineup win rate",
             "roster win rate",
+            "comp win rate",
+            "composition win rate",
           ],
         },
         {

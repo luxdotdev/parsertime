@@ -4361,6 +4361,41 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans composition questions onto role trios", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What are our best comps with PGE?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "role_trio",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["trio"],
+      filters: [{ field: "player", op: "eq", value: "PGE" }],
+      sort: { key: "ratio__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans multi-player composition filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What are our best compositions with PGE and Rupal?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "role_trio",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["trio"],
+      filters: [
+        { field: "player", op: "eq", value: "PGE" },
+        { field: "player", op: "eq", value: "Rupal" },
+      ],
+      sort: { key: "ratio__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans multi-player lineup membership filters", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,
@@ -4422,6 +4457,29 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans comp aggregate metric threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question:
+        "What are our best comps with win rate over 70% and at least 3 maps?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "role_trio",
+      metrics: [
+        { metric: "win_rate", agg: "ratio" },
+        { metric: "games", agg: "sum" },
+      ],
+      dimensions: ["trio"],
+      filters: [
+        { field: "win_rate", op: "gt", value: 70 },
+        { field: "games", op: "gte", value: 3 },
+      ],
+      sort: { key: "ratio__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans map-specific roster questions onto roster variants", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,
@@ -4438,10 +4496,42 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans map-specific comp questions onto roster variants", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What is our best comp on King's Row?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "roster_variant",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["roster"],
+      filters: [{ field: "map", op: "in", value: ["King's Row"] }],
+      sort: { key: "ratio__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans best-roster-for-each-map questions onto roster variants", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,
       question: "What are our best rosters for each map?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "roster_variant",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["map", "roster"],
+      filters: [{ field: "is_best_for_map", op: "eq", value: "yes" }],
+      sort: { key: "ratio__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans best-comps-for-each-map questions onto roster variants", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What are our best comps for each map?",
     });
 
     expect(planned?.spec).toMatchObject({
@@ -4512,6 +4602,27 @@ describe("query-builder natural-language planner", () => {
         { field: "map", op: "in", value: ["Circuit Royal"] },
         { field: "player", op: "eq", value: "PGE" },
         { field: "player", op: "eq", value: "Vega" },
+        { field: "player", op: "neq", value: "Rupal" },
+      ],
+      sort: { key: "ratio__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans map-specific comp questions with multiple player filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question:
+        "What are our best comps with PGE on Circuit Royal without Rupal?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "roster_variant",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["roster"],
+      filters: [
+        { field: "map", op: "in", value: ["Circuit Royal"] },
+        { field: "player", op: "eq", value: "PGE" },
         { field: "player", op: "neq", value: "Rupal" },
       ],
       sort: { key: "ratio__win_rate", dir: "desc" },
