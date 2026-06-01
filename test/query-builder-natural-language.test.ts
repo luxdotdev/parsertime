@@ -3606,6 +3606,36 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans enemy-role matchup filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What is our win rate against Damage heroes?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "enemy_hero",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: [],
+      filters: [{ field: "enemy_role", op: "in", value: ["Damage"] }],
+    });
+  });
+
+  it("plans multi-enemy-role matchup comparisons", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "Compare enemy Damage and Support win rates",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "enemy_hero",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["enemy_role"],
+      filters: [
+        { field: "enemy_role", op: "in", value: ["Damage", "Support"] },
+      ],
+    });
+  });
+
   it("plans specific duel matchup questions with both hero sides", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,

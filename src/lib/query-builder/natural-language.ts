@@ -1253,6 +1253,7 @@ const FILLER_WORDS = new Set([
   "data",
   "decrease",
   "each",
+  "enemy",
   "every",
   "find",
   "for",
@@ -2680,6 +2681,31 @@ function mentionsWithWithoutBanComparison(normalized: string): boolean {
   );
 }
 
+function mentionsEnemyRoleMatchupContext(normalized: string): boolean {
+  const mentionsEnemyRole = ["tank", "damage", "support"].some((role) => {
+    return (
+      includesPhrase(normalized, `${role} heroes`) ||
+      includesPhrase(normalized, `${role} hero`) ||
+      includesPhrase(normalized, `enemy ${role}`) ||
+      includesPhrase(normalized, `enemy ${role} heroes`) ||
+      includesPhrase(normalized, `enemy ${role} hero`) ||
+      includesPhrase(normalized, `against ${role}`) ||
+      includesPhrase(normalized, `versus ${role}`) ||
+      includesPhrase(normalized, `vs ${role}`)
+    );
+  });
+  if (!mentionsEnemyRole) return false;
+
+  return (
+    includesPhrase(normalized, "enemy") ||
+    includesPhrase(normalized, "against") ||
+    includesPhrase(normalized, "versus") ||
+    includesPhrase(normalized, "vs") ||
+    includesPhrase(normalized, "matchup") ||
+    includesPhrase(normalized, "matchups")
+  );
+}
+
 function mentionsRolePerformanceContext(normalized: string): boolean {
   if (
     includesPhrase(normalized, "role trio") ||
@@ -2856,6 +2882,9 @@ function pickDataset(question: string): DatasetId {
   }
   if (mentionsUlt && mentionsRawUltimateEventContext(normalized)) {
     return "ultimate";
+  }
+  if (mentionsEnemyRoleMatchupContext(normalized)) {
+    return "enemy_hero";
   }
   if (
     mentionsSwap &&
@@ -5930,6 +5959,31 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   }
 
   if (dataset === "enemy_hero") {
+    const wantsEnemyRoleComparison =
+      mentionsEnemyRoleMatchupContext(normalized) &&
+      (includesPhrase(normalized, "compare") ||
+        includesPhrase(normalized, "comparison") ||
+        includesPhrase(normalized, "versus") ||
+        includesPhrase(normalized, "vs"));
+
+    for (const role of ["Tank", "Damage", "Support"]) {
+      const roleWord = normalize(role);
+      if (
+        includesPhrase(normalized, `${roleWord} heroes`) ||
+        includesPhrase(normalized, `${roleWord} hero`) ||
+        includesPhrase(normalized, `enemy ${roleWord}`) ||
+        includesPhrase(normalized, `enemy ${roleWord} heroes`) ||
+        includesPhrase(normalized, `enemy ${roleWord} hero`) ||
+        includesPhrase(normalized, `against ${roleWord}`) ||
+        includesPhrase(normalized, `versus ${roleWord}`) ||
+        includesPhrase(normalized, `vs ${roleWord}`) ||
+        (wantsEnemyRoleComparison && includesPhrase(normalized, roleWord))
+      ) {
+        const filter = filterFor(dataset, "role", role);
+        if (filter) filters.push(filter);
+      }
+    }
+
     filters.push(
       ...extractNumericThresholdFilters(dataset, normalized, [
         {
@@ -8251,6 +8305,9 @@ function pickDimensions(
   if (hasMultiValueFilter("role")) {
     add("role");
   }
+  if (hasMultiValueFilter("enemy_role")) {
+    add("enemy_role");
+  }
   if (hasMultiValueFilter("map_type")) {
     add("map_type");
   }
@@ -8644,7 +8701,8 @@ function pickDimensions(
   if (
     dataset === "enemy_hero" &&
     dims.length === 0 &&
-    !hasFilter("enemy_hero")
+    !hasFilter("enemy_hero") &&
+    !hasFilter("enemy_role")
   ) {
     add("enemy_hero");
   }
