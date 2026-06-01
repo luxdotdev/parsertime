@@ -673,6 +673,32 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans alternate ult-economy advantage bucket phrasing", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "What is our fight win rate with an ult advantage?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_economy",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      filters: [{ field: "advantage_bucket", op: "in", value: ["1 ahead"] }],
+    });
+  });
+
+  it("plans negative ult-economy advantage bucket phrasing", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "What is our fight win rate when we are down by two ults?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_economy",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      filters: [{ field: "advantage_bucket", op: "in", value: ["2+ behind"] }],
+    });
+  });
+
   it("plans ult-economy aggregate metric thresholds", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

@@ -2140,10 +2140,10 @@ function mentionsUltEconomyContext(normalized: string): boolean {
     includesPhrase(normalized, "ultimate advantage") ||
     includesPhrase(normalized, "ult bank") ||
     includesPhrase(normalized, "ultimate bank") ||
-    /\b(?:ahead|behind|even)\b.*\b(?:ult|ults|ultimate|ultimates)\b/.test(
+    /\b(?:ahead|behind|even|up|down)\b.*\b(?:ult|ults|ultimate|ultimates)\b/.test(
       normalized
     ) ||
-    /\b(?:ult|ults|ultimate|ultimates)\b.*\b(?:ahead|behind|even)\b/.test(
+    /\b(?:ult|ults|ultimate|ultimates)\b.*\b(?:ahead|behind|even|up|down)\b/.test(
       normalized
     )
   );
@@ -4144,6 +4144,12 @@ function pickUltEconomyBucket(normalized: string): string | null {
     includesPhrase(normalized, "2 ults behind") ||
     includesPhrase(normalized, "two ults behind") ||
     includesPhrase(normalized, "2+ behind") ||
+    includesPhrase(normalized, "negative 2 ult advantage") ||
+    includesPhrase(normalized, "negative two ult advantage") ||
+    includesPhrase(normalized, "down by 2") ||
+    includesPhrase(normalized, "down by two") ||
+    includesPhrase(normalized, "down by 2 ults") ||
+    includesPhrase(normalized, "down by two ults") ||
     includesPhrase(normalized, "down 2") ||
     includesPhrase(normalized, "down two")
   ) {
@@ -4154,6 +4160,12 @@ function pickUltEconomyBucket(normalized: string): string | null {
     includesPhrase(normalized, "one behind") ||
     includesPhrase(normalized, "1 ult behind") ||
     includesPhrase(normalized, "one ult behind") ||
+    includesPhrase(normalized, "negative 1 ult advantage") ||
+    includesPhrase(normalized, "negative one ult advantage") ||
+    includesPhrase(normalized, "down by 1") ||
+    includesPhrase(normalized, "down by one") ||
+    includesPhrase(normalized, "down by 1 ult") ||
+    includesPhrase(normalized, "down by one ult") ||
     includesPhrase(normalized, "down 1") ||
     includesPhrase(normalized, "down one")
   ) {
@@ -4165,6 +4177,14 @@ function pickUltEconomyBucket(normalized: string): string | null {
     includesPhrase(normalized, "2 ults ahead") ||
     includesPhrase(normalized, "two ults ahead") ||
     includesPhrase(normalized, "2+ ahead") ||
+    includesPhrase(normalized, "plus 2 ult advantage") ||
+    includesPhrase(normalized, "plus two ult advantage") ||
+    includesPhrase(normalized, "two ult advantage") ||
+    includesPhrase(normalized, "2 ult advantage") ||
+    includesPhrase(normalized, "up by 2") ||
+    includesPhrase(normalized, "up by two") ||
+    includesPhrase(normalized, "up by 2 ults") ||
+    includesPhrase(normalized, "up by two ults") ||
     includesPhrase(normalized, "up 2") ||
     includesPhrase(normalized, "up two")
   ) {
@@ -4175,6 +4195,18 @@ function pickUltEconomyBucket(normalized: string): string | null {
     includesPhrase(normalized, "one ahead") ||
     includesPhrase(normalized, "1 ult ahead") ||
     includesPhrase(normalized, "one ult ahead") ||
+    includesPhrase(normalized, "an ult ahead") ||
+    includesPhrase(normalized, "a ult ahead") ||
+    includesPhrase(normalized, "plus 1 ult advantage") ||
+    includesPhrase(normalized, "plus one ult advantage") ||
+    includesPhrase(normalized, "one ult advantage") ||
+    includesPhrase(normalized, "1 ult advantage") ||
+    includesPhrase(normalized, "an ult advantage") ||
+    includesPhrase(normalized, "a one ult advantage") ||
+    includesPhrase(normalized, "up by 1") ||
+    includesPhrase(normalized, "up by one") ||
+    includesPhrase(normalized, "up by 1 ult") ||
+    includesPhrase(normalized, "up by one ult") ||
     includesPhrase(normalized, "up 1") ||
     includesPhrase(normalized, "up one")
   ) {
