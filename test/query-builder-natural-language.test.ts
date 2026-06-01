@@ -4454,6 +4454,38 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans player fight-opening ult questions with conjugated open wording", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "Who opens fights with ult the most?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_usage",
+      metrics: [{ metric: "fight_openings", agg: "sum" }],
+      dimensions: ["player"],
+      filters: [{ field: "row_type", op: "eq", value: "player" }],
+      sort: { key: "sum__fight_openings", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans fight-opening hero questions with start-fight wording", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "Which heroes start fights with ultimates the most?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_usage",
+      metrics: [{ metric: "fight_openings", agg: "sum" }],
+      dimensions: ["hero"],
+      filters: [{ field: "row_type", op: "eq", value: "fight opening hero" }],
+      sort: { key: "sum__fight_openings", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans fight-opening hero per-map questions onto ult usage summaries", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,

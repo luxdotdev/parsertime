@@ -199,6 +199,8 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "fight openers",
     "open fights with ult",
     "opens fights with ult",
+    "start fights with ult",
+    "starts fights with ult",
     "opening ult",
     "opening ultimate",
     "fight openings per map",
@@ -903,6 +905,13 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "fight opener",
     "fight openers",
     "open fights",
+    "opens fights",
+    "start fights",
+    "starts fights",
+    "open fights with ult",
+    "opens fights with ult",
+    "start fights with ult",
+    "starts fights with ult",
     "opening ult",
     "opening ultimate",
   ],
@@ -2070,6 +2079,20 @@ function mentionsStatVersusPlaytimeContext(normalized: string): boolean {
   );
 }
 
+function mentionsFightOpeningUltContext(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "fight openings") ||
+    includesPhrase(normalized, "fight opener") ||
+    includesPhrase(normalized, "fight openers") ||
+    includesPhrase(normalized, "open fights") ||
+    includesPhrase(normalized, "opens fights") ||
+    includesPhrase(normalized, "start fights") ||
+    includesPhrase(normalized, "starts fights") ||
+    includesPhrase(normalized, "opening ult") ||
+    includesPhrase(normalized, "opening ultimate")
+  );
+}
+
 function mentionsPlayerStatMetricContext(normalized: string): boolean {
   return (
     includesPhrase(normalized, "final blow") ||
@@ -3037,6 +3060,9 @@ function pickDataset(question: string): DatasetId {
   }
   if (mentionsTrendContext(normalized)) return "trend";
   if (mentionsRotationDeathContext(normalized)) return "rotation_death";
+  if (mentionsUlt && mentionsFightOpeningUltContext(normalized)) {
+    return "ult_usage";
+  }
   if (mentionsHeroSliceStatContext(normalized)) return "hero_pool";
   if (
     mentionsAbilityTimingContext(normalized) ||
@@ -3077,17 +3103,6 @@ function pickDataset(question: string): DatasetId {
   }
 
   if (mentionsUltEconomyContext(normalized)) return "ult_economy";
-
-  if (
-    mentionsUlt &&
-    (includesPhrase(normalized, "fight opener") ||
-      includesPhrase(normalized, "fight openers") ||
-      includesPhrase(normalized, "open fights") ||
-      includesPhrase(normalized, "opening ult") ||
-      includesPhrase(normalized, "opening ultimate"))
-  ) {
-    return "ult_usage";
-  }
 
   if (mentionsUlt && pickUltImpactScenario(normalized)) {
     return "ult_impact";
@@ -8268,14 +8283,7 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   }
 
   if (dataset === "ult_usage") {
-    if (
-      includesPhrase(normalized, "fight openings") ||
-      includesPhrase(normalized, "fight opener") ||
-      includesPhrase(normalized, "fight openers") ||
-      includesPhrase(normalized, "open fights") ||
-      includesPhrase(normalized, "opening ult") ||
-      includesPhrase(normalized, "opening ultimate")
-    ) {
+    if (mentionsFightOpeningUltContext(normalized)) {
       if (
         includesPhrase(normalized, "which hero") ||
         includesPhrase(normalized, "which heroes") ||
@@ -8327,6 +8335,10 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
             "opening ults",
             "opening ultimates",
             "fight-opening ults",
+            "open fights with ult",
+            "opens fights with ult",
+            "start fights with ult",
+            "starts fights with ult",
           ],
         },
         {
@@ -8350,6 +8362,15 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
             "open fights with ult per map",
             "open fights with ult per game",
             "open fights with ult per match",
+            "opens fights with ult per map",
+            "opens fights with ult per game",
+            "opens fights with ult per match",
+            "start fights with ult per map",
+            "start fights with ult per game",
+            "start fights with ult per match",
+            "starts fights with ult per map",
+            "starts fights with ult per game",
+            "starts fights with ult per match",
           ],
         },
       ])
