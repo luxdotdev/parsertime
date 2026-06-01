@@ -10,14 +10,15 @@ export function hasNegatedFightContext(
   normalized: string,
   phrases: string[]
 ): boolean {
-  return phrases.some(
-    (phrase) =>
-      includesPhrase(normalized, `no ${phrase}`) ||
-      includesPhrase(normalized, `without ${phrase}`) ||
-      includesPhrase(normalized, `don t ${phrase}`) ||
-      includesPhrase(normalized, `do not ${phrase}`) ||
-      includesPhrase(normalized, `didn t ${phrase}`) ||
-      includesPhrase(normalized, `did not ${phrase}`)
+  return phrases.some((phrase) =>
+    includesAnyPhrase(normalized, [
+      `no ${phrase}`,
+      `without ${phrase}`,
+      `don t ${phrase}`,
+      `do not ${phrase}`,
+      `didn t ${phrase}`,
+      `did not ${phrase}`,
+    ])
   );
 }
 
@@ -36,13 +37,14 @@ export function mentionsBooleanFightComparison(
   normalized: string,
   phrases: string[]
 ): boolean {
-  const mentionsPositive = phrases.some(
-    (phrase) =>
-      includesPhrase(normalized, phrase) ||
-      includesPhrase(normalized, `with ${phrase}`) ||
-      includesPhrase(normalized, `have ${phrase}`) ||
-      includesPhrase(normalized, `get ${phrase}`) ||
-      includesPhrase(normalized, `use ${phrase}`)
+  const mentionsPositive = phrases.some((phrase) =>
+    includesAnyPhrase(normalized, [
+      phrase,
+      `with ${phrase}`,
+      `have ${phrase}`,
+      `get ${phrase}`,
+      `use ${phrase}`,
+    ])
   );
   if (!mentionsPositive) return false;
 
@@ -269,94 +271,104 @@ export function pickUltEconomyBucket(normalized: string): string | null {
   if (friendlyHas(genericUltAdvantage)) return "1 ahead";
 
   if (
-    includesPhrase(normalized, "2 behind") ||
-    includesPhrase(normalized, "two behind") ||
-    includesPhrase(normalized, "2 ults behind") ||
-    includesPhrase(normalized, "two ults behind") ||
-    includesPhrase(normalized, "2+ behind") ||
-    includesPhrase(normalized, "negative 2 ult advantage") ||
-    includesPhrase(normalized, "negative two ult advantage") ||
-    includesPhrase(normalized, "down by 2") ||
-    includesPhrase(normalized, "down by two") ||
-    includesPhrase(normalized, "down by 2 ults") ||
-    includesPhrase(normalized, "down by two ults") ||
-    includesPhrase(normalized, "down 2") ||
-    includesPhrase(normalized, "down two")
+    includesAnyPhrase(normalized, [
+      "2 behind",
+      "two behind",
+      "2 ults behind",
+      "two ults behind",
+      "2+ behind",
+      "negative 2 ult advantage",
+      "negative two ult advantage",
+      "down by 2",
+      "down by two",
+      "down by 2 ults",
+      "down by two ults",
+      "down 2",
+      "down two",
+    ])
   ) {
     return "2+ behind";
   }
   if (
-    includesPhrase(normalized, "1 behind") ||
-    includesPhrase(normalized, "one behind") ||
-    includesPhrase(normalized, "1 ult behind") ||
-    includesPhrase(normalized, "one ult behind") ||
-    includesPhrase(normalized, "negative 1 ult advantage") ||
-    includesPhrase(normalized, "negative one ult advantage") ||
-    includesPhrase(normalized, "down by 1") ||
-    includesPhrase(normalized, "down by one") ||
-    includesPhrase(normalized, "down by 1 ult") ||
-    includesPhrase(normalized, "down by one ult") ||
-    includesPhrase(normalized, "down 1") ||
-    includesPhrase(normalized, "down one")
+    includesAnyPhrase(normalized, [
+      "1 behind",
+      "one behind",
+      "1 ult behind",
+      "one ult behind",
+      "negative 1 ult advantage",
+      "negative one ult advantage",
+      "down by 1",
+      "down by one",
+      "down by 1 ult",
+      "down by one ult",
+      "down 1",
+      "down one",
+    ])
   ) {
     return "1 behind";
   }
   if (
-    includesPhrase(normalized, "2 ahead") ||
-    includesPhrase(normalized, "two ahead") ||
-    includesPhrase(normalized, "2 ults ahead") ||
-    includesPhrase(normalized, "two ults ahead") ||
-    includesPhrase(normalized, "2+ ahead") ||
-    includesPhrase(normalized, "plus 2 ult advantage") ||
-    includesPhrase(normalized, "plus two ult advantage") ||
-    includesPhrase(normalized, "two ult advantage") ||
-    includesPhrase(normalized, "2 ult advantage") ||
-    includesPhrase(normalized, "up by 2") ||
-    includesPhrase(normalized, "up by two") ||
-    includesPhrase(normalized, "up by 2 ults") ||
-    includesPhrase(normalized, "up by two ults") ||
-    includesPhrase(normalized, "up 2") ||
-    includesPhrase(normalized, "up two")
+    includesAnyPhrase(normalized, [
+      "2 ahead",
+      "two ahead",
+      "2 ults ahead",
+      "two ults ahead",
+      "2+ ahead",
+      "plus 2 ult advantage",
+      "plus two ult advantage",
+      "two ult advantage",
+      "2 ult advantage",
+      "up by 2",
+      "up by two",
+      "up by 2 ults",
+      "up by two ults",
+      "up 2",
+      "up two",
+    ])
   ) {
     return "2+ ahead";
   }
   if (
-    includesPhrase(normalized, "1 ahead") ||
-    includesPhrase(normalized, "one ahead") ||
-    includesPhrase(normalized, "1 ult ahead") ||
-    includesPhrase(normalized, "one ult ahead") ||
-    includesPhrase(normalized, "an ult ahead") ||
-    includesPhrase(normalized, "a ult ahead") ||
-    includesPhrase(normalized, "plus 1 ult advantage") ||
-    includesPhrase(normalized, "plus one ult advantage") ||
-    includesPhrase(normalized, "one ult advantage") ||
-    includesPhrase(normalized, "1 ult advantage") ||
-    includesPhrase(normalized, "an ult advantage") ||
-    includesPhrase(normalized, "a one ult advantage") ||
-    includesPhrase(normalized, "up by 1") ||
-    includesPhrase(normalized, "up by one") ||
-    includesPhrase(normalized, "up by 1 ult") ||
-    includesPhrase(normalized, "up by one ult") ||
-    includesPhrase(normalized, "up 1") ||
-    includesPhrase(normalized, "up one")
+    includesAnyPhrase(normalized, [
+      "1 ahead",
+      "one ahead",
+      "1 ult ahead",
+      "one ult ahead",
+      "an ult ahead",
+      "a ult ahead",
+      "plus 1 ult advantage",
+      "plus one ult advantage",
+      "one ult advantage",
+      "1 ult advantage",
+      "an ult advantage",
+      "a one ult advantage",
+      "up by 1",
+      "up by one",
+      "up by 1 ult",
+      "up by one ult",
+      "up 1",
+      "up one",
+    ])
   ) {
     return "1 ahead";
   }
   if (
-    includesPhrase(normalized, "even ults") ||
-    includesPhrase(normalized, "even ultimates") ||
-    includesPhrase(normalized, "even ult economy") ||
-    includesPhrase(normalized, "even ultimate economy") ||
-    includesPhrase(normalized, "same ults") ||
-    includesPhrase(normalized, "same ultimates") ||
-    includesPhrase(normalized, "same number of ults") ||
-    includesPhrase(normalized, "same number of ultimates") ||
-    includesPhrase(normalized, "equal ults") ||
-    includesPhrase(normalized, "equal ultimates") ||
-    includesPhrase(normalized, "no ult advantage") ||
-    includesPhrase(normalized, "no ultimate advantage") ||
-    includesPhrase(normalized, "neither team has ult advantage") ||
-    includesPhrase(normalized, "neither team has ultimate advantage")
+    includesAnyPhrase(normalized, [
+      "even ults",
+      "even ultimates",
+      "even ult economy",
+      "even ultimate economy",
+      "same ults",
+      "same ultimates",
+      "same number of ults",
+      "same number of ultimates",
+      "equal ults",
+      "equal ultimates",
+      "no ult advantage",
+      "no ultimate advantage",
+      "neither team has ult advantage",
+      "neither team has ultimate advantage",
+    ])
   ) {
     return "even";
   }
@@ -364,60 +376,68 @@ export function pickUltEconomyBucket(normalized: string): string | null {
 }
 
 export function pickUltImpactScenario(normalized: string): string | null {
-  const uncontested =
-    includesPhrase(normalized, "uncontested ult") ||
-    includesPhrase(normalized, "uncontested ults") ||
-    includesPhrase(normalized, "uncontested ultimate") ||
-    includesPhrase(normalized, "uncontested ultimates") ||
-    includesPhrase(normalized, "not mirrored") ||
-    includesPhrase(normalized, "without mirror");
-  const mirror =
-    includesPhrase(normalized, "mirror ult") ||
-    includesPhrase(normalized, "mirror ults") ||
-    includesPhrase(normalized, "mirror ultimate") ||
-    includesPhrase(normalized, "mirror ultimates") ||
-    includesPhrase(normalized, "mirrored ult") ||
-    includesPhrase(normalized, "mirrored ults") ||
-    includesPhrase(normalized, "mirrored ultimate") ||
-    includesPhrase(normalized, "mirrored ultimates");
+  const uncontested = includesAnyPhrase(normalized, [
+    "uncontested ult",
+    "uncontested ults",
+    "uncontested ultimate",
+    "uncontested ultimates",
+    "not mirrored",
+    "without mirror",
+  ]);
+  const mirror = includesAnyPhrase(normalized, [
+    "mirror ult",
+    "mirror ults",
+    "mirror ultimate",
+    "mirror ultimates",
+    "mirrored ult",
+    "mirrored ults",
+    "mirrored ultimate",
+    "mirrored ultimates",
+  ]);
   const ourUlt =
-    includesPhrase(normalized, "we ult") ||
-    includesPhrase(normalized, "we ults") ||
-    includesPhrase(normalized, "we use ult") ||
-    includesPhrase(normalized, "we used ult") ||
-    includesPhrase(normalized, "our ult") ||
-    includesPhrase(normalized, "our ultimate") ||
+    includesAnyPhrase(normalized, [
+      "we ult",
+      "we ults",
+      "we use ult",
+      "we used ult",
+      "our ult",
+      "our ultimate",
+    ]) ||
     /\bwe\s+(?:use|uses|used)\b.*\b(?:ult|ults|ultimate|ultimates)\b/.test(
       normalized
     );
   const enemyUlt =
-    includesPhrase(normalized, "enemy ult") ||
-    includesPhrase(normalized, "enemy ults") ||
-    includesPhrase(normalized, "enemy ultimate") ||
-    includesPhrase(normalized, "enemy ultimates") ||
-    includesPhrase(normalized, "their ult") ||
-    includesPhrase(normalized, "their ults") ||
-    includesPhrase(normalized, "their ultimate") ||
-    includesPhrase(normalized, "their ultimates") ||
+    includesAnyPhrase(normalized, [
+      "enemy ult",
+      "enemy ults",
+      "enemy ultimate",
+      "enemy ultimates",
+      "their ult",
+      "their ults",
+      "their ultimate",
+      "their ultimates",
+    ]) ||
     /\b(?:enemy|they|their)\b.*\b(?:use|uses|used|ult|ults|ultimate|ultimates)\b/.test(
       normalized
     );
-  const weFirst =
-    includesPhrase(normalized, "we first") ||
-    includesPhrase(normalized, "ours first") ||
-    includesPhrase(normalized, "our ult first") ||
-    includesPhrase(normalized, "we ult first") ||
-    includesPhrase(normalized, "we use first") ||
-    includesPhrase(normalized, "we used first");
-  const enemyFirst =
-    includesPhrase(normalized, "enemy first") ||
-    includesPhrase(normalized, "they first") ||
-    includesPhrase(normalized, "theirs first") ||
-    includesPhrase(normalized, "enemy ult first") ||
-    includesPhrase(normalized, "enemy ults first") ||
-    includesPhrase(normalized, "they ult first") ||
-    includesPhrase(normalized, "they use first") ||
-    includesPhrase(normalized, "they used first");
+  const weFirst = includesAnyPhrase(normalized, [
+    "we first",
+    "ours first",
+    "our ult first",
+    "we ult first",
+    "we use first",
+    "we used first",
+  ]);
+  const enemyFirst = includesAnyPhrase(normalized, [
+    "enemy first",
+    "they first",
+    "theirs first",
+    "enemy ult first",
+    "enemy ults first",
+    "they ult first",
+    "they use first",
+    "they used first",
+  ]);
 
   if (uncontested && ourUlt) return "we used uncontested";
   if (uncontested && enemyUlt) return "enemy used uncontested";
@@ -661,91 +681,60 @@ export function pickPlayerTrendMetric(normalized: string): string | null {
 
 export function pickPlayerOutlierStat(normalized: string): string | null {
   if (
-    includesPhrase(normalized, "damage blocked") ||
-    includesPhrase(normalized, "mitigation") ||
-    includesPhrase(normalized, "mitigated")
+    includesAnyPhrase(normalized, ["damage blocked", "mitigation", "mitigated"])
   ) {
     return "damage_blocked";
   }
   if (
-    includesPhrase(normalized, "hero damage") ||
-    includesPhrase(normalized, "damage dealt") ||
-    includesPhrase(normalized, "damage")
+    includesAnyPhrase(normalized, ["hero damage", "damage dealt", "damage"])
   ) {
     return "hero_damage_dealt";
   }
-  if (
-    includesPhrase(normalized, "healing") ||
-    includesPhrase(normalized, "heals")
-  ) {
+  if (includesAnyPhrase(normalized, ["healing", "heals"])) {
     return "healing_dealt";
   }
-  if (
-    includesPhrase(normalized, "deaths") ||
-    includesPhrase(normalized, "death")
-  ) {
+  if (includesAnyPhrase(normalized, ["deaths", "death"])) {
     return "deaths";
   }
-  if (
-    includesPhrase(normalized, "eliminations") ||
-    includesPhrase(normalized, "elims")
-  ) {
+  if (includesAnyPhrase(normalized, ["eliminations", "elims"])) {
     return "eliminations";
   }
   return null;
 }
 
 export function pickPlayerTargetStat(normalized: string): string | null {
-  if (
-    includesPhrase(normalized, "damage taken") ||
-    includesPhrase(normalized, "taking damage")
-  ) {
+  if (includesAnyPhrase(normalized, ["damage taken", "taking damage"])) {
     return "damage_taken";
   }
   if (
-    includesPhrase(normalized, "damage blocked") ||
-    includesPhrase(normalized, "mitigation") ||
-    includesPhrase(normalized, "mitigated")
+    includesAnyPhrase(normalized, ["damage blocked", "mitigation", "mitigated"])
   ) {
     return "damage_blocked";
   }
   if (
-    includesPhrase(normalized, "hero damage") ||
-    includesPhrase(normalized, "damage dealt") ||
-    includesPhrase(normalized, "damage")
+    includesAnyPhrase(normalized, ["hero damage", "damage dealt", "damage"])
   ) {
     return "hero_damage_dealt";
   }
-  if (
-    includesPhrase(normalized, "healing") ||
-    includesPhrase(normalized, "heals")
-  ) {
+  if (includesAnyPhrase(normalized, ["healing", "heals"])) {
     return "healing_dealt";
   }
-  if (
-    includesPhrase(normalized, "final blows") ||
-    includesPhrase(normalized, "final blow") ||
-    includesPhrase(normalized, "finals")
-  ) {
+  if (includesAnyPhrase(normalized, ["final blows", "final blow", "finals"])) {
     return "final_blows";
   }
   if (
-    includesPhrase(normalized, "ultimates earned") ||
-    includesPhrase(normalized, "ults earned") ||
-    includesPhrase(normalized, "ult charge")
+    includesAnyPhrase(normalized, [
+      "ultimates earned",
+      "ults earned",
+      "ult charge",
+    ])
   ) {
     return "ultimates_earned";
   }
-  if (
-    includesPhrase(normalized, "deaths") ||
-    includesPhrase(normalized, "death")
-  ) {
+  if (includesAnyPhrase(normalized, ["deaths", "death"])) {
     return "deaths";
   }
-  if (
-    includesPhrase(normalized, "eliminations") ||
-    includesPhrase(normalized, "elims")
-  ) {
+  if (includesAnyPhrase(normalized, ["eliminations", "elims"])) {
     return "eliminations";
   }
   return null;
@@ -753,35 +742,39 @@ export function pickPlayerTargetStat(normalized: string): string | null {
 
 export function pickPlayerTargetDirection(normalized: string): string | null {
   if (
-    includesPhrase(normalized, "increase goal") ||
-    includesPhrase(normalized, "increase goals") ||
-    includesPhrase(normalized, "increase target") ||
-    includesPhrase(normalized, "increase targets") ||
-    includesPhrase(normalized, "improvement goal") ||
-    includesPhrase(normalized, "improvement goals") ||
-    includesPhrase(normalized, "raise target") ||
-    includesPhrase(normalized, "raise targets") ||
-    includesPhrase(normalized, "higher target") ||
-    includesPhrase(normalized, "higher goals")
+    includesAnyPhrase(normalized, [
+      "increase goal",
+      "increase goals",
+      "increase target",
+      "increase targets",
+      "improvement goal",
+      "improvement goals",
+      "raise target",
+      "raise targets",
+      "higher target",
+      "higher goals",
+    ])
   ) {
     return "increase";
   }
 
   if (
-    includesPhrase(normalized, "decrease goal") ||
-    includesPhrase(normalized, "decrease goals") ||
-    includesPhrase(normalized, "decrease target") ||
-    includesPhrase(normalized, "decrease targets") ||
-    includesPhrase(normalized, "reduction goal") ||
-    includesPhrase(normalized, "reduction goals") ||
-    includesPhrase(normalized, "reduce target") ||
-    includesPhrase(normalized, "reduce targets") ||
-    includesPhrase(normalized, "reduce goal") ||
-    includesPhrase(normalized, "reduce goals") ||
-    includesPhrase(normalized, "lower target") ||
-    includesPhrase(normalized, "lower targets") ||
-    includesPhrase(normalized, "lower goal") ||
-    includesPhrase(normalized, "lower goals")
+    includesAnyPhrase(normalized, [
+      "decrease goal",
+      "decrease goals",
+      "decrease target",
+      "decrease targets",
+      "reduction goal",
+      "reduction goals",
+      "reduce target",
+      "reduce targets",
+      "reduce goal",
+      "reduce goals",
+      "lower target",
+      "lower targets",
+      "lower goal",
+      "lower goals",
+    ])
   ) {
     return "decrease";
   }
@@ -815,58 +808,61 @@ export function mentionsStandaloneLeast(normalized: string): boolean {
 
 export function mentionsLowRankingIntent(normalized: string): boolean {
   return (
-    includesPhrase(normalized, "lowest") ||
-    mentionsStandaloneLeast(normalized) ||
-    includesPhrase(normalized, "fewest") ||
-    includesPhrase(normalized, "bottom") ||
-    includesPhrase(normalized, "thinnest") ||
-    includesPhrase(normalized, "fastest") ||
-    includesPhrase(normalized, "declining") ||
-    includesPhrase(normalized, "trending down")
+    includesAnyPhrase(normalized, [
+      "lowest",
+      "fewest",
+      "bottom",
+      "thinnest",
+      "fastest",
+      "declining",
+      "trending down",
+    ]) || mentionsStandaloneLeast(normalized)
   );
 }
 
 export function mentionsHighRankingIntent(normalized: string): boolean {
-  return (
-    includesPhrase(normalized, "top") ||
-    includesPhrase(normalized, "most") ||
-    includesPhrase(normalized, "highest") ||
-    includesPhrase(normalized, "leader") ||
-    includesPhrase(normalized, "leaders") ||
-    includesPhrase(normalized, "leaderboard") ||
-    includesPhrase(normalized, "leads") ||
-    includesPhrase(normalized, "lead in") ||
-    includesPhrase(normalized, "deepest") ||
-    includesPhrase(normalized, "longest") ||
-    includesPhrase(normalized, "slowest") ||
-    includesPhrase(normalized, "overperforming") ||
-    includesPhrase(normalized, "over performing") ||
-    includesPhrase(normalized, "underperforming") ||
-    includesPhrase(normalized, "under performing") ||
-    includesPhrase(normalized, "one trick") ||
-    includesPhrase(normalized, "one-trick") ||
-    includesPhrase(normalized, "forced off") ||
-    includesPhrase(normalized, "improving") ||
-    includesPhrase(normalized, "increasing") ||
-    includesPhrase(normalized, "trending up") ||
-    includesPhrase(normalized, "outlier") ||
-    includesPhrase(normalized, "outliers") ||
-    includesPhrase(normalized, "far above") ||
-    includesPhrase(normalized, "far below") ||
-    includesPhrase(normalized, "consistent") ||
-    includesPhrase(normalized, "volatile") ||
-    includesPhrase(normalized, "volatility")
-  );
+  return includesAnyPhrase(normalized, [
+    "top",
+    "most",
+    "highest",
+    "leader",
+    "leaders",
+    "leaderboard",
+    "leads",
+    "lead in",
+    "deepest",
+    "longest",
+    "slowest",
+    "overperforming",
+    "over performing",
+    "underperforming",
+    "under performing",
+    "one trick",
+    "one-trick",
+    "forced off",
+    "improving",
+    "increasing",
+    "trending up",
+    "outlier",
+    "outliers",
+    "far above",
+    "far below",
+    "consistent",
+    "volatile",
+    "volatility",
+  ]);
 }
 
 export function mentionsRankingIntent(normalized: string): boolean {
   return (
     mentionsHighRankingIntent(normalized) ||
     mentionsLowRankingIntent(normalized) ||
-    includesPhrase(normalized, "rank") ||
-    includesPhrase(normalized, "ranked") ||
-    includesPhrase(normalized, "ranking") ||
-    includesPhrase(normalized, "best") ||
-    includesPhrase(normalized, "worst")
+    includesAnyPhrase(normalized, [
+      "rank",
+      "ranked",
+      "ranking",
+      "best",
+      "worst",
+    ])
   );
 }

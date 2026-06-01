@@ -327,24 +327,28 @@ export function extractLineupPlayerFilters(question: string): QueryFilter[] {
 
 export function asksBestRosterForEachMap(normalized: string): boolean {
   return (
-    (includesPhrase(normalized, "best roster") ||
-      includesPhrase(normalized, "best rosters") ||
-      includesPhrase(normalized, "top roster") ||
-      includesPhrase(normalized, "top rosters") ||
-      includesPhrase(normalized, "best lineup") ||
-      includesPhrase(normalized, "best lineups") ||
-      includesPhrase(normalized, "best comp") ||
-      includesPhrase(normalized, "best comps") ||
-      includesPhrase(normalized, "top comp") ||
-      includesPhrase(normalized, "top comps") ||
-      includesPhrase(normalized, "best composition") ||
-      includesPhrase(normalized, "best compositions")) &&
-    (includesPhrase(normalized, "for each map") ||
-      includesPhrase(normalized, "for every map") ||
-      includesPhrase(normalized, "by map") ||
-      includesPhrase(normalized, "per map") ||
-      includesPhrase(normalized, "on each map") ||
-      includesPhrase(normalized, "on every map"))
+    includesAnyPhrase(normalized, [
+      "best roster",
+      "best rosters",
+      "top roster",
+      "top rosters",
+      "best lineup",
+      "best lineups",
+      "best comp",
+      "best comps",
+      "top comp",
+      "top comps",
+      "best composition",
+      "best compositions",
+    ]) &&
+    includesAnyPhrase(normalized, [
+      "for each map",
+      "for every map",
+      "by map",
+      "per map",
+      "on each map",
+      "on every map",
+    ])
   );
 }
 

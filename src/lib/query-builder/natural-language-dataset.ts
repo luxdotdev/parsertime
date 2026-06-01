@@ -282,9 +282,7 @@ export function pickDataset(question: string): DatasetId {
 
   if (
     mentionsHeroDiversityContext(normalized) &&
-    !includesPhrase(normalized, "who") &&
-    !includesPhrase(normalized, "which player") &&
-    !includesPhrase(normalized, "which players") &&
+    !includesAnyPhrase(normalized, ["who", "which player", "which players"]) &&
     !player
   ) {
     return "hero_diversity";
@@ -315,8 +313,7 @@ export function pickDataset(question: string): DatasetId {
 
   if (
     mentionsRolePerformanceContext(normalized) &&
-    !includesPhrase(normalized, "which hero") &&
-    !includesPhrase(normalized, "which heroes") &&
+    !includesAnyPhrase(normalized, ["which hero", "which heroes"]) &&
     !includesPhrase(normalized, "hero win")
   ) {
     return "role_performance";
@@ -331,34 +328,35 @@ export function pickDataset(question: string): DatasetId {
 
   if (
     mentionsFightContext(normalized) &&
-    (includesPhrase(normalized, "duration") ||
-      includesPhrase(normalized, "fight length") ||
-      includesPhrase(normalized, "fight duration") ||
-      includesPhrase(normalized, "teamfight duration") ||
-      includesPhrase(normalized, "team fight duration") ||
-      includesPhrase(normalized, "average fight length") ||
-      includesPhrase(normalized, "average fight duration"))
+    includesAnyPhrase(normalized, [
+      "duration",
+      "fight length",
+      "fight duration",
+      "teamfight duration",
+      "team fight duration",
+      "average fight length",
+      "average fight duration",
+    ])
   ) {
     return "teamfight";
   }
 
   if (
     mentionsFightContext(normalized) &&
-    (includesPhrase(normalized, "win rate") ||
-      includesPhrase(normalized, "winrate") ||
-      includesPhrase(normalized, "wins") ||
-      includesPhrase(normalized, "losses"))
+    includesAnyPhrase(normalized, ["win rate", "winrate", "wins", "losses"])
   ) {
     return "teamfight";
   }
 
   if (
-    includesPhrase(normalized, "map mode") ||
-    includesPhrase(normalized, "map modes") ||
-    includesPhrase(normalized, "map type") ||
-    includesPhrase(normalized, "map types") ||
-    includesPhrase(normalized, "mode win rate") ||
-    includesPhrase(normalized, "mode winrate")
+    includesAnyPhrase(normalized, [
+      "map mode",
+      "map modes",
+      "map type",
+      "map types",
+      "mode win rate",
+      "mode winrate",
+    ])
   ) {
     return "map_result";
   }
@@ -373,8 +371,7 @@ export function pickDataset(question: string): DatasetId {
 
   if (
     mentionsPlayerMapPerformanceContext(normalized) &&
-    !includesPhrase(normalized, "which hero") &&
-    !includesPhrase(normalized, "which heroes") &&
+    !includesAnyPhrase(normalized, ["which hero", "which heroes"]) &&
     heroMentions.length === 0
   ) {
     return "player_map_performance";
@@ -390,23 +387,21 @@ export function pickDataset(question: string): DatasetId {
     }
 
     if (
-      !includesPhrase(normalized, "which hero") &&
-      !includesPhrase(normalized, "which heroes") &&
-      (includesPhrase(normalized, "who") ||
-        includesPhrase(normalized, "which player") ||
-        includesPhrase(normalized, "which players") ||
-        includesPhrase(normalized, "player") ||
-        includesPhrase(normalized, "players") ||
-        includesPhrase(normalized, "perform") ||
-        includesPhrase(normalized, "performance"))
+      !includesAnyPhrase(normalized, ["which hero", "which heroes"]) &&
+      includesAnyPhrase(normalized, [
+        "who",
+        "which player",
+        "which players",
+        "player",
+        "players",
+        "perform",
+        "performance",
+      ])
     ) {
       return heroMentions.length > 0 ? "hero_pool" : "player_map_performance";
     }
 
-    if (
-      includesPhrase(normalized, "which hero") ||
-      includesPhrase(normalized, "which heroes")
-    ) {
+    if (includesAnyPhrase(normalized, ["which hero", "which heroes"])) {
       return "hero_pool";
     }
 
@@ -414,12 +409,7 @@ export function pickDataset(question: string): DatasetId {
       return "teamfight";
     }
 
-    if (
-      includesPhrase(normalized, "swap") ||
-      includesPhrase(normalized, "swaps") ||
-      includesPhrase(normalized, "swapped") ||
-      includesPhrase(normalized, "swapping")
-    ) {
+    if (mentionsSwap) {
       return "swap_impact";
     }
 
@@ -461,32 +451,37 @@ export function pickDataset(question: string): DatasetId {
 
   if (
     mentionsUlt &&
-    (includesPhrase(normalized, "counter ult") ||
-      includesPhrase(normalized, "counter ultimate") ||
-      includesPhrase(normalized, "response ult") ||
-      includesPhrase(normalized, "ult combo") ||
-      includesPhrase(normalized, "ultimate combo"))
+    includesAnyPhrase(normalized, [
+      "counter ult",
+      "counter ultimate",
+      "response ult",
+      "ult combo",
+      "ultimate combo",
+    ])
   ) {
     return "ult_combo";
   }
 
   if (
     mentionsUlt &&
-    (includesPhrase(normalized, "mirror") ||
-      includesPhrase(normalized, "mirrored") ||
-      includesPhrase(normalized, "uncontested") ||
-      includesPhrase(normalized, "when") ||
-      includesPhrase(normalized, "impact"))
+    includesAnyPhrase(normalized, [
+      "mirror",
+      "mirrored",
+      "uncontested",
+      "when",
+      "impact",
+    ])
   ) {
     return "ult_impact";
   }
 
-  const asksPlayerScopedComeback =
-    includesPhrase(normalized, "who") ||
-    includesPhrase(normalized, "which player") ||
-    includesPhrase(normalized, "which players") ||
-    includesPhrase(normalized, "by player") ||
-    includesPhrase(normalized, "per player");
+  const asksPlayerScopedComeback = includesAnyPhrase(normalized, [
+    "who",
+    "which player",
+    "which players",
+    "by player",
+    "per player",
+  ]);
   if (mentionsFightComebackContext(normalized) && asksPlayerScopedComeback) {
     return "calculated_stat";
   }

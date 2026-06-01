@@ -484,22 +484,26 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   }
 
   if (dataset === "teamfight") {
-    const asksFirstPickRate =
-      includesPhrase(normalized, "first pick rate") ||
-      includesPhrase(normalized, "opening pick rate");
-    const asksFirstDeathRate =
-      includesPhrase(normalized, "first death rate") ||
-      includesPhrase(normalized, "opening death rate");
-    const asksFirstUltRate =
-      includesPhrase(normalized, "first ult rate") ||
-      includesPhrase(normalized, "first ultimate rate");
-    const asksDryFightRate =
-      includesPhrase(normalized, "dry fight rate") ||
-      includesPhrase(normalized, "dry-fight rate") ||
-      includesPhrase(normalized, "dry fight reversal rate") ||
-      includesPhrase(normalized, "dry-fight reversal rate") ||
-      includesPhrase(normalized, "dry fight comeback rate") ||
-      includesPhrase(normalized, "dry comeback rate");
+    const asksFirstPickRate = includesAnyPhrase(normalized, [
+      "first pick rate",
+      "opening pick rate",
+    ]);
+    const asksFirstDeathRate = includesAnyPhrase(normalized, [
+      "first death rate",
+      "opening death rate",
+    ]);
+    const asksFirstUltRate = includesAnyPhrase(normalized, [
+      "first ult rate",
+      "first ultimate rate",
+    ]);
+    const asksDryFightRate = includesAnyPhrase(normalized, [
+      "dry fight rate",
+      "dry-fight rate",
+      "dry fight reversal rate",
+      "dry-fight reversal rate",
+      "dry fight comeback rate",
+      "dry comeback rate",
+    ]);
     const asksReversalRate = mentionsFightComebackRateContext(normalized);
 
     const noFirstDeath = hasNegatedFightContext(normalized, [
@@ -543,8 +547,7 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     ]);
     const noDryFight =
       hasNegatedFightContext(normalized, ["dry fight"]) ||
-      includesPhrase(normalized, "non dry") ||
-      includesPhrase(normalized, "non-dry");
+      includesAnyPhrase(normalized, ["non dry", "non-dry"]);
     const noReversal = hasNegatedFightContext(normalized, [
       "reversal",
       "reverse fight",
@@ -584,8 +587,7 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       });
     }
     if (
-      (includesPhrase(normalized, "dry fight") ||
-        includesPhrase(normalized, "dry fights")) &&
+      includesAnyPhrase(normalized, ["dry fight", "dry fights"]) &&
       !asksDryFightRate &&
       !mentionsNonDryFightAggregateMetric(normalized) &&
       comparisonDimension !== "dry_fight"
@@ -597,8 +599,7 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       });
     }
     if (
-      (includesPhrase(normalized, "first ult") ||
-        includesPhrase(normalized, "first ultimate")) &&
+      includesAnyPhrase(normalized, ["first ult", "first ultimate"]) &&
       !asksFirstUltRate &&
       comparisonDimension !== "first_ult"
     ) {
@@ -609,8 +610,7 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       });
     }
     if (
-      (includesPhrase(normalized, "reversal") ||
-        includesPhrase(normalized, "reverse fight") ||
+      (includesAnyPhrase(normalized, ["reversal", "reverse fight"]) ||
         mentionsFightComebackContext(normalized)) &&
       !asksReversalRate
     ) {
@@ -628,28 +628,31 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   }
 
   if (dataset === "rotation_death") {
-    const enemySide =
-      includesPhrase(normalized, "enemy rotation") ||
-      includesPhrase(normalized, "enemy deaths") ||
-      includesPhrase(normalized, "enemy caught") ||
-      includesPhrase(normalized, "enemy caught out") ||
-      includesPhrase(normalized, "enemy players") ||
-      includesPhrase(normalized, "enemy heroes") ||
-      includesPhrase(normalized, "their rotation") ||
-      includesPhrase(normalized, "their deaths") ||
-      includesPhrase(normalized, "their players") ||
-      includesPhrase(normalized, "their heroes") ||
-      includesPhrase(normalized, "opponent rotation") ||
-      includesPhrase(normalized, "opponent deaths") ||
-      includesPhrase(normalized, "opponent players") ||
-      includesPhrase(normalized, "opponent heroes");
+    const enemySide = includesAnyPhrase(normalized, [
+      "enemy rotation",
+      "enemy deaths",
+      "enemy caught",
+      "enemy caught out",
+      "enemy players",
+      "enemy heroes",
+      "their rotation",
+      "their deaths",
+      "their players",
+      "their heroes",
+      "opponent rotation",
+      "opponent deaths",
+      "opponent players",
+      "opponent heroes",
+    ]);
     const sideFilter = filterFor(dataset, "side", enemySide ? "enemy" : "us");
     if (sideFilter) filters.push(sideFilter);
 
     if (
-      includesPhrase(normalized, "normal deaths") ||
-      includesPhrase(normalized, "non rotation") ||
-      includesPhrase(normalized, "non-rotation")
+      includesAnyPhrase(normalized, [
+        "normal deaths",
+        "non rotation",
+        "non-rotation",
+      ])
     ) {
       const typeFilter = filterFor(dataset, "death_type", "normal");
       if (typeFilter) filters.push(typeFilter);
@@ -657,10 +660,12 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
 
     if (
       hero &&
-      (includesPhrase(normalized, "killed by") ||
-        includesPhrase(normalized, "dying to") ||
-        includesPhrase(normalized, "died to") ||
-        includesPhrase(normalized, "against"))
+      includesAnyPhrase(normalized, [
+        "killed by",
+        "dying to",
+        "died to",
+        "against",
+      ])
     ) {
       filters.push({ field: "attacker_hero", op: "in", value: [hero] });
       for (let i = filters.length - 1; i >= 0; i--) {
@@ -1644,17 +1649,21 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
 
   if (dataset === "player_trend") {
     if (
-      includesPhrase(normalized, "improving") ||
-      includesPhrase(normalized, "improve") ||
-      includesPhrase(normalized, "improved") ||
-      includesPhrase(normalized, "trending up")
+      includesAnyPhrase(normalized, [
+        "improving",
+        "improve",
+        "improved",
+        "trending up",
+      ])
     ) {
       filters.push({ field: "direction", op: "in", value: ["improving"] });
     } else if (
-      includesPhrase(normalized, "declining") ||
-      includesPhrase(normalized, "decline") ||
-      includesPhrase(normalized, "declined") ||
-      includesPhrase(normalized, "trending down")
+      includesAnyPhrase(normalized, [
+        "declining",
+        "decline",
+        "declined",
+        "trending down",
+      ])
     ) {
       filters.push({ field: "direction", op: "in", value: ["declining"] });
     } else if (includesPhrase(normalized, "stable")) {
@@ -1669,11 +1678,13 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     for (const role of ["Tank", "Damage", "Support"]) {
       const roleWord = normalize(role);
       if (
-        includesPhrase(normalized, `${roleWord} players`) ||
-        includesPhrase(normalized, `${roleWord}s`) ||
-        includesPhrase(normalized, `${roleWord} role`) ||
-        includesPhrase(normalized, `for ${roleWord}`) ||
-        includesPhrase(normalized, `as ${roleWord}`)
+        includesAnyPhrase(normalized, [
+          `${roleWord} players`,
+          `${roleWord}s`,
+          `${roleWord} role`,
+          `for ${roleWord}`,
+          `as ${roleWord}`,
+        ])
       ) {
         const filter = filterFor(dataset, "role", role);
         if (filter) filters.push(filter);
@@ -1723,26 +1734,27 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   }
 
   if (dataset === "player_outlier") {
-    if (
-      includesPhrase(normalized, "outlier") ||
-      includesPhrase(normalized, "outliers")
-    ) {
+    if (includesAnyPhrase(normalized, ["outlier", "outliers"])) {
       filters.push({ field: "outlier", op: "eq", value: "yes" });
     }
     if (
-      includesPhrase(normalized, "above baseline") ||
-      includesPhrase(normalized, "far above") ||
-      includesPhrase(normalized, "overperforming") ||
-      includesPhrase(normalized, "over performing") ||
-      includesPhrase(normalized, "high")
+      includesAnyPhrase(normalized, [
+        "above baseline",
+        "far above",
+        "overperforming",
+        "over performing",
+        "high",
+      ])
     ) {
       filters.push({ field: "direction", op: "in", value: ["high"] });
     } else if (
-      includesPhrase(normalized, "below baseline") ||
-      includesPhrase(normalized, "far below") ||
-      includesPhrase(normalized, "underperforming") ||
-      includesPhrase(normalized, "under performing") ||
-      includesPhrase(normalized, "low")
+      includesAnyPhrase(normalized, [
+        "below baseline",
+        "far below",
+        "underperforming",
+        "under performing",
+        "low",
+      ])
     ) {
       filters.push({ field: "direction", op: "in", value: ["low"] });
     }
@@ -1803,11 +1815,13 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     for (const role of ["Tank", "Damage", "Support"]) {
       const roleWord = normalize(role);
       if (
-        includesPhrase(normalized, `${roleWord} players`) ||
-        includesPhrase(normalized, `${roleWord}s`) ||
-        includesPhrase(normalized, `${roleWord} role`) ||
-        includesPhrase(normalized, `for ${roleWord}`) ||
-        includesPhrase(normalized, `as ${roleWord}`)
+        includesAnyPhrase(normalized, [
+          `${roleWord} players`,
+          `${roleWord}s`,
+          `${roleWord} role`,
+          `for ${roleWord}`,
+          `as ${roleWord}`,
+        ])
       ) {
         const filter = filterFor(dataset, "role", role);
         if (filter) filters.push(filter);
@@ -1816,25 +1830,20 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   }
 
   if (dataset === "player_target") {
-    const neutralTrendIntent =
-      includesPhrase(normalized, "neutral trend") ||
-      includesPhrase(normalized, "neutral trends") ||
-      includesPhrase(normalized, "neutral trending") ||
-      includesPhrase(normalized, "trending neutral");
+    const neutralTrendIntent = includesAnyPhrase(normalized, [
+      "neutral trend",
+      "neutral trends",
+      "neutral trending",
+      "trending neutral",
+    ]);
 
     if (includesPhrase(normalized, "on track")) {
       filters.push({ field: "status", op: "in", value: ["on track"] });
     } else if (includesPhrase(normalized, "off track")) {
       filters.push({ field: "status", op: "in", value: ["off track"] });
-    } else if (
-      includesPhrase(normalized, "no data") ||
-      includesPhrase(normalized, "missing data")
-    ) {
+    } else if (includesAnyPhrase(normalized, ["no data", "missing data"])) {
       filters.push({ field: "status", op: "in", value: ["no data"] });
-    } else if (
-      includesPhrase(normalized, "complete") ||
-      includesPhrase(normalized, "completed")
-    ) {
+    } else if (includesAnyPhrase(normalized, ["complete", "completed"])) {
       filters.push({ field: "status", op: "in", value: ["complete"] });
     } else if (
       includesPhrase(normalized, "stalled") ||
@@ -1843,15 +1852,9 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       filters.push({ field: "status", op: "in", value: ["stalled"] });
     }
 
-    if (
-      includesPhrase(normalized, "toward") ||
-      includesPhrase(normalized, "improving toward")
-    ) {
+    if (includesAnyPhrase(normalized, ["toward", "improving toward"])) {
       filters.push({ field: "trending", op: "in", value: ["toward"] });
-    } else if (
-      includesPhrase(normalized, "away") ||
-      includesPhrase(normalized, "moving away")
-    ) {
+    } else if (includesAnyPhrase(normalized, ["away", "moving away"])) {
       filters.push({ field: "trending", op: "in", value: ["away"] });
     } else if (neutralTrendIntent) {
       filters.push({ field: "trending", op: "in", value: ["neutral"] });
@@ -1926,27 +1929,31 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
 
   if (dataset === "hero_trend") {
     if (
-      includesPhrase(normalized, "trending up") ||
-      includesPhrase(normalized, "increasing") ||
-      includesPhrase(normalized, "rising") ||
-      includesPhrase(normalized, "more popular") ||
-      includesPhrase(normalized, "picked more") ||
-      includesPhrase(normalized, "played more") ||
-      includesPhrase(normalized, "getting picked more") ||
-      includesPhrase(normalized, "getting played more")
+      includesAnyPhrase(normalized, [
+        "trending up",
+        "increasing",
+        "rising",
+        "more popular",
+        "picked more",
+        "played more",
+        "getting picked more",
+        "getting played more",
+      ])
     ) {
       filters.push({ field: "trend", op: "in", value: ["increasing"] });
     } else if (
-      includesPhrase(normalized, "trending down") ||
-      includesPhrase(normalized, "declining") ||
-      includesPhrase(normalized, "falling") ||
-      includesPhrase(normalized, "falling out of the meta") ||
-      includesPhrase(normalized, "falling out of meta") ||
-      includesPhrase(normalized, "less popular") ||
-      includesPhrase(normalized, "picked less") ||
-      includesPhrase(normalized, "played less") ||
-      includesPhrase(normalized, "getting picked less") ||
-      includesPhrase(normalized, "getting played less")
+      includesAnyPhrase(normalized, [
+        "trending down",
+        "declining",
+        "falling",
+        "falling out of the meta",
+        "falling out of meta",
+        "less popular",
+        "picked less",
+        "played less",
+        "getting picked less",
+        "getting played less",
+      ])
     ) {
       filters.push({ field: "trend", op: "in", value: ["declining"] });
     } else if (includesPhrase(normalized, "stable")) {
@@ -2550,20 +2557,24 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       filters.push({ field: "is_primary", op: "eq", value: "no" });
     } else if (
       primaryHeroIntent &&
-      (includesPhrase(normalized, "which heroes") ||
-        includesPhrase(normalized, "what heroes") ||
-        includesPhrase(normalized, "show heroes") ||
-        includesPhrase(normalized, "by hero"))
+      includesAnyPhrase(normalized, [
+        "which heroes",
+        "what heroes",
+        "show heroes",
+        "by hero",
+      ])
     ) {
       filters.push({ field: "is_primary", op: "eq", value: "yes" });
     }
 
     if (
       mostPlayedHeroIntent &&
-      (includesPhrase(normalized, "which heroes") ||
-        includesPhrase(normalized, "what heroes") ||
-        includesPhrase(normalized, "show heroes") ||
-        includesPhrase(normalized, "by hero"))
+      includesAnyPhrase(normalized, [
+        "which heroes",
+        "what heroes",
+        "show heroes",
+        "by hero",
+      ])
     ) {
       filters.push({ field: "is_most_played", op: "eq", value: "yes" });
     }
@@ -2639,39 +2650,37 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
 
   if (dataset === "ban_impact") {
     if (
-      includesPhrase(normalized, "banned by us") ||
-      includesPhrase(normalized, "we ban") ||
-      includesPhrase(normalized, "we banned") ||
-      includesPhrase(normalized, "by us") ||
-      includesPhrase(normalized, "our bans") ||
-      includesPhrase(normalized, "strong ban") ||
-      includesPhrase(normalized, "strong bans")
+      includesAnyPhrase(normalized, [
+        "banned by us",
+        "we ban",
+        "we banned",
+        "by us",
+        "our bans",
+        "strong ban",
+        "strong bans",
+      ])
     ) {
       const sideFilter = filterFor(dataset, "side", "banned by us");
       if (sideFilter) filters.push(sideFilter);
     } else if (
-      includesPhrase(normalized, "banned by enemy") ||
-      includesPhrase(normalized, "enemy ban") ||
-      includesPhrase(normalized, "enemy bans") ||
-      includesPhrase(normalized, "opponent ban") ||
-      includesPhrase(normalized, "opponent bans") ||
-      includesPhrase(normalized, "banned from us") ||
-      includesPhrase(normalized, "weak point")
+      includesAnyPhrase(normalized, [
+        "banned by enemy",
+        "enemy ban",
+        "enemy bans",
+        "opponent ban",
+        "opponent bans",
+        "banned from us",
+        "weak point",
+      ])
     ) {
       const sideFilter = filterFor(dataset, "side", "banned by enemy");
       if (sideFilter) filters.push(sideFilter);
     }
 
-    if (
-      includesPhrase(normalized, "weak point") ||
-      includesPhrase(normalized, "weak points")
-    ) {
+    if (includesAnyPhrase(normalized, ["weak point", "weak points"])) {
       filters.push({ field: "tag", op: "eq", value: "weak point" });
     }
-    if (
-      includesPhrase(normalized, "strong ban") ||
-      includesPhrase(normalized, "strong bans")
-    ) {
+    if (includesAnyPhrase(normalized, ["strong ban", "strong bans"])) {
       filters.push({ field: "tag", op: "eq", value: "strong ban" });
     }
     filters.push(
@@ -2711,32 +2720,38 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
 
   if (dataset === "ult_combo") {
     if (
-      includesPhrase(normalized, "counter ult") ||
-      includesPhrase(normalized, "counter ultimate") ||
-      includesPhrase(normalized, "response ult") ||
-      includesPhrase(normalized, "respond to ult") ||
-      includesPhrase(normalized, "respond to ultimate") ||
-      includesPhrase(normalized, "answer ult") ||
-      includesPhrase(normalized, "answer ultimate")
+      includesAnyPhrase(normalized, [
+        "counter ult",
+        "counter ultimate",
+        "response ult",
+        "respond to ult",
+        "respond to ultimate",
+        "answer ult",
+        "answer ultimate",
+      ])
     ) {
       filters.push({ field: "type", op: "eq", value: "response" });
     } else if (
-      includesPhrase(normalized, "ult combo") ||
-      includesPhrase(normalized, "ult combos") ||
-      includesPhrase(normalized, "ultimate combo") ||
-      includesPhrase(normalized, "ultimate combos") ||
-      includesPhrase(normalized, "combo win rate") ||
-      includesPhrase(normalized, "combo winrate")
+      includesAnyPhrase(normalized, [
+        "ult combo",
+        "ult combos",
+        "ultimate combo",
+        "ultimate combos",
+        "combo win rate",
+        "combo winrate",
+      ])
     ) {
       filters.push({ field: "type", op: "eq", value: "combo" });
     }
 
     if (
       hero &&
-      (includesPhrase(normalized, "enemy ult") ||
-        includesPhrase(normalized, "enemy ultimate") ||
-        includesPhrase(normalized, "against") ||
-        includesPhrase(normalized, "respond to"))
+      includesAnyPhrase(normalized, [
+        "enemy ult",
+        "enemy ultimate",
+        "against",
+        "respond to",
+      ])
     ) {
       filters.push({ field: "enemy_hero", op: "in", value: [hero] });
     }
@@ -2840,8 +2855,7 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         filters.push({ field: "side", op: "in", value: ["enemy", "both"] });
       } else if (
         player ||
-        includesPhrase(normalized, "our win rate") ||
-        includesPhrase(normalized, "we win") ||
+        includesAnyPhrase(normalized, ["our win rate", "we win"]) ||
         /\b(?:we|our|us)\b/.test(normalized)
       ) {
         filters.push({ field: "side", op: "in", value: ["us", "both"] });
@@ -2850,37 +2864,45 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
 
     if (
       !scenario &&
-      (includesPhrase(normalized, "uncontested ult") ||
-        includesPhrase(normalized, "uncontested ultimate") ||
-        includesPhrase(normalized, "not mirrored") ||
-        includesPhrase(normalized, "without mirror"))
+      includesAnyPhrase(normalized, [
+        "uncontested ult",
+        "uncontested ultimate",
+        "not mirrored",
+        "without mirror",
+      ])
     ) {
       filters.push({ field: "mirrored", op: "eq", value: "no" });
     } else if (
       !scenario &&
-      (includesPhrase(normalized, "mirror ult") ||
-        includesPhrase(normalized, "mirror ultimate") ||
-        includesPhrase(normalized, "mirrored ult") ||
-        includesPhrase(normalized, "mirrored ultimate"))
+      includesAnyPhrase(normalized, [
+        "mirror ult",
+        "mirror ultimate",
+        "mirrored ult",
+        "mirrored ultimate",
+      ])
     ) {
       filters.push({ field: "mirrored", op: "eq", value: "yes" });
     }
 
     if (
       !scenario &&
-      (includesPhrase(normalized, "we first") ||
-        includesPhrase(normalized, "ours first") ||
-        includesPhrase(normalized, "our ult first") ||
-        includesPhrase(normalized, "we ult first"))
+      includesAnyPhrase(normalized, [
+        "we first",
+        "ours first",
+        "our ult first",
+        "we ult first",
+      ])
     ) {
       filters.push({ field: "first_side", op: "eq", value: "us" });
     } else if (
       !scenario &&
-      (includesPhrase(normalized, "enemy first") ||
-        includesPhrase(normalized, "they first") ||
-        includesPhrase(normalized, "enemy ult first") ||
-        includesPhrase(normalized, "enemy ults first") ||
-        includesPhrase(normalized, "they ult first"))
+      includesAnyPhrase(normalized, [
+        "enemy first",
+        "they first",
+        "enemy ult first",
+        "enemy ults first",
+        "they ult first",
+      ])
     ) {
       filters.push({ field: "first_side", op: "eq", value: "enemy" });
     }
@@ -3057,32 +3079,33 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   }
 
   if (dataset === "streak") {
-    const wantsCurrentStreak =
-      includesPhrase(normalized, "current") ||
-      includesPhrase(normalized, "currently winning") ||
-      includesPhrase(normalized, "currently losing") ||
-      includesPhrase(normalized, "on a win streak") ||
-      includesPhrase(normalized, "on a loss streak") ||
-      includesPhrase(normalized, "on a losing streak");
-    const wantsLossStreak =
-      includesPhrase(normalized, "loss streak") ||
-      includesPhrase(normalized, "losing streak") ||
-      includesPhrase(normalized, "currently losing") ||
-      includesPhrase(normalized, "on a loss streak") ||
-      includesPhrase(normalized, "on a losing streak");
-    const wantsWinStreak =
-      includesPhrase(normalized, "win streak") ||
-      includesPhrase(normalized, "winning streak") ||
-      includesPhrase(normalized, "currently winning") ||
-      includesPhrase(normalized, "on a win streak");
+    const wantsCurrentStreak = includesAnyPhrase(normalized, [
+      "current",
+      "currently winning",
+      "currently losing",
+      "on a win streak",
+      "on a loss streak",
+      "on a losing streak",
+    ]);
+    const wantsLossStreak = includesAnyPhrase(normalized, [
+      "loss streak",
+      "losing streak",
+      "currently losing",
+      "on a loss streak",
+      "on a losing streak",
+    ]);
+    const wantsWinStreak = includesAnyPhrase(normalized, [
+      "win streak",
+      "winning streak",
+      "currently winning",
+      "on a win streak",
+    ]);
 
     if (wantsCurrentStreak) {
       filters.push({ field: "streak", op: "eq", value: "current streak" });
     } else if (
       includesPhrase(normalized, "longest") &&
-      (includesPhrase(normalized, "loss") ||
-        includesPhrase(normalized, "losses") ||
-        includesPhrase(normalized, "losing"))
+      includesAnyPhrase(normalized, ["loss", "losses", "losing"])
     ) {
       filters.push({
         field: "streak",
@@ -3184,10 +3207,12 @@ function pickDimensions(
   for (const dim of ds.dimensions) {
     if (
       dim.id === "map" &&
-      (includesPhrase(normalized, "map type") ||
-        includesPhrase(normalized, "map types") ||
-        includesPhrase(normalized, "map mode") ||
-        includesPhrase(normalized, "map modes"))
+      includesAnyPhrase(normalized, [
+        "map type",
+        "map types",
+        "map mode",
+        "map modes",
+      ])
     ) {
       continue;
     }
@@ -3243,14 +3268,16 @@ function pickDimensions(
   }
 
   if (
-    (includesPhrase(normalized, "who") ||
-      includesPhrase(normalized, "whose") ||
-      includesPhrase(normalized, "which player") ||
-      includesPhrase(normalized, "which players") ||
-      includesPhrase(normalized, "rank player") ||
-      includesPhrase(normalized, "rank players") ||
-      includesPhrase(normalized, "player leaderboard") ||
-      includesPhrase(normalized, "players leaderboard")) &&
+    includesAnyPhrase(normalized, [
+      "who",
+      "whose",
+      "which player",
+      "which players",
+      "rank player",
+      "rank players",
+      "player leaderboard",
+      "players leaderboard",
+    ]) &&
     !hasFilter("player")
   ) {
     add(
@@ -3260,13 +3287,15 @@ function pickDimensions(
     );
   }
   if (
-    (includesPhrase(normalized, "which hero") ||
-      includesPhrase(normalized, "which heroes") ||
-      includesPhrase(normalized, "by hero") ||
-      includesPhrase(normalized, "rank hero") ||
-      includesPhrase(normalized, "rank heroes") ||
-      includesPhrase(normalized, "hero leaderboard") ||
-      includesPhrase(normalized, "heroes leaderboard")) &&
+    includesAnyPhrase(normalized, [
+      "which hero",
+      "which heroes",
+      "by hero",
+      "rank hero",
+      "rank heroes",
+      "hero leaderboard",
+      "heroes leaderboard",
+    ]) &&
     !hasFilter("hero") &&
     !hasFilter("our_hero")
   ) {
@@ -3276,40 +3305,47 @@ function pickDimensions(
       add(ds.dimensions.some((d) => d.id === "our_hero") ? "our_hero" : "hero");
   }
   if (
-    (includesPhrase(normalized, "which role") ||
-      includesPhrase(normalized, "which roles")) &&
+    includesAnyPhrase(normalized, ["which role", "which roles"]) &&
     !hasFilter("role")
   ) {
     add("role");
   }
   if (
-    (includesPhrase(normalized, "which map") ||
-      includesPhrase(normalized, "which maps") ||
-      includesPhrase(normalized, "what map") ||
-      includesPhrase(normalized, "what maps") ||
-      includesPhrase(normalized, "by map") ||
-      includesPhrase(normalized, "by maps")) &&
-    !includesPhrase(normalized, "map type") &&
-    !includesPhrase(normalized, "map types") &&
-    !includesPhrase(normalized, "map mode") &&
-    !includesPhrase(normalized, "map modes")
+    includesAnyPhrase(normalized, [
+      "which map",
+      "which maps",
+      "what map",
+      "what maps",
+      "by map",
+      "by maps",
+    ]) &&
+    !includesAnyPhrase(normalized, [
+      "map type",
+      "map types",
+      "map mode",
+      "map modes",
+    ])
   ) {
     add("map");
   }
   if (
-    (includesPhrase(normalized, "which map type") ||
-      includesPhrase(normalized, "which map types") ||
-      includesPhrase(normalized, "what map type") ||
-      includesPhrase(normalized, "what map types")) &&
+    includesAnyPhrase(normalized, [
+      "which map type",
+      "which map types",
+      "what map type",
+      "what map types",
+    ]) &&
     !hasFilter("map_type")
   ) {
     add("map_type");
   }
   if (
-    (includesPhrase(normalized, "which opponent") ||
-      includesPhrase(normalized, "which opponents") ||
-      includesPhrase(normalized, "what opponent") ||
-      includesPhrase(normalized, "what opponents")) &&
+    includesAnyPhrase(normalized, [
+      "which opponent",
+      "which opponents",
+      "what opponent",
+      "what opponents",
+    ]) &&
     !hasFilter("opponent")
   ) {
     add("opponent");
@@ -3317,10 +3353,12 @@ function pickDimensions(
   if (dataset === "kill" && dims.length === 0) {
     if (
       asksKillVictim(normalized) &&
-      (includesPhrase(normalized, "which hero") ||
-        includesPhrase(normalized, "which heroes") ||
-        includesPhrase(normalized, "what hero") ||
-        includesPhrase(normalized, "what heroes"))
+      includesAnyPhrase(normalized, [
+        "which hero",
+        "which heroes",
+        "what hero",
+        "what heroes",
+      ])
     ) {
       add("victim_hero");
     } else if (
@@ -3344,9 +3382,7 @@ function pickDimensions(
   }
   if (dataset === "hero_swap" && dims.length === 0) {
     if (
-      includesPhrase(normalized, "who") ||
-      includesPhrase(normalized, "which player") ||
-      includesPhrase(normalized, "which players")
+      includesAnyPhrase(normalized, ["who", "which player", "which players"])
     ) {
       if (!hasFilter("player")) add("player");
     } else if (hasFilter("to_hero") && !hasFilter("from_hero")) {
@@ -3359,16 +3395,16 @@ function pickDimensions(
   }
   if (dataset === "ultimate" && dims.length === 0) {
     if (
-      includesPhrase(normalized, "which player") ||
-      includesPhrase(normalized, "which players") ||
-      includesPhrase(normalized, "who") ||
-      includesPhrase(normalized, "by player")
+      includesAnyPhrase(normalized, [
+        "which player",
+        "which players",
+        "who",
+        "by player",
+      ])
     ) {
       if (!hasFilter("player")) add("player");
     } else if (
-      includesPhrase(normalized, "which hero") ||
-      includesPhrase(normalized, "which heroes") ||
-      includesPhrase(normalized, "by hero")
+      includesAnyPhrase(normalized, ["which hero", "which heroes", "by hero"])
     ) {
       if (!hasFilter("hero")) add("hero");
     } else if (!hasFilter("player")) {
@@ -3379,26 +3415,30 @@ function pickDimensions(
   }
   if (
     dataset === "map_result" &&
-    (includesPhrase(normalized, "map mode") ||
-      includesPhrase(normalized, "map modes") ||
-      includesPhrase(normalized, "map type") ||
-      includesPhrase(normalized, "map types") ||
-      includesPhrase(normalized, "by mode") ||
-      includesPhrase(normalized, "by map mode") ||
-      includesPhrase(normalized, "by map type") ||
-      includesPhrase(normalized, "per mode") ||
-      includesPhrase(normalized, "per map mode") ||
-      includesPhrase(normalized, "per map type"))
+    includesAnyPhrase(normalized, [
+      "map mode",
+      "map modes",
+      "map type",
+      "map types",
+      "by mode",
+      "by map mode",
+      "by map type",
+      "per mode",
+      "per map mode",
+      "per map type",
+    ])
   ) {
     add("map_type");
   }
   if (
     dataset === "map_result" &&
     dims.length === 0 &&
-    (includesPhrase(normalized, "best map mode") ||
-      includesPhrase(normalized, "best map type") ||
-      includesPhrase(normalized, "worst map mode") ||
-      includesPhrase(normalized, "worst map type"))
+    includesAnyPhrase(normalized, [
+      "best map mode",
+      "best map type",
+      "worst map mode",
+      "worst map type",
+    ])
   ) {
     add("map_type");
   }
@@ -3411,10 +3451,12 @@ function pickDimensions(
   }
   if (dataset === "map_intelligence" && dims.length === 0) {
     if (
-      includesPhrase(normalized, "map type") ||
-      includesPhrase(normalized, "map types") ||
-      includesPhrase(normalized, "map type dependency") ||
-      includesPhrase(normalized, "map type dependencies")
+      includesAnyPhrase(normalized, [
+        "map type",
+        "map types",
+        "map type dependency",
+        "map type dependencies",
+      ])
     ) {
       add("map_type");
     } else {
@@ -3431,19 +3473,21 @@ function pickDimensions(
   if (dataset === "duel" && dims.length === 0) {
     const hasOurHeroFilter = hasFilter("our_hero");
     const hasEnemyHeroFilter = hasFilter("enemy_hero");
-    const wantsOurHeroes =
-      includesPhrase(normalized, "our heroes") ||
-      includesPhrase(normalized, "our hero") ||
-      includesPhrase(normalized, "which heroes") ||
-      includesPhrase(normalized, "which of our heroes") ||
-      includesPhrase(normalized, "who on");
-    const wantsEnemyHeroes =
-      includesPhrase(normalized, "enemy heroes") ||
-      includesPhrase(normalized, "enemy hero") ||
-      includesPhrase(normalized, "opponent heroes") ||
-      includesPhrase(normalized, "opponent hero") ||
-      includesPhrase(normalized, "against who") ||
-      includesPhrase(normalized, "against which");
+    const wantsOurHeroes = includesAnyPhrase(normalized, [
+      "our heroes",
+      "our hero",
+      "which heroes",
+      "which of our heroes",
+      "who on",
+    ]);
+    const wantsEnemyHeroes = includesAnyPhrase(normalized, [
+      "enemy heroes",
+      "enemy hero",
+      "opponent heroes",
+      "opponent hero",
+      "against who",
+      "against which",
+    ]);
     if (!hasOurHeroFilter && (!wantsEnemyHeroes || wantsOurHeroes)) {
       add("our_hero");
     }
@@ -3492,11 +3536,13 @@ function pickDimensions(
       // The count is already scoped exactly/thresholded; don't re-split it.
     } else if (
       hasFilter("had_swap") ||
-      includesPhrase(normalized, "swap count") ||
-      includesPhrase(normalized, "swap counts") ||
-      includesPhrase(normalized, "swap bucket") ||
-      includesPhrase(normalized, "swap buckets") ||
-      includesPhrase(normalized, "how many swaps")
+      includesAnyPhrase(normalized, [
+        "swap count",
+        "swap counts",
+        "swap bucket",
+        "swap buckets",
+        "how many swaps",
+      ])
     ) {
       add("swap_count_bucket");
     } else {
@@ -3514,11 +3560,7 @@ function pickDimensions(
     if (!hasFilter("hero")) add("hero");
   }
   if (dataset === "hero_trend" && dims.length === 0) {
-    if (
-      includesPhrase(normalized, "which map") ||
-      includesPhrase(normalized, "which maps") ||
-      includesPhrase(normalized, "by map")
-    ) {
+    if (includesAnyPhrase(normalized, ["which map", "which maps", "by map"])) {
       if (!hasFilter("map")) add("map");
     } else {
       if (!hasFilter("hero")) add("hero");
@@ -3530,11 +3572,13 @@ function pickDimensions(
   if (dataset === "player_intelligence" && dims.length === 0) {
     if (
       hasFilter("player") ||
-      includesPhrase(normalized, "which hero") ||
-      includesPhrase(normalized, "which heroes") ||
-      includesPhrase(normalized, "best hero") ||
-      includesPhrase(normalized, "best heroes") ||
-      includesPhrase(normalized, "by hero")
+      includesAnyPhrase(normalized, [
+        "which hero",
+        "which heroes",
+        "best hero",
+        "best heroes",
+        "by hero",
+      ])
     ) {
       if (!hasFilter("hero")) add("hero");
     } else {
@@ -3549,19 +3593,19 @@ function pickDimensions(
     dataset === "player_impact" &&
     dims.length === 0 &&
     (!hasFilter("player") ||
-      includesPhrase(normalized, "which players") ||
-      includesPhrase(normalized, "which player") ||
-      includesPhrase(normalized, "who"))
+      includesAnyPhrase(normalized, ["which players", "which player", "who"]))
   ) {
     add("player");
   }
   if (dataset === "player_trend" && dims.length === 0) {
     if (
       hasFilter("player") ||
-      includesPhrase(normalized, "what") ||
-      includesPhrase(normalized, "which metric") ||
-      includesPhrase(normalized, "which metrics") ||
-      includesPhrase(normalized, "at")
+      includesAnyPhrase(normalized, [
+        "what",
+        "which metric",
+        "which metrics",
+        "at",
+      ])
     ) {
       add("metric");
     } else if (!hasFilter("player")) {
@@ -3571,10 +3615,12 @@ function pickDimensions(
   if (dataset === "player_outlier" && dims.length === 0) {
     if (
       hasFilter("player") ||
-      includesPhrase(normalized, "which stat") ||
-      includesPhrase(normalized, "which stats") ||
-      includesPhrase(normalized, "what stat") ||
-      includesPhrase(normalized, "what stats")
+      includesAnyPhrase(normalized, [
+        "which stat",
+        "which stats",
+        "what stat",
+        "what stats",
+      ])
     ) {
       add("stat");
     } else if (!hasFilter("player")) {
@@ -3584,26 +3630,23 @@ function pickDimensions(
   if (dataset === "player_target" && dims.length === 0) {
     if (
       hasFilter("player") ||
-      includesPhrase(normalized, "which stat") ||
-      includesPhrase(normalized, "which stats") ||
-      includesPhrase(normalized, "what stat") ||
-      includesPhrase(normalized, "what stats")
+      includesAnyPhrase(normalized, [
+        "which stat",
+        "which stats",
+        "what stat",
+        "what stats",
+      ])
     ) {
       add("stat");
     } else {
       if (!hasFilter("player")) add("player");
       if (
-        includesPhrase(normalized, "target") ||
-        includesPhrase(normalized, "targets") ||
-        includesPhrase(normalized, "goal") ||
-        includesPhrase(normalized, "goals") ||
+        includesAnyPhrase(normalized, ["target", "targets", "goal", "goals"]) ||
         hasFilter("stat")
       ) {
         add("stat");
       } else if (
-        includesPhrase(normalized, "status") ||
-        includesPhrase(normalized, "on track") ||
-        includesPhrase(normalized, "off track")
+        includesAnyPhrase(normalized, ["status", "on track", "off track"])
       ) {
         add("status");
       }
@@ -3614,10 +3657,7 @@ function pickDimensions(
     dims.length > 0 &&
     !dims.includes("stat") &&
     !hasFilter("player") &&
-    (includesPhrase(normalized, "target") ||
-      includesPhrase(normalized, "targets") ||
-      includesPhrase(normalized, "goal") ||
-      includesPhrase(normalized, "goals") ||
+    (includesAnyPhrase(normalized, ["target", "targets", "goal", "goals"]) ||
       hasFilter("stat"))
   ) {
     add("stat");
@@ -3668,21 +3708,11 @@ function pickDimensions(
     }
   }
   if (dataset === "trend" && dims.length === 0) {
-    if (
-      includesPhrase(normalized, "weekly") ||
-      includesPhrase(normalized, "by week") ||
-      includesPhrase(normalized, "over time")
-    ) {
+    if (includesAnyPhrase(normalized, ["weekly", "by week", "over time"])) {
       add("week");
-    } else if (
-      includesPhrase(normalized, "monthly") ||
-      includesPhrase(normalized, "by month")
-    ) {
+    } else if (includesAnyPhrase(normalized, ["monthly", "by month"])) {
       add("month");
-    } else if (
-      includesPhrase(normalized, "day of week") ||
-      includesPhrase(normalized, "by day")
-    ) {
+    } else if (includesAnyPhrase(normalized, ["day of week", "by day"])) {
       add("day_of_week");
     } else if (!hasFilter("recent_bucket")) {
       add("date");
@@ -3721,21 +3751,19 @@ function pickSort(
     !mentionsRankingIntent(normalized) &&
     !(
       dataset === "hero_pickrate" &&
-      (includesPhrase(normalized, "owns") ||
-        includesPhrase(normalized, "ownership") ||
-        includesPhrase(normalized, "owned by"))
+      includesAnyPhrase(normalized, ["owns", "ownership", "owned by"])
     ) &&
     !(
       dataset === "player_intelligence" &&
-      (includesPhrase(normalized, "z score") ||
-        includesPhrase(normalized, "z-score") ||
-        includesPhrase(normalized, "composite z score"))
+      includesAnyPhrase(normalized, ["z score", "z-score", "composite z score"])
     ) &&
     !(
       dataset === "ability_timing" &&
-      (includesPhrase(normalized, "when should") ||
-        includesPhrase(normalized, "when to use") ||
-        includesPhrase(normalized, "best phase"))
+      includesAnyPhrase(normalized, [
+        "when should",
+        "when to use",
+        "best phase",
+      ])
     ) &&
     !(
       dataset === "opening_kill" &&
@@ -3744,18 +3772,20 @@ function pickSort(
     ) &&
     !(
       dataset === "hero_trend" &&
-      (includesPhrase(normalized, "trending up") ||
-        includesPhrase(normalized, "trending down") ||
-        includesPhrase(normalized, "increasing") ||
-        includesPhrase(normalized, "declining") ||
-        includesPhrase(normalized, "rising") ||
-        includesPhrase(normalized, "falling") ||
-        includesPhrase(normalized, "picked more") ||
-        includesPhrase(normalized, "picked less") ||
-        includesPhrase(normalized, "played more") ||
-        includesPhrase(normalized, "played less") ||
-        includesPhrase(normalized, "usage") ||
-        includesPhrase(normalized, "meta"))
+      includesAnyPhrase(normalized, [
+        "trending up",
+        "trending down",
+        "increasing",
+        "declining",
+        "rising",
+        "falling",
+        "picked more",
+        "picked less",
+        "played more",
+        "played less",
+        "usage",
+        "meta",
+      ])
     )
   ) {
     return null;
@@ -3764,34 +3794,40 @@ function pickSort(
   const wantsHigh =
     mentionsHighRankingIntent(normalized) ||
     (dataset === "ability_timing" &&
-      (includesPhrase(normalized, "when should") ||
-        includesPhrase(normalized, "when to use") ||
-        includesPhrase(normalized, "best phase"))) ||
+      includesAnyPhrase(normalized, [
+        "when should",
+        "when to use",
+        "best phase",
+      ])) ||
     (dataset === "opening_kill" &&
       (mentionsFirstPickAttribution(normalized) ||
         mentionsFirstDeathAttribution(normalized))) ||
     (dataset === "hero_pickrate" &&
-      (includesPhrase(normalized, "owns") ||
-        includesPhrase(normalized, "ownership") ||
-        includesPhrase(normalized, "owned by"))) ||
+      includesAnyPhrase(normalized, ["owns", "ownership", "owned by"])) ||
     (dataset === "player_intelligence" &&
-      (includesPhrase(normalized, "z score") ||
-        includesPhrase(normalized, "z-score") ||
-        includesPhrase(normalized, "composite z score"))) ||
+      includesAnyPhrase(normalized, [
+        "z score",
+        "z-score",
+        "composite z score",
+      ])) ||
     (dataset === "hero_trend" &&
-      (includesPhrase(normalized, "rising") ||
-        includesPhrase(normalized, "increasing") ||
-        includesPhrase(normalized, "trending up") ||
-        includesPhrase(normalized, "picked more") ||
-        includesPhrase(normalized, "played more")));
+      includesAnyPhrase(normalized, [
+        "rising",
+        "increasing",
+        "trending up",
+        "picked more",
+        "played more",
+      ]));
   const wantsLow =
     mentionsLowRankingIntent(normalized) ||
     (dataset === "hero_trend" &&
-      (includesPhrase(normalized, "falling") ||
-        includesPhrase(normalized, "declining") ||
-        includesPhrase(normalized, "trending down") ||
-        includesPhrase(normalized, "picked less") ||
-        includesPhrase(normalized, "played less")));
+      includesAnyPhrase(normalized, [
+        "falling",
+        "declining",
+        "trending down",
+        "picked less",
+        "played less",
+      ]));
   const wantsBest = includesPhrase(normalized, "best");
   const wantsWorst = includesPhrase(normalized, "worst");
   const dir = wantsLow

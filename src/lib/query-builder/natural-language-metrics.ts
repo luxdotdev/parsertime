@@ -17,6 +17,7 @@ import {
   pickResultScope,
 } from "@/lib/query-builder/natural-language-filter-intent";
 import {
+  includesAnyPhrase,
   includesPhrase,
   normalize,
 } from "@/lib/query-builder/natural-language-text";
@@ -31,6 +32,10 @@ import {
   type MetricRef,
 } from "@/lib/query-builder/types";
 
+const COUNT_INTENT_PHRASES = ["how many", "number", "count", "total"];
+const WIN_RATE_PHRASES = ["win rate", "win rates", "winrate", "winrates"];
+const LOSS_INTENT_PHRASES = ["losses", "lost", "lose"];
+
 function pickMetricAgg(dataset: DatasetId, metricId: string, question: string) {
   const metric = getMetric(dataset, metricId);
   if (!metric) return null;
@@ -43,18 +48,19 @@ function pickMetricAgg(dataset: DatasetId, metricId: string, question: string) {
     return "per10";
   }
   if (
-    (includesPhrase(normalized, "average") ||
-      includesPhrase(normalized, "avg")) &&
+    includesAnyPhrase(normalized, ["average", "avg"]) &&
     metric.allowedAggs.includes("avg")
   ) {
     return "avg";
   }
   if (
-    (includesPhrase(normalized, "number") ||
-      includesPhrase(normalized, "total") ||
-      includesPhrase(normalized, "how many") ||
-      includesPhrase(normalized, "how often") ||
-      includesPhrase(normalized, "most")) &&
+    includesAnyPhrase(normalized, [
+      "number",
+      "total",
+      "how many",
+      "how often",
+      "most",
+    ]) &&
     metric.allowedAggs.includes("sum")
   ) {
     return "sum";
@@ -70,6 +76,70 @@ function metricAliasCore(alias: string) {
     .replace(/\bper 10(?: minutes?)?\b/g, "")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function pickPreferredTeamfightMetric(normalized: string): string | null {
+  if (
+    includesAnyPhrase(normalized, [
+      "non dry fight reversal rate",
+      "non-dry fight reversal rate",
+      "non dry reversal rate",
+      "non dry fight comeback rate",
+      "non-dry fight comeback rate",
+      "non dry comeback rate",
+    ])
+  ) {
+    return "non_dry_fight_reversal_rate";
+  }
+  if (
+    includesAnyPhrase(normalized, [
+      "dry fight reversal rate",
+      "dry-fight reversal rate",
+      "dry reversal rate",
+      "dry fight comeback rate",
+      "dry comeback rate",
+    ])
+  ) {
+    return "dry_fight_reversal_rate";
+  }
+  if (mentionsFightComebackRateContext(normalized)) return "reversal_rate";
+  if (
+    includesAnyPhrase(normalized, [
+      "ultimate efficiency",
+      "ult efficiency",
+      "fight wins per ultimate",
+      "fight wins per ult",
+    ])
+  ) {
+    return "ultimate_efficiency";
+  }
+  return null;
+}
+
+function pickPreferredHeroTrendMetric(normalized: string): string | null {
+  if (
+    includesAnyPhrase(normalized, [
+      "pick rate",
+      "pickrate",
+      "picked",
+      "getting picked",
+      "usage",
+      "meta",
+    ])
+  ) {
+    return "pick_rate_trend";
+  }
+  if (
+    includesAnyPhrase(normalized, [
+      "playtime",
+      "time played",
+      "played",
+      "getting played",
+    ])
+  ) {
+    return "playtime_trend";
+  }
+  return null;
 }
 
 export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
@@ -128,48 +198,30 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
 
   if (dataset === "teamfight") {
     if (
-      (includesPhrase(normalized, "ults did we use") ||
-        includesPhrase(normalized, "ultimates did we use") ||
-        includesPhrase(normalized, "ults we use") ||
-        includesPhrase(normalized, "ultimates we use")) &&
+      includesAnyPhrase(normalized, [
+        "ults did we use",
+        "ultimates did we use",
+        "ults we use",
+        "ultimates we use",
+      ]) &&
       !refs.some((ref) => ref.metric === "ults_used")
     ) {
       refs.push({ metric: "ults_used", agg: "sum" });
     }
 
-    const wantsFightCount =
-      includesPhrase(normalized, "how many fights") ||
-      includesPhrase(normalized, "number of fights") ||
-      includesPhrase(normalized, "fight count") ||
-      includesPhrase(normalized, "count fights");
+    const wantsFightCount = includesAnyPhrase(normalized, [
+      "how many fights",
+      "number of fights",
+      "fight count",
+      "count fights",
+    ]);
     if (!wantsFightCount && refs.length > 1) {
       for (let i = refs.length - 1; i >= 0; i--) {
         if (refs[i].metric === "fights") refs.splice(i, 1);
       }
     }
 
-    const preferredTeamfightMetric =
-      includesPhrase(normalized, "non dry fight reversal rate") ||
-      includesPhrase(normalized, "non-dry fight reversal rate") ||
-      includesPhrase(normalized, "non dry reversal rate") ||
-      includesPhrase(normalized, "non dry fight comeback rate") ||
-      includesPhrase(normalized, "non-dry fight comeback rate") ||
-      includesPhrase(normalized, "non dry comeback rate")
-        ? "non_dry_fight_reversal_rate"
-        : includesPhrase(normalized, "dry fight reversal rate") ||
-            includesPhrase(normalized, "dry-fight reversal rate") ||
-            includesPhrase(normalized, "dry reversal rate") ||
-            includesPhrase(normalized, "dry fight comeback rate") ||
-            includesPhrase(normalized, "dry comeback rate")
-          ? "dry_fight_reversal_rate"
-          : mentionsFightComebackRateContext(normalized)
-            ? "reversal_rate"
-            : includesPhrase(normalized, "ultimate efficiency") ||
-                includesPhrase(normalized, "ult efficiency") ||
-                includesPhrase(normalized, "fight wins per ultimate") ||
-                includesPhrase(normalized, "fight wins per ult")
-              ? "ultimate_efficiency"
-              : null;
+    const preferredTeamfightMetric = pickPreferredTeamfightMetric(normalized);
     if (preferredTeamfightMetric) {
       for (let i = refs.length - 1; i >= 0; i--) {
         if (refs[i].metric !== preferredTeamfightMetric) refs.splice(i, 1);
@@ -202,11 +254,13 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
 
   if (
     dataset === "map_intelligence" &&
-    (includesPhrase(normalized, "improving") ||
-      includesPhrase(normalized, "declining") ||
-      includesPhrase(normalized, "map trend") ||
-      includesPhrase(normalized, "map trends") ||
-      includesPhrase(normalized, "trend delta"))
+    includesAnyPhrase(normalized, [
+      "improving",
+      "declining",
+      "map trend",
+      "map trends",
+      "trend delta",
+    ])
   ) {
     refs.unshift({ metric: "trend_delta", agg: "avg" });
   }
@@ -220,31 +274,32 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   }
 
   if (dataset === "player_impact") {
-    const mentionsSpecificVolatilityMetric =
-      includesPhrase(normalized, "damage volatility") ||
-      includesPhrase(normalized, "volatile damage") ||
-      includesPhrase(normalized, "healing volatility") ||
-      includesPhrase(normalized, "volatile healing") ||
-      includesPhrase(normalized, "deaths volatility") ||
-      includesPhrase(normalized, "death volatility") ||
-      includesPhrase(normalized, "eliminations volatility") ||
-      includesPhrase(normalized, "elims volatility");
+    const mentionsSpecificVolatilityMetric = includesAnyPhrase(normalized, [
+      "damage volatility",
+      "volatile damage",
+      "healing volatility",
+      "volatile healing",
+      "deaths volatility",
+      "death volatility",
+      "eliminations volatility",
+      "elims volatility",
+    ]);
     const preferredMetric =
       includesPhrase(normalized, "map mvp") &&
       !includesPhrase(normalized, "map mvp rate") &&
       !includesPhrase(normalized, "map mvp percentage")
         ? "map_mvp_count"
         : !mentionsSpecificVolatilityMetric &&
-            (includesPhrase(normalized, "least volatile") ||
-              includesPhrase(normalized, "most volatile") ||
-              includesPhrase(normalized, "volatile player") ||
-              includesPhrase(normalized, "volatile players") ||
-              includesPhrase(normalized, "volatility player") ||
-              includesPhrase(normalized, "volatility players"))
+            includesAnyPhrase(normalized, [
+              "least volatile",
+              "most volatile",
+              "volatile player",
+              "volatile players",
+              "volatility player",
+              "volatility players",
+            ])
           ? "all_damage_per10_stddev"
-          : includesPhrase(normalized, "stable") ||
-              includesPhrase(normalized, "stability") ||
-              includesPhrase(normalized, "steady")
+          : includesAnyPhrase(normalized, ["stable", "stability", "steady"])
             ? "consistency_score"
             : /\b(?:take|takes|took|taking)\b.*\b(?:use|used)\b.*\b(?:ult|ultimate)\b/.test(
                   normalized
@@ -272,13 +327,15 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
     dataset === "trend" &&
     refs.some((ref) => ref.metric === "win_rate") &&
     !refs.some((ref) => ref.metric === "maps") &&
-    (includesPhrase(normalized, "last 5 games") ||
-      includesPhrase(normalized, "last 10 games") ||
-      includesPhrase(normalized, "last 20 games") ||
-      includesPhrase(normalized, "recent games") ||
-      includesPhrase(normalized, "day of week") ||
-      includesPhrase(normalized, "best day") ||
-      includesPhrase(normalized, "worst day"))
+    includesAnyPhrase(normalized, [
+      "last 5 games",
+      "last 10 games",
+      "last 20 games",
+      "recent games",
+      "day of week",
+      "best day",
+      "worst day",
+    ])
   ) {
     refs.push({ metric: "maps", agg: "count" });
   }
@@ -300,11 +357,7 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
     }
   }
   if (dataset === "map_intelligence") {
-    const wantsCount =
-      includesPhrase(normalized, "how many") ||
-      includesPhrase(normalized, "number") ||
-      includesPhrase(normalized, "count") ||
-      includesPhrase(normalized, "total");
+    const wantsCount = includesAnyPhrase(normalized, COUNT_INTENT_PHRASES);
     const hasWeighted = deduped.some(
       (ref) => ref.metric === "weighted_win_rate"
     );
@@ -431,11 +484,13 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   }
   if (
     dataset === "player_impact" &&
-    (includesPhrase(normalized, "volatile") ||
-      includesPhrase(normalized, "volatility") ||
-      includesPhrase(normalized, "variance") ||
-      includesPhrase(normalized, "standard deviation") ||
-      includesPhrase(normalized, "stddev"))
+    includesAnyPhrase(normalized, [
+      "volatile",
+      "volatility",
+      "variance",
+      "standard deviation",
+      "stddev",
+    ])
   ) {
     const volatilityMetrics = new Set([
       "eliminations_per10_stddev",
@@ -456,13 +511,15 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   }
   if (
     dataset === "player_outlier" &&
-    (includesPhrase(normalized, "outlier") ||
-      includesPhrase(normalized, "outliers") ||
-      includesPhrase(normalized, "hero baseline") ||
-      includesPhrase(normalized, "far above") ||
-      includesPhrase(normalized, "far below") ||
-      includesPhrase(normalized, "above baseline") ||
-      includesPhrase(normalized, "below baseline"))
+    includesAnyPhrase(normalized, [
+      "outlier",
+      "outliers",
+      "hero baseline",
+      "far above",
+      "far below",
+      "above baseline",
+      "below baseline",
+    ])
   ) {
     for (let i = deduped.length - 1; i >= 0; i--) {
       if (deduped[i].metric === "baseline_per10") deduped.splice(i, 1);
@@ -529,21 +586,19 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   }
   if (
     deduped.some((ref) => ref.metric === "win_rate") &&
-    (includesPhrase(normalized, "win rate") ||
-      includesPhrase(normalized, "win rates") ||
-      includesPhrase(normalized, "winrate") ||
-      includesPhrase(normalized, "winrates"))
+    includesAnyPhrase(normalized, WIN_RATE_PHRASES)
   ) {
     deduped.sort((a, b) =>
       a.metric === "win_rate" ? -1 : b.metric === "win_rate" ? 1 : 0
     );
   }
   if (dataset === "opening_kill") {
-    const wantsOpeningRanking =
-      includesPhrase(normalized, "most") ||
-      includesPhrase(normalized, "top") ||
-      includesPhrase(normalized, "highest") ||
-      includesPhrase(normalized, "worst");
+    const wantsOpeningRanking = includesAnyPhrase(normalized, [
+      "most",
+      "top",
+      "highest",
+      "worst",
+    ]);
     const priority = wantsOpeningRanking
       ? mentionsFirstPickAttribution(normalized)
         ? "first_picks"
@@ -559,9 +614,7 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   }
   if (
     deduped.some((ref) => ref.metric === "losses") &&
-    (includesPhrase(normalized, "losses") ||
-      includesPhrase(normalized, "lost") ||
-      includesPhrase(normalized, "lose"))
+    includesAnyPhrase(normalized, LOSS_INTENT_PHRASES)
   ) {
     deduped.sort((a, b) =>
       a.metric === "losses" ? -1 : b.metric === "losses" ? 1 : 0
@@ -570,30 +623,19 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   if (
     dataset === "hero_pickrate" &&
     deduped.some((ref) => ref.metric === "ownership_rate") &&
-    (includesPhrase(normalized, "ownership") ||
-      includesPhrase(normalized, "owns") ||
-      includesPhrase(normalized, "owned by") ||
-      includesPhrase(normalized, "share of hero"))
+    includesAnyPhrase(normalized, [
+      "ownership",
+      "owns",
+      "owned by",
+      "share of hero",
+    ])
   ) {
     deduped.sort((a, b) =>
       a.metric === "ownership_rate" ? -1 : b.metric === "ownership_rate" ? 1 : 0
     );
   }
   if (dataset === "hero_trend") {
-    const preferredHeroTrendMetric =
-      includesPhrase(normalized, "pick rate") ||
-      includesPhrase(normalized, "pickrate") ||
-      includesPhrase(normalized, "picked") ||
-      includesPhrase(normalized, "getting picked") ||
-      includesPhrase(normalized, "usage") ||
-      includesPhrase(normalized, "meta")
-        ? "pick_rate_trend"
-        : includesPhrase(normalized, "playtime") ||
-            includesPhrase(normalized, "time played") ||
-            includesPhrase(normalized, "played") ||
-            includesPhrase(normalized, "getting played")
-          ? "playtime_trend"
-          : null;
+    const preferredHeroTrendMetric = pickPreferredHeroTrendMetric(normalized);
 
     if (preferredHeroTrendMetric) {
       for (let i = deduped.length - 1; i >= 0; i--) {
@@ -631,14 +673,14 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
         deduped.splice(i, 1);
       }
     }
-    const priority =
-      includesPhrase(normalized, "kill distance") ||
-      includesPhrase(normalized, "death distance")
-        ? "kill_distance"
-        : includesPhrase(normalized, "pre fight damage") ||
-            includesPhrase(normalized, "pre-fight damage")
-          ? "pre_fight_damage"
-          : null;
+    const priority = includesAnyPhrase(normalized, [
+      "kill distance",
+      "death distance",
+    ])
+      ? "kill_distance"
+      : includesAnyPhrase(normalized, ["pre fight damage", "pre-fight damage"])
+        ? "pre_fight_damage"
+        : null;
     if (priority) {
       deduped.sort((a, b) =>
         a.metric === priority ? -1 : b.metric === priority ? 1 : 0
@@ -657,9 +699,7 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   if (
     dataset === "rotation_death" &&
     deduped.some((ref) => ref.metric === "rotation_death_rate") &&
-    (includesPhrase(normalized, "rate") ||
-      includesPhrase(normalized, "percentage") ||
-      includesPhrase(normalized, "pct"))
+    includesAnyPhrase(normalized, ["rate", "percentage", "pct"])
   ) {
     deduped.sort((a, b) =>
       a.metric === "rotation_death_rate"
@@ -671,11 +711,13 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   }
   if (
     dataset === "ban_impact" &&
-    (includesPhrase(normalized, "weak point") ||
-      includesPhrase(normalized, "weak points") ||
-      includesPhrase(normalized, "strong ban") ||
-      includesPhrase(normalized, "strong bans") ||
-      includesPhrase(normalized, "impact"))
+    includesAnyPhrase(normalized, [
+      "weak point",
+      "weak points",
+      "strong ban",
+      "strong bans",
+      "impact",
+    ])
   ) {
     deduped.sort((a, b) =>
       a.metric === "win_rate_delta" ? -1 : b.metric === "win_rate_delta" ? 1 : 0
@@ -703,11 +745,13 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   if (
     dataset === "ult_impact" &&
     !deduped.some((ref) => ref.metric === "win_rate") &&
-    (includesPhrase(normalized, "what happens") ||
-      includesPhrase(normalized, "impact") ||
-      includesPhrase(normalized, "mirror") ||
-      includesPhrase(normalized, "mirrored") ||
-      includesPhrase(normalized, "uncontested"))
+    includesAnyPhrase(normalized, [
+      "what happens",
+      "impact",
+      "mirror",
+      "mirrored",
+      "uncontested",
+    ])
   ) {
     const agg = pickMetricAgg(dataset, "win_rate", question);
     if (agg) deduped.unshift({ metric: "win_rate", agg });
@@ -724,12 +768,10 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
     deduped.sort((a, b) =>
       a.metric === "playtime" ? -1 : b.metric === "playtime" ? 1 : 0
     );
-    const wantsWinRate =
-      includesPhrase(normalized, "win rate") ||
-      includesPhrase(normalized, "win rates") ||
-      includesPhrase(normalized, "winrate") ||
-      includesPhrase(normalized, "winrates") ||
-      includesPhrase(normalized, "record");
+    const wantsWinRate = includesAnyPhrase(normalized, [
+      ...WIN_RATE_PHRASES,
+      "record",
+    ]);
     if (!wantsWinRate) {
       for (let i = deduped.length - 1; i >= 0; i--) {
         if (deduped[i].metric !== "playtime") deduped.splice(i, 1);
@@ -738,18 +780,12 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   }
   if (
     dataset === "map_result" &&
-    (includesPhrase(normalized, "best") ||
-      includesPhrase(normalized, "worst") ||
-      includesPhrase(normalized, "top") ||
-      includesPhrase(normalized, "highest") ||
-      includesPhrase(normalized, "lowest"))
+    includesAnyPhrase(normalized, ["best", "worst", "top", "highest", "lowest"])
   ) {
-    const wantsCount =
-      includesPhrase(normalized, "how many") ||
-      includesPhrase(normalized, "number") ||
-      includesPhrase(normalized, "count") ||
-      includesPhrase(normalized, "total") ||
-      includesPhrase(normalized, "most maps");
+    const wantsCount = includesAnyPhrase(normalized, [
+      ...COUNT_INTENT_PHRASES,
+      "most maps",
+    ]);
     const wantsPlaytime = deduped.some((ref) => ref.metric === "playtime");
     if (!wantsCount && !wantsPlaytime) {
       for (let i = deduped.length - 1; i >= 0; i--) {
@@ -763,9 +799,7 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   }
   if (
     dataset === "ult_usage" &&
-    (includesPhrase(normalized, "per map") ||
-      includesPhrase(normalized, "per game") ||
-      includesPhrase(normalized, "per match"))
+    includesAnyPhrase(normalized, ["per map", "per game", "per match"])
   ) {
     const priority = deduped.some(
       (ref) => ref.metric === "fight_openings_per_map"
@@ -779,12 +813,14 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   if (
     dataset === "ult_economy" &&
     deduped.some((ref) => ref.metric === "avg_advantage") &&
-    (includesPhrase(normalized, "average ult advantage") ||
-      includesPhrase(normalized, "avg ult advantage") ||
-      includesPhrase(normalized, "average ultimate advantage") ||
-      includesPhrase(normalized, "avg ultimate advantage") ||
-      includesPhrase(normalized, "average ult bank") ||
-      includesPhrase(normalized, "ult bank advantage"))
+    includesAnyPhrase(normalized, [
+      "average ult advantage",
+      "avg ult advantage",
+      "average ultimate advantage",
+      "avg ultimate advantage",
+      "average ult bank",
+      "ult bank advantage",
+    ])
   ) {
     deduped.sort((a, b) =>
       a.metric === "avg_advantage" ? -1 : b.metric === "avg_advantage" ? 1 : 0
@@ -792,9 +828,7 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   }
   if (
     dataset === "streak" &&
-    (includesPhrase(normalized, "streak length") ||
-      includesPhrase(normalized, "games long") ||
-      includesPhrase(normalized, "maps long"))
+    includesAnyPhrase(normalized, ["streak length", "games long", "maps long"])
   ) {
     for (let i = deduped.length - 1; i >= 0; i--) {
       if (deduped[i].metric === "streaks") deduped.splice(i, 1);
@@ -822,26 +856,23 @@ export function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   if (dataset === "duel") {
     const wantsDuelSample =
       includesPhrase(normalized, "duels") &&
-      (includesPhrase(normalized, "at least") ||
-        includesPhrase(normalized, "minimum") ||
-        includesPhrase(normalized, "min") ||
-        includesPhrase(normalized, "more than") ||
-        includesPhrase(normalized, "over") ||
-        includesPhrase(normalized, "at most") ||
-        includesPhrase(normalized, "maximum") ||
-        includesPhrase(normalized, "under"));
+      includesAnyPhrase(normalized, [
+        "at least",
+        "minimum",
+        "min",
+        "more than",
+        "over",
+        "at most",
+        "maximum",
+        "under",
+      ]);
     const wantsCount =
-      includesPhrase(normalized, "how many") ||
-      includesPhrase(normalized, "number") ||
-      includesPhrase(normalized, "count") ||
-      includesPhrase(normalized, "total") ||
-      wantsDuelSample;
-    const wantsLosses =
-      includesPhrase(normalized, "losses") ||
-      includesPhrase(normalized, "lost") ||
-      includesPhrase(normalized, "lose") ||
-      includesPhrase(normalized, "deaths") ||
-      includesPhrase(normalized, "died");
+      includesAnyPhrase(normalized, COUNT_INTENT_PHRASES) || wantsDuelSample;
+    const wantsLosses = includesAnyPhrase(normalized, [
+      ...LOSS_INTENT_PHRASES,
+      "deaths",
+      "died",
+    ]);
     if (!wantsCount) {
       for (let i = deduped.length - 1; i >= 0; i--) {
         if (deduped[i].metric === "duels") deduped.splice(i, 1);
