@@ -3318,6 +3318,21 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans player-impact stable-player phrasing", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Who is the most stable player?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_impact",
+      metrics: [{ metric: "consistency_score", agg: "avg" }],
+      dimensions: ["player"],
+      sort: { key: "avg__consistency_score", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans player-impact volatility questions", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,
@@ -3329,6 +3344,21 @@ describe("query-builder natural-language planner", () => {
       metrics: [{ metric: "all_damage_per10_stddev", agg: "avg" }],
       dimensions: ["player"],
       sort: { key: "avg__all_damage_per10_stddev", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans generic least-volatile player questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Who is the least volatile player?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_impact",
+      metrics: [{ metric: "all_damage_per10_stddev", agg: "avg" }],
+      dimensions: ["player"],
+      sort: { key: "avg__all_damage_per10_stddev", dir: "asc" },
       limit: 20,
     });
   });
@@ -3404,6 +3434,66 @@ describe("query-builder natural-language planner", () => {
       metrics: [{ metric: "average_ult_charge_time", agg: "avg" }],
       dimensions: ["player"],
       sort: { key: "avg__average_ult_charge_time", dir: "asc" },
+      limit: 20,
+    });
+  });
+
+  it("plans natural ult-charge timing leaderboards", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Who charges ult fastest?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_impact",
+      metrics: [{ metric: "average_ult_charge_time", agg: "avg" }],
+      dimensions: ["player"],
+      sort: { key: "avg__average_ult_charge_time", dir: "asc" },
+      limit: 20,
+    });
+  });
+
+  it("plans natural time-to-use-ult leaderboards", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Who takes the longest to use ult?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_impact",
+      metrics: [{ metric: "average_time_to_use_ult", agg: "avg" }],
+      dimensions: ["player"],
+      sort: { key: "avg__average_time_to_use_ult", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans natural kills-per-ultimate leaderboards", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Who has the most kills per ultimate?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_impact",
+      metrics: [{ metric: "kills_per_ultimate", agg: "avg" }],
+      dimensions: ["player"],
+      sort: { key: "avg__kills_per_ultimate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans map-MVP count leaderboards onto player impact", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Who gets map MVP the most?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_impact",
+      metrics: [{ metric: "map_mvp_count", agg: "sum" }],
+      dimensions: ["player"],
+      sort: { key: "sum__map_mvp_count", dir: "desc" },
       limit: 20,
     });
   });

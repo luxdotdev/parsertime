@@ -684,12 +684,24 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "ultimate charge time",
     "average ult charge time",
     "average ultimate charge time",
+    "charge ult",
+    "charges ult",
+    "charged ult",
+    "charge ultimate",
+    "charges ultimate",
+    "charged ultimate",
   ],
   average_ult_charge_time: [
     "ult charge time",
     "ultimate charge time",
     "average ult charge time",
     "average ultimate charge time",
+    "charge ult",
+    "charges ult",
+    "charged ult",
+    "charge ultimate",
+    "charges ultimate",
+    "charged ultimate",
   ],
   time_to_use_ult: [
     "time to use ult",
@@ -702,6 +714,8 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "time to use ultimate",
     "average time to use ult",
     "average time to use ultimate",
+    "use ult",
+    "use ultimate",
   ],
   drought_time: ["drought time", "average drought time"],
   average_drought_time: ["drought time", "average drought time"],
@@ -1148,6 +1162,8 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "consistent",
     "consistency score",
     "steady",
+    "stable",
+    "stability",
     "stable output",
   ],
   eliminations_per10_stddev: [
@@ -2971,6 +2987,9 @@ function mentionsPlayerImpactContext(normalized: string): boolean {
     includesPhrase(normalized, "impact metrics") ||
     includesPhrase(normalized, "consistency") ||
     includesPhrase(normalized, "consistent") ||
+    includesPhrase(normalized, "stable") ||
+    includesPhrase(normalized, "stability") ||
+    includesPhrase(normalized, "steady") ||
     includesPhrase(normalized, "volatile") ||
     includesPhrase(normalized, "volatility") ||
     includesPhrase(normalized, "variance") ||
@@ -2978,6 +2997,7 @@ function mentionsPlayerImpactContext(normalized: string): boolean {
     includesPhrase(normalized, "stddev") ||
     includesPhrase(normalized, "swingy") ||
     includesPhrase(normalized, "streaky") ||
+    includesPhrase(normalized, "map mvp") ||
     includesPhrase(normalized, "map mvp rate") ||
     includesPhrase(normalized, "first picks per 10") ||
     includesPhrase(normalized, "first pick count per 10") ||
@@ -2985,6 +3005,29 @@ function mentionsPlayerImpactContext(normalized: string): boolean {
     includesPhrase(normalized, "first death count per 10") ||
     includesPhrase(normalized, "ajax per 10") ||
     includesPhrase(normalized, "ajaxes per 10")
+  );
+}
+
+function mentionsPlayerImpactComputedMetricContext(
+  normalized: string
+): boolean {
+  return (
+    includesPhrase(normalized, "stable") ||
+    includesPhrase(normalized, "stability") ||
+    includesPhrase(normalized, "steady") ||
+    includesPhrase(normalized, "volatile") ||
+    includesPhrase(normalized, "volatility") ||
+    includesPhrase(normalized, "map mvp") ||
+    includesPhrase(normalized, "kills per ult") ||
+    includesPhrase(normalized, "kills per ultimate") ||
+    includesPhrase(normalized, "charge ult") ||
+    includesPhrase(normalized, "charges ult") ||
+    includesPhrase(normalized, "charged ult") ||
+    includesPhrase(normalized, "charge ultimate") ||
+    includesPhrase(normalized, "charges ultimate") ||
+    /\b(?:take|takes|took|taking)\b.*\b(?:use|used)\b.*\b(?:ult|ultimate)\b/.test(
+      normalized
+    )
   );
 }
 
@@ -3130,6 +3173,12 @@ function pickDataset(question: string): DatasetId {
     return "hero_pool";
   }
   if (mentionsTeamPerformanceContext(normalized)) return "team_performance";
+  if (
+    mentionsPlayerImpactComputedMetricContext(normalized) &&
+    mentionsRankingIntent(normalized)
+  ) {
+    return "player_impact";
+  }
   if (
     mentionsPlayerImpactContext(normalized) &&
     (includesPhrase(normalized, "first picks per 10") ||
@@ -3534,6 +3583,7 @@ function mentionsHighRankingIntent(normalized: string): boolean {
     includesPhrase(normalized, "leads") ||
     includesPhrase(normalized, "lead in") ||
     includesPhrase(normalized, "deepest") ||
+    includesPhrase(normalized, "longest") ||
     includesPhrase(normalized, "slowest") ||
     includesPhrase(normalized, "one trick") ||
     includesPhrase(normalized, "one-trick") ||
@@ -3700,6 +3750,49 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
       refs.unshift({ metric: "first_picks", agg: "sum" });
     } else if (mentionsFirstDeathAttribution(normalized)) {
       refs.unshift({ metric: "first_deaths", agg: "sum" });
+    }
+  }
+
+  if (dataset === "player_impact") {
+    const mentionsSpecificVolatilityMetric =
+      includesPhrase(normalized, "damage volatility") ||
+      includesPhrase(normalized, "volatile damage") ||
+      includesPhrase(normalized, "healing volatility") ||
+      includesPhrase(normalized, "volatile healing") ||
+      includesPhrase(normalized, "deaths volatility") ||
+      includesPhrase(normalized, "death volatility") ||
+      includesPhrase(normalized, "eliminations volatility") ||
+      includesPhrase(normalized, "elims volatility");
+    const preferredMetric =
+      includesPhrase(normalized, "map mvp") &&
+      !includesPhrase(normalized, "map mvp rate") &&
+      !includesPhrase(normalized, "map mvp percentage")
+        ? "map_mvp_count"
+        : !mentionsSpecificVolatilityMetric &&
+            (includesPhrase(normalized, "least volatile") ||
+              includesPhrase(normalized, "most volatile") ||
+              includesPhrase(normalized, "volatile player") ||
+              includesPhrase(normalized, "volatile players") ||
+              includesPhrase(normalized, "volatility player") ||
+              includesPhrase(normalized, "volatility players"))
+          ? "all_damage_per10_stddev"
+          : includesPhrase(normalized, "stable") ||
+              includesPhrase(normalized, "stability") ||
+              includesPhrase(normalized, "steady")
+            ? "consistency_score"
+            : /\b(?:take|takes|took|taking)\b.*\b(?:use|used)\b.*\b(?:ult|ultimate)\b/.test(
+                  normalized
+                )
+              ? "average_time_to_use_ult"
+              : null;
+    if (preferredMetric) {
+      for (let i = refs.length - 1; i >= 0; i--) {
+        if (refs[i].metric !== preferredMetric) refs.splice(i, 1);
+      }
+      if (!refs.some((ref) => ref.metric === preferredMetric)) {
+        const agg = pickMetricAgg(dataset, preferredMetric, question);
+        if (agg) refs.push({ metric: preferredMetric, agg });
+      }
     }
   }
 
