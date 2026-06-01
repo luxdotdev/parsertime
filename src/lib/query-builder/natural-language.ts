@@ -494,6 +494,14 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "ultimate economy",
     "ult advantage",
     "ult bank",
+    "ult disadvantage",
+    "ultimate disadvantage",
+    "ult deficit",
+    "ultimate deficit",
+    "more ults",
+    "more ultimates",
+    "same ults",
+    "same ultimates",
     "ahead an ult",
     "behind an ult",
   ],
@@ -2868,6 +2876,14 @@ function mentionsUltEconomyContext(normalized: string): boolean {
     includesPhrase(normalized, "ultimate advantage") ||
     includesPhrase(normalized, "ult bank") ||
     includesPhrase(normalized, "ultimate bank") ||
+    includesPhrase(normalized, "ult disadvantage") ||
+    includesPhrase(normalized, "ultimate disadvantage") ||
+    includesPhrase(normalized, "ult deficit") ||
+    includesPhrase(normalized, "ultimate deficit") ||
+    includesPhrase(normalized, "more ults") ||
+    includesPhrase(normalized, "more ultimates") ||
+    includesPhrase(normalized, "same ults") ||
+    includesPhrase(normalized, "same ultimates") ||
     /\b(?:ahead|behind|even|up|down)\b.*\b(?:ult|ults|ultimate|ultimates)\b/.test(
       normalized
     ) ||
@@ -5616,6 +5632,63 @@ function pickResultScope(normalized: string): "win" | "loss" | null {
 }
 
 function pickUltEconomyBucket(normalized: string): string | null {
+  const enemySubject =
+    /\b(?:they|them|their|enemy|enemies|opponent|opponents)\b/;
+  const friendlySubject = /\b(?:we|us|our)\b/;
+  const ultToken = "(?:ult|ults|ultimate|ultimates)";
+  const enemyHas = (pattern: RegExp) =>
+    enemySubject.test(normalized) && pattern.test(normalized);
+  const friendlyHas = (pattern: RegExp) =>
+    friendlySubject.test(normalized) && pattern.test(normalized);
+
+  const twoUltAdvantage = new RegExp(
+    `\\b(?:two|2)\\s+(?:more\\s+)?${ultToken}\\s+(?:advantage|lead)\\b|\\b(?:two|2)\\s+more\\s+${ultToken}\\b|\\b(?:up|ahead)\\b.*\\b(?:two|2)\\b.*\\b${ultToken}\\b|\\b(?:two|2)\\b.*\\b${ultToken}\\b.*\\b(?:up|ahead)\\b`
+  );
+  const oneUltAdvantage = new RegExp(
+    `\\b(?:one|1|an|a)\\s+(?:more\\s+)?${ultToken}\\s+(?:advantage|lead)\\b|\\b(?:one|1)\\s+more\\s+${ultToken}\\b|\\b(?:up|ahead)\\b.*\\b(?:one|1|an|a)\\b.*\\b${ultToken}\\b|\\b(?:one|1|an|a)\\b.*\\b${ultToken}\\b.*\\b(?:up|ahead)\\b`
+  );
+  const genericUltAdvantage = new RegExp(
+    `\\b(?:more\\s+${ultToken}|${ultToken}\\s+advantage|ultimate\\s+advantage|${ultToken}\\s+lead)\\b`
+  );
+  const twoUltDisadvantage = new RegExp(
+    `\\b(?:two|2)\\s+${ultToken}\\s+(?:disadvantage|deficit)\\b|\\b(?:two|2)\\s+fewer\\s+${ultToken}\\b|\\b(?:down|behind)\\b.*\\b(?:two|2)\\b.*\\b${ultToken}\\b|\\b(?:two|2)\\b.*\\b${ultToken}\\b.*\\b(?:down|behind)\\b`
+  );
+  const oneUltDisadvantage = new RegExp(
+    `\\b(?:one|1|an|a)\\s+${ultToken}\\s+(?:disadvantage|deficit)\\b|\\b(?:one|1)\\s+fewer\\s+${ultToken}\\b|\\b(?:down|behind)\\b.*\\b(?:one|1|an|a)\\b.*\\b${ultToken}\\b|\\b(?:one|1|an|a)\\b.*\\b${ultToken}\\b.*\\b(?:down|behind)\\b`
+  );
+  const genericUltDisadvantage = new RegExp(
+    `\\b(?:fewer\\s+${ultToken}|${ultToken}\\s+disadvantage|ultimate\\s+disadvantage|${ultToken}\\s+deficit)\\b`
+  );
+
+  if (enemyHas(twoUltAdvantage)) {
+    return "2+ behind";
+  }
+  if (enemyHas(oneUltAdvantage)) {
+    return "1 behind";
+  }
+  if (enemyHas(twoUltDisadvantage)) {
+    return "2+ ahead";
+  }
+  if (enemyHas(oneUltDisadvantage)) {
+    return "1 ahead";
+  }
+  if (friendlyHas(twoUltDisadvantage)) {
+    return "2+ behind";
+  }
+  if (friendlyHas(oneUltDisadvantage)) {
+    return "1 behind";
+  }
+  if (friendlyHas(twoUltAdvantage)) {
+    return "2+ ahead";
+  }
+  if (friendlyHas(oneUltAdvantage)) {
+    return "1 ahead";
+  }
+  if (enemyHas(genericUltAdvantage)) return "1 behind";
+  if (enemyHas(genericUltDisadvantage)) return "1 ahead";
+  if (friendlyHas(genericUltDisadvantage)) return "1 behind";
+  if (friendlyHas(genericUltAdvantage)) return "1 ahead";
+
   if (
     includesPhrase(normalized, "2 behind") ||
     includesPhrase(normalized, "two behind") ||

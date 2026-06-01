@@ -1265,6 +1265,59 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans enemy ult-advantage phrasing as our disadvantage", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "What is our fight win rate when enemy has ult advantage?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_economy",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      filters: [{ field: "advantage_bucket", op: "in", value: ["1 behind"] }],
+    });
+  });
+
+  it("plans friendly more-ults phrasing as our advantage", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "What is our fight win rate when we have more ults?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_economy",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      filters: [{ field: "advantage_bucket", op: "in", value: ["1 ahead"] }],
+    });
+  });
+
+  it("plans enemy two-more-ults phrasing as a large disadvantage", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "What is our fight win rate when they have two more ults?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_economy",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      filters: [{ field: "advantage_bucket", op: "in", value: ["2+ behind"] }],
+    });
+  });
+
+  it("plans enemy ult-disadvantage phrasing as our advantage", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "What is our fight win rate when the opponent has an ult disadvantage?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_economy",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      filters: [{ field: "advantage_bucket", op: "in", value: ["1 ahead"] }],
+    });
+  });
+
   it("plans ult-economy aggregate metric thresholds", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,
