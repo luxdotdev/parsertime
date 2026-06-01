@@ -1708,7 +1708,10 @@ function mentionsStatVersusPlaytimeContext(normalized: string): boolean {
       includesPhrase(normalized, "vs time") ||
       includesPhrase(normalized, "against time") ||
       includesPhrase(normalized, "compared to time") ||
-      /\b(?:compared|relative)\s+to\s+(?:the\s+)?(?:time|playtime)\b/.test(
+      /\b(?:compared|relative)\s+to\s+(?:the\s+)?(?:time|playtime|time\s+played|minutes?\s+played|seconds?\s+played|hours?\s+played)\b/.test(
+        normalized
+      ) ||
+      /\b(?:normalized|normalised|adjusted)\s+(?:by|for|to)\s+(?:the\s+)?(?:time|playtime|time\s+played|minutes?\s+played|seconds?\s+played|hours?\s+played)\b/.test(
         normalized
       ) ||
       includesPhrase(normalized, "relative to time") ||
@@ -1718,6 +1721,12 @@ function mentionsStatVersusPlaytimeContext(normalized: string): boolean {
       includesPhrase(normalized, "vs playtime")) &&
     (includesPhrase(normalized, "time played") ||
       includesPhrase(normalized, "playtime") ||
+      includesPhrase(normalized, "minutes played") ||
+      includesPhrase(normalized, "minute played") ||
+      includesPhrase(normalized, "seconds played") ||
+      includesPhrase(normalized, "second played") ||
+      includesPhrase(normalized, "hours played") ||
+      includesPhrase(normalized, "hour played") ||
       includesPhrase(normalized, "played it") ||
       includesPhrase(normalized, "played them") ||
       includesPhrase(normalized, "time"))

@@ -51,6 +51,29 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans normalized-by-playtime questions as raw, time, and per-10 metrics", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 7,
+      question:
+        "Show PGE's eliminations normalized by minutes played on Tracer",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_stat",
+      teamId: 7,
+      metrics: [
+        { metric: "eliminations", agg: "sum" },
+        { metric: "time_played", agg: "sum" },
+        { metric: "eliminations", agg: "per10" },
+      ],
+      dimensions: [],
+      filters: [
+        { field: "hero", op: "in", value: ["Tracer"] },
+        { field: "player", op: "in", value: ["PGE"] },
+      ],
+    });
+  });
+
   it("plans player-stat time-played threshold filters", () => {
     const planned = planQueryFromQuestion({
       teamId: 7,
