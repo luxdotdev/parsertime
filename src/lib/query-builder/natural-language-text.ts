@@ -39,6 +39,28 @@ export function includesPhrase(haystack: string, phrase: string): boolean {
   return new RegExp(`(^|\\s)${escapeRegExp(normalized)}(\\s|$)`).test(haystack);
 }
 
+const phrasePatternCache = new Map<string, RegExp>();
+
+export function includesAnyPhrase(
+  haystack: string,
+  phrases: readonly string[]
+): boolean {
+  const normalizedPhrases = phrases.map((phrase) => normalize(phrase));
+  const cacheKey = normalizedPhrases.join("\0");
+  let pattern = phrasePatternCache.get(cacheKey);
+  if (!pattern) {
+    const alternatives = normalizedPhrases
+      .filter(Boolean)
+      .map(escapeRegExp)
+      .join("|");
+    pattern = alternatives
+      ? new RegExp(`(^|\\s)(?:${alternatives})(\\s|$)`)
+      : /(?!)/;
+    phrasePatternCache.set(cacheKey, pattern);
+  }
+  return pattern.test(haystack);
+}
+
 export function titleCase(value: string): string {
   return value
     .split(/\s+/)
