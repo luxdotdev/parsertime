@@ -5832,6 +5832,16 @@
       "removeNamed": "将 {name} 从黑名单中移除",
       "addError": "无法添加该队伍，请重试。",
       "removeError": "无法移除该队伍，请重试。"
+    },
+    "feedback": {
+      "prompt": "你与 {name} 打了一场训练赛，感觉怎么样？",
+      "good": "打得不错",
+      "okay": "还行",
+      "poor": "较差 — 加入黑名单",
+      "skip": "跳过",
+      "reasonPlaceholder": "原因（可选）",
+      "confirmBlacklist": "加入黑名单",
+      "error": "无法保存你的反馈，请重试。"
     }
   },
   "teamStatsPage": {

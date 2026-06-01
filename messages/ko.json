@@ -5832,6 +5832,16 @@
       "removeNamed": "{name}을(를) 블랙리스트에서 제거",
       "addError": "팀을 추가하지 못했습니다. 다시 시도해 주세요.",
       "removeError": "팀을 제거하지 못했습니다. 다시 시도해 주세요."
+    },
+    "feedback": {
+      "prompt": "{name}과(와) 스크림을 했습니다. 어떠셨나요?",
+      "good": "좋은 스크림이었습니다",
+      "okay": "그럭저럭",
+      "poor": "별로 — 블랙리스트에 추가",
+      "skip": "건너뛰기",
+      "reasonPlaceholder": "사유 (선택)",
+      "confirmBlacklist": "팀 블랙리스트 추가",
+      "error": "피드백을 저장하지 못했습니다. 다시 시도해 주세요."
     }
   },
   "teamStatsPage": {

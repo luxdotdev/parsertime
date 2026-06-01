@@ -1,3 +1,4 @@
+import { ScrimFeedbackBanner } from "@/components/team-ops/scrim-feedback-banner";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { DirectionalTransition } from "@/components/directional-transition";
 import { AddMapCard } from "@/components/map/add-map";
@@ -20,7 +21,7 @@ import { ScrimOverviewService, ScrimService } from "@/data/scrim";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
-import { auth, isAuthedToViewScrim } from "@/lib/auth";
+import { auth, canManageTeam, isAuthedToViewScrim } from "@/lib/auth";
 import { mapComparison, overviewCard } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -119,6 +120,19 @@ export default async function ScrimDashboardPage(
     isManager ||
     user?.role === $Enums.UserRole.MANAGER ||
     user?.role === $Enums.UserRole.ADMIN;
+
+  const feedbackScrim = await prisma.scrim.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      teamId: true,
+      opponentTeamId: true,
+      feedback: { select: { id: true } },
+      opponentTeam: { select: { name: true } },
+    },
+  });
+
+  const canManage = await canManageTeam(feedbackScrim?.teamId, user);
 
   const visibility = (await prisma.scrim.findFirst({
     where: {
@@ -268,6 +282,18 @@ export default async function ScrimDashboardPage(
               </>
             )}
           </div>
+
+          {feedbackScrim?.opponentTeamId != null &&
+            feedbackScrim.opponentTeam &&
+            !feedbackScrim.feedback &&
+            canManage && (
+              <div className="mt-4">
+                <ScrimFeedbackBanner
+                  scrimId={feedbackScrim.id}
+                  opponentName={feedbackScrim.opponentTeam.name}
+                />
+              </div>
+            )}
 
           {showOverview && (
             <div className="mt-8">

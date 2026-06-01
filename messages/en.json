@@ -5452,6 +5452,16 @@
       "removeNamed": "Remove {name} from blacklist",
       "addError": "Couldn't add that team. Try again.",
       "removeError": "Couldn't remove that team. Try again."
+    },
+    "feedback": {
+      "prompt": "You scrimmed {name}. How was it?",
+      "good": "Good scrim",
+      "okay": "Okay",
+      "poor": "Poor — blacklist them",
+      "skip": "Skip",
+      "reasonPlaceholder": "Reason (optional)",
+      "confirmBlacklist": "Blacklist team",
+      "error": "Couldn't save your feedback. Try again."
     }
   },
   "dataCorruption": {
