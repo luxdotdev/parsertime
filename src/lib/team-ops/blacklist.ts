@@ -99,3 +99,40 @@ export async function areTeamsBlocked(a: number, b: number): Promise<boolean> {
   });
   return row != null;
 }
+
+export type BlacklistSuggestion = { teamId: number; name: string; image: string | null };
+
+export async function getBlacklistSuggestions(
+  ownerTeamId: number
+): Promise<BlacklistSuggestion[]> {
+  const [snapshots, requests, existing] = await Promise.all([
+    prisma.teamTsrSnapshot.findMany({
+      where: { teamId: { not: ownerTeamId }, team: { readonly: false } },
+      select: { team: { select: { id: true, name: true, image: true } } },
+    }),
+    prisma.scrimRequest.findMany({
+      where: { OR: [{ fromTeamId: ownerTeamId }, { toTeamId: ownerTeamId }] },
+      select: {
+        fromTeam: { select: { id: true, name: true, image: true } },
+        toTeam: { select: { id: true, name: true, image: true } },
+      },
+    }),
+    prisma.teamBlacklist.findMany({
+      where: { ownerTeamId, blockedTeamId: { not: null } },
+      select: { blockedTeamId: true },
+    }),
+  ]);
+
+  const blocked = new Set(existing.map((e) => e.blockedTeamId).filter((x): x is number => x !== null));
+  const byId = new Map<number, BlacklistSuggestion>();
+  const add = (t: { id: number; name: string; image: string | null }) => {
+    if (t.id === ownerTeamId || blocked.has(t.id) || byId.has(t.id)) return;
+    byId.set(t.id, { teamId: t.id, name: t.name, image: t.image });
+  };
+  for (const s of snapshots) add(s.team);
+  for (const r of requests) {
+    if (r.fromTeam.id !== ownerTeamId) add(r.fromTeam);
+    if (r.toTeam.id !== ownerTeamId) add(r.toTeam);
+  }
+  return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name));
+}
