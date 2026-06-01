@@ -3459,6 +3459,40 @@ describe("query-builder natural-language planner", () => {
     );
   });
 
+  it("plans target direction and trend filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which decrease goals are moving away from target?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_target",
+      metrics: [{ metric: "progress_percent", agg: "avg" }],
+      dimensions: ["player", "stat"],
+      filters: [
+        { field: "trending", op: "in", value: ["away"] },
+        { field: "direction", op: "in", value: ["decrease"] },
+      ],
+    });
+  });
+
+  it("plans saved target change percentage thresholds", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which increase goals have target change percent over 20?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_target",
+      metrics: [{ metric: "target_percent", agg: "avg" }],
+      dimensions: ["player", "stat"],
+      filters: [
+        { field: "direction", op: "in", value: ["increase"] },
+        { field: "target_percent", op: "gt", value: 20 },
+      ],
+    });
+  });
+
   it("plans enemy-hero matchup questions with hero filters", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,

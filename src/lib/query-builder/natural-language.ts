@@ -434,6 +434,8 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "player goals",
     "target progress",
     "goal progress",
+    "target change",
+    "goal change",
     "progress toward target",
     "progress toward goal",
     "current value",
@@ -1119,6 +1121,16 @@ const METRIC_ALIASES: Record<string, string[]> = {
   baseline_value: ["baseline value", "baseline"],
   target_value: ["target value", "goal value"],
   gap_to_target: ["gap to target", "remaining", "distance to target"],
+  target_percent: [
+    "target percent",
+    "target percentage",
+    "target change",
+    "target change percent",
+    "target change percentage",
+    "goal change",
+    "goal change percent",
+    "goal change percentage",
+  ],
   sample_scrims: ["sample scrims", "scrim sample"],
   consistency_score: [
     "consistency",
@@ -1237,10 +1249,14 @@ const FILLER_WORDS = new Set([
   "at",
   "by",
   "data",
+  "decrease",
   "each",
   "every",
   "find",
   "for",
+  "from",
+  "goal",
+  "goals",
   "has",
   "have",
   "he",
@@ -1249,6 +1265,7 @@ const FILLER_WORDS = new Set([
   "heroes",
   "his",
   "i",
+  "increase",
   "in",
   "it",
   "is",
@@ -1270,6 +1287,8 @@ const FILLER_WORDS = new Set([
   "player",
   "players",
   "role",
+  "target",
+  "targets",
   "scrim",
   "scrims",
   "support",
@@ -2081,6 +2100,8 @@ function mentionsPlayerTargetContext(normalized: string): boolean {
     includesPhrase(normalized, "goal value") ||
     includesPhrase(normalized, "target percent") ||
     includesPhrase(normalized, "target percentage") ||
+    includesPhrase(normalized, "target change") ||
+    includesPhrase(normalized, "goal change") ||
     includesPhrase(normalized, "scrim window") ||
     includesPhrase(normalized, "target window") ||
     includesPhrase(normalized, "sample scrims") ||
@@ -2099,6 +2120,14 @@ function mentionsPlayerTargetContext(normalized: string): boolean {
         includesPhrase(normalized, "gap") ||
         includesPhrase(normalized, "status") ||
         includesPhrase(normalized, "value") ||
+        includesPhrase(normalized, "change") ||
+        includesPhrase(normalized, "toward") ||
+        includesPhrase(normalized, "away") ||
+        includesPhrase(normalized, "moving") ||
+        includesPhrase(normalized, "increase") ||
+        includesPhrase(normalized, "decrease") ||
+        includesPhrase(normalized, "reduce") ||
+        includesPhrase(normalized, "lower") ||
         includesPhrase(normalized, "window") ||
         includesPhrase(normalized, "sampled") ||
         includesPhrase(normalized, "scrims")))
@@ -5321,6 +5350,44 @@ function pickPlayerTargetStat(normalized: string): string | null {
   return null;
 }
 
+function pickPlayerTargetDirection(normalized: string): string | null {
+  if (
+    includesPhrase(normalized, "increase goal") ||
+    includesPhrase(normalized, "increase goals") ||
+    includesPhrase(normalized, "increase target") ||
+    includesPhrase(normalized, "increase targets") ||
+    includesPhrase(normalized, "improvement goal") ||
+    includesPhrase(normalized, "improvement goals") ||
+    includesPhrase(normalized, "raise target") ||
+    includesPhrase(normalized, "raise targets") ||
+    includesPhrase(normalized, "higher target") ||
+    includesPhrase(normalized, "higher goals")
+  ) {
+    return "increase";
+  }
+
+  if (
+    includesPhrase(normalized, "decrease goal") ||
+    includesPhrase(normalized, "decrease goals") ||
+    includesPhrase(normalized, "decrease target") ||
+    includesPhrase(normalized, "decrease targets") ||
+    includesPhrase(normalized, "reduction goal") ||
+    includesPhrase(normalized, "reduction goals") ||
+    includesPhrase(normalized, "reduce target") ||
+    includesPhrase(normalized, "reduce targets") ||
+    includesPhrase(normalized, "reduce goal") ||
+    includesPhrase(normalized, "reduce goals") ||
+    includesPhrase(normalized, "lower target") ||
+    includesPhrase(normalized, "lower targets") ||
+    includesPhrase(normalized, "lower goal") ||
+    includesPhrase(normalized, "lower goals")
+  ) {
+    return "decrease";
+  }
+
+  return null;
+}
+
 function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   const filters: QueryFilter[] = [];
   const heroMentions = findHeroMentions(question);
@@ -6739,7 +6806,10 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       filters.push({ field: "status", op: "in", value: ["on track"] });
     } else if (includesPhrase(normalized, "off track")) {
       filters.push({ field: "status", op: "in", value: ["off track"] });
-    } else if (includesPhrase(normalized, "complete")) {
+    } else if (
+      includesPhrase(normalized, "complete") ||
+      includesPhrase(normalized, "completed")
+    ) {
       filters.push({ field: "status", op: "in", value: ["complete"] });
     } else if (
       includesPhrase(normalized, "stalled") ||
@@ -6758,6 +6828,15 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       includesPhrase(normalized, "moving away")
     ) {
       filters.push({ field: "trending", op: "in", value: ["away"] });
+    }
+
+    const targetDirection = pickPlayerTargetDirection(normalized);
+    if (targetDirection) {
+      filters.push({
+        field: "direction",
+        op: "in",
+        value: [targetDirection],
+      });
     }
 
     const targetStat = pickPlayerTargetStat(normalized);
@@ -6795,7 +6874,16 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         },
         {
           field: "target_percent",
-          aliases: ["target percent", "target percentage", "target change"],
+          aliases: [
+            "target percent",
+            "target percentage",
+            "target change",
+            "target change percent",
+            "target change percentage",
+            "goal change",
+            "goal change percent",
+            "goal change percentage",
+          ],
         },
         {
           field: "sample_scrims",
