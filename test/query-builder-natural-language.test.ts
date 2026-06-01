@@ -4083,6 +4083,20 @@ describe("query-builder natural-language planner", () => {
     );
   });
 
+  it("plans our-vs-enemy ultimate side comparisons", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "Compare our ult win rate versus enemy ult win rate",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_impact",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["side"],
+      filters: [{ field: "side", op: "in", value: ["us", "enemy"] }],
+    });
+  });
+
   it("plans player ult-usage questions onto ult usage summaries", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,

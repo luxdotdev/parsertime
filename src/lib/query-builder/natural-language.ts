@@ -177,6 +177,8 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "mirrored ult",
     "mirrored ultimate",
     "when we ult",
+    "our ult win rate",
+    "our ultimate win rate",
     "when we use ult",
     "when we use ultimate",
     "enemy ult win rate",
@@ -2608,6 +2610,57 @@ function mentionsUltEconomyContext(normalized: string): boolean {
   );
 }
 
+function mentionsOurUltSide(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "our ult") ||
+    includesPhrase(normalized, "our ults") ||
+    includesPhrase(normalized, "our ultimate") ||
+    includesPhrase(normalized, "our ultimates") ||
+    includesPhrase(normalized, "we ult") ||
+    includesPhrase(normalized, "we ults") ||
+    includesPhrase(normalized, "we ulted") ||
+    includesPhrase(normalized, "we use ult") ||
+    includesPhrase(normalized, "we use ults") ||
+    includesPhrase(normalized, "we use ultimate") ||
+    includesPhrase(normalized, "we use ultimates") ||
+    includesPhrase(normalized, "we used ult") ||
+    includesPhrase(normalized, "we used ults") ||
+    includesPhrase(normalized, "we used ultimate") ||
+    includesPhrase(normalized, "we used ultimates") ||
+    /\bwe\s+(?:use|used)\b.*\b(?:ult|ults|ultimate|ultimates)\b/.test(
+      normalized
+    )
+  );
+}
+
+function mentionsEnemyUltSide(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "enemy ult") ||
+    includesPhrase(normalized, "enemy ults") ||
+    includesPhrase(normalized, "enemy ultimate") ||
+    includesPhrase(normalized, "enemy ultimates") ||
+    includesPhrase(normalized, "their ult") ||
+    includesPhrase(normalized, "their ults") ||
+    includesPhrase(normalized, "their ultimate") ||
+    includesPhrase(normalized, "their ultimates") ||
+    includesPhrase(normalized, "they ult") ||
+    includesPhrase(normalized, "they ulted") ||
+    /\benemy\s+ults?\b/.test(normalized)
+  );
+}
+
+function mentionsUltSideComparison(normalized: string): boolean {
+  return (
+    mentionsOurUltSide(normalized) &&
+    mentionsEnemyUltSide(normalized) &&
+    (includesPhrase(normalized, "compare") ||
+      includesPhrase(normalized, "comparison") ||
+      includesPhrase(normalized, "versus") ||
+      includesPhrase(normalized, "vs") ||
+      includesPhrase(normalized, "compared to"))
+  );
+}
+
 function mentionsRolePerformanceContext(normalized: string): boolean {
   if (
     includesPhrase(normalized, "role trio") ||
@@ -2771,6 +2824,7 @@ function pickDataset(question: string): DatasetId {
     mentionsUlt &&
     (includesPhrase(normalized, "ult impact") ||
       includesPhrase(normalized, "ultimate impact") ||
+      mentionsUltSideComparison(normalized) ||
       ((includesPhrase(normalized, "which heroes") ||
         includesPhrase(normalized, "which hero")) &&
         (includesPhrase(normalized, "ult win rate") ||
@@ -7801,28 +7855,11 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     const scenario = pickUltImpactScenario(normalized);
     if (scenario) {
       filters.push({ field: "scenario", op: "eq", value: scenario });
-    } else if (
-      includesPhrase(normalized, "enemy ult") ||
-      includesPhrase(normalized, "enemy ults") ||
-      includesPhrase(normalized, "enemy ultimate") ||
-      includesPhrase(normalized, "enemy ultimates") ||
-      includesPhrase(normalized, "their ult") ||
-      includesPhrase(normalized, "their ults") ||
-      includesPhrase(normalized, "their ultimate") ||
-      /\benemy\s+ults?\b/.test(normalized)
-    ) {
+    } else if (mentionsUltSideComparison(normalized)) {
+      filters.push({ field: "side", op: "in", value: ["us", "enemy"] });
+    } else if (mentionsEnemyUltSide(normalized)) {
       filters.push({ field: "side", op: "in", value: ["enemy", "both"] });
-    } else if (
-      includesPhrase(normalized, "we ult") ||
-      includesPhrase(normalized, "we ults") ||
-      includesPhrase(normalized, "we use ult") ||
-      includesPhrase(normalized, "we used ult") ||
-      includesPhrase(normalized, "our ult") ||
-      includesPhrase(normalized, "our ultimate") ||
-      /\bwe\s+(?:use|used)\b.*\b(?:ult|ults|ultimate|ultimates)\b/.test(
-        normalized
-      )
-    ) {
+    } else if (mentionsOurUltSide(normalized)) {
       filters.push({ field: "side", op: "in", value: ["us", "both"] });
     }
 
@@ -8178,6 +8215,9 @@ function pickDimensions(
   }
   if (hasMultiValueFilter("map_type")) {
     add("map_type");
+  }
+  if (hasMultiValueFilter("side") && mentionsUltSideComparison(normalized)) {
+    add("side");
   }
 
   if (
