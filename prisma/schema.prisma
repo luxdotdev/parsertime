@@ -75,6 +75,7 @@ model User {
   creditTransactions     CreditTransaction[]
   pendingAutoRefill      PendingAutoRefill?
   scrimRequestsSent      ScrimRequest[]
+  teamSubstitutes        TeamSubstitute[]
 
   @@index([id, email])
 }
@@ -164,6 +165,8 @@ enum AuditLogAction {
   TEAM_MEMBER_PROMOTED
   TEAM_MEMBER_DEMOTED
   TEAM_MEMBER_REMOVED
+  TEAM_SUBSTITUTE_MARKED
+  TEAM_SUBSTITUTE_UNMARKED
   TEAM_OWNERSHIP_TRANSFERRED
   SCRIM_CREATED
   SCRIM_UPDATED
@@ -217,6 +220,7 @@ model Team {
   teamTsrSnapshot       TeamTsrSnapshot?
   scrimRequestsFrom     ScrimRequest[]            @relation("ScrimRequestFrom")
   scrimRequestsTo       ScrimRequest[]            @relation("ScrimRequestTo")
+  substitutes           TeamSubstitute[]
 }
 
 model BotNotificationConfig {
@@ -243,6 +247,22 @@ model TeamManager {
 
   @@unique([teamId, userId])
   @@index([userId])
+}
+
+model TeamSubstitute {
+  id         Int      @id @default(autoincrement())
+  teamId     Int
+  playerName String
+  createdBy  String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  team    Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  creator User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, playerName])
+  @@index([teamId])
+  @@index([createdBy])
 }
 
 enum UserRole {
@@ -333,6 +353,7 @@ model Map {
   name           String
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
+  order          Int             @default(0)
   mapData        MapData[]
   Scrim          Scrim?          @relation(fields: [scrimId], references: [id])
   vod            String?
@@ -341,6 +362,7 @@ model Map {
   tournamentMaps TournamentMap[]
 
   @@index([scrimId])
+  @@index([scrimId, order])
 }
 
 model HeroBan {
