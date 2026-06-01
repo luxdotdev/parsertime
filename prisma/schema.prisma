@@ -1620,10 +1620,25 @@ model FaceitPlayer {
   rosterEntries   FaceitMatchRoster[]
   rosterOverrides TsrRosterOverride[]
   aliases         BattletagAlias[]
+  mapStats        FaceitMapPlayerStats[]
   tsr             PlayerTsr?
 
   @@index([battletag])
   @@index([region])
+}
+
+model FaceitTeam {
+  faceitTeamId String   @id
+  name         String
+  avatar       String?
+  type         String?
+  firstSeenAt  DateTime @default(now())
+  lastSyncedAt DateTime @default(now())
+
+  matchSides FaceitMatchTeam[]
+  mapStats   FaceitMapTeamStats[]
+
+  @@index([name])
 }
 
 model FaceitChampionship {
@@ -1645,25 +1660,53 @@ model FaceitChampionship {
 }
 
 model FaceitMatch {
-  faceitMatchId  String            @id
-  championshipId String
-  organizerId    String
-  bestOf         Int
-  team1Score     Int
-  team2Score     Int
-  winnerFaction  Int
-  status         FaceitMatchStatus
-  finishedAt     DateTime
-  rawRegion      String
-  ingestedAt     DateTime          @default(now())
+  faceitMatchId     String            @id
+  championshipId    String
+  organizerId       String
+  bestOf            Int
+  team1FaceitTeamId String?
+  team2FaceitTeamId String?
+  team1Name         String?
+  team2Name         String?
+  team1Score        Int
+  team2Score        Int
+  winnerFaction     Int
+  status            FaceitMatchStatus
+  finishedAt        DateTime
+  rawRegion         String
+  rawDetails        Json?
+  rawVoting         Json?
+  ingestedAt        DateTime          @default(now())
 
   championship    FaceitChampionship  @relation(fields: [championshipId], references: [championshipId], onDelete: Cascade)
+  matchTeams      FaceitMatchTeam[]
+  maps            FaceitMatchMap[]
   rosters         FaceitMatchRoster[]
   rosterOverrides TsrRosterOverride[]
 
   @@index([championshipId])
   @@index([finishedAt])
+  @@index([team1FaceitTeamId])
+  @@index([team2FaceitTeamId])
   @@index([organizerId, finishedAt])
+}
+
+model FaceitMatchTeam {
+  id           Int     @id @default(autoincrement())
+  matchId      String
+  teamSide     Int
+  faceitTeamId String?
+  teamName     String
+  score        Int
+  winner       Boolean @default(false)
+  rawStats     Json?
+
+  match FaceitMatch @relation(fields: [matchId], references: [faceitMatchId], onDelete: Cascade)
+  team  FaceitTeam? @relation(fields: [faceitTeamId], references: [faceitTeamId], onDelete: SetNull)
+
+  @@unique([matchId, teamSide])
+  @@index([faceitTeamId])
+  @@index([teamName])
 }
 
 model FaceitMatchRoster {
@@ -1678,6 +1721,116 @@ model FaceitMatchRoster {
   @@unique([matchId, faceitPlayerId])
   @@index([faceitPlayerId])
   @@index([matchId])
+}
+
+model FaceitMatchMap {
+  id                    Int      @id @default(autoincrement())
+  matchId               String
+  gameNumber            Int
+  mapGuid               String?
+  mapName               String?
+  mapType               MapType?
+  attackingFirstFaction String?
+  winnerFaction         Int?
+  winnerFaceitTeamId    String?
+  team1Score            Int?
+  team2Score            Int?
+  scoreSummary          String?
+  played                Boolean?
+  rawRoundStats         Json?
+  rawDetailedResult     Json?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  match       FaceitMatch            @relation(fields: [matchId], references: [faceitMatchId], onDelete: Cascade)
+  heroBans    FaceitHeroBan[]
+  playerStats FaceitMapPlayerStats[]
+  teamStats   FaceitMapTeamStats[]
+
+  @@unique([matchId, gameNumber])
+  @@index([matchId])
+  @@index([mapGuid])
+  @@index([mapName])
+  @@index([mapType])
+}
+
+model FaceitHeroBan {
+  id              Int      @id @default(autoincrement())
+  faceitMapId     Int
+  heroGuid        String?
+  heroName        String
+  role            String?
+  banOrder        Int
+  bannedByFaction Int?
+  source          String
+  rawEntity       Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  map FaceitMatchMap @relation(fields: [faceitMapId], references: [id], onDelete: Cascade)
+
+  @@index([faceitMapId])
+  @@index([heroName])
+}
+
+model FaceitMapTeamStats {
+  id            Int      @id @default(autoincrement())
+  faceitMapId   Int
+  teamSide      Int
+  faceitTeamId  String?
+  teamName      String
+  score         Int?
+  won           Boolean?
+  eliminations  Int?
+  deaths        Int?
+  finalBlows    Int?
+  objectiveTime Float?
+  timePlayed    Float?
+  rawStats      Json
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  map  FaceitMatchMap @relation(fields: [faceitMapId], references: [id], onDelete: Cascade)
+  team FaceitTeam?    @relation(fields: [faceitTeamId], references: [faceitTeamId], onDelete: SetNull)
+
+  @@unique([faceitMapId, teamSide])
+  @@index([faceitMapId])
+  @@index([faceitTeamId])
+  @@index([teamName])
+}
+
+model FaceitMapPlayerStats {
+  id                 Int      @id @default(autoincrement())
+  faceitMapId        Int
+  teamSide           Int
+  faceitPlayerId     String
+  nickname           String
+  role               String?
+  result             Int?
+  eliminations       Int?
+  assists            Int?
+  deaths             Int?
+  finalBlows         Int?
+  soloKills          Int?
+  multiKills         Int?
+  environmentalKills Int?
+  damageDealt        Float?
+  healingDone        Float?
+  damageMitigated    Float?
+  objectiveTime      Float?
+  timePlayed         Float?
+  rawStats           Json
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  map    FaceitMatchMap @relation(fields: [faceitMapId], references: [id], onDelete: Cascade)
+  player FaceitPlayer   @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@unique([faceitMapId, faceitPlayerId])
+  @@index([faceitMapId])
+  @@index([faceitPlayerId])
+  @@index([nickname])
+  @@index([role])
 }
 
 model TsrRosterOverride {
