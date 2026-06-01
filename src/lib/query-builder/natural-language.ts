@@ -1970,6 +1970,40 @@ function mentionsHeroDiversityContext(normalized: string): boolean {
   );
 }
 
+function mentionsHeroSliceStatContext(normalized: string): boolean {
+  const heroSlice =
+    includesPhrase(normalized, "which hero") ||
+    includesPhrase(normalized, "which heroes") ||
+    includesPhrase(normalized, "what hero") ||
+    includesPhrase(normalized, "what heroes") ||
+    includesPhrase(normalized, "hero stats") ||
+    includesPhrase(normalized, "hero stat") ||
+    ["tank", "damage", "support"].some((role) =>
+      includesPhrase(normalized, `${role} heroes`)
+    );
+  const statMetric =
+    includesPhrase(normalized, "final blow") ||
+    includesPhrase(normalized, "final blows") ||
+    includesPhrase(normalized, "finals") ||
+    includesPhrase(normalized, "eliminations") ||
+    includesPhrase(normalized, "elims") ||
+    includesPhrase(normalized, "death") ||
+    includesPhrase(normalized, "deaths") ||
+    includesPhrase(normalized, "assists") ||
+    includesPhrase(normalized, "damage") ||
+    includesPhrase(normalized, "healing") ||
+    includesPhrase(normalized, "heals") ||
+    includesPhrase(normalized, "time played") ||
+    includesPhrase(normalized, "playtime") ||
+    includesPhrase(normalized, "ultimates") ||
+    includesPhrase(normalized, "ults") ||
+    includesPhrase(normalized, "per 10") ||
+    includesPhrase(normalized, "final blows per death") ||
+    includesPhrase(normalized, "kd");
+
+  return heroSlice && statMetric;
+}
+
 function mentionsRotationDeathContext(normalized: string): boolean {
   return (
     includesPhrase(normalized, "rotation death") ||
@@ -2426,6 +2460,7 @@ function pickDataset(question: string): DatasetId {
   }
   if (mentionsTrendContext(normalized)) return "trend";
   if (mentionsRotationDeathContext(normalized)) return "rotation_death";
+  if (mentionsHeroSliceStatContext(normalized)) return "hero_pool";
   if (
     mentionsAbilityTimingContext(normalized) ||
     (findAbility(question) &&
@@ -6417,28 +6452,120 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
           ],
         },
         {
+          field: "wins",
+          aliases: ["wins", "hero wins", "map wins"],
+        },
+        {
+          field: "losses",
+          aliases: ["losses", "hero losses", "map losses"],
+        },
+        {
+          field: "final_blows_per10",
+          aliases: ["final blows per 10", "finals per 10"],
+        },
+        {
           field: "final_blows",
-          aliases: ["final blows", "finals"],
+          aliases: ["total final blows", "total finals", "final blow count"],
+        },
+        {
+          field: "eliminations_per10",
+          aliases: ["eliminations per 10", "elims per 10"],
         },
         {
           field: "eliminations",
-          aliases: ["eliminations", "elims"],
+          aliases: ["total eliminations", "total elims", "elimination count"],
+        },
+        {
+          field: "deaths_per10",
+          aliases: ["deaths per 10", "death rate"],
         },
         {
           field: "deaths",
-          aliases: ["deaths"],
+          aliases: ["total deaths", "death count"],
+        },
+        {
+          field: "assists_per10",
+          aliases: ["assists per 10", "offensive assists per 10"],
+        },
+        {
+          field: "assists",
+          aliases: ["total assists", "assist count"],
+        },
+        {
+          field: "hero_damage_per10",
+          aliases: ["hero damage per 10", "damage per 10"],
         },
         {
           field: "hero_damage",
-          aliases: ["hero damage", "damage"],
+          aliases: ["total hero damage", "total damage"],
+        },
+        {
+          field: "damage_taken_per10",
+          aliases: ["damage taken per 10", "damage taken rate"],
+        },
+        {
+          field: "damage_taken",
+          aliases: ["total damage taken", "damage taken count"],
+        },
+        {
+          field: "healing_per10",
+          aliases: ["healing per 10", "heals per 10"],
         },
         {
           field: "healing",
-          aliases: ["healing", "heals"],
+          aliases: ["total healing", "total heals", "healing count"],
+        },
+        {
+          field: "ultimates_earned_per10",
+          aliases: [
+            "ults earned per 10",
+            "ultimates earned per 10",
+            "ult charge per 10",
+          ],
+        },
+        {
+          field: "ultimates_earned",
+          aliases: [
+            "total ults earned",
+            "total ultimates earned",
+            "ultimates earned count",
+          ],
+        },
+        {
+          field: "ultimates_used_per10",
+          aliases: [
+            "ults used per 10",
+            "ultimates used per 10",
+            "ult usage per 10",
+          ],
+        },
+        {
+          field: "ultimates_used",
+          aliases: [
+            "total ults used",
+            "total ultimates used",
+            "ultimates used count",
+          ],
+        },
+        {
+          field: "kd",
+          aliases: ["kd", "k d", "final blows per death"],
         },
         {
           field: "ult_efficiency",
           aliases: ["ult efficiency", "ultimate efficiency", "kills per ult"],
+        },
+      ])
+    );
+    filters.push(
+      ...extractDurationThresholdFilters(dataset, normalized, [
+        {
+          field: "total_time_played",
+          aliases: [
+            "total time played",
+            "total playtime",
+            "total hero time played",
+          ],
         },
       ])
     );

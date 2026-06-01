@@ -2095,6 +2095,53 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans hero-pool per-10 aggregate and total-playtime thresholds", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Which Damage heroes have final blows per 10 over 8 with at least 30 minutes total time played?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_pool",
+      dimensions: ["hero"],
+      filters: expect.arrayContaining([
+        { field: "role", op: "in", value: ["Damage"] },
+        { field: "final_blows_per10", op: "gt", value: 8 },
+        { field: "total_time_played", op: "gte", value: 1800 },
+      ]),
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([
+        { metric: "final_blows", agg: "per10" },
+        { metric: "time_played", agg: "sum" },
+      ])
+    );
+  });
+
+  it("plans hero-pool ratio and result-count thresholds", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Which heroes have final blows per death over 2 and at least 3 losses?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_pool",
+      dimensions: ["hero"],
+      filters: expect.arrayContaining([
+        { field: "kd", op: "gt", value: 2 },
+        { field: "losses", op: "gte", value: 3 },
+      ]),
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([
+        { metric: "kd", agg: "ratio" },
+        { metric: "losses", agg: "sum" },
+      ])
+    );
+  });
+
   it("plans role-performance per-10 questions onto role metrics", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,
