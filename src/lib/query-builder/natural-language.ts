@@ -2412,6 +2412,25 @@ function pickDataset(question: string): DatasetId {
   ) {
     return "player_impact";
   }
+  if (
+    mentionsFightContext(normalized) &&
+    (includesPhrase(normalized, "win rate") ||
+      includesPhrase(normalized, "winrate") ||
+      includesPhrase(normalized, "wins") ||
+      includesPhrase(normalized, "losses")) &&
+    (includesPhrase(normalized, "first pick") ||
+      includesPhrase(normalized, "opening pick") ||
+      includesPhrase(normalized, "first kill") ||
+      includesPhrase(normalized, "opening kill") ||
+      includesPhrase(normalized, "first death") ||
+      includesPhrase(normalized, "opening death") ||
+      includesPhrase(normalized, "first ult") ||
+      includesPhrase(normalized, "first ultimate") ||
+      includesPhrase(normalized, "opening ult") ||
+      includesPhrase(normalized, "opening ultimate"))
+  ) {
+    return "teamfight";
+  }
   if (mentionsOpeningKillContext(normalized)) return "opening_kill";
   if (
     mentionsPlayerTrendContext(normalized) ||
@@ -4244,6 +4263,35 @@ function hasNegatedFightContext(
   );
 }
 
+function hasEnemyFightContext(normalized: string, phrases: string[]): boolean {
+  return phrases.some((phrase) => {
+    const escaped = escapeRegExp(normalize(phrase));
+    return (
+      new RegExp(
+        `\\b(?:enemy|enemies|opponent|opponents|they|their)\\s+(?:gets?|got|has|have|uses?|used|takes?|took)?\\s*${escaped}\\b`
+      ).test(normalized) ||
+      new RegExp(
+        `\\b${escaped}\\s+(?:for|by|from)\\s+(?:enemy|enemies|opponent|opponents|them|their)\\b`
+      ).test(normalized)
+    );
+  });
+}
+
+function hasFriendlyVictimFightContext(
+  normalized: string,
+  phrases: string[]
+): boolean {
+  return phrases.some((phrase) => {
+    return (
+      new RegExp(
+        `\\b(?:we|us|our)\\s+(?:get|gets|got|are|were|was)?\\s*(?:picked|killed)\\s+first\\b`
+      ).test(normalized) ||
+      includesPhrase(normalized, `we suffer ${phrase}`) ||
+      includesPhrase(normalized, `we suffered ${phrase}`)
+    );
+  });
+}
+
 function pickResultScope(normalized: string): "win" | "loss" | null {
   if (
     /\b(?:in|during|on|for|from)\s+(?:our\s+)?(?:won|winning)\s+(?:fights?|teamfights?|team fights?|maps?|games?)\b/.test(
@@ -4924,20 +4972,52 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       "use first ultimate",
       "get first ultimate",
     ]);
+    const enemyFirstPick =
+      hasEnemyFightContext(normalized, [
+        "first pick",
+        "opening pick",
+        "first kill",
+        "opening kill",
+      ]) ||
+      hasFriendlyVictimFightContext(normalized, [
+        "first pick",
+        "opening pick",
+        "first kill",
+        "opening kill",
+      ]);
+    const enemyFirstUlt = hasEnemyFightContext(normalized, [
+      "first ult",
+      "first ultimate",
+      "opening ult",
+      "opening ultimate",
+    ]);
     const noDryFight = hasNegatedFightContext(normalized, ["dry fight"]);
     const noReversal = hasNegatedFightContext(normalized, [
       "reversal",
       "reverse fight",
     ]);
 
-    if (includesPhrase(normalized, "first death") && !asksFirstDeathRate) {
+    if (enemyFirstPick && !asksFirstPickRate && !asksFirstDeathRate) {
+      filters.push({
+        field: "first_death",
+        op: "eq",
+        value: "yes",
+      });
+    } else if (
+      includesPhrase(normalized, "first death") &&
+      !asksFirstDeathRate
+    ) {
       filters.push({
         field: "first_death",
         op: "eq",
         value: noFirstDeath ? "no" : "yes",
       });
     }
-    if (includesPhrase(normalized, "first pick") && !asksFirstPickRate) {
+    if (
+      includesPhrase(normalized, "first pick") &&
+      !asksFirstPickRate &&
+      !enemyFirstPick
+    ) {
       filters.push({
         field: "first_pick",
         op: "eq",
@@ -4959,7 +5039,7 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       filters.push({
         field: "first_ult",
         op: "eq",
-        value: noFirstUlt ? "no" : "yes",
+        value: enemyFirstUlt || noFirstUlt ? "no" : "yes",
       });
     }
     if (
