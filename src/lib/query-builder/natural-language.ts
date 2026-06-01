@@ -2154,11 +2154,26 @@ function mentionsHeroTrendContext(normalized: string): boolean {
     includesPhrase(normalized, "heroes trending") ||
     includesPhrase(normalized, "hero meta") ||
     includesPhrase(normalized, "meta trend") ||
+    includesPhrase(normalized, "rising in usage") ||
+    includesPhrase(normalized, "rising usage") ||
+    includesPhrase(normalized, "falling in usage") ||
+    includesPhrase(normalized, "falling out of the meta") ||
+    includesPhrase(normalized, "falling out of meta") ||
+    includesPhrase(normalized, "picked more") ||
+    includesPhrase(normalized, "picked less") ||
+    includesPhrase(normalized, "played more") ||
+    includesPhrase(normalized, "played less") ||
     (includesPhrase(normalized, "which heroes") &&
       (includesPhrase(normalized, "trending up") ||
         includesPhrase(normalized, "trending down") ||
         includesPhrase(normalized, "increasing") ||
-        includesPhrase(normalized, "declining")))
+        includesPhrase(normalized, "declining") ||
+        includesPhrase(normalized, "rising") ||
+        includesPhrase(normalized, "falling") ||
+        includesPhrase(normalized, "getting picked") ||
+        includesPhrase(normalized, "getting played") ||
+        includesPhrase(normalized, "usage") ||
+        includesPhrase(normalized, "meta")))
   );
 }
 
@@ -2169,7 +2184,12 @@ function mentionsStreakContext(normalized: string): boolean {
     includesPhrase(normalized, "win streak") ||
     includesPhrase(normalized, "loss streak") ||
     includesPhrase(normalized, "current streak") ||
-    includesPhrase(normalized, "longest streak")
+    includesPhrase(normalized, "longest streak") ||
+    includesPhrase(normalized, "currently winning") ||
+    includesPhrase(normalized, "currently losing") ||
+    includesPhrase(normalized, "on a win streak") ||
+    includesPhrase(normalized, "on a loss streak") ||
+    includesPhrase(normalized, "on a losing streak")
   );
 }
 
@@ -3835,6 +3855,34 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
     deduped.sort((a, b) =>
       a.metric === "ownership_rate" ? -1 : b.metric === "ownership_rate" ? 1 : 0
     );
+  }
+  if (dataset === "hero_trend") {
+    const preferredHeroTrendMetric =
+      includesPhrase(normalized, "pick rate") ||
+      includesPhrase(normalized, "pickrate") ||
+      includesPhrase(normalized, "picked") ||
+      includesPhrase(normalized, "getting picked") ||
+      includesPhrase(normalized, "usage") ||
+      includesPhrase(normalized, "meta")
+        ? "pick_rate_trend"
+        : includesPhrase(normalized, "playtime") ||
+            includesPhrase(normalized, "time played") ||
+            includesPhrase(normalized, "played") ||
+            includesPhrase(normalized, "getting played")
+          ? "playtime_trend"
+          : null;
+
+    if (preferredHeroTrendMetric) {
+      for (let i = deduped.length - 1; i >= 0; i--) {
+        if (deduped[i].metric !== preferredHeroTrendMetric) {
+          deduped.splice(i, 1);
+        }
+      }
+      if (!deduped.some((ref) => ref.metric === preferredHeroTrendMetric)) {
+        const agg = pickMetricAgg(dataset, preferredHeroTrendMetric, question);
+        if (agg) deduped.unshift({ metric: preferredHeroTrendMetric, agg });
+      }
+    }
   }
   if (
     dataset === "rotation_death" &&
@@ -7257,14 +7305,24 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       includesPhrase(normalized, "trending up") ||
       includesPhrase(normalized, "increasing") ||
       includesPhrase(normalized, "rising") ||
-      includesPhrase(normalized, "more popular")
+      includesPhrase(normalized, "more popular") ||
+      includesPhrase(normalized, "picked more") ||
+      includesPhrase(normalized, "played more") ||
+      includesPhrase(normalized, "getting picked more") ||
+      includesPhrase(normalized, "getting played more")
     ) {
       filters.push({ field: "trend", op: "in", value: ["increasing"] });
     } else if (
       includesPhrase(normalized, "trending down") ||
       includesPhrase(normalized, "declining") ||
       includesPhrase(normalized, "falling") ||
-      includesPhrase(normalized, "less popular")
+      includesPhrase(normalized, "falling out of the meta") ||
+      includesPhrase(normalized, "falling out of meta") ||
+      includesPhrase(normalized, "less popular") ||
+      includesPhrase(normalized, "picked less") ||
+      includesPhrase(normalized, "played less") ||
+      includesPhrase(normalized, "getting picked less") ||
+      includesPhrase(normalized, "getting played less")
     ) {
       filters.push({ field: "trend", op: "in", value: ["declining"] });
     } else if (includesPhrase(normalized, "stable")) {
@@ -8354,7 +8412,26 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   }
 
   if (dataset === "streak") {
-    if (includesPhrase(normalized, "current")) {
+    const wantsCurrentStreak =
+      includesPhrase(normalized, "current") ||
+      includesPhrase(normalized, "currently winning") ||
+      includesPhrase(normalized, "currently losing") ||
+      includesPhrase(normalized, "on a win streak") ||
+      includesPhrase(normalized, "on a loss streak") ||
+      includesPhrase(normalized, "on a losing streak");
+    const wantsLossStreak =
+      includesPhrase(normalized, "loss streak") ||
+      includesPhrase(normalized, "losing streak") ||
+      includesPhrase(normalized, "currently losing") ||
+      includesPhrase(normalized, "on a loss streak") ||
+      includesPhrase(normalized, "on a losing streak");
+    const wantsWinStreak =
+      includesPhrase(normalized, "win streak") ||
+      includesPhrase(normalized, "winning streak") ||
+      includesPhrase(normalized, "currently winning") ||
+      includesPhrase(normalized, "on a win streak");
+
+    if (wantsCurrentStreak) {
       filters.push({ field: "streak", op: "eq", value: "current streak" });
     } else if (
       includesPhrase(normalized, "longest") &&
@@ -8373,6 +8450,11 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         op: "eq",
         value: "longest win streak",
       });
+    }
+    if (wantsLossStreak) {
+      filters.push({ field: "result", op: "eq", value: "loss" });
+    } else if (wantsWinStreak) {
+      filters.push({ field: "result", op: "eq", value: "win" });
     }
     filters.push(
       ...extractNumericThresholdFilters(dataset, normalized, [
@@ -9014,6 +9096,21 @@ function pickSort(
       dataset === "opening_kill" &&
       (mentionsFirstPickAttribution(normalized) ||
         mentionsFirstDeathAttribution(normalized))
+    ) &&
+    !(
+      dataset === "hero_trend" &&
+      (includesPhrase(normalized, "trending up") ||
+        includesPhrase(normalized, "trending down") ||
+        includesPhrase(normalized, "increasing") ||
+        includesPhrase(normalized, "declining") ||
+        includesPhrase(normalized, "rising") ||
+        includesPhrase(normalized, "falling") ||
+        includesPhrase(normalized, "picked more") ||
+        includesPhrase(normalized, "picked less") ||
+        includesPhrase(normalized, "played more") ||
+        includesPhrase(normalized, "played less") ||
+        includesPhrase(normalized, "usage") ||
+        includesPhrase(normalized, "meta"))
     )
   ) {
     return null;
@@ -9035,8 +9132,21 @@ function pickSort(
     (dataset === "player_intelligence" &&
       (includesPhrase(normalized, "z score") ||
         includesPhrase(normalized, "z-score") ||
-        includesPhrase(normalized, "composite z score")));
-  const wantsLow = mentionsLowRankingIntent(normalized);
+        includesPhrase(normalized, "composite z score"))) ||
+    (dataset === "hero_trend" &&
+      (includesPhrase(normalized, "rising") ||
+        includesPhrase(normalized, "increasing") ||
+        includesPhrase(normalized, "trending up") ||
+        includesPhrase(normalized, "picked more") ||
+        includesPhrase(normalized, "played more")));
+  const wantsLow =
+    mentionsLowRankingIntent(normalized) ||
+    (dataset === "hero_trend" &&
+      (includesPhrase(normalized, "falling") ||
+        includesPhrase(normalized, "declining") ||
+        includesPhrase(normalized, "trending down") ||
+        includesPhrase(normalized, "picked less") ||
+        includesPhrase(normalized, "played less")));
   const wantsBest = includesPhrase(normalized, "best");
   const wantsWorst = includesPhrase(normalized, "worst");
   const dir = wantsLow

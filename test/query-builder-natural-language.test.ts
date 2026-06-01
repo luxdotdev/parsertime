@@ -2078,6 +2078,54 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans rising hero usage questions onto pick-rate trends", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Which heroes are rising in usage?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_trend",
+      metrics: [{ metric: "pick_rate_trend", agg: "avg" }],
+      dimensions: ["hero"],
+      filters: [{ field: "trend", op: "in", value: ["increasing"] }],
+      sort: { key: "avg__pick_rate_trend", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans falling meta hero questions onto declining pick-rate trends", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Which heroes are falling out of the meta?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_trend",
+      metrics: [{ metric: "pick_rate_trend", agg: "avg" }],
+      dimensions: ["hero"],
+      filters: [{ field: "trend", op: "in", value: ["declining"] }],
+      sort: { key: "avg__pick_rate_trend", dir: "asc" },
+      limit: 20,
+    });
+  });
+
+  it("plans played-more hero questions onto playtime trends", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Which heroes are getting played more?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "hero_trend",
+      metrics: [{ metric: "playtime_trend", agg: "avg" }],
+      dimensions: ["hero"],
+      filters: [{ field: "trend", op: "in", value: ["increasing"] }],
+      sort: { key: "avg__playtime_trend", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans map-specific hero pick-rate trend questions", () => {
     const planned = planQueryFromQuestion({
       teamId: 2,
@@ -4578,7 +4626,44 @@ describe("query-builder natural-language planner", () => {
       dataset: "streak",
       metrics: [{ metric: "length", agg: "max" }],
       dimensions: ["result"],
-      filters: [{ field: "streak", op: "eq", value: "current streak" }],
+      filters: [
+        { field: "streak", op: "eq", value: "current streak" },
+        { field: "result", op: "eq", value: "win" },
+      ],
+    });
+  });
+
+  it("plans current losing-state questions onto current loss streaks", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "Are we currently losing?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "streak",
+      metrics: [{ metric: "length", agg: "max" }],
+      dimensions: ["result"],
+      filters: [
+        { field: "streak", op: "eq", value: "current streak" },
+        { field: "result", op: "eq", value: "loss" },
+      ],
+    });
+  });
+
+  it("plans current loss streak wording with result filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "How long is our current loss streak?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "streak",
+      metrics: [{ metric: "length", agg: "max" }],
+      dimensions: ["result"],
+      filters: [
+        { field: "streak", op: "eq", value: "current streak" },
+        { field: "result", op: "eq", value: "loss" },
+      ],
     });
   });
 
@@ -4606,7 +4691,10 @@ describe("query-builder natural-language planner", () => {
       dataset: "streak",
       metrics: [{ metric: "length", agg: "max" }],
       dimensions: ["result"],
-      filters: [{ field: "streak", op: "eq", value: "longest loss streak" }],
+      filters: [
+        { field: "streak", op: "eq", value: "longest loss streak" },
+        { field: "result", op: "eq", value: "loss" },
+      ],
     });
   });
 });
