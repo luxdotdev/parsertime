@@ -673,6 +673,48 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans ult-economy aggregate metric thresholds", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "Which ult advantage buckets have fight win rate over 60% with at least 10 fights?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_economy",
+      metrics: [
+        { metric: "win_rate", agg: "avg" },
+        { metric: "fights", agg: "count" },
+      ],
+      dimensions: ["advantage_bucket"],
+      filters: [
+        { field: "win_rate", op: "gt", value: 60 },
+        { field: "fights", op: "gte", value: 10 },
+      ],
+    });
+  });
+
+  it("plans average ult-advantage threshold drilldowns", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "Which map types have average ult advantage above 1 with at least 8 fights?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_economy",
+      metrics: [
+        { metric: "avg_advantage", agg: "avg" },
+        { metric: "fights", agg: "count" },
+      ],
+      dimensions: ["map_type"],
+      filters: [
+        { field: "avg_advantage", op: "gt", value: 1 },
+        { field: "fights", op: "gte", value: 8 },
+      ],
+    });
+  });
+
   it("plans per-player first-pick rate questions onto calculated stats", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

@@ -899,6 +899,14 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "average ultimates in lost fights",
     "ults in lost fights",
   ],
+  avg_advantage: [
+    "average ult advantage",
+    "avg ult advantage",
+    "average ultimate advantage",
+    "avg ultimate advantage",
+    "average ult bank",
+    "ult bank advantage",
+  ],
   first_events: ["opening kill", "opening kills", "first kill", "first kills"],
   first_deaths: [
     "first death",
@@ -3284,6 +3292,20 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
       : "ults_per_map";
     deduped.sort((a, b) =>
       a.metric === priority ? -1 : b.metric === priority ? 1 : 0
+    );
+  }
+  if (
+    dataset === "ult_economy" &&
+    deduped.some((ref) => ref.metric === "avg_advantage") &&
+    (includesPhrase(normalized, "average ult advantage") ||
+      includesPhrase(normalized, "avg ult advantage") ||
+      includesPhrase(normalized, "average ultimate advantage") ||
+      includesPhrase(normalized, "avg ultimate advantage") ||
+      includesPhrase(normalized, "average ult bank") ||
+      includesPhrase(normalized, "ult bank advantage"))
+  ) {
+    deduped.sort((a, b) =>
+      a.metric === "avg_advantage" ? -1 : b.metric === "avg_advantage" ? 1 : 0
     );
   }
   if (
@@ -5941,6 +5963,40 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     if (bucket) {
       filters.push({ field: "advantage_bucket", op: "in", value: [bucket] });
     }
+    filters.push(
+      ...extractNumericThresholdFilters(dataset, normalized, [
+        {
+          field: "win_rate",
+          aliases: [
+            "win rate",
+            "winrate",
+            "fight win rate",
+            "ult economy win rate",
+          ],
+        },
+        {
+          field: "avg_advantage",
+          aliases: [
+            "average ult advantage",
+            "avg ult advantage",
+            "average ultimate advantage",
+            "avg ultimate advantage",
+            "average ult bank",
+            "ult bank advantage",
+          ],
+        },
+        {
+          field: "fights",
+          aliases: [
+            "fights",
+            "teamfights",
+            "team fights",
+            "fight sample",
+            "sample size",
+          ],
+        },
+      ])
+    );
   }
 
   if (dataset === "ability_impact") {

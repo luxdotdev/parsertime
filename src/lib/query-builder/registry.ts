@@ -5987,6 +5987,28 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
           { value: "loss", label: "loss" },
         ],
       },
+      metricAggregateFilter({
+        id: "win_rate",
+        label: "win rate",
+        table: "UltEconomy",
+        column: "won",
+        aggregate: "avg",
+        unit: "%",
+      }),
+      metricAggregateFilter({
+        id: "fights",
+        label: "fights",
+        table: "UltEconomy",
+        column: "won",
+        aggregate: "count",
+      }),
+      metricAggregateFilter({
+        id: "avg_advantage",
+        label: "avg ult advantage",
+        table: "UltEconomy",
+        column: "advantage",
+        aggregate: "avg",
+      }),
     ],
   },
   duel: {
