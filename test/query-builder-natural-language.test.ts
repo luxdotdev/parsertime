@@ -168,6 +168,58 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans leaderboard phrasing onto ranked player stat metrics", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 7,
+      question: "Who leads the team in final blows per 10 on Widowmaker?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_stat",
+      teamId: 7,
+      metrics: [{ metric: "final_blows", agg: "per10" }],
+      dimensions: ["player"],
+      filters: [{ field: "hero", op: "in", value: ["Widowmaker"] }],
+      sort: { key: "per10__final_blows", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans ranked-by phrasing onto grouped player stat leaderboards", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 7,
+      question: "Rank players by scoped accuracy on Widowmaker",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_stat",
+      teamId: 7,
+      metrics: [{ metric: "scoped_accuracy", agg: "ratio" }],
+      dimensions: ["player"],
+      filters: [{ field: "hero", op: "in", value: ["Widowmaker"] }],
+      sort: { key: "ratio__scoped_accuracy", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans least phrasing as a low-value ranking without stealing thresholds", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 7,
+      question:
+        "Which players have the least deaths per 10 with at least 5 minutes played?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_stat",
+      teamId: 7,
+      metrics: [{ metric: "deaths", agg: "per10" }],
+      dimensions: ["player"],
+      filters: [{ field: "min_time_played", op: "gte", value: 300 }],
+      sort: { key: "per10__deaths", dir: "asc" },
+      limit: 20,
+    });
+  });
+
   it("plans environmental death rate questions by player", () => {
     const planned = planQueryFromQuestion({
       teamId: 7,

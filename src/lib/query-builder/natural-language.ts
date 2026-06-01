@@ -1470,6 +1470,8 @@ function findPlayer(question: string, hero: string | null): string | null {
     "critical",
     "distance",
     "environmental",
+    "scoped",
+    "accuracy",
     "per",
     "progress",
     "improvement",
@@ -2981,6 +2983,30 @@ function metricAliasCore(alias: string) {
     .replace(/\bper 10(?: minutes?)?\b/g, "")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function mentionsStandaloneLeast(normalized: string): boolean {
+  for (const match of normalized.matchAll(/\bleast\b/g)) {
+    const index = match.index ?? 0;
+    const before = normalized.slice(Math.max(0, index - 3), index);
+    if (before === "at ") continue;
+
+    const after = normalized.slice(index + "least".length).trimStart();
+    if (
+      new RegExp(`^(?:${INTEGER_TOKEN}|\\d+)\\b`).test(after) ||
+      after.startsWith("minute") ||
+      after.startsWith("second") ||
+      after.startsWith("map") ||
+      after.startsWith("game") ||
+      after.startsWith("scrim")
+    ) {
+      continue;
+    }
+
+    return true;
+  }
+
+  return false;
 }
 
 function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
@@ -7746,7 +7772,11 @@ function pickDimensions(
     (includesPhrase(normalized, "who") ||
       includesPhrase(normalized, "whose") ||
       includesPhrase(normalized, "which player") ||
-      includesPhrase(normalized, "which players")) &&
+      includesPhrase(normalized, "which players") ||
+      includesPhrase(normalized, "rank player") ||
+      includesPhrase(normalized, "rank players") ||
+      includesPhrase(normalized, "player leaderboard") ||
+      includesPhrase(normalized, "players leaderboard")) &&
     !hasFilter("player")
   ) {
     add(
@@ -7758,7 +7788,11 @@ function pickDimensions(
   if (
     (includesPhrase(normalized, "which hero") ||
       includesPhrase(normalized, "which heroes") ||
-      includesPhrase(normalized, "by hero")) &&
+      includesPhrase(normalized, "by hero") ||
+      includesPhrase(normalized, "rank hero") ||
+      includesPhrase(normalized, "rank heroes") ||
+      includesPhrase(normalized, "hero leaderboard") ||
+      includesPhrase(normalized, "heroes leaderboard")) &&
     !hasFilter("hero") &&
     !hasFilter("our_hero")
   ) {
@@ -8200,14 +8234,26 @@ function pickSort(
 ): QuerySpec["sort"] {
   if (dimensions.length === 0 || metrics.length === 0) return null;
   const normalized = normalize(question);
+  const hasLeastRanking = mentionsStandaloneLeast(normalized);
   if (
     !includesPhrase(normalized, "top") &&
     !includesPhrase(normalized, "most") &&
     !includesPhrase(normalized, "highest") &&
+    !includesPhrase(normalized, "leader") &&
+    !includesPhrase(normalized, "leaders") &&
+    !includesPhrase(normalized, "leaderboard") &&
+    !includesPhrase(normalized, "leads") &&
+    !includesPhrase(normalized, "lead in") &&
+    !includesPhrase(normalized, "rank") &&
+    !includesPhrase(normalized, "ranked") &&
+    !includesPhrase(normalized, "ranking") &&
     !includesPhrase(normalized, "deepest") &&
     !includesPhrase(normalized, "thinnest") &&
     !includesPhrase(normalized, "best") &&
     !includesPhrase(normalized, "lowest") &&
+    !hasLeastRanking &&
+    !includesPhrase(normalized, "fewest") &&
+    !includesPhrase(normalized, "bottom") &&
     !includesPhrase(normalized, "worst") &&
     !includesPhrase(normalized, "fastest") &&
     !includesPhrase(normalized, "slowest") &&
@@ -8257,6 +8303,11 @@ function pickSort(
     includesPhrase(normalized, "top") ||
     includesPhrase(normalized, "most") ||
     includesPhrase(normalized, "highest") ||
+    includesPhrase(normalized, "leader") ||
+    includesPhrase(normalized, "leaders") ||
+    includesPhrase(normalized, "leaderboard") ||
+    includesPhrase(normalized, "leads") ||
+    includesPhrase(normalized, "lead in") ||
     includesPhrase(normalized, "deepest") ||
     includesPhrase(normalized, "slowest") ||
     includesPhrase(normalized, "one trick") ||
@@ -8289,6 +8340,9 @@ function pickSort(
         includesPhrase(normalized, "composite z score")));
   const wantsLow =
     includesPhrase(normalized, "lowest") ||
+    hasLeastRanking ||
+    includesPhrase(normalized, "fewest") ||
+    includesPhrase(normalized, "bottom") ||
     includesPhrase(normalized, "thinnest") ||
     includesPhrase(normalized, "fastest") ||
     includesPhrase(normalized, "declining") ||
