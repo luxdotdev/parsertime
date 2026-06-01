@@ -1407,6 +1407,12 @@ type HeroMention = {
   aliasLength: number;
 };
 
+type AbilityMention = {
+  ability: string;
+  index: number;
+  aliasLength: number;
+};
+
 type MapMention = {
   map: string;
   index: number;
@@ -1443,11 +1449,27 @@ function findHeroMentions(question: string): HeroMention[] {
 }
 
 function findAbility(question: string): string | null {
+  return findAbilityMentions(question)[0]?.ability ?? null;
+}
+
+function findAbilityMentions(question: string): AbilityMention[] {
   const normalized = normalize(question);
   const matches = Array.from(ABILITY_BY_NORMALIZED.entries())
-    .filter(([alias]) => includesPhrase(normalized, alias))
-    .sort((a, b) => b[0].length - a[0].length);
-  return matches[0]?.[1] ?? null;
+    .map(([alias, ability]) => ({
+      ability,
+      index: findPhraseIndex(normalized, alias),
+      aliasLength: alias.length,
+    }))
+    .filter((mention) => mention.index >= 0)
+    .sort((a, b) => a.index - b.index || b.aliasLength - a.aliasLength);
+  const seen = new Set<string>();
+  const mentions: AbilityMention[] = [];
+  for (const mention of matches) {
+    if (seen.has(mention.ability)) continue;
+    seen.add(mention.ability);
+    mentions.push(mention);
+  }
+  return mentions;
 }
 
 function findMapName(question: string): string | null {
@@ -5304,7 +5326,8 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   const heroMentions = findHeroMentions(question);
   const heroes = heroMentions.map((mention) => mention.hero);
   const hero = heroes[0] ?? null;
-  const ability = findAbility(question);
+  const abilityMentions = findAbilityMentions(question);
+  const abilities = abilityMentions.map((mention) => mention.ability);
   const mapMentions = findMapMentions(question);
   const mapNames = mapMentions.map((mention) => mention.map);
   const mapName = mapNames[0] ?? null;
@@ -5356,8 +5379,8 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         : filterFor(dataset, "player", player);
     if (filter) filters.push(filter);
   }
-  if (ability) {
-    const filter = filterFor(dataset, "ability", ability);
+  if (abilities.length > 0) {
+    const filter = filterFor(dataset, "ability", abilities);
     if (filter) filters.push(filter);
   }
   if (mapNames.length > 0) {
@@ -8010,6 +8033,9 @@ function pickDimensions(
   }
   if (hasMultiValueFilter("opponent")) {
     add("opponent");
+  }
+  if (hasMultiValueFilter("ability")) {
+    add("ability");
   }
 
   if (

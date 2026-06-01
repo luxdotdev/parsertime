@@ -2005,6 +2005,28 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans multi-ability impact comparisons with grouped ability output", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 9,
+      question: "Compare using Suzu and Sleep Dart for fight win rate",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ability_impact",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["hero", "ability"],
+      filters: [
+        { field: "hero", op: "in", value: ["Kiriko", "Ana"] },
+        {
+          field: "ability",
+          op: "in",
+          value: ["Protection Suzu", "Sleep Dart"],
+        },
+        { field: "side", op: "eq", value: "us" },
+      ],
+    });
+  });
+
   it("plans ability loss questions after using abilities", () => {
     const planned = planQueryFromQuestion({
       teamId: 9,
@@ -2176,6 +2198,29 @@ describe("query-builder natural-language planner", () => {
         { field: "fights", op: "gte", value: 2 },
       ])
     );
+  });
+
+  it("plans multi-ability timing comparisons with grouped ability output", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 9,
+      question: "When should we use Suzu and Sleep Dart?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ability_timing",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["hero", "ability"],
+      filters: [
+        { field: "hero", op: "in", value: ["Kiriko", "Ana"] },
+        {
+          field: "ability",
+          op: "in",
+          value: ["Protection Suzu", "Sleep Dart"],
+        },
+      ],
+      sort: { key: "avg__win_rate", dir: "desc" },
+      limit: 20,
+    });
   });
 
   it("plans ability-timing loss questions by phase", () => {
