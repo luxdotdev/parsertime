@@ -517,6 +517,57 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans named ultimate count questions by player", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 1,
+      question: "How many blades has PGE used?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ultimate",
+      metrics: [{ metric: "ultimates", agg: "count" }],
+      dimensions: [],
+      filters: [
+        { field: "hero", op: "in", value: ["Genji"] },
+        { field: "player", op: "in", value: ["PGE"] },
+      ],
+      sort: null,
+      limit: null,
+    });
+  });
+
+  it("plans named ultimate usage leaderboards by player", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 1,
+      question: "Who used the most blades?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ultimate",
+      metrics: [{ metric: "ultimates", agg: "count" }],
+      dimensions: ["player"],
+      filters: [{ field: "hero", op: "in", value: ["Genji"] }],
+      sort: { key: "count__ultimates", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans plural named ultimate usage leaderboards", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 1,
+      question: "Which players used the most nano boosts?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ultimate",
+      metrics: [{ metric: "ultimates", agg: "count" }],
+      dimensions: ["player"],
+      filters: [{ field: "hero", op: "in", value: ["Ana"] }],
+      sort: { key: "count__ultimates", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans ranked raw ultimate usage questions by hero", () => {
     const planned = planQueryFromQuestion({
       teamId: 1,

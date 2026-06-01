@@ -1474,7 +1474,11 @@ const ULTIMATE_HERO_ALIASES: Array<[string, string[]]> = [
 
 const ULTIMATE_HERO_BY_NORMALIZED = new Map(
   ULTIMATE_HERO_ALIASES.flatMap(([hero, aliases]) =>
-    aliases.map((alias) => [normalize(alias), hero] as const)
+    aliases.flatMap((alias) => {
+      const normalized = normalize(alias);
+      if (normalized.endsWith("s")) return [[normalized, hero] as const];
+      return [[normalized, hero] as const, [`${normalized}s`, hero] as const];
+    })
   )
 );
 
@@ -2809,6 +2813,31 @@ function mentionsNamedUltimateImpactContext(
   );
 }
 
+function mentionsNamedUltimateCountContext(
+  normalized: string,
+  hasNamedUltimate: boolean
+): boolean {
+  if (!hasNamedUltimate) return false;
+  const countIntent =
+    includesPhrase(normalized, "how many") ||
+    includesPhrase(normalized, "number of") ||
+    includesPhrase(normalized, "count of");
+  const rankingIntent =
+    (includesPhrase(normalized, "who") ||
+      includesPhrase(normalized, "which player") ||
+      includesPhrase(normalized, "which players")) &&
+    (includesPhrase(normalized, "most") ||
+      includesPhrase(normalized, "least") ||
+      includesPhrase(normalized, "fewest") ||
+      includesPhrase(normalized, "top") ||
+      includesPhrase(normalized, "leaderboard"));
+
+  return (
+    (countIntent || rankingIntent) &&
+    /\b(?:use|uses|used|using)\b/.test(normalized)
+  );
+}
+
 function mentionsWithWithoutBanComparison(normalized: string): boolean {
   const mentionsBan =
     includesPhrase(normalized, "ban") ||
@@ -3033,6 +3062,14 @@ function pickDataset(question: string): DatasetId {
   }
   if (mentionsWonLostFightUltComparison(normalized)) {
     return "teamfight";
+  }
+  if (
+    mentionsNamedUltimateCountContext(
+      normalized,
+      namedUltimateHeroMentions.length > 0
+    )
+  ) {
+    return "ultimate";
   }
   if (
     mentionsNamedUltimateImpactContext(
