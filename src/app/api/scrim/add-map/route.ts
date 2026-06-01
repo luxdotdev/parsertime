@@ -11,6 +11,7 @@ import { after, type NextRequest } from "next/server";
 
 export type AddMapRequestData = {
   map: ParserData;
+  order?: number;
   heroBans?: {
     hero: string;
     team: string;
@@ -87,6 +88,7 @@ export async function POST(req: NextRequest) {
       {
         map: mapData,
         scrimId,
+        order: data.order,
         heroBans: data.heroBans,
       },
       session

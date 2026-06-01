@@ -57,7 +57,7 @@ const parserDataSchema = z.custom<ParserData>((value) => {
   );
 });
 
-const createScrimSchema = z.object({
+export const createScrimSchema = z.object({
   name: z.string().min(1).max(100),
   team: z
     .string()
@@ -226,12 +226,13 @@ export async function POST(request: NextRequest) {
         }
 
         const parseStart = performance.now();
-        await createNewScrimFromParsedData(data, session);
+        const newScrimId = await createNewScrimFromParsedData(data, session);
         const parseDuration = performance.now() - parseStart;
         scrimParsingDuration.record(parseDuration);
         scrimCreatedCounter.add(1);
 
         event.parse_duration_ms = Math.round(parseDuration);
+        event.scrim_id = newScrimId;
         event.outcome = "success";
         event.status_code = 200;
 
@@ -248,7 +249,7 @@ export async function POST(request: NextRequest) {
               event: "scrim.created",
               data: {
                 scrimName: data.name,
-                scrimId: 0, // Scrim ID not returned from parser
+                scrimId: newScrimId,
                 createdBy: session.user.email,
                 teamId,
               },
@@ -256,7 +257,7 @@ export async function POST(request: NextRequest) {
           }
         });
 
-        return new Response("OK", { status: 200 });
+        return Response.json({ scrimId: newScrimId }, { status: 200 });
       }
     );
   } catch (error) {

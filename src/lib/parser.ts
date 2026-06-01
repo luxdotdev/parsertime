@@ -339,9 +339,68 @@ export async function parseDataFromXLSX(file: File) {
   return result;
 }
 
+export type InsertProgress = (completed: number, total: number) => void;
+
+/**
+ * Insert every event type's rows for a map, reporting progress weighted by how
+ * many rows each event type contributes. Progress is measured in rows, so a
+ * long kill feed moves the bar more than a one-line match_start. Passing no
+ * `onProgress` runs the inserts exactly as before.
+ */
+async function insertMapEventRows(
+  map: ParserData,
+  scrim: { id: number },
+  mapDataId: number,
+  onProgress?: InsertProgress
+): Promise<void> {
+  const tasks: [keyof ParserData, () => Promise<unknown>][] = [
+    ["ability_1_used", () => createAbility1UsedRows(map, scrim, mapDataId)],
+    ["ability_2_used", () => createAbility2UsedRows(map, scrim, mapDataId)],
+    ["damage", () => createDamageRows(map, scrim, mapDataId)],
+    ["defensive_assist", () => createDefensiveAssistsRows(map, scrim, mapDataId)],
+    ["dva_remech", () => createDvaRemechRows(map, scrim, mapDataId)],
+    ["echo_duplicate_end", () => createEchoDuplicateEndRows(map, scrim, mapDataId)],
+    ["echo_duplicate_start", () => createEchoDuplicateStartRows(map, scrim, mapDataId)],
+    ["healing", () => createHealingRows(map, scrim, mapDataId)],
+    ["hero_spawn", () => createHeroSpawnRows(map, scrim, mapDataId)],
+    ["hero_swap", () => createHeroSwapRows(map, scrim, mapDataId)],
+    ["kill", () => createKillRows(map, scrim, mapDataId)],
+    ["match_end", () => createMatchEndRows(map, scrim, mapDataId)],
+    ["match_start", () => createMatchStartRows(map, scrim, mapDataId)],
+    ["mercy_rez", () => createMercyRezRows(map, scrim, mapDataId)],
+    ["objective_captured", () => createObjectiveCapturedRows(map, scrim, mapDataId)],
+    ["objective_updated", () => createObjectiveUpdatedRows(map, scrim, mapDataId)],
+    ["offensive_assist", () => createOffensiveAssistRows(map, scrim, mapDataId)],
+    ["payload_progress", () => createPayloadProgressRows(map, scrim, mapDataId)],
+    ["player_stat", () => createPlayerStatRows(map, scrim, mapDataId)],
+    ["point_progress", () => createPointProgressRows(map, scrim, mapDataId)],
+    ["remech_charged", () => createRemechChargedRows(map, scrim, mapDataId)],
+    ["round_end", () => createRoundEndRows(map, scrim, mapDataId)],
+    ["round_start", () => createRoundStartRows(map, scrim, mapDataId)],
+    ["setup_complete", () => createSetupCompleteRows(map, scrim, mapDataId)],
+    ["ultimate_charged", () => createUltimateChargedRows(map, scrim, mapDataId)],
+    ["ultimate_end", () => createUltimateEndRows(map, scrim, mapDataId)],
+    ["ultimate_start", () => createUltimateStartRows(map, scrim, mapDataId)],
+  ];
+
+  const weights = tasks.map(([key]) => map[key]?.length ?? 0);
+  const total = weights.reduce((sum, n) => sum + n, 0) || 1;
+
+  let done = 0;
+  onProgress?.(0, total);
+  await Promise.all(
+    tasks.map(async ([, run], i) => {
+      await run();
+      done += weights[i];
+      onProgress?.(done, total);
+    })
+  );
+}
+
 export async function createNewScrimFromParsedData(
   data: CreateScrimRequestData,
-  session: Session
+  session: Session,
+  onProgress?: InsertProgress
 ) {
   const startTime = Date.now();
   const event: Record<string, unknown> = {
@@ -429,6 +488,7 @@ export async function createNewScrimFromParsedData(
         name: data.map.match_start[0][2] ?? "New Map",
         scrimId: scrim.id,
         replayCode: data.replayCode ?? "",
+        order: 0,
         mapData: {
           connect: {
             id: mapData.id,
@@ -473,35 +533,7 @@ export async function createNewScrimFromParsedData(
     const eventInsertStart = Date.now();
 
     try {
-      await Promise.all([
-        createAbility1UsedRows(firstMap, scrim, mapData.id),
-        createAbility2UsedRows(firstMap, scrim, mapData.id),
-        createDamageRows(firstMap, scrim, mapData.id),
-        createDefensiveAssistsRows(firstMap, scrim, mapData.id),
-        createDvaRemechRows(firstMap, scrim, mapData.id),
-        createEchoDuplicateEndRows(firstMap, scrim, mapData.id),
-        createEchoDuplicateStartRows(firstMap, scrim, mapData.id),
-        createHealingRows(firstMap, scrim, mapData.id),
-        createHeroSpawnRows(firstMap, scrim, mapData.id),
-        createHeroSwapRows(firstMap, scrim, mapData.id),
-        createKillRows(firstMap, scrim, mapData.id),
-        createMatchEndRows(firstMap, scrim, mapData.id),
-        createMatchStartRows(firstMap, scrim, mapData.id),
-        createMercyRezRows(firstMap, scrim, mapData.id),
-        createObjectiveCapturedRows(firstMap, scrim, mapData.id),
-        createObjectiveUpdatedRows(firstMap, scrim, mapData.id),
-        createOffensiveAssistRows(firstMap, scrim, mapData.id),
-        createPayloadProgressRows(firstMap, scrim, mapData.id),
-        createPlayerStatRows(firstMap, scrim, mapData.id),
-        createPointProgressRows(firstMap, scrim, mapData.id),
-        createRemechChargedRows(firstMap, scrim, mapData.id),
-        createRoundEndRows(firstMap, scrim, mapData.id),
-        createRoundStartRows(firstMap, scrim, mapData.id),
-        createSetupCompleteRows(firstMap, scrim, mapData.id),
-        createUltimateChargedRows(firstMap, scrim, mapData.id),
-        createUltimateEndRows(firstMap, scrim, mapData.id),
-        createUltimateStartRows(firstMap, scrim, mapData.id),
-      ]);
+      await insertMapEventRows(firstMap, scrim, mapData.id, onProgress);
 
       event.event_insert_duration_ms = Date.now() - eventInsertStart;
 
@@ -533,6 +565,7 @@ export async function createNewScrimFromParsedData(
     }
 
     event.outcome = "success";
+    return scrim.id;
   } catch (error) {
     if (!event.outcome) {
       event.outcome = "error";
@@ -551,6 +584,7 @@ export async function createNewScrimFromParsedData(
 type CreateNewMapArgs = {
   scrimId: number;
   map: ParserData;
+  order?: number;
   heroBans?: {
     hero: string;
     team: string;
@@ -558,7 +592,11 @@ type CreateNewMapArgs = {
   }[];
 };
 
-export async function createNewMap(data: CreateNewMapArgs, session: Session) {
+export async function createNewMap(
+  data: CreateNewMapArgs,
+  session: Session,
+  onProgress?: InsertProgress
+) {
   const startTime = Date.now();
   const event: Record<string, unknown> = {
     operation: "createNewMap",
@@ -594,6 +632,7 @@ export async function createNewMap(data: CreateNewMapArgs, session: Session) {
       data: {
         name: toTitleCase(data.map.match_start[0][2]) ?? "New Map",
         scrimId: data.scrimId,
+        order: data.order ?? 0,
         mapData: {
           connect: {
             id: mapData.id,
@@ -645,39 +684,12 @@ export async function createNewMap(data: CreateNewMapArgs, session: Session) {
     const eventInsertStart = Date.now();
 
     try {
-      await Promise.all([
-        createAbility1UsedRows(data.map, { id: data.scrimId }, mapData.id),
-        createAbility2UsedRows(data.map, { id: data.scrimId }, mapData.id),
-        createDamageRows(data.map, { id: data.scrimId }, mapData.id),
-        createDefensiveAssistsRows(data.map, { id: data.scrimId }, mapData.id),
-        createDvaRemechRows(data.map, { id: data.scrimId }, mapData.id),
-        createEchoDuplicateEndRows(data.map, { id: data.scrimId }, mapData.id),
-        createEchoDuplicateStartRows(
-          data.map,
-          { id: data.scrimId },
-          mapData.id
-        ),
-        createHealingRows(data.map, { id: data.scrimId }, mapData.id),
-        createHeroSpawnRows(data.map, { id: data.scrimId }, mapData.id),
-        createHeroSwapRows(data.map, { id: data.scrimId }, mapData.id),
-        createKillRows(data.map, { id: data.scrimId }, mapData.id),
-        createMatchEndRows(data.map, { id: data.scrimId }, mapData.id),
-        createMatchStartRows(data.map, { id: data.scrimId }, mapData.id),
-        createMercyRezRows(data.map, { id: data.scrimId }, mapData.id),
-        createObjectiveCapturedRows(data.map, { id: data.scrimId }, mapData.id),
-        createObjectiveUpdatedRows(data.map, { id: data.scrimId }, mapData.id),
-        createOffensiveAssistRows(data.map, { id: data.scrimId }, mapData.id),
-        createPayloadProgressRows(data.map, { id: data.scrimId }, mapData.id),
-        createPlayerStatRows(data.map, { id: data.scrimId }, mapData.id),
-        createPointProgressRows(data.map, { id: data.scrimId }, mapData.id),
-        createRemechChargedRows(data.map, { id: data.scrimId }, mapData.id),
-        createRoundEndRows(data.map, { id: data.scrimId }, mapData.id),
-        createRoundStartRows(data.map, { id: data.scrimId }, mapData.id),
-        createSetupCompleteRows(data.map, { id: data.scrimId }, mapData.id),
-        createUltimateChargedRows(data.map, { id: data.scrimId }, mapData.id),
-        createUltimateEndRows(data.map, { id: data.scrimId }, mapData.id),
-        createUltimateStartRows(data.map, { id: data.scrimId }, mapData.id),
-      ]);
+      await insertMapEventRows(
+        data.map,
+        { id: data.scrimId },
+        mapData.id,
+        onProgress
+      );
     } catch (error) {
       event.event_insert_duration_ms = Date.now() - eventInsertStart;
       event.outcome = "event_insert_failed";
