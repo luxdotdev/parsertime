@@ -4,6 +4,7 @@ import {
   loadCurrentTeamAvailability,
 } from "@/lib/matchmaker/availability";
 import { upsertTeamTsrSnapshot } from "@/lib/matchmaker/snapshot";
+import { getBlockedTeamIds } from "@/lib/team-ops/blacklist";
 import prisma from "@/lib/prisma";
 import type { FaceitTier, TeamTsrSource, TsrRegion } from "@prisma/client";
 
@@ -101,12 +102,14 @@ export async function getMatchmakerCandidates(
   });
   if (!snap) return { kind: "no-snapshot" };
 
+  const blockedTeamIds = await getBlockedTeamIds(searcherTeamId);
+
   const since = new Date(Date.now() - COOLDOWN_HOURS * 3_600_000);
   const [pool, recentRequests, sentInLast24h, searcherAvail] =
     await Promise.all([
       prisma.teamTsrSnapshot.findMany({
         where: {
-          teamId: { not: searcherTeamId },
+          teamId: { not: searcherTeamId, notIn: [...blockedTeamIds] },
           team: { readonly: false },
         },
         include: { team: { select: { id: true, name: true, image: true } } },
