@@ -155,6 +155,12 @@ export type PlayerScrimPerformance = {
   outliers: ScrimOutlier[];
   trend: "improving" | "stable" | "declining";
   trendData?: TrendsAnalysis;
+  /**
+   * Whether this player is designated a substitute for the team. Substitutes
+   * remain in `teamPlayers` (individually visible) but are excluded from
+   * team-level aggregates such as {@link ScrimTeamTotals}.
+   */
+  isSubstitute: boolean;
 };
 
 export type ScrimInsight = {

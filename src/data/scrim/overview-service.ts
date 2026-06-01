@@ -21,6 +21,8 @@ import {
   TeamSharedDataService,
   TeamSharedDataServiceLive,
 } from "@/data/team/shared-data-service";
+import { getTeamSubstituteNames } from "@/data/team/substitutes";
+import { computeTeamTotals } from "@/data/scrim/team-totals";
 import { EffectObservabilityLive } from "@/instrumentation";
 import prisma from "@/lib/prisma";
 import type { ValidStatColumn } from "@/lib/stat-percentiles";
@@ -1585,6 +1587,15 @@ export const make: Effect.Effect<
         })
       );
 
+      const substituteNames = yield* Effect.tryPromise({
+        try: () => getTeamSubstituteNames(teamId),
+        catch: (error) =>
+          new ScrimQueryError({
+            operation: "getScrimOverview.fetchSubstitutes",
+            cause: error,
+          }),
+      });
+
       const teamRosterSet = new Set(teamRoster);
       const scrimPlayers = scrimPlayerNames
         .map((p) => p.player_name)
@@ -2145,6 +2156,7 @@ export const make: Effect.Effect<
           outliers: [],
           trend,
           trendData,
+          isSubstitute: substituteNames.has(playerName),
         } satisfies PlayerScrimPerformance);
       }
 
@@ -2222,26 +2234,9 @@ export const make: Effect.Effect<
           a.playerName.localeCompare(b.playerName)
       );
 
-      const teamTotals = teamPlayers.reduce(
-        (acc, p) => ({
-          eliminations: acc.eliminations + p.eliminations,
-          deaths: acc.deaths + p.deaths,
-          heroDamage: acc.heroDamage + p.heroDamageDealt,
-          healing: acc.healing + p.healingDealt,
-          kdRatio: 0,
-        }),
-        {
-          eliminations: 0,
-          deaths: 0,
-          heroDamage: 0,
-          healing: 0,
-          kdRatio: 0,
-        }
-      );
-      teamTotals.kdRatio =
-        teamTotals.deaths > 0
-          ? teamTotals.eliminations / teamTotals.deaths
-          : teamTotals.eliminations;
+      // Substitutes stay in `teamPlayers` (individually visible) but are
+      // excluded from team-level totals.
+      const teamTotals = computeTeamTotals(teamPlayers);
 
       const insights = generateInsights(teamPlayers);
 

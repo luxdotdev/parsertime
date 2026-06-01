@@ -81,6 +81,20 @@ function playerNameCandidates(member: TeamMember): string[] {
   return [...out];
 }
 
+/**
+ * Whether a team member matches any of the given player names (case-insensitive,
+ * across display name and every plausible BattleTag form). Used to exclude
+ * substitutes, which are keyed by in-game `player_name`, from the TSR roster.
+ */
+export function matchesAnyName(
+  member: TeamMember,
+  names: Set<string>
+): boolean {
+  if (names.size === 0) return false;
+  const lowered = new Set([...names].map((n) => n.toLowerCase()));
+  return playerNameCandidates(member).some((c) => lowered.has(c));
+}
+
 // Mean of the top two heroes' Raw CSR by playtime — the spec's
 // "player composite CSR" used as the predictor input. Heroes are picked
 // from the team's scrims so the predictor reflects the player's role on
