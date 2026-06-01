@@ -76,6 +76,8 @@ model User {
   pendingAutoRefill      PendingAutoRefill?
   scrimRequestsSent      ScrimRequest[]
   teamSubstitutes        TeamSubstitute[]
+  teamBlacklists         TeamBlacklist[]
+  scrimFeedback          ScrimFeedback[]
 
   @@index([id, email])
 }
@@ -221,6 +223,9 @@ model Team {
   scrimRequestsFrom     ScrimRequest[]            @relation("ScrimRequestFrom")
   scrimRequestsTo       ScrimRequest[]            @relation("ScrimRequestTo")
   substitutes           TeamSubstitute[]
+  blacklistsOwned       TeamBlacklist[]           @relation("BlacklistOwner")
+  blacklistedBy         TeamBlacklist[]           @relation("BlacklistBlocked")
+  scrimsAgainst         Scrim[]                   @relation("ScrimOpponent")
 }
 
 model BotNotificationConfig {
@@ -269,6 +274,18 @@ enum UserRole {
   ADMIN
   MANAGER
   USER
+}
+
+enum TeamBlacklistSource {
+  MANUAL
+  POST_SCRIM
+}
+
+enum ScrimFeedbackVerdict {
+  GOOD
+  NEUTRAL
+  BLACKLISTED
+  DISMISSED
 }
 
 model TeamInviteToken {
@@ -344,8 +361,15 @@ model Scrim {
   team1Name           String?
   team2Name           String?
   tournamentMatch     TournamentMatch?
+  opponentTeamId      Int?
+  scrimRequestId      String?
+  opponentTeam   Team?          @relation("ScrimOpponent", fields: [opponentTeamId], references: [id], onDelete: SetNull)
+  scrimRequest   ScrimRequest?  @relation(fields: [scrimRequestId], references: [id], onDelete: SetNull)
+  feedback       ScrimFeedback?
 
   @@index([teamId])
+  @@index([opponentTeamId])
+  @@index([teamId, opponentTeamId])
 }
 
 model Map {
@@ -1903,11 +1927,46 @@ model ScrimRequest {
   message      String
   createdAt    DateTime @default(now())
 
-  fromTeam Team @relation("ScrimRequestFrom", fields: [fromTeamId], references: [id], onDelete: Cascade)
-  toTeam   Team @relation("ScrimRequestTo", fields: [toTeamId], references: [id], onDelete: Cascade)
-  sentBy   User @relation(fields: [sentByUserId], references: [id], onDelete: Cascade)
+  fromTeam     Team    @relation("ScrimRequestFrom", fields: [fromTeamId], references: [id], onDelete: Cascade)
+  toTeam       Team    @relation("ScrimRequestTo", fields: [toTeamId], references: [id], onDelete: Cascade)
+  sentBy       User    @relation(fields: [sentByUserId], references: [id], onDelete: Cascade)
+  linkedScrims Scrim[]
 
   @@index([fromTeamId, createdAt])
   @@index([toTeamId, createdAt])
   @@index([fromTeamId, toTeamId, createdAt])
+}
+
+model TeamBlacklist {
+  id              String              @id @default(cuid())
+  ownerTeamId     Int
+  blockedTeamId   Int?
+  blockedTeamName String
+  blockedKey      String
+  reason          String?
+  source          TeamBlacklistSource @default(MANUAL)
+  createdBy       String
+  createdAt       DateTime            @default(now())
+
+  ownerTeam   Team  @relation("BlacklistOwner", fields: [ownerTeamId], references: [id], onDelete: Cascade)
+  blockedTeam Team? @relation("BlacklistBlocked", fields: [blockedTeamId], references: [id], onDelete: SetNull)
+  creator     User  @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@unique([ownerTeamId, blockedKey])
+  @@index([blockedTeamId])
+  @@index([ownerTeamId])
+  @@index([createdBy])
+}
+
+model ScrimFeedback {
+  id        String               @id @default(cuid())
+  scrimId   Int                  @unique
+  verdict   ScrimFeedbackVerdict
+  createdBy String
+  createdAt DateTime             @default(now())
+
+  scrim   Scrim @relation(fields: [scrimId], references: [id], onDelete: Cascade)
+  creator User  @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@index([createdBy])
 }
