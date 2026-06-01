@@ -1354,6 +1354,22 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans multi-map comparisons with grouped map output", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Compare our map win rate on King's Row and Circuit Royal",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_result",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["map"],
+      filters: [
+        { field: "map", op: "in", value: ["King's Row", "Circuit Royal"] },
+      ],
+    });
+  });
+
   it("plans best maps against an opponent", () => {
     const planned = planQueryFromQuestion({
       teamId: 2,
@@ -1666,6 +1682,22 @@ describe("query-builder natural-language planner", () => {
       metrics: [{ metric: "playtime", agg: "sum" }],
       dimensions: [],
       filters: [{ field: "map", op: "in", value: ["King's Row"] }],
+    });
+  });
+
+  it("plans multi-map playtime comparisons with grouped map output", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "How much time have we played on King's Row and Lijiang Tower?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_result",
+      metrics: [{ metric: "playtime", agg: "sum" }],
+      dimensions: ["map"],
+      filters: [
+        { field: "map", op: "in", value: ["King's Row", "Lijiang Tower"] },
+      ],
     });
   });
 
