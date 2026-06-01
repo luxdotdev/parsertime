@@ -608,6 +608,7 @@
     "title": "Dashboard",
     "overview": "Your Scrims",
     "admin": "Admin View",
+    "pendingFeedback": "{count, plural, one {# scrim awaiting feedback} other {# scrims awaiting feedback}}",
     "search": "Search...",
     "themeSwitcher": {
       "toggle": "Toggle theme",

@@ -608,6 +608,7 @@
     "title": "仪表盘",
     "overview": "您的比赛",
     "admin": "管理员视图",
+    "pendingFeedback": "{count, plural, other {{count} 场训练赛等待反馈}}",
     "search": "搜索...",
     "themeSwitcher": {
       "toggle": "切换主题",

@@ -6,6 +6,7 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
+import { getPendingFeedbackCount } from "@/lib/team-ops/scrim-feedback";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
 import type { Metadata } from "next";
@@ -50,11 +51,21 @@ export default async function DashboardPage() {
     getTranslations("dashboard"),
   ]);
 
-  const userData = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
-  );
+  const email = session?.user?.email;
+
+  const [userData, manageableTeams] = await Promise.all([
+    AppRuntime.runPromise(
+      UserService.pipe(Effect.flatMap((svc) => svc.getUser(email)))
+    ),
+    AppRuntime.runPromise(
+      UserService.pipe(Effect.flatMap((svc) => svc.getTeamsWithPerms(email)))
+    ),
+  ]);
 
   const isAdmin = userData?.role === $Enums.UserRole.ADMIN;
+
+  const manageableTeamIds = manageableTeams.map((team) => team.id);
+  const pendingFeedbackCount = await getPendingFeedbackCount(manageableTeamIds);
 
   return (
     <DirectionalTransition>
@@ -62,6 +73,11 @@ export default async function DashboardPage() {
         <div className="mb-3 flex items-end justify-between gap-4">
           <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
         </div>
+        {pendingFeedbackCount > 0 && (
+          <p className="text-muted-foreground mb-4 text-sm">
+            {t("pendingFeedback", { count: pendingFeedbackCount })}
+          </p>
+        )}
         <Tabs defaultValue="overview">
           {isAdmin && (
             <TabsList className="mb-5">

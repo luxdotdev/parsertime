@@ -608,6 +608,7 @@
     "title": "대시보드",
     "overview": "내 스크림",
     "admin": "관리자 보기",
+    "pendingFeedback": "{count, plural, other {{count}개의 스크림이 피드백을 기다리고 있습니다}}",
     "search": "검색...",
     "themeSwitcher": {
       "toggle": "테마 전환",
