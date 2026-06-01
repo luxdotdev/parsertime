@@ -202,6 +202,40 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("defaults player-stat leaderboards to player groups", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 7,
+      question: "Show the final blows per 10 leaderboard on Widowmaker",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_stat",
+      teamId: 7,
+      metrics: [{ metric: "final_blows", agg: "per10" }],
+      dimensions: ["player"],
+      filters: [{ field: "hero", op: "in", value: ["Widowmaker"] }],
+      sort: { key: "per10__final_blows", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("lets low-value ranking words beat generic leaderboard wording", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 7,
+      question: "Show the fewest deaths per 10 leaderboard",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_stat",
+      teamId: 7,
+      metrics: [{ metric: "deaths", agg: "per10" }],
+      dimensions: ["player"],
+      filters: [],
+      sort: { key: "per10__deaths", dir: "asc" },
+      limit: 20,
+    });
+  });
+
   it("plans least phrasing as a low-value ranking without stealing thresholds", () => {
     const planned = planQueryFromQuestion({
       teamId: 7,

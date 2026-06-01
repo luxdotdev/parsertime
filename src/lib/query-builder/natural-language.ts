@@ -3009,6 +3009,59 @@ function mentionsStandaloneLeast(normalized: string): boolean {
   return false;
 }
 
+function mentionsLowRankingIntent(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "lowest") ||
+    mentionsStandaloneLeast(normalized) ||
+    includesPhrase(normalized, "fewest") ||
+    includesPhrase(normalized, "bottom") ||
+    includesPhrase(normalized, "thinnest") ||
+    includesPhrase(normalized, "fastest") ||
+    includesPhrase(normalized, "declining") ||
+    includesPhrase(normalized, "trending down")
+  );
+}
+
+function mentionsHighRankingIntent(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "top") ||
+    includesPhrase(normalized, "most") ||
+    includesPhrase(normalized, "highest") ||
+    includesPhrase(normalized, "leader") ||
+    includesPhrase(normalized, "leaders") ||
+    includesPhrase(normalized, "leaderboard") ||
+    includesPhrase(normalized, "leads") ||
+    includesPhrase(normalized, "lead in") ||
+    includesPhrase(normalized, "deepest") ||
+    includesPhrase(normalized, "slowest") ||
+    includesPhrase(normalized, "one trick") ||
+    includesPhrase(normalized, "one-trick") ||
+    includesPhrase(normalized, "forced off") ||
+    includesPhrase(normalized, "improving") ||
+    includesPhrase(normalized, "increasing") ||
+    includesPhrase(normalized, "trending up") ||
+    includesPhrase(normalized, "outlier") ||
+    includesPhrase(normalized, "outliers") ||
+    includesPhrase(normalized, "far above") ||
+    includesPhrase(normalized, "far below") ||
+    includesPhrase(normalized, "consistent") ||
+    includesPhrase(normalized, "volatile") ||
+    includesPhrase(normalized, "volatility")
+  );
+}
+
+function mentionsRankingIntent(normalized: string): boolean {
+  return (
+    mentionsHighRankingIntent(normalized) ||
+    mentionsLowRankingIntent(normalized) ||
+    includesPhrase(normalized, "rank") ||
+    includesPhrase(normalized, "ranked") ||
+    includesPhrase(normalized, "ranking") ||
+    includesPhrase(normalized, "best") ||
+    includesPhrase(normalized, "worst")
+  );
+}
+
 function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   const normalized = normalize(question);
   const ds = getDataset(dataset);
@@ -7860,6 +7913,14 @@ function pickDimensions(
       add("attacker_hero");
     }
   }
+  if (
+    dataset === "player_stat" &&
+    dims.length === 0 &&
+    mentionsRankingIntent(normalized) &&
+    !hasFilter("player")
+  ) {
+    add("player");
+  }
   if (dataset === "hero_swap" && dims.length === 0) {
     if (
       includesPhrase(normalized, "who") ||
@@ -8234,44 +8295,8 @@ function pickSort(
 ): QuerySpec["sort"] {
   if (dimensions.length === 0 || metrics.length === 0) return null;
   const normalized = normalize(question);
-  const hasLeastRanking = mentionsStandaloneLeast(normalized);
   if (
-    !includesPhrase(normalized, "top") &&
-    !includesPhrase(normalized, "most") &&
-    !includesPhrase(normalized, "highest") &&
-    !includesPhrase(normalized, "leader") &&
-    !includesPhrase(normalized, "leaders") &&
-    !includesPhrase(normalized, "leaderboard") &&
-    !includesPhrase(normalized, "leads") &&
-    !includesPhrase(normalized, "lead in") &&
-    !includesPhrase(normalized, "rank") &&
-    !includesPhrase(normalized, "ranked") &&
-    !includesPhrase(normalized, "ranking") &&
-    !includesPhrase(normalized, "deepest") &&
-    !includesPhrase(normalized, "thinnest") &&
-    !includesPhrase(normalized, "best") &&
-    !includesPhrase(normalized, "lowest") &&
-    !hasLeastRanking &&
-    !includesPhrase(normalized, "fewest") &&
-    !includesPhrase(normalized, "bottom") &&
-    !includesPhrase(normalized, "worst") &&
-    !includesPhrase(normalized, "fastest") &&
-    !includesPhrase(normalized, "slowest") &&
-    !includesPhrase(normalized, "one trick") &&
-    !includesPhrase(normalized, "one-trick") &&
-    !includesPhrase(normalized, "forced off") &&
-    !includesPhrase(normalized, "improving") &&
-    !includesPhrase(normalized, "increasing") &&
-    !includesPhrase(normalized, "declining") &&
-    !includesPhrase(normalized, "trending up") &&
-    !includesPhrase(normalized, "trending down") &&
-    !includesPhrase(normalized, "outlier") &&
-    !includesPhrase(normalized, "outliers") &&
-    !includesPhrase(normalized, "far above") &&
-    !includesPhrase(normalized, "far below") &&
-    !includesPhrase(normalized, "consistent") &&
-    !includesPhrase(normalized, "volatile") &&
-    !includesPhrase(normalized, "volatility") &&
+    !mentionsRankingIntent(normalized) &&
     !(
       dataset === "hero_pickrate" &&
       (includesPhrase(normalized, "owns") ||
@@ -8300,29 +8325,7 @@ function pickSort(
   }
   const metric = getMetric(dataset, metrics[0].metric);
   const wantsHigh =
-    includesPhrase(normalized, "top") ||
-    includesPhrase(normalized, "most") ||
-    includesPhrase(normalized, "highest") ||
-    includesPhrase(normalized, "leader") ||
-    includesPhrase(normalized, "leaders") ||
-    includesPhrase(normalized, "leaderboard") ||
-    includesPhrase(normalized, "leads") ||
-    includesPhrase(normalized, "lead in") ||
-    includesPhrase(normalized, "deepest") ||
-    includesPhrase(normalized, "slowest") ||
-    includesPhrase(normalized, "one trick") ||
-    includesPhrase(normalized, "one-trick") ||
-    includesPhrase(normalized, "forced off") ||
-    includesPhrase(normalized, "improving") ||
-    includesPhrase(normalized, "increasing") ||
-    includesPhrase(normalized, "trending up") ||
-    includesPhrase(normalized, "outlier") ||
-    includesPhrase(normalized, "outliers") ||
-    includesPhrase(normalized, "far above") ||
-    includesPhrase(normalized, "far below") ||
-    includesPhrase(normalized, "consistent") ||
-    includesPhrase(normalized, "volatile") ||
-    includesPhrase(normalized, "volatility") ||
+    mentionsHighRankingIntent(normalized) ||
     (dataset === "ability_timing" &&
       (includesPhrase(normalized, "when should") ||
         includesPhrase(normalized, "when to use") ||
@@ -8338,21 +8341,13 @@ function pickSort(
       (includesPhrase(normalized, "z score") ||
         includesPhrase(normalized, "z-score") ||
         includesPhrase(normalized, "composite z score")));
-  const wantsLow =
-    includesPhrase(normalized, "lowest") ||
-    hasLeastRanking ||
-    includesPhrase(normalized, "fewest") ||
-    includesPhrase(normalized, "bottom") ||
-    includesPhrase(normalized, "thinnest") ||
-    includesPhrase(normalized, "fastest") ||
-    includesPhrase(normalized, "declining") ||
-    includesPhrase(normalized, "trending down");
+  const wantsLow = mentionsLowRankingIntent(normalized);
   const wantsBest = includesPhrase(normalized, "best");
   const wantsWorst = includesPhrase(normalized, "worst");
-  const dir = wantsHigh
-    ? "desc"
-    : wantsLow
-      ? "asc"
+  const dir = wantsLow
+    ? "asc"
+    : wantsHigh
+      ? "desc"
       : wantsBest
         ? metric?.lowerIsBetter
           ? "asc"
