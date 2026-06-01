@@ -125,10 +125,10 @@ export async function getBlacklistSuggestions(
 
   const blocked = new Set(existing.map((e) => e.blockedTeamId).filter((x): x is number => x !== null));
   const byId = new Map<number, BlacklistSuggestion>();
-  const add = (t: { id: number; name: string; image: string | null }) => {
+  function add(t: { id: number; name: string; image: string | null }) {
     if (t.id === ownerTeamId || blocked.has(t.id) || byId.has(t.id)) return;
     byId.set(t.id, { teamId: t.id, name: t.name, image: t.image });
-  };
+  }
   for (const s of snapshots) add(s.team);
   for (const r of requests) {
     if (r.fromTeam.id !== ownerTeamId) add(r.fromTeam);
