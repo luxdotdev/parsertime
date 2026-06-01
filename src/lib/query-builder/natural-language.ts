@@ -6547,8 +6547,11 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
           field: "fight_openings_per_map",
           aliases: [
             "fight openings per map",
+            "fight opener per map",
+            "fight openers per map",
             "opening ults per map",
             "opening ultimates per map",
+            "open fights with ult per map",
           ],
         },
       ])

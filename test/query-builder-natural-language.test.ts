@@ -3370,6 +3370,23 @@ describe("query-builder natural-language planner", () => {
     );
   });
 
+  it("plans fight-opening ultimate per-map threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "Which heroes open fights with ult per map at least 0.5 times?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_usage",
+      metrics: [{ metric: "fight_openings_per_map", agg: "ratio" }],
+      dimensions: ["hero"],
+      filters: [
+        { field: "row_type", op: "eq", value: "fight opening hero" },
+        { field: "fight_openings_per_map", op: "gte", value: 0.5 },
+      ],
+    });
+  });
+
   it("plans recent-form questions onto trend buckets", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,
