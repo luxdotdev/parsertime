@@ -328,6 +328,22 @@ export async function computePlayerImpact(
         calcStats,
         CalculatedStatType.KILLS_PER_ULTIMATE
       ),
+      average_ult_charge_time: averageCalculated(
+        calcStats,
+        CalculatedStatType.AVERAGE_ULT_CHARGE_TIME
+      ),
+      average_time_to_use_ult: averageCalculated(
+        calcStats,
+        CalculatedStatType.AVERAGE_TIME_TO_USE_ULT
+      ),
+      average_drought_time: averageCalculated(
+        calcStats,
+        CalculatedStatType.AVERAGE_DROUGHT_TIME
+      ),
+      duel_winrate_percentage: averageCalculated(
+        calcStats,
+        CalculatedStatType.DUEL_WINRATE_PERCENTAGE
+      ),
       fight_reversal_percentage: averageCalculated(
         calcStats,
         CalculatedStatType.FIGHT_REVERSAL_PERCENTAGE

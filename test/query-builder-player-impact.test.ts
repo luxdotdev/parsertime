@@ -31,6 +31,10 @@ const PLAYER_IMPACT_ROWS: ComputedRow[] = [
     map_mvp_rate: 37.5,
     ajax_count: 2,
     kills_per_ultimate: 2.8,
+    average_ult_charge_time: 61,
+    average_time_to_use_ult: 78,
+    average_drought_time: 34,
+    duel_winrate_percentage: 58,
     fight_reversal_percentage: 12,
     fleta_deadlift_percentage: 27,
     all_damage_per10_stddev: 900,
@@ -62,6 +66,10 @@ const PLAYER_IMPACT_ROWS: ComputedRow[] = [
     map_mvp_rate: 12.5,
     ajax_count: 0,
     kills_per_ultimate: 1.3,
+    average_ult_charge_time: 82,
+    average_time_to_use_ult: 104,
+    average_drought_time: 51,
+    duel_winrate_percentage: 43,
     fight_reversal_percentage: 7,
     fleta_deadlift_percentage: 10,
     all_damage_per10_stddev: 300,
@@ -142,6 +150,28 @@ describe("computed aggregator (player impact)", () => {
 
     expect(rows.map((row) => row.player)).toEqual(["PGE"]);
     expect(rows[0]["avg__kills_per_ultimate"]).toBe(2.8);
+  });
+
+  it("answers calculated advanced impact metrics", () => {
+    const { rows } = aggregateComputed(
+      PLAYER_IMPACT_ROWS,
+      spec({
+        metrics: [
+          { metric: "average_ult_charge_time", agg: "avg" },
+          { metric: "average_time_to_use_ult", agg: "avg" },
+          { metric: "average_drought_time", agg: "avg" },
+          { metric: "duel_winrate_percentage", agg: "avg" },
+        ],
+        dimensions: ["player"],
+        filters: [{ field: "player", op: "in", value: ["PGE"] }],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0]["avg__average_ult_charge_time"]).toBe(61);
+    expect(rows[0]["avg__average_time_to_use_ult"]).toBe(78);
+    expect(rows[0]["avg__average_drought_time"]).toBe(34);
+    expect(rows[0]["avg__duel_winrate_percentage"]).toBe(58);
   });
 
   it("answers healing volatility from map-level variance", () => {

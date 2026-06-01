@@ -658,6 +658,7 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "average time to use ultimate",
   ],
   drought_time: ["drought time", "average drought time"],
+  average_drought_time: ["drought time", "average drought time"],
   kills_per_ult: [
     "kills per ult",
     "kills per ultimate",
@@ -671,6 +672,7 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "eliminations per ultimate",
   ],
   duel_winrate: ["duel winrate", "duel win rate", "duel rate"],
+  duel_winrate_percentage: ["duel winrate", "duel win rate", "duel rate"],
   fight_reversal: [
     "fight reversal",
     "fight reversal percentage",
@@ -4659,6 +4661,27 @@ function pickPlayerTrendMetric(normalized: string): string | null {
   ) {
     return "kills_per_ultimate";
   }
+  if (
+    includesPhrase(normalized, "ult charge time") ||
+    includesPhrase(normalized, "ultimate charge time")
+  ) {
+    return "average_ult_charge_time";
+  }
+  if (
+    includesPhrase(normalized, "time to use ult") ||
+    includesPhrase(normalized, "time to use ultimate")
+  ) {
+    return "average_time_to_use_ult";
+  }
+  if (includesPhrase(normalized, "drought time")) {
+    return "average_drought_time";
+  }
+  if (
+    includesPhrase(normalized, "duel winrate") ||
+    includesPhrase(normalized, "duel win rate")
+  ) {
+    return "duel_winrate_percentage";
+  }
   return null;
 }
 
@@ -5919,6 +5942,30 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         {
           field: "kills_per_ultimate",
           aliases: ["kills per ult", "kills per ultimate"],
+        },
+        {
+          field: "average_ult_charge_time",
+          aliases: [
+            "ult charge time",
+            "ultimate charge time",
+            "average ult charge time",
+          ],
+        },
+        {
+          field: "average_time_to_use_ult",
+          aliases: [
+            "time to use ult",
+            "time to use ultimate",
+            "average time to use ult",
+          ],
+        },
+        {
+          field: "average_drought_time",
+          aliases: ["drought time", "average drought time"],
+        },
+        {
+          field: "duel_winrate_percentage",
+          aliases: ["duel winrate", "duel win rate", "duel rate"],
         },
         {
           field: "fight_reversal_percentage",

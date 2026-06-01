@@ -2644,6 +2644,46 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans player-impact ultimate timing questions", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Which players have the fastest player impact ult charge time?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_impact",
+      metrics: [{ metric: "average_ult_charge_time", agg: "avg" }],
+      dimensions: ["player"],
+      sort: { key: "avg__average_ult_charge_time", dir: "asc" },
+      limit: 20,
+    });
+  });
+
+  it("plans player-impact duel winrate thresholds", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question:
+        "Which players have player impact duel win rate over 55% with drought time under 40 seconds?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "player_impact",
+      dimensions: ["player"],
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([
+        { metric: "duel_winrate_percentage", agg: "avg" },
+        { metric: "average_drought_time", agg: "avg" },
+      ])
+    );
+    expect(planned?.spec.filters).toEqual(
+      expect.arrayContaining([
+        { field: "duel_winrate_percentage", op: "gt", value: 55 },
+        { field: "average_drought_time", op: "lt", value: 40 },
+      ])
+    );
+  });
+
   it("plans player-impact aggregate metric threshold filters", () => {
     const planned = planQueryFromQuestion({
       teamId: 5,
