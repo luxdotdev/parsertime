@@ -1541,6 +1541,20 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans multi-map-type comparisons with grouped map-type output", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 2,
+      question: "Compare Control and Hybrid map win rate",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "map_result",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["map_type"],
+      filters: [{ field: "map_type", op: "in", value: ["Control", "Hybrid"] }],
+    });
+  });
+
   it("plans best map-mode questions as ranked map-type winrates", () => {
     const planned = planQueryFromQuestion({
       teamId: 2,
@@ -2595,6 +2609,20 @@ describe("query-builder natural-language planner", () => {
       metrics: [{ metric: "win_rate", agg: "avg" }],
       dimensions: ["map_type"],
       filters: [{ field: "role", op: "in", value: ["Damage"] }],
+    });
+  });
+
+  it("plans multi-role comparisons with grouped role output", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 5,
+      question: "Compare Damage role and Support role win rate",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "role_performance",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["role"],
+      filters: [{ field: "role", op: "in", value: ["Damage", "Support"] }],
     });
   });
 

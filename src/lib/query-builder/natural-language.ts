@@ -7966,7 +7966,42 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     ...extractGenericAggregateThresholdFilters(dataset, normalized, filters)
   );
 
-  return filters.slice(0, 8);
+  return mergeInFilters(filters).slice(0, 8);
+}
+
+function mergeInFilters(filters: QueryFilter[]): QueryFilter[] {
+  const merged: QueryFilter[] = [];
+  const byField = new Map<string, QueryFilter>();
+
+  for (const filter of filters) {
+    if (filter.op !== "in") {
+      merged.push(filter);
+      continue;
+    }
+
+    const key = `${filter.field}:${filter.op}`;
+    const existing = byField.get(key);
+    if (!existing) {
+      const value = Array.isArray(filter.value)
+        ? [...filter.value]
+        : [filter.value];
+      const next = { ...filter, value };
+      byField.set(key, next);
+      merged.push(next);
+      continue;
+    }
+
+    const values = Array.isArray(filter.value) ? filter.value : [filter.value];
+    const existingValues = Array.isArray(existing.value)
+      ? existing.value
+      : [existing.value];
+    for (const value of values) {
+      if (!existingValues.includes(value)) existingValues.push(value);
+    }
+    existing.value = existingValues;
+  }
+
+  return merged;
 }
 
 function pickDimensions(
@@ -8036,6 +8071,12 @@ function pickDimensions(
   }
   if (hasMultiValueFilter("ability")) {
     add("ability");
+  }
+  if (hasMultiValueFilter("role")) {
+    add("role");
+  }
+  if (hasMultiValueFilter("map_type")) {
+    add("map_type");
   }
 
   if (
