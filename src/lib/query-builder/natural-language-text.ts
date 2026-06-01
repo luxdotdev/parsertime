@@ -36,9 +36,7 @@ export function escapeRegExp(value: string): string {
 
 export function includesPhrase(haystack: string, phrase: string): boolean {
   const normalized = normalize(phrase);
-  return new RegExp(`(^|\\s)${escapeRegExp(normalized)}(\\s|$)`).test(
-    haystack
-  );
+  return new RegExp(`(^|\\s)${escapeRegExp(normalized)}(\\s|$)`).test(haystack);
 }
 
 export function titleCase(value: string): string {
