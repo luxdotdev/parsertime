@@ -8,6 +8,7 @@ import { notifications } from "@/lib/notifications";
 import { Logger } from "@/lib/logger";
 import { auditLog } from "@/lib/audit-logs";
 import { UserRole } from "@prisma/client";
+import { areTeamsBlocked } from "@/lib/team-ops/blacklist";
 
 const COOLDOWN_HOURS = 24;
 const DAILY_LIMIT = 10;
@@ -64,6 +65,14 @@ export async function sendScrimRequest(input: {
   const isAdmin = sender?.role === UserRole.ADMIN;
   if (!isOwner && !isManager && !isAdmin) {
     return { ok: false, status: 403, reason: "Not a manager" };
+  }
+
+  if (await areTeamsBlocked(input.fromTeamId, input.toTeamId)) {
+    return {
+      ok: false,
+      status: 403,
+      reason: "You can't send a scrim request to this team",
+    };
   }
 
   const [fromSnap, toSnap] = await Promise.all([
