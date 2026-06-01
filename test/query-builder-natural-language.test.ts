@@ -1318,6 +1318,20 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans neutral ult-bank phrasing onto even economy", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "What is our fight win rate when both teams have the same number of ults?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_economy",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      filters: [{ field: "advantage_bucket", op: "in", value: ["even"] }],
+    });
+  });
+
   it("plans ult-economy aggregate metric thresholds", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

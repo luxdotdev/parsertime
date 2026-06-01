@@ -502,6 +502,12 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "more ultimates",
     "same ults",
     "same ultimates",
+    "same number of ults",
+    "same number of ultimates",
+    "equal ults",
+    "equal ultimates",
+    "no ult advantage",
+    "no ultimate advantage",
     "ahead an ult",
     "behind an ult",
   ],
@@ -2884,6 +2890,12 @@ function mentionsUltEconomyContext(normalized: string): boolean {
     includesPhrase(normalized, "more ultimates") ||
     includesPhrase(normalized, "same ults") ||
     includesPhrase(normalized, "same ultimates") ||
+    includesPhrase(normalized, "same number of ults") ||
+    includesPhrase(normalized, "same number of ultimates") ||
+    includesPhrase(normalized, "equal ults") ||
+    includesPhrase(normalized, "equal ultimates") ||
+    includesPhrase(normalized, "no ult advantage") ||
+    includesPhrase(normalized, "no ultimate advantage") ||
     /\b(?:ahead|behind|even|up|down)\b.*\b(?:ult|ults|ultimate|ultimates)\b/.test(
       normalized
     ) ||
@@ -5767,7 +5779,17 @@ function pickUltEconomyBucket(normalized: string): string | null {
     includesPhrase(normalized, "even ults") ||
     includesPhrase(normalized, "even ultimates") ||
     includesPhrase(normalized, "even ult economy") ||
-    includesPhrase(normalized, "even ultimate economy")
+    includesPhrase(normalized, "even ultimate economy") ||
+    includesPhrase(normalized, "same ults") ||
+    includesPhrase(normalized, "same ultimates") ||
+    includesPhrase(normalized, "same number of ults") ||
+    includesPhrase(normalized, "same number of ultimates") ||
+    includesPhrase(normalized, "equal ults") ||
+    includesPhrase(normalized, "equal ultimates") ||
+    includesPhrase(normalized, "no ult advantage") ||
+    includesPhrase(normalized, "no ultimate advantage") ||
+    includesPhrase(normalized, "neither team has ult advantage") ||
+    includesPhrase(normalized, "neither team has ultimate advantage")
   ) {
     return "even";
   }
