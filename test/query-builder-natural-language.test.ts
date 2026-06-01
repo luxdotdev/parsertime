@@ -3336,6 +3336,25 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans per-game ult-usage questions onto per-map metrics", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "Who has the most ultimates per game?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_usage",
+      metrics: [
+        { metric: "ults_per_map", agg: "avg" },
+        { metric: "ults_used", agg: "sum" },
+      ],
+      dimensions: ["player"],
+      filters: [{ field: "row_type", op: "eq", value: "player" }],
+      sort: { key: "avg__ults_per_map", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans fight-opening hero questions onto ult usage summaries", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,
@@ -3397,6 +3416,24 @@ describe("query-builder natural-language planner", () => {
     const planned = planQueryFromQuestion({
       teamId: 8,
       question: "Which heroes open fights with ult per map at least 0.5 times?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_usage",
+      metrics: [{ metric: "fight_openings_per_map", agg: "ratio" }],
+      dimensions: ["hero"],
+      filters: [
+        { field: "row_type", op: "eq", value: "fight opening hero" },
+        { field: "fight_openings_per_map", op: "gte", value: 0.5 },
+      ],
+    });
+  });
+
+  it("plans fight-opening ultimate per-game threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question:
+        "Which heroes open fights with ult per game at least 0.5 times?",
     });
 
     expect(planned?.spec).toMatchObject({

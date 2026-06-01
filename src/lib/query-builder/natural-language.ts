@@ -147,6 +147,10 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "ultimate usage",
     "ults per map",
     "ultimates per map",
+    "ults per game",
+    "ultimates per game",
+    "ults per match",
+    "ultimates per match",
     "most ults",
     "most ultimates",
     "fight opener",
@@ -156,6 +160,8 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "opening ult",
     "opening ultimate",
     "fight openings per map",
+    "fight openings per game",
+    "fight openings per match",
     "opening ults per map",
   ],
   role_trio: [
@@ -803,7 +809,14 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "played most",
     "played the most",
   ],
-  ults_per_map: ["ults per map", "ultimates per map"],
+  ults_per_map: [
+    "ults per map",
+    "ultimates per map",
+    "ults per game",
+    "ultimates per game",
+    "ults per match",
+    "ultimates per match",
+  ],
   fight_openings: [
     "fight openings",
     "fight opener",
@@ -814,11 +827,23 @@ const METRIC_ALIASES: Record<string, string[]> = {
   ],
   fight_openings_per_map: [
     "fight openings per map",
+    "fight openings per game",
+    "fight openings per match",
     "fight opener per map",
+    "fight opener per game",
+    "fight opener per match",
     "fight openers per map",
+    "fight openers per game",
+    "fight openers per match",
     "opening ults per map",
+    "opening ults per game",
+    "opening ults per match",
     "opening ultimates per map",
+    "opening ultimates per game",
+    "opening ultimates per match",
     "open fights with ult per map",
+    "open fights with ult per game",
+    "open fights with ult per match",
   ],
   avg_wasted_ults: ["wasted ult", "wasted ults", "wasted ultimates"],
   avg_swaps: [
@@ -3240,7 +3265,12 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
       }
     }
   }
-  if (dataset === "ult_usage" && includesPhrase(normalized, "per map")) {
+  if (
+    dataset === "ult_usage" &&
+    (includesPhrase(normalized, "per map") ||
+      includesPhrase(normalized, "per game") ||
+      includesPhrase(normalized, "per match"))
+  ) {
     const priority = deduped.some(
       (ref) => ref.metric === "fight_openings_per_map"
     )
@@ -6541,7 +6571,15 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         },
         {
           field: "ults_per_map",
-          aliases: ["ults per map", "ultimates per map", "ult rate"],
+          aliases: [
+            "ults per map",
+            "ultimates per map",
+            "ults per game",
+            "ultimates per game",
+            "ults per match",
+            "ultimates per match",
+            "ult rate",
+          ],
         },
         {
           field: "fight_openings",
@@ -6556,11 +6594,23 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
           field: "fight_openings_per_map",
           aliases: [
             "fight openings per map",
+            "fight openings per game",
+            "fight openings per match",
             "fight opener per map",
+            "fight opener per game",
+            "fight opener per match",
             "fight openers per map",
+            "fight openers per game",
+            "fight openers per match",
             "opening ults per map",
+            "opening ults per game",
+            "opening ults per match",
             "opening ultimates per map",
+            "opening ultimates per game",
+            "opening ultimates per match",
             "open fights with ult per map",
+            "open fights with ult per game",
+            "open fights with ult per match",
           ],
         },
       ])
