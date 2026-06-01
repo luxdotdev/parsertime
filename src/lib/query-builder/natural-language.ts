@@ -5233,6 +5233,34 @@ function hasAffirmedAbilityUse(normalized: string): boolean {
   );
 }
 
+function mentionsAbilityUseComparison(normalized: string): boolean {
+  if (
+    includesPhrase(normalized, "used vs not used") ||
+    includesPhrase(normalized, "used versus not used") ||
+    includesPhrase(normalized, "with and without")
+  ) {
+    return true;
+  }
+
+  const hasComparisonCue =
+    includesPhrase(normalized, "compare") ||
+    includesPhrase(normalized, "comparison") ||
+    includesPhrase(normalized, "compared to") ||
+    includesPhrase(normalized, "versus") ||
+    includesPhrase(normalized, "vs");
+
+  if (!hasComparisonCue) return false;
+
+  if (
+    includesPhrase(normalized, "with") &&
+    includesPhrase(normalized, "without")
+  ) {
+    return true;
+  }
+
+  return hasAffirmedAbilityUse(normalized) && hasNegatedAbilityUse(normalized);
+}
+
 function pickFightPhase(normalized: string): string | null {
   if (
     includesPhrase(normalized, "pre fight") ||
@@ -7161,7 +7189,7 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       includesPhrase(normalized, "affect") ||
       includesPhrase(normalized, "impact") ||
       includesPhrase(normalized, "compare") ||
-      includesPhrase(normalized, "used vs not used");
+      mentionsAbilityUseComparison(normalized);
     if (!wantsComparison) {
       if (hasNegatedAbilityUse(normalized)) {
         const usedFilter = filterFor(dataset, "used", "no");

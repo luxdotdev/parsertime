@@ -2178,6 +2178,43 @@ describe("query-builder natural-language planner", () => {
     );
   });
 
+  it("plans ability-use versus non-use comparisons", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 9,
+      question:
+        "What is our win rate when we use Suzu versus when we do not use Suzu?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ability_impact",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["used"],
+      filters: [
+        { field: "hero", op: "in", value: ["Kiriko"] },
+        { field: "ability", op: "in", value: ["Protection Suzu"] },
+        { field: "side", op: "eq", value: "us" },
+      ],
+    });
+  });
+
+  it("plans with-without ability comparisons", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 9,
+      question: "What is our fight win rate with Sleep Dart vs without it?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ability_impact",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["used"],
+      filters: [
+        { field: "hero", op: "in", value: ["Ana"] },
+        { field: "ability", op: "in", value: ["Sleep Dart"] },
+        { field: "side", op: "eq", value: "us" },
+      ],
+    });
+  });
+
   it("plans enemy ability loss questions after use", () => {
     const planned = planQueryFromQuestion({
       teamId: 9,
