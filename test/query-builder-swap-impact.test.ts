@@ -124,4 +124,19 @@ describe("computed aggregator (swap impact)", () => {
     expect(rows[0]["avg__win_rate"]).toBe(50);
     expect(rows[0]["count__maps"]).toBe(2);
   });
+
+  it("filters grouped average swaps after aggregation", () => {
+    const { rows } = aggregateComputed(
+      MAPS,
+      spec({
+        metrics: [{ metric: "avg_swaps", agg: "avg" }],
+        dimensions: ["map_type"],
+        filters: [{ field: "avg_swaps", op: "gt", value: 2 }],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].map_type).toBe("Hybrid");
+    expect(rows[0]["avg__avg_swaps"]).toBe(3);
+  });
 });

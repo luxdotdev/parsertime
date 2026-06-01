@@ -821,6 +821,12 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "open fights with ult per map",
   ],
   avg_wasted_ults: ["wasted ult", "wasted ults", "wasted ultimates"],
+  avg_swaps: [
+    "avg swaps",
+    "average swaps",
+    "swaps per map",
+    "average swaps per map",
+  ],
   first_pick_rate: ["first pick rate", "first-pick rate", "opening pick rate"],
   first_death_rate: [
     "first death rate",

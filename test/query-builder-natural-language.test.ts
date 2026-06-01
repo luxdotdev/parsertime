@@ -1840,6 +1840,20 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans average-swap aggregate threshold filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 3,
+      question: "Which map types have average swaps per map over 2?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "swap_impact",
+      metrics: [{ metric: "avg_swaps", agg: "avg" }],
+      dimensions: ["map_type"],
+      filters: [{ field: "avg_swaps", op: "gt", value: 2 }],
+    });
+  });
+
   it("plans swap-count loss questions onto swap buckets", () => {
     const planned = planQueryFromQuestion({
       teamId: 3,
