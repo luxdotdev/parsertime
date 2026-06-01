@@ -112,7 +112,21 @@ const DATASET_HINTS: Record<DatasetId, string[]> = {
     "fight reversal percentage",
     "fight reversal rate",
   ],
-  kill: ["kill feed", "kills by", "killed", "critical kill", "victim"],
+  kill: [
+    "kill feed",
+    "kill event",
+    "kill events",
+    "kills by",
+    "killed by",
+    "critical kill",
+    "critical kills",
+    "environmental kill",
+    "environmental kills",
+    "killing blow",
+    "kill damage",
+    "victim",
+    "victims",
+  ],
   hero_swap: ["swap", "swaps", "swapped", "hero swap"],
   ultimate: ["ultimate used", "ultimates used", "ults used"],
   ult_combo: [
@@ -690,6 +704,20 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "boop deaths",
     "booped deaths",
   ],
+  kills: ["kills", "kill count", "kill events"],
+  critical_kills: ["critical kill", "critical kills", "headshot kills"],
+  environmental_kills: [
+    "environmental kill",
+    "environmental kills",
+    "boop kills",
+    "booped kills",
+  ],
+  kill_damage: [
+    "kill damage",
+    "killing blow damage",
+    "average kill damage",
+    "average killing blow damage",
+  ],
   multikill_best: ["best multikill", "biggest multikill", "multikill best"],
   ults_used: [
     "ults used",
@@ -1089,7 +1117,6 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "fight length",
   ],
   maps: ["maps", "map count", "maps played"],
-  kills: ["kills", "kill count"],
 };
 
 const DIMENSION_ALIASES: Record<string, string[]> = {
@@ -1120,6 +1147,7 @@ const DIMENSION_ALIASES: Record<string, string[]> = {
   side: ["side", "team"],
   death_type: ["death type", "rotation death"],
   attacker: ["attacker", "killer"],
+  victim: ["victim", "killed player"],
   attacker_side: ["attacker side", "killer side"],
   type: ["type"],
   combo: ["combo", "ult combo", "ultimate combo"],
@@ -1396,9 +1424,17 @@ function findPlayer(question: string, hero: string | null): string | null {
     "targets",
     "goal",
     "goals",
+    "ability",
+    "abilities",
+    "critical",
+    "distance",
+    "environmental",
+    "per",
     "progress",
     "improvement",
     "intelligence",
+    "killing",
+    "opening",
     "percentage",
     "percent",
     "status",
@@ -1453,7 +1489,16 @@ function findPlayer(question: string, hero: string | null): string | null {
       /\b(?:does|did)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:have|has|record|recorded)\b/gi
     ),
     ...question.matchAll(
+      /\b(?:does|did)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:get|gets|kill|kills|killed)\b/gi
+    ),
+    ...question.matchAll(
       /\b(?:does|did|has|have)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:play|played)\b/gi
+    ),
+    ...question.matchAll(
+      /\b([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:kill|kills|killed)\b/gi
+    ),
+    ...question.matchAll(
+      /\b(?:kill|kills|killed)\s+([A-Za-z][A-Za-z0-9_.-]{1,})\b/gi
     ),
     ...question.matchAll(/\b([A-Za-z][A-Za-z0-9_.-]{1,})\s+(?:has|had)\b/gi),
     ...question.matchAll(
@@ -2102,6 +2147,56 @@ function mentionsOpeningKillContext(normalized: string): boolean {
   );
 }
 
+function mentionsRawKillEventContext(normalized: string): boolean {
+  if (mentionsOpeningKillContext(normalized)) return false;
+  return (
+    includesPhrase(normalized, "kill feed") ||
+    includesPhrase(normalized, "kill event") ||
+    includesPhrase(normalized, "kill events") ||
+    includesPhrase(normalized, "critical kill") ||
+    includesPhrase(normalized, "critical kills") ||
+    includesPhrase(normalized, "environmental kill") ||
+    includesPhrase(normalized, "environmental kills") ||
+    includesPhrase(normalized, "killing blow") ||
+    includesPhrase(normalized, "kill damage") ||
+    includesPhrase(normalized, "kills by ability") ||
+    includesPhrase(normalized, "kills per ability") ||
+    /\bwho\s+(?:kill|kills|killed)\b/.test(normalized) ||
+    /\bwho\s+(?:did|does|has|have)\b.*\b(?:kill|kills|killed)\b/.test(
+      normalized
+    ) ||
+    /\b(?:kills?|killed)\s+(?:by|with)\b/.test(normalized)
+  );
+}
+
+function asksKillVictim(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "victim") ||
+    includesPhrase(normalized, "victims") ||
+    /\bwho\s+(?:did|does|has|have)\b.*\b(?:kill|kills|killed)\b/.test(
+      normalized
+    ) ||
+    /\bwhich\s+heroes?\s+(?:did|does|has|have)\b.*\b(?:kill|kills|killed)\b/.test(
+      normalized
+    )
+  );
+}
+
+function isKillVictimPlayerContext(
+  normalized: string,
+  player: string
+): boolean {
+  const escapedPlayer = escapeRegExp(normalize(player));
+  return (
+    new RegExp(`\\b(?:kill|kills|killed)\\s+${escapedPlayer}\\b`).test(
+      normalized
+    ) ||
+    new RegExp(
+      `\\b${escapedPlayer}\\s+(?:is|was|gets?|got)?\\s*killed\\b`
+    ).test(normalized)
+  );
+}
+
 function mentionsAbilityTimingContext(normalized: string): boolean {
   const abilityContext =
     includesPhrase(normalized, "ability") ||
@@ -2433,6 +2528,7 @@ function pickDataset(question: string): DatasetId {
   ) {
     return "teamfight";
   }
+  if (mentionsRawKillEventContext(normalized)) return "kill";
   if (mentionsOpeningKillContext(normalized)) return "opening_kill";
   if (
     mentionsPlayerTrendContext(normalized) ||
@@ -3468,6 +3564,7 @@ function filterFor(
     | "death_type"
     | "attacker_hero"
     | "attacker_side"
+    | "victim"
     | "used"
     | "had_swap"
     | "first_swap_timing"
@@ -3494,6 +3591,7 @@ function filterFor(
     death_type: ["death_type"],
     attacker_hero: ["attacker_hero"],
     attacker_side: ["attacker_side"],
+    victim: ["victim"],
     used: ["used"],
     had_swap: ["had_swap"],
     first_swap_timing: ["first_swap_timing"],
@@ -4820,7 +4918,10 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       includesPhrase(normalized, "player impact")
     )
   ) {
-    const filter = filterFor(dataset, "player", player);
+    const filter =
+      dataset === "kill" && isKillVictimPlayerContext(normalized, player)
+        ? filterFor(dataset, "victim", player)
+        : filterFor(dataset, "player", player);
     if (filter) filters.push(filter);
   }
   if (ability) {
@@ -7517,6 +7618,26 @@ function pickDimensions(
     !hasFilter("opponent")
   ) {
     add("opponent");
+  }
+  if (dataset === "kill" && dims.length === 0) {
+    if (
+      asksKillVictim(normalized) &&
+      (includesPhrase(normalized, "which hero") ||
+        includesPhrase(normalized, "which heroes") ||
+        includesPhrase(normalized, "what hero") ||
+        includesPhrase(normalized, "what heroes"))
+    ) {
+      add("victim_hero");
+    } else if (
+      asksKillVictim(normalized) &&
+      (hasFilter("attacker") || hasFilter("attacker_hero"))
+    ) {
+      add("victim");
+    } else if (!hasFilter("attacker")) {
+      add("attacker");
+    } else if (!hasFilter("attacker_hero")) {
+      add("attacker_hero");
+    }
   }
   if (
     dataset === "map_result" &&

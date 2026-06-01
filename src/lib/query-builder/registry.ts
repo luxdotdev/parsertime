@@ -925,6 +925,17 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         optionsSource: "base",
       },
       {
+        id: "victim",
+        label: "victim",
+        table: "Kill",
+        column: "victim_name",
+        source: "base",
+        valueType: "player",
+        operators: ["in", "nin"],
+        optionsColumn: "victim_name",
+        optionsSource: "base",
+      },
+      {
         id: "ability",
         label: "ability",
         table: "Kill",

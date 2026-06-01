@@ -203,6 +203,58 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans raw critical-kill drilldowns by ability", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 1,
+      question: "How many critical kills by PGE on Widowmaker by ability?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "kill",
+      metrics: [{ metric: "critical_kills", agg: "count" }],
+      dimensions: ["ability"],
+      filters: [
+        { field: "attacker_hero", op: "in", value: ["Widowmaker"] },
+        { field: "attacker", op: "in", value: ["PGE"] },
+      ],
+    });
+  });
+
+  it("plans raw kill victim drilldowns from who-did phrasing", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 1,
+      question: "Who did PGE kill the most on Widowmaker?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "kill",
+      metrics: [{ metric: "kills", agg: "count" }],
+      dimensions: ["victim"],
+      filters: [
+        { field: "attacker_hero", op: "in", value: ["Widowmaker"] },
+        { field: "attacker", op: "in", value: ["PGE"] },
+      ],
+      sort: { key: "count__kills", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans raw kill attacker drilldowns for killed-player phrasing", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 1,
+      question: "Who killed PGE the most?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "kill",
+      metrics: [{ metric: "kills", agg: "count" }],
+      dimensions: ["attacker"],
+      filters: [{ field: "victim", op: "in", value: ["PGE"] }],
+      sort: { key: "count__kills", dir: "desc" },
+      limit: 20,
+    });
+  });
+
   it("plans extended fight winrate questions onto computed teamfight fields", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,
