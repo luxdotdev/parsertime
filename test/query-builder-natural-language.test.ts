@@ -3499,12 +3499,43 @@ describe("query-builder natural-language planner", () => {
         { metric: "fights", agg: "sum" },
       ],
       dimensions: ["hero"],
-      filters: [
-        { field: "side", op: "in", value: ["enemy", "both"] },
-        { field: "mirrored", op: "eq", value: "yes" },
-        { field: "first_side", op: "eq", value: "enemy" },
-      ],
+      filters: [{ field: "scenario", op: "eq", value: "mirror, enemy first" }],
     });
+  });
+
+  it("plans uncontested enemy ultimate questions onto exact scenario filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question:
+        "Which heroes have the best win rate when enemy uses an uncontested ult?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_impact",
+      metrics: [{ metric: "win_rate", agg: "ratio" }],
+      dimensions: ["hero"],
+      filters: [
+        { field: "scenario", op: "eq", value: "enemy used uncontested" },
+      ],
+      sort: { key: "ratio__win_rate", dir: "desc" },
+      limit: 20,
+    });
+  });
+
+  it("plans mirrored ultimate first-use questions onto exact scenario filters", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 8,
+      question: "What is our win rate in mirror ult fights when we ult first?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "ult_impact",
+      dimensions: ["hero"],
+      filters: [{ field: "scenario", op: "eq", value: "mirror, we first" }],
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([{ metric: "win_rate", agg: "ratio" }])
+    );
   });
 
   it("plans player ult-usage questions onto ult usage summaries", () => {

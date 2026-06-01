@@ -2512,6 +2512,10 @@ function pickDataset(question: string): DatasetId {
     return "ult_usage";
   }
 
+  if (mentionsUlt && pickUltImpactScenario(normalized)) {
+    return "ult_impact";
+  }
+
   if (
     mentionsRolePerformanceContext(normalized) &&
     !includesPhrase(normalized, "which hero") &&
@@ -4343,6 +4347,69 @@ function pickUltEconomyBucket(normalized: string): string | null {
   ) {
     return "even";
   }
+  return null;
+}
+
+function pickUltImpactScenario(normalized: string): string | null {
+  const uncontested =
+    includesPhrase(normalized, "uncontested ult") ||
+    includesPhrase(normalized, "uncontested ults") ||
+    includesPhrase(normalized, "uncontested ultimate") ||
+    includesPhrase(normalized, "uncontested ultimates") ||
+    includesPhrase(normalized, "not mirrored") ||
+    includesPhrase(normalized, "without mirror");
+  const mirror =
+    includesPhrase(normalized, "mirror ult") ||
+    includesPhrase(normalized, "mirror ults") ||
+    includesPhrase(normalized, "mirror ultimate") ||
+    includesPhrase(normalized, "mirror ultimates") ||
+    includesPhrase(normalized, "mirrored ult") ||
+    includesPhrase(normalized, "mirrored ults") ||
+    includesPhrase(normalized, "mirrored ultimate") ||
+    includesPhrase(normalized, "mirrored ultimates");
+  const ourUlt =
+    includesPhrase(normalized, "we ult") ||
+    includesPhrase(normalized, "we ults") ||
+    includesPhrase(normalized, "we use ult") ||
+    includesPhrase(normalized, "we used ult") ||
+    includesPhrase(normalized, "our ult") ||
+    includesPhrase(normalized, "our ultimate") ||
+    /\bwe\s+(?:use|uses|used)\b.*\b(?:ult|ults|ultimate|ultimates)\b/.test(
+      normalized
+    );
+  const enemyUlt =
+    includesPhrase(normalized, "enemy ult") ||
+    includesPhrase(normalized, "enemy ults") ||
+    includesPhrase(normalized, "enemy ultimate") ||
+    includesPhrase(normalized, "enemy ultimates") ||
+    includesPhrase(normalized, "their ult") ||
+    includesPhrase(normalized, "their ults") ||
+    includesPhrase(normalized, "their ultimate") ||
+    includesPhrase(normalized, "their ultimates") ||
+    /\b(?:enemy|they|their)\b.*\b(?:use|uses|used|ult|ults|ultimate|ultimates)\b/.test(
+      normalized
+    );
+  const weFirst =
+    includesPhrase(normalized, "we first") ||
+    includesPhrase(normalized, "ours first") ||
+    includesPhrase(normalized, "our ult first") ||
+    includesPhrase(normalized, "we ult first") ||
+    includesPhrase(normalized, "we use first") ||
+    includesPhrase(normalized, "we used first");
+  const enemyFirst =
+    includesPhrase(normalized, "enemy first") ||
+    includesPhrase(normalized, "they first") ||
+    includesPhrase(normalized, "theirs first") ||
+    includesPhrase(normalized, "enemy ult first") ||
+    includesPhrase(normalized, "enemy ults first") ||
+    includesPhrase(normalized, "they ult first") ||
+    includesPhrase(normalized, "they use first") ||
+    includesPhrase(normalized, "they used first");
+
+  if (uncontested && ourUlt) return "we used uncontested";
+  if (uncontested && enemyUlt) return "enemy used uncontested";
+  if (mirror && weFirst) return "mirror, we first";
+  if (mirror && enemyFirst) return "mirror, enemy first";
   return null;
 }
 
@@ -6947,7 +7014,10 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   }
 
   if (dataset === "ult_impact") {
-    if (
+    const scenario = pickUltImpactScenario(normalized);
+    if (scenario) {
+      filters.push({ field: "scenario", op: "eq", value: scenario });
+    } else if (
       includesPhrase(normalized, "enemy ult") ||
       includesPhrase(normalized, "enemy ults") ||
       includesPhrase(normalized, "enemy ultimate") ||
@@ -6973,34 +7043,38 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     }
 
     if (
-      includesPhrase(normalized, "uncontested ult") ||
-      includesPhrase(normalized, "uncontested ultimate") ||
-      includesPhrase(normalized, "not mirrored") ||
-      includesPhrase(normalized, "without mirror")
+      !scenario &&
+      (includesPhrase(normalized, "uncontested ult") ||
+        includesPhrase(normalized, "uncontested ultimate") ||
+        includesPhrase(normalized, "not mirrored") ||
+        includesPhrase(normalized, "without mirror"))
     ) {
       filters.push({ field: "mirrored", op: "eq", value: "no" });
     } else if (
-      includesPhrase(normalized, "mirror ult") ||
-      includesPhrase(normalized, "mirror ultimate") ||
-      includesPhrase(normalized, "mirrored ult") ||
-      includesPhrase(normalized, "mirrored ultimate")
+      !scenario &&
+      (includesPhrase(normalized, "mirror ult") ||
+        includesPhrase(normalized, "mirror ultimate") ||
+        includesPhrase(normalized, "mirrored ult") ||
+        includesPhrase(normalized, "mirrored ultimate"))
     ) {
       filters.push({ field: "mirrored", op: "eq", value: "yes" });
     }
 
     if (
-      includesPhrase(normalized, "we first") ||
-      includesPhrase(normalized, "ours first") ||
-      includesPhrase(normalized, "our ult first") ||
-      includesPhrase(normalized, "we ult first")
+      !scenario &&
+      (includesPhrase(normalized, "we first") ||
+        includesPhrase(normalized, "ours first") ||
+        includesPhrase(normalized, "our ult first") ||
+        includesPhrase(normalized, "we ult first"))
     ) {
       filters.push({ field: "first_side", op: "eq", value: "us" });
     } else if (
-      includesPhrase(normalized, "enemy first") ||
-      includesPhrase(normalized, "they first") ||
-      includesPhrase(normalized, "enemy ult first") ||
-      includesPhrase(normalized, "enemy ults first") ||
-      includesPhrase(normalized, "they ult first")
+      !scenario &&
+      (includesPhrase(normalized, "enemy first") ||
+        includesPhrase(normalized, "they first") ||
+        includesPhrase(normalized, "enemy ult first") ||
+        includesPhrase(normalized, "enemy ults first") ||
+        includesPhrase(normalized, "they ult first"))
     ) {
       filters.push({ field: "first_side", op: "eq", value: "enemy" });
     }
