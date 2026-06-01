@@ -2468,6 +2468,22 @@ export const DATASET_REGISTRY: Record<DatasetId, DatasetDef> = {
         aggregate: "avg",
         unit: "%",
       }),
+      metricAggregateFilter({
+        id: "avg_pre_fight_damage",
+        metric: "pre_fight_damage",
+        label: "average pre-fight damage events",
+        table: "RotationDeath",
+        column: "pre_fight_damage_count",
+        aggregate: "avg",
+      }),
+      metricAggregateFilter({
+        id: "avg_kill_distance",
+        metric: "kill_distance",
+        label: "average kill distance",
+        table: "RotationDeath",
+        column: "kill_distance",
+        aggregate: "avg",
+      }),
     ],
   },
   map_result: {

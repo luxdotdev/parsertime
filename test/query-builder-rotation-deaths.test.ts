@@ -160,4 +160,40 @@ describe("computed aggregator (rotation deaths)", () => {
     expect(rows[0]["avg__rotation_death_rate"]).toBe(100);
     expect(rows[0]["count__deaths"]).toBe(1);
   });
+
+  it("filters grouped pre-fight damage after aggregation", () => {
+    const { rows } = aggregateComputed(
+      ROTATION_DEATH_ROWS,
+      spec({
+        metrics: [{ metric: "pre_fight_damage", agg: "avg" }],
+        dimensions: ["player"],
+        filters: [
+          { field: "side", op: "eq", value: "us" },
+          { field: "avg_pre_fight_damage", op: "lt", value: 10 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].player).toBe("Landon");
+    expect(rows[0]["avg__pre_fight_damage"]).toBe(5);
+  });
+
+  it("filters grouped kill distance after aggregation", () => {
+    const { rows } = aggregateComputed(
+      ROTATION_DEATH_ROWS,
+      spec({
+        metrics: [{ metric: "kill_distance", agg: "avg" }],
+        dimensions: ["map"],
+        filters: [
+          { field: "side", op: "eq", value: "us" },
+          { field: "avg_kill_distance", op: "gt", value: 20 },
+        ],
+      })
+    );
+
+    expect(rows).toHaveLength(1);
+    expect(rows[0].map).toBe("King's Row");
+    expect(rows[0]["avg__kill_distance"]).toBe(21.5);
+  });
 });

@@ -894,8 +894,18 @@ const METRIC_ALIASES: Record<string, string[]> = {
     "rotation rate",
   ],
   early_death_rate: ["early death rate", "early fight death rate"],
-  pre_fight_damage: ["pre fight damage", "pre-fight damage"],
-  kill_distance: ["kill distance", "death distance"],
+  pre_fight_damage: [
+    "pre fight damage",
+    "pre-fight damage",
+    "average pre fight damage",
+    "average pre-fight damage",
+  ],
+  kill_distance: [
+    "kill distance",
+    "death distance",
+    "average kill distance",
+    "average death distance",
+  ],
   final_blows_per10: ["final blows per 10", "finals per 10"],
   eliminations_per10: ["eliminations per 10", "elims per 10", "kills per 10"],
   hero_damage_per10: [
@@ -3077,6 +3087,7 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
   if (
     dataset === "rotation_death" &&
     extractRotationDeathSignalFilters(normalized).length > 0 &&
+    !hasAverageRotationSignalIntent(normalized) &&
     deduped.some((ref) => ref.metric === "rotation_deaths")
   ) {
     for (let i = deduped.length - 1; i >= 0; i--) {
@@ -3086,6 +3097,29 @@ function pickMetrics(dataset: DatasetId, question: string): MetricRef[] {
       ) {
         deduped.splice(i, 1);
       }
+    }
+  }
+  if (
+    dataset === "rotation_death" &&
+    hasAverageRotationSignalIntent(normalized)
+  ) {
+    for (let i = deduped.length - 1; i >= 0; i--) {
+      if (deduped[i].metric === "rotation_deaths" && deduped.length > 1) {
+        deduped.splice(i, 1);
+      }
+    }
+    const priority =
+      includesPhrase(normalized, "kill distance") ||
+      includesPhrase(normalized, "death distance")
+        ? "kill_distance"
+        : includesPhrase(normalized, "pre fight damage") ||
+            includesPhrase(normalized, "pre-fight damage")
+          ? "pre_fight_damage"
+          : null;
+    if (priority) {
+      deduped.sort((a, b) =>
+        a.metric === priority ? -1 : b.metric === priority ? 1 : 0
+      );
     }
   }
   if (
@@ -3811,6 +3845,19 @@ function extractRotationDeathSignalFilters(normalized: string): QueryFilter[] {
   }
 
   return filters;
+}
+
+function hasAverageRotationSignalIntent(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "average pre fight damage") ||
+    includesPhrase(normalized, "average pre-fight damage") ||
+    includesPhrase(normalized, "avg pre fight damage") ||
+    includesPhrase(normalized, "avg pre-fight damage") ||
+    includesPhrase(normalized, "average kill distance") ||
+    includesPhrase(normalized, "avg kill distance") ||
+    includesPhrase(normalized, "average death distance") ||
+    includesPhrase(normalized, "avg death distance")
+  );
 }
 
 function extractUltCountFilter(normalized: string): QueryFilter | null {
@@ -4661,7 +4708,51 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       }
     }
 
-    filters.push(...extractRotationDeathSignalFilters(normalized));
+    const aggregateSignalFilters = extractNumericThresholdFilters(
+      dataset,
+      normalized,
+      [
+        {
+          field: "avg_pre_fight_damage",
+          aliases: [
+            "average pre fight damage",
+            "average pre-fight damage",
+            "avg pre fight damage",
+            "avg pre-fight damage",
+          ],
+        },
+        {
+          field: "avg_kill_distance",
+          aliases: [
+            "average kill distance",
+            "avg kill distance",
+            "average death distance",
+            "avg death distance",
+          ],
+        },
+      ]
+    );
+    const aggregateSignalFields = new Set(
+      aggregateSignalFilters.map((filter) => filter.field)
+    );
+    filters.push(
+      ...extractRotationDeathSignalFilters(normalized).filter((filter) => {
+        if (
+          filter.field === "pre_fight_damage" &&
+          aggregateSignalFields.has("avg_pre_fight_damage")
+        ) {
+          return false;
+        }
+        if (
+          filter.field === "kill_distance" &&
+          aggregateSignalFields.has("avg_kill_distance")
+        ) {
+          return false;
+        }
+        return true;
+      }),
+      ...aggregateSignalFilters
+    );
     filters.push(
       ...extractNumericThresholdFilters(dataset, normalized, [
         {

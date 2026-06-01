@@ -545,6 +545,49 @@ describe("query-builder natural-language planner", () => {
     );
   });
 
+  it("plans aggregate pre-fight damage thresholds for rotation deaths", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "Which players have average pre-fight damage under 10 on rotation deaths?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "rotation_death",
+      dimensions: ["player"],
+      filters: [
+        { field: "side", op: "eq", value: "us" },
+        { field: "avg_pre_fight_damage", op: "lt", value: 10 },
+      ],
+    });
+    expect(planned?.spec.metrics).toEqual(
+      expect.arrayContaining([{ metric: "pre_fight_damage", agg: "avg" }])
+    );
+    expect(planned?.spec.filters).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ field: "pre_fight_damage" }),
+      ])
+    );
+  });
+
+  it("plans aggregate kill-distance thresholds for rotation deaths", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "Which maps have average kill distance over 20 meters for rotation deaths?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "rotation_death",
+      metrics: [{ metric: "kill_distance", agg: "avg" }],
+      dimensions: ["map"],
+      filters: [
+        { field: "side", op: "eq", value: "us" },
+        { field: "avg_kill_distance", op: "gt", value: 20 },
+      ],
+    });
+  });
+
   it("plans specific-map enemy hero questions onto enemy matchups", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,
