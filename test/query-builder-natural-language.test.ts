@@ -576,6 +576,63 @@ describe("query-builder natural-language planner", () => {
     });
   });
 
+  it("plans first-pick with-without fight comparisons", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Compare fight win rate with first pick and without first pick",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["first_pick"],
+      filters: [],
+    });
+  });
+
+  it("plans first-ultimate with-without fight comparisons", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "Compare fight win rate with first ult and without first ult",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["first_ult"],
+      filters: [],
+    });
+  });
+
+  it("plans dry versus non-dry fight comparisons", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question: "What is our fight win rate in dry fights vs non dry fights?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["dry_fight"],
+      filters: [],
+    });
+  });
+
+  it("plans no-ult versus ult-use fight comparisons as dry-fight splits", () => {
+    const planned = planQueryFromQuestion({
+      teamId: 4,
+      question:
+        "What is our fight win rate when we use no ults vs when we use ults?",
+    });
+
+    expect(planned?.spec).toMatchObject({
+      dataset: "teamfight",
+      metrics: [{ metric: "win_rate", agg: "avg" }],
+      dimensions: ["dry_fight"],
+      filters: [],
+    });
+  });
+
   it("plans enemy first-pick fight context as our first death", () => {
     const planned = planQueryFromQuestion({
       teamId: 4,

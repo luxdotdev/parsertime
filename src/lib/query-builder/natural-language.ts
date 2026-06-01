@@ -4960,6 +4960,103 @@ function hasNegatedFightContext(
   );
 }
 
+function hasComparisonCue(normalized: string): boolean {
+  return (
+    includesPhrase(normalized, "compare") ||
+    includesPhrase(normalized, "comparison") ||
+    includesPhrase(normalized, "compared to") ||
+    includesPhrase(normalized, "versus") ||
+    includesPhrase(normalized, "vs") ||
+    includesPhrase(normalized, "with and without")
+  );
+}
+
+function mentionsBooleanFightComparison(
+  normalized: string,
+  phrases: string[]
+): boolean {
+  const mentionsPositive = phrases.some(
+    (phrase) =>
+      includesPhrase(normalized, phrase) ||
+      includesPhrase(normalized, `with ${phrase}`) ||
+      includesPhrase(normalized, `have ${phrase}`) ||
+      includesPhrase(normalized, `get ${phrase}`) ||
+      includesPhrase(normalized, `use ${phrase}`)
+  );
+  if (!mentionsPositive) return false;
+
+  const mentionsNegative =
+    hasNegatedFightContext(normalized, phrases) ||
+    includesPhrase(normalized, "without it");
+
+  return mentionsNegative && hasComparisonCue(normalized);
+}
+
+function mentionsDryFightComparison(normalized: string): boolean {
+  const mentionsDry =
+    includesPhrase(normalized, "dry fight") ||
+    includesPhrase(normalized, "dry fights") ||
+    includesPhrase(normalized, "no ults") ||
+    includesPhrase(normalized, "no ultimates") ||
+    includesPhrase(normalized, "zero ults") ||
+    includesPhrase(normalized, "zero ultimates") ||
+    includesPhrase(normalized, "without ults") ||
+    includesPhrase(normalized, "without ultimates");
+  const mentionsNonDry =
+    includesPhrase(normalized, "non dry") ||
+    includesPhrase(normalized, "non-dry") ||
+    includesPhrase(normalized, "with ults") ||
+    includesPhrase(normalized, "with ultimates") ||
+    includesPhrase(normalized, "use ults") ||
+    includesPhrase(normalized, "use ultimates") ||
+    includesPhrase(normalized, "using ults") ||
+    includesPhrase(normalized, "using ultimates");
+
+  return mentionsDry && mentionsNonDry && hasComparisonCue(normalized);
+}
+
+function pickTeamfightComparisonDimension(normalized: string): string | null {
+  if (
+    mentionsBooleanFightComparison(normalized, [
+      "first pick",
+      "get first pick",
+      "opening pick",
+      "get opening pick",
+    ])
+  ) {
+    return "first_pick";
+  }
+  if (
+    mentionsBooleanFightComparison(normalized, [
+      "first death",
+      "have first death",
+      "opening death",
+      "have opening death",
+    ])
+  ) {
+    return "first_death";
+  }
+  if (
+    mentionsBooleanFightComparison(normalized, [
+      "first ult",
+      "use first ult",
+      "get first ult",
+      "first ultimate",
+      "use first ultimate",
+      "get first ultimate",
+    ])
+  ) {
+    return "first_ult";
+  }
+  if (
+    mentionsBooleanFightComparison(normalized, ["dry fight"]) ||
+    mentionsDryFightComparison(normalized)
+  ) {
+    return "dry_fight";
+  }
+  return null;
+}
+
 function hasEnemyFightContext(normalized: string, phrases: string[]): boolean {
   return phrases.some((phrase) => {
     const escaped = escapeRegExp(normalize(phrase));
@@ -5792,6 +5889,7 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       "reversal",
       "reverse fight",
     ]);
+    const comparisonDimension = pickTeamfightComparisonDimension(normalized);
 
     if (enemyFirstPick && !asksFirstPickRate && !asksFirstDeathRate) {
       filters.push({
@@ -5801,7 +5899,8 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       });
     } else if (
       includesPhrase(normalized, "first death") &&
-      !asksFirstDeathRate
+      !asksFirstDeathRate &&
+      comparisonDimension !== "first_death"
     ) {
       filters.push({
         field: "first_death",
@@ -5812,7 +5911,8 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     if (
       includesPhrase(normalized, "first pick") &&
       !asksFirstPickRate &&
-      !enemyFirstPick
+      !enemyFirstPick &&
+      comparisonDimension !== "first_pick"
     ) {
       filters.push({
         field: "first_pick",
@@ -5820,7 +5920,11 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
         value: noFirstPick ? "no" : "yes",
       });
     }
-    if (includesPhrase(normalized, "dry fight") && !asksDryFightRate) {
+    if (
+      includesPhrase(normalized, "dry fight") &&
+      !asksDryFightRate &&
+      comparisonDimension !== "dry_fight"
+    ) {
       filters.push({
         field: "dry_fight",
         op: "eq",
@@ -5830,7 +5934,8 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
     if (
       (includesPhrase(normalized, "first ult") ||
         includesPhrase(normalized, "first ultimate")) &&
-      !asksFirstUltRate
+      !asksFirstUltRate &&
+      comparisonDimension !== "first_ult"
     ) {
       filters.push({
         field: "first_ult",
@@ -5850,7 +5955,8 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
       });
     }
     const ultCountFilter = extractUltCountFilter(normalized);
-    if (ultCountFilter) filters.push(ultCountFilter);
+    if (ultCountFilter && comparisonDimension !== "dry_fight")
+      filters.push(ultCountFilter);
     const wastedUltFilter = extractWastedUltFilter(normalized);
     if (wastedUltFilter) filters.push(wastedUltFilter);
   }
@@ -8342,6 +8448,10 @@ function pickDimensions(
   }
   if (hasMultiValueFilter("side") && mentionsUltSideComparison(normalized)) {
     add("side");
+  }
+  if (dataset === "teamfight") {
+    const comparisonDimension = pickTeamfightComparisonDimension(normalized);
+    if (comparisonDimension) add(comparisonDimension);
   }
 
   if (
