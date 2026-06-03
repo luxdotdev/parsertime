@@ -7,7 +7,11 @@ import { unauthorized } from "next/navigation";
 import type { NextRequest } from "next/server";
 
 export type RecentRequestsResponse = {
-  requests: { scrimRequestId: string; opponentTeamId: number; opponentTeamName: string }[];
+  requests: {
+    scrimRequestId: string;
+    opponentTeamId: number;
+    opponentTeamName: string;
+  }[];
 };
 
 export async function GET(request: NextRequest) {
@@ -23,5 +27,7 @@ export async function GET(request: NextRequest) {
   if (!user || !(await canManageTeam(teamId, user))) {
     return Response.json({ requests: [] } satisfies RecentRequestsResponse);
   }
-  return Response.json({ requests: await getRecentLinkableRequests(teamId) } satisfies RecentRequestsResponse);
+  return Response.json({
+    requests: await getRecentLinkableRequests(teamId),
+  } satisfies RecentRequestsResponse);
 }

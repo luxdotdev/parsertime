@@ -72,7 +72,8 @@ export async function resolveScrimLink(input: {
   ) {
     return null;
   }
-  const opponent = req.fromTeamId === input.teamId ? req.toTeamId : req.fromTeamId;
+  const opponent =
+    req.fromTeamId === input.teamId ? req.toTeamId : req.fromTeamId;
   if (opponent !== input.opponentTeamId) return null;
   return { scrimRequestId: input.scrimRequestId, opponentTeamId: opponent };
 }
@@ -110,7 +111,9 @@ export async function recordScrimFeedback(input: {
 }
 
 /** Pending = scrim has opponentTeamId and no feedback row, for the given teams. */
-export async function getPendingFeedbackCount(teamIds: number[]): Promise<number> {
+export async function getPendingFeedbackCount(
+  teamIds: number[]
+): Promise<number> {
   if (teamIds.length === 0) return 0;
   return prisma.scrim.count({
     where: {

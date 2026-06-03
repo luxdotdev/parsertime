@@ -349,7 +349,9 @@ export function MapUploadList({ upload, busy = false }: Props) {
         <p className="text-foreground mt-3 text-sm font-medium">
           {pendingMaps.length === 0 ? t("dropTitleEmpty") : t("dropTitleMore")}
         </p>
-        <p className="text-muted-foreground mt-1 text-xs">{t("dropSubtitle")}</p>
+        <p className="text-muted-foreground mt-1 text-xs">
+          {t("dropSubtitle")}
+        </p>
         <p className="text-muted-foreground/70 mt-3 font-mono text-[0.6875rem] tracking-[0.04em] uppercase">
           {t("dropHint", { max: upload.maxMaps })}
         </p>

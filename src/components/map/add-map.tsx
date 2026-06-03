@@ -112,7 +112,9 @@ export function AddMapCard({
         </div>
         <div>
           <p className="text-foreground text-sm font-medium">{t("title")}</p>
-          <p className="text-muted-foreground text-xs">{tb("addDescription")}</p>
+          <p className="text-muted-foreground text-xs">
+            {tb("addDescription")}
+          </p>
         </div>
       </button>
 

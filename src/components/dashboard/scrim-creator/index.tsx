@@ -45,8 +45,13 @@ export function ScrimCreationForm({
   const tb = useTranslations("bulkUpload");
 
   const upload = useBulkMapUpload();
-  const { pendingMaps, isParsing, failedCount, reset: resetMaps, patchMap } =
-    upload;
+  const {
+    pendingMaps,
+    isParsing,
+    failedCount,
+    reset: resetMaps,
+    patchMap,
+  } = upload;
   const scrimIdRef = useRef<number | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -109,7 +114,9 @@ export function ScrimCreationForm({
   const { data: linkableRequests = [] } = useQuery({
     queryKey: ["recent-requests", selectedTeam],
     queryFn: async () => {
-      const res = await fetch(`/api/team-ops/recent-requests?teamId=${selectedTeam}`);
+      const res = await fetch(
+        `/api/team-ops/recent-requests?teamId=${selectedTeam}`
+      );
       if (!res.ok) return [];
       const data = (await res.json()) as RecentRequestsResponse;
       return data.requests;
@@ -218,7 +225,11 @@ export function ScrimCreationForm({
   }
 
   function handleCreateAnother() {
-    form.reset({ date: new Date(), opponentTeamAbbr: null, scrimRequestId: null });
+    form.reset({
+      date: new Date(),
+      opponentTeamAbbr: null,
+      scrimRequestId: null,
+    });
     resetMaps();
     scrimIdRef.current = null;
     scrimCreatorStore.trigger.reset();

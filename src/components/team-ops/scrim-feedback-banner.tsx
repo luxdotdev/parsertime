@@ -50,9 +50,9 @@ export function ScrimFeedbackBanner({
   }
 
   return (
-    <div className="bg-muted/40 border rounded-lg p-4 flex flex-col gap-3">
+    <div className="bg-muted/40 flex flex-col gap-3 rounded-lg border p-4">
       <div className="flex items-start justify-between gap-3">
-        <p className="text-sm font-medium leading-snug">
+        <p className="text-sm leading-snug font-medium">
           {t("prompt", { name: opponentName })}
         </p>
         <button
@@ -60,7 +60,7 @@ export function ScrimFeedbackBanner({
           onClick={() => send("DISMISSED")}
           disabled={pending}
           aria-label={t("skip")}
-          className="text-muted-foreground hover:text-foreground shrink-0 -mt-0.5 h-6 w-6 inline-flex items-center justify-center rounded transition-colors disabled:opacity-50"
+          className="text-muted-foreground hover:text-foreground -mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded transition-colors disabled:opacity-50"
         >
           <span aria-hidden="true" className="text-base leading-none">
             ✕
@@ -103,7 +103,7 @@ export function ScrimFeedbackBanner({
             onChange={(e) => setReason(e.target.value)}
             placeholder={t("reasonPlaceholder")}
             disabled={pending}
-            className="h-8 text-sm max-w-sm"
+            className="h-8 max-w-sm text-sm"
             onKeyDown={(e) => {
               if (e.key === "Enter") handlePoorClick();
             }}

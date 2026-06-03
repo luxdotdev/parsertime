@@ -5,7 +5,12 @@ import type { BulkMapUpload } from "@/components/map/bulk-upload/use-bulk-map-up
 import { OpponentSearchField } from "@/components/scrim/opponent-search-field";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -30,7 +35,12 @@ import { motion, useReducedMotion } from "framer-motion";
 import { FileText } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Controller, type UseFormReturn } from "react-hook-form";
-import type { FormValues, LinkableRequestOption, ScoutingTeam, TeamOption } from "./types";
+import type {
+  FormValues,
+  LinkableRequestOption,
+  ScoutingTeam,
+  TeamOption,
+} from "./types";
 
 type Props = {
   form: UseFormReturn<FormValues>;
@@ -85,14 +95,19 @@ export function FormPane({
             control={form.control}
             name="name"
             render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid} className="sm:col-span-2">
+              <Field
+                data-invalid={fieldState.invalid}
+                className="sm:col-span-2"
+              >
                 <FieldLabel htmlFor={field.name}>{t("scrimName")}</FieldLabel>
                 <Input
                   {...field}
                   aria-invalid={fieldState.invalid}
                   placeholder={t("scrimPlaceholder")}
                 />
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
@@ -102,7 +117,10 @@ export function FormPane({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel htmlFor={field.name}>{t("teamName")}</FieldLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <SelectTrigger
                     id={field.name}
                     aria-invalid={fieldState.invalid}
@@ -123,7 +141,9 @@ export function FormPane({
                     )}
                   </SelectContent>
                 </Select>
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
@@ -163,7 +183,9 @@ export function FormPane({
                     />
                   </PopoverContent>
                 </Popover>
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
               </Field>
             )}
           />
@@ -174,7 +196,9 @@ export function FormPane({
             htmlFor="auto-assign-team-names"
             className={cn(
               "text-sm",
-              isIndividual || !selectedTeam ? "text-muted-foreground" : undefined
+              isIndividual || !selectedTeam
+                ? "text-muted-foreground"
+                : undefined
             )}
           >
             {t("autoAssignTeamNames")}
@@ -200,14 +224,18 @@ export function FormPane({
               name="opponentTeamAbbr"
               render={({ field }) => (
                 <Field>
-                  <FieldLabel htmlFor={field.name}>{t("opponentName")}</FieldLabel>
+                  <FieldLabel htmlFor={field.name}>
+                    {t("opponentName")}
+                  </FieldLabel>
                   <OpponentSearchField
                     id={field.name}
                     options={scoutingTeams}
                     value={field.value ?? null}
                     onChange={field.onChange}
                   />
-                  <FieldDescription>{t("opponentDescription")}</FieldDescription>
+                  <FieldDescription>
+                    {t("opponentDescription")}
+                  </FieldDescription>
                 </Field>
               )}
             />
@@ -221,21 +249,33 @@ export function FormPane({
               name="scrimRequestId"
               render={({ field }) => (
                 <Field>
-                  <FieldLabel htmlFor={field.name}>{t("linkedRequestLabel")}</FieldLabel>
-                  <Select onValueChange={field.onChange} value={field.value ?? "none"}>
+                  <FieldLabel htmlFor={field.name}>
+                    {t("linkedRequestLabel")}
+                  </FieldLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value ?? "none"}
+                  >
                     <SelectTrigger id={field.name} className="w-full">
                       <SelectValue placeholder={t("linkedRequestNone")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">{t("linkedRequestNone")}</SelectItem>
+                      <SelectItem value="none">
+                        {t("linkedRequestNone")}
+                      </SelectItem>
                       {linkableRequests.map((r) => (
-                        <SelectItem key={r.scrimRequestId} value={r.scrimRequestId}>
+                        <SelectItem
+                          key={r.scrimRequestId}
+                          value={r.scrimRequestId}
+                        >
                           {r.opponentTeamName}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  <FieldDescription>{t("linkedRequestDescription")}</FieldDescription>
+                  <FieldDescription>
+                    {t("linkedRequestDescription")}
+                  </FieldDescription>
                 </Field>
               )}
             />
@@ -249,7 +289,12 @@ export function FormPane({
           <span>.txt</span>
         </div>
         <div className="flex items-center gap-2">
-          <Button type="button" variant="ghost" onClick={onCancel} disabled={busy}>
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onCancel}
+            disabled={busy}
+          >
             {t("cancel")}
           </Button>
           <Button

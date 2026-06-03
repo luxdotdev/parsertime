@@ -78,9 +78,7 @@ export function SubstituteToggle({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem
-          onSelect={() => startTransition(() => void toggle())}
-        >
+        <DropdownMenuItem onSelect={() => startTransition(() => void toggle())}>
           {isSubstitute ? t("unmarkSubstitute") : t("markSubstitute")}
         </DropdownMenuItem>
       </DropdownMenuContent>

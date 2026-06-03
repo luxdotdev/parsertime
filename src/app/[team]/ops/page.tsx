@@ -59,7 +59,10 @@ export default async function TeamOpsPage(
     getBlacklistSuggestions(teamId),
   ]);
 
-  const t = await getTranslations({ locale: params.locale, namespace: "teamOps" });
+  const t = await getTranslations({
+    locale: params.locale,
+    namespace: "teamOps",
+  });
 
   return (
     <DashboardLayout>

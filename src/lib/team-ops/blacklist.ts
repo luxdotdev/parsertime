@@ -13,7 +13,9 @@ export type BlacklistRow = {
   createdAt: Date;
 };
 
-export async function listBlacklist(ownerTeamId: number): Promise<BlacklistRow[]> {
+export async function listBlacklist(
+  ownerTeamId: number
+): Promise<BlacklistRow[]> {
   const rows = await prisma.teamBlacklist.findMany({
     where: { ownerTeamId },
     orderBy: { createdAt: "desc" },
@@ -51,7 +53,12 @@ export async function addBlacklistEntry(input: {
     name: input.blockedTeamName,
   });
   await prisma.teamBlacklist.upsert({
-    where: { ownerTeamId_blockedKey: { ownerTeamId: input.ownerTeamId, blockedKey: key } },
+    where: {
+      ownerTeamId_blockedKey: {
+        ownerTeamId: input.ownerTeamId,
+        blockedKey: key,
+      },
+    },
     // Re-blocking an existing entry (e.g. a POST_SCRIM verdict over a prior
     // manual block) should not wipe an existing reason with a null one.
     update: input.reason != null ? { reason: input.reason } : {},
@@ -102,7 +109,11 @@ export async function areTeamsBlocked(a: number, b: number): Promise<boolean> {
   return row != null;
 }
 
-export type BlacklistSuggestion = { teamId: number; name: string; image: string | null };
+export type BlacklistSuggestion = {
+  teamId: number;
+  name: string;
+  image: string | null;
+};
 
 export async function getBlacklistSuggestions(
   ownerTeamId: number
@@ -125,7 +136,9 @@ export async function getBlacklistSuggestions(
     }),
   ]);
 
-  const blocked = new Set(existing.map((e) => e.blockedTeamId).filter((x): x is number => x !== null));
+  const blocked = new Set(
+    existing.map((e) => e.blockedTeamId).filter((x): x is number => x !== null)
+  );
   const byId = new Map<number, BlacklistSuggestion>();
   function add(t: { id: number; name: string; image: string | null }) {
     if (t.id === ownerTeamId || blocked.has(t.id) || byId.has(t.id)) return;

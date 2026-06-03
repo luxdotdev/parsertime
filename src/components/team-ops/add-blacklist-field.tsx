@@ -6,11 +6,7 @@ import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import Fuse from "fuse.js";
 import { useTranslations } from "next-intl";
 import { useCallback, useId, useMemo, useRef, useState } from "react";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export type BlacklistSelection =
   | { kind: "team"; teamId: number; name: string }
@@ -65,7 +61,8 @@ export function AddBlacklistField({
   const showOffPlatformRow = trimmed.length > 0 && !hasExactMatch;
   const totalItems = matchedSuggestions.length + (showOffPlatformRow ? 1 : 0);
 
-  const showDropdown = isFocused && (matchedSuggestions.length > 0 || showOffPlatformRow);
+  const showDropdown =
+    isFocused && (matchedSuggestions.length > 0 || showOffPlatformRow);
   const activeDescendant =
     totalItems > 0 ? `blacklist-result-${activeIndex}` : undefined;
 
@@ -79,7 +76,11 @@ export function AddBlacklistField({
   const selectSuggestion = useCallback(
     (suggestion: BlacklistSuggestion) => {
       pendingSelectionRef.current = true;
-      onSelect({ kind: "team", teamId: suggestion.teamId, name: suggestion.name });
+      onSelect({
+        kind: "team",
+        teamId: suggestion.teamId,
+        name: suggestion.name,
+      });
       setQuery("");
       setActiveIndex(0);
       setIsFocused(false);

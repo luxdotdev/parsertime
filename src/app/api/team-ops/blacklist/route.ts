@@ -2,7 +2,10 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth, canManageTeam } from "@/lib/auth";
-import { addBlacklistEntry, removeBlacklistEntry } from "@/lib/team-ops/blacklist";
+import {
+  addBlacklistEntry,
+  removeBlacklistEntry,
+} from "@/lib/team-ops/blacklist";
 import { unauthorized } from "next/navigation";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
@@ -53,6 +56,9 @@ export async function DELETE(request: NextRequest) {
   const user = await requireManager(parsed.data.ownerTeamId);
   if (!user) return new Response("Forbidden", { status: 403 });
 
-  await removeBlacklistEntry({ ownerTeamId: parsed.data.ownerTeamId, id: parsed.data.id });
+  await removeBlacklistEntry({
+    ownerTeamId: parsed.data.ownerTeamId,
+    id: parsed.data.id,
+  });
   return Response.json({ ok: true });
 }

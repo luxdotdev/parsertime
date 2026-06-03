@@ -106,11 +106,7 @@ export function BlacklistManager({
               disabled={isPending}
             />
             <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                onClick={handleAdd}
-                disabled={isPending}
-              >
+              <Button size="sm" onClick={handleAdd} disabled={isPending}>
                 {t("confirmAdd")}
               </Button>
               <Button
@@ -132,7 +128,7 @@ export function BlacklistManager({
           {t("empty")}
         </p>
       ) : (
-        <ul className="border-input divide-input rounded-md border divide-y overflow-hidden">
+        <ul className="border-input divide-input divide-y overflow-hidden rounded-md border">
           {rows.map((row) => (
             <li
               key={row.id}

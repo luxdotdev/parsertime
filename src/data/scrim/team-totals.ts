@@ -2,7 +2,11 @@ import type { PlayerScrimPerformance, ScrimTeamTotals } from "./types";
 
 type TeamTotalsInput = Pick<
   PlayerScrimPerformance,
-  "eliminations" | "deaths" | "heroDamageDealt" | "healingDealt" | "isSubstitute"
+  | "eliminations"
+  | "deaths"
+  | "heroDamageDealt"
+  | "healingDealt"
+  | "isSubstitute"
 >;
 
 /**

@@ -34,9 +34,9 @@ describe("compareByFilenameTimestamp", () => {
       { timestamp: 100, seq: 1 },
       { timestamp: 200, seq: 2 },
     ];
-    expect([...list].sort(compareByFilenameTimestamp).map((m) => m.timestamp)).toEqual([
-      100, 200, 300,
-    ]);
+    expect(
+      [...list].sort(compareByFilenameTimestamp).map((m) => m.timestamp)
+    ).toEqual([100, 200, 300]);
   });
 
   it("places maps without a timestamp last, preserving add order", () => {
@@ -45,9 +45,9 @@ describe("compareByFilenameTimestamp", () => {
       { timestamp: 100, seq: 1 },
       { timestamp: null, seq: 2 },
     ];
-    expect([...list].sort(compareByFilenameTimestamp).map((m) => m.seq)).toEqual([
-      1, 0, 2,
-    ]);
+    expect(
+      [...list].sort(compareByFilenameTimestamp).map((m) => m.seq)
+    ).toEqual([1, 0, 2]);
   });
 
   it("is stable for equal timestamps via seq", () => {
@@ -56,8 +56,8 @@ describe("compareByFilenameTimestamp", () => {
       { timestamp: 100, seq: 0 },
       { timestamp: 100, seq: 1 },
     ];
-    expect([...list].sort(compareByFilenameTimestamp).map((m) => m.seq)).toEqual([
-      0, 1, 2,
-    ]);
+    expect(
+      [...list].sort(compareByFilenameTimestamp).map((m) => m.seq)
+    ).toEqual([0, 1, 2]);
   });
 });

@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { isScrimRequestLinkable, LINKAGE_WINDOW_DAYS } from "@/lib/team-ops/linkage";
+import {
+  isScrimRequestLinkable,
+  LINKAGE_WINDOW_DAYS,
+} from "@/lib/team-ops/linkage";
 
 const now = new Date("2026-06-01T00:00:00Z");
 const recent = new Date("2026-05-31T00:00:00Z"); // 1 day ago

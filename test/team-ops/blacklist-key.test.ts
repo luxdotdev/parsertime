@@ -13,6 +13,8 @@ describe("blacklistKey", () => {
   });
 
   it("keys an off-platform team by normalized name", () => {
-    expect(blacklistKey({ teamId: null, name: "  Team   Liquid " })).toBe("name:team liquid");
+    expect(blacklistKey({ teamId: null, name: "  Team   Liquid " })).toBe(
+      "name:team liquid"
+    );
   });
 });
