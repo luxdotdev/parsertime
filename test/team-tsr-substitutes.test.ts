@@ -1,11 +1,13 @@
 import { matchesAnyName } from "@/lib/tsr/team";
 import { describe, expect, it } from "vitest";
 
-const member = (name: string | null, battletag: string | null) => ({
-  id: "u1",
-  name,
-  battletag,
-});
+function member(name: string | null, battletag: string | null) {
+  return {
+    id: "u1",
+    name,
+    battletag,
+  };
+}
 
 describe("matchesAnyName", () => {
   it("matches on display name (case-insensitive)", () => {

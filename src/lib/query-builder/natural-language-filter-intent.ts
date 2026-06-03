@@ -217,10 +217,12 @@ export function pickUltEconomyBucket(normalized: string): string | null {
     /\b(?:they|them|their|enemy|enemies|opponent|opponents)\b/;
   const friendlySubject = /\b(?:we|us|our)\b/;
   const ultToken = "(?:ult|ults|ultimate|ultimates)";
-  const enemyHas = (pattern: RegExp) =>
-    enemySubject.test(normalized) && pattern.test(normalized);
-  const friendlyHas = (pattern: RegExp) =>
-    friendlySubject.test(normalized) && pattern.test(normalized);
+  function enemyHas(pattern: RegExp) {
+    return enemySubject.test(normalized) && pattern.test(normalized);
+  }
+  function friendlyHas(pattern: RegExp) {
+    return friendlySubject.test(normalized) && pattern.test(normalized);
+  }
 
   const twoUltAdvantage = new RegExp(
     `\\b(?:two|2)\\s+(?:more\\s+)?${ultToken}\\s+(?:advantage|lead)\\b|\\b(?:two|2)\\s+more\\s+${ultToken}\\b|\\b(?:up|ahead)\\b.*\\b(?:two|2)\\b.*\\b${ultToken}\\b|\\b(?:two|2)\\b.*\\b${ultToken}\\b.*\\b(?:up|ahead)\\b`

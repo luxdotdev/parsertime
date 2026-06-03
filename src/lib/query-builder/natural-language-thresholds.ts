@@ -331,12 +331,14 @@ export function extractGenericAggregateThresholdFilters(
       !existingFields.has(filter.id)
   );
   const seen = new Set(
-    existing.map((filter) => `${filter.field}:${filter.op}:${filter.value}`)
+    existing.map(
+      (filter) => `${filter.field}:${filter.op}:${String(filter.value)}`
+    )
   );
   const seenThresholds = new Set(
     existing
       .filter((filter) => typeof filter.value === "number")
-      .map((filter) => `${filter.op}:${filter.value}`)
+      .map((filter) => `${filter.op}:${String(filter.value)}`)
   );
   const generated: QueryFilter[] = [];
   const candidates = aggregateFilters

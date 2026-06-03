@@ -145,7 +145,7 @@ const ABILITY_BY_NORMALIZED = new Map(
   )
 );
 
-const ULTIMATE_HERO_ALIASES: Array<[string, string[]]> = [
+const ULTIMATE_HERO_ALIASES: [string, string[]][] = [
   ["Ana", ["nano boost", "nano"]],
   ["Ashe", ["b o b", "bob"]],
   ["Baptiste", ["amplification matrix", "amp matrix", "window"]],

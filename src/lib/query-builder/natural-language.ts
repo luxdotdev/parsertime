@@ -294,7 +294,6 @@ function pickFilters(dataset: DatasetId, question: string): QueryFilter[] {
   const abilities = abilityMentions.map((mention) => mention.ability);
   const mapMentions = findMapMentions(question);
   const mapNames = mapMentions.map((mention) => mention.map);
-  const mapName = mapNames[0] ?? null;
   const player = findPlayer(question, hero);
   const comparedPlayers = extractComparedPlayers(question);
   const normalized = normalize(question);

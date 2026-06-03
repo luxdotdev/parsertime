@@ -7,7 +7,6 @@ import {
 import {
   escapeRegExp,
   includesAnyPhrase,
-  includesPhrase,
   normalize,
   titleCase,
 } from "@/lib/query-builder/natural-language-text";
@@ -254,9 +253,9 @@ export function extractComparedPlayers(question: string): string[] {
   if (!hasCompareContext) return [];
 
   const players: string[] = [];
-  const add = (player: string | null) => {
+  function add(player: string | null) {
     if (player && !players.includes(player)) players.push(player);
-  };
+  }
   const playerToken = "[A-Za-z][A-Za-z0-9_.-]{1,}";
   const metricBoundary =
     "final\\s+blows?|deaths?|eliminations?|elims?|damage|healing|accuracy|ults?|ultimates?|kills?|assists?|stats?|win\\s+rates?|winrates?";

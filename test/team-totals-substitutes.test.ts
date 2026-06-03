@@ -9,14 +9,16 @@ type Row = {
   isSubstitute: boolean;
 };
 
-const player = (overrides: Partial<Row> = {}): Row => ({
-  eliminations: 10,
-  deaths: 5,
-  heroDamageDealt: 5000,
-  healingDealt: 0,
-  isSubstitute: false,
-  ...overrides,
-});
+function player(overrides: Partial<Row> = {}): Row {
+  return {
+    eliminations: 10,
+    deaths: 5,
+    heroDamageDealt: 5000,
+    healingDealt: 0,
+    isSubstitute: false,
+    ...overrides,
+  };
+}
 
 describe("computeTeamTotals", () => {
   it("sums all players when none are substitutes", () => {

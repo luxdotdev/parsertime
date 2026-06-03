@@ -97,7 +97,8 @@ async function upsertRosterPlayer(
   tx: Prisma.TransactionClient,
   player: FaceitMatchRosterPlayer
 ): Promise<void> {
-  const battletag = player.game_player_name?.trim() || null;
+  const trimmedName = player.game_player_name?.trim() ?? "";
+  const battletag = trimmedName.length > 0 ? trimmedName : null;
   await tx.faceitPlayer.upsert({
     where: { faceitPlayerId: player.player_id },
     create: {
