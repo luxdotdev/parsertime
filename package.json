@@ -2,6 +2,7 @@
   "name": "parsertime",
   "version": "3.0.0",
   "private": true,
+  "packageManager": "pnpm@9.15.9",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -197,11 +198,16 @@
       "@types/react-dom": "19.2.2"
     },
     "onlyBuiltDependencies": [
-      "@tailwindcss/oxide",
-      "@vercel/speed-insights",
+      "@parcel/watcher",
       "@prisma/client",
       "@prisma/engines",
-      "prisma"
+      "@tailwindcss/oxide",
+      "@vercel/speed-insights",
+      "esbuild",
+      "msgpackr-extract",
+      "prisma",
+      "protobufjs",
+      "sharp"
     ]
   }
 }
