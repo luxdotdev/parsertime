@@ -109,7 +109,7 @@ export async function POST(
     }
 
     const mutation = await prisma.$transaction(async (tx) => {
-      await tx.$executeRaw`SELECT pg_advisory_xact_lock(${TOURNAMENT_MATCH_LOCK_NAMESPACE}, ${match.id})`;
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(${TOURNAMENT_MATCH_LOCK_NAMESPACE}::integer, ${match.id}::integer)`;
 
       const lockedMatch = await tx.tournamentMatch.findUnique({
         where: { id: match.id },

@@ -483,7 +483,7 @@ async function finalizeTournamentMap({
   winner: string | null;
 }) {
   return await prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT pg_advisory_xact_lock(${TOURNAMENT_MATCH_LOCK_NAMESPACE}, ${matchId})`;
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(${TOURNAMENT_MATCH_LOCK_NAMESPACE}::integer, ${matchId}::integer)`;
 
     const tournamentMap = await tx.tournamentMap.findUnique({
       where: { id: tournamentMapId },

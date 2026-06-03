@@ -99,8 +99,8 @@ export async function sendScrimRequest(input: {
   const created = await prisma.$transaction(async (tx) => {
     await tx.$executeRaw`
       SELECT pg_advisory_xact_lock(
-        ${SCRIM_REQUEST_LOCK_NAMESPACE},
-        ${input.fromTeamId}
+        ${SCRIM_REQUEST_LOCK_NAMESPACE}::integer,
+        ${input.fromTeamId}::integer
       )
     `;
 

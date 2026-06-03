@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
   }
 
   const result = await prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT pg_advisory_xact_lock(${TEAM_CREATION_LOCK_NAMESPACE}, hashtext(${userId.id}))`;
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(${TEAM_CREATION_LOCK_NAMESPACE}::integer, hashtext(${userId.id}))`;
 
     const numberOfTeams = await tx.team.count({
       where: { ownerId: userId.id },
