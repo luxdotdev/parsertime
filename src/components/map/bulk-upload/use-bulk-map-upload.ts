@@ -1,6 +1,6 @@
 "use client";
 
-import { parseData } from "@/lib/parser-client";
+import { parseData } from "@/lib/parser/client";
 import { detectFileCorruption } from "@/lib/utils";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useTranslations } from "next-intl";

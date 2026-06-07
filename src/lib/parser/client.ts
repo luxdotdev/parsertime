@@ -1,10 +1,6 @@
 import { headers } from "@/lib/headers";
 import type { ParserData } from "@/types/parser";
-import { type $Enums, MapType } from "@prisma/client";
-import * as XLSX from "xlsx";
-
-const XLSX_FILE =
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+import type { $Enums } from "@prisma/client";
 
 const TXT_FILE = "text/plain";
 
@@ -54,53 +50,52 @@ export function normalizeTeamData(
   const origTeam1 = String(data.match_start[0][4]);
   const origTeam2 = String(data.match_start[0][5]);
 
-  const [fromTeam1, toTeam1] = userIsOriginalTeam2
-    ? [origTeam2, newTeam1Name]
-    : [origTeam1, newTeam1Name];
+  const result = structuredClone(data);
 
-  const [fromTeam2, toTeam2] = userIsOriginalTeam2
-    ? [origTeam1, newTeam2Name ?? origTeam1]
-    : [origTeam2, newTeam2Name ?? origTeam2];
-
-  const newData = structuredClone(data);
-
-  for (const [eventType, rows] of Object.entries(newData)) {
-    const fieldPositions = TEAM_NAME_FIELDS[eventType];
-    if (!fieldPositions) continue;
-
-    for (const row of rows as unknown[][]) {
-      for (const pos of fieldPositions) {
-        if (String(row[pos]) === fromTeam1) {
-          row[pos] = toTeam1;
-        } else if (String(row[pos]) === fromTeam2) {
-          row[pos] = toTeam2;
-        }
-      }
-    }
-
-    const swapPositions = TEAM_POSITIONAL_SWAP_FIELDS[eventType];
-    if (swapPositions && userIsOriginalTeam2) {
-      for (const row of rows as unknown[][]) {
-        for (const [pos1, pos2] of swapPositions) {
-          const temp = row[pos1];
-          row[pos1] = row[pos2];
-          row[pos2] = temp;
+  if (userIsOriginalTeam2) {
+    for (const [eventType, swapPairs] of Object.entries(
+      TEAM_POSITIONAL_SWAP_FIELDS
+    )) {
+      const events = result[eventType as keyof ParserData] as
+        | unknown[][]
+        | undefined;
+      if (!events) continue;
+      for (const row of events) {
+        for (const [i, j] of swapPairs) {
+          [row[i], row[j]] = [row[j], row[i]];
         }
       }
     }
   }
 
-  return newData;
-}
+  const nameToReplace1 = userIsOriginalTeam2 ? origTeam2 : origTeam1;
+  const nameToReplace2 = userIsOriginalTeam2 ? origTeam1 : origTeam2;
 
+  for (const [eventType, indices] of Object.entries(TEAM_NAME_FIELDS)) {
+    const events = result[eventType as keyof ParserData] as
+      | unknown[][]
+      | undefined;
+    if (!events) continue;
+    for (const row of events) {
+      for (const idx of indices) {
+        const val = String(row[idx]);
+        if (val === nameToReplace1) {
+          row[idx] = newTeam1Name;
+        } else if (newTeam2Name !== null && val === nameToReplace2) {
+          row[idx] = newTeam2Name;
+        }
+      }
+    }
+  }
+
+  return result;
+}
 export async function parseData(file: File) {
   switch (file.type) {
-    case XLSX_FILE:
-      return await parseDataFromXLSX(file);
     case TXT_FILE:
       return await parseDataFromTXT(file);
     default:
-      throw new Error("Invalid file type");
+      throw new Error("Invalid file type. Upload a .txt replay log.");
   }
 }
 
@@ -163,6 +158,25 @@ export function parseCoordinate(
   return { x, y, z };
 }
 
+type ParsedTxtValue = string | number | null | undefined;
+type ParsedTxtRow = ParsedTxtValue[];
+
+function normalizeTxtRowForSheetJson(row: ParsedTxtRow): ParsedTxtRow {
+  let end = row.length;
+  while (end > 0 && row[end - 1] === null) {
+    end--;
+  }
+
+  const normalized = end === row.length ? row : row.slice(0, end);
+  for (let index = 0; index < normalized.length; index++) {
+    if (normalized[index] === null) {
+      normalized[index] = undefined;
+    }
+  }
+
+  return normalized;
+}
+
 export async function parseDataFromTXT(file: File) {
   const fileContent =
     process.env.NODE_ENV !== "test"
@@ -195,7 +209,7 @@ export async function parseDataFromTXT(file: File) {
       (eventType === "round_end" || eventType === "round_start") &&
       index === 3
     ) {
-      if (MapType.Control && value === "0") {
+      if (value === "0") {
         return 0;
       }
       return value;
@@ -214,21 +228,23 @@ export async function parseDataFromTXT(file: File) {
     return TEAM_NAME_FIELDS[eventType]?.includes(index) || false;
   }
 
-  const categorizedData: Record<string, string[][]> = {};
+  const categorizedData: Record<string, ParsedTxtRow[]> = {};
   cleanedLines.forEach((line) => {
     const eventType = line[0];
     if (headers[eventType]) {
       if (!categorizedData[eventType]) {
-        categorizedData[eventType] = [headers[eventType]];
+        categorizedData[eventType] = [];
       }
       const convertedLine = line.map((value, index) =>
         convertToNumberOrReplaceEmpty(value, eventType, index)
       );
-      categorizedData[eventType].push(convertedLine as never);
+      categorizedData[eventType].push(
+        normalizeTxtRowForSheetJson(convertedLine)
+      );
     }
   });
 
-  for (const kill of categorizedData["kill"]) {
+  for (const kill of categorizedData["kill"] ?? []) {
     if (kill[2] === "All Teams") {
       kill[2] = kill[5];
       kill[3] = kill[6];
@@ -236,51 +252,11 @@ export async function parseDataFromTXT(file: File) {
     }
   }
 
-  const workbook = XLSX.utils.book_new();
-
-  const sortedEventTypes = Object.keys(categorizedData).sort();
-
-  sortedEventTypes.forEach((eventType) => {
-    const ws = XLSX.utils.aoa_to_sheet(categorizedData[eventType]);
-    XLSX.utils.book_append_sheet(workbook, ws, eventType);
-  });
-
-  const sheetName = workbook.SheetNames as $Enums.EventType[];
-
   // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions
   const result = {} as ParserData;
 
-  for (const sheet of sheetName) {
-    const ws = workbook.Sheets[sheet];
-    const json = XLSX.utils.sheet_to_json(ws, { header: 1 }).slice(1);
-
-    result[sheet] = json as never;
-  }
-
-  return result;
-}
-
-export async function parseDataFromXLSX(file: File) {
-  const reader = new FileReader();
-
-  const data = await new Promise((resolve, reject) => {
-    reader.onload = (e: ProgressEvent<FileReader>) => resolve(e.target?.result);
-    reader.onerror = () => reject(new Error("Failed to read the file."));
-    reader.readAsBinaryString(file);
-  });
-
-  const workbook = XLSX.read(data, { type: "binary" });
-  const sheetName = workbook.SheetNames as $Enums.EventType[];
-
-  // oxlint-disable-next-line @typescript-eslint/consistent-type-assertions
-  const result = {} as ParserData;
-
-  for (const sheet of sheetName) {
-    const ws = workbook.Sheets[sheet];
-    const json = XLSX.utils.sheet_to_json(ws, { header: 1 }).slice(1);
-
-    // @ts-expect-error - Dynamic assignment
-    result[sheet] = json;
+  for (const eventType of Object.keys(categorizedData).sort()) {
+    result[eventType as $Enums.EventType] = categorizedData[eventType] as never;
   }
 
   return result;

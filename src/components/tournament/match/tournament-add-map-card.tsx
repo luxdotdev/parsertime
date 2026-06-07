@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ClientOnly } from "@/lib/client-only";
-import { parseData } from "@/lib/parser-client";
+import { parseData } from "@/lib/parser/client";
 import { cn, detectFileCorruption } from "@/lib/utils";
 import { heroRoleMapping } from "@/types/heroes";
 import type { ParserData } from "@/types/parser";
@@ -45,10 +45,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
-const ACCEPTED_FILE_TYPES = [
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  "text/plain",
-];
+const ACCEPTED_FILE_TYPES = ["text/plain"];
 
 const MAX_FILE_SIZE = 10000000; // 10MB
 
@@ -95,7 +92,7 @@ export function TournamentAddMapCard({
   function validateFile(file: File): string | null {
     if (file.size > MAX_FILE_SIZE) return "File must be under 10MB";
     if (!ACCEPTED_FILE_TYPES.includes(file.type))
-      return "Only .xlsx and .txt files are accepted";
+      return "Only .txt files are accepted";
     return null;
   }
 
@@ -245,14 +242,14 @@ export function TournamentAddMapCard({
             Upload a map replay
           </p>
           <p className="text-muted-foreground text-xs">
-            Drag and drop an .xlsx or .txt file, or click to browse
+            Drag and drop a .txt file, or click to browse
           </p>
         </div>
         <Input
           ref={fileInputRef}
           type="file"
           className="hidden"
-          accept=".xlsx, .txt"
+          accept=".txt"
           onChange={handleChange}
         />
       </button>
