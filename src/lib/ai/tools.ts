@@ -14,6 +14,10 @@ import {
 } from "@/data/team";
 import { Effect } from "effect";
 import prisma from "@/lib/prisma";
+import {
+  aggregateStatsByPlayer,
+  POSITIONAL_STAT_TYPES,
+} from "@/lib/positional-rollups";
 import { SPATIAL_STAT_TYPES } from "@/lib/spatial-stats";
 import { ULT_STAT_TYPES } from "@/lib/ult-quality";
 import { round } from "@/lib/utils";
@@ -252,7 +256,7 @@ export function buildTools(opts: {
 
     getScrimAnalysis: tool({
       description:
-        "Get a detailed analysis of a specific scrim, including player performance, fight analysis, ultimate economy, hero swaps, and statistical outliers. Requires a scrim ID (get from getScrimList) and the team ID.",
+        "Get a detailed analysis of a specific scrim, including player performance, fight analysis, ultimate economy, hero swaps, and statistical outliers. Requires a scrim ID (get from getScrimList) and the team ID. When the scrim's maps have positional data, the response includes positionalStats — per-player averages of spatial stats (engagement distance m, high ground kill %, isolation death %, fight start spread m) and ult stats (conversion kills, ult death %, displacement m, ults on objective %).",
       inputSchema: z.object({
         scrimId: z.number().describe("The scrim ID to analyze."),
         teamId: z
@@ -274,7 +278,22 @@ export function buildTools(opts: {
             Effect.flatMap((svc) => svc.getScrimOverview(scrimId, teamId))
           )
         );
-        return formatScrimOverview(data);
+        const positionalRows = await prisma.calculatedStat.findMany({
+          where: { scrimId, stat: { in: [...POSITIONAL_STAT_TYPES] } },
+          select: { playerName: true, stat: true, value: true },
+        });
+        return {
+          ...formatScrimOverview(data),
+          positionalStats:
+            positionalRows.length > 0
+              ? Object.fromEntries(
+                  Array.from(
+                    aggregateStatsByPlayer(positionalRows),
+                    ([player, stats]) => [player, Object.fromEntries(stats)]
+                  )
+                )
+              : undefined,
+        };
       },
     }),
 
