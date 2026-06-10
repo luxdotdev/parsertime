@@ -14,6 +14,8 @@ import {
 } from "@/data/team";
 import { Effect } from "effect";
 import prisma from "@/lib/prisma";
+import { SPATIAL_STAT_TYPES } from "@/lib/spatial-stats";
+import { round } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
 import { allHeroes } from "@/types/heroes";
 import type { Prisma } from "@prisma/client";
@@ -360,7 +362,7 @@ export function buildTools(opts: {
 
     getPlayerPerformance: tool({
       description:
-        "Get detailed performance stats for a specific player across selected maps. Requires map IDs (get from getScrimList or getScrimAnalysis). Optionally filter by specific heroes.",
+        "Get detailed performance stats for a specific player across selected maps. Requires map IDs (get from getScrimList or getScrimAnalysis). Optionally filter by specific heroes. When the maps have positional data, the response includes spatialStats (average engagement distance in meters, high ground kill %, isolation death %, fight start spread in meters) averaged across the selected maps.",
       inputSchema: z.object({
         mapIds: z
           .array(z.number())
@@ -404,6 +406,27 @@ export function buildTools(opts: {
             )
           )
         );
+        const spatialRows = await prisma.calculatedStat.findMany({
+          where: {
+            playerName,
+            stat: { in: [...SPATIAL_STAT_TYPES] },
+            MapData: { mapId: { in: mapIds } },
+          },
+          select: { stat: true, value: true },
+        });
+
+        const spatialStats: Record<string, number> = {};
+        for (const type of SPATIAL_STAT_TYPES) {
+          const values = spatialRows
+            .filter((row) => row.stat === type)
+            .map((row) => row.value);
+          if (values.length > 0) {
+            spatialStats[type] = round(
+              values.reduce((acc, v) => acc + v, 0) / values.length
+            );
+          }
+        }
+
         return {
           playerName: data.playerName,
           mapCount: data.mapCount,
@@ -411,6 +434,8 @@ export function buildTools(opts: {
           aggregated: data.aggregated,
           trends: data.trends,
           perMapBreakdown: data.perMapBreakdown.slice(0, 5),
+          spatialStats:
+            Object.keys(spatialStats).length > 0 ? spatialStats : undefined,
         };
       },
     }),
