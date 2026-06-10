@@ -34,6 +34,7 @@ import {
   useMapNames,
 } from "@/lib/utils";
 import { SUBROLE_ORDER, type RoleName, type SubroleName } from "@/types/heroes";
+import type { OverwatchPatch } from "@/types/overwatch-patches";
 import { $Enums } from "@prisma/client";
 import { CheckIcon, ChevronsUpDownIcon, LayersIcon } from "lucide-react";
 import Image from "next/image";
@@ -98,9 +99,11 @@ const COLS =
 export function MapHeroTrends({
   allMaps,
   perMap,
+  patches,
 }: {
   allMaps: MapHeroTrendGroup;
   perMap: MapHeroTrendGroup[];
+  patches: OverwatchPatch[];
 }) {
   const t = useTranslations("statsPage.mapHeroTrends");
   const formatter = useFormatter();
@@ -405,6 +408,7 @@ export function MapHeroTrends({
                 index={index}
                 hero={hero}
                 name={heroNames.get(toHero(hero.hero)) ?? hero.hero}
+                patches={patches}
                 formatter={formatter}
               />
             ))}
@@ -524,11 +528,13 @@ function HeroRow({
   index,
   hero,
   name,
+  patches,
   formatter,
 }: {
   index: number;
   hero: HeroRowData;
   name: string;
+  patches: OverwatchPatch[];
   formatter: ReturnType<typeof useFormatter>;
 }) {
   const t = useTranslations("statsPage.mapHeroTrends");
@@ -563,6 +569,7 @@ function HeroRow({
         subrole={hero.subrole ? getRoleFilterLabel(hero.subrole, t) : null}
         trend={hero.trend}
         pickRate={hero.pickRate}
+        patches={patches}
       >
         <button
           type="button"

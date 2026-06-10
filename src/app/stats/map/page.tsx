@@ -1,5 +1,6 @@
 import { MapHeroTrends } from "@/components/stats/map/map-hero-trends";
 import { MapHeroTrendsService } from "@/data/map";
+import { getOverwatchPatches } from "@/data/overwatch/patches-service";
 import { AppRuntime } from "@/data/runtime";
 import { Effect } from "effect";
 import type { Metadata } from "next";
@@ -10,10 +11,19 @@ export const metadata: Metadata = {
 };
 
 export default async function MapHeroStatsPage() {
-  const data = await AppRuntime.runPromise(
-    MapHeroTrendsService.pipe(
-      Effect.flatMap((svc) => svc.getRecentMapHeroTrends())
-    )
+  const [data, patches] = await Promise.all([
+    AppRuntime.runPromise(
+      MapHeroTrendsService.pipe(
+        Effect.flatMap((svc) => svc.getRecentMapHeroTrends())
+      )
+    ),
+    getOverwatchPatches(),
+  ]);
+  return (
+    <MapHeroTrends
+      allMaps={data.allMaps}
+      perMap={data.perMap}
+      patches={patches}
+    />
   );
-  return <MapHeroTrends allMaps={data.allMaps} perMap={data.perMap} />;
 }
