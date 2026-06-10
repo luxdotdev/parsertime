@@ -5604,6 +5604,20 @@
     "notification-created": "通知创建成功",
     "create-notification-error": "创建通知失败"
   },
+  "positioningCard": {
+    "title": "站位",
+    "description": "基于坐标数据计算的站位统计。仅统计包含坐标追踪的地图。",
+    "mapsWithData": "{count} 张地图有数据",
+    "noData": "暂无站位数据。上传包含坐标追踪的训练赛后将显示统计。",
+    "engagementDistance": "平均交战距离",
+    "engagementDistanceHint": "击杀时与目标的平均距离。",
+    "highGroundKills": "高地击杀 %",
+    "highGroundKillsHint": "拥有高度优势时取得击杀的比例。",
+    "isolationDeaths": "孤立死亡 %",
+    "isolationDeathsHint": "死亡时 15 米内没有队友的比例。",
+    "fightStartSpread": "团战开始间距",
+    "fightStartSpreadHint": "团战开始时与队友的平均距离。"
+  },
   "titles": {
     "DEVELOPER": "Parsertime 开发者",
     "DEVELOPER-description": "授予为 Parsertime 开发做出贡献的用户。",

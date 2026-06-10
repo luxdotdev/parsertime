@@ -5492,6 +5492,20 @@
       "viewProfile": "View Profile →"
     }
   },
+  "positioningCard": {
+    "title": "Positioning",
+    "description": "Spatial stats computed from positional data. Only maps with coordinate tracking are included.",
+    "mapsWithData": "{count, plural, one {# map with data} other {# maps with data}}",
+    "noData": "No positional data yet. Stats appear once scrims with coordinate tracking are uploaded.",
+    "engagementDistance": "Avg Engagement Distance",
+    "engagementDistanceHint": "Average distance to your target on final blows.",
+    "highGroundKills": "High Ground Kill %",
+    "highGroundKillsHint": "Share of your kills taken with a height advantage.",
+    "isolationDeaths": "Isolation Death %",
+    "isolationDeathsHint": "Deaths with no teammate within 15 meters.",
+    "fightStartSpread": "Fight Start Spread",
+    "fightStartSpreadHint": "Average distance to teammates when fights begin."
+  },
   "titles": {
     "DEVELOPER": "Parsertime Developer",
     "DEVELOPER-description": "Awarded to users who have contributed to the development of Parsertime.",
