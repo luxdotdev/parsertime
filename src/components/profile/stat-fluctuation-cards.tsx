@@ -51,6 +51,10 @@ const STAT_ORDER: CalculatedStatType[] = [
   "AVERAGE_TIME_TO_USE_ULT",
   "KILLS_PER_ULTIMATE",
   "AJAX_COUNT",
+  "AVERAGE_ENGAGEMENT_DISTANCE",
+  "HIGH_GROUND_KILL_PERCENTAGE",
+  "ISOLATION_DEATH_PERCENTAGE",
+  "AVERAGE_FIGHT_START_SPREAD",
 ];
 
 const STAT_CONFIGS: Record<string, StatConfig> = {
@@ -144,6 +148,34 @@ const STAT_CONFIGS: Record<string, StatConfig> = {
     formatValue: (value) => value.toFixed(1),
     color: "hsl(217.2 91.2% 59.8%)",
     aggregation: "sum",
+  },
+  AVERAGE_ENGAGEMENT_DISTANCE: {
+    name: "AVERAGE_ENGAGEMENT_DISTANCE",
+    label: "Avg Engagement Distance",
+    formatValue: (value) => `${value.toFixed(1)}m`,
+    color: "hsl(217.2 91.2% 59.8%)",
+    aggregation: "average",
+  },
+  HIGH_GROUND_KILL_PERCENTAGE: {
+    name: "HIGH_GROUND_KILL_PERCENTAGE",
+    label: "High Ground Kill %",
+    formatValue: (value) => `${value.toFixed(1)}%`,
+    color: "hsl(142.1 76.2% 36.3%)",
+    aggregation: "average",
+  },
+  ISOLATION_DEATH_PERCENTAGE: {
+    name: "ISOLATION_DEATH_PERCENTAGE",
+    label: "Isolation Death %",
+    formatValue: (value) => `${value.toFixed(1)}%`,
+    color: "hsl(0 72.2% 50.6%)",
+    aggregation: "average",
+  },
+  AVERAGE_FIGHT_START_SPREAD: {
+    name: "AVERAGE_FIGHT_START_SPREAD",
+    label: "Fight Start Spread",
+    formatValue: (value) => `${value.toFixed(1)}m`,
+    color: "hsl(217.2 91.2% 59.8%)",
+    aggregation: "average",
   },
 };
 
