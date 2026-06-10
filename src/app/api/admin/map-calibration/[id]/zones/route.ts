@@ -70,8 +70,15 @@ export async function POST(req: Request, props: Params) {
   };
 
   try {
-    const [{ id }, rawBody] = await Promise.all([props.params, req.json()]);
-    const parsedBody = CreateZoneSchema.safeParse(rawBody);
+    const { id } = await props.params;
+    const user = await getCurrentUser();
+    if (!user) unauthorized();
+    if (!isAdminUser(user)) forbidden();
+
+    const enabled = await dataLabeling();
+    if (!enabled) forbidden();
+
+    const parsedBody = CreateZoneSchema.safeParse(await req.json());
     if (!parsedBody.success) {
       wideEvent.status_code = 400;
       wideEvent.outcome = "validation_error";
@@ -80,12 +87,6 @@ export async function POST(req: Request, props: Params) {
         { status: 400 }
       );
     }
-    const user = await getCurrentUser();
-    if (!user) unauthorized();
-    if (!isAdminUser(user)) forbidden();
-
-    const enabled = await dataLabeling();
-    if (!enabled) forbidden();
 
     const numericId = parseInt(id, 10);
     const body = parsedBody.data;

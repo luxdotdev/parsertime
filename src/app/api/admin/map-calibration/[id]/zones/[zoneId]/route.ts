@@ -27,11 +27,15 @@ export async function PATCH(req: Request, props: Params) {
   };
 
   try {
-    const [{ id, zoneId }, rawBody] = await Promise.all([
-      props.params,
-      req.json(),
-    ]);
-    const parsedBody = UpdateZoneSchema.safeParse(rawBody);
+    const { id, zoneId } = await props.params;
+    const user = await getCurrentUser();
+    if (!user) unauthorized();
+    if (!isAdminUser(user)) forbidden();
+
+    const enabled = await dataLabeling();
+    if (!enabled) forbidden();
+
+    const parsedBody = UpdateZoneSchema.safeParse(await req.json());
     if (!parsedBody.success) {
       wideEvent.status_code = 400;
       wideEvent.outcome = "validation_error";
@@ -40,13 +44,6 @@ export async function PATCH(req: Request, props: Params) {
         { status: 400 }
       );
     }
-    const user = await getCurrentUser();
-    if (!user) unauthorized();
-    if (!isAdminUser(user)) forbidden();
-
-    const enabled = await dataLabeling();
-    if (!enabled) forbidden();
-
     const numericId = parseInt(id, 10);
     const numericZoneId = parseInt(zoneId, 10);
     const body = parsedBody.data;
