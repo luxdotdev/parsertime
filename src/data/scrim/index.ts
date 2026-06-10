@@ -21,6 +21,15 @@ export {
 } from "./ability-timing-service";
 export type { ScrimAbilityTimingServiceInterface } from "./ability-timing-service";
 
+export {
+  ScrimPositionalStatsService,
+  ScrimPositionalStatsServiceLive,
+} from "./positional-stats-service";
+export type {
+  ScrimPositionalStats,
+  ScrimPositionalStatsServiceInterface,
+} from "./positional-stats-service";
+
 export { ScrimNotFoundError, ScrimQueryError } from "./errors";
 
 export {
