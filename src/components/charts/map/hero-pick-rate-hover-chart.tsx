@@ -202,12 +202,14 @@ export function HeroPickRateHoverChart({
   subrole,
   trend,
   pickRate,
+  patches,
   children,
 }: {
   heroLabel: string;
   subrole?: string | null;
   trend: MapHeroTrendPoint[];
   pickRate: number;
+  patches: OverwatchPatch[];
   children: React.ReactNode;
 }) {
   const t = useTranslations("chartComponents.heroPickRateHover");
@@ -225,7 +227,7 @@ export function HeroPickRateHoverChart({
 
   const patchPositions = resolvePatches(
     trend,
-    getPatchesInRange(firstPoint.date, lastPoint.date),
+    getPatchesInRange(patches, firstPoint.date, lastPoint.date),
     formatter
   );
 
