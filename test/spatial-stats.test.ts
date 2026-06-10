@@ -1,7 +1,11 @@
 import {
   computeAverageEngagementDistance,
+  computeAverageFightStartSpread,
   computeHighGroundKillPercentage,
+  computeIsolationDeathPercentage,
+  samplePositionsAt,
   type CoordKill,
+  type SpatialPositionSample,
 } from "@/lib/spatial-stats";
 import { expect, test } from "vitest";
 
@@ -76,4 +80,121 @@ test("high ground percentage is null when y coordinates are missing", () => {
     makeKill({ attacker_y: null, victim_y: null })
   );
   expect(computeHighGroundKillPercentage(kills, "lux")).toBeNull();
+});
+
+function makeSample(
+  overrides: Partial<SpatialPositionSample> = {}
+): SpatialPositionSample {
+  return {
+    match_time: 95,
+    playerName: "teammate",
+    playerTeam: "Team 1",
+    x: 0,
+    y: 0,
+    z: 0,
+    ...overrides,
+  };
+}
+
+test("samplePositionsAt picks the nearest sample within the window per player", () => {
+  const samples = [
+    makeSample({ match_time: 80, x: 1 }), // outside 10s window of t=100
+    makeSample({ match_time: 92, x: 2 }),
+    makeSample({ match_time: 97, x: 3 }), // nearest to t=100
+    makeSample({ match_time: 101, x: 4 }), // after t, ignored
+  ].sort((a, b) => a.match_time - b.match_time);
+
+  const result = samplePositionsAt(100, samples);
+  expect(result.get("teammate::Team 1")?.x).toBe(3);
+});
+
+test("isolation death percentage classifies by nearest teammate distance", () => {
+  // 3 deaths with a teammate 10m away (peeled), 3 with the teammate 20m away (isolated) → 50%
+  const deaths = Array.from({ length: 6 }, (_, i) =>
+    makeKill({
+      match_time: 100 + i * 60,
+      attacker_name: "enemy",
+      victim_name: "lux",
+      victim_team: "Team 1",
+      victim_x: 0,
+      victim_y: 0,
+      victim_z: 0,
+    })
+  );
+  const samples = deaths
+    .map((d, i) =>
+      makeSample({
+        match_time: d.match_time - 2,
+        playerName: "teammate",
+        playerTeam: "Team 1",
+        x: i < 3 ? 10 : 20,
+      })
+    )
+    .sort((a, b) => a.match_time - b.match_time);
+
+  expect(computeIsolationDeathPercentage(deaths, samples, "lux")).toBe(50);
+});
+
+test("deaths with no sampled teammate are excluded from the denominator", () => {
+  // 5 evaluable deaths (isolated) + 1 with no teammate sample → 100% over 5
+  const deaths = Array.from({ length: 6 }, (_, i) =>
+    makeKill({
+      match_time: 100 + i * 60,
+      attacker_name: "enemy",
+      victim_name: "lux",
+      victim_team: "Team 1",
+      victim_x: 0,
+      victim_y: 0,
+      victim_z: 0,
+    })
+  );
+  const samples = deaths
+    .slice(0, 5)
+    .map((d) =>
+      makeSample({ match_time: d.match_time - 1, x: 30 })
+    )
+    .sort((a, b) => a.match_time - b.match_time);
+
+  expect(computeIsolationDeathPercentage(deaths, samples, "lux")).toBe(100);
+});
+
+test("isolation death percentage is null without victim coordinates", () => {
+  const deaths = Array.from({ length: 6 }, () =>
+    makeKill({
+      attacker_name: "enemy",
+      victim_name: "lux",
+      victim_team: "Team 1",
+      victim_x: null,
+      victim_y: null,
+      victim_z: null,
+    })
+  );
+  const samples = [makeSample()];
+  expect(computeIsolationDeathPercentage(deaths, samples, "lux")).toBeNull();
+});
+
+test("fight start spread averages distance to teammates across fights", () => {
+  // 5 fights; player at origin, teammates at 10m and 20m → mean 15 per fight
+  const fightStarts = [100, 200, 300, 400, 500];
+  const samples = fightStarts
+    .flatMap((start) => [
+      makeSample({ match_time: start - 3, playerName: "lux", x: 0 }),
+      makeSample({ match_time: start - 2, playerName: "mate1", x: 10 }),
+      makeSample({ match_time: start - 1, playerName: "mate2", x: 20 }),
+    ])
+    .sort((a, b) => a.match_time - b.match_time);
+
+  expect(computeAverageFightStartSpread(fightStarts, samples, "lux")).toBe(15);
+});
+
+test("fight start spread is null when the player is never sampled", () => {
+  const fightStarts = [100, 200, 300, 400, 500];
+  const samples = fightStarts
+    .flatMap((start) => [
+      makeSample({ match_time: start - 2, playerName: "mate1", x: 10 }),
+      makeSample({ match_time: start - 1, playerName: "mate2", x: 20 }),
+    ])
+    .sort((a, b) => a.match_time - b.match_time);
+
+  expect(computeAverageFightStartSpread(fightStarts, samples, "lux")).toBeNull();
 });

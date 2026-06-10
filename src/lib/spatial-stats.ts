@@ -113,3 +113,119 @@ export function computeHighGroundKillPercentage(
 
   return round((highGround.length / withY.length) * 100);
 }
+
+/**
+ * For each player, the nearest position sample within
+ * [time - POSITION_WINDOW_SEC, time]. Samples MUST be sorted by match_time.
+ */
+export function samplePositionsAt(
+  time: number,
+  samples: SpatialPositionSample[]
+): Map<string, SpatialPositionSample> {
+  const windowStart = time - POSITION_WINDOW_SEC;
+  const best = new Map<string, { sample: SpatialPositionSample; dt: number }>();
+
+  for (const sample of samples) {
+    if (sample.match_time < windowStart) continue;
+    if (sample.match_time > time) break;
+
+    const key = `${sample.playerName}::${sample.playerTeam}`;
+    const dt = time - sample.match_time;
+    const existing = best.get(key);
+    if (!existing || dt < existing.dt) {
+      best.set(key, { sample, dt });
+    }
+  }
+
+  return new Map(
+    Array.from(best, ([key, value]) => [key, value.sample])
+  );
+}
+
+export function computeIsolationDeathPercentage(
+  kills: CoordKill[],
+  samples: SpatialPositionSample[],
+  playerName: string
+): number | null {
+  const deaths = kills.filter((k) => k.victim_name === playerName);
+
+  let evaluated = 0;
+  let isolated = 0;
+
+  for (const death of deaths) {
+    if (
+      death.victim_x == null ||
+      death.victim_y == null ||
+      death.victim_z == null
+    ) {
+      continue;
+    }
+
+    const positions = samplePositionsAt(death.match_time, samples);
+    const teammates = Array.from(positions.values()).filter(
+      (p) => p.playerTeam === death.victim_team && p.playerName !== playerName
+    );
+    if (teammates.length === 0) continue;
+
+    evaluated++;
+    const nearest = Math.min(
+      ...teammates.map((p) =>
+        distance3d(
+          p.x,
+          p.y,
+          p.z,
+          death.victim_x!,
+          death.victim_y!,
+          death.victim_z!
+        )
+      )
+    );
+    if (nearest > ISOLATION_RADIUS) isolated++;
+  }
+
+  if (
+    evaluated < MIN_SAMPLES ||
+    evaluated / deaths.length < MIN_COVERAGE
+  ) {
+    return null;
+  }
+
+  return round((isolated / evaluated) * 100);
+}
+
+export function computeAverageFightStartSpread(
+  fightStarts: number[],
+  samples: SpatialPositionSample[],
+  playerName: string
+): number | null {
+  const perFight: number[] = [];
+
+  for (const start of fightStarts) {
+    const positions = samplePositionsAt(start, samples);
+    const me = Array.from(positions.values()).find(
+      (p) => p.playerName === playerName
+    );
+    if (!me) continue;
+
+    const teammates = Array.from(positions.values()).filter(
+      (p) => p.playerTeam === me.playerTeam && p.playerName !== playerName
+    );
+    if (teammates.length < 2) continue;
+
+    const mean =
+      teammates.reduce(
+        (acc, p) => acc + distance3d(p.x, p.y, p.z, me.x, me.y, me.z),
+        0
+      ) / teammates.length;
+    perFight.push(mean);
+  }
+
+  if (
+    perFight.length < MIN_SAMPLES ||
+    perFight.length / fightStarts.length < MIN_COVERAGE
+  ) {
+    return null;
+  }
+
+  return round(perFight.reduce((acc, v) => acc + v, 0) / perFight.length);
+}
