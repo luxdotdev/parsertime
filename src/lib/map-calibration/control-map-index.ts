@@ -5,7 +5,7 @@
  * Ordering is a best-guess based on alphabetical sub-map names.
  * Verify against real game data and update if incorrect.
  */
-const CONTROL_OBJECTIVE_MAP: Record<string, string[]> = {
+export const CONTROL_OBJECTIVE_MAP: Record<string, string[]> = {
   "Antarctic Peninsula": [
     "Antarctic Peninsula: Icebreaker",
     "Antarctic Peninsula: Labs",
