@@ -1970,3 +1970,30 @@ model ScrimFeedback {
 
   @@index([createdBy])
 }
+
+enum OverwatchPatchType {
+  SEASON
+  MID_SEASON
+  HOTFIX
+}
+
+enum OverwatchPatchSource {
+  MANUAL
+  SCRAPED
+}
+
+model OverwatchPatch {
+  id          String               @id @default(cuid())
+  date        DateTime             @db.Date
+  type        OverwatchPatchType
+  name        String
+  rawTitle    String?
+  sourceUrl   String?
+  bodyExcerpt String?
+  source      OverwatchPatchSource @default(SCRAPED)
+  needsReview Boolean              @default(false)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@unique([date])
+}
