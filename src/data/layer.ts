@@ -15,6 +15,7 @@ import { KillfeedServiceLive } from "./map/killfeed/service";
 import { ReplayServiceLive } from "./map/replay/service";
 import { PlayerTelemetryServiceLive } from "./map/player-telemetry-service";
 import { RotationDeathServiceLive } from "./map/rotation-death-service";
+import { RouteMiningServiceLive } from "./map/route-mining-service";
 import { TempoServiceLive } from "./map/tempo-service";
 import { IntelligenceServiceLive } from "./player/intelligence-service";
 import { PlayerServiceLive } from "./player/player-service";
@@ -39,6 +40,7 @@ import { TeamMatchupServiceLive } from "./team/matchup-service";
 import { TeamPredictionServiceLive } from "./team/prediction-service";
 import { TeamQuickWinsServiceLive } from "./team/quick-wins-service";
 import { TeamRoleStatsServiceLive } from "./team/role-stats-service";
+import { RouteTendenciesServiceLive } from "./team/route-tendencies-service";
 import { TeamSharedDataServiceLive } from "./team/shared-data-service";
 import { TeamStatsServiceLive } from "./team/stats-service";
 import { TeamTrendsServiceLive } from "./team/trends-service";
@@ -81,6 +83,7 @@ export const DataLayerLive = Layer.mergeAll(
   PlayerTelemetryServiceLive,
   RotationDeathServiceLive,
   FightUltQualityServiceLive,
+  RouteMiningServiceLive,
   MapGroupServiceLive,
   MapHeroTrendsServiceLive,
 
@@ -103,6 +106,7 @@ export const DataLayerLive = Layer.mergeAll(
   TeamMatchupServiceLive,
   TeamAnalyticsServiceLive,
   TeamPredictionServiceLive,
+  RouteTendenciesServiceLive,
   TournamentTeamSharedDataServiceLive,
   TournamentTeamStatsServiceLive
 );

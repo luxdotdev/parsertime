@@ -754,7 +754,8 @@
       "coachingCanvas": "Canvas",
       "yourTeams": "Your Teams",
       "availability": "Availability",
-      "matchmaker": "Matchmaker"
+      "matchmaker": "Matchmaker",
+      "tendencies": "Tendencies"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "Search team...",
@@ -1538,6 +1539,23 @@
       "description": "Create and manage custom map groups for analysis"
     }
   },
+  "tendenciesPage": {
+    "metadata": {
+      "title": "Tendencies | Parsertime",
+      "description": "Recurring movement routes grouped by map for your team"
+    },
+    "title": "Tendencies",
+    "description": "Recurring movement routes grouped by map, with how often each appears and the recorded outcome counts.",
+    "empty": "No positional data yet.",
+    "totalRoutes": "Total routes",
+    "route": "Route {n}",
+    "share": "Share",
+    "routeColumn": "Route",
+    "outcomes": "Won / Lost / Unknown",
+    "won": "Won",
+    "lost": "Lost",
+    "unknown": "Unknown"
+  },
   "comparePage": {
     "metadata": {
       "title": "Compare Maps | Parsertime",
@@ -2206,7 +2224,39 @@
       "vod": "VOD",
       "heatmap": "Heatmap",
       "replay": "Replay",
-      "ultsAndFights": "Ults & Fights"
+      "ultsAndFights": "Ults & Fights",
+      "routes": "Routes"
+    },
+    "routes": {
+      "empty": "No positional data on this map.",
+      "noCalibration": "No map calibration available. Routes require a calibrated orthographic map image.",
+      "showAll": "Show all routes",
+      "routeFallback": "Route {n}",
+      "loadingImage": "Loading map image...",
+      "canvasLabel": "Player routes drawn over the map image.",
+      "filters": {
+        "team": "Team",
+        "player": "Player",
+        "round": "Round",
+        "outcome": "Outcome",
+        "kind": "Kind",
+        "cluster": "Cluster",
+        "all": "All"
+      },
+      "outcomes": {
+        "won": "Won",
+        "lost": "Lost",
+        "unknown": "Unknown"
+      },
+      "kinds": {
+        "initial": "Initial",
+        "respawn": "Respawn"
+      },
+      "clusters": {
+        "header": "Route clusters",
+        "routes": "{count} routes",
+        "outcomes": "{won} won / {lost} lost / {unknown} unknown"
+      }
     },
     "replay": {
       "noCalibration": "No map calibration available. The replay viewer requires a calibrated orthographic map image.",

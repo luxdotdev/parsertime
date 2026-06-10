@@ -50,6 +50,10 @@ export function MainNav({
     teamId !== undefined ? `/team/${teamId}/availability` : "/team"
   ) as Route;
 
+  const tendenciesHref = (
+    teamId !== undefined ? `/${teamId}/tendencies` : "/team"
+  ) as Route;
+
   return (
     <nav className={cn("flex items-center", className)}>
       <ul className="flex flex-wrap items-center space-x-2 lg:space-x-4">
@@ -201,6 +205,16 @@ export function MainNav({
                 )}
               >
                 {t("availability")}
+              </Link>
+              <Link
+                href={tendenciesHref}
+                role="menuitem"
+                className={cn(
+                  dropdownItemStyles,
+                  pathname.includes("/tendencies") && "text-primary"
+                )}
+              >
+                {t("tendencies")}
               </Link>
             </div>
           </div>

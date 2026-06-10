@@ -151,6 +151,28 @@ export const fightUltQualityQueryDuration = Metric.histogram(
   "Distribution of fight ult quality query duration in milliseconds"
 );
 
+export const routeMiningQuerySuccessTotal = Metric.counter(
+  "map.route_mining.query.success",
+  {
+    description: "Total successful route mining analysis queries",
+    incremental: true,
+  }
+);
+
+export const routeMiningQueryErrorTotal = Metric.counter(
+  "map.route_mining.query.error",
+  {
+    description: "Total route mining analysis query failures",
+    incremental: true,
+  }
+);
+
+export const routeMiningQueryDuration = Metric.histogram(
+  "map.route_mining.query.duration_ms",
+  MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
+  "Distribution of route mining analysis query duration in milliseconds"
+);
+
 export const mapGroupQuerySuccessTotal = Metric.counter(
   "map.group.query.success",
   {

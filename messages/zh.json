@@ -789,7 +789,8 @@
       "coachingCanvas": "画布",
       "yourTeams": "你的队伍",
       "availability": "可用时间",
-      "matchmaker": "匹配工具"
+      "matchmaker": "匹配工具",
+      "tendencies": "倾向"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "搜索团队...",
@@ -1538,6 +1539,23 @@
       "description": "创建和管理用于分析的自定义地图组"
     }
   },
+  "tendenciesPage": {
+    "metadata": {
+      "title": "倾向 | Parsertime",
+      "description": "按地图分组的团队重复移动路线"
+    },
+    "title": "倾向",
+    "description": "按地图分组的重复移动路线，以及每条路线的出现频率和记录的结果数量。",
+    "empty": "暂无位置数据。",
+    "totalRoutes": "路线总数",
+    "route": "路线 {n}",
+    "share": "占比",
+    "routeColumn": "路线",
+    "outcomes": "胜 / 负 / 未知",
+    "won": "胜",
+    "lost": "负",
+    "unknown": "未知"
+  },
   "comparePage": {
     "metadata": {
       "title": "地图比较 | Parsertime",
@@ -2206,7 +2224,39 @@
       "vod": "VOD",
       "heatmap": "热力图",
       "replay": "回放",
-      "ultsAndFights": "终极技能与团战"
+      "ultsAndFights": "终极技能与团战",
+      "routes": "路线"
+    },
+    "routes": {
+      "empty": "此地图没有位置数据。",
+      "noCalibration": "没有可用的地图校准数据。路线需要已校准的正射地图图片。",
+      "showAll": "显示所有路线",
+      "routeFallback": "路线 {n}",
+      "loadingImage": "正在加载地图图片...",
+      "canvasLabel": "绘制在地图图片上的玩家路线。",
+      "filters": {
+        "team": "队伍",
+        "player": "玩家",
+        "round": "回合",
+        "outcome": "结果",
+        "kind": "类型",
+        "cluster": "聚类",
+        "all": "全部"
+      },
+      "outcomes": {
+        "won": "获胜",
+        "lost": "失败",
+        "unknown": "未知"
+      },
+      "kinds": {
+        "initial": "初始",
+        "respawn": "重生"
+      },
+      "clusters": {
+        "header": "路线聚类",
+        "routes": "{count} 条路线",
+        "outcomes": "{won} 胜 / {lost} 负 / {unknown} 未知"
+      }
     },
     "replay": {
       "noCalibration": "没有可用的地图校准数据。回放查看器需要已校准的正射地图图片。",
