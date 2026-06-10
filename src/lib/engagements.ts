@@ -59,9 +59,7 @@ export function clusterEngagements(events: EngagementEvent[]): Engagement[] {
         const other = sorted[j];
         if (other.match_time > e.match_time + ENGAGEMENT_GAP_SEC) break;
         if (clusterOf[j] !== -1) continue;
-        if (
-          Math.hypot(other.x - e.x, other.z - e.z) <= ENGAGEMENT_RADIUS_M
-        ) {
+        if (Math.hypot(other.x - e.x, other.z - e.z) <= ENGAGEMENT_RADIUS_M) {
           clusterOf[j] = clusterId;
           queue.push(j);
         }

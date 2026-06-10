@@ -1,7 +1,4 @@
-import {
-  clusterEngagements,
-  type EngagementEvent,
-} from "@/lib/engagements";
+import { clusterEngagements, type EngagementEvent } from "@/lib/engagements";
 import { expect, test } from "vitest";
 
 function ev(o: Partial<EngagementEvent> = {}): EngagementEvent {
@@ -18,7 +15,13 @@ function ev(o: Partial<EngagementEvent> = {}): EngagementEvent {
   };
 }
 
-function burst(n: number, t: number, cx: number, cz: number, o: Partial<EngagementEvent> = {}) {
+function burst(
+  n: number,
+  t: number,
+  cx: number,
+  cz: number,
+  o: Partial<EngagementEvent> = {}
+) {
   return Array.from({ length: n }, (_, i) =>
     ev({ match_time: t + i, x: cx + (i % 3), z: cz + (i % 2), ...o })
   );
@@ -37,7 +40,12 @@ test("two simultaneous fights on opposite flanks split into two engagements", ()
 
 test("a continuous drifting fight stays one engagement", () => {
   const events = Array.from({ length: 60 }, (_, i) =>
-    ev({ match_time: 100 + i, x: i * 2, z: 0, kind: i === 30 ? "kill" : "damage" })
+    ev({
+      match_time: 100 + i,
+      x: i * 2,
+      z: 0,
+      kind: i === 30 ? "kill" : "damage",
+    })
   );
   expect(clusterEngagements(events)).toHaveLength(1);
 });
@@ -77,7 +85,14 @@ test("winner is the team with more kills; tie is null", () => {
 test("engagement records time bounds, centroid, and participants", () => {
   const events = [
     ...burst(8, 100, 10, 10, { attackerName: "a1", victimName: "v1" }),
-    ev({ match_time: 109, x: 12, z: 10, kind: "kill", attackerName: "a2", victimName: "v2" }),
+    ev({
+      match_time: 109,
+      x: 12,
+      z: 10,
+      kind: "kill",
+      attackerName: "a2",
+      victimName: "v2",
+    }),
   ];
   const [e] = clusterEngagements(events);
   expect(e.start).toBe(100);

@@ -158,8 +158,7 @@ export function buildUltInstances(
 
     let displacement: number | null = null;
     if (hasStartPos && p.endX != null && p.endZ != null) {
-      const dy =
-        p.startY != null && p.endY != null ? p.endY - p.startY : 0;
+      const dy = p.startY != null && p.endY != null ? p.endY - p.startY : 0;
       displacement = round(
         Math.hypot(p.endX - p.startX!, dy, p.endZ - p.startZ!)
       );

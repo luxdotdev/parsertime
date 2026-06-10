@@ -151,7 +151,12 @@ test("zone tagging uses the resolver at ult start time", () => {
       id: 1,
       name: "Point",
       category: "POINT" as const,
-      vertices: [[-5, -5], [5, -5], [5, 5], [-5, 5]] as Array<[number, number]>,
+      vertices: [
+        [-5, -5],
+        [5, -5],
+        [5, 5],
+        [-5, 5],
+      ] as Array<[number, number]>,
     },
   ];
   const instances = buildUltInstances(
@@ -199,7 +204,13 @@ test("all null below MIN_ULTS_FOR_STATS", () => {
 
 test("coordinate-dependent stats are null when instances lack coords; death % survives", () => {
   const stats = computeUltQualityStats(
-    instances(4, { x: null, z: null, displacement: null, conversionKills: null, zone: null }),
+    instances(4, {
+      x: null,
+      z: null,
+      displacement: null,
+      conversionKills: null,
+      zone: null,
+    }),
     "lux",
     true
   );
