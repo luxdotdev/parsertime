@@ -486,6 +486,7 @@ model CalculatedStat {
 
   @@index([scrimId, MapDataId])
   @@index([playerName, hero, stat])
+  @@index([MapDataId, stat])
 }
 
 enum EventType {
