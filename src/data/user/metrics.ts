@@ -69,3 +69,25 @@ export const userCacheMissTotal = Metric.counter("user.cache.miss", {
   description: "Total user cache misses",
   incremental: true,
 });
+
+export const isMemberOfTeamSuccessTotal = Metric.counter(
+  "user.isMemberOfTeam.success",
+  {
+    description: "Total successful isMemberOfTeam queries",
+    incremental: true,
+  }
+);
+
+export const isMemberOfTeamErrorTotal = Metric.counter(
+  "user.isMemberOfTeam.error",
+  {
+    description: "Total isMemberOfTeam query failures",
+    incremental: true,
+  }
+);
+
+export const isMemberOfTeamDuration = Metric.histogram(
+  "user.isMemberOfTeam.duration_ms",
+  MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
+  "Distribution of isMemberOfTeam query duration in milliseconds"
+);
