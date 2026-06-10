@@ -6,6 +6,7 @@ import { GuestNav } from "@/components/guest-nav";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ComparePlayers } from "@/components/map/compare-players";
 import { DefaultOverview } from "@/components/map/default-overview";
+import { FightUltQualityTab } from "@/components/map/fight-ult-quality-tab";
 import { HeatmapTab } from "@/components/map/heatmap/heatmap-tab";
 import { ReplayTab } from "@/components/map/replay/replay-tab";
 import { HeroBans } from "@/components/map/hero-bans";
@@ -306,6 +307,11 @@ export default async function MapDashboardPage(
                           value: "replay",
                           label: t("tabs.replay"),
                           content: <ReplayTab id={mapDataId} />,
+                        },
+                        {
+                          value: "ults-and-fights",
+                          label: t("tabs.ultsAndFights"),
+                          content: <FightUltQualityTab id={mapDataId} />,
                         },
                       ]
                     : []),

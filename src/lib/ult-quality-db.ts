@@ -5,6 +5,7 @@ import {
   type Engagement,
   type EngagementEvent,
 } from "@/lib/engagements";
+import { tagZone } from "@/lib/zones/tag";
 import {
   buildUltInstances,
   computeUltQualityStats,
@@ -177,9 +178,11 @@ export async function getUltQualityStatsForMapData(
   return computeUltQualityStats(instances, playerName, hasPointZones);
 }
 
+export type EngagementWithZone = Engagement & { zoneName: string | null };
+
 export async function getEngagementsForMapData(
   mapDataId: number
-): Promise<Engagement[]> {
+): Promise<EngagementWithZone[]> {
   const [kills, damage] = await Promise.all([
     prisma.kill.findMany({
       where: { MapDataId: mapDataId },
@@ -241,5 +244,19 @@ export async function getEngagementsForMapData(
   }
   for (const k of kills) push(k, "kill");
   for (const d of damage) push(d, "damage");
-  return clusterEngagements(events);
+
+  const engagements = clusterEngagements(events);
+  const emptyZones: TaggableZone[] = [];
+  const { zonesAt } = events.length
+    ? await loadZoneContext(mapDataId)
+    : { zonesAt: () => emptyZones };
+  return engagements.map((engagement) => ({
+    ...engagement,
+    zoneName:
+      tagZone(
+        engagement.centroid.x,
+        engagement.centroid.z,
+        zonesAt(engagement.start)
+      )?.name ?? null,
+  }));
 }

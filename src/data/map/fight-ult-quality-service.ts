@@ -3,8 +3,8 @@ import { resolveMapDataId } from "@/lib/map-data-resolver";
 import {
   buildUltInstancesForMapData,
   getEngagementsForMapData,
+  type EngagementWithZone,
 } from "@/lib/ult-quality-db";
-import type { Engagement } from "@/lib/engagements";
 import type { UltInstance } from "@/lib/ult-quality";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { MapQueryError } from "./errors";
@@ -19,7 +19,7 @@ import {
 export type FightUltQualityResult = {
   mapDataId: number;
   ults: UltInstance[];
-  engagements: Engagement[];
+  engagements: EngagementWithZone[];
 };
 
 export type FightUltQualityServiceInterface = {

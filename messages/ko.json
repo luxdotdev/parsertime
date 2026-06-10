@@ -2205,7 +2205,8 @@
       "notes": "노트",
       "vod": "VOD",
       "heatmap": "히트맵",
-      "replay": "리플레이"
+      "replay": "리플레이",
+      "ultsAndFights": "궁극기 & 교전"
     },
     "replay": {
       "noCalibration": "맵 캘리브레이션이 없습니다. 리플레이 뷰어는 캘리브레이션된 정사영 맵 이미지가 필요합니다.",
@@ -2253,6 +2254,26 @@
         "loadingImage": "맵 이미지를 불러오는 중...",
         "zoomHint": "{zoom, number}% · 스크롤로 확대/축소 · 드래그로 이동",
         "primaryFire": "기본 공격"
+      }
+    },
+    "fightUltQuality": {
+      "noData": "이 맵에 위치 데이터가 없습니다.",
+      "ults": {
+        "heading": "궁극기",
+        "time": "시간",
+        "player": "선수",
+        "hero": "영웅",
+        "zone": "구역",
+        "displacement": "이동 거리",
+        "conversionKills": "전환 킬",
+        "diedDuringUlt": "사망",
+        "died": "사망",
+        "meters": "{value}m",
+        "unpaired": "종료 이벤트 누락"
+      },
+      "engagements": {
+        "heading": "교전",
+        "even": "무승부"
       }
     },
     "vod": {
