@@ -23,6 +23,14 @@
     {
       "path": "/api/cron/tsr-recompute",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/scrape-patch-notes",
+      "schedule": "10 18 * * *"
+    },
+    {
+      "path": "/api/cron/scrape-patch-notes",
+      "schedule": "10 19 * * *"
     }
   ],
   "regions": ["iad1"]
