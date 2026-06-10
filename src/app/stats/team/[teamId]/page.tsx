@@ -51,6 +51,7 @@ import {
   TeamHeroSwapService,
   TeamMapModeService,
   TeamMatchupService,
+  TeamPositionalArtifactsService,
   TeamPositionalStatsService,
   TeamPredictionService,
   TeamQuickWinsService,
@@ -274,6 +275,7 @@ export default async function TeamStatsPage(
       matchupWinrateData,
       heroPool,
       positionalStats,
+      positionalArtifacts,
     },
     teamTsr,
     mapNames,
@@ -382,6 +384,11 @@ export default async function TeamStatsPage(
           positionalStats: positionalDataEnabled
             ? TeamPositionalStatsService.pipe(
                 Effect.flatMap((svc) => svc.getTeamPositionalStats(teamId))
+              )
+            : Effect.succeed(null),
+          positionalArtifacts: positionalDataEnabled
+            ? TeamPositionalArtifactsService.pipe(
+                Effect.flatMap((svc) => svc.getTeamPositionalArtifacts(teamId))
               )
             : Effect.succeed(null),
         },
@@ -890,7 +897,10 @@ export default async function TeamStatsPage(
         {positionalDataEnabled && (
           <TabsContent value="positional" className="space-y-12">
             {positionalStats ? (
-              <PositionalStatsCards data={positionalStats} />
+              <PositionalStatsCards
+                data={positionalStats}
+                artifacts={positionalArtifacts}
+              />
             ) : (
               <PositionalStatsEmpty />
             )}

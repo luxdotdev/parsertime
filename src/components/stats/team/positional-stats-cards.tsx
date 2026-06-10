@@ -21,12 +21,14 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import type { TeamPositionalArtifacts } from "@/data/team/positional-artifacts-service";
 import type { TeamPositionalStats } from "@/data/team/positional-stats-service";
 import {
   POSITIONAL_STAT_FORMATTERS,
   POSITIONAL_STAT_KEYS,
   type PositionalStatKey,
 } from "@/lib/positional-stat-display";
+import type { ZoneCountRow } from "@/lib/zones/analytics";
 import { ChartBar } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
@@ -45,6 +47,27 @@ import type {
 } from "recharts/types/component/DefaultTooltipContent";
 
 type TrendPoint = TeamPositionalStats["trends"][string][number];
+
+const EM_DASH = "—";
+
+type ZoneGroup = { zoneName: string; rows: ZoneCountRow[] };
+
+function groupZoneRows(rows: ZoneCountRow[]): ZoneGroup[] {
+  const groups = new Map<string, ZoneCountRow[]>();
+  for (const row of rows) {
+    const existing = groups.get(row.zoneName);
+    if (existing) existing.push(row);
+    else groups.set(row.zoneName, [row]);
+  }
+  return [...groups.entries()].map(([zoneName, zoneRows]) => ({
+    zoneName,
+    rows: zoneRows,
+  }));
+}
+
+function formatWinrate(winratePercent: number | null): string {
+  return winratePercent === null ? EM_DASH : `${winratePercent.toFixed(1)}%`;
+}
 
 export function PositionalStatsEmpty() {
   const t = useTranslations("teamStatsPage.positional");
@@ -140,12 +163,23 @@ function TrendSparkline({
   );
 }
 
-export function PositionalStatsCards({ data }: { data: TeamPositionalStats }) {
+export function PositionalStatsCards({
+  data,
+  artifacts = null,
+}: {
+  data: TeamPositionalStats;
+  artifacts?: TeamPositionalArtifacts | null;
+}) {
   const t = useTranslations("teamStatsPage.positional");
 
   const trendStats = POSITIONAL_STAT_KEYS.filter(
     (stat) => (data.trends[stat]?.length ?? 0) > 0
   );
+
+  const engagements = artifacts?.engagements ?? null;
+  const showEngagements = engagements !== null && engagements.total > 0;
+  const zonesByMap = artifacts?.zonesByMap ?? [];
+  const routesByMap = artifacts?.routesByMap ?? [];
 
   return (
     <div className="space-y-12">
@@ -238,6 +272,139 @@ export function PositionalStatsCards({ data }: { data: TeamPositionalStats }) {
           </Table>
         </div>
       </section>
+
+      {/* Engagement winrate */}
+      {showEngagements && (
+        <section className="space-y-4">
+          <SectionHeader eyebrow={t("eyebrow")} title={t("engagementsTitle")} />
+          <div className="flex flex-wrap items-baseline gap-x-6 gap-y-1 text-sm">
+            <span>{t("fights", { total: engagements.total })}</span>
+            <span className="tabular-nums">
+              {t("recordSummary", {
+                won: engagements.won,
+                lost: engagements.lost,
+                even: engagements.even,
+              })}
+            </span>
+            <span className="tabular-nums">
+              {t("winrate")}: {formatWinrate(engagements.winratePercent)}
+            </span>
+          </div>
+          {engagements.byZone.length > 0 && (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>{t("zoneColumn")}</TableHead>
+                    <TableHead className="text-right">
+                      {t("wonLabel")}
+                    </TableHead>
+                    <TableHead className="text-right">
+                      {t("lostLabel")}
+                    </TableHead>
+                    <TableHead className="text-right">
+                      {t("evenLabel")}
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {engagements.byZone.map((zone) => (
+                    <TableRow key={zone.zoneName}>
+                      <TableCell className="font-medium">
+                        {zone.zoneName}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {zone.won}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {zone.lost}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {zone.even}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Zone control by map */}
+      {zonesByMap.length > 0 && (
+        <section className="space-y-4">
+          <SectionHeader eyebrow={t("eyebrow")} title={t("zonesTitle")} />
+          {zonesByMap.map((entry) => (
+            <div key={entry.mapName} className="space-y-2">
+              <h4 className="text-muted-foreground font-mono text-xs tracking-[0.06em] uppercase">
+                {entry.mapName}
+              </h4>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t("zoneColumn")}</TableHead>
+                      <TableHead>{t("teamColumn")}</TableHead>
+                      <TableHead className="text-right">
+                        {t("killsColumn")}
+                      </TableHead>
+                      <TableHead className="text-right">
+                        {t("deathsColumn")}
+                      </TableHead>
+                      <TableHead className="text-right">
+                        {t("ultsColumn")}
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {groupZoneRows(entry.rows).map((group) =>
+                      group.rows.map((row, index) => (
+                        <TableRow key={`${row.zoneName}-${row.team}`}>
+                          <TableCell className="font-medium">
+                            {index === 0 ? group.zoneName : ""}
+                          </TableCell>
+                          <TableCell>{row.team}</TableCell>
+                          <TableCell className="text-right tabular-nums">
+                            {row.kills}
+                          </TableCell>
+                          <TableCell className="text-right tabular-nums">
+                            {row.deaths}
+                          </TableCell>
+                          <TableCell className="text-right tabular-nums">
+                            {row.ults}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {/* Routes by map */}
+      {routesByMap.length > 0 && (
+        <section className="space-y-4">
+          <SectionHeader eyebrow={t("eyebrow")} title={t("routesTitle")} />
+          <ul className="space-y-1 text-sm">
+            {routesByMap.map((entry) => (
+              <li key={entry.mapName} className="flex flex-wrap gap-x-2">
+                <span className="font-medium">{entry.mapName}</span>
+                <span className="text-muted-foreground tabular-nums">
+                  {t("routesSummary", {
+                    total: entry.total,
+                    won: entry.won,
+                    lost: entry.lost,
+                  })}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 }

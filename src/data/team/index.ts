@@ -172,6 +172,15 @@ export type {
 } from "./positional-stats-service";
 
 export {
+  TeamPositionalArtifactsService,
+  TeamPositionalArtifactsServiceLive,
+} from "./positional-artifacts-service";
+export type {
+  TeamPositionalArtifacts,
+  TeamPositionalArtifactsServiceInterface,
+} from "./positional-artifacts-service";
+
+export {
   TeamAnalyticsService,
   TeamAnalyticsServiceLive,
 } from "./analytics-service";
