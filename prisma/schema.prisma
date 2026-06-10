@@ -266,7 +266,6 @@ model TeamSubstitute {
   creator User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
 
   @@unique([teamId, playerName])
-  @@index([teamId])
   @@index([createdBy])
 }
 
@@ -385,7 +384,6 @@ model Map {
   replayCode     String?
   tournamentMaps TournamentMap[]
 
-  @@index([scrimId])
   @@index([scrimId, order])
 }
 
@@ -900,6 +898,7 @@ model PlayerStat {
 
   @@index([scrimId])
   @@index([MapDataId])
+  @@index([player_name, player_hero, hero_time_played])
 }
 
 model PointProgress {
@@ -1777,7 +1776,6 @@ model FaceitMatchMap {
   teamStats   FaceitMapTeamStats[]
 
   @@unique([matchId, gameNumber])
-  @@index([matchId])
   @@index([mapGuid])
   @@index([mapName])
   @@index([mapType])
@@ -1823,7 +1821,6 @@ model FaceitMapTeamStats {
   team FaceitTeam?    @relation(fields: [faceitTeamId], references: [faceitTeamId], onDelete: SetNull)
 
   @@unique([faceitMapId, teamSide])
-  @@index([faceitMapId])
   @@index([faceitTeamId])
   @@index([teamName])
 }
@@ -1856,7 +1853,6 @@ model FaceitMapPlayerStats {
   player FaceitPlayer   @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
 
   @@unique([faceitMapId, faceitPlayerId])
-  @@index([faceitMapId])
   @@index([faceitPlayerId])
   @@index([nickname])
   @@index([role])

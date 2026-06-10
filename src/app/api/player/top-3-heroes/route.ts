@@ -7,10 +7,10 @@ import { unauthorized } from "next/navigation";
 import { NextResponse, type NextRequest } from "next/server";
 import z from "zod";
 
-type Top3Heroes = {
+type Top3Hero = {
   player_hero: string;
   total_time_played: number;
-}[];
+};
 
 const PlayerSchema = z.string().min(1).normalize("NFD");
 
@@ -24,28 +24,15 @@ export async function GET(request: NextRequest) {
   const validPlayer = PlayerSchema.safeParse(player);
   if (!validPlayer.success) return new Response("Bad request", { status: 400 });
 
-  const top3Heroes = await prisma.$queryRaw<Top3Heroes>`
-    WITH final_rows AS (
-      SELECT DISTINCT ON ("MapDataId", player_name, player_hero)
-        player_hero,
-        hero_time_played
-      FROM
-        "PlayerStat"
-      WHERE
-        player_name ILIKE ${validPlayer.data}
-        AND hero_time_played > 0
-      ORDER BY
-        "MapDataId",
-        player_name,
-        player_hero,
-        round_number DESC,
-        id DESC
-    )
+  const top3Heroes = await prisma.$queryRaw<Top3Hero[]>`
     SELECT
       player_hero,
       SUM(hero_time_played) AS total_time_played
     FROM
-      final_rows
+      "PlayerStat"
+    WHERE
+      player_name = ${validPlayer.data}
+      AND hero_time_played > 0
     GROUP BY
       player_hero
     ORDER BY
@@ -66,7 +53,7 @@ export async function GET(request: NextRequest) {
         const mapsPlayed = await prisma.playerStat.groupBy({
           by: ["MapDataId"],
           where: {
-            player_name: validPlayer.data,
+            player_name: { equals: validPlayer.data },
             player_hero: hero.player_hero as HeroName,
             hero_time_played: {
               gt: 60,
