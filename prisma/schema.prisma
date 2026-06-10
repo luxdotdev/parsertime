@@ -1369,6 +1369,7 @@ model MapCalibration {
   createdAt       DateTime               @default(now())
   updatedAt       DateTime               @updatedAt
   anchors         MapCalibrationAnchor[]
+  zones           MapZone[]
 }
 
 model MapCalibrationAnchor {
@@ -1384,6 +1385,43 @@ model MapCalibrationAnchor {
   calibration   MapCalibration @relation(fields: [calibrationId], references: [id], onDelete: Cascade)
 
   @@index([calibrationId])
+}
+
+enum MapZoneCategory {
+  POINT
+  LANE
+}
+
+enum MapZoneStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum MapZoneSource {
+  AUTO
+  MANUAL
+}
+
+enum LaneRole {
+  MAIN
+  FLANK
+}
+
+model MapZone {
+  id            Int             @id @default(autoincrement())
+  calibrationId Int
+  name          String
+  category      MapZoneCategory
+  status        MapZoneStatus   @default(DRAFT)
+  source        MapZoneSource   @default(MANUAL)
+  laneRole      LaneRole?
+  vertices      Json
+  createdBy     String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  calibration   MapCalibration  @relation(fields: [calibrationId], references: [id], onDelete: Cascade)
+
+  @@index([calibrationId, status])
 }
 
 // Tournament Models
