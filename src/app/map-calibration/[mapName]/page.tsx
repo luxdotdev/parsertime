@@ -1,6 +1,11 @@
 import { CalibrationEditor } from "@/components/admin/map-calibration/calibration-editor";
+import {
+  ZoneSection,
+  type MapZoneDto,
+} from "@/components/admin/map-calibration/zone-section";
 import { getCurrentUser, isAdminUser } from "@/lib/auth";
 import { dataLabeling } from "@/lib/flags";
+import type { MapTransform } from "@/lib/map-calibration/types";
 import prisma from "@/lib/prisma";
 import { r2 } from "@/lib/r2";
 import { notFound, redirect } from "next/navigation";
@@ -56,12 +61,48 @@ export default async function MapCalibrationEditorPage({
   let calibrationWithUrl:
     | (typeof calibration & { imagePresignedUrl?: string })
     | null = calibration;
+  let presignedImageUrl: string | null = null;
+  let zones: MapZoneDto[] = [];
+  let transform: MapTransform | null = null;
   if (calibration) {
-    const imagePresignedUrl = await r2.getPresignedUrl({
-      key: calibration.imageUrl,
-      expiresIn: 3600,
-    });
+    const [imagePresignedUrl, zoneRows] = await Promise.all([
+      r2.getPresignedUrl({ key: calibration.imageUrl, expiresIn: 3600 }),
+      prisma.mapZone.findMany({
+        where: { calibrationId: calibration.id },
+        orderBy: { id: "asc" },
+      }),
+    ]);
     calibrationWithUrl = { ...calibration, imagePresignedUrl };
+    presignedImageUrl = imagePresignedUrl;
+    zones = zoneRows.map((z) => ({
+      id: z.id,
+      name: z.name,
+      category: z.category,
+      status: z.status,
+      source: z.source,
+      laneRole: z.laneRole,
+      vertices: z.vertices as unknown as [number, number][],
+    }));
+
+    // Build the affine transform the same way load-calibration.ts does:
+    // null if any affine field is null.
+    if (
+      calibration.affineA != null &&
+      calibration.affineB != null &&
+      calibration.affineC != null &&
+      calibration.affineD != null &&
+      calibration.affineTx != null &&
+      calibration.affineTy != null
+    ) {
+      transform = {
+        a: calibration.affineA,
+        b: calibration.affineB,
+        c: calibration.affineC,
+        d: calibration.affineD,
+        tx: calibration.affineTx,
+        ty: calibration.affineTy,
+      };
+    }
   }
 
   return (
@@ -70,6 +111,16 @@ export default async function MapCalibrationEditorPage({
         mapName={decodedMapName}
         calibration={calibrationWithUrl}
       />
+      {calibration && presignedImageUrl ? (
+        <ZoneSection
+          calibrationId={calibration.id}
+          presignedImageUrl={presignedImageUrl}
+          imageWidth={calibration.imageWidth}
+          imageHeight={calibration.imageHeight}
+          transform={transform}
+          initialZones={zones}
+        />
+      ) : null}
     </div>
   );
 }
