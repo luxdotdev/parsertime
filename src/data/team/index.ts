@@ -163,6 +163,15 @@ export { TeamMatchupService, TeamMatchupServiceLive } from "./matchup-service";
 export type { TeamMatchupServiceInterface } from "./matchup-service";
 
 export {
+  TeamPositionalStatsService,
+  TeamPositionalStatsServiceLive,
+} from "./positional-stats-service";
+export type {
+  TeamPositionalStats,
+  TeamPositionalStatsServiceInterface,
+} from "./positional-stats-service";
+
+export {
   TeamAnalyticsService,
   TeamAnalyticsServiceLive,
 } from "./analytics-service";
