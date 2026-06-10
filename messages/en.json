@@ -2205,7 +2205,8 @@
       "notes": "Notes",
       "vod": "VOD",
       "heatmap": "Heatmap",
-      "replay": "Replay"
+      "replay": "Replay",
+      "ultsAndFights": "Ults & Fights"
     },
     "replay": {
       "noCalibration": "No map calibration available. The replay viewer requires a calibrated orthographic map image.",
@@ -2253,6 +2254,26 @@
         "loadingImage": "Loading map image...",
         "zoomHint": "{zoom, number}% · Scroll to zoom · Drag to pan",
         "primaryFire": "Primary Fire"
+      }
+    },
+    "fightUltQuality": {
+      "noData": "No positional data on this map.",
+      "ults": {
+        "heading": "Ultimates",
+        "time": "Time",
+        "player": "Player",
+        "hero": "Hero",
+        "zone": "Zone",
+        "displacement": "Displacement",
+        "conversionKills": "Conversion kills",
+        "diedDuringUlt": "Died",
+        "died": "Died",
+        "meters": "{value}m",
+        "unpaired": "End event missing"
+      },
+      "engagements": {
+        "heading": "Engagements",
+        "even": "Even"
       }
     },
     "vod": {

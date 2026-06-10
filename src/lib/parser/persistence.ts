@@ -747,6 +747,66 @@ export async function calculateStatsForMap(mapDataId: number, scrimId: number) {
         });
       }
 
+      if (
+        stats.averageUltConversionKills !== null &&
+        !isNaN(stats.averageUltConversionKills)
+      ) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "AVERAGE_ULT_CONVERSION_KILLS" as const,
+          value: stats.averageUltConversionKills,
+          MapDataId: mapDataId,
+        });
+      }
+
+      if (
+        stats.ultDeathPercentage !== null &&
+        !isNaN(stats.ultDeathPercentage)
+      ) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "ULT_DEATH_PERCENTAGE" as const,
+          value: stats.ultDeathPercentage,
+          MapDataId: mapDataId,
+        });
+      }
+
+      if (
+        stats.averageUltDisplacement !== null &&
+        !isNaN(stats.averageUltDisplacement)
+      ) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "AVERAGE_ULT_DISPLACEMENT" as const,
+          value: stats.averageUltDisplacement,
+          MapDataId: mapDataId,
+        });
+      }
+
+      if (
+        stats.ultsOnObjectivePercentage !== null &&
+        !isNaN(stats.ultsOnObjectivePercentage)
+      ) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "ULTS_ON_OBJECTIVE_PERCENTAGE" as const,
+          value: stats.ultsOnObjectivePercentage,
+          MapDataId: mapDataId,
+        });
+      }
+
       if (calculatedStatRecords.length > 0) {
         await prisma.calculatedStat.createMany({
           data: calculatedStatRecords,

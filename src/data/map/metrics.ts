@@ -129,6 +129,28 @@ export const rotationDeathQueryDuration = Metric.histogram(
   "Distribution of rotation death analysis query duration in milliseconds"
 );
 
+export const fightUltQualityQuerySuccessTotal = Metric.counter(
+  "map.fight_ult_quality.query.success",
+  {
+    description: "Total successful fight ult quality queries",
+    incremental: true,
+  }
+);
+
+export const fightUltQualityQueryErrorTotal = Metric.counter(
+  "map.fight_ult_quality.query.error",
+  {
+    description: "Total fight ult quality query failures",
+    incremental: true,
+  }
+);
+
+export const fightUltQualityQueryDuration = Metric.histogram(
+  "map.fight_ult_quality.query.duration_ms",
+  MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
+  "Distribution of fight ult quality query duration in milliseconds"
+);
+
 export const mapGroupQuerySuccessTotal = Metric.counter(
   "map.group.query.success",
   {

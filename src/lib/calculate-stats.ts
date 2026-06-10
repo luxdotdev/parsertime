@@ -11,6 +11,7 @@ import {
   getMVPForFinalRoundStats,
 } from "@/lib/mvp-score";
 import { getSpatialStatsForMapData } from "@/lib/spatial-stats";
+import { getUltQualityStatsForMapData } from "@/lib/ult-quality-db";
 import {
   groupKillsIntoFightsByMapDataId,
   removeDuplicateRows,
@@ -38,6 +39,7 @@ export async function calculateStats(mapDataId: number, playerName: string) {
     playerMvpScore,
     mapMVP,
     spatialStats,
+    ultStats,
   ] = await Promise.all([
     groupKillsIntoFightsByMapDataId(mapDataId),
     prisma.roundEnd.findFirst({
@@ -56,6 +58,7 @@ export async function calculateStats(mapDataId: number, playerName: string) {
     }),
     getMVPForFinalRoundStats(finalRoundStats),
     getSpatialStatsForMapData(mapDataId, playerName),
+    getUltQualityStatsForMapData(mapDataId, playerName),
   ]);
 
   const mostPlayedHero = playerFinalRoundStats.sort(
@@ -149,6 +152,10 @@ export async function calculateStats(mapDataId: number, playerName: string) {
     highGroundKillPercentage: spatialStats.highGroundKillPercentage,
     isolationDeathPercentage: spatialStats.isolationDeathPercentage,
     averageFightStartSpread: spatialStats.averageFightStartSpread,
+    averageUltConversionKills: ultStats.averageUltConversionKills,
+    ultDeathPercentage: ultStats.ultDeathPercentage,
+    averageUltDisplacement: ultStats.averageUltDisplacement,
+    ultsOnObjectivePercentage: ultStats.ultsOnObjectivePercentage,
   };
 }
 

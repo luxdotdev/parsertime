@@ -55,6 +55,10 @@ const STAT_ORDER: CalculatedStatType[] = [
   "HIGH_GROUND_KILL_PERCENTAGE",
   "ISOLATION_DEATH_PERCENTAGE",
   "AVERAGE_FIGHT_START_SPREAD",
+  "AVERAGE_ULT_CONVERSION_KILLS",
+  "ULT_DEATH_PERCENTAGE",
+  "AVERAGE_ULT_DISPLACEMENT",
+  "ULTS_ON_OBJECTIVE_PERCENTAGE",
 ];
 
 const STAT_CONFIGS: Record<string, StatConfig> = {
@@ -175,6 +179,34 @@ const STAT_CONFIGS: Record<string, StatConfig> = {
     label: "Fight Start Spread",
     formatValue: (value) => `${value.toFixed(1)}m`,
     color: "hsl(217.2 91.2% 59.8%)",
+    aggregation: "average",
+  },
+  AVERAGE_ULT_CONVERSION_KILLS: {
+    name: "AVERAGE_ULT_CONVERSION_KILLS",
+    label: "Ult Conversion Kills",
+    formatValue: (value) => value.toFixed(2),
+    color: "hsl(142.1 76.2% 36.3%)",
+    aggregation: "average",
+  },
+  ULT_DEATH_PERCENTAGE: {
+    name: "ULT_DEATH_PERCENTAGE",
+    label: "Ult Death %",
+    formatValue: (value) => `${value.toFixed(1)}%`,
+    color: "hsl(0 72.2% 50.6%)",
+    aggregation: "average",
+  },
+  AVERAGE_ULT_DISPLACEMENT: {
+    name: "AVERAGE_ULT_DISPLACEMENT",
+    label: "Avg Ult Displacement",
+    formatValue: (value) => `${value.toFixed(1)}m`,
+    color: "hsl(217.2 91.2% 59.8%)",
+    aggregation: "average",
+  },
+  ULTS_ON_OBJECTIVE_PERCENTAGE: {
+    name: "ULTS_ON_OBJECTIVE_PERCENTAGE",
+    label: "Ults On Objective %",
+    formatValue: (value) => `${value.toFixed(1)}%`,
+    color: "hsl(142.1 76.2% 36.3%)",
     aggregation: "average",
   },
 };

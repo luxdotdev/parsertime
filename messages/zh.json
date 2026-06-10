@@ -2205,7 +2205,8 @@
       "notes": "笔记",
       "vod": "VOD",
       "heatmap": "热力图",
-      "replay": "回放"
+      "replay": "回放",
+      "ultsAndFights": "终极技能与团战"
     },
     "replay": {
       "noCalibration": "没有可用的地图校准数据。回放查看器需要已校准的正射地图图片。",
@@ -2253,6 +2254,26 @@
         "loadingImage": "正在加载地图图片...",
         "zoomHint": "{zoom, number}% · 滚动缩放 · 拖动平移",
         "primaryFire": "主要攻击"
+      }
+    },
+    "fightUltQuality": {
+      "noData": "此地图没有位置数据。",
+      "ults": {
+        "heading": "终极技能",
+        "time": "时间",
+        "player": "选手",
+        "hero": "英雄",
+        "zone": "区域",
+        "displacement": "位移",
+        "conversionKills": "转化击杀",
+        "diedDuringUlt": "阵亡",
+        "died": "阵亡",
+        "meters": "{value}米",
+        "unpaired": "缺少结束事件"
+      },
+      "engagements": {
+        "heading": "团战",
+        "even": "平局"
       }
     },
     "vod": {
