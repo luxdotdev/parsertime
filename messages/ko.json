@@ -1569,7 +1569,22 @@
           "short": "거점 궁 %",
           "full": "거점 위 궁극기 %"
         }
-      }
+      },
+      "engagementsTitle": "교전",
+      "winrate": "승률",
+      "fights": "{total, plural, other {교전 #회}}",
+      "recordSummary": "{won}승 / {lost}패 / 무승부 {even}",
+      "wonLabel": "승리",
+      "lostLabel": "패배",
+      "evenLabel": "무승부",
+      "zonesTitle": "맵별 구역 장악",
+      "routesTitle": "맵별 이동 경로",
+      "routesSummary": "경로 {total}개 · {won}승 / {lost}패",
+      "zoneColumn": "구역",
+      "teamColumn": "팀",
+      "killsColumn": "킬",
+      "deathsColumn": "데스",
+      "ultsColumn": "궁극기"
     }
   },
   "mapGroupsPage": {
@@ -6393,7 +6408,22 @@
           "short": "거점 궁 %",
           "full": "거점 위 궁극기 %"
         }
-      }
+      },
+      "engagementsTitle": "교전",
+      "winrate": "승률",
+      "fights": "{total, plural, other {교전 #회}}",
+      "recordSummary": "{won}승 / {lost}패 / 무승부 {even}",
+      "wonLabel": "승리",
+      "lostLabel": "패배",
+      "evenLabel": "무승부",
+      "zonesTitle": "맵별 구역 장악",
+      "routesTitle": "맵별 이동 경로",
+      "routesSummary": "경로 {total}개 · {won}승 / {lost}패",
+      "zoneColumn": "구역",
+      "teamColumn": "팀",
+      "killsColumn": "킬",
+      "deathsColumn": "데스",
+      "ultsColumn": "궁극기"
     },
     "roleBalanceRadar": {
       "eyebrow": "개요 · 역할 균형",

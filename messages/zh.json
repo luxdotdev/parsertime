@@ -1569,7 +1569,22 @@
           "short": "点上大招 %",
           "full": "争夺点上的终极技能 %"
         }
-      }
+      },
+      "engagementsTitle": "交战",
+      "winrate": "胜率",
+      "fights": "{total, plural, other {# 次交战}}",
+      "recordSummary": "{won}胜 / {lost}负 / {even}平",
+      "wonLabel": "胜",
+      "lostLabel": "负",
+      "evenLabel": "平",
+      "zonesTitle": "各地图区域控制",
+      "routesTitle": "各地图路线",
+      "routesSummary": "{total} 条路线 · {won} 胜 / {lost} 负",
+      "zoneColumn": "区域",
+      "teamColumn": "队伍",
+      "killsColumn": "击杀",
+      "deathsColumn": "死亡",
+      "ultsColumn": "终极技能"
     }
   },
   "mapGroupsPage": {
@@ -6393,7 +6408,22 @@
           "short": "点上大招 %",
           "full": "争夺点上的终极技能 %"
         }
-      }
+      },
+      "engagementsTitle": "交战",
+      "winrate": "胜率",
+      "fights": "{total, plural, other {# 次交战}}",
+      "recordSummary": "{won}胜 / {lost}负 / {even}平",
+      "wonLabel": "胜",
+      "lostLabel": "负",
+      "evenLabel": "平",
+      "zonesTitle": "各地图区域控制",
+      "routesTitle": "各地图路线",
+      "routesSummary": "{total} 条路线 · {won} 胜 / {lost} 负",
+      "zoneColumn": "区域",
+      "teamColumn": "队伍",
+      "killsColumn": "击杀",
+      "deathsColumn": "死亡",
+      "ultsColumn": "终极技能"
     },
     "roleBalanceRadar": {
       "eyebrow": "概览 · 职责平衡",
