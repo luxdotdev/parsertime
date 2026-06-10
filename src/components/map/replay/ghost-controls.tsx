@@ -143,10 +143,10 @@ export function GhostControls({
 
       <div className="flex flex-wrap items-end gap-3">
         <label className="flex flex-col gap-1 text-xs">
-          <span className="text-muted-foreground">{t("sourceRound")}</span>
+          <span className="text-muted-foreground">{t("source")}</span>
           <Select value={sourceSelectValue} onValueChange={handleSourceChange}>
             <SelectTrigger className="h-8 w-44 text-xs">
-              <SelectValue placeholder={t("sourceRound")} />
+              <SelectValue placeholder={t("source")} />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
@@ -220,10 +220,10 @@ export function GhostControls({
 
         <div
           role="radiogroup"
-          aria-label={t("primaryRound")}
+          aria-label={t("alignMode")}
           className="flex flex-col gap-1 text-xs"
         >
-          <span className="text-muted-foreground">{t("primaryRound")}</span>
+          <span className="text-muted-foreground">{t("alignMode")}</span>
           <div className="flex items-center gap-1">
             <button
               type="button"

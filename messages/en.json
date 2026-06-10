@@ -2313,7 +2313,7 @@
       }
     },
     "replay": {
-      "ghost": { "title": "Ghost", "sourceRound": "Ghost round", "otherScrim": "From another scrim", "primaryRound": "Align onto round", "alignRoundStart": "Round start", "alignFirstContact": "First contact", "nudge": "Offset (s)", "playerFilter": "Ghost player", "allPlayers": "All players", "clear": "Clear ghost", "noData": "No positional data in the selected source.", "loadError": "Couldn't load ghost data.", "arenaMismatch": "Ghost is on a different sub-map this round.", "loading": "Loading ghost…" },
+      "ghost": { "title": "Ghost", "source": "Ghost source", "alignMode": "Alignment", "sourceRound": "Ghost round", "otherScrim": "From another scrim", "primaryRound": "Align onto round", "alignRoundStart": "Round start", "alignFirstContact": "First contact", "nudge": "Offset (s)", "playerFilter": "Ghost player", "allPlayers": "All players", "clear": "Clear ghost", "noData": "No positional data in the selected source.", "loadError": "Couldn't load ghost data.", "arenaMismatch": "Ghost is on a different sub-map this round.", "loading": "Loading ghost…" },
       "noCalibration": "No map calibration available. The replay viewer requires a calibrated orthographic map image.",
       "noCoordinates": "No coordinate data available for this map.",
       "noCalibrationForRange": "No map calibration available for this time range.",
