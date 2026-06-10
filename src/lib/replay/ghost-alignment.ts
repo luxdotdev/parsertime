@@ -2,7 +2,12 @@ export type GhostAlignMode = "ROUND_START" | "FIRST_CONTACT";
 
 /** The minimal event shape this module reads (subset of DisplayEvent). */
 type AnchorEvent =
-  | { type: "round_start"; t: number; roundNumber: number; objectiveIndex: number }
+  | {
+      type: "round_start";
+      t: number;
+      roundNumber: number;
+      objectiveIndex: number;
+    }
   | { type: string; t: number };
 
 export type GhostRoundInfo = {

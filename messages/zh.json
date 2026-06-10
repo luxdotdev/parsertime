@@ -2313,7 +2313,24 @@
       }
     },
     "replay": {
-      "ghost": { "title": "幽灵回放", "source": "幽灵来源", "alignMode": "对齐方式", "sourceRound": "幽灵回合", "otherScrim": "来自其他训练赛", "primaryRound": "对齐到回合", "alignRoundStart": "回合开始", "alignFirstContact": "首次交战", "nudge": "偏移（秒）", "playerFilter": "幽灵玩家", "allPlayers": "所有玩家", "clear": "清除幽灵", "noData": "所选来源没有站位数据。", "loadError": "幽灵数据加载失败。", "arenaMismatch": "本回合幽灵位于不同的子地图。", "loading": "正在加载幽灵…" },
+      "ghost": {
+        "title": "幽灵回放",
+        "source": "幽灵来源",
+        "alignMode": "对齐方式",
+        "sourceRound": "幽灵回合",
+        "otherScrim": "来自其他训练赛",
+        "primaryRound": "对齐到回合",
+        "alignRoundStart": "回合开始",
+        "alignFirstContact": "首次交战",
+        "nudge": "偏移（秒）",
+        "playerFilter": "幽灵玩家",
+        "allPlayers": "所有玩家",
+        "clear": "清除幽灵",
+        "noData": "所选来源没有站位数据。",
+        "loadError": "幽灵数据加载失败。",
+        "arenaMismatch": "本回合幽灵位于不同的子地图。",
+        "loading": "正在加载幽灵…"
+      },
       "noCalibration": "没有可用的地图校准数据。回放查看器需要已校准的正射地图图片。",
       "noCoordinates": "此地图没有坐标数据。",
       "noCalibrationForRange": "此时间范围没有可用的地图校准数据。",
