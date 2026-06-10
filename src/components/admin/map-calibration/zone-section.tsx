@@ -89,10 +89,10 @@ function ZoneEditor({
   const [canvasWidth, setCanvasWidth] = useState(800);
   const [zones, setZones] = useState<MapZoneDto[]>(initialZones);
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [dirty, setDirty] = useState(false);
+  const [dirtyZoneId, setDirtyZoneId] = useState<number | null>(null);
   const [drawing, setDrawing] = useState(false);
   const [draftVertices, setDraftVertices] = useState<[number, number][]>([]);
-  const [generateError, setGenerateError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const dragVertexRef = useRef<number | null>(null);
 
   const base = `/api/admin/map-calibration/${calibrationId}/zones`;
@@ -286,7 +286,7 @@ function ZoneEditor({
           : z
       )
     );
-    setDirty(true);
+    setDirtyZoneId(selectedId);
   }
 
   function handlePointerUp() {
@@ -299,19 +299,26 @@ function ZoneEditor({
       setDraftVertices([]);
       return;
     }
-    const res = await fetch(base, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: "New zone",
-        category: "POINT",
-        vertices: draftVertices,
-      }),
-    });
-    if (res.ok) {
-      const created = (await res.json()) as MapZoneDto;
-      setZones((prev) => [...prev, created]);
-      setSelectedId(created.id);
+    try {
+      const res = await fetch(base, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: "New zone",
+          category: "POINT",
+          vertices: draftVertices,
+        }),
+      });
+      if (res.ok) {
+        const created = (await res.json()) as MapZoneDto;
+        setZones((prev) => [...prev, created]);
+        setSelectedId(created.id);
+        setActionError(null);
+      } else {
+        setActionError("Failed to create zone");
+      }
+    } catch {
+      setActionError("Failed to create zone");
     }
     setDrawing(false);
     setDraftVertices([]);
@@ -330,43 +337,69 @@ function ZoneEditor({
   }, [drawing]);
 
   async function saveVertices() {
-    const selected = zones.find((z) => z.id === selectedId);
-    if (!selected) return;
-    const res = await fetch(`${base}/${selected.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ vertices: selected.vertices }),
-    });
-    if (res.ok) {
-      const updated = (await res.json()) as MapZoneDto;
-      setZones((prev) => prev.map((z) => (z.id === updated.id ? updated : z)));
-      setDirty(false);
+    const target = zones.find((z) => z.id === dirtyZoneId);
+    if (!target) return;
+    try {
+      const res = await fetch(`${base}/${target.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ vertices: target.vertices }),
+      });
+      if (res.ok) {
+        const updated = (await res.json()) as MapZoneDto;
+        setZones((prev) =>
+          prev.map((z) => (z.id === updated.id ? updated : z))
+        );
+        setDirtyZoneId(null);
+        setActionError(null);
+      } else {
+        setActionError("Failed to save vertices");
+      }
+    } catch {
+      setActionError("Failed to save vertices");
     }
   }
 
   async function patchZone(id: number, body: Partial<MapZoneDto>) {
-    const res = await fetch(`${base}/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    if (res.ok) {
-      const updated = (await res.json()) as MapZoneDto;
-      setZones((prev) => prev.map((z) => (z.id === updated.id ? updated : z)));
+    try {
+      const res = await fetch(`${base}/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (res.ok) {
+        const updated = (await res.json()) as MapZoneDto;
+        setZones((prev) =>
+          prev.map((z) => (z.id === updated.id ? updated : z))
+        );
+        setActionError(null);
+      } else {
+        setActionError("Failed to update zone");
+      }
+    } catch {
+      setActionError("Failed to update zone");
     }
   }
 
   async function deleteZone(id: number) {
     if (!confirm("Delete this zone?")) return;
-    const res = await fetch(`${base}/${id}`, { method: "DELETE" });
-    if (res.ok) {
-      setZones((prev) => prev.filter((z) => z.id !== id));
-      if (selectedId === id) setSelectedId(null);
+    try {
+      const res = await fetch(`${base}/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setZones((prev) => prev.filter((z) => z.id !== id));
+        if (selectedId === id) setSelectedId(null);
+        if (dirtyZoneId === id) setDirtyZoneId(null);
+        setActionError(null);
+      } else {
+        setActionError("Failed to delete zone");
+      }
+    } catch {
+      setActionError("Failed to delete zone");
     }
   }
 
   async function generateProposals() {
-    setGenerateError(null);
+    setActionError(null);
     const res = await fetch(`${base}/generate`, { method: "POST" });
     if (res.ok) {
       const refetch = await fetch(base);
@@ -374,11 +407,11 @@ function ZoneEditor({
         const fresh = (await refetch.json()) as MapZoneDto[];
         setZones(fresh);
         setSelectedId(null);
-        setDirty(false);
+        setDirtyZoneId(null);
       }
     } else {
       const err = (await res.json().catch(() => ({}))) as { error?: string };
-      setGenerateError(err.error ?? "Failed to generate proposals.");
+      setActionError(err.error ?? "Failed to generate proposals.");
     }
   }
 
@@ -419,7 +452,7 @@ function ZoneEditor({
               Draw zone
             </Button>
           )}
-          {dirty ? (
+          {dirtyZoneId !== null && dirtyZoneId === selectedId ? (
             <Button size="sm" onClick={saveVertices}>
               Save vertices
             </Button>
@@ -441,7 +474,7 @@ function ZoneEditor({
       <ZoneListPanel
         zones={zones}
         selectedId={selectedId}
-        generateError={generateError}
+        actionError={actionError}
         onSelect={setSelectedId}
         onRename={(id, name) => patchZone(id, { name })}
         onLaneRole={(id, laneRole) => patchZone(id, { laneRole })}
@@ -460,7 +493,7 @@ function ZoneEditor({
 type ZoneListPanelProps = {
   zones: MapZoneDto[];
   selectedId: number | null;
-  generateError: string | null;
+  actionError: string | null;
   onSelect: (id: number) => void;
   onRename: (id: number, name: string) => void;
   onLaneRole: (id: number, laneRole: "MAIN" | "FLANK" | null) => void;
@@ -472,7 +505,7 @@ type ZoneListPanelProps = {
 function ZoneListPanel({
   zones,
   selectedId,
-  generateError,
+  actionError,
   onSelect,
   onRename,
   onLaneRole,
@@ -485,8 +518,8 @@ function ZoneListPanel({
       <Button size="sm" variant="secondary" onClick={onGenerate}>
         Generate proposals
       </Button>
-      {generateError ? (
-        <p className="text-destructive text-xs">{generateError}</p>
+      {actionError ? (
+        <p className="text-destructive text-xs">{actionError}</p>
       ) : null}
       {zones.length === 0 ? (
         <p className="text-muted-foreground text-sm">No zones yet.</p>
