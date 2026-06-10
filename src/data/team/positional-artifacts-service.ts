@@ -44,10 +44,7 @@ export type TeamPositionalArtifactsServiceInterface = {
 
 export class TeamPositionalArtifactsService extends Context.Tag(
   "@app/data/team/TeamPositionalArtifactsService"
-)<
-  TeamPositionalArtifactsService,
-  TeamPositionalArtifactsServiceInterface
->() {}
+)<TeamPositionalArtifactsService, TeamPositionalArtifactsServiceInterface>() {}
 
 const CACHE_TTL = Duration.minutes(5);
 const CACHE_CAPACITY = 32;
@@ -102,18 +99,16 @@ export const make: Effect.Effect<
       const perScrim = yield* Effect.forEach(
         scrimIds,
         (scrimId) =>
-          scrimArtifacts
-            .getScrimPositionalArtifacts(scrimId, teamId)
-            .pipe(
-              Effect.mapError(
-                (error) =>
-                  new TeamQueryError({
-                    operation:
-                      "getTeamPositionalArtifacts.getScrimPositionalArtifacts",
-                    cause: error,
-                  })
-              )
-            ),
+          scrimArtifacts.getScrimPositionalArtifacts(scrimId, teamId).pipe(
+            Effect.mapError(
+              (error) =>
+                new TeamQueryError({
+                  operation:
+                    "getTeamPositionalArtifacts.getScrimPositionalArtifacts",
+                  cause: error,
+                })
+            )
+          ),
         { concurrency: "unbounded" }
       );
 

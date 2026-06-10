@@ -43,8 +43,7 @@ export function summarizeEngagements(
     won,
     lost,
     even,
-    winratePercent:
-      won + lost > 0 ? round((won / (won + lost)) * 100) : null,
+    winratePercent: won + lost > 0 ? round((won / (won + lost)) * 100) : null,
     byZone: Array.from(zones, ([zoneName, counts]) => ({
       zoneName,
       ...counts,
@@ -79,6 +78,9 @@ export function mergeEngagementSummaries(
     lost,
     even,
     winratePercent: won + lost > 0 ? round((won / (won + lost)) * 100) : null,
-    byZone: Array.from(zones, ([zoneName, counts]) => ({ zoneName, ...counts })),
+    byZone: Array.from(zones, ([zoneName, counts]) => ({
+      zoneName,
+      ...counts,
+    })),
   };
 }

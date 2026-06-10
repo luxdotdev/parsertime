@@ -31,9 +31,13 @@ export function countEventsByZone(
     const zone = tagZone(e.x, e.z, zonesAt(e.t));
     if (!zone) continue;
     const key = `${zone.name}::${e.team}`;
-    const row =
-      acc.get(key) ??
-      ({ zoneName: zone.name, team: e.team, kills: 0, deaths: 0, ults: 0 });
+    const row = acc.get(key) ?? {
+      zoneName: zone.name,
+      team: e.team,
+      kills: 0,
+      deaths: 0,
+      ults: 0,
+    };
     if (e.kind === "kill") row.kills++;
     else if (e.kind === "death") row.deaths++;
     else row.ults++;
@@ -48,9 +52,13 @@ export function sumZoneRows(tables: ZoneCountRow[][]): ZoneCountRow[] {
   for (const table of tables) {
     for (const row of table) {
       const key = `${row.zoneName}::${row.team}`;
-      const merged =
-        acc.get(key) ??
-        ({ zoneName: row.zoneName, team: row.team, kills: 0, deaths: 0, ults: 0 });
+      const merged = acc.get(key) ?? {
+        zoneName: row.zoneName,
+        team: row.team,
+        kills: 0,
+        deaths: 0,
+        ults: 0,
+      };
       merged.kills += row.kills;
       merged.deaths += row.deaths;
       merged.ults += row.ults;

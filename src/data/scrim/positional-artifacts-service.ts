@@ -189,8 +189,7 @@ export const make: Effect.Effect<
                   try: () => getEngagementsForMapData(mapDataId),
                   catch: (error) =>
                     new ScrimQueryError({
-                      operation:
-                        "getScrimPositionalArtifacts.getEngagements",
+                      operation: "getScrimPositionalArtifacts.getEngagements",
                       cause: error,
                     }),
                 }),
@@ -245,7 +244,9 @@ export const make: Effect.Effect<
       );
 
       // engagements: merge across every non-skipped MapData.
-      const engagements = mergeEngagementSummaries(perMap.map((p) => p.summary));
+      const engagements = mergeEngagementSummaries(
+        perMap.map((p) => p.summary)
+      );
 
       // zones: group zone tables by base map name, sum within each name.
       const zoneTablesByMap = new Map<string, ZoneCountRow[][]>();
