@@ -38,3 +38,22 @@ test("hotfix keyword takes priority over a stray season mention", () => {
   });
   expect(result.type).toBe("HOTFIX");
 });
+
+test("does not classify a non-hotfix 'Bug Fix Patch' as hotfix", () => {
+  const result = classifyPatch({
+    rawTitle: "Overwatch Retail Patch Notes – May 30, 2024",
+    body: "Bug Fix Patch Balance adjustments. Replay codes have been wiped.",
+  });
+  expect(result.type).not.toBe("HOTFIX");
+  expect(result.type).toBe("MID_SEASON");
+});
+
+test("extracts a season codename containing a hyphen", () => {
+  const result = classifyPatch({
+    rawTitle: "Overwatch Retail Patch Notes - June 20, 2024",
+    body: "Season 11: Super-Mega Ultrawatch Patch Notes Big changes this season.",
+  });
+  expect(result.type).toBe("SEASON");
+  expect(result.name).toBe("Season 11: Super-Mega Ultrawatch");
+  expect(result.needsReview).toBe(false);
+});

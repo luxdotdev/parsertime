@@ -12,7 +12,7 @@ export type ClassifyResult = {
 };
 
 const HOTFIX_RE = /\b(?:bug fix )?hotfix patch\b/i;
-const SEASON_RE = /season\s+(\d+):\s*([^\n–—-]+?)\s+patch notes/i;
+const SEASON_RE = /season\s+(\d+):\s*([^\n]+?)\s+patch notes/i;
 
 export function classifyPatch({ rawTitle, body }: ClassifyInput): ClassifyResult {
   const haystack = `${rawTitle}\n${body}`;
