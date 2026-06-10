@@ -18,7 +18,11 @@ type ReplayPlayerMarkerProps = {
   playerName: string;
   isSelected: boolean;
   animatePosition: boolean;
-  onClick: () => void;
+  onClick?: () => void;
+  /** Visual border style; ghost markers use "dashed" to distinguish. */
+  borderStyle?: "solid" | "dashed";
+  /** Z-index of the marker; ghosts render beneath primary markers. */
+  zIndexBase?: number;
 };
 
 function ReplayPlayerMarkerInner({
@@ -34,6 +38,8 @@ function ReplayPlayerMarkerInner({
   isSelected,
   animatePosition,
   onClick,
+  borderStyle = "solid",
+  zIndexBase,
 }: ReplayPlayerMarkerProps) {
   const prefersReducedMotion = useReducedMotion();
   const positionTransition =
@@ -68,13 +74,15 @@ function ReplayPlayerMarkerInner({
       style={{
         left: 0,
         top: 0,
-        zIndex: isSelected ? 20 : 10,
+        zIndex: zIndexBase ?? (isSelected ? 20 : 10),
         willChange: "transform, opacity",
       }}
     >
       <motion.button
         type="button"
         onClick={onClick}
+        disabled={!onClick}
+        tabIndex={onClick ? undefined : -1}
         aria-label={`${playerName}, ${heroName}${isDead ? ", eliminated" : ""}${isUlting ? ", ultimate active" : ""}`}
         aria-pressed={isSelected}
         className={`bg-popover/90 flex items-center justify-center overflow-hidden rounded-full transition-transform hover:scale-110 ${
@@ -105,7 +113,7 @@ function ReplayPlayerMarkerInner({
         style={{
           width: size,
           height: size,
-          border: `3px solid ${color}`,
+          border: `3px ${borderStyle} ${color}`,
         }}
       >
         <Image
@@ -143,7 +151,9 @@ export const ReplayPlayerMarker = memo(
       prev.isInactive === next.isInactive &&
       prev.isSelected === next.isSelected &&
       prev.animatePosition === next.animatePosition &&
-      prev.color === next.color
+      prev.color === next.color &&
+      prev.borderStyle === next.borderStyle &&
+      prev.zIndexBase === next.zIndexBase
     );
   }
 );

@@ -5,6 +5,7 @@ import type { PlayerState } from "@/lib/replay/build-player-timeline";
 import { worldToImage } from "@/lib/map-calibration/world-to-image";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { GHOST_OPACITY } from "./ghost-controls";
 import { ReplayPlayerMarker } from "./replay-player-marker";
 
 type PlayerRender = {
@@ -30,6 +31,10 @@ type ReplayMapProps = {
     victimZ: number;
     attackerTeam: string;
   } | null;
+  ghost?: {
+    players: PlayerRender[];
+    teamColorsSwapped?: boolean;
+  };
 };
 
 const MARKER_SIZE = 32;
@@ -43,6 +48,7 @@ export function ReplayMap({
   selectedPlayer,
   onSelectPlayerAction,
   recentKill,
+  ghost,
 }: ReplayMapProps) {
   const t = useTranslations("mapPage.replay.map");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -276,6 +282,40 @@ export function ReplayMap({
             opacity={0.9}
           />
         </svg>
+      )}
+
+      {/* Ghost player markers (beneath primary markers) */}
+      {imageLoaded && ghost && ghost.players.length > 0 && (
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{ opacity: GHOST_OPACITY, zIndex: 4 }}
+        >
+          {ghost.players.map((p) => {
+            const screen = worldToScreen(p.state.x, p.state.z);
+            const isTeam1 = p.playerTeam === team1Name;
+            const useTeam1Color = ghost.teamColorsSwapped ? !isTeam1 : isTeam1;
+            const color = useTeam1Color ? team1Color : team2Color;
+
+            return (
+              <ReplayPlayerMarker
+                key={`ghost-${p.key}`}
+                heroName={p.state.hero}
+                color={color}
+                x={screen.x}
+                y={screen.y}
+                size={MARKER_SIZE}
+                isDead={p.state.isDead}
+                isUlting={false}
+                isInactive={p.isInactive}
+                playerName={p.playerName}
+                isSelected={false}
+                animatePosition={!didViewChange}
+                borderStyle="dashed"
+                zIndexBase={5}
+              />
+            );
+          })}
+        </div>
       )}
 
       {/* Player markers */}
