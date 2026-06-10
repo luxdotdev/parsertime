@@ -1,5 +1,7 @@
 import { AppRuntime } from "@/data/runtime";
 import { FightUltQualityService } from "@/data/map/fight-ult-quality-service";
+import { ZoneAnalyticsService } from "@/data/map/zone-analytics-service";
+import type { ZoneCountRow } from "@/lib/zones/analytics";
 import {
   Table,
   TableBody,
@@ -22,10 +24,15 @@ import { getTranslations } from "next-intl/server";
 const EM_DASH = "—";
 
 export async function FightUltQualityTab({ id }: { id: number }) {
-  const [data, t] = await Promise.all([
+  const [data, zoneAnalytics, t] = await Promise.all([
     AppRuntime.runPromise(
       FightUltQualityService.pipe(
         Effect.flatMap((svc) => svc.getFightUltQuality(id))
+      )
+    ),
+    AppRuntime.runPromise(
+      ZoneAnalyticsService.pipe(
+        Effect.flatMap((svc) => svc.getZoneAnalytics(id))
       )
     ),
     getTranslations("mapPage.fightUltQuality"),
@@ -139,6 +146,59 @@ export async function FightUltQualityTab({ id }: { id: number }) {
           })}
         </ul>
       </section>
+
+      <section className="space-y-2">
+        <h2 className="text-lg font-semibold tracking-tight">
+          {t("zones.title")}
+        </h2>
+        {zoneAnalytics === null ? (
+          <div className="flex min-h-[120px] items-center justify-center rounded-lg border border-dashed">
+            <p className="text-muted-foreground text-sm">{t("zones.empty")}</p>
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("zones.zone")}</TableHead>
+                <TableHead>{t("zones.team")}</TableHead>
+                <TableHead>{t("zones.kills")}</TableHead>
+                <TableHead>{t("zones.deaths")}</TableHead>
+                <TableHead>{t("zones.ults")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {groupZoneRows(zoneAnalytics.rows).map((group) =>
+                group.rows.map((row, index) => (
+                  <TableRow key={`${row.zoneName}-${row.team}`}>
+                    <TableCell>{index === 0 ? group.zoneName : ""}</TableCell>
+                    <TableCell>{row.team}</TableCell>
+                    <TableCell>{row.kills}</TableCell>
+                    <TableCell>{row.deaths}</TableCell>
+                    <TableCell>{row.ults}</TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        )}
+      </section>
     </div>
   );
+}
+
+type ZoneGroup = { zoneName: string; rows: ZoneCountRow[] };
+
+function groupZoneRows(rows: ZoneCountRow[]): ZoneGroup[] {
+  const groups = new Map<string, ZoneCountRow[]>();
+  for (const row of rows) {
+    const existing = groups.get(row.zoneName);
+    if (existing) existing.push(row);
+    else groups.set(row.zoneName, [row]);
+  }
+  return [...groups.entries()]
+    .map(([zoneName, zoneRows]) => ({
+      zoneName,
+      rows: zoneRows.sort((a, b) => a.team.localeCompare(b.team)),
+    }))
+    .sort((a, b) => a.zoneName.localeCompare(b.zoneName));
 }

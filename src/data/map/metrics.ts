@@ -173,6 +173,28 @@ export const routeMiningQueryDuration = Metric.histogram(
   "Distribution of route mining analysis query duration in milliseconds"
 );
 
+export const zoneAnalyticsQuerySuccessTotal = Metric.counter(
+  "map.zone_analytics.query.success",
+  {
+    description: "Total successful zone analytics queries",
+    incremental: true,
+  }
+);
+
+export const zoneAnalyticsQueryErrorTotal = Metric.counter(
+  "map.zone_analytics.query.error",
+  {
+    description: "Total zone analytics query failures",
+    incremental: true,
+  }
+);
+
+export const zoneAnalyticsQueryDuration = Metric.histogram(
+  "map.zone_analytics.query.duration_ms",
+  MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
+  "Distribution of zone analytics query duration in milliseconds"
+);
+
 export const mapGroupQuerySuccessTotal = Metric.counter(
   "map.group.query.success",
   {

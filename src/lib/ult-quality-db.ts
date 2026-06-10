@@ -16,7 +16,7 @@ import {
 } from "@/lib/ult-quality";
 import type { TaggableZone } from "@/lib/zones/tag";
 
-type ZoneContext = {
+export type ZoneContext = {
   zonesAt: (matchTime: number) => TaggableZone[];
   hasPointZones: boolean;
 };
@@ -42,7 +42,7 @@ function toTaggable(
  * sub-map, selected by the round's objective_index at the given time
  * (sub-map arenas can overlap in world space — never tag across them).
  */
-async function loadZoneContext(mapDataId: number): Promise<ZoneContext> {
+export async function loadZoneContext(mapDataId: number): Promise<ZoneContext> {
   const mapData = await prisma.mapData.findUnique({
     where: { id: mapDataId },
     select: { Map: { select: { name: true } } },

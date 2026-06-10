@@ -17,6 +17,7 @@ import { PlayerTelemetryServiceLive } from "./map/player-telemetry-service";
 import { RotationDeathServiceLive } from "./map/rotation-death-service";
 import { RouteMiningServiceLive } from "./map/route-mining-service";
 import { TempoServiceLive } from "./map/tempo-service";
+import { ZoneAnalyticsServiceLive } from "./map/zone-analytics-service";
 import { IntelligenceServiceLive } from "./player/intelligence-service";
 import { PlayerServiceLive } from "./player/player-service";
 import { ScoutingAnalyticsServiceLive } from "./player/scouting-analytics-service";
@@ -27,6 +28,7 @@ import { ScoutingServiceLive } from "./scouting/scouting-service";
 import { ScrimAbilityTimingServiceLive } from "./scrim/ability-timing-service";
 import { ScrimOpponentServiceLive } from "./scrim/opponent-service";
 import { ScrimOverviewServiceLive } from "./scrim/overview-service";
+import { ScrimPositionalArtifactsServiceLive } from "./scrim/positional-artifacts-service";
 import { ScrimPositionalStatsServiceLive } from "./scrim/positional-stats-service";
 import { ScrimServiceLive } from "./scrim/scrim-service";
 import { TeamAbilityImpactServiceLive } from "./team/ability-impact-service";
@@ -38,6 +40,7 @@ import { TeamHeroSwapServiceLive } from "./team/hero-swap-service";
 import { TeamMapModeServiceLive } from "./team/map-mode-service";
 import { TeamAnalyticsServiceLive } from "./team/analytics-service";
 import { TeamMatchupServiceLive } from "./team/matchup-service";
+import { TeamPositionalArtifactsServiceLive } from "./team/positional-artifacts-service";
 import { TeamPositionalStatsServiceLive } from "./team/positional-stats-service";
 import { TeamPredictionServiceLive } from "./team/prediction-service";
 import { TeamQuickWinsServiceLive } from "./team/quick-wins-service";
@@ -71,6 +74,7 @@ export const DataLayerLive = Layer.mergeAll(
   ScrimOpponentServiceLive,
   ScrimAbilityTimingServiceLive,
   ScrimPositionalStatsServiceLive,
+  ScrimPositionalArtifactsServiceLive,
 
   PlayerServiceLive,
   IntelligenceServiceLive,
@@ -89,6 +93,7 @@ export const DataLayerLive = Layer.mergeAll(
   RouteMiningServiceLive,
   MapGroupServiceLive,
   MapHeroTrendsServiceLive,
+  ZoneAnalyticsServiceLive,
 
   HeroBanIntelligenceServiceLive,
   MapIntelligenceServiceLive,
@@ -108,6 +113,7 @@ export const DataLayerLive = Layer.mergeAll(
   TeamComparisonServiceLive,
   TeamMatchupServiceLive,
   TeamPositionalStatsServiceLive,
+  TeamPositionalArtifactsServiceLive,
   TeamAnalyticsServiceLive,
   TeamPredictionServiceLive,
   RouteTendenciesServiceLive,

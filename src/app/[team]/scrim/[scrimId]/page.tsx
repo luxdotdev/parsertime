@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/tooltip";
 import {
   ScrimOverviewService,
+  ScrimPositionalArtifactsService,
   ScrimPositionalStatsService,
   ScrimService,
 } from "@/data/scrim";
@@ -204,6 +205,15 @@ export default async function ScrimDashboardPage(
         )
       : null;
 
+  const positionalArtifacts =
+    showPositional && maps.length > 0 && teamId
+      ? await AppRuntime.runPromise(
+          ScrimPositionalArtifactsService.pipe(
+            Effect.flatMap((svc) => svc.getScrimPositionalArtifacts(id, teamId))
+          )
+        )
+      : null;
+
   return (
     <DirectionalTransition>
       <DashboardLayout guestMode={visibility.guestMode}>
@@ -322,7 +332,10 @@ export default async function ScrimDashboardPage(
 
           {showPositional && positionalStats && (
             <div className="mt-8">
-              <PositionalStatsSection data={positionalStats} />
+              <PositionalStatsSection
+                data={positionalStats}
+                artifacts={positionalArtifacts}
+              />
             </div>
           )}
 

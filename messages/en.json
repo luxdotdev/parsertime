@@ -1569,7 +1569,22 @@
           "short": "Ult Obj %",
           "full": "Ults On Objective %"
         }
-      }
+      },
+      "engagementsTitle": "Engagements",
+      "winrate": "Winrate",
+      "fights": "{total, plural, one {# fight} other {# fights}}",
+      "recordSummary": "{won}W / {lost}L / {even} even",
+      "wonLabel": "Won",
+      "lostLabel": "Lost",
+      "evenLabel": "Even",
+      "zonesTitle": "Zone control by map",
+      "routesTitle": "Routes by map",
+      "routesSummary": "{total} routes · {won} won / {lost} lost",
+      "zoneColumn": "Zone",
+      "teamColumn": "Team",
+      "killsColumn": "Kills",
+      "deathsColumn": "Deaths",
+      "ultsColumn": "Ults"
     }
   },
   "mapGroupsPage": {
@@ -2363,6 +2378,15 @@
       "engagements": {
         "heading": "Engagements",
         "even": "Even"
+      },
+      "zones": {
+        "title": "Zones",
+        "empty": "No published zones for this map yet.",
+        "zone": "Zone",
+        "team": "Team",
+        "kills": "Kills",
+        "deaths": "Deaths",
+        "ults": "Ults"
       }
     },
     "vod": {
@@ -7033,7 +7057,22 @@
           "short": "Ult Obj %",
           "full": "Ults On Objective %"
         }
-      }
+      },
+      "engagementsTitle": "Engagements",
+      "winrate": "Winrate",
+      "fights": "{total, plural, one {# fight} other {# fights}}",
+      "recordSummary": "{won}W / {lost}L / {even} even",
+      "wonLabel": "Won",
+      "lostLabel": "Lost",
+      "evenLabel": "Even",
+      "zonesTitle": "Zone control by map",
+      "routesTitle": "Routes by map",
+      "routesSummary": "{total} routes · {won} won / {lost} lost",
+      "zoneColumn": "Zone",
+      "teamColumn": "Team",
+      "killsColumn": "Kills",
+      "deathsColumn": "Deaths",
+      "ultsColumn": "Ults"
     }
   },
   "targets": {
