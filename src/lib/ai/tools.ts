@@ -15,6 +15,7 @@ import {
 import { Effect } from "effect";
 import prisma from "@/lib/prisma";
 import { SPATIAL_STAT_TYPES } from "@/lib/spatial-stats";
+import { ULT_STAT_TYPES } from "@/lib/ult-quality";
 import { round } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
 import { allHeroes } from "@/types/heroes";
@@ -362,7 +363,7 @@ export function buildTools(opts: {
 
     getPlayerPerformance: tool({
       description:
-        "Get detailed performance stats for a specific player across selected maps. Requires map IDs (get from getScrimList or getScrimAnalysis). Optionally filter by specific heroes. When the maps have positional data, the response includes spatialStats (average engagement distance in meters, high ground kill %, isolation death %, fight start spread in meters) averaged across the selected maps. spatialStats are per-map whole-player values and are not filtered by the heroes parameter.",
+        "Get detailed performance stats for a specific player across selected maps. Requires map IDs (get from getScrimList or getScrimAnalysis). Optionally filter by specific heroes. When the maps have positional data, the response includes spatialStats (average engagement distance in meters, high ground kill %, isolation death %, fight start spread in meters) averaged across the selected maps. spatialStats are per-map whole-player values and are not filtered by the heroes parameter. ultStats (ult conversion kills, ult death %, ult displacement in meters, ults-on-objective %) follow the same rules.",
       inputSchema: z.object({
         mapIds: z
           .array(z.number())
@@ -409,7 +410,7 @@ export function buildTools(opts: {
         const spatialRows = await prisma.calculatedStat.findMany({
           where: {
             playerName,
-            stat: { in: [...SPATIAL_STAT_TYPES] },
+            stat: { in: [...SPATIAL_STAT_TYPES, ...ULT_STAT_TYPES] },
             MapData: { mapId: { in: mapIds } },
           },
           select: { stat: true, value: true },
@@ -427,6 +428,18 @@ export function buildTools(opts: {
           }
         }
 
+        const ultStats: Record<string, number> = {};
+        for (const type of ULT_STAT_TYPES) {
+          const values = spatialRows
+            .filter((row) => row.stat === type)
+            .map((row) => row.value);
+          if (values.length > 0) {
+            ultStats[type] = round(
+              values.reduce((acc, v) => acc + v, 0) / values.length
+            );
+          }
+        }
+
         return {
           playerName: data.playerName,
           mapCount: data.mapCount,
@@ -436,6 +449,7 @@ export function buildTools(opts: {
           perMapBreakdown: data.perMapBreakdown.slice(0, 5),
           spatialStats:
             Object.keys(spatialStats).length > 0 ? spatialStats : undefined,
+          ultStats: Object.keys(ultStats).length > 0 ? ultStats : undefined,
         };
       },
     }),
