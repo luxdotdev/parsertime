@@ -9,6 +9,7 @@ import { DefaultOverview } from "@/components/map/default-overview";
 import { FightUltQualityTab } from "@/components/map/fight-ult-quality-tab";
 import { HeatmapTab } from "@/components/map/heatmap/heatmap-tab";
 import { ReplayTab } from "@/components/map/replay/replay-tab";
+import { RoutesTab } from "@/components/map/routes/routes-tab";
 import { HeroBans } from "@/components/map/hero-bans";
 import { Killfeed } from "@/components/map/killfeed";
 import { MapEvents } from "@/components/map/map-events";
@@ -312,6 +313,11 @@ export default async function MapDashboardPage(
                           value: "ults-and-fights",
                           label: t("tabs.ultsAndFights"),
                           content: <FightUltQualityTab id={mapDataId} />,
+                        },
+                        {
+                          value: "routes",
+                          label: t("tabs.routes"),
+                          content: <RoutesTab id={mapDataId} />,
                         },
                       ]
                     : []),
