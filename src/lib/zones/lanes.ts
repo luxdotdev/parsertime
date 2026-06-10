@@ -55,7 +55,11 @@ export function extractLanes(grid: DensityGrid): Lane[] {
       }
     }
     const centerline = decimate(path).map((idx) => {
-      const center = cellCenterWorld(idx % cols, Math.floor(idx / cols), grid.spec);
+      const center = cellCenterWorld(
+        idx % cols,
+        Math.floor(idx / cols),
+        grid.spec
+      );
       return { x: center.x, z: center.z };
     });
     const polygon = bufferCenterline(centerline, grid, threshold);
@@ -162,7 +166,10 @@ function marchHalfWidth(
 ): number {
   let dist = MIN_LANE_WIDTH_M / 2;
   while (dist < MAX_LANE_WIDTH_M / 2) {
-    if (densityAt(px + sign * nx * dist, pz + sign * nz * dist, counts, spec) < threshold) {
+    if (
+      densityAt(px + sign * nx * dist, pz + sign * nz * dist, counts, spec) <
+      threshold
+    ) {
       break;
     }
     dist += spec.cellSize / 2;
@@ -194,8 +201,26 @@ function bufferCenterline(
     const nz = dx / len;
     const p = centerline[i];
 
-    const lw = marchHalfWidth(p.x, p.z, nx, nz, 1, grid.counts, grid.spec, threshold);
-    const rw = marchHalfWidth(p.x, p.z, nx, nz, -1, grid.counts, grid.spec, threshold);
+    const lw = marchHalfWidth(
+      p.x,
+      p.z,
+      nx,
+      nz,
+      1,
+      grid.counts,
+      grid.spec,
+      threshold
+    );
+    const rw = marchHalfWidth(
+      p.x,
+      p.z,
+      nx,
+      nz,
+      -1,
+      grid.counts,
+      grid.spec,
+      threshold
+    );
 
     left.push([p.x + nx * lw, p.z + nz * lw]);
     right.push([p.x - nx * rw, p.z - nz * rw]);

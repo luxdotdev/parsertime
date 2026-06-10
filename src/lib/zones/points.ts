@@ -57,7 +57,11 @@ export function extractPointPolygon(samples: GridSample[]): Vertex[] | null {
   }
 
   const points: Vertex[] = cells.map((idx) => {
-    const center = cellCenterWorld(idx % cols, Math.floor(idx / cols), grid.spec);
+    const center = cellCenterWorld(
+      idx % cols,
+      Math.floor(idx / cols),
+      grid.spec
+    );
     return [center.x, center.z];
   });
   const hull = convexHull(points);

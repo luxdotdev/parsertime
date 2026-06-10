@@ -8,7 +8,11 @@ import {
   MIN_TOTAL_SAMPLES,
 } from "@/lib/zones/constants";
 import type { Vertex } from "@/lib/zones/geometry";
-import { buildDensityGrid, gaussianBlur, type GridSample } from "@/lib/zones/grid";
+import {
+  buildDensityGrid,
+  gaussianBlur,
+  type GridSample,
+} from "@/lib/zones/grid";
 import {
   labelLanes,
   tracePayloadPath,
@@ -21,7 +25,10 @@ import { buildWindows, inWindows, type TimeWindow } from "@/lib/zones/windows";
 
 export type ClassifyResult =
   | { ok: true; pointZones: number; laneZones: number }
-  | { ok: false; reason: "no_calibration" | "no_data" | "insufficient_samples" };
+  | {
+      ok: false;
+      reason: "no_calibration" | "no_data" | "insufficient_samples";
+    };
 
 /** "Nepal: Sanctum" → { baseMapName: "Nepal", objectiveIndex: 0 } */
 export function resolveCalibrationTarget(mapName: string): {
@@ -138,19 +145,39 @@ export async function classifyZonesForCalibration(
     }),
     prisma.ability1Used.findMany({
       where: { MapDataId: { in: ids } },
-      select: { MapDataId: true, match_time: true, player_x: true, player_z: true },
+      select: {
+        MapDataId: true,
+        match_time: true,
+        player_x: true,
+        player_z: true,
+      },
     }),
     prisma.ability2Used.findMany({
       where: { MapDataId: { in: ids } },
-      select: { MapDataId: true, match_time: true, player_x: true, player_z: true },
+      select: {
+        MapDataId: true,
+        match_time: true,
+        player_x: true,
+        player_z: true,
+      },
     }),
     prisma.ultimateStart.findMany({
       where: { MapDataId: { in: ids } },
-      select: { MapDataId: true, match_time: true, player_x: true, player_z: true },
+      select: {
+        MapDataId: true,
+        match_time: true,
+        player_x: true,
+        player_z: true,
+      },
     }),
     prisma.ultimateEnd.findMany({
       where: { MapDataId: { in: ids } },
-      select: { MapDataId: true, match_time: true, player_x: true, player_z: true },
+      select: {
+        MapDataId: true,
+        match_time: true,
+        player_x: true,
+        player_z: true,
+      },
     }),
     prisma.roundStart.findMany({
       where: { MapDataId: { in: ids } },

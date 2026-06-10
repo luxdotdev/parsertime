@@ -1,8 +1,4 @@
-import {
-  pointInPolygon,
-  polygonArea,
-  type Vertex,
-} from "@/lib/zones/geometry";
+import { pointInPolygon, polygonArea, type Vertex } from "@/lib/zones/geometry";
 
 export type TaggableZone = {
   id: number;

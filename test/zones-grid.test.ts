@@ -21,12 +21,24 @@ test("buildDensityGrid bins samples into cells with padding", () => {
 });
 
 test("worldToCell returns null outside the grid", () => {
-  const grid = buildDensityGrid([{ x: 0, z: 0 }, { x: 9, z: 9 }], 3);
+  const grid = buildDensityGrid(
+    [
+      { x: 0, z: 0 },
+      { x: 9, z: 9 },
+    ],
+    3
+  );
   expect(worldToCell(1000, 1000, grid.spec)).toBeNull();
 });
 
 test("cellCenterWorld inverts worldToCell to the cell center", () => {
-  const grid = buildDensityGrid([{ x: 0, z: 0 }, { x: 30, z: 30 }], 3);
+  const grid = buildDensityGrid(
+    [
+      { x: 0, z: 0 },
+      { x: 30, z: 30 },
+    ],
+    3
+  );
   const cell = worldToCell(15, 15, grid.spec)!;
   const center = cellCenterWorld(cell.col, cell.row, grid.spec);
   expect(Math.abs(center.x - 15)).toBeLessThanOrEqual(1.5);

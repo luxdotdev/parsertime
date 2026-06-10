@@ -1,7 +1,11 @@
 import { thinSkeleton } from "@/lib/zones/skeleton";
 import { expect, test } from "vitest";
 
-function mask(rows: string[]): { mask: Uint8Array; cols: number; rows: number } {
+function mask(rows: string[]): {
+  mask: Uint8Array;
+  cols: number;
+  rows: number;
+} {
   const cols = rows[0].length;
   const m = new Uint8Array(cols * rows.length);
   rows.forEach((line, r) => {
@@ -11,7 +15,11 @@ function mask(rows: string[]): { mask: Uint8Array; cols: number; rows: number } 
 }
 
 test("a thick horizontal bar thins to a single-cell line", () => {
-  const { mask: m, cols, rows } = mask([
+  const {
+    mask: m,
+    cols,
+    rows,
+  } = mask([
     "..........",
     ".########.",
     ".########.",
@@ -27,14 +35,11 @@ test("a thick horizontal bar thins to a single-cell line", () => {
 });
 
 test("thinning preserves connectivity of an L shape", () => {
-  const { mask: m, cols, rows } = mask([
-    ".....",
-    ".###.",
-    ".###.",
-    ".##..",
-    ".##..",
-    ".....",
-  ]);
+  const {
+    mask: m,
+    cols,
+    rows,
+  } = mask([".....", ".###.", ".###.", ".##..", ".##..", "....."]);
   const thin = thinSkeleton(m, cols, rows);
   const on = [];
   for (let i = 0; i < thin.length; i++) if (thin[i]) on.push(i);

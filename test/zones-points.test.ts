@@ -7,7 +7,10 @@ function blob(n: number, cx: number, cz: number, r: number) {
   for (let i = 0; i < n; i++) {
     const angle = i * 2.399963;
     const dist = r * Math.sqrt(i / n);
-    out.push({ x: cx + dist * Math.cos(angle), z: cz + dist * Math.sin(angle) });
+    out.push({
+      x: cx + dist * Math.cos(angle),
+      z: cz + dist * Math.sin(angle),
+    });
   }
   return out;
 }

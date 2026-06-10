@@ -79,9 +79,7 @@ function blurPass(
     for (let col = 0; col < cols; col++) {
       let acc = 0;
       for (let k = -2; k <= 2; k++) {
-        const c = horizontal
-          ? Math.min(cols - 1, Math.max(0, col + k))
-          : col;
+        const c = horizontal ? Math.min(cols - 1, Math.max(0, col + k)) : col;
         const r = horizontal ? row : Math.min(rows - 1, Math.max(0, row + k));
         acc += src[r * cols + c] * BLUR_KERNEL[k + 2];
       }
@@ -96,6 +94,11 @@ export function gaussianBlur(grid: DensityGrid): DensityGrid {
   const { cols, rows } = grid.spec;
   return {
     spec: grid.spec,
-    counts: blurPass(blurPass(grid.counts, true, cols, rows), false, cols, rows),
+    counts: blurPass(
+      blurPass(grid.counts, true, cols, rows),
+      false,
+      cols,
+      rows
+    ),
   };
 }

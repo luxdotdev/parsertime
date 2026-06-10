@@ -40,15 +40,36 @@ test("labelLanes marks the corridor hugging the path as MAIN", () => {
     { x: 200, z: 20 },
   ];
   const lanes = [
-    { centerline: [{ x: 0, z: 100 }, { x: 200, z: 100 }] },
-    { centerline: [{ x: 0, z: 21 }, { x: 100, z: 19 }, { x: 200, z: 22 }] },
+    {
+      centerline: [
+        { x: 0, z: 100 },
+        { x: 200, z: 100 },
+      ],
+    },
+    {
+      centerline: [
+        { x: 0, z: 21 },
+        { x: 100, z: 19 },
+        { x: 200, z: 22 },
+      ],
+    },
   ];
   expect(labelLanes(lanes, path)).toEqual(["FLANK", "MAIN"]);
 });
 
 test("labelLanes returns nulls when no path or nothing close enough", () => {
-  const lanes = [{ centerline: [{ x: 0, z: 0 }, { x: 10, z: 0 }] }];
+  const lanes = [
+    {
+      centerline: [
+        { x: 0, z: 0 },
+        { x: 10, z: 0 },
+      ],
+    },
+  ];
   expect(labelLanes(lanes, [])).toEqual([null]);
-  const farPath = [{ x: 0, z: 500 }, { x: 10, z: 500 }];
+  const farPath = [
+    { x: 0, z: 500 },
+    { x: 10, z: 500 },
+  ];
   expect(labelLanes(lanes, farPath)).toEqual([null]);
 });

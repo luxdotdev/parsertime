@@ -38,9 +38,9 @@ test("three parallel ridges produce three lane corridors", () => {
   expect(lanes).toHaveLength(3);
   const mids = [20, 60, 100];
   for (const mid of mids) {
-    expect(
-      lanes.some((lane) => pointInPolygon(100, mid, lane.polygon))
-    ).toBe(true);
+    expect(lanes.some((lane) => pointInPolygon(100, mid, lane.polygon))).toBe(
+      true
+    );
   }
 });
 

@@ -1,8 +1,4 @@
-import {
-  convexHull,
-  pointInPolygon,
-  polygonArea,
-} from "@/lib/zones/geometry";
+import { convexHull, pointInPolygon, polygonArea } from "@/lib/zones/geometry";
 import { expect, test } from "vitest";
 
 const square: Array<[number, number]> = [
@@ -20,7 +16,14 @@ test("pointInPolygon detects inside and outside", () => {
 
 test("pointInPolygon handles concave polygons", () => {
   const u: Array<[number, number]> = [
-    [0, 0], [10, 0], [10, 10], [7, 10], [7, 3], [3, 3], [3, 10], [0, 10],
+    [0, 0],
+    [10, 0],
+    [10, 10],
+    [7, 10],
+    [7, 3],
+    [3, 3],
+    [3, 10],
+    [0, 10],
   ];
   expect(pointInPolygon(5, 8, u)).toBe(false);
   expect(pointInPolygon(5, 1, u)).toBe(true);
@@ -31,17 +34,17 @@ test("polygonArea of a 10x10 square is 100", () => {
 });
 
 test("convexHull of points with interior noise returns the bounding square", () => {
-  const points: Array<[number, number]> = [
-    ...square,
-    [5, 5],
-    [2, 7],
-    [8, 3],
-  ];
+  const points: Array<[number, number]> = [...square, [5, 5], [2, 7], [8, 3]];
   const hull = convexHull(points);
   expect(hull).toHaveLength(4);
   expect(polygonArea(hull)).toBe(100);
 });
 
 test("convexHull of fewer than 3 points returns empty", () => {
-  expect(convexHull([[0, 0], [1, 1]])).toEqual([]);
+  expect(
+    convexHull([
+      [0, 0],
+      [1, 1],
+    ])
+  ).toEqual([]);
 });

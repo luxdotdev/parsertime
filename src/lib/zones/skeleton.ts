@@ -34,13 +34,13 @@ export function thinSkeleton(
         for (let x = 0; x < cols; x++) {
           if (!out[y * cols + x]) continue;
           const p = [
-            getCell(out, x, y - 1, cols, rows),     // N
+            getCell(out, x, y - 1, cols, rows), // N
             getCell(out, x + 1, y - 1, cols, rows), // NE
-            getCell(out, x + 1, y, cols, rows),     // E
+            getCell(out, x + 1, y, cols, rows), // E
             getCell(out, x + 1, y + 1, cols, rows), // SE
-            getCell(out, x, y + 1, cols, rows),     // S
+            getCell(out, x, y + 1, cols, rows), // S
             getCell(out, x - 1, y + 1, cols, rows), // SW
-            getCell(out, x - 1, y, cols, rows),     // W
+            getCell(out, x - 1, y, cols, rows), // W
             getCell(out, x - 1, y - 1, cols, rows), // NW
           ];
           const b = p.reduce((acc, v) => acc + v, 0);
