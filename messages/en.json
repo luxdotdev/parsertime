@@ -614,7 +614,8 @@
       "toggle": "Toggle theme",
       "light": "Light",
       "dark": "Dark",
-      "system": "System"
+      "system": "System",
+      "disguised": "Disguised"
     },
     "userNav": {
       "dashboard": "Dashboard",

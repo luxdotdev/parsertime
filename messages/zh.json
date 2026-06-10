@@ -614,7 +614,8 @@
       "toggle": "切换主题",
       "light": "浅色",
       "dark": "深色",
-      "system": "系统默认"
+      "system": "系统默认",
+      "disguised": "Disguised"
     },
     "userNav": {
       "dashboard": "仪表盘",

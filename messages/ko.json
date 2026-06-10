@@ -614,7 +614,8 @@
       "toggle": "테마 전환",
       "light": "라이트",
       "dark": "다크",
-      "system": "시스템"
+      "system": "시스템",
+      "disguised": "디스가이즈드"
     },
     "userNav": {
       "dashboard": "대시보드",
