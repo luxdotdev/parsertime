@@ -169,7 +169,8 @@ export const positionalData = flag<boolean, Entities>({
     { value: false, label: "Disabled" },
   ],
   defaultValue: false,
-  description: "Show the Heatmap tab on map detail pages",
+  description:
+    "Show positional data features (heatmap/replay tabs, profile positioning card)",
   identify,
 });
 

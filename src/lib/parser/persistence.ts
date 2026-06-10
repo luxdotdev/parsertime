@@ -687,6 +687,66 @@ export async function calculateStatsForMap(mapDataId: number, scrimId: number) {
         });
       }
 
+      if (
+        stats.averageEngagementDistance !== null &&
+        !isNaN(stats.averageEngagementDistance)
+      ) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "AVERAGE_ENGAGEMENT_DISTANCE" as const,
+          value: stats.averageEngagementDistance,
+          MapDataId: mapDataId,
+        });
+      }
+
+      if (
+        stats.highGroundKillPercentage !== null &&
+        !isNaN(stats.highGroundKillPercentage)
+      ) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "HIGH_GROUND_KILL_PERCENTAGE" as const,
+          value: stats.highGroundKillPercentage,
+          MapDataId: mapDataId,
+        });
+      }
+
+      if (
+        stats.isolationDeathPercentage !== null &&
+        !isNaN(stats.isolationDeathPercentage)
+      ) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "ISOLATION_DEATH_PERCENTAGE" as const,
+          value: stats.isolationDeathPercentage,
+          MapDataId: mapDataId,
+        });
+      }
+
+      if (
+        stats.averageFightStartSpread !== null &&
+        !isNaN(stats.averageFightStartSpread)
+      ) {
+        calculatedStatRecords.push({
+          scrimId,
+          playerName: stats.playerName,
+          hero: stats.hero,
+          role: stats.role as Role,
+          stat: "AVERAGE_FIGHT_START_SPREAD" as const,
+          value: stats.averageFightStartSpread,
+          MapDataId: mapDataId,
+        });
+      }
+
       if (calculatedStatRecords.length > 0) {
         await prisma.calculatedStat.createMany({
           data: calculatedStatRecords,

@@ -4,6 +4,7 @@ import { HeroMasteryGrid } from "@/components/profile/hero-mastery-grid";
 import { HeroRating } from "@/components/profile/hero-rating";
 import { PersonalRecords } from "@/components/profile/personal-records";
 import { PlayStyleIndicator } from "@/components/profile/play-style-indicator";
+import { PositioningCard } from "@/components/profile/positioning-card";
 import { ProfileHeader } from "@/components/profile/profile-header";
 import { RecentActivityCalendar } from "@/components/profile/recent-activity-calendar";
 import { SkillRatingDetail } from "@/components/profile/skill-rating-card";
@@ -25,6 +26,7 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth, getViewableScrimIds } from "@/lib/auth";
+import { positionalData } from "@/lib/flags";
 import { getCompositeSRLeaderboard } from "@/lib/hero-rating";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
@@ -302,6 +304,8 @@ export default async function ProfilePage(
       scrimId: { in: permittedScrimIds },
     },
   });
+
+  const showPositioning = await positionalData();
 
   const { stats, kills, deaths, mapWinrates } = await AppRuntime.runPromise(
     Effect.all(
@@ -664,6 +668,17 @@ export default async function ProfilePage(
               permissions={permissions}
             />
           </section>
+
+          {showPositioning && (
+            <section className="space-y-4">
+              <SectionHeader
+                eyebrow="Overview · Positioning"
+                title="Engagement distance, high ground, isolation"
+                description="Computed from maps with positional data only."
+              />
+              <PositioningCard calculatedStats={calculatedStats} />
+            </section>
+          )}
         </TabsContent>
 
         <TabsContent value="progression" className="space-y-12">

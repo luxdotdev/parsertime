@@ -5604,6 +5604,20 @@
     "notification-created": "알림 생성 성공",
     "create-notification-error": "알림 생성 실패"
   },
+  "positioningCard": {
+    "title": "포지셔닝",
+    "description": "좌표 데이터를 기반으로 계산된 위치 통계입니다. 좌표 추적이 포함된 맵만 집계됩니다.",
+    "mapsWithData": "{count}개 맵 데이터",
+    "noData": "아직 위치 데이터가 없습니다. 좌표 추적이 포함된 스크림을 업로드하면 통계가 표시됩니다.",
+    "engagementDistance": "평균 교전 거리",
+    "engagementDistanceHint": "막타 기준 대상과의 평균 거리입니다.",
+    "highGroundKills": "고지대 킬 %",
+    "highGroundKillsHint": "높이 우위를 가지고 올린 킬의 비율입니다.",
+    "isolationDeaths": "고립 데스 %",
+    "isolationDeathsHint": "15미터 이내에 아군이 없는 상태에서의 데스 비율입니다.",
+    "fightStartSpread": "한타 시작 간격",
+    "fightStartSpreadHint": "한타 시작 시 아군과의 평균 거리입니다."
+  },
   "titles": {
     "DEVELOPER": "Parsertime 개발자",
     "DEVELOPER-description": "Parsertime 개발에 기여한 사용자에게 수여됩니다.",

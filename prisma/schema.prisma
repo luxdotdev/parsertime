@@ -459,6 +459,10 @@ enum CalculatedStatType {
   KILLS_PER_ULTIMATE
   DUEL_WINRATE_PERCENTAGE
   FIGHT_REVERSAL_PERCENTAGE
+  AVERAGE_ENGAGEMENT_DISTANCE
+  HIGH_GROUND_KILL_PERCENTAGE
+  ISOLATION_DEATH_PERCENTAGE
+  AVERAGE_FIGHT_START_SPREAD
 }
 
 enum Role {
@@ -482,6 +486,7 @@ model CalculatedStat {
 
   @@index([scrimId, MapDataId])
   @@index([playerName, hero, stat])
+  @@index([MapDataId, stat])
 }
 
 enum EventType {
