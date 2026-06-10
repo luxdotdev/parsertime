@@ -1,3 +1,4 @@
+import { BrandThemeProvider } from "@/components/brand-theme-provider";
 import { CommandDialogMenu } from "@/components/command-menu";
 import { CommandMenuProvider } from "@/components/command-menu-provider";
 import { DevTools } from "@/components/devtools";
@@ -12,6 +13,7 @@ import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { register } from "@/instrumentation";
 import { auth } from "@/lib/auth";
+import { DSG_TEAM_ID } from "@/lib/brand-theme";
 import { WebVitals } from "@/lib/axiom/client";
 import { resolveAllFlags, toFlagValues } from "@/lib/flags-helpers";
 import { QueryProvider } from "@/lib/query";
@@ -89,6 +91,18 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     );
   }
 
+  let isDsgMember = false;
+
+  if (session) {
+    isDsgMember = await AppRuntime.runPromise(
+      UserService.pipe(
+        Effect.flatMap((svc) =>
+          svc.isMemberOfTeam(session.user.email, DSG_TEAM_ID)
+        )
+      )
+    );
+  }
+
   const flags = await resolveAllFlags();
 
   return (
@@ -104,20 +118,23 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           <QueryProvider>
             <ThemeProvider
               attribute="class"
-              defaultTheme="system"
+              defaultTheme={isDsgMember ? "disguised" : "system"}
               enableSystem
+              themes={["light", "dark", "disguised"]}
               disableTransitionOnChange
             >
               <TooltipProvider>
                 <NextIntlClientProvider messages={messages}>
                   <CommandMenuProvider>
                     <AppSettingsProvider>
-                      <FeatureFlagsProvider flags={flags}>
-                        <FlagValues values={toFlagValues(flags)} />
-                        <BetaBanner />
-                        {children}
-                        <CommandDialogMenu user={user} />
-                      </FeatureFlagsProvider>
+                      <BrandThemeProvider canUseDisguised={isDsgMember}>
+                        <FeatureFlagsProvider flags={flags}>
+                          <FlagValues values={toFlagValues(flags)} />
+                          <BetaBanner />
+                          {children}
+                          <CommandDialogMenu user={user} />
+                        </FeatureFlagsProvider>
+                      </BrandThemeProvider>
                     </AppSettingsProvider>
                   </CommandMenuProvider>
                 </NextIntlClientProvider>
