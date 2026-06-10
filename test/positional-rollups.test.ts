@@ -27,9 +27,24 @@ test("aggregateStatsByPlayer averages per player and stat", () => {
 
 test("buildStatTrends produces per-scrim averages ordered by date", () => {
   const rows = [
-    { stat: "ULT_DEATH_PERCENTAGE", value: 20, scrimId: 1, scrimDate: new Date("2026-06-01") },
-    { stat: "ULT_DEATH_PERCENTAGE", value: 40, scrimId: 1, scrimDate: new Date("2026-06-01") },
-    { stat: "ULT_DEATH_PERCENTAGE", value: 10, scrimId: 2, scrimDate: new Date("2026-06-08") },
+    {
+      stat: "ULT_DEATH_PERCENTAGE",
+      value: 20,
+      scrimId: 1,
+      scrimDate: new Date("2026-06-01"),
+    },
+    {
+      stat: "ULT_DEATH_PERCENTAGE",
+      value: 40,
+      scrimId: 1,
+      scrimDate: new Date("2026-06-01"),
+    },
+    {
+      stat: "ULT_DEATH_PERCENTAGE",
+      value: 10,
+      scrimId: 2,
+      scrimDate: new Date("2026-06-08"),
+    },
   ];
   const trends = buildStatTrends(rows);
   expect(trends.get("ULT_DEATH_PERCENTAGE")).toEqual([

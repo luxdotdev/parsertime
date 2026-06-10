@@ -88,7 +88,9 @@ export const make: Effect.Effect<ScrimPositionalStatsServiceInterface> =
             wideEvent.outcome = "error";
             wideEvent.error_tag = error._tag;
             wideEvent.error_message = error.message;
-          }).pipe(Effect.andThen(Metric.increment(scrimPositionalStatsErrorTotal)))
+          }).pipe(
+            Effect.andThen(Metric.increment(scrimPositionalStatsErrorTotal))
+          )
         ),
         Effect.ensuring(
           Effect.suspend(() => {

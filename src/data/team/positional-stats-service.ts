@@ -21,10 +21,7 @@ import {
 export type TeamPositionalStats = {
   players: { playerName: string; stats: Record<string, number> }[];
   teamAverages: Record<string, number>;
-  trends: Record<
-    string,
-    { scrimId: number; date: string; value: number }[]
-  >;
+  trends: Record<string, { scrimId: number; date: string; value: number }[]>;
   scrimWindow: number;
 };
 
@@ -177,7 +174,9 @@ export const make: Effect.Effect<TeamPositionalStatsServiceInterface> =
             wideEvent.outcome = "error";
             wideEvent.error_tag = error._tag;
             wideEvent.error_message = error.message;
-          }).pipe(Effect.andThen(Metric.increment(positionalStatsQueryErrorTotal)))
+          }).pipe(
+            Effect.andThen(Metric.increment(positionalStatsQueryErrorTotal))
+          )
         ),
         Effect.ensuring(
           Effect.suspend(() => {

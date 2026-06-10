@@ -62,7 +62,10 @@ export function buildStatTrends(
     perScrim.set(row.scrimId, acc);
     byStat.set(row.stat, perScrim);
   }
-  const out = new Map<string, { scrimId: number; date: Date; value: number }[]>();
+  const out = new Map<
+    string,
+    { scrimId: number; date: Date; value: number }[]
+  >();
   for (const [stat, perScrim] of byStat) {
     out.set(
       stat,
