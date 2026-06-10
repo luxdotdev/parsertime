@@ -1,5 +1,6 @@
 import {
   buildUltInstances,
+  computeUltQualityStats,
   MAX_ULT_DURATION_SEC,
   pairUltEvents,
   type UltEndEvent,
@@ -160,4 +161,63 @@ test("zone tagging uses the resolver at ult start time", () => {
   );
   expect(instances[0].zone?.name).toBe("Point");
   expect(instances[0].zone?.category).toBe("POINT");
+});
+
+function instances(n: number, overrides: object = {}) {
+  return Array.from({ length: n }, (_, i) => ({
+    playerName: "lux",
+    playerTeam: "Team 1",
+    hero: "Genji",
+    startTime: 100 + i * 60,
+    endTime: 106 + i * 60,
+    unpaired: false,
+    x: 0,
+    z: 0,
+    displacement: 10,
+    conversionKills: 2,
+    diedDuringUlt: i === 0,
+    zone: { name: "Point", category: "POINT" as const },
+    ...overrides,
+  }));
+}
+
+test("aggregates over the player's ults", () => {
+  const stats = computeUltQualityStats(instances(4), "lux", true);
+  expect(stats.averageUltConversionKills).toBe(2);
+  expect(stats.ultDeathPercentage).toBe(25);
+  expect(stats.averageUltDisplacement).toBe(10);
+  expect(stats.ultsOnObjectivePercentage).toBe(100);
+});
+
+test("all null below MIN_ULTS_FOR_STATS", () => {
+  const stats = computeUltQualityStats(instances(2), "lux", true);
+  expect(stats.averageUltConversionKills).toBeNull();
+  expect(stats.ultDeathPercentage).toBeNull();
+  expect(stats.averageUltDisplacement).toBeNull();
+  expect(stats.ultsOnObjectivePercentage).toBeNull();
+});
+
+test("coordinate-dependent stats are null when instances lack coords; death % survives", () => {
+  const stats = computeUltQualityStats(
+    instances(4, { x: null, z: null, displacement: null, conversionKills: null, zone: null }),
+    "lux",
+    true
+  );
+  expect(stats.averageUltConversionKills).toBeNull();
+  expect(stats.averageUltDisplacement).toBeNull();
+  expect(stats.ultsOnObjectivePercentage).toBeNull();
+  expect(stats.ultDeathPercentage).toBe(25);
+});
+
+test("ults-on-objective is null when the map has no published POINT zones", () => {
+  const stats = computeUltQualityStats(instances(4), "lux", false);
+  expect(stats.ultsOnObjectivePercentage).toBeNull();
+  expect(stats.averageUltConversionKills).toBe(2);
+});
+
+test("only the named player's ults count", () => {
+  const mine = instances(4);
+  const theirs = instances(4, { playerName: "other", conversionKills: 9 });
+  const stats = computeUltQualityStats([...mine, ...theirs], "lux", true);
+  expect(stats.averageUltConversionKills).toBe(2);
 });
