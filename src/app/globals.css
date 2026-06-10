@@ -83,6 +83,7 @@
 }
 
 .disguised {
+  color-scheme: dark;
   --background: oklch(0.14 0.003 250);
   --foreground: oklch(0.98 0.002 250);
   --card: oklch(0.175 0.004 250);
@@ -377,7 +378,7 @@
   background-size: 24px 24px;
 }
 
-:is(.dark *) .bracket-grid {
+:is(.dark *, .disguised *) .bracket-grid {
   background-image: radial-gradient(
     circle,
     oklch(0.4 0 0 / 0.4) 1px,
