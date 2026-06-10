@@ -242,6 +242,10 @@ export default async function TeamStatsPage(
 
   const dateRange = computeDateRange(effectiveTimeframe, customFrom, customTo);
 
+  // Resolved before the batch so the positional fetch can be skipped entirely
+  // when the flag is off (the section is flag-gated and defaults to hidden).
+  const positionalDataEnabled = await positionalData();
+
   const [
     {
       teamRoster,
@@ -277,7 +281,6 @@ export default async function TeamStatsPage(
     simulatorContext,
     simulationToolEnabled,
     ultimateImpactToolEnabled,
-    positionalDataEnabled,
     heroPickrateRawData,
   ] = await Promise.all([
     AppRuntime.runPromise(
@@ -376,9 +379,11 @@ export default async function TeamStatsPage(
               svc.getHeroPoolAnalysis(teamId, dateRange?.from, dateRange?.to)
             )
           ),
-          positionalStats: TeamPositionalStatsService.pipe(
-            Effect.flatMap((svc) => svc.getTeamPositionalStats(teamId))
-          ),
+          positionalStats: positionalDataEnabled
+            ? TeamPositionalStatsService.pipe(
+                Effect.flatMap((svc) => svc.getTeamPositionalStats(teamId))
+              )
+            : Effect.succeed(null),
         },
         { concurrency: "unbounded" }
       )
@@ -413,7 +418,6 @@ export default async function TeamStatsPage(
     ),
     simulationTool(),
     ultimateImpactTool(),
-    positionalData(),
     AppRuntime.runPromise(
       TeamAnalyticsService.pipe(
         Effect.flatMap((svc) => svc.getHeroPickrateRawData(teamId, dateRange))
