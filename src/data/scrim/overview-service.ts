@@ -38,6 +38,7 @@ import {
 import {
   Prisma,
   type CalculatedStat,
+  type CalculatedStatType,
   type Kill,
   type MatchStart,
   type ObjectiveCaptured,
@@ -97,6 +98,25 @@ export type ScrimOverviewServiceInterface = {
     teamId: number
   ) => Effect.Effect<ScrimOverviewData, ScrimQueryError>;
 };
+
+// Main can share prod data with newer deploys. Hide enum rows this client
+// cannot decode until the schema/client update lands.
+const SUPPORTED_CALCULATED_STAT_TYPES = [
+  "FLETA_DEADLIFT_PERCENTAGE",
+  "FIRST_PICK_PERCENTAGE",
+  "FIRST_PICK_COUNT",
+  "FIRST_DEATH_PERCENTAGE",
+  "FIRST_DEATH_COUNT",
+  "MVP_SCORE",
+  "MAP_MVP_COUNT",
+  "AJAX_COUNT",
+  "AVERAGE_ULT_CHARGE_TIME",
+  "AVERAGE_TIME_TO_USE_ULT",
+  "AVERAGE_DROUGHT_TIME",
+  "KILLS_PER_ULTIMATE",
+  "DUEL_WINRATE_PERCENTAGE",
+  "FIGHT_REVERSAL_PERCENTAGE",
+] satisfies CalculatedStatType[];
 
 export class ScrimOverviewService extends Context.Tag(
   "@app/data/scrim/ScrimOverviewService"
@@ -1636,6 +1656,7 @@ export const make: Effect.Effect<
               where: {
                 MapDataId: { in: mapDataIds },
                 playerName: { in: scrimPlayers },
+                stat: { in: SUPPORTED_CALCULATED_STAT_TYPES },
               },
             }),
             prisma.matchStart.findMany({
