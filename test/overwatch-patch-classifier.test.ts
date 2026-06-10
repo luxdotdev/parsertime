@@ -48,6 +48,40 @@ test("does not classify a non-hotfix 'Bug Fix Patch' as hotfix", () => {
   expect(result.type).toBe("MID_SEASON");
 });
 
+// Real Blizzard hotfix phrasings observed in the wild — the word "hotfix"
+// appears without the literal "Hotfix Patch" adjacency.
+test("classifies a hotfix from 'This hotfix includes' phrasing", () => {
+  const result = classifyPatch({
+    rawTitle: "Overwatch Retail Patch Notes - February 13, 2026",
+    body: "Hero Balance UpdatesThis hotfix includes small adjustments to the six newest heroes.",
+  });
+  expect(result.type).toBe("HOTFIX");
+});
+
+test("classifies a 'Balance Hotfix Update' as hotfix", () => {
+  const result = classifyPatch({
+    rawTitle: "Overwatch Retail Patch Notes – April 17, 2026",
+    body: "Balance Hotfix UpdateThis is a balance hotfix update. Replay codes from the April 14, 2026 patch are still available.",
+  });
+  expect(result.type).toBe("HOTFIX");
+});
+
+test("a 'Hotfix Update' wins even when the body also says 'bug fix patch'", () => {
+  const result = classifyPatch({
+    rawTitle: "Overwatch Retail Patch Notes - March 12, 2026",
+    body: "Hotfix UpdateThis is a bug fix patch. Replay codes from March 10, 2026 patch are still available.",
+  });
+  expect(result.type).toBe("HOTFIX");
+});
+
+test("a real 'Bug Fix Update' with codes wiped stays mid-season", () => {
+  const result = classifyPatch({
+    rawTitle: "Overwatch Retail Patch Notes – April 28, 2026",
+    body: "Bug Fix UpdateThis is a bug fix update. Replay codes have been wiped.",
+  });
+  expect(result.type).toBe("MID_SEASON");
+});
+
 test("extracts a season codename containing a hyphen", () => {
   const result = classifyPatch({
     rawTitle: "Overwatch Retail Patch Notes - June 20, 2024",
