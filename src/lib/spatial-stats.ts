@@ -117,6 +117,10 @@ export function computeHighGroundKillPercentage(
 /**
  * For each player, the nearest position sample within
  * [time - POSITION_WINDOW_SEC, time]. Samples MUST be sorted by match_time.
+ *
+ * Linear scan from the start of the array — O(n) per call. Fine at per-map
+ * event counts; switch to the bisect approach used in rotation-death
+ * detection if this ever runs hot.
  */
 export function samplePositionsAt(
   time: number,

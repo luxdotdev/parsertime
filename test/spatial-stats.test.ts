@@ -3,6 +3,7 @@ import {
   computeAverageFightStartSpread,
   computeHighGroundKillPercentage,
   computeIsolationDeathPercentage,
+  ISOLATION_RADIUS,
   samplePositionsAt,
   type CoordKill,
   type SpatialPositionSample,
@@ -197,4 +198,24 @@ test("fight start spread is null when the player is never sampled", () => {
     .sort((a, b) => a.match_time - b.match_time);
 
   expect(computeAverageFightStartSpread(fightStarts, samples, "lux")).toBeNull();
+});
+
+test("a teammate at exactly the isolation radius is not isolated", () => {
+  // 6 deaths, teammate exactly 15m away each time → strict > means 0% isolated
+  const deaths = Array.from({ length: 6 }, (_, i) =>
+    makeKill({
+      match_time: 100 + i * 60,
+      attacker_name: "enemy",
+      victim_name: "lux",
+      victim_team: "Team 1",
+      victim_x: 0,
+      victim_y: 0,
+      victim_z: 0,
+    })
+  );
+  const samples = deaths
+    .map((d) => makeSample({ match_time: d.match_time - 1, x: ISOLATION_RADIUS }))
+    .sort((a, b) => a.match_time - b.match_time);
+
+  expect(computeIsolationDeathPercentage(deaths, samples, "lux")).toBe(0);
 });
