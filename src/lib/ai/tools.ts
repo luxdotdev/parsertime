@@ -362,7 +362,7 @@ export function buildTools(opts: {
 
     getPlayerPerformance: tool({
       description:
-        "Get detailed performance stats for a specific player across selected maps. Requires map IDs (get from getScrimList or getScrimAnalysis). Optionally filter by specific heroes. When the maps have positional data, the response includes spatialStats (average engagement distance in meters, high ground kill %, isolation death %, fight start spread in meters) averaged across the selected maps.",
+        "Get detailed performance stats for a specific player across selected maps. Requires map IDs (get from getScrimList or getScrimAnalysis). Optionally filter by specific heroes. When the maps have positional data, the response includes spatialStats (average engagement distance in meters, high ground kill %, isolation death %, fight start spread in meters) averaged across the selected maps. spatialStats are per-map whole-player values and are not filtered by the heroes parameter.",
       inputSchema: z.object({
         mapIds: z
           .array(z.number())

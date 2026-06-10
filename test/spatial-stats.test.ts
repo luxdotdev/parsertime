@@ -10,7 +10,7 @@ import {
 } from "@/lib/spatial-stats";
 import { expect, test } from "vitest";
 
-export function makeKill(overrides: Partial<CoordKill> = {}): CoordKill {
+function makeKill(overrides: Partial<CoordKill> = {}): CoordKill {
   return {
     match_time: 100,
     attacker_name: "lux",
