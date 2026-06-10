@@ -1,3 +1,5 @@
+import "server-only";
+
 import prisma from "@/lib/prisma";
 import type { ParsedPatch } from "@/lib/overwatch/patch-scraper";
 import type { OverwatchPatch, PatchType } from "@/types/overwatch-patches";
