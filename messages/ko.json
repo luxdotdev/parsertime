@@ -789,7 +789,8 @@
       "coachingCanvas": "캔버스",
       "yourTeams": "내 팀",
       "availability": "가능 시간",
-      "matchmaker": "매치메이커"
+      "matchmaker": "매치메이커",
+      "tendencies": "경향"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "팀 검색...",
@@ -1537,6 +1538,23 @@
       "title": "맵 그룹 | Parsertime",
       "description": "분석을 위한 사용자 지정 맵 그룹을 만들고 관리하세요"
     }
+  },
+  "tendenciesPage": {
+    "metadata": {
+      "title": "경향 | Parsertime",
+      "description": "맵별로 묶인 팀의 반복적인 이동 경로"
+    },
+    "title": "경향",
+    "description": "맵별로 묶인 반복적인 이동 경로와 각 경로의 등장 빈도 및 기록된 결과 수입니다.",
+    "empty": "아직 위치 데이터가 없습니다.",
+    "totalRoutes": "전체 경로",
+    "route": "경로 {n}",
+    "share": "비율",
+    "routeColumn": "경로",
+    "outcomes": "승 / 패 / 미상",
+    "won": "승",
+    "lost": "패",
+    "unknown": "미상"
   },
   "comparePage": {
     "metadata": {

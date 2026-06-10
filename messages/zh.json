@@ -789,7 +789,8 @@
       "coachingCanvas": "画布",
       "yourTeams": "你的队伍",
       "availability": "可用时间",
-      "matchmaker": "匹配工具"
+      "matchmaker": "匹配工具",
+      "tendencies": "倾向"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "搜索团队...",
@@ -1537,6 +1538,23 @@
       "title": "地图组 | Parsertime",
       "description": "创建和管理用于分析的自定义地图组"
     }
+  },
+  "tendenciesPage": {
+    "metadata": {
+      "title": "倾向 | Parsertime",
+      "description": "按地图分组的团队重复移动路线"
+    },
+    "title": "倾向",
+    "description": "按地图分组的重复移动路线，以及每条路线的出现频率和记录的结果数量。",
+    "empty": "暂无位置数据。",
+    "totalRoutes": "路线总数",
+    "route": "路线 {n}",
+    "share": "占比",
+    "routeColumn": "路线",
+    "outcomes": "胜 / 负 / 未知",
+    "won": "胜",
+    "lost": "负",
+    "unknown": "未知"
   },
   "comparePage": {
     "metadata": {

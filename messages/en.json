@@ -754,7 +754,8 @@
       "coachingCanvas": "Canvas",
       "yourTeams": "Your Teams",
       "availability": "Availability",
-      "matchmaker": "Matchmaker"
+      "matchmaker": "Matchmaker",
+      "tendencies": "Tendencies"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "Search team...",
@@ -1537,6 +1538,23 @@
       "title": "Map Groups | Parsertime",
       "description": "Create and manage custom map groups for analysis"
     }
+  },
+  "tendenciesPage": {
+    "metadata": {
+      "title": "Tendencies | Parsertime",
+      "description": "Recurring movement routes grouped by map for your team"
+    },
+    "title": "Tendencies",
+    "description": "Recurring movement routes grouped by map, with how often each appears and the recorded outcome counts.",
+    "empty": "No positional data yet.",
+    "totalRoutes": "Total routes",
+    "route": "Route {n}",
+    "share": "Share",
+    "routeColumn": "Route",
+    "outcomes": "Won / Lost / Unknown",
+    "won": "Won",
+    "lost": "Lost",
+    "unknown": "Unknown"
   },
   "comparePage": {
     "metadata": {
