@@ -11,10 +11,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTranslations } from "next-intl";
+import { useCanUseDisguised } from "@/components/brand-theme-provider";
 
 export function ModeToggle() {
   const { setTheme } = useTheme();
   const t = useTranslations("dashboard.themeSwitcher");
+  const canUseDisguised = useCanUseDisguised();
 
   return (
     <DropdownMenu>
@@ -35,6 +37,11 @@ export function ModeToggle() {
         <DropdownMenuItem onClick={() => setTheme("system")}>
           {t("system")}
         </DropdownMenuItem>
+        {canUseDisguised ? (
+          <DropdownMenuItem onClick={() => setTheme("disguised")}>
+            {t("disguised")}
+          </DropdownMenuItem>
+        ) : null}
       </DropdownMenuContent>
     </DropdownMenu>
   );
