@@ -18,7 +18,10 @@ export type ClassifyResult = {
 const HOTFIX_RE = /\bhotfix\b/i;
 const SEASON_RE = /season\s+(\d+):\s*([^\n]+?)\s+patch notes/i;
 
-export function classifyPatch({ rawTitle, body }: ClassifyInput): ClassifyResult {
+export function classifyPatch({
+  rawTitle,
+  body,
+}: ClassifyInput): ClassifyResult {
   const haystack = `${rawTitle}\n${body}`;
 
   // 1. Season launches embed "Season N: Codename Patch Notes" — a high-specificity
