@@ -15,6 +15,7 @@ import { KillfeedServiceLive } from "./map/killfeed/service";
 import { ReplayServiceLive } from "./map/replay/service";
 import { PlayerTelemetryServiceLive } from "./map/player-telemetry-service";
 import { RotationDeathServiceLive } from "./map/rotation-death-service";
+import { RouteMiningServiceLive } from "./map/route-mining-service";
 import { TempoServiceLive } from "./map/tempo-service";
 import { IntelligenceServiceLive } from "./player/intelligence-service";
 import { PlayerServiceLive } from "./player/player-service";
@@ -81,6 +82,7 @@ export const DataLayerLive = Layer.mergeAll(
   PlayerTelemetryServiceLive,
   RotationDeathServiceLive,
   FightUltQualityServiceLive,
+  RouteMiningServiceLive,
   MapGroupServiceLive,
   MapHeroTrendsServiceLive,
 
