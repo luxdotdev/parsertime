@@ -142,9 +142,7 @@ export function samplePositionsAt(
     }
   }
 
-  return new Map(
-    Array.from(best, ([key, value]) => [key, value.sample])
-  );
+  return new Map(Array.from(best, ([key, value]) => [key, value.sample]));
 }
 
 export function computeIsolationDeathPercentage(
@@ -188,10 +186,7 @@ export function computeIsolationDeathPercentage(
     if (nearest > ISOLATION_RADIUS) isolated++;
   }
 
-  if (
-    evaluated < MIN_SAMPLES ||
-    evaluated / deaths.length < MIN_COVERAGE
-  ) {
+  if (evaluated < MIN_SAMPLES || evaluated / deaths.length < MIN_COVERAGE) {
     return null;
   }
 

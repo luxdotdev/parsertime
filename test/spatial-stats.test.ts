@@ -151,9 +151,7 @@ test("deaths with no sampled teammate are excluded from the denominator", () => 
   );
   const samples = deaths
     .slice(0, 5)
-    .map((d) =>
-      makeSample({ match_time: d.match_time - 1, x: 30 })
-    )
+    .map((d) => makeSample({ match_time: d.match_time - 1, x: 30 }))
     .sort((a, b) => a.match_time - b.match_time);
 
   expect(computeIsolationDeathPercentage(deaths, samples, "lux")).toBe(100);
@@ -197,7 +195,9 @@ test("fight start spread is null when the player is never sampled", () => {
     ])
     .sort((a, b) => a.match_time - b.match_time);
 
-  expect(computeAverageFightStartSpread(fightStarts, samples, "lux")).toBeNull();
+  expect(
+    computeAverageFightStartSpread(fightStarts, samples, "lux")
+  ).toBeNull();
 });
 
 test("a teammate at exactly the isolation radius is not isolated", () => {
@@ -214,7 +214,9 @@ test("a teammate at exactly the isolation radius is not isolated", () => {
     })
   );
   const samples = deaths
-    .map((d) => makeSample({ match_time: d.match_time - 1, x: ISOLATION_RADIUS }))
+    .map((d) =>
+      makeSample({ match_time: d.match_time - 1, x: ISOLATION_RADIUS })
+    )
     .sort((a, b) => a.match_time - b.match_time);
 
   expect(computeIsolationDeathPercentage(deaths, samples, "lux")).toBe(0);
