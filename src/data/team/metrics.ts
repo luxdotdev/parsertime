@@ -110,6 +110,28 @@ export const positionalStatsQueryDuration = Metric.histogram(
   "Distribution of team positional stats query duration in milliseconds"
 );
 
+export const positionalArtifactsQuerySuccessTotal = Metric.counter(
+  "team.positional_artifacts.query.success",
+  {
+    description: "Total successful team positional artifacts queries",
+    incremental: true,
+  }
+);
+
+export const positionalArtifactsQueryErrorTotal = Metric.counter(
+  "team.positional_artifacts.query.error",
+  {
+    description: "Total team positional artifacts query failures",
+    incremental: true,
+  }
+);
+
+export const positionalArtifactsQueryDuration = Metric.histogram(
+  "team.positional_artifacts.query.duration_ms",
+  MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
+  "Distribution of team positional artifacts query duration in milliseconds"
+);
+
 export const teamCacheRequestTotal = Metric.counter("team.cache.request", {
   description: "Total team data cache requests",
   incremental: true,

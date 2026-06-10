@@ -40,6 +40,7 @@ import { TeamHeroSwapServiceLive } from "./team/hero-swap-service";
 import { TeamMapModeServiceLive } from "./team/map-mode-service";
 import { TeamAnalyticsServiceLive } from "./team/analytics-service";
 import { TeamMatchupServiceLive } from "./team/matchup-service";
+import { TeamPositionalArtifactsServiceLive } from "./team/positional-artifacts-service";
 import { TeamPositionalStatsServiceLive } from "./team/positional-stats-service";
 import { TeamPredictionServiceLive } from "./team/prediction-service";
 import { TeamQuickWinsServiceLive } from "./team/quick-wins-service";
@@ -112,6 +113,7 @@ export const DataLayerLive = Layer.mergeAll(
   TeamComparisonServiceLive,
   TeamMatchupServiceLive,
   TeamPositionalStatsServiceLive,
+  TeamPositionalArtifactsServiceLive,
   TeamAnalyticsServiceLive,
   TeamPredictionServiceLive,
   RouteTendenciesServiceLive,
