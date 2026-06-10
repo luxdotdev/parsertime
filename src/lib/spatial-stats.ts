@@ -32,7 +32,7 @@ export type CoordKill = {
   victim_z: number | null;
 };
 
-export type PositionSample = {
+export type SpatialPositionSample = {
   match_time: number;
   playerName: string;
   playerTeam: string;
