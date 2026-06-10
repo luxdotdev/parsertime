@@ -6991,6 +6991,49 @@
         "winrateWithout": "WR w/o Swaps",
         "topPair": "Top Swap"
       }
+    },
+    "positional": {
+      "eyebrow": "Positional",
+      "title": "Positional stats",
+      "description": "Averages over the last {count} scrims with positional data.",
+      "trendsTitle": "Trends",
+      "playersTitle": "Per-player breakdown",
+      "playerColumn": "Player",
+      "empty": "No positional data yet. Stats appear once scrims with coordinate tracking are uploaded.",
+      "stats": {
+        "AVERAGE_ENGAGEMENT_DISTANCE": {
+          "short": "Eng Dist",
+          "full": "Engagement Distance"
+        },
+        "HIGH_GROUND_KILL_PERCENTAGE": {
+          "short": "HG Kill %",
+          "full": "High Ground Kill %"
+        },
+        "ISOLATION_DEATH_PERCENTAGE": {
+          "short": "Iso Death %",
+          "full": "Isolation Death %"
+        },
+        "AVERAGE_FIGHT_START_SPREAD": {
+          "short": "Start Spread",
+          "full": "Fight Start Spread"
+        },
+        "AVERAGE_ULT_CONVERSION_KILLS": {
+          "short": "Ult Conv",
+          "full": "Ult Conversion Kills"
+        },
+        "ULT_DEATH_PERCENTAGE": {
+          "short": "Ult Death %",
+          "full": "Ult Death %"
+        },
+        "AVERAGE_ULT_DISPLACEMENT": {
+          "short": "Ult Disp",
+          "full": "Ult Displacement"
+        },
+        "ULTS_ON_OBJECTIVE_PERCENTAGE": {
+          "short": "Ult Obj %",
+          "full": "Ults On Objective %"
+        }
+      }
     }
   },
   "targets": {

@@ -10,6 +10,10 @@ import { MapWinrateGallery } from "@/components/stats/team/map-winrate-gallery";
 import { MatchupWinrateTab } from "@/components/stats/team/matchup-winrate-tab";
 import { OverviewInsightsBand } from "@/components/stats/team/overview-insights-band";
 import { PlayerMapPerformanceCard } from "@/components/stats/team/player-map-performance-card";
+import {
+  PositionalStatsCards,
+  PositionalStatsEmpty,
+} from "@/components/stats/team/positional-stats-cards";
 import { QuickStatsRibbon } from "@/components/stats/team/quick-stats-ribbon";
 import { RecentFormCard } from "@/components/stats/team/recent-form-card";
 import { RolePerformanceCard } from "@/components/stats/team/role-performance-card";
@@ -47,6 +51,7 @@ import {
   TeamHeroSwapService,
   TeamMapModeService,
   TeamMatchupService,
+  TeamPositionalStatsService,
   TeamPredictionService,
   TeamQuickWinsService,
   TeamRoleStatsService,
@@ -57,7 +62,11 @@ import {
 } from "@/data/team";
 import { UserService } from "@/data/user";
 import { auth, canManageTeam } from "@/lib/auth";
-import { simulationTool, ultimateImpactTool } from "@/lib/flags";
+import {
+  positionalData,
+  simulationTool,
+  ultimateImpactTool,
+} from "@/lib/flags";
 import { calculateHeroPickrateMatrix } from "@/lib/hero-pickrate-utils";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
@@ -260,6 +269,7 @@ export default async function TeamStatsPage(
       abilityImpactAnalysis,
       matchupWinrateData,
       heroPool,
+      positionalStats,
     },
     teamTsr,
     mapNames,
@@ -267,6 +277,7 @@ export default async function TeamStatsPage(
     simulatorContext,
     simulationToolEnabled,
     ultimateImpactToolEnabled,
+    positionalDataEnabled,
     heroPickrateRawData,
   ] = await Promise.all([
     AppRuntime.runPromise(
@@ -365,6 +376,9 @@ export default async function TeamStatsPage(
               svc.getHeroPoolAnalysis(teamId, dateRange?.from, dateRange?.to)
             )
           ),
+          positionalStats: TeamPositionalStatsService.pipe(
+            Effect.flatMap((svc) => svc.getTeamPositionalStats(teamId))
+          ),
         },
         { concurrency: "unbounded" }
       )
@@ -399,6 +413,7 @@ export default async function TeamStatsPage(
     ),
     simulationTool(),
     ultimateImpactTool(),
+    positionalData(),
     AppRuntime.runPromise(
       TeamAnalyticsService.pipe(
         Effect.flatMap((svc) => svc.getHeroPickrateRawData(teamId, dateRange))
@@ -486,6 +501,11 @@ export default async function TeamStatsPage(
           <TabsTrigger value="winrates" className={tabTriggerClass}>
             Winrates
           </TabsTrigger>
+          {positionalDataEnabled && (
+            <TabsTrigger value="positional" className={tabTriggerClass}>
+              Positional
+            </TabsTrigger>
+          )}
           {simulationToolEnabled && (
             <TabsTrigger value="simulator" className={tabTriggerClass}>
               Simulator
@@ -861,6 +881,17 @@ export default async function TeamStatsPage(
         <TabsContent value="winrates" className="space-y-6">
           <MatchupWinrateTab data={matchupWinrateData} />
         </TabsContent>
+
+        {/* Positional Tab */}
+        {positionalDataEnabled && (
+          <TabsContent value="positional" className="space-y-12">
+            {positionalStats ? (
+              <PositionalStatsCards data={positionalStats} />
+            ) : (
+              <PositionalStatsEmpty />
+            )}
+          </TabsContent>
+        )}
 
         {/* Simulator Tab */}
         <TabsContent value="simulator" className="space-y-6">
