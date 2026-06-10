@@ -28,12 +28,14 @@ export function polygonArea(vertices: Vertex[]): number {
   return Math.abs(sum) / 2;
 }
 
+function cross(o: Vertex, a: Vertex, b: Vertex): number {
+  return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+}
+
 /** Andrew's monotone chain. Returns counter-clockwise hull, [] for <3 points. */
 export function convexHull(points: Vertex[]): Vertex[] {
   if (points.length < 3) return [];
   const sorted = [...points].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-  const cross = (o: Vertex, a: Vertex, b: Vertex) =>
-    (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
 
   const lower: Vertex[] = [];
   for (const p of sorted) {

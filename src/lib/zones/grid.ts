@@ -66,26 +66,36 @@ export function cellCenterWorld(
   };
 }
 
+const BLUR_KERNEL = [1 / 16, 4 / 16, 6 / 16, 4 / 16, 1 / 16] as const;
+
+function blurPass(
+  src: Float64Array,
+  horizontal: boolean,
+  cols: number,
+  rows: number
+): Float64Array {
+  const out = new Float64Array(src.length);
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      let acc = 0;
+      for (let k = -2; k <= 2; k++) {
+        const c = horizontal
+          ? Math.min(cols - 1, Math.max(0, col + k))
+          : col;
+        const r = horizontal ? row : Math.min(rows - 1, Math.max(0, row + k));
+        acc += src[r * cols + c] * BLUR_KERNEL[k + 2];
+      }
+      out[row * cols + col] = acc;
+    }
+  }
+  return out;
+}
+
 /** Separable 5-tap binomial blur ([1,4,6,4,1]/16), edge-clamped. */
 export function gaussianBlur(grid: DensityGrid): DensityGrid {
   const { cols, rows } = grid.spec;
-  const kernel = [1 / 16, 4 / 16, 6 / 16, 4 / 16, 1 / 16];
-  const pass = (src: Float64Array, horizontal: boolean) => {
-    const out = new Float64Array(src.length);
-    for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < cols; col++) {
-        let acc = 0;
-        for (let k = -2; k <= 2; k++) {
-          const c = horizontal
-            ? Math.min(cols - 1, Math.max(0, col + k))
-            : col;
-          const r = horizontal ? row : Math.min(rows - 1, Math.max(0, row + k));
-          acc += src[r * cols + c] * kernel[k + 2];
-        }
-        out[row * cols + col] = acc;
-      }
-    }
-    return out;
+  return {
+    spec: grid.spec,
+    counts: blurPass(blurPass(grid.counts, true, cols, rows), false, cols, rows),
   };
-  return { spec: grid.spec, counts: pass(pass(grid.counts, true), false) };
 }
