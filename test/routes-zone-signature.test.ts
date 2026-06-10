@@ -7,19 +7,34 @@ const zones: TaggableZone[] = [
     id: 1,
     name: "Spawn",
     category: "LANE",
-    vertices: [[0, 0], [10, 0], [10, 10], [0, 10]],
+    vertices: [
+      [0, 0],
+      [10, 0],
+      [10, 10],
+      [0, 10],
+    ],
   },
   {
     id: 2,
     name: "Main",
     category: "LANE",
-    vertices: [[10, 0], [50, 0], [50, 10], [10, 10]],
+    vertices: [
+      [10, 0],
+      [50, 0],
+      [50, 10],
+      [10, 10],
+    ],
   },
   {
     id: 3,
     name: "Point",
     category: "POINT",
-    vertices: [[50, 0], [70, 0], [70, 10], [50, 10]],
+    vertices: [
+      [50, 0],
+      [70, 0],
+      [70, 10],
+      [50, 10],
+    ],
   },
 ];
 

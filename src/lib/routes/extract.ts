@@ -70,8 +70,7 @@ export function extractRoutes(
       const lifeEnd = i + 1 < lifeStarts.length ? lifeStarts[i + 1].t : maxTime;
 
       const contact = sortedContacts.find(
-        (c) =>
-          c.t >= start.t && c.t <= lifeEnd && c.players.includes(player)
+        (c) => c.t >= start.t && c.t <= lifeEnd && c.players.includes(player)
       );
       if (!contact) continue;
 

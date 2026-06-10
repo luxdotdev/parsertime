@@ -6,7 +6,10 @@ import {
 import { expect, test } from "vitest";
 
 function straight(z0: number, n = 11) {
-  return Array.from({ length: n }, (_, i) => ({ x: (i * 100) / (n - 1), z: z0 }));
+  return Array.from({ length: n }, (_, i) => ({
+    x: (i * 100) / (n - 1),
+    z: z0,
+  }));
 }
 
 test("resampleRoute produces evenly spaced points by arc length", () => {
@@ -30,11 +33,7 @@ test("routeDistance is the mean pointwise distance", () => {
 });
 
 test("parallel paths within threshold merge; distant paths do not", () => {
-  const routes = [
-    straight(0),
-    straight(10),
-    straight(60),
-  ];
+  const routes = [straight(0), straight(10), straight(60)];
   const clusters = clusterRoutes(routes);
   expect(clusters).toHaveLength(2);
   const sizes = clusters.map((c) => c.routeIndexes.length).sort();

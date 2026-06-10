@@ -59,7 +59,9 @@ test("a life with no contact produces no route", () => {
 test("routes below the length quality bar are dropped", () => {
   const samples = Array.from({ length: 5 }, (_, i) => sample({ t: i }));
   const contacts = [{ t: 4, players: ["lux"] }];
-  expect(extractRoutes(samples, contacts, [], roundStarts, 100)).toHaveLength(0);
+  expect(extractRoutes(samples, contacts, [], roundStarts, 100)).toHaveLength(
+    0
+  );
 });
 
 test("contact by another player does not end the route", () => {

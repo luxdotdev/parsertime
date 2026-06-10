@@ -91,7 +91,9 @@ export const make: Effect.Effect<RouteMiningServiceInterface> = Effect.gen(
                 : Effect.logInfo("map.routeMining.getRouteAnalysis");
             return log.pipe(
               Effect.annotateLogs(wideEvent),
-              Effect.andThen(routeMiningQueryDuration(Effect.succeed(durationMs)))
+              Effect.andThen(
+                routeMiningQueryDuration(Effect.succeed(durationMs))
+              )
             );
           })
         ),

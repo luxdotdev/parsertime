@@ -59,7 +59,9 @@ export function clusterRoutes(routes: Pt[][]): RouteCluster[] {
   if (n === 0) return [];
   const resampled = routes.map((r) => resampleRoute(r));
 
-  const dist: number[][] = Array.from({ length: n }, () => new Array<number>(n).fill(0));
+  const dist: number[][] = Array.from({ length: n }, () =>
+    new Array<number>(n).fill(0)
+  );
   for (let i = 0; i < n; i++) {
     for (let j = i + 1; j < n; j++) {
       dist[i][j] = dist[j][i] = routeDistance(resampled[i], resampled[j]);
