@@ -1,12 +1,38 @@
-import { countEventsByZone, sumZoneRows, type ZoneCountRow } from "@/lib/zones/analytics";
+import {
+  countEventsByZone,
+  sumZoneRows,
+  type ZoneCountRow,
+} from "@/lib/zones/analytics";
 import type { TaggableZone } from "@/lib/zones/tag";
 import { expect, test } from "vitest";
 
 const zones: TaggableZone[] = [
-  { id: 1, name: "Point", category: "POINT", vertices: [[0, 0], [20, 0], [20, 20], [0, 20]] },
-  { id: 2, name: "Main", category: "LANE", vertices: [[20, 0], [60, 0], [60, 20], [20, 20]] },
+  {
+    id: 1,
+    name: "Point",
+    category: "POINT",
+    vertices: [
+      [0, 0],
+      [20, 0],
+      [20, 20],
+      [0, 20],
+    ],
+  },
+  {
+    id: 2,
+    name: "Main",
+    category: "LANE",
+    vertices: [
+      [20, 0],
+      [60, 0],
+      [60, 20],
+      [20, 20],
+    ],
+  },
 ];
-const zonesAt = () => zones;
+function zonesAt(): TaggableZone[] {
+  return zones;
+}
 
 test("counts kills, deaths, and ults per zone per team", () => {
   const events = [
@@ -17,13 +43,25 @@ test("counts kills, deaths, and ults per zone per team", () => {
   ];
   const rows = countEventsByZone(events, zonesAt);
   expect(rows).toContainEqual({
-    zoneName: "Point", team: "Alpha", kills: 2, deaths: 0, ults: 0,
+    zoneName: "Point",
+    team: "Alpha",
+    kills: 2,
+    deaths: 0,
+    ults: 0,
   });
   expect(rows).toContainEqual({
-    zoneName: "Point", team: "Bravo", kills: 0, deaths: 1, ults: 0,
+    zoneName: "Point",
+    team: "Bravo",
+    kills: 0,
+    deaths: 1,
+    ults: 0,
   });
   expect(rows).toContainEqual({
-    zoneName: "Main", team: "Alpha", kills: 0, deaths: 0, ults: 1,
+    zoneName: "Main",
+    team: "Alpha",
+    kills: 0,
+    deaths: 0,
+    ults: 1,
   });
 });
 
@@ -45,9 +83,17 @@ test("sumZoneRows merges tables by zone and team", () => {
   ];
   const merged = sumZoneRows([a, b]);
   expect(merged).toContainEqual({
-    zoneName: "Point", team: "Alpha", kills: 3, deaths: 1, ults: 3,
+    zoneName: "Point",
+    team: "Alpha",
+    kills: 3,
+    deaths: 1,
+    ults: 3,
   });
   expect(merged).toContainEqual({
-    zoneName: "Main", team: "Bravo", kills: 1, deaths: 0, ults: 0,
+    zoneName: "Main",
+    team: "Bravo",
+    kills: 1,
+    deaths: 0,
+    ults: 0,
   });
 });

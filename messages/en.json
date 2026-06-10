@@ -2363,6 +2363,15 @@
       "engagements": {
         "heading": "Engagements",
         "even": "Even"
+      },
+      "zones": {
+        "title": "Zones",
+        "empty": "No published zones for this map yet.",
+        "zone": "Zone",
+        "team": "Team",
+        "kills": "Kills",
+        "deaths": "Deaths",
+        "ults": "Ults"
       }
     },
     "vod": {

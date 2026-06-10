@@ -2363,6 +2363,15 @@
       "engagements": {
         "heading": "团战",
         "even": "平局"
+      },
+      "zones": {
+        "title": "区域",
+        "empty": "此地图尚未发布任何区域。",
+        "zone": "区域",
+        "team": "队伍",
+        "kills": "击杀",
+        "deaths": "阵亡",
+        "ults": "终极技能"
       }
     },
     "vod": {

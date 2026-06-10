@@ -2363,6 +2363,15 @@
       "engagements": {
         "heading": "교전",
         "even": "무승부"
+      },
+      "zones": {
+        "title": "구역",
+        "empty": "이 맵에는 아직 게시된 구역이 없습니다.",
+        "zone": "구역",
+        "team": "팀",
+        "kills": "킬",
+        "deaths": "데스",
+        "ults": "궁극기"
       }
     },
     "vod": {
