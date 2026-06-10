@@ -1531,7 +1531,46 @@
       "addToMapGroup": "添加到地图组",
       "clear": "清除"
     },
-    "viewStats": "查看团队统计"
+    "viewStats": "查看团队统计",
+    "positional": {
+      "title": "站位数据",
+      "description": "基于本场训练赛中包含站位数据的地图取平均。",
+      "playerColumn": "选手",
+      "stats": {
+        "AVERAGE_ENGAGEMENT_DISTANCE": {
+          "short": "交战距离",
+          "full": "平均交战距离"
+        },
+        "HIGH_GROUND_KILL_PERCENTAGE": {
+          "short": "高地击杀 %",
+          "full": "高地击杀 %"
+        },
+        "ISOLATION_DEATH_PERCENTAGE": {
+          "short": "孤立死亡 %",
+          "full": "孤立死亡 %"
+        },
+        "AVERAGE_FIGHT_START_SPREAD": {
+          "short": "开战间距",
+          "full": "团战开始间距"
+        },
+        "AVERAGE_ULT_CONVERSION_KILLS": {
+          "short": "转化击杀",
+          "full": "终极技能转化击杀"
+        },
+        "ULT_DEATH_PERCENTAGE": {
+          "short": "开大阵亡 %",
+          "full": "使用终极技能时阵亡 %"
+        },
+        "AVERAGE_ULT_DISPLACEMENT": {
+          "short": "位移",
+          "full": "平均终极技能位移"
+        },
+        "ULTS_ON_OBJECTIVE_PERCENTAGE": {
+          "short": "点上大招 %",
+          "full": "争夺点上的终极技能 %"
+        }
+      }
+    }
   },
   "mapGroupsPage": {
     "metadata": {

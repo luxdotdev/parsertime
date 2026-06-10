@@ -5,6 +5,7 @@ import { AddMapCard } from "@/components/map/add-map";
 import { ClientDate } from "@/components/scrim/client-date";
 import { CompareSelectedButton } from "@/components/scrim/compare-selected-button";
 import { MapCardWithSelection } from "@/components/scrim/map-card-with-selection";
+import { PositionalStatsSection } from "@/components/scrim/positional-stats-section";
 import {
   ScrimOverviewSection,
   WinLossBadge,
@@ -17,12 +18,16 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ScrimOverviewService, ScrimService } from "@/data/scrim";
+import {
+  ScrimOverviewService,
+  ScrimPositionalStatsService,
+  ScrimService,
+} from "@/data/scrim";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth, canManageTeam, isAuthedToViewScrim } from "@/lib/auth";
-import { mapComparison, overviewCard } from "@/lib/flags";
+import { mapComparison, overviewCard, positionalData } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
@@ -143,34 +148,39 @@ export default async function ScrimDashboardPage(
     },
   })) ?? { guestMode: false };
 
-  const [mapComparisonEnabled, overviewCardEnabled, opponentFullName] =
-    await Promise.all([
-      mapComparison(),
-      overviewCard(),
-      scrim.opponentTeamAbbr
-        ? prisma.scoutingMatch
-            .findFirst({
-              where: {
-                OR: [
-                  { team1: scrim.opponentTeamAbbr },
-                  { team2: scrim.opponentTeamAbbr },
-                ],
-              },
-              select: {
-                team1: true,
-                team1FullName: true,
-                team2: true,
-                team2FullName: true,
-              },
-            })
-            .then((m) => {
-              if (!m) return scrim.opponentTeamAbbr;
-              return m.team1 === scrim.opponentTeamAbbr
-                ? m.team1FullName
-                : m.team2FullName;
-            })
-        : Promise.resolve(null),
-    ]);
+  const [
+    mapComparisonEnabled,
+    overviewCardEnabled,
+    showPositional,
+    opponentFullName,
+  ] = await Promise.all([
+    mapComparison(),
+    overviewCard(),
+    positionalData(),
+    scrim.opponentTeamAbbr
+      ? prisma.scoutingMatch
+          .findFirst({
+            where: {
+              OR: [
+                { team1: scrim.opponentTeamAbbr },
+                { team2: scrim.opponentTeamAbbr },
+              ],
+            },
+            select: {
+              team1: true,
+              team1FullName: true,
+              team2: true,
+              team2FullName: true,
+            },
+          })
+          .then((m) => {
+            if (!m) return scrim.opponentTeamAbbr;
+            return m.team1 === scrim.opponentTeamAbbr
+              ? m.team1FullName
+              : m.team2FullName;
+          })
+      : Promise.resolve(null),
+  ]);
 
   const overviewData =
     overviewCardEnabled && maps.length > 0 && teamId
@@ -184,6 +194,15 @@ export default async function ScrimDashboardPage(
     overviewData !== null &&
     overviewData.mapCount > 0 &&
     overviewData.teamPlayers.length > 0;
+
+  const positionalStats =
+    showPositional && maps.length > 0
+      ? await AppRuntime.runPromise(
+          ScrimPositionalStatsService.pipe(
+            Effect.flatMap((svc) => svc.getScrimPositionalStats(id))
+          )
+        )
+      : null;
 
   return (
     <DirectionalTransition>
@@ -298,6 +317,12 @@ export default async function ScrimDashboardPage(
           {showOverview && (
             <div className="mt-8">
               <ScrimOverviewSection data={overviewData} />
+            </div>
+          )}
+
+          {showPositional && positionalStats && (
+            <div className="mt-8">
+              <PositionalStatsSection data={positionalStats} />
             </div>
           )}
 
