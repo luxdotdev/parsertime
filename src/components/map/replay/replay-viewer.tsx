@@ -41,6 +41,11 @@ type ReplayViewerProps = {
   calibration: ReplayCalibration;
   team1Name: string;
   team2Name: string;
+  ghostCandidates?: {
+    mapDataId: number;
+    scrimName: string;
+    scrimDate: string;
+  }[];
 };
 
 function getCalibrationAtTime(
