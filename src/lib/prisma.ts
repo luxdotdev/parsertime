@@ -1,7 +1,35 @@
-import { PrismaClient } from "@prisma/client";
+import { CalculatedStatType, PrismaClient, type Prisma } from "@prisma/client";
+
+// Main can share prod data with newer deploys. Hide enum rows this client
+// cannot decode until the schema/client update lands.
+const supportedCalculatedStatTypes = Object.values(CalculatedStatType);
+
+function onlySupportedCalculatedStatTypes<
+  T extends { where?: Prisma.CalculatedStatWhereInput },
+>(args: T): T {
+  return {
+    ...args,
+    where: {
+      AND: [
+        args.where ?? {},
+        { stat: { in: supportedCalculatedStatTypes } },
+      ],
+    },
+  };
+}
 
 function prismaClientSingleton() {
-  return new PrismaClient();
+  const client = new PrismaClient().$extends({
+    query: {
+      calculatedStat: {
+        findMany({ args, query }) {
+          return query(onlySupportedCalculatedStatTypes(args));
+        },
+      },
+    },
+  });
+
+  return client as unknown as PrismaClient;
 }
 
 declare global {
