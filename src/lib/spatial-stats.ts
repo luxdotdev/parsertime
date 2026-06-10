@@ -255,65 +255,76 @@ export async function getSpatialStatsForMapData(
   mapDataId: number,
   playerName: string
 ): Promise<SpatialStats> {
-  const [kills, mercyRezzes, damage, healing, ability1, ability2] =
-    await Promise.all([
-      prisma.kill.findMany({ where: { MapDataId: mapDataId } }),
-      prisma.mercyRez.findMany({ where: { MapDataId: mapDataId } }),
-      prisma.damage.findMany({
-        where: { MapDataId: mapDataId },
-        select: {
-          match_time: true,
-          attacker_name: true,
-          attacker_team: true,
-          attacker_x: true,
-          attacker_y: true,
-          attacker_z: true,
-          victim_name: true,
-          victim_team: true,
-          victim_x: true,
-          victim_y: true,
-          victim_z: true,
-        },
-      }),
-      prisma.healing.findMany({
-        where: { MapDataId: mapDataId },
-        select: {
-          match_time: true,
-          healer_name: true,
-          healer_team: true,
-          healer_x: true,
-          healer_y: true,
-          healer_z: true,
-          healee_name: true,
-          healee_team: true,
-          healee_x: true,
-          healee_y: true,
-          healee_z: true,
-        },
-      }),
-      prisma.ability1Used.findMany({
-        where: { MapDataId: mapDataId },
-        select: {
-          match_time: true,
-          player_name: true,
-          player_team: true,
-          player_x: true,
-          player_y: true,
-          player_z: true,
-        },
-      }),
-      prisma.ability2Used.findMany({
-        where: { MapDataId: mapDataId },
-        select: {
-          match_time: true,
-          player_name: true,
-          player_team: true,
-          player_x: true,
-          player_y: true,
-          player_z: true,
-        },
-      }),
-    ]);
+  // Most maps have no positional data; don't pay for five large queries to
+  // compute four nulls. Check kills first and bail early if there are no coords.
+  const kills = await prisma.kill.findMany({ where: { MapDataId: mapDataId } });
+
+  if (!kills.some((k) => k.attacker_x != null || k.victim_x != null)) {
+    return {
+      averageEngagementDistance: null,
+      highGroundKillPercentage: null,
+      isolationDeathPercentage: null,
+      averageFightStartSpread: null,
+    };
+  }
+
+  const [mercyRezzes, damage, healing, ability1, ability2] = await Promise.all([
+    prisma.mercyRez.findMany({ where: { MapDataId: mapDataId } }),
+    prisma.damage.findMany({
+      where: { MapDataId: mapDataId },
+      select: {
+        match_time: true,
+        attacker_name: true,
+        attacker_team: true,
+        attacker_x: true,
+        attacker_y: true,
+        attacker_z: true,
+        victim_name: true,
+        victim_team: true,
+        victim_x: true,
+        victim_y: true,
+        victim_z: true,
+      },
+    }),
+    prisma.healing.findMany({
+      where: { MapDataId: mapDataId },
+      select: {
+        match_time: true,
+        healer_name: true,
+        healer_team: true,
+        healer_x: true,
+        healer_y: true,
+        healer_z: true,
+        healee_name: true,
+        healee_team: true,
+        healee_x: true,
+        healee_y: true,
+        healee_z: true,
+      },
+    }),
+    prisma.ability1Used.findMany({
+      where: { MapDataId: mapDataId },
+      select: {
+        match_time: true,
+        player_name: true,
+        player_team: true,
+        player_x: true,
+        player_y: true,
+        player_z: true,
+      },
+    }),
+    prisma.ability2Used.findMany({
+      where: { MapDataId: mapDataId },
+      select: {
+        match_time: true,
+        player_name: true,
+        player_team: true,
+        player_x: true,
+        player_y: true,
+        player_z: true,
+      },
+    }),
+  ]);
 
   const samples: SpatialPositionSample[] = [];
   for (const k of kills) {
