@@ -1,4 +1,5 @@
-import { round } from "@/lib/utils";
+import prisma from "@/lib/prisma";
+import { groupEventsIntoFights, mercyRezToKillEvent, round } from "@/lib/utils";
 
 /** Minimum attacker-over-victim height difference (meters) to call a kill "high ground". */
 export const HIGH_GROUND_DELTA = 5.0;
@@ -232,4 +233,201 @@ export function computeAverageFightStartSpread(
   }
 
   return round(perFight.reduce((acc, v) => acc + v, 0) / perFight.length);
+}
+
+export type SpatialStats = {
+  averageEngagementDistance: number | null;
+  highGroundKillPercentage: number | null;
+  isolationDeathPercentage: number | null;
+  averageFightStartSpread: number | null;
+};
+
+function pushSample(
+  arr: SpatialPositionSample[],
+  matchTime: number,
+  playerName: string,
+  playerTeam: string,
+  x: number | null,
+  y: number | null,
+  z: number | null
+) {
+  if (x != null && y != null && z != null) {
+    arr.push({ match_time: matchTime, playerName, playerTeam, x, y, z });
+  }
+}
+
+export async function getSpatialStatsForMapData(
+  mapDataId: number,
+  playerName: string
+): Promise<SpatialStats> {
+  const [kills, mercyRezzes, damage, healing, ability1, ability2] =
+    await Promise.all([
+      prisma.kill.findMany({ where: { MapDataId: mapDataId } }),
+      prisma.mercyRez.findMany({ where: { MapDataId: mapDataId } }),
+      prisma.damage.findMany({
+        where: { MapDataId: mapDataId },
+        select: {
+          match_time: true,
+          attacker_name: true,
+          attacker_team: true,
+          attacker_x: true,
+          attacker_y: true,
+          attacker_z: true,
+          victim_name: true,
+          victim_team: true,
+          victim_x: true,
+          victim_y: true,
+          victim_z: true,
+        },
+      }),
+      prisma.healing.findMany({
+        where: { MapDataId: mapDataId },
+        select: {
+          match_time: true,
+          healer_name: true,
+          healer_team: true,
+          healer_x: true,
+          healer_y: true,
+          healer_z: true,
+          healee_name: true,
+          healee_team: true,
+          healee_x: true,
+          healee_y: true,
+          healee_z: true,
+        },
+      }),
+      prisma.ability1Used.findMany({
+        where: { MapDataId: mapDataId },
+        select: {
+          match_time: true,
+          player_name: true,
+          player_team: true,
+          player_x: true,
+          player_y: true,
+          player_z: true,
+        },
+      }),
+      prisma.ability2Used.findMany({
+        where: { MapDataId: mapDataId },
+        select: {
+          match_time: true,
+          player_name: true,
+          player_team: true,
+          player_x: true,
+          player_y: true,
+          player_z: true,
+        },
+      }),
+    ]);
+
+  const samples: SpatialPositionSample[] = [];
+  for (const k of kills) {
+    pushSample(
+      samples,
+      k.match_time,
+      k.attacker_name,
+      k.attacker_team,
+      k.attacker_x,
+      k.attacker_y,
+      k.attacker_z
+    );
+    pushSample(
+      samples,
+      k.match_time,
+      k.victim_name,
+      k.victim_team,
+      k.victim_x,
+      k.victim_y,
+      k.victim_z
+    );
+  }
+  for (const d of damage) {
+    pushSample(
+      samples,
+      d.match_time,
+      d.attacker_name,
+      d.attacker_team,
+      d.attacker_x,
+      d.attacker_y,
+      d.attacker_z
+    );
+    pushSample(
+      samples,
+      d.match_time,
+      d.victim_name,
+      d.victim_team,
+      d.victim_x,
+      d.victim_y,
+      d.victim_z
+    );
+  }
+  for (const h of healing) {
+    pushSample(
+      samples,
+      h.match_time,
+      h.healer_name,
+      h.healer_team,
+      h.healer_x,
+      h.healer_y,
+      h.healer_z
+    );
+    pushSample(
+      samples,
+      h.match_time,
+      h.healee_name,
+      h.healee_team,
+      h.healee_x,
+      h.healee_y,
+      h.healee_z
+    );
+  }
+  for (const a of ability1) {
+    pushSample(
+      samples,
+      a.match_time,
+      a.player_name,
+      a.player_team,
+      a.player_x,
+      a.player_y,
+      a.player_z
+    );
+  }
+  for (const a of ability2) {
+    pushSample(
+      samples,
+      a.match_time,
+      a.player_name,
+      a.player_team,
+      a.player_x,
+      a.player_y,
+      a.player_z
+    );
+  }
+  samples.sort((a, b) => a.match_time - b.match_time);
+
+  const fightEvents = [...kills, ...mercyRezzes.map(mercyRezToKillEvent)].sort(
+    (a, b) => a.match_time - b.match_time
+  );
+  const fightStarts = groupEventsIntoFights(fightEvents).map((f) => f.start);
+
+  return {
+    averageEngagementDistance: computeAverageEngagementDistance(
+      kills,
+      playerName
+    ),
+    highGroundKillPercentage: computeHighGroundKillPercentage(
+      kills,
+      playerName
+    ),
+    isolationDeathPercentage: computeIsolationDeathPercentage(
+      kills,
+      samples,
+      playerName
+    ),
+    averageFightStartSpread: computeAverageFightStartSpread(
+      fightStarts,
+      samples,
+      playerName
+    ),
+  };
 }
