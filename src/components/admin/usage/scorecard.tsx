@@ -3,7 +3,9 @@ import type { Scorecard } from "@/lib/usage/queries";
 import { getTranslations } from "next-intl/server";
 
 export async function UsageScorecard({ data }: { data: Scorecard }) {
-  const t = await getTranslations("settingsPage.admin.analytics.usage.scorecard");
+  const t = await getTranslations(
+    "settingsPage.admin.analytics.usage.scorecard"
+  );
   const items = [
     { label: t("dau"), value: data.dau.toLocaleString() },
     { label: t("wau"), value: data.wau.toLocaleString() },

@@ -419,7 +419,9 @@ export default async function AdminAnalyticsPage(props: {
 
   const sp = await props.searchParams;
   const envParam = (Array.isArray(sp.env) ? sp.env[0] : sp.env) ?? "PRODUCTION";
-  const env: UsageEnv = ["PRODUCTION", "PREVIEW", "DEVELOPMENT"].includes(envParam)
+  const env: UsageEnv = ["PRODUCTION", "PREVIEW", "DEVELOPMENT"].includes(
+    envParam
+  )
     ? (envParam as UsageEnv)
     : "PRODUCTION";
 
@@ -485,7 +487,9 @@ export default async function AdminAnalyticsPage(props: {
             <Card>
               <CardHeader>
                 <CardTitle>{t("activeUsers.title")}</CardTitle>
-                <CardDescription>{t("activeUsers.description")}</CardDescription>
+                <CardDescription>
+                  {t("activeUsers.description")}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ActiveUsersPieChart data={userActivityData.pieData} />
@@ -510,7 +514,9 @@ export default async function AdminAnalyticsPage(props: {
             <Card>
               <CardHeader>
                 <CardTitle>{t("activeTeams.title")}</CardTitle>
-                <CardDescription>{t("activeTeams.description")}</CardDescription>
+                <CardDescription>
+                  {t("activeTeams.description")}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <ActiveTeamsPieChart data={teamActivityData.pieData} />
@@ -560,7 +566,9 @@ export default async function AdminAnalyticsPage(props: {
             <Card>
               <CardHeader>
                 <CardTitle>{t("billingPlans.title")}</CardTitle>
-                <CardDescription>{t("billingPlans.description")}</CardDescription>
+                <CardDescription>
+                  {t("billingPlans.description")}
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <BillingPlanPieChart data={billingPlanData} />
@@ -611,7 +619,9 @@ export default async function AdminAnalyticsPage(props: {
           <Card>
             <CardHeader>
               <CardTitle>{t("usage.adoptionTitle")}</CardTitle>
-              <CardDescription>{t("usage.adoptionDescription")}</CardDescription>
+              <CardDescription>
+                {t("usage.adoptionDescription")}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <FeatureAdoptionChart data={adoption} />
@@ -623,7 +633,9 @@ export default async function AdminAnalyticsPage(props: {
           <Card>
             <CardHeader>
               <CardTitle>{t("usage.activeUsersTitle")}</CardTitle>
-              <CardDescription>{t("usage.activeUsersDescription")}</CardDescription>
+              <CardDescription>
+                {t("usage.activeUsersDescription")}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <ActiveUsersChart data={activeSeries} />
@@ -644,7 +656,9 @@ export default async function AdminAnalyticsPage(props: {
           <Card>
             <CardHeader>
               <CardTitle>{t("usage.funnels.title")}</CardTitle>
-              <CardDescription>{t("usage.funnels.description")}</CardDescription>
+              <CardDescription>
+                {t("usage.funnels.description")}
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-8">
               {funnels.map((f) => (

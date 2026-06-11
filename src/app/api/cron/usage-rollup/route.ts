@@ -121,7 +121,9 @@ export async function GET(req: Request): Promise<Response> {
       wideEvent.auth_reason = auth.reason;
       wideEvent.status_code = auth.status;
       const body =
-        auth.reason === "missing_secret" ? "Server misconfigured" : "Unauthorized";
+        auth.reason === "missing_secret"
+          ? "Server misconfigured"
+          : "Unauthorized";
       return new Response(body, { status: auth.status });
     }
     wideEvent.auth_reason = "ok";
@@ -133,7 +135,9 @@ export async function GET(req: Request): Promise<Response> {
       const d = new Date(today);
       d.setUTCDate(d.getUTCDate() - back);
       const day = dayKey(d);
-      const existing = await prisma.dailyFeatureRollup.count({ where: { day } });
+      const existing = await prisma.dailyFeatureRollup.count({
+        where: { day },
+      });
       if (back === 1 || existing === 0) {
         processed[day] = await rollupDay(day);
       }

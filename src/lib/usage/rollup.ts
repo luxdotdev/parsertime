@@ -42,13 +42,25 @@ export function aggregateFeatureRollups(
 ): FeatureRollupRow[] {
   const map = new Map<
     string,
-    { env: UsageEnv; name: string; total: number; users: Set<string>; teams: Set<number> }
+    {
+      env: UsageEnv;
+      name: string;
+      total: number;
+      users: Set<string>;
+      teams: Set<number>;
+    }
   >();
   for (const row of rows) {
     const key = `${row.environment} ${row.name}`;
     let entry = map.get(key);
     if (!entry) {
-      entry = { env: row.environment, name: row.name, total: 0, users: new Set(), teams: new Set() };
+      entry = {
+        env: row.environment,
+        name: row.name,
+        total: 0,
+        users: new Set(),
+        teams: new Set(),
+      };
       map.set(key, entry);
     }
     entry.total += 1;
@@ -78,7 +90,12 @@ export function aggregatePageRollups(
     const key = `${row.environment} ${row.path}`;
     let entry = map.get(key);
     if (!entry) {
-      entry = { env: row.environment, path: row.path, views: 0, users: new Set() };
+      entry = {
+        env: row.environment,
+        path: row.path,
+        views: 0,
+        users: new Set(),
+      };
       map.set(key, entry);
     }
     entry.views += 1;

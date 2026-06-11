@@ -18,7 +18,10 @@ export function FeatureAdoptionChart({ data }: { data: FeatureAdoptionRow[] }) {
     <ResponsiveContainer width="100%" height={280}>
       <BarChart data={data} layout="vertical" margin={{ left: 24, right: 16 }}>
         <CartesianGrid horizontal={false} strokeOpacity={0.2} />
-        <XAxis type="number" tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} />
+        <XAxis
+          type="number"
+          tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+        />
         <YAxis
           type="category"
           dataKey="name"
@@ -33,8 +36,12 @@ export function FeatureAdoptionChart({ data }: { data: FeatureAdoptionRow[] }) {
             return (
               <div className="bg-popover text-popover-foreground rounded-md border p-2 text-sm shadow-md">
                 <div className="font-medium">{row.name}</div>
-                <div>{t("uniqueUsers")}: {row.uniqueUsers}</div>
-                <div>{t("totalEvents")}: {row.totalEvents}</div>
+                <div>
+                  {t("uniqueUsers")}: {row.uniqueUsers}
+                </div>
+                <div>
+                  {t("totalEvents")}: {row.totalEvents}
+                </div>
               </div>
             );
           }}

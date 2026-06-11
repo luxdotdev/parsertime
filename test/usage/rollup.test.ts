@@ -9,12 +9,48 @@ import {
 
 const day = "2026-06-10";
 const rows: RawEventRow[] = [
-  { name: "scrim.create", environment: "PRODUCTION", userId: "u1", teamId: 1, path: null },
-  { name: "scrim.create", environment: "PRODUCTION", userId: "u1", teamId: 1, path: null },
-  { name: "scrim.create", environment: "PRODUCTION", userId: "u2", teamId: 2, path: null },
-  { name: "page_view", environment: "PRODUCTION", userId: "u1", teamId: null, path: "/dashboard" },
-  { name: "page_view", environment: "PRODUCTION", userId: "u2", teamId: null, path: "/dashboard" },
-  { name: "page_view", environment: "PREVIEW", userId: "u9", teamId: null, path: "/dashboard" },
+  {
+    name: "scrim.create",
+    environment: "PRODUCTION",
+    userId: "u1",
+    teamId: 1,
+    path: null,
+  },
+  {
+    name: "scrim.create",
+    environment: "PRODUCTION",
+    userId: "u1",
+    teamId: 1,
+    path: null,
+  },
+  {
+    name: "scrim.create",
+    environment: "PRODUCTION",
+    userId: "u2",
+    teamId: 2,
+    path: null,
+  },
+  {
+    name: "page_view",
+    environment: "PRODUCTION",
+    userId: "u1",
+    teamId: null,
+    path: "/dashboard",
+  },
+  {
+    name: "page_view",
+    environment: "PRODUCTION",
+    userId: "u2",
+    teamId: null,
+    path: "/dashboard",
+  },
+  {
+    name: "page_view",
+    environment: "PREVIEW",
+    userId: "u9",
+    teamId: null,
+    path: "/dashboard",
+  },
 ];
 
 describe("dayKey", () => {
@@ -66,9 +102,21 @@ describe("aggregatePageRollups", () => {
 describe("aggregateActiveUsers", () => {
   it("emits one (env, day, userId) row per active user", () => {
     const result = aggregateActiveUsers(rows, day);
-    expect(result).toContainEqual({ environment: "PRODUCTION", day, userId: "u1" });
-    expect(result).toContainEqual({ environment: "PRODUCTION", day, userId: "u2" });
-    expect(result).toContainEqual({ environment: "PREVIEW", day, userId: "u9" });
+    expect(result).toContainEqual({
+      environment: "PRODUCTION",
+      day,
+      userId: "u1",
+    });
+    expect(result).toContainEqual({
+      environment: "PRODUCTION",
+      day,
+      userId: "u2",
+    });
+    expect(result).toContainEqual({
+      environment: "PREVIEW",
+      day,
+      userId: "u9",
+    });
     expect(result).toHaveLength(3);
   });
 });

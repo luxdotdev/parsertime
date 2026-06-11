@@ -238,7 +238,11 @@ export async function POST(request: NextRequest) {
         const parseDuration = performance.now() - parseStart;
         scrimParsingDuration.record(parseDuration);
         scrimCreatedCounter.add(1);
-        void usage.track({ name: UsageEventName.SCRIM_CREATE, userId: user.id, teamId });
+        void usage.track({
+          name: UsageEventName.SCRIM_CREATE,
+          userId: user.id,
+          teamId,
+        });
 
         event.parse_duration_ms = Math.round(parseDuration);
         event.scrim_id = newScrimId;

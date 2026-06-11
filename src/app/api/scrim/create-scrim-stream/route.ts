@@ -104,7 +104,11 @@ export async function POST(request: NextRequest) {
       const parseDuration = performance.now() - parseStart;
       scrimParsingDuration.record(parseDuration);
       scrimCreatedCounter.add(1);
-      void usage.track({ name: UsageEventName.SCRIM_CREATE, userId: user.id, teamId });
+      void usage.track({
+        name: UsageEventName.SCRIM_CREATE,
+        userId: user.id,
+        teamId,
+      });
 
       // Linking is best-effort: the scrim is already created, so a failed link
       // update must not surface as a creation error (which would prompt a retry

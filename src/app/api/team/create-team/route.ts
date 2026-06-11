@@ -120,7 +120,11 @@ export async function POST(request: NextRequest) {
 
   const { team } = result;
   teamCreatedCounter.add(1, { plan: userId.billingPlan });
-  void usage.track({ name: UsageEventName.TEAM_CREATE, userId: userId.id, props: { plan: userId.billingPlan } });
+  void usage.track({
+    name: UsageEventName.TEAM_CREATE,
+    userId: userId.id,
+    props: { plan: userId.billingPlan },
+  });
 
   after(async () => {
     await auditLog.createAuditLog({

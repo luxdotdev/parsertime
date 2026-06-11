@@ -28,11 +28,31 @@ export async function getScorecard(env: UsageEnv): Promise<Scorecard> {
   const day28 = daysAgoKey(28);
 
   const [dauRows, wauRows, mauRows, events30d, features] = await Promise.all([
-    prisma.userActiveDay.findMany({ where: { environment: env, day: day1 }, select: { userId: true } }),
-    prisma.userActiveDay.findMany({ where: { environment: env, day: { gte: day7, lte: today } }, select: { userId: true } }),
-    prisma.userActiveDay.findMany({ where: { environment: env, day: { gte: day28, lte: today } }, select: { userId: true } }),
-    prisma.dailyFeatureRollup.aggregate({ where: { environment: env, day: { gte: daysAgoKey(30) } }, _sum: { totalEvents: true } }),
-    prisma.dailyFeatureRollup.findMany({ where: { environment: env, day: { gte: daysAgoKey(30) }, name: { not: "page_view" } }, distinct: ["name"], select: { name: true } }),
+    prisma.userActiveDay.findMany({
+      where: { environment: env, day: day1 },
+      select: { userId: true },
+    }),
+    prisma.userActiveDay.findMany({
+      where: { environment: env, day: { gte: day7, lte: today } },
+      select: { userId: true },
+    }),
+    prisma.userActiveDay.findMany({
+      where: { environment: env, day: { gte: day28, lte: today } },
+      select: { userId: true },
+    }),
+    prisma.dailyFeatureRollup.aggregate({
+      where: { environment: env, day: { gte: daysAgoKey(30) } },
+      _sum: { totalEvents: true },
+    }),
+    prisma.dailyFeatureRollup.findMany({
+      where: {
+        environment: env,
+        day: { gte: daysAgoKey(30) },
+        name: { not: "page_view" },
+      },
+      distinct: ["name"],
+      select: { name: true },
+    }),
   ]);
 
   const dau = dauRows.length;
@@ -47,30 +67,53 @@ export async function getScorecard(env: UsageEnv): Promise<Scorecard> {
   };
 }
 
-export type FeatureAdoptionRow = { name: string; uniqueUsers: number; totalEvents: number };
+export type FeatureAdoptionRow = {
+  name: string;
+  uniqueUsers: number;
+  totalEvents: number;
+};
 
-export async function getFeatureAdoption(env: UsageEnv): Promise<FeatureAdoptionRow[]> {
+export async function getFeatureAdoption(
+  env: UsageEnv
+): Promise<FeatureAdoptionRow[]> {
   const grouped = await prisma.dailyFeatureRollup.groupBy({
     by: ["name"],
-    where: { environment: env, day: { gte: daysAgoKey(30) }, name: { not: "page_view" } },
+    where: {
+      environment: env,
+      day: { gte: daysAgoKey(30) },
+      name: { not: "page_view" },
+    },
     _sum: { totalEvents: true },
   });
   // uniqueUsers can't be summed across days (double-counts); approximate with
   // the max single-day unique users per feature, which is exact for DAU-style reads.
   const maxUsers = await prisma.dailyFeatureRollup.groupBy({
     by: ["name"],
-    where: { environment: env, day: { gte: daysAgoKey(30) }, name: { not: "page_view" } },
+    where: {
+      environment: env,
+      day: { gte: daysAgoKey(30) },
+      name: { not: "page_view" },
+    },
     _max: { uniqueUsers: true },
   });
-  const userByName = new Map(maxUsers.map((m) => [m.name, m._max.uniqueUsers ?? 0]));
+  const userByName = new Map(
+    maxUsers.map((m) => [m.name, m._max.uniqueUsers ?? 0])
+  );
   return grouped
-    .map((g) => ({ name: g.name, totalEvents: g._sum.totalEvents ?? 0, uniqueUsers: userByName.get(g.name) ?? 0 }))
+    .map((g) => ({
+      name: g.name,
+      totalEvents: g._sum.totalEvents ?? 0,
+      uniqueUsers: userByName.get(g.name) ?? 0,
+    }))
     .sort((a, b) => b.uniqueUsers - a.uniqueUsers);
 }
 
 export type DailyActivePoint = { day: string; dau: number };
 
-export async function getDailyActiveSeries(env: UsageEnv, days = 30): Promise<DailyActivePoint[]> {
+export async function getDailyActiveSeries(
+  env: UsageEnv,
+  days = 30
+): Promise<DailyActivePoint[]> {
   const rows = await prisma.userActiveDay.groupBy({
     by: ["day"],
     where: { environment: env, day: { gte: daysAgoKey(days) } },
@@ -91,25 +134,40 @@ export async function getPageHeat(env: UsageEnv): Promise<PageHeatRow[]> {
     _max: { uniqueUsers: true },
   });
   return grouped
-    .map((g) => ({ path: g.path, views: g._sum.views ?? 0, uniqueUsers: g._max.uniqueUsers ?? 0 }))
+    .map((g) => ({
+      path: g.path,
+      views: g._sum.views ?? 0,
+      uniqueUsers: g._max.uniqueUsers ?? 0,
+    }))
     .sort((a, b) => b.views - a.views);
 }
 
 export type FunnelResult = { key: string; steps: FunnelStep[] };
 
-async function loadFunnels(env: UsageEnv, days: number): Promise<FunnelResult[]> {
+async function loadFunnels(
+  env: UsageEnv,
+  days: number
+): Promise<FunnelResult[]> {
   const since = new Date();
   since.setUTCDate(since.getUTCDate() - days);
 
   // All event names referenced by any funnel, fetched once within the window.
   const names = [...new Set(FUNNELS.flatMap((f) => f.steps))];
   const rows = await prisma.usageEvent.findMany({
-    where: { environment: env, ts: { gte: since }, name: { in: names }, userId: { not: null } },
+    where: {
+      environment: env,
+      ts: { gte: since },
+      name: { in: names },
+      userId: { not: null },
+    },
     select: { userId: true, name: true },
   });
   const funnelRows = rows.map((r) => ({ userId: r.userId!, name: r.name }));
 
-  return FUNNELS.map((f) => ({ key: f.key, steps: computeFunnel(funnelRows, f.steps) }));
+  return FUNNELS.map((f) => ({
+    key: f.key,
+    steps: computeFunnel(funnelRows, f.steps),
+  }));
 }
 
 export function getFunnels(env: UsageEnv, days = 30): Promise<FunnelResult[]> {

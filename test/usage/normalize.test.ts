@@ -10,12 +10,18 @@ describe("normalizePath", () => {
   });
   it("replaces uuid and cuid segments with [id]", () => {
     expect(
-      normalizePath("/team/clx1a2b3c0000d4e5f6g7h8i9/map/9f8e7d6c-1234-4abc-9def-000000000000")
+      normalizePath(
+        "/team/clx1a2b3c0000d4e5f6g7h8i9/map/9f8e7d6c-1234-4abc-9def-000000000000"
+      )
     ).toBe("/team/[id]/map/[id]");
   });
   it("does not collapse ordinary path words that start with 'c'", () => {
-    expect(normalizePath("/tournaments/challenges")).toBe("/tournaments/challenges");
-    expect(normalizePath("/admin/map-calibration")).toBe("/admin/map-calibration");
+    expect(normalizePath("/tournaments/challenges")).toBe(
+      "/tournaments/challenges"
+    );
+    expect(normalizePath("/admin/map-calibration")).toBe(
+      "/admin/map-calibration"
+    );
   });
   it("leaves a clean static route untouched", () => {
     expect(normalizePath("/settings/admin/analytics")).toBe(

@@ -76,9 +76,7 @@ const usageRuntime = ManagedRuntime.make(layer());
 export const usage = {
   track: (args: TrackArgs): Promise<void> =>
     usageRuntime
-      .runPromise(
-        EventService.pipe(Effect.flatMap((svc) => svc.track(args)))
-      )
+      .runPromise(EventService.pipe(Effect.flatMap((svc) => svc.track(args))))
       .then(() => undefined)
       .catch(() => undefined),
 } as const;

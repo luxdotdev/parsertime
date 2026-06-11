@@ -24,18 +24,29 @@ export function ActiveUsersChart({ data }: { data: DailyActivePoint[] }) {
           tickFormatter={(d: string) => d.slice(5)}
           minTickGap={24}
         />
-        <YAxis tick={{ fill: "var(--muted-foreground)", fontSize: 12 }} allowDecimals={false} />
+        <YAxis
+          tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+          allowDecimals={false}
+        />
         <Tooltip
           content={({ active, payload, label }) =>
             active && payload?.length ? (
               <div className="bg-popover text-popover-foreground rounded-md border p-2 text-sm shadow-md">
                 <div className="font-medium">{label}</div>
-                <div>{t("dau")}: {payload[0]?.value}</div>
+                <div>
+                  {t("dau")}: {payload[0]?.value}
+                </div>
               </div>
             ) : null
           }
         />
-        <Line type="monotone" dataKey="dau" stroke="var(--chart-1)" strokeWidth={2} dot={false} />
+        <Line
+          type="monotone"
+          dataKey="dau"
+          stroke="var(--chart-1)"
+          strokeWidth={2}
+          dot={false}
+        />
       </LineChart>
     </ResponsiveContainer>
   );

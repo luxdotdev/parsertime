@@ -57,7 +57,10 @@ export async function POST(req: Request) {
     });
   }
 
-  void usage.track({ name: UsageEventName.AI_CHAT_MESSAGE, userId: userData.id });
+  void usage.track({
+    name: UsageEventName.AI_CHAT_MESSAGE,
+    userId: userData.id,
+  });
 
   const balanceCents = await getUserBalance(userData.id);
   if (balanceCents < MIN_BALANCE_TO_CHAT_CENTS) {

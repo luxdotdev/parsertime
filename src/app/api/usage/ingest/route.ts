@@ -52,9 +52,7 @@ export async function POST(req: NextRequest) {
   let userId: string | null = null;
   if (session?.user?.email) {
     const user = await AppRuntime.runPromise(
-      UserService.pipe(
-        Effect.flatMap((svc) => svc.getUser(session.user.email))
-      )
+      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
     ).catch(() => null);
     userId = user?.id ?? null;
   }

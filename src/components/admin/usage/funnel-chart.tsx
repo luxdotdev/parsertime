@@ -19,7 +19,7 @@ export function FunnelChart({ funnel }: { funnel: FunnelResult }) {
           </div>
           <div className="bg-muted h-3 w-full overflow-hidden rounded">
             <div
-              className="bg-[var(--chart-1)] h-full rounded"
+              className="h-full rounded bg-[var(--chart-1)]"
               style={{ width: `${(step.users / max) * 100}%` }}
             />
           </div>
