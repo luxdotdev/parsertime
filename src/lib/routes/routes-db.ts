@@ -8,6 +8,10 @@ import {
   type Route,
   type RouteSample,
 } from "@/lib/routes/extract";
+import {
+  partitionRoutesByObjective,
+  type ObjectiveRoundMark,
+} from "@/lib/routes/partition";
 import { roundOutcomes } from "@/lib/routes/round-outcome";
 import { zoneSignature } from "@/lib/routes/zone-signature";
 import type { TaggableZone } from "@/lib/zones/tag";
@@ -15,6 +19,16 @@ import type { TaggableZone } from "@/lib/zones/tag";
 type ZoneContext = {
   zonesAt: (matchTime: number) => TaggableZone[];
   hasPointZones: boolean;
+};
+
+type RouteContext = {
+  routes: Route[];
+  outcomes: Map<number, string | null>;
+  zoneContext: ZoneContext;
+  team1Name: string;
+  team2Name: string;
+  mapName: string | null;
+  roundStarts: ObjectiveRoundMark[];
 };
 
 function toTaggable(
@@ -107,7 +121,7 @@ async function loadZoneContext(mapDataId: number): Promise<ZoneContext> {
   return { zonesAt, hasPointZones };
 }
 
-export type RouteAnalysis = {
+export type SubMapRoutes = {
   routes: (Route & {
     outcome: "WON" | "LOST" | "UNKNOWN";
     signature: string | null;
@@ -122,6 +136,20 @@ export type RouteAnalysis = {
   team2Name: string;
 };
 
+/** Back-compat alias for the flat builder's callers. */
+export type RouteAnalysis = SubMapRoutes;
+
+export type ControlSubMapRoutes = {
+  objectiveIndex: number;
+  calibrationMapName: string; // e.g. "Busan: Downtown" — the loadCalibration key
+  subMapName: string; // e.g. "Downtown" — the tab label
+  analysis: SubMapRoutes;
+};
+
+export type RouteAnalysisResult =
+  | { type: "single"; analysis: SubMapRoutes }
+  | { type: "control"; subMaps: ControlSubMapRoutes[] };
+
 function pushSample(
   arr: RouteSample[],
   t: number,
@@ -135,9 +163,9 @@ function pushSample(
   }
 }
 
-export async function buildRouteAnalysisForMapData(
+async function loadRouteContext(
   mapDataId: number
-): Promise<RouteAnalysis | null> {
+): Promise<RouteContext | null> {
   const [
     kills,
     damage,
@@ -411,7 +439,28 @@ export async function buildRouteAnalysisForMapData(
 
   const zoneContext = await loadZoneContext(mapDataId);
 
-  const augmentedRoutes: RouteAnalysis["routes"] = routes.map((route) => {
+  return {
+    routes,
+    outcomes,
+    zoneContext,
+    team1Name,
+    team2Name,
+    mapName: matchStart?.map_name ?? null,
+    roundStarts: roundStarts.map((r) => ({
+      match_time: r.match_time,
+      objective_index: r.objective_index,
+    })),
+  };
+}
+
+function buildSubMapRoutes(
+  routes: Route[],
+  outcomes: Map<number, string | null>,
+  zoneContext: ZoneContext,
+  team1Name: string,
+  team2Name: string
+): SubMapRoutes {
+  const augmentedRoutes: SubMapRoutes["routes"] = routes.map((route) => {
     const winner = outcomes.get(route.roundNumber);
     let outcome: "WON" | "LOST" | "UNKNOWN";
     if (winner == null) outcome = "UNKNOWN";
@@ -426,7 +475,7 @@ export async function buildRouteAnalysisForMapData(
   });
 
   const rawClusters = clusterRoutes(routes.map((r) => r.points));
-  const clusters: RouteAnalysis["clusters"] = rawClusters.map((cluster) => {
+  const clusters: SubMapRoutes["clusters"] = rawClusters.map((cluster) => {
     const counts = { won: 0, lost: 0, unknown: 0 };
     for (const idx of cluster.routeIndexes) {
       const outcome = augmentedRoutes[idx].outcome;
@@ -443,4 +492,70 @@ export async function buildRouteAnalysisForMapData(
   });
 
   return { routes: augmentedRoutes, clusters, team1Name, team2Name };
+}
+
+export async function buildRouteAnalysisForMapData(
+  mapDataId: number
+): Promise<RouteAnalysis | null> {
+  const ctx = await loadRouteContext(mapDataId);
+  if (!ctx) return null;
+  return buildSubMapRoutes(
+    ctx.routes,
+    ctx.outcomes,
+    ctx.zoneContext,
+    ctx.team1Name,
+    ctx.team2Name
+  );
+}
+
+export async function buildRouteTabAnalysis(
+  mapDataId: number
+): Promise<RouteAnalysisResult | null> {
+  const ctx = await loadRouteContext(mapDataId);
+  if (!ctx) return null;
+
+  const subMapNames = ctx.mapName
+    ? CONTROL_OBJECTIVE_MAP[ctx.mapName]
+    : undefined;
+
+  // Non-control maps: a single view over all routes.
+  if (!ctx.mapName || !subMapNames) {
+    return {
+      type: "single",
+      analysis: buildSubMapRoutes(
+        ctx.routes,
+        ctx.outcomes,
+        ctx.zoneContext,
+        ctx.team1Name,
+        ctx.team2Name
+      ),
+    };
+  }
+
+  // Control maps: one entry per capture point, in objective_index order.
+  // Sub-maps with no routes yield an empty analysis (shown as an empty tab).
+  const byIndex = partitionRoutesByObjective(ctx.routes, ctx.roundStarts);
+  const subMaps: ControlSubMapRoutes[] = subMapNames.map(
+    (calibrationMapName, objectiveIndex) => {
+      const colonIdx = calibrationMapName.indexOf(": ");
+      const subMapName =
+        colonIdx >= 0
+          ? calibrationMapName.slice(colonIdx + 2)
+          : calibrationMapName;
+      return {
+        objectiveIndex,
+        calibrationMapName,
+        subMapName,
+        analysis: buildSubMapRoutes(
+          byIndex.get(objectiveIndex) ?? [],
+          ctx.outcomes,
+          ctx.zoneContext,
+          ctx.team1Name,
+          ctx.team2Name
+        ),
+      };
+    }
+  );
+
+  return { type: "control", subMaps };
 }
