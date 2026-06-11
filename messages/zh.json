@@ -1619,10 +1619,10 @@
     },
     "metadata": {
       "title": "倾向 | Parsertime",
-      "description": "按地图分组的团队重复移动路线"
+      "description": "汇总最近训练赛，展示队伍在各地图上团战的优势与劣势区域"
     },
     "title": "倾向",
-    "description": "按地图分组的重复移动路线，以及每条路线的出现频率和记录的结果数量。",
+    "description": "每张地图按位置展示团战胜率——绿色为优势区域，红色为劣势区域。",
     "empty": "暂无位置数据。",
     "totalRoutes": "路线总数",
     "route": "路线 {n}",

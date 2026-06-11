@@ -1619,10 +1619,10 @@
     },
     "metadata": {
       "title": "Tendencies | Parsertime",
-      "description": "Recurring movement routes grouped by map for your team"
+      "description": "Where your team wins and loses fights on each map, pooled across recent scrims"
     },
     "title": "Tendencies",
-    "description": "Recurring movement routes grouped by map, with how often each appears and the recorded outcome counts.",
+    "description": "Each map shows fight winrate by location — green where you win, red where you struggle.",
     "empty": "No positional data yet.",
     "totalRoutes": "Total routes",
     "route": "Route {n}",

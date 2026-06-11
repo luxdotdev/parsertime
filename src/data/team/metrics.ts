@@ -66,27 +66,8 @@ export const teamExtendedDataQueryDuration = Metric.histogram(
   "Distribution of extended team data query duration in milliseconds"
 );
 
-export const routeTendenciesQuerySuccessTotal = Metric.counter(
-  "team.route_tendencies.query.success",
-  {
-    description: "Total successful team route tendencies queries",
-    incremental: true,
-  }
-);
 
-export const routeTendenciesQueryErrorTotal = Metric.counter(
-  "team.route_tendencies.query.error",
-  {
-    description: "Total team route tendencies query failures",
-    incremental: true,
-  }
-);
 
-export const routeTendenciesQueryDuration = Metric.histogram(
-  "team.route_tendencies.query.duration_ms",
-  MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
-  "Distribution of team route tendencies query duration in milliseconds"
-);
 
 export const positionalStatsQuerySuccessTotal = Metric.counter(
   "team.positional_stats.query.success",
