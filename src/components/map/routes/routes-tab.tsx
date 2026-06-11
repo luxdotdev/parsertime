@@ -64,34 +64,6 @@ export async function RoutesTab({ id }: { id: number }) {
     );
   }
 
-  const labels = {
-    filters: {
-      team: t("filters.team"),
-      player: t("filters.player"),
-      round: t("filters.round"),
-      outcome: t("filters.outcome"),
-      kind: t("filters.kind"),
-      cluster: t("filters.cluster"),
-      all: t("filters.all"),
-    },
-    outcomes: {
-      won: t("outcomes.won"),
-      lost: t("outcomes.lost"),
-      unknown: t("outcomes.unknown"),
-    },
-    kinds: {
-      INITIAL: t("kinds.initial"),
-      RESPAWN: t("kinds.respawn"),
-    },
-    showAll: t("showAll"),
-    clusterHeader: t("clusters.header"),
-    routesLabel: t("clusters.routes"),
-    outcomesLabel: t("clusters.outcomes"),
-    routeFallback: t("routeFallback"),
-    loadingImage: t("loadingImage"),
-    canvasLabel: t("canvasLabel"),
-  };
-
   return (
     <RoutesView
       analysis={analysis}
@@ -99,7 +71,6 @@ export async function RoutesTab({ id }: { id: number }) {
       imageWidth={calibration.imageWidth}
       imageHeight={calibration.imageHeight}
       transform={calibration.transform}
-      labels={labels}
     />
   );
 }

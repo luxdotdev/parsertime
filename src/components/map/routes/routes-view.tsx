@@ -4,29 +4,9 @@ import type { RouteAnalysis } from "@/lib/routes/routes-db";
 import type { MapTransform } from "@/lib/map-calibration/types";
 import { worldToImage } from "@/lib/map-calibration/world-to-image";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 
 type Outcome = "WON" | "LOST" | "UNKNOWN";
-
-type RoutesViewLabels = {
-  filters: {
-    team: string;
-    player: string;
-    round: string;
-    outcome: string;
-    kind: string;
-    cluster: string;
-    all: string;
-  };
-  outcomes: { won: string; lost: string; unknown: string };
-  kinds: { INITIAL: string; RESPAWN: string };
-  showAll: string;
-  clusterHeader: string;
-  routesLabel: string;
-  outcomesLabel: string;
-  routeFallback: string;
-  loadingImage: string;
-  canvasLabel: string;
-};
 
 type RoutesViewProps = {
   analysis: RouteAnalysis;
@@ -34,7 +14,6 @@ type RoutesViewProps = {
   imageWidth: number;
   imageHeight: number;
   transform: MapTransform;
-  labels: RoutesViewLabels;
 };
 
 const OUTCOME_COLORS: Record<Outcome, string> = {
@@ -51,7 +30,6 @@ export function RoutesView({
   imageWidth,
   imageHeight,
   transform,
-  labels,
 }: RoutesViewProps) {
   const { routes, clusters, team1Name, team2Name } = analysis;
 
@@ -136,7 +114,6 @@ export function RoutesView({
     <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
       <div className="space-y-3">
         <RouteFilters
-          labels={labels}
           teamOptions={teamOptions}
           playerOptions={playerOptions}
           roundOptions={roundOptions}
@@ -162,13 +139,11 @@ export function RoutesView({
           imageWidth={imageWidth}
           imageHeight={imageHeight}
           transform={transform}
-          labels={labels}
         />
       </div>
       <ClusterList
         clusters={clusters}
         routes={routes}
-        labels={labels}
         selectedCluster={selectedCluster}
         onSelect={(ci) =>
           setSelectedCluster((prev) => (prev === ci ? null : ci))
@@ -211,7 +186,6 @@ function Select({
 }
 
 function RouteFilters({
-  labels,
   teamOptions,
   playerOptions,
   roundOptions,
@@ -228,7 +202,6 @@ function RouteFilters({
   onKind,
   onShowAll,
 }: {
-  labels: RoutesViewLabels;
   teamOptions: string[];
   playerOptions: string[];
   roundOptions: number[];
@@ -245,11 +218,12 @@ function RouteFilters({
   onKind: (v: string) => void;
   onShowAll: (v: boolean) => void;
 }) {
-  const all = labels.filters.all;
+  const t = useTranslations("mapPage.routes");
+  const all = t("filters.all");
   return (
     <div className="flex flex-wrap items-end gap-3">
       <Select
-        label={labels.filters.team}
+        label={t("filters.team")}
         value={team}
         onChange={onTeam}
         options={[
@@ -258,7 +232,7 @@ function RouteFilters({
         ]}
       />
       <Select
-        label={labels.filters.player}
+        label={t("filters.player")}
         value={player}
         onChange={onPlayer}
         options={[
@@ -267,7 +241,7 @@ function RouteFilters({
         ]}
       />
       <Select
-        label={labels.filters.round}
+        label={t("filters.round")}
         value={round}
         onChange={onRound}
         options={[
@@ -279,24 +253,24 @@ function RouteFilters({
         ]}
       />
       <Select
-        label={labels.filters.outcome}
+        label={t("filters.outcome")}
         value={outcome}
         onChange={onOutcome}
         options={[
           { value: ALL, label: all },
-          { value: "WON", label: labels.outcomes.won },
-          { value: "LOST", label: labels.outcomes.lost },
-          { value: "UNKNOWN", label: labels.outcomes.unknown },
+          { value: "WON", label: t("outcomes.won") },
+          { value: "LOST", label: t("outcomes.lost") },
+          { value: "UNKNOWN", label: t("outcomes.unknown") },
         ]}
       />
       <Select
-        label={labels.filters.kind}
+        label={t("filters.kind")}
         value={kind}
         onChange={onKind}
         options={[
           { value: ALL, label: all },
-          { value: "INITIAL", label: labels.kinds.INITIAL },
-          { value: "RESPAWN", label: labels.kinds.RESPAWN },
+          { value: "INITIAL", label: t("kinds.initial") },
+          { value: "RESPAWN", label: t("kinds.respawn") },
         ]}
       />
       <label className="flex items-center gap-2 text-sm">
@@ -306,7 +280,7 @@ function RouteFilters({
           onChange={(e) => onShowAll(e.target.checked)}
           className="h-4 w-4"
         />
-        {labels.showAll}
+        {t("showAll")}
       </label>
     </div>
   );
@@ -321,7 +295,6 @@ function RouteCanvas({
   imageWidth,
   imageHeight,
   transform,
-  labels,
 }: {
   routes: RouteAnalysis["routes"];
   visibleRouteIndexes: number[];
@@ -331,8 +304,8 @@ function RouteCanvas({
   imageWidth: number;
   imageHeight: number;
   transform: MapTransform;
-  labels: RoutesViewLabels;
 }) {
+  const t = useTranslations("mapPage.routes");
   const containerRef = useRef<HTMLDivElement>(null);
   const [canvasWidth, setCanvasWidth] = useState(imageWidth);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -399,7 +372,7 @@ function RouteCanvas({
         // oxlint-disable-next-line @next/next/no-img-element
         <img
           src={imageUrl}
-          alt={labels.canvasLabel}
+          alt={t("canvasLabel")}
           width={canvasWidth}
           height={canvasHeight}
           draggable={false}
@@ -412,7 +385,7 @@ function RouteCanvas({
           width={canvasWidth}
           height={canvasHeight}
           role="img"
-          aria-label={labels.canvasLabel}
+          aria-label={t("canvasLabel")}
         >
           {polylines.map((pl) => (
             <polyline
@@ -430,7 +403,7 @@ function RouteCanvas({
       )}
       {!imageLoaded && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <p className="text-muted-foreground">{labels.loadingImage}</p>
+          <p className="text-muted-foreground">{t("loadingImage")}</p>
         </div>
       )}
     </div>
@@ -440,30 +413,27 @@ function RouteCanvas({
 function ClusterList({
   clusters,
   routes,
-  labels,
   selectedCluster,
   onSelect,
   onHover,
 }: {
   clusters: RouteAnalysis["clusters"];
   routes: RouteAnalysis["routes"];
-  labels: RoutesViewLabels;
   selectedCluster: number | null;
   onSelect: (ci: number) => void;
   onHover: (ci: number | null) => void;
 }) {
+  const t = useTranslations("mapPage.routes");
   return (
     <div className="space-y-2">
       <h3 className="text-sm font-semibold tracking-tight">
-        {labels.clusterHeader}
+        {t("clusters.header")}
       </h3>
       <ul className="space-y-1.5">
         {clusters.map((cluster, ci) => {
           const memberCount = cluster.routeIndexes.length;
           const { won, lost, unknown } = cluster.outcomes;
-          const label =
-            cluster.label ??
-            labels.routeFallback.replace("{n}", String(ci + 1));
+          const label = cluster.label ?? t("routeFallback", { n: ci + 1 });
           const medoidColor =
             OUTCOME_COLORS[routes[cluster.medoidIndex]?.outcome ?? "UNKNOWN"];
           const selected = selectedCluster === ci;
@@ -490,13 +460,10 @@ function ClusterList({
                   {label}
                 </span>
                 <span className="text-muted-foreground font-mono text-xs tabular-nums">
-                  {labels.routesLabel.replace("{count}", String(memberCount))}
+                  {t("clusters.routes", { count: memberCount })}
                 </span>
                 <span className="text-muted-foreground font-mono text-xs tabular-nums">
-                  {labels.outcomesLabel
-                    .replace("{won}", String(won))
-                    .replace("{lost}", String(lost))
-                    .replace("{unknown}", String(unknown))}
+                  {t("clusters.outcomes", { won, lost, unknown })}
                 </span>
               </button>
             </li>
