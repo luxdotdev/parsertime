@@ -398,6 +398,9 @@
   },
   "landingPage": {
     "hero": {
+      "liveData": "实时平台数据",
+      "eyebrow": "训练赛数据分析 · 守望先锋 2",
+      "trustedBy": "深受 {count}+ 支队伍信赖",
       "latestUpdates": "最新更新",
       "title": "革新您的训练赛体验",
       "description": "使用我们的平台，直观查看您的比赛数据，跟踪球员的个人表现等。邀请球员加入您的团队，并让他们查看自己的统计数据。",

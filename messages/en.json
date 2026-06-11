@@ -398,6 +398,9 @@
   },
   "landingPage": {
     "hero": {
+      "liveData": "Live platform data",
+      "eyebrow": "Scrim analytics · Overwatch 2",
+      "trustedBy": "Trusted by {count}+ teams",
       "latestUpdates": "Latest updates",
       "title": "Every stat the scoreboard doesn't show you",
       "description": "Parsertime turns raw scrim data into skill ratings, trend lines, and the insights that change how you coach.",
