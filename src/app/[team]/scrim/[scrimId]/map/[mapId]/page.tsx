@@ -19,6 +19,7 @@ import { Notifications } from "@/components/notifications";
 import { ReplayCode } from "@/components/scrim/replay-code";
 import { ModeToggle } from "@/components/theme-switcher";
 import { TipTap } from "@/components/tiptap/tiptap";
+import { StatsViewBeacon } from "@/components/usage/stats-view-beacon";
 import { MapTabsSkeleton } from "@/components/map/map-tabs-skeleton";
 import { Suspense, ViewTransition } from "react";
 import { UserNav } from "@/components/user-nav";
@@ -171,6 +172,7 @@ export default async function MapDashboardPage(
 
   return (
     <DirectionalTransition>
+      <StatsViewBeacon />
       <div className="flex-col md:flex">
         <header
           className="shadow-xs"

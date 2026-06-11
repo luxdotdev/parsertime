@@ -12,6 +12,8 @@ import {
 } from "@/lib/tournaments/bracket";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
+import { UsageEventName } from "@/lib/usage/names";
+import { usage } from "@/lib/usage/server";
 import { TournamentFormat } from "@prisma/client";
 import { Ratelimit } from "@upstash/ratelimit";
 import { ipAddress } from "@vercel/functions";
@@ -335,6 +337,11 @@ export async function POST(request: NextRequest) {
     });
 
     event.tournamentId = tournament.id;
+
+    void usage.track({
+      name: UsageEventName.TOURNAMENT_CREATE,
+      userId: user.id,
+    });
 
     after(async () => {
       await auditLog.createAuditLog({

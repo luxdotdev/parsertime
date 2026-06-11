@@ -6,6 +6,8 @@ import { createNewMap } from "@/lib/parser";
 import prisma from "@/lib/prisma";
 import { createNdjsonStream } from "@/lib/progress-stream";
 import { normalizeMapForScrim } from "@/lib/team-normalization";
+import { UsageEventName } from "@/lib/usage/names";
+import { usage } from "@/lib/usage/server";
 import { track } from "@vercel/analytics/server";
 import type { NextRequest } from "next/server";
 import type { AddMapRequestData } from "../add-map/route";
@@ -73,6 +75,11 @@ export async function POST(req: NextRequest) {
       const parseDuration = performance.now() - parseStart;
       scrimParsingDuration.record(parseDuration);
       mapAddedCounter.add(1);
+      void usage.track({
+        name: UsageEventName.SCRIM_MAP_ADD,
+        userId: user?.id,
+        teamId: scrim?.teamId,
+      });
 
       emit({ type: "done", mapId: result.mapId });
       event.outcome = "success";
