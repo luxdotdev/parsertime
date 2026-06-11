@@ -31,23 +31,6 @@ type ActivityDotProps = DotProps & {
   key?: string | number;
 };
 
-function ActivityDot({ cx, cy, payload, key }: ActivityDotProps) {
-  if (cx == null || cy == null) return <g key={key} />;
-  return payload?.inProgress ? (
-    <circle
-      key={key}
-      cx={cx}
-      cy={cy}
-      r={4}
-      fill="var(--background)"
-      stroke="var(--color-activeUsers)"
-      strokeWidth={2}
-    />
-  ) : (
-    <circle key={key} cx={cx} cy={cy} r={3} fill="var(--color-activeUsers)" />
-  );
-}
-
 type MonthlyActiveUsersChartProps = {
   twelveMonth: MonthlyActiveUsersData[];
   historical: MonthlyActiveUsersData[];
@@ -94,7 +77,30 @@ function renderChart(
           type="monotone"
           stroke="var(--color-activeUsers)"
           strokeWidth={2}
-          dot={(props) => ActivityDot(props as ActivityDotProps)}
+          isAnimationActive={false}
+          dot={(props) => {
+            const { cx, cy, payload, key } = props as ActivityDotProps;
+            if (cx == null || cy == null) return <g key={key} />;
+            return payload?.inProgress ? (
+              <circle
+                key={key}
+                cx={cx}
+                cy={cy}
+                r={4}
+                fill="var(--background)"
+                stroke="var(--color-activeUsers)"
+                strokeWidth={2}
+              />
+            ) : (
+              <circle
+                key={key}
+                cx={cx}
+                cy={cy}
+                r={3}
+                fill="var(--color-activeUsers)"
+              />
+            );
+          }}
           activeDot={{ r: 5 }}
         />
         <Line
