@@ -2,8 +2,7 @@
 
 import {
   buildHeatmapImageData,
-  parseOklchToRgb,
-  type Ramp,
+  HEATMAP_RAMP,
 } from "@/components/map/heatmap/heatmap-render";
 import type { HeatmapSubMap, KillPoint } from "@/data/map/heatmap/types";
 import { useColorblindMode } from "@/hooks/use-colorblind-mode";
@@ -35,16 +34,6 @@ type HeatmapCanvasProps = {
     kills: string;
   };
 };
-
-const RAMP_TOKENS = [
-  "--chart-5",
-  "--chart-2",
-  "--chart-4",
-  "--chart-1",
-  "--chart-3",
-] as const;
-
-const RAMP_ALPHAS = [0, 130, 180, 215, 240];
 
 export function HeatmapCanvas({
   imageUrl,
@@ -129,7 +118,6 @@ export function HeatmapCanvas({
     void resolvedTheme;
     if (typeof window === "undefined") {
       return {
-        ramp: RAMP_TOKENS.map((_, i) => [200, 120, 80, RAMP_ALPHAS[i]]) as Ramp,
         background: "#0a0a0a",
         team1: team1,
         team2: team2,
@@ -139,19 +127,10 @@ export function HeatmapCanvas({
     function resolve(token: string) {
       return styles.getPropertyValue(token).trim();
     }
-    function tokenToRgb(token: string): [number, number, number] {
-      const value = resolve(token);
-      return parseOklchToRgb(value) ?? [200, 120, 80];
-    }
-    const ramp: Ramp = RAMP_TOKENS.map((token, i) => {
-      const [r, g, b] = tokenToRgb(token);
-      return [r, g, b, RAMP_ALPHAS[i]];
-    });
     function resolveTeam(c: string) {
       return c.startsWith("var(") ? resolve(c.slice(4, -1)) : c;
     }
     return {
-      ramp,
       background: resolve("--background") || "#0a0a0a",
       team1: resolveTeam(team1),
       team2: resolveTeam(team2),
@@ -179,9 +158,9 @@ export function HeatmapCanvas({
             activePoints,
             imageWidth,
             imageHeight,
-            themeTokens.ramp
+            HEATMAP_RAMP
           ),
-    [activePoints, imageWidth, imageHeight, killsOnly, themeTokens.ramp]
+    [activePoints, imageWidth, imageHeight, killsOnly]
   );
 
   const [heatmapBitmap, setHeatmapBitmap] = useState<ImageBitmap | null>(null);

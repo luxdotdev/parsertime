@@ -100,20 +100,22 @@ export function interpolateColorWithRamp(
 }
 
 /**
- * Perceptual "plasma"-style density ramp: violet at low density through magenta
- * and pink to a pale near-white core. The cool violet/magenta band sits at a
- * usable opacity so it reads as a distinct overlay over warm, light maps (sand,
- * desert) rather than smearing a muddy warm tint, while the bright core marks
- * true hotspots. One ramp is used for every density metric; the active toggle
- * and label say which metric it is.
+ * Cold-to-hot "thermal" density ramp: cold blue at low density warming through
+ * blue-violet and magenta to a hot red-pink core. The cool blue band starts
+ * nearly transparent and reads as a distinct overlay over warm, light maps
+ * (sand, desert) — where the previous warm/gold ramp blended in — while the hot
+ * core marks true hotspots. One ramp is used for every density metric; the
+ * active toggle and label say which metric it is.
  */
 export const HEATMAP_RAMP: Ramp = [
-  [42, 22, 110, 0],
-  [108, 42, 180, 165],
-  [178, 42, 156, 205],
-  [224, 56, 112, 230],
-  [248, 132, 74, 244],
-  [253, 235, 172, 255],
+  [100, 150, 255, 0],
+  [100, 150, 255, 90],
+  [60, 60, 220, 130],
+  [120, 40, 200, 160],
+  [180, 30, 160, 185],
+  [220, 20, 100, 205],
+  [240, 10, 60, 225],
+  [200, 0, 120, 240],
 ];
 
 /**
