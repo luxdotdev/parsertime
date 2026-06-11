@@ -1,9 +1,11 @@
+import {
+  getLandingPageStats,
+  roundCount,
+} from "@/components/home/landing-stats";
 import { auth } from "@/lib/auth";
-import prisma from "@/lib/prisma";
 import { get } from "@vercel/edge-config";
 import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
-import { unstable_cache } from "next/cache";
 import { Instrument_Serif } from "next/font/google";
 import type { SVGProps } from "react";
 import { CtaSection } from "./cta-section";
@@ -24,56 +26,6 @@ const instrumentSerif = Instrument_Serif({
   display: "swap",
   variable: "--font-instrument-serif",
 });
-
-/**
- * Rounds a count down to a "nice" number for display.
- */
-function roundCount(count: number): { value: number; suffix: string } {
-  if (count >= 100_000) {
-    const rounded = Math.floor(count / 10_000) * 10_000;
-    return { value: rounded, suffix: "+" };
-  }
-  if (count >= 10_000) {
-    const rounded = Math.floor(count / 5_000) * 5_000;
-    return { value: rounded, suffix: "+" };
-  }
-  if (count >= 1_000) {
-    const rounded = Math.floor(count / 500) * 500;
-    return { value: rounded, suffix: "+" };
-  }
-  return { value: count, suffix: "+" };
-}
-
-const getLandingPageStats = unstable_cache(
-  async () => {
-    const results = await Promise.allSettled([
-      prisma.playerStat.count(),
-      prisma.calculatedStat.count(),
-      prisma.kill.count(),
-      prisma.map.count(),
-      prisma.team.count(),
-    ]);
-
-    const [
-      playerStatCount,
-      calculatedStatCount,
-      killCount,
-      mapCount,
-      teamCount,
-    ] = results.map((r) => (r.status === "fulfilled" ? r.value : 0));
-
-    // Use known floor values if a query fails, so the landing page
-    // never shows "0+" for a stat that clearly isn't zero.
-    return {
-      statsCount: Math.max(playerStatCount + calculatedStatCount, 800_000),
-      killCount: Math.max(killCount, 450_000),
-      mapCount: Math.max(mapCount, 6_000),
-      teamCount: Math.max(teamCount, 10),
-    };
-  },
-  ["landing-page-stats"],
-  { revalidate: 3600 }
-);
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, "fill" | "viewbox">;
 
