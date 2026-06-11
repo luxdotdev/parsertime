@@ -1,7 +1,10 @@
+import { FightUltQualityService } from "@/data/map/fight-ult-quality-service";
+import { AppRuntime } from "@/data/runtime";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { groupKillsIntoFights, removeDuplicateRows } from "@/lib/utils";
 import type { Kill } from "@prisma/client";
+import { Effect } from "effect";
 
 type Fight = {
   kills: Kill[];
@@ -35,6 +38,17 @@ export type EventEntry =
       team: "team1" | "team2";
       hero: string;
       fight: number | null;
+      conversionKills?: number | null;
+      ultZone?: string | null;
+      diedDuringUlt?: boolean;
+    }
+  | {
+      kind: "engagement";
+      time: number;
+      zone: string | null;
+      winner: "team1" | "team2" | null;
+      team1Kills: number;
+      team2Kills: number;
     }
   | {
       kind: "ult_kill";
@@ -131,7 +145,8 @@ function findMultikills(fights: Fight[]) {
 }
 
 export async function getMapEventsData(
-  id: number
+  id: number,
+  includePositional = false
 ): Promise<MapEventsData | null> {
   const mapDataId = await resolveMapDataId(id);
   const [
@@ -234,6 +249,32 @@ export async function getMapEventsData(
   const isPointMap =
     matchStart.map_type === "Control" || matchStart.map_type === "Flashpoint";
 
+  const positional = includePositional
+    ? await AppRuntime.runPromise(
+        FightUltQualityService.pipe(
+          Effect.flatMap((svc) => svc.getFightUltQuality(mapDataId))
+        )
+      )
+    : null;
+
+  const ultInstanceByKey = new Map(
+    (positional?.ults ?? []).map((inst) => [
+      `${inst.playerName}::${inst.startTime}`,
+      inst,
+    ])
+  );
+
+  const engagementEvents: EventEntry[] = (positional?.engagements ?? []).map(
+    (e) => ({
+      kind: "engagement" as const,
+      time: e.start,
+      zone: e.zoneName,
+      winner: e.winner == null ? null : teamOf(e.winner),
+      team1Kills: e.killsByTeam[team1Name] ?? 0,
+      team2Kills: e.killsByTeam[team2Name] ?? 0,
+    })
+  );
+
   const events: EventEntry[] = [
     { kind: "match_start", time: matchStart.match_time },
     ...(matchEnd
@@ -263,14 +304,24 @@ export async function getMapEventsData(
       fromHero: s.previous_hero,
       toHero: s.player_hero,
     })),
-    ...ultimateStarts.map((u) => ({
-      kind: "ult_used" as const,
-      time: u.match_time,
-      player: u.player_name,
-      team: teamOf(u.player_team),
-      hero: u.player_hero,
-      fight: fightIndexAt(u.match_time, fights),
-    })),
+    ...ultimateStarts.map((u) => {
+      const inst = ultInstanceByKey.get(`${u.player_name}::${u.match_time}`);
+      return {
+        kind: "ult_used" as const,
+        time: u.match_time,
+        player: u.player_name,
+        team: teamOf(u.player_team),
+        hero: u.player_hero,
+        fight: fightIndexAt(u.match_time, fights),
+        ...(inst
+          ? {
+              conversionKills: inst.conversionKills,
+              ultZone: inst.zone?.name ?? null,
+              diedDuringUlt: inst.diedDuringUlt,
+            }
+          : {}),
+      };
+    }),
     ...ultimateKills.map((u) => ({
       kind: "ult_kill" as const,
       ...u,
@@ -285,6 +336,7 @@ export async function getMapEventsData(
       fight: m.fightIndex + 1,
     })),
     ...ajaxes.map((a) => ({ kind: "ajax" as const, ...a })),
+    ...engagementEvents,
   ];
 
   events.sort((a, b) => {
@@ -315,6 +367,8 @@ function kindPriority(kind: EventEntry["kind"]): number {
     case "round_start":
       return 1;
     case "objective_captured":
+      return 2;
+    case "engagement":
       return 2;
     case "swap":
       return 3;

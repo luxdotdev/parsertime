@@ -4,11 +4,18 @@ import { MapStatCell } from "@/components/map/map-stat-cell";
 import { Separator } from "@/components/ui/separator";
 import type { EventEntry, MapEventsData } from "@/lib/get-map-events";
 import { toHero, toTimestamp } from "@/lib/utils";
+import { Skull } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useMemo, useState } from "react";
 
-type FilterKey = "all" | "highlights" | "ultimates" | "swaps" | "objectives";
+type FilterKey =
+  | "all"
+  | "highlights"
+  | "ultimates"
+  | "fights"
+  | "swaps"
+  | "objectives";
 
 type EventsTimelineProps = {
   data: MapEventsData;
@@ -20,6 +27,7 @@ const FILTER_ORDER: FilterKey[] = [
   "all",
   "highlights",
   "ultimates",
+  "fights",
   "swaps",
   "objectives",
 ];
@@ -38,6 +46,8 @@ function matchesFilter(entry: EventEntry, filter: FilterKey): boolean {
     case "ult_used":
     case "ult_kill":
       return filter === "ultimates" || filter === "highlights";
+    case "engagement":
+      return filter === "fights";
     case "swap":
       return filter === "swaps";
     case "objective_captured":
@@ -64,6 +74,8 @@ function entryKey(entry: EventEntry): string {
       return `${entry.kind}-${entry.time}-${entry.round}`;
     case "objective_captured":
       return `${entry.kind}-${entry.time}-${entry.team}`;
+    case "engagement":
+      return `engagement-${entry.time}-${entry.winner ?? "even"}`;
     case "swap":
       return `${entry.kind}-${entry.time}-${entry.player}-${entry.toHero}`;
     case "ult_used":
@@ -241,6 +253,7 @@ const TYPE_LABEL_KEYS: Record<EventEntry["kind"], string> = {
   round_start: "type.roundStart",
   round_end: "type.roundEnd",
   objective_captured: "type.objective",
+  engagement: "type.engagement",
   swap: "type.swap",
   ult_used: "type.ult",
   ult_kill: "type.ultKill",
@@ -348,6 +361,32 @@ function EventDetail({
           })}
         </span>
       );
+    case "engagement":
+      return (
+        <div className="flex items-center gap-2">
+          {entry.zone ? (
+            <span className="text-muted-foreground text-xs">{entry.zone}</span>
+          ) : null}
+          <span className="font-mono tabular-nums">
+            {entry.team1Kills}–{entry.team2Kills}
+          </span>
+          {entry.winner !== null ? (
+            <span>
+              <span
+                style={{ color: teamColor(entry.winner) }}
+                className="font-medium"
+              >
+                {teamName(entry.winner)}
+              </span>{" "}
+              {t("detail.engagementWon")}
+            </span>
+          ) : (
+            <span className="text-muted-foreground">
+              {t("detail.engagementEven")}
+            </span>
+          )}
+        </div>
+      );
     case "swap":
       return (
         <div className="flex items-center gap-2">
@@ -387,6 +426,21 @@ function EventDetail({
           {entry.fight !== null ? (
             <span className="text-muted-foreground text-xs">
               {t("detail.fightTag", { number: entry.fight })}
+            </span>
+          ) : null}
+          {entry.conversionKills != null ? (
+            <span className="text-muted-foreground text-xs">
+              · {t("detail.ultConversion", { count: entry.conversionKills })}
+            </span>
+          ) : null}
+          {entry.ultZone ? (
+            <span className="text-muted-foreground text-xs">
+              · {entry.ultZone}
+            </span>
+          ) : null}
+          {entry.diedDuringUlt ? (
+            <span className="text-muted-foreground inline-flex items-center gap-1 text-xs">
+              · <Skull className="size-3" aria-hidden /> {t("detail.ultDied")}
             </span>
           ) : null}
         </div>

@@ -6,7 +6,6 @@ import { GuestNav } from "@/components/guest-nav";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ComparePlayers } from "@/components/map/compare-players";
 import { DefaultOverview } from "@/components/map/default-overview";
-import { FightUltQualityTab } from "@/components/map/fight-ult-quality-tab";
 import { HeatmapTab } from "@/components/map/heatmap/heatmap-tab";
 import { ReplayTab } from "@/components/map/replay/replay-tab";
 import { RoutesTab } from "@/components/map/routes/routes-tab";
@@ -310,11 +309,6 @@ export default async function MapDashboardPage(
                           content: <ReplayTab id={mapDataId} />,
                         },
                         {
-                          value: "ults-and-fights",
-                          label: t("tabs.ultsAndFights"),
-                          content: <FightUltQualityTab id={mapDataId} />,
-                        },
-                        {
                           value: "routes",
                           label: t("tabs.routes"),
                           content: <RoutesTab id={mapDataId} />,
@@ -330,6 +324,7 @@ export default async function MapDashboardPage(
                         id={id}
                         team1Color={team1}
                         team2Color={team2}
+                        includePositional={positionalDataEnabled}
                       />
                     ),
                   },

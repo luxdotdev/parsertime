@@ -2278,7 +2278,6 @@
       "vod": "VOD",
       "heatmap": "Heatmap",
       "replay": "Replay",
-      "ultsAndFights": "Ults & Fights",
       "routes": "Routes"
     },
     "routes": {
@@ -2837,6 +2836,7 @@
         "all": "All",
         "highlights": "Highlights",
         "ultimates": "Ultimates",
+        "fights": "Fights",
         "swaps": "Swaps",
         "objectives": "Objectives",
         "empty": "No events match this filter."
@@ -2847,6 +2847,7 @@
         "roundStart": "Round",
         "roundEnd": "Round end",
         "objective": "Objective",
+        "engagement": "Fight",
         "swap": "Swap",
         "ult": "Ult",
         "ultKill": "Ult kill",
@@ -2863,7 +2864,11 @@
         "fightTag": "Fight {number}",
         "ultKill": "<color>{player}</color> got {count, plural, =1 {one kill} other {# kills}} during their ultimate.",
         "multikill": "<color>{player}</color> got {count, plural, =3 {a triple} =4 {a quad} =5 {a quint} other {a # multi}} kill in fight {fight}.",
-        "ajax": "<color>{player}</color> ajaxed in fight {fight}."
+        "ajax": "<color>{player}</color> ajaxed in fight {fight}.",
+        "engagementWon": "won",
+        "engagementEven": "Even",
+        "ultConversion": "{count} conv",
+        "ultDied": "died"
       },
       "tempo": {
         "title": "Match Tempo",
