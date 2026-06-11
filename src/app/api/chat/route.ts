@@ -6,6 +6,8 @@ import { systemPrompt } from "@/lib/ai/system-prompt";
 import { chatTelemetry } from "@/lib/ai/telemetry";
 import { buildTools } from "@/lib/ai/tools";
 import { auth } from "@/lib/auth";
+import { UsageEventName } from "@/lib/usage/names";
+import { usage } from "@/lib/usage/server";
 import { flagsToBaggage, withRequestContext } from "@/lib/axiom/baggage";
 import {
   MIN_BALANCE_TO_CHAT_CENTS,
@@ -54,6 +56,8 @@ export async function POST(req: Request) {
       status: 429,
     });
   }
+
+  void usage.track({ name: UsageEventName.AI_CHAT_MESSAGE, userId: userData.id });
 
   const balanceCents = await getUserBalance(userData.id);
   if (balanceCents < MIN_BALANCE_TO_CHAT_CENTS) {

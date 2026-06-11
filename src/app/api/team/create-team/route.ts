@@ -8,6 +8,8 @@ import {
   teamCreatedCounter,
   teamQuotaHitCounter,
 } from "@/lib/axiom/metrics";
+import { UsageEventName } from "@/lib/usage/names";
+import { usage } from "@/lib/usage/server";
 import { Logger } from "@/lib/logger";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
@@ -118,6 +120,7 @@ export async function POST(request: NextRequest) {
 
   const { team } = result;
   teamCreatedCounter.add(1, { plan: userId.billingPlan });
+  void usage.track({ name: UsageEventName.TEAM_CREATE, userId: userId.id, props: { plan: userId.billingPlan } });
 
   after(async () => {
     await auditLog.createAuditLog({

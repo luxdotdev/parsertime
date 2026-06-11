@@ -9,6 +9,8 @@ import {
   scrimCreatedCounter,
   scrimParsingDuration,
 } from "@/lib/axiom/metrics";
+import { UsageEventName } from "@/lib/usage/names";
+import { usage } from "@/lib/usage/server";
 import { sendScrimNotifications } from "@/lib/bot-events";
 import { Logger } from "@/lib/logger";
 import { createNewScrimFromParsedData } from "@/lib/parser";
@@ -236,6 +238,7 @@ export async function POST(request: NextRequest) {
         const parseDuration = performance.now() - parseStart;
         scrimParsingDuration.record(parseDuration);
         scrimCreatedCounter.add(1);
+        void usage.track({ name: UsageEventName.SCRIM_CREATE, userId: user.id, teamId });
 
         event.parse_duration_ms = Math.round(parseDuration);
         event.scrim_id = newScrimId;

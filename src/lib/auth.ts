@@ -7,6 +7,8 @@ import {
   authSignInCounter,
   rateLimitHitCounter,
 } from "@/lib/axiom/metrics";
+import { UsageEventName } from "@/lib/usage/names";
+import { usage } from "@/lib/usage/server";
 import { email } from "@/lib/email";
 import { createShortLink } from "@/lib/link-service";
 import { Logger } from "@/lib/logger";
@@ -205,9 +207,11 @@ export const config = {
       }
 
       authSignInCounter.add(1);
+      void usage.track({ name: UsageEventName.SIGNIN, userId: user.id });
 
       if (isNewUser) {
         authNewUserCounter.add(1);
+        void usage.track({ name: UsageEventName.SIGNUP, userId: user.id });
         // Log new user signups
         Logger.info(`New user signed up: ${user.email}`);
 

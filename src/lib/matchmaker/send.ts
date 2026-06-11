@@ -1,6 +1,8 @@
 import prisma from "@/lib/prisma";
 import { sendScrimRequestNotification } from "@/lib/bot-events";
 import { matchmakerCounter } from "@/lib/axiom/metrics";
+import { UsageEventName } from "@/lib/usage/names";
+import { usage } from "@/lib/usage/server";
 import { renderScrimRequestMessage } from "@/lib/matchmaker/messages";
 import { getTierBucket } from "@/lib/tsr/tier-bucket";
 import { getPlayerTsrByBattletag } from "@/lib/tsr/lookup";
@@ -145,6 +147,11 @@ export async function sendScrimRequest(input: {
   if (!created.ok) return created;
 
   matchmakerCounter.add(1, { outcome: "sent" });
+  void usage.track({
+    name: UsageEventName.MATCHMAKER_REQUEST,
+    userId: input.sentByUserId,
+    teamId: input.fromTeamId,
+  });
 
   const senderUser = await prisma.user.findUnique({
     where: { id: input.sentByUserId },
