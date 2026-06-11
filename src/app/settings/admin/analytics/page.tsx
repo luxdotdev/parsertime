@@ -8,6 +8,11 @@ import { ScrimActivityChart } from "@/components/admin/scrim-activity-chart";
 import { SignupMethodPieChart } from "@/components/admin/signup-method-pie-chart";
 import { TeamCreationChart } from "@/components/admin/team-creation-chart";
 import { TeamManagerPieChart } from "@/components/admin/team-manager-pie-chart";
+import { ActiveUsersChart } from "@/components/admin/usage/active-users-chart";
+import { EnvSelector } from "@/components/admin/usage/env-selector";
+import { FeatureAdoptionChart } from "@/components/admin/usage/feature-adoption-chart";
+import { HotColdTable } from "@/components/admin/usage/hot-cold-table";
+import { UsageScorecard } from "@/components/admin/usage/scorecard";
 import { NoAuthCard } from "@/components/auth/no-auth";
 import {
   Card,
@@ -17,12 +22,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Effect } from "effect";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import {
+  getDailyActiveSeries,
+  getFeatureAdoption,
+  getPageHeat,
+  getScorecard,
+} from "@/lib/usage/queries";
 import { $Enums } from "@prisma/client";
+import type { UsageEnv } from "@prisma/client";
+import { Effect } from "effect";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
@@ -382,7 +395,9 @@ async function getTeamActivityData(firstUserDate: Date) {
   return { monthlyActivity: { twelveMonth, historical }, pieData };
 }
 
-export default async function AdminAnalyticsPage() {
+export default async function AdminAnalyticsPage(props: {
+  searchParams: Promise<{ env?: string }>;
+}) {
   const session = await auth();
   if (!session?.user) {
     redirect("/sign-in");
@@ -400,6 +415,12 @@ export default async function AdminAnalyticsPage() {
 
   const t = await getTranslations("settingsPage.admin.analytics");
 
+  const sp = await props.searchParams;
+  const envParam = (Array.isArray(sp.env) ? sp.env[0] : sp.env) ?? "PRODUCTION";
+  const env: UsageEnv = ["PRODUCTION", "PREVIEW", "DEVELOPMENT"].includes(envParam)
+    ? (envParam as UsageEnv)
+    : "PRODUCTION";
+
   const firstUser = await prisma.user.findFirst({
     orderBy: { createdAt: "asc" },
     select: { createdAt: true },
@@ -415,6 +436,10 @@ export default async function AdminAnalyticsPage() {
     billingPlanData,
     userActivityData,
     teamActivityData,
+    scorecard,
+    adoption,
+    activeSeries,
+    pageHeat,
   ] = await Promise.all([
     getMonthlyUserData(firstUserDate),
     getScrimActivityData(),
@@ -424,6 +449,10 @@ export default async function AdminAnalyticsPage() {
     getBillingPlanData(),
     getUserActivityData(firstUserDate),
     getTeamActivityData(firstUserDate),
+    getScorecard(env),
+    getFeatureAdoption(env),
+    getDailyActiveSeries(env),
+    getPageHeat(env),
   ]);
 
   return (
@@ -433,132 +462,179 @@ export default async function AdminAnalyticsPage() {
         <p className="text-muted-foreground text-sm">{t("description")}</p>
       </div>
       <Separator />
-      <div className="space-y-6">
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("activeUsers.title")}</CardTitle>
-              <CardDescription>{t("activeUsers.description")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ActiveUsersPieChart data={userActivityData.pieData} />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("monthlyActiveUsers.title")}</CardTitle>
-              <CardDescription>
-                {t("monthlyActiveUsers.description")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <MonthlyActiveUsersChart
-                twelveMonth={userActivityData.monthlyActivity.twelveMonth}
-                historical={userActivityData.monthlyActivity.historical}
-              />
-            </CardContent>
-          </Card>
-        </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("activeTeams.title")}</CardTitle>
-              <CardDescription>{t("activeTeams.description")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ActiveTeamsPieChart data={teamActivityData.pieData} />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("monthlyActiveTeams.title")}</CardTitle>
-              <CardDescription>
-                {t("monthlyActiveTeams.description")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <MonthlyActiveTeamsChart
-                twelveMonth={teamActivityData.monthlyActivity.twelveMonth}
-                historical={teamActivityData.monthlyActivity.historical}
-              />
-            </CardContent>
-          </Card>
-        </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("userGrowth.title")}</CardTitle>
-              <CardDescription>{t("userGrowth.description")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <MonthlyUserChart
-                twelveMonth={monthlyUserData.twelveMonth}
-                historical={monthlyUserData.historical}
-              />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("signupMethods.title")}</CardTitle>
-              <CardDescription>
-                {t("signupMethods.description")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <SignupMethodPieChart data={signupMethodData} />
-            </CardContent>
-          </Card>
-        </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("billingPlans.title")}</CardTitle>
-              <CardDescription>{t("billingPlans.description")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <BillingPlanPieChart data={billingPlanData} />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("scrimActivity.title")}</CardTitle>
-              <CardDescription>
-                {t("scrimActivity.description")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ScrimActivityChart data={scrimActivityData} />
-            </CardContent>
-          </Card>
-        </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("teamCreations.title")}</CardTitle>
-              <CardDescription>
-                {t("teamCreations.description")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <TeamCreationChart
-                twelveMonth={teamCreationData.twelveMonth}
-                historical={teamCreationData.historical}
-              />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("teamManagerDistribution.title")}</CardTitle>
-              <CardDescription>
-                {t("teamManagerDistribution.description")}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <TeamManagerPieChart data={teamManagerData} />
-            </CardContent>
-          </Card>
-        </div>
+      <div className="flex items-center justify-between">
+        <EnvSelector current={env} />
       </div>
+
+      <UsageScorecard data={scorecard} />
+
+      <Tabs defaultValue="growth" className="w-full">
+        <TabsList>
+          <TabsTrigger value="growth">{t("tabs.growth")}</TabsTrigger>
+          <TabsTrigger value="adoption">{t("tabs.adoption")}</TabsTrigger>
+          <TabsTrigger value="activity">{t("tabs.activity")}</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="growth" className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("activeUsers.title")}</CardTitle>
+                <CardDescription>{t("activeUsers.description")}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ActiveUsersPieChart data={userActivityData.pieData} />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("monthlyActiveUsers.title")}</CardTitle>
+                <CardDescription>
+                  {t("monthlyActiveUsers.description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <MonthlyActiveUsersChart
+                  twelveMonth={userActivityData.monthlyActivity.twelveMonth}
+                  historical={userActivityData.monthlyActivity.historical}
+                />
+              </CardContent>
+            </Card>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("activeTeams.title")}</CardTitle>
+                <CardDescription>{t("activeTeams.description")}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ActiveTeamsPieChart data={teamActivityData.pieData} />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("monthlyActiveTeams.title")}</CardTitle>
+                <CardDescription>
+                  {t("monthlyActiveTeams.description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <MonthlyActiveTeamsChart
+                  twelveMonth={teamActivityData.monthlyActivity.twelveMonth}
+                  historical={teamActivityData.monthlyActivity.historical}
+                />
+              </CardContent>
+            </Card>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("userGrowth.title")}</CardTitle>
+                <CardDescription>{t("userGrowth.description")}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <MonthlyUserChart
+                  twelveMonth={monthlyUserData.twelveMonth}
+                  historical={monthlyUserData.historical}
+                />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("signupMethods.title")}</CardTitle>
+                <CardDescription>
+                  {t("signupMethods.description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <SignupMethodPieChart data={signupMethodData} />
+              </CardContent>
+            </Card>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("billingPlans.title")}</CardTitle>
+                <CardDescription>{t("billingPlans.description")}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <BillingPlanPieChart data={billingPlanData} />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("scrimActivity.title")}</CardTitle>
+                <CardDescription>
+                  {t("scrimActivity.description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ScrimActivityChart data={scrimActivityData} />
+              </CardContent>
+            </Card>
+          </div>
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("teamCreations.title")}</CardTitle>
+                <CardDescription>
+                  {t("teamCreations.description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <TeamCreationChart
+                  twelveMonth={teamCreationData.twelveMonth}
+                  historical={teamCreationData.historical}
+                />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("teamManagerDistribution.title")}</CardTitle>
+                <CardDescription>
+                  {t("teamManagerDistribution.description")}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <TeamManagerPieChart data={teamManagerData} />
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="adoption" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("usage.adoptionTitle")}</CardTitle>
+              <CardDescription>{t("usage.adoptionDescription")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <FeatureAdoptionChart data={adoption} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="activity" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("usage.activeUsersTitle")}</CardTitle>
+              <CardDescription>{t("usage.activeUsersDescription")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ActiveUsersChart data={activeSeries} />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("usage.hotColdTitle")}</CardTitle>
+              <CardDescription>{t("usage.hotColdDescription")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <HotColdTable data={pageHeat} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
