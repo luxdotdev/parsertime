@@ -2278,7 +2278,6 @@
       "vod": "VOD",
       "heatmap": "热力图",
       "replay": "回放",
-      "ultsAndFights": "终极技能与团战",
       "routes": "路线"
     },
     "routes": {
@@ -2837,6 +2836,7 @@
         "all": "全部",
         "highlights": "亮点",
         "ultimates": "终极技能",
+        "fights": "团战",
         "swaps": "切换",
         "objectives": "目标",
         "empty": "没有事件匹配该筛选条件。"
@@ -2847,6 +2847,7 @@
         "roundStart": "回合",
         "roundEnd": "回合结束",
         "objective": "目标",
+        "engagement": "团战",
         "swap": "切换",
         "ult": "终极",
         "ultKill": "终极击杀",
@@ -2863,7 +2864,11 @@
         "fightTag": "战斗 {number}",
         "ultKill": "<color>{player}</color> 在终极技能期间击杀了 {count, plural, =1 {一名玩家} other {# 名玩家}}。",
         "multikill": "<color>{player}</color> 在第 {fight} 场战斗中完成 {count, plural, =3 {三} =4 {四} =5 {五} other {# 连}} 杀。",
-        "ajax": "<color>{player}</color> 在第 {fight} 场战斗中触发了亚克斯现象。"
+        "ajax": "<color>{player}</color> 在第 {fight} 场战斗中触发了亚克斯现象。",
+        "engagementWon": "获胜",
+        "engagementEven": "平局",
+        "ultConversion": "{count} 转化",
+        "ultDied": "阵亡"
       },
       "tempo": {
         "title": "比赛节奏",

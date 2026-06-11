@@ -6,12 +6,14 @@ export async function MapEvents({
   id,
   team1Color,
   team2Color,
+  includePositional = false,
 }: {
   id: number;
   team1Color: string;
   team2Color: string;
+  includePositional?: boolean;
 }) {
-  const data = await getMapEventsData(id);
+  const data = await getMapEventsData(id, includePositional);
   const t = await getTranslations("mapPage.events");
 
   if (!data) {

@@ -2278,7 +2278,6 @@
       "vod": "VOD",
       "heatmap": "히트맵",
       "replay": "리플레이",
-      "ultsAndFights": "궁극기 & 교전",
       "routes": "이동 경로"
     },
     "routes": {
@@ -2837,6 +2836,7 @@
         "all": "전체",
         "highlights": "하이라이트",
         "ultimates": "궁극기",
+        "fights": "교전",
         "swaps": "변경",
         "objectives": "목표",
         "empty": "이 필터와 일치하는 이벤트가 없습니다."
@@ -2847,6 +2847,7 @@
         "roundStart": "라운드",
         "roundEnd": "라운드 종료",
         "objective": "목표",
+        "engagement": "교전",
         "swap": "변경",
         "ult": "궁극기",
         "ultKill": "궁극기 처치",
@@ -2863,7 +2864,11 @@
         "fightTag": "전투 {number}",
         "ultKill": "<color>{player}</color>이(가) 궁극기를 사용해 {count, plural, =1 {한 명을} other {#명을}} 처치했습니다.",
         "multikill": "<color>{player}</color>이(가) 전투 {fight}에서 {count, plural, =3 {트리플} =4 {쿼드} =5 {퀸텀플} other {#-멀티}} 킬을 기록했습니다.",
-        "ajax": "<color>{player}</color>이(가) 전투 {fight}에서 에이잭스를 기록했습니다."
+        "ajax": "<color>{player}</color>이(가) 전투 {fight}에서 에이잭스를 기록했습니다.",
+        "engagementWon": "승리",
+        "engagementEven": "무승부",
+        "ultConversion": "{count} 전환",
+        "ultDied": "사망"
       },
       "tempo": {
         "title": "경기 템포",
