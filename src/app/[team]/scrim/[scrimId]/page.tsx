@@ -6,6 +6,7 @@ import { ClientDate } from "@/components/scrim/client-date";
 import { CompareSelectedButton } from "@/components/scrim/compare-selected-button";
 import { MapCardWithSelection } from "@/components/scrim/map-card-with-selection";
 import { PositionalStatsSection } from "@/components/scrim/positional-stats-section";
+import { ScrimOverviewUnavailable } from "@/components/scrim/scrim-overview-unavailable";
 import {
   ScrimOverviewSection,
   WinLossBadge,
@@ -183,8 +184,18 @@ export default async function ScrimDashboardPage(
       : Promise.resolve(null),
   ]);
 
+  // The overview's roster-identity heuristic (getTeamRoster) anchors on the
+  // most-frequent player across the team's maps, which can't reliably tell
+  // which side is "our team" until the team has at least two scrims. Mirror
+  // the team stats page (totalScrimCount < 2 -> placeholder) and skip the
+  // overview for new teams rather than render a possibly-inverted record.
+  const totalScrimCount = teamId
+    ? await prisma.scrim.count({ where: { teamId } })
+    : 0;
+  const isNewTeam = teamId !== null && totalScrimCount < 2;
+
   const overviewData =
-    overviewCardEnabled && maps.length > 0 && teamId
+    overviewCardEnabled && maps.length > 0 && teamId && !isNewTeam
       ? await AppRuntime.runPromise(
           ScrimOverviewService.pipe(
             Effect.flatMap((svc) => svc.getScrimOverview(id, teamId))
@@ -195,6 +206,8 @@ export default async function ScrimDashboardPage(
     overviewData !== null &&
     overviewData.mapCount > 0 &&
     overviewData.teamPlayers.length > 0;
+  const showOverviewUnavailable =
+    overviewCardEnabled && isNewTeam && maps.length > 0;
 
   const positionalStats =
     showPositional && maps.length > 0
@@ -331,6 +344,10 @@ export default async function ScrimDashboardPage(
                 positionalStats={positionalStats}
                 positionalArtifacts={positionalArtifacts}
               />
+            </div>
+          ) : showOverviewUnavailable ? (
+            <div className="mt-8">
+              <ScrimOverviewUnavailable />
             </div>
           ) : (
             showPositional &&
