@@ -27,15 +27,17 @@ export function FeatureAdoptionChart({ data }: { data: FeatureAdoptionRow[] }) {
         />
         <Tooltip
           cursor={{ fillOpacity: 0.1 }}
-          content={({ active, payload }) =>
-            active && payload?.length ? (
+          content={({ active, payload }) => {
+            if (!active || !payload?.length) return null;
+            const row = payload[0]?.payload as FeatureAdoptionRow;
+            return (
               <div className="bg-popover text-popover-foreground rounded-md border p-2 text-sm shadow-md">
-                <div className="font-medium">{payload[0]?.payload.name}</div>
-                <div>{t("uniqueUsers")}: {payload[0]?.payload.uniqueUsers}</div>
-                <div>{t("totalEvents")}: {payload[0]?.payload.totalEvents}</div>
+                <div className="font-medium">{row.name}</div>
+                <div>{t("uniqueUsers")}: {row.uniqueUsers}</div>
+                <div>{t("totalEvents")}: {row.totalEvents}</div>
               </div>
-            ) : null
-          }
+            );
+          }}
         />
         <Bar dataKey="uniqueUsers" fill="var(--chart-1)" radius={4} />
       </BarChart>

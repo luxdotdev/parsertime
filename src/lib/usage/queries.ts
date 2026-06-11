@@ -107,7 +107,7 @@ async function loadFunnels(env: UsageEnv, days: number): Promise<FunnelResult[]>
     where: { environment: env, ts: { gte: since }, name: { in: names }, userId: { not: null } },
     select: { userId: true, name: true },
   });
-  const funnelRows = rows.map((r) => ({ userId: r.userId as string, name: r.name }));
+  const funnelRows = rows.map((r) => ({ userId: r.userId!, name: r.name }));
 
   return FUNNELS.map((f) => ({ key: f.key, steps: computeFunnel(funnelRows, f.steps) }));
 }

@@ -39,15 +39,15 @@ export function computeFunnel(
   const counts = steps.map(() => 0);
   for (const set of byUser.values()) {
     for (let i = 0; i < steps.length; i++) {
-      if (set.has(steps[i]!)) counts[i]! += 1;
+      if (set.has(steps[i])) counts[i] += 1;
       else break; // ordered: stop at the first missing step
     }
   }
 
   return steps.map((name, i) => ({
     name,
-    users: counts[i]!,
+    users: counts[i],
     conversion:
-      i === 0 ? 1 : counts[i - 1] === 0 ? 0 : counts[i]! / counts[i - 1]!,
+      i === 0 ? 1 : counts[i - 1] === 0 ? 0 : counts[i] / counts[i - 1],
   }));
 }

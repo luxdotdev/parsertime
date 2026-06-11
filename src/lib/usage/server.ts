@@ -64,7 +64,9 @@ function createService(): Effect.Effect<Service, never> {
   return Effect.succeed(service);
 }
 
-export const layer = () => Layer.effect(EventService, createService());
+export function layer() {
+  return Layer.effect(EventService, createService());
+}
 const usageRuntime = ManagedRuntime.make(layer());
 
 /**

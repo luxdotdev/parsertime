@@ -8,7 +8,7 @@ import { usage } from "@/lib/usage/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { ipAddress } from "@vercel/functions";
 import { kv } from "@vercel/kv";
-import { type NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import { z } from "zod";
 
 export const runtime = "nodejs";
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
   if (session?.user?.email) {
     const user = await AppRuntime.runPromise(
       UserService.pipe(
-        Effect.flatMap((svc) => svc.getUser(session.user!.email))
+        Effect.flatMap((svc) => svc.getUser(session.user.email))
       )
     ).catch(() => null);
     userId = user?.id ?? null;
