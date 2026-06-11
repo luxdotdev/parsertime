@@ -10,3 +10,7 @@ export const ROUTE_CLUSTER_THRESHOLD_M = 15;
 export const TENDENCIES_SCRIM_WINDOW = 10;
 /** Tendencies pools at most this many MapData rows per map. */
 export const TENDENCIES_MAX_MAPDATA = 30;
+/** Consecutive samples further apart than this (seconds) split a route. */
+export const MAX_SAMPLE_GAP_SEC = 10;
+/** ... or further apart than this (meters). */
+export const MAX_SAMPLE_JUMP_M = 40;

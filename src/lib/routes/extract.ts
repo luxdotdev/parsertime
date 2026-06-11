@@ -1,4 +1,9 @@
-import { MIN_ROUTE_LENGTH_M, MIN_ROUTE_POINTS } from "@/lib/routes/constants";
+import {
+  MAX_SAMPLE_GAP_SEC,
+  MAX_SAMPLE_JUMP_M,
+  MIN_ROUTE_LENGTH_M,
+  MIN_ROUTE_POINTS,
+} from "@/lib/routes/constants";
 
 export type RouteSample = {
   t: number;
@@ -69,14 +74,42 @@ export function extractRoutes(
       const start = lifeStarts[i];
       const lifeEnd = i + 1 < lifeStarts.length ? lifeStarts[i + 1].t : maxTime;
 
+      // RESPAWN lives anchor at the first sample strictly after the
+      // death — the killing blow is itself a contact at the death
+      // timestamp and must not terminate the life it starts.
+      let windowStart = start.t;
+      if (start.kind === "RESPAWN") {
+        const anchor = mySamples.find((s) => s.t > start.t);
+        if (!anchor || anchor.t >= lifeEnd) continue;
+        windowStart = anchor.t;
+      }
+
       const contact = sortedContacts.find(
-        (c) => c.t >= start.t && c.t <= lifeEnd && c.players.includes(player)
+        (c) =>
+          c.t >= windowStart && c.t <= lifeEnd && c.players.includes(player)
       );
       if (!contact) continue;
 
-      const points = mySamples.filter(
-        (s) => s.t >= start.t && s.t <= contact.t
+      let points = mySamples.filter(
+        (s) => s.t >= windowStart && s.t <= contact.t
       );
+
+      // Positions only exist at event moments, so unsampled travel must
+      // never be bridged with invented straight lines: keep only the
+      // final contiguous segment — the approach into the contact.
+      let segmentStart = 0;
+      for (let j = 1; j < points.length; j++) {
+        const dt = points[j].t - points[j - 1].t;
+        const jump = Math.hypot(
+          points[j].x - points[j - 1].x,
+          points[j].z - points[j - 1].z
+        );
+        if (dt > MAX_SAMPLE_GAP_SEC || jump > MAX_SAMPLE_JUMP_M) {
+          segmentStart = j;
+        }
+      }
+      points = points.slice(segmentStart);
+
       if (points.length < MIN_ROUTE_POINTS) continue;
       const coords = points.map((p) => ({ x: p.x, z: p.z }));
       if (pathLength(coords) < MIN_ROUTE_LENGTH_M) continue;

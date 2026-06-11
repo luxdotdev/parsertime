@@ -9,6 +9,10 @@ import {
   type RouteSample,
 } from "@/lib/routes/extract";
 import {
+  buildObjectivePeriods,
+  objectivePeriodOutcomes,
+} from "@/lib/routes/objective-outcome";
+import {
   partitionRoutesByObjective,
   type ObjectiveRoundMark,
 } from "@/lib/routes/partition";
@@ -174,6 +178,8 @@ async function loadRouteContext(
     ability2,
     ultStarts,
     ultEnds,
+    objectiveUpdated,
+    objectiveCaptured,
     roundStarts,
     roundEnds,
     matchStart,
@@ -259,6 +265,16 @@ async function loadRouteContext(
         player_x: true,
         player_z: true,
       },
+    }),
+    prisma.objectiveUpdated.findMany({
+      where: { MapDataId: mapDataId },
+      select: { match_time: true, round_number: true },
+      orderBy: { match_time: "asc" },
+    }),
+    prisma.objectiveCaptured.findMany({
+      where: { MapDataId: mapDataId },
+      select: { match_time: true, capturing_team: true },
+      orderBy: { match_time: "asc" },
     }),
     prisma.roundStart.findMany({
       where: { MapDataId: mapDataId },
@@ -419,15 +435,45 @@ async function loadRouteContext(
   // No coordinate data at all → empty state.
   if (samples.length === 0) return null;
 
+  // Life boundaries: round starts plus objective transitions. Flashpoint
+  // logs emit a single round_start, so the per-flashpoint transitions in
+  // ObjectiveUpdated (which carry the new round's number) are the real
+  // boundaries there; on Control they coincide with round starts and are
+  // deduped away.
+  const boundaryMarks = roundStarts.map((r) => ({
+    t: r.match_time,
+    roundNumber: r.round_number,
+  }));
+  for (const o of objectiveUpdated) {
+    if (boundaryMarks.some((m) => Math.abs(m.t - o.match_time) < 2)) continue;
+    boundaryMarks.push({ t: o.match_time, roundNumber: o.round_number });
+  }
+
   const routes = extractRoutes(
     samples,
     contacts,
     deaths,
-    roundStarts.map((r) => ({ t: r.match_time, roundNumber: r.round_number })),
+    boundaryMarks,
     maxTime
   );
 
-  const outcomes = roundOutcomes(
+  // Outcome resolution: RoundEnd score deltas where decisive, objective
+  // capture periods as the fallback (the only working source on
+  // Flashpoint, where RoundEnd is a single final-score row).
+  const captureOutcomes = objectivePeriodOutcomes(
+    buildObjectivePeriods(
+      objectiveUpdated.map((o) => ({
+        t: o.match_time,
+        roundNumber: o.round_number,
+      })),
+      maxTime
+    ),
+    objectiveCaptured.map((c) => ({
+      t: c.match_time,
+      capturingTeam: c.capturing_team,
+    }))
+  );
+  const scoreOutcomes = roundOutcomes(
     roundEnds.map((r) => ({
       roundNumber: r.round_number,
       team1Score: r.team_1_score,
@@ -436,6 +482,11 @@ async function loadRouteContext(
     team1Name,
     team2Name
   );
+  const outcomes = new Map<number, string | null>(captureOutcomes);
+  for (const [round, winner] of scoreOutcomes) {
+    if (winner != null) outcomes.set(round, winner);
+    else if (!outcomes.has(round)) outcomes.set(round, null);
+  }
 
   const zoneContext = await loadZoneContext(mapDataId);
 
