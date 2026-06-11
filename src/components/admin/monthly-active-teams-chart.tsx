@@ -108,6 +108,7 @@ function renderChart(
           connectNulls
           isAnimationActive={false}
           legendType="none"
+          tooltipType="none"
         />
       </LineChart>
     </ChartContainer>
