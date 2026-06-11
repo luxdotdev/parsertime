@@ -50,12 +50,14 @@ export function PositionalOutcomeBars({
   labels,
   showLabels = true,
   showMeta = true,
+  showLegend = true,
 }: {
   rows: OutcomeRow[];
   /** Segment names: [won, neutral, lost]. */
   labels: { won: string; neutral: string; lost: string };
   showLabels?: boolean;
   showMeta?: boolean;
+  showLegend?: boolean;
 }) {
   const enriched: EnrichedRow[] = rows
     .map((r) => ({ ...r, total: r.won + r.lost + r.neutral }))
@@ -70,11 +72,13 @@ export function PositionalOutcomeBars({
 
   return (
     <div className="space-y-2.5">
-      <div className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[10px] tracking-[0.06em] uppercase">
-        <LegendChip color={WON_COLOR} label={labels.won} />
-        <LegendChip color={NEUTRAL_COLOR} label={labels.neutral} />
-        <LegendChip color={LOST_COLOR} label={labels.lost} />
-      </div>
+      {showLegend && (
+        <div className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[10px] tracking-[0.06em] uppercase">
+          <LegendChip color={WON_COLOR} label={labels.won} />
+          <LegendChip color={NEUTRAL_COLOR} label={labels.neutral} />
+          <LegendChip color={LOST_COLOR} label={labels.lost} />
+        </div>
+      )}
 
       <ul className="space-y-1.5">
         {enriched.map((row) => (

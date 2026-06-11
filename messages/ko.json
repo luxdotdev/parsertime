@@ -1585,6 +1585,10 @@
       "lostLabel": "패배",
       "evenLabel": "무승부",
       "zonesTitle": "맵별 구역 장악",
+      "zonesYourTeam": "우리 팀",
+      "zonesOpponents": "상대 팀",
+      "zonesCount": "구역 {count}개",
+      "zonesControlPct": "{pct}% 장악",
       "routesTitle": "맵별 이동 경로",
       "routesSummary": "경로 {total}개 · {won}승 / {lost}패",
       "routesUndecided": "미정",
@@ -6407,6 +6411,12 @@
       "trendsTitle": "추세",
       "playersTitle": "선수별 분석",
       "playerColumn": "선수",
+      "matrix": {
+        "below": "중앙값 미만",
+        "above": "중앙값 초과",
+        "legend": "색조는 각 값이 해당 스탯의 로스터 중앙값에서 벗어난 정도를 나타냅니다."
+      },
+      "byZoneTitle": "구역별 승 / 패 / 무",
       "empty": "아직 위치 데이터가 없습니다. 좌표 추적이 포함된 스크림을 업로드하면 통계가 표시됩니다.",
       "stats": {
         "AVERAGE_ENGAGEMENT_DISTANCE": {
@@ -6450,6 +6460,10 @@
       "lostLabel": "패배",
       "evenLabel": "무승부",
       "zonesTitle": "맵별 구역 장악",
+      "zonesYourTeam": "우리 팀",
+      "zonesOpponents": "상대 팀",
+      "zonesCount": "구역 {count}개",
+      "zonesControlPct": "{pct}% 장악",
       "routesTitle": "맵별 이동 경로",
       "routesSummary": "경로 {total}개 · {won}승 / {lost}패",
       "routesUndecided": "미정",

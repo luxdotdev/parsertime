@@ -1,7 +1,7 @@
 "use client";
 
-import { PositionalOutcomeBars } from "@/components/scrim/positional-outcome-bars";
-import { PositionalStatHeatmap } from "@/components/scrim/positional-stat-heatmap";
+import { PositionalOutcomeBars } from "@/components/positional/positional-outcome-bars";
+import { PositionalStatHeatmap } from "@/components/positional/positional-stat-heatmap";
 import { Separator } from "@/components/ui/separator";
 import {
   Table,
@@ -70,7 +70,19 @@ export function PositionalStatsSection({
     <section aria-label={t("title")} className="space-y-6">
       <p className="text-muted-foreground text-sm">{t("description")}</p>
 
-      <PositionalStatHeatmap data={data} />
+      <PositionalStatHeatmap
+        players={data.players}
+        playerLabel={t("playerColumn")}
+        statLabel={(stat) => ({
+          short: t(`stats.${stat}.short`),
+          full: t(`stats.${stat}.full`),
+        })}
+        legend={{
+          below: t("matrix.below"),
+          above: t("matrix.above"),
+          caption: t("matrix.legend"),
+        }}
+      />
 
       {showEngagements && (
         <>

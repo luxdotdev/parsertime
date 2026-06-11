@@ -1585,6 +1585,10 @@
       "lostLabel": "Lost",
       "evenLabel": "Even",
       "zonesTitle": "Zone control by map",
+      "zonesYourTeam": "Your team",
+      "zonesOpponents": "Opponents",
+      "zonesCount": "{count, plural, one {# zone} other {# zones}}",
+      "zonesControlPct": "{pct}% control",
       "routesTitle": "Routes by map",
       "routesSummary": "{total} routes · {won} won / {lost} lost",
       "routesUndecided": "Undecided",
@@ -7056,6 +7060,12 @@
       "trendsTitle": "Trends",
       "playersTitle": "Per-player breakdown",
       "playerColumn": "Player",
+      "matrix": {
+        "below": "Below median",
+        "above": "Above median",
+        "legend": "Tint shows each value's deviation from the roster median for that stat."
+      },
+      "byZoneTitle": "Won / lost / even by zone",
       "empty": "No positional data yet. Stats appear once scrims with coordinate tracking are uploaded.",
       "stats": {
         "AVERAGE_ENGAGEMENT_DISTANCE": {
@@ -7099,6 +7109,10 @@
       "lostLabel": "Lost",
       "evenLabel": "Even",
       "zonesTitle": "Zone control by map",
+      "zonesYourTeam": "Your team",
+      "zonesOpponents": "Opponents",
+      "zonesCount": "{count, plural, one {# zone} other {# zones}}",
+      "zonesControlPct": "{pct}% control",
       "routesTitle": "Routes by map",
       "routesSummary": "{total} routes · {won} won / {lost} lost",
       "routesUndecided": "Undecided",

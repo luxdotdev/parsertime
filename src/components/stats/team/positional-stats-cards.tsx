@@ -1,6 +1,15 @@
 "use client";
 
+import { PositionalOutcomeBars } from "@/components/positional/positional-outcome-bars";
+import { PositionalStatHeatmap } from "@/components/positional/positional-stat-heatmap";
+import { ZoneControlByMap } from "@/components/positional/zone-control-by-map";
 import { SectionHeader } from "@/components/stats/team/section-header";
+import type { ChartConfig } from "@/components/ui/chart";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import {
   Empty,
   EmptyDescription,
@@ -8,19 +17,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import type { TeamPositionalArtifacts } from "@/data/team/positional-artifacts-service";
 import type { TeamPositionalStats } from "@/data/team/positional-stats-service";
 import {
@@ -28,42 +24,13 @@ import {
   POSITIONAL_STAT_KEYS,
   type PositionalStatKey,
 } from "@/lib/positional-stat-display";
-import type { ZoneCountRow } from "@/lib/zones/analytics";
 import { ChartBar } from "lucide-react";
 import { useTranslations } from "next-intl";
-import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip as RechartsTooltip,
-  type TooltipProps,
-  XAxis,
-  YAxis,
-} from "recharts";
-import type {
-  NameType,
-  ValueType,
-} from "recharts/types/component/DefaultTooltipContent";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 type TrendPoint = TeamPositionalStats["trends"][string][number];
 
 const EM_DASH = "—";
-
-type ZoneGroup = { zoneName: string; rows: ZoneCountRow[] };
-
-function groupZoneRows(rows: ZoneCountRow[]): ZoneGroup[] {
-  const groups = new Map<string, ZoneCountRow[]>();
-  for (const row of rows) {
-    const existing = groups.get(row.zoneName);
-    if (existing) existing.push(row);
-    else groups.set(row.zoneName, [row]);
-  }
-  return [...groups.entries()].map(([zoneName, zoneRows]) => ({
-    zoneName,
-    rows: zoneRows,
-  }));
-}
 
 function formatWinrate(winratePercent: number | null): string {
   return winratePercent === null ? EM_DASH : `${winratePercent.toFixed(1)}%`;
@@ -94,25 +61,6 @@ function formatTrendDate(iso: string): string {
   });
 }
 
-type TrendTooltipProps = TooltipProps<ValueType, NameType> & {
-  stat: PositionalStatKey;
-};
-
-function TrendTooltip({ active, payload, stat }: TrendTooltipProps) {
-  if (active && payload?.length) {
-    const point = payload[0].payload as TrendPoint;
-    return (
-      <div className="bg-popover text-popover-foreground border-border z-50 overflow-hidden rounded-md border px-3 py-2 shadow-xl">
-        <p className="text-sm font-semibold">{formatTrendDate(point.date)}</p>
-        <p className="text-sm tabular-nums">
-          {POSITIONAL_STAT_FORMATTERS[stat](point.value)}
-        </p>
-      </div>
-    );
-  }
-  return null;
-}
-
 function TrendSparkline({
   stat,
   series,
@@ -122,43 +70,69 @@ function TrendSparkline({
   series: TrendPoint[];
   label: string;
 }) {
+  const chartConfig: ChartConfig = {
+    value: { label, color: "var(--chart-1)" },
+  };
+  const fillId = `trend-fill-${stat}`;
+
   return (
-    <div className="bg-card border-border flex flex-col gap-2 rounded-md border p-4">
+    <div className="bg-card flex flex-col gap-2 p-4">
       <p className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
         {label}
       </p>
-      <ResponsiveContainer width="100%" height={120}>
-        <LineChart
+      <ChartContainer config={chartConfig} className="h-[120px] w-full">
+        <AreaChart
+          accessibilityLayer
           data={series}
-          margin={{ top: 5, right: 8, left: 0, bottom: 0 }}
+          margin={{ left: 8, right: 16, top: 8, bottom: 4 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+          <CartesianGrid vertical={false} stroke="var(--border)" />
           <XAxis
             dataKey="date"
-            tickFormatter={formatTrendDate}
-            stroke="var(--muted-foreground)"
-            tick={{ fill: "var(--muted-foreground)", fontSize: 10 }}
+            tickLine={false}
+            axisLine={false}
+            tickMargin={8}
             minTickGap={16}
+            tickFormatter={formatTrendDate}
+            className="text-xs"
           />
           <YAxis
-            width={36}
-            stroke="var(--muted-foreground)"
-            tick={{ fill: "var(--muted-foreground)", fontSize: 10 }}
-            tickFormatter={(value) =>
+            tickLine={false}
+            axisLine={false}
+            width={40}
+            tickFormatter={(value: number) =>
               POSITIONAL_STAT_FORMATTERS[stat](Number(value))
             }
           />
-          <RechartsTooltip content={<TrendTooltip stat={stat} />} />
-          <Line
+          <ChartTooltip
+            content={
+              <ChartTooltipContent
+                labelFormatter={(value) => formatTrendDate(String(value))}
+                formatter={(value) =>
+                  POSITIONAL_STAT_FORMATTERS[stat](Number(value))
+                }
+              />
+            }
+          />
+          <defs>
+            <linearGradient id={fillId} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.3} />
+              <stop
+                offset="95%"
+                stopColor="var(--chart-1)"
+                stopOpacity={0.05}
+              />
+            </linearGradient>
+          </defs>
+          <Area
             type="monotone"
             dataKey="value"
-            stroke="var(--primary)"
+            stroke="var(--color-value)"
             strokeWidth={2}
-            dot={{ r: 2, fill: "var(--primary)" }}
-            activeDot={{ r: 4 }}
+            fill={`url(#${fillId})`}
           />
-        </LineChart>
-      </ResponsiveContainer>
+        </AreaChart>
+      </ChartContainer>
     </div>
   );
 }
@@ -181,6 +155,12 @@ export function PositionalStatsCards({
   const zonesByMap = artifacts?.zonesByMap ?? [];
   const routesByMap = artifacts?.routesByMap ?? [];
 
+  const outcomeLabels = {
+    won: t("wonLabel"),
+    neutral: t("evenLabel"),
+    lost: t("lostLabel"),
+  };
+
   return (
     <div className="space-y-12">
       {/* Team-averages ribbon */}
@@ -200,7 +180,7 @@ export function PositionalStatsCards({
                 </dt>
                 <dd className="mt-1 font-mono text-xl font-semibold tabular-nums">
                   {value === undefined
-                    ? "—"
+                    ? EM_DASH
                     : POSITIONAL_STAT_FORMATTERS[stat](value)}
                 </dd>
               </div>
@@ -213,7 +193,7 @@ export function PositionalStatsCards({
       {trendStats.length > 0 && (
         <section className="space-y-4">
           <SectionHeader eyebrow={t("eyebrow")} title={t("trendsTitle")} />
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="bg-border grid w-full grid-cols-1 gap-px overflow-hidden rounded-md sm:grid-cols-2 lg:grid-cols-4">
             {trendStats.map((stat) => (
               <TrendSparkline
                 key={stat}
@@ -226,107 +206,75 @@ export function PositionalStatsCards({
         </section>
       )}
 
-      {/* Per-player table */}
+      {/* Per-player deviation heatmap */}
       <section className="space-y-4">
         <SectionHeader eyebrow={t("eyebrow")} title={t("playersTitle")} />
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="sticky left-0">
-                  {t("playerColumn")}
-                </TableHead>
-                {POSITIONAL_STAT_KEYS.map((stat) => (
-                  <TableHead key={stat} className="text-right">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="cursor-help underline decoration-dotted underline-offset-4">
-                          {t(`stats.${stat}.short`)}
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent>{t(`stats.${stat}.full`)}</TooltipContent>
-                    </Tooltip>
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.players.map((player) => (
-                <TableRow key={player.playerName}>
-                  <TableCell className="bg-background sticky left-0 font-medium">
-                    {player.playerName}
-                  </TableCell>
-                  {POSITIONAL_STAT_KEYS.map((stat) => {
-                    const value = player.stats[stat];
-                    return (
-                      <TableCell key={stat} className="text-right tabular-nums">
-                        {value === undefined
-                          ? "—"
-                          : POSITIONAL_STAT_FORMATTERS[stat](value)}
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <PositionalStatHeatmap
+          players={data.players}
+          playerLabel={t("playerColumn")}
+          statLabel={(stat) => ({
+            short: t(`stats.${stat}.short`),
+            full: t(`stats.${stat}.full`),
+          })}
+          legend={{
+            below: t("matrix.below"),
+            above: t("matrix.above"),
+            caption: t("matrix.legend"),
+          }}
+        />
       </section>
 
       {/* Engagement winrate */}
       {showEngagements && (
         <section className="space-y-4">
           <SectionHeader eyebrow={t("eyebrow")} title={t("engagementsTitle")} />
-          <div className="flex flex-wrap items-baseline gap-x-6 gap-y-1 text-sm">
-            <span>{t("fights", { total: engagements.total })}</span>
-            <span className="tabular-nums">
+          <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1">
+            <span className="text-foreground text-base font-semibold tabular-nums">
+              {t("fights", { total: engagements.total })}
+            </span>
+            <span className="font-mono text-sm tabular-nums">
               {t("recordSummary", {
                 won: engagements.won,
                 lost: engagements.lost,
                 even: engagements.even,
               })}
             </span>
-            <span className="tabular-nums">
-              {t("winrate")}: {formatWinrate(engagements.winratePercent)}
+            <span className="text-sm">
+              <span className="text-muted-foreground">{t("winrate")}: </span>
+              <span className="font-mono font-semibold tabular-nums">
+                {formatWinrate(engagements.winratePercent)}
+              </span>
             </span>
           </div>
-          {engagements.byZone.length > 0 && (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{t("zoneColumn")}</TableHead>
-                    <TableHead className="text-right">
-                      {t("wonLabel")}
-                    </TableHead>
-                    <TableHead className="text-right">
-                      {t("lostLabel")}
-                    </TableHead>
-                    <TableHead className="text-right">
-                      {t("evenLabel")}
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {engagements.byZone.map((zone) => (
-                    <TableRow key={zone.zoneName}>
-                      <TableCell className="font-medium">
-                        {zone.zoneName}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {zone.won}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {zone.lost}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">
-                        {zone.even}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+          {engagements.byZone.length > 0 ? (
+            <div className="space-y-2">
+              <h4 className="text-muted-foreground font-mono text-xs tracking-[0.06em] uppercase">
+                {t("byZoneTitle")}
+              </h4>
+              <PositionalOutcomeBars
+                rows={engagements.byZone.map((zone) => ({
+                  label: zone.zoneName,
+                  won: zone.won,
+                  lost: zone.lost,
+                  neutral: zone.even,
+                }))}
+                labels={outcomeLabels}
+              />
             </div>
+          ) : (
+            <PositionalOutcomeBars
+              rows={[
+                {
+                  label: "",
+                  won: engagements.won,
+                  lost: engagements.lost,
+                  neutral: engagements.even,
+                },
+              ]}
+              labels={outcomeLabels}
+              showLabels={false}
+              showMeta={false}
+            />
           )}
         </section>
       )}
@@ -335,53 +283,10 @@ export function PositionalStatsCards({
       {zonesByMap.length > 0 && (
         <section className="space-y-4">
           <SectionHeader eyebrow={t("eyebrow")} title={t("zonesTitle")} />
-          {zonesByMap.map((entry) => (
-            <div key={entry.mapName} className="space-y-2">
-              <h4 className="text-muted-foreground font-mono text-xs tracking-[0.06em] uppercase">
-                {entry.mapName}
-              </h4>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{t("zoneColumn")}</TableHead>
-                      <TableHead>{t("teamColumn")}</TableHead>
-                      <TableHead className="text-right">
-                        {t("killsColumn")}
-                      </TableHead>
-                      <TableHead className="text-right">
-                        {t("deathsColumn")}
-                      </TableHead>
-                      <TableHead className="text-right">
-                        {t("ultsColumn")}
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {groupZoneRows(entry.rows).map((group) =>
-                      group.rows.map((row, index) => (
-                        <TableRow key={`${row.zoneName}-${row.team}`}>
-                          <TableCell className="font-medium">
-                            {index === 0 ? group.zoneName : ""}
-                          </TableCell>
-                          <TableCell>{row.team}</TableCell>
-                          <TableCell className="text-right tabular-nums">
-                            {row.kills}
-                          </TableCell>
-                          <TableCell className="text-right tabular-nums">
-                            {row.deaths}
-                          </TableCell>
-                          <TableCell className="text-right tabular-nums">
-                            {row.ults}
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
-          ))}
+          <ZoneControlByMap
+            zonesByMap={zonesByMap}
+            ourTeamNames={artifacts?.ourTeamNames ?? []}
+          />
         </section>
       )}
 
@@ -389,20 +294,19 @@ export function PositionalStatsCards({
       {routesByMap.length > 0 && (
         <section className="space-y-4">
           <SectionHeader eyebrow={t("eyebrow")} title={t("routesTitle")} />
-          <ul className="space-y-1 text-sm">
-            {routesByMap.map((entry) => (
-              <li key={entry.mapName} className="flex flex-wrap gap-x-2">
-                <span className="font-medium">{entry.mapName}</span>
-                <span className="text-muted-foreground tabular-nums">
-                  {t("routesSummary", {
-                    total: entry.total,
-                    won: entry.won,
-                    lost: entry.lost,
-                  })}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <PositionalOutcomeBars
+            rows={routesByMap.map((entry) => ({
+              label: entry.mapName,
+              won: entry.won,
+              lost: entry.lost,
+              neutral: Math.max(0, entry.total - entry.won - entry.lost),
+            }))}
+            labels={{
+              won: t("wonLabel"),
+              neutral: t("routesUndecided"),
+              lost: t("lostLabel"),
+            }}
+          />
         </section>
       )}
     </div>

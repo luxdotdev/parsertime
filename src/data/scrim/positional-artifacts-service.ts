@@ -36,6 +36,12 @@ export type ScrimPositionalArtifacts = {
     won: number;
     lost: number;
   }[];
+  /**
+   * The roster-resolved in-game team name(s) for our side across this scrim's
+   * resolved maps. Usually one, but a team can appear under name variants. Lets
+   * the UI orient zone rows to "us" without guessing from name frequency.
+   */
+  ourTeamNames: string[];
 };
 
 export type ScrimPositionalArtifactsServiceInterface = {
@@ -281,10 +287,13 @@ export const make: Effect.Effect<
         ...acc,
       })).filter((entry) => entry.total > 0);
 
+      const ourTeamNames = Array.from(new Set(resolved.map((r) => r.ourSide)));
+
       const result: ScrimPositionalArtifacts = {
         engagements,
         zonesByMap,
         routesByMap,
+        ourTeamNames,
       };
 
       wideEvent.engagement_total = engagements.total;

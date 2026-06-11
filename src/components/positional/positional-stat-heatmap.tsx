@@ -13,13 +13,12 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { ScrimPositionalStats } from "@/data/scrim/positional-stats-service";
 import {
-  POSITIONAL_STAT_KEYS,
   POSITIONAL_STAT_FORMATTERS,
+  POSITIONAL_STAT_KEYS,
+  type PositionalStatKey,
 } from "@/lib/positional-stat-display";
 import { cn } from "@/lib/utils";
-import { useTranslations } from "next-intl";
 
 const EM_DASH = "—";
 
@@ -35,6 +34,11 @@ const HEAD_LABEL =
 const MAX_ALPHA = 0.42;
 const ABOVE = { l: 0.72, c: 0.15, h: 70 }; // gold — above median
 const BELOW = { l: 0.62, c: 0.13, h: 244 }; // blue — below median
+
+export type PositionalPlayerRow = {
+  playerName: string;
+  stats: Record<string, number>;
+};
 
 function median(values: number[]): number {
   const sorted = [...values].sort((a, b) => a - b);
@@ -64,15 +68,19 @@ function tintFor(value: number, scale: ColumnScale): string | undefined {
 }
 
 export function PositionalStatHeatmap({
-  data,
+  players,
+  playerLabel,
+  statLabel,
+  legend,
 }: {
-  data: ScrimPositionalStats;
+  players: PositionalPlayerRow[];
+  playerLabel: string;
+  statLabel: (stat: PositionalStatKey) => { short: string; full: string };
+  legend: { below: string; above: string; caption: string };
 }) {
-  const t = useTranslations("scrimPage.positional");
-
   const scales = Object.fromEntries(
     POSITIONAL_STAT_KEYS.map((stat) => {
-      const values = data.players
+      const values = players
         .map((p) => p.stats[stat])
         .filter((v): v is number => v !== undefined && Number.isFinite(v));
       return [stat, buildScale(values)];
@@ -87,24 +95,24 @@ export function PositionalStatHeatmap({
             <TableHead
               className={cn(HEAD_LABEL, "bg-background sticky left-0")}
             >
-              {t("playerColumn")}
+              {playerLabel}
             </TableHead>
             {POSITIONAL_STAT_KEYS.map((stat) => (
               <TableHead key={stat} className={cn(HEAD_LABEL, "text-right")}>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className="cursor-help underline decoration-dotted underline-offset-4">
-                      {t(`stats.${stat}.short`)}
+                      {statLabel(stat).short}
                     </span>
                   </TooltipTrigger>
-                  <TooltipContent>{t(`stats.${stat}.full`)}</TooltipContent>
+                  <TooltipContent>{statLabel(stat).full}</TooltipContent>
                 </Tooltip>
               </TableHead>
             ))}
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.players.map((player) => (
+          {players.map((player) => (
             <TableRow key={player.playerName}>
               <TableCell className="bg-background sticky left-0 font-medium">
                 {player.playerName}
@@ -134,7 +142,7 @@ export function PositionalStatHeatmap({
 
       <div className="text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1.5 font-mono text-[10px] tracking-[0.06em] uppercase">
         <span className="flex items-center gap-1.5">
-          {t("matrix.below")}
+          {legend.below}
           <span
             className="h-2 w-28 rounded-full"
             aria-hidden="true"
@@ -142,9 +150,9 @@ export function PositionalStatHeatmap({
               background: `linear-gradient(to right, oklch(${BELOW.l} ${BELOW.c} ${BELOW.h} / ${MAX_ALPHA}), transparent 50%, oklch(${ABOVE.l} ${ABOVE.c} ${ABOVE.h} / ${MAX_ALPHA}))`,
             }}
           />
-          {t("matrix.above")}
+          {legend.above}
         </span>
-        <span className="normal-case">{t("matrix.legend")}</span>
+        <span className="normal-case">{legend.caption}</span>
       </div>
     </div>
   );

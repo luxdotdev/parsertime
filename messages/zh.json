@@ -1585,6 +1585,10 @@
       "lostLabel": "负",
       "evenLabel": "平",
       "zonesTitle": "各地图区域控制",
+      "zonesYourTeam": "我方",
+      "zonesOpponents": "对手",
+      "zonesCount": "{count} 个区域",
+      "zonesControlPct": "{pct}% 控制",
       "routesTitle": "各地图路线",
       "routesSummary": "{total} 条路线 · {won} 胜 / {lost} 负",
       "routesUndecided": "未定",
@@ -6407,6 +6411,12 @@
       "trendsTitle": "趋势",
       "playersTitle": "选手分项",
       "playerColumn": "选手",
+      "matrix": {
+        "below": "低于中位数",
+        "above": "高于中位数",
+        "legend": "色调表示每个数值相对于该项数据阵容中位数的偏差。"
+      },
+      "byZoneTitle": "按区域划分的胜 / 负 / 平",
       "empty": "暂无站位数据。上传包含坐标追踪的训练赛后将显示统计。",
       "stats": {
         "AVERAGE_ENGAGEMENT_DISTANCE": {
@@ -6450,6 +6460,10 @@
       "lostLabel": "负",
       "evenLabel": "平",
       "zonesTitle": "各地图区域控制",
+      "zonesYourTeam": "我方",
+      "zonesOpponents": "对手",
+      "zonesCount": "{count} 个区域",
+      "zonesControlPct": "{pct}% 控制",
       "routesTitle": "各地图路线",
       "routesSummary": "{total} 条路线 · {won} 胜 / {lost} 负",
       "routesUndecided": "未定",

@@ -32,6 +32,11 @@ export type TeamPositionalArtifacts = {
     won: number;
     lost: number;
   }[];
+  /**
+   * Roster-resolved in-game team name(s) for our side across the window, most
+   * frequent first. Lets the UI orient zone rows to "us" without guessing.
+   */
+  ourTeamNames: string[];
   /** Number of scrims actually contributing (non-null results). */
   scrimWindow: number;
 };
@@ -170,6 +175,18 @@ export const make: Effect.Effect<
         ...acc,
       })).filter((entry) => entry.total > 0);
 
+      // Union our-side names across scrims, most frequent first, so the UI can
+      // orient zone rows to our team even when the in-game name varies.
+      const ourNameFreq = new Map<string, number>();
+      for (const r of results) {
+        for (const name of r.ourTeamNames) {
+          ourNameFreq.set(name, (ourNameFreq.get(name) ?? 0) + 1);
+        }
+      }
+      const ourTeamNames = Array.from(ourNameFreq.entries())
+        .sort((a, b) => b[1] - a[1])
+        .map(([name]) => name);
+
       wideEvent.engagement_total = engagements.total;
       wideEvent.zone_map_count = zonesByMap.length;
       wideEvent.route_map_count = routesByMap.length;
@@ -192,6 +209,7 @@ export const make: Effect.Effect<
         engagements,
         zonesByMap,
         routesByMap,
+        ourTeamNames,
         scrimWindow,
       };
     }).pipe(
