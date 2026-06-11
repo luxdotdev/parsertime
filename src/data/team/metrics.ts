@@ -66,27 +66,8 @@ export const teamExtendedDataQueryDuration = Metric.histogram(
   "Distribution of extended team data query duration in milliseconds"
 );
 
-export const routeTendenciesQuerySuccessTotal = Metric.counter(
-  "team.route_tendencies.query.success",
-  {
-    description: "Total successful team route tendencies queries",
-    incremental: true,
-  }
-);
 
-export const routeTendenciesQueryErrorTotal = Metric.counter(
-  "team.route_tendencies.query.error",
-  {
-    description: "Total team route tendencies query failures",
-    incremental: true,
-  }
-);
 
-export const routeTendenciesQueryDuration = Metric.histogram(
-  "team.route_tendencies.query.duration_ms",
-  MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
-  "Distribution of team route tendencies query duration in milliseconds"
-);
 
 export const positionalStatsQuerySuccessTotal = Metric.counter(
   "team.positional_stats.query.success",
@@ -141,3 +122,25 @@ export const teamCacheMissTotal = Metric.counter("team.cache.miss", {
   description: "Total team data cache misses (triggered lookup)",
   incremental: true,
 });
+
+export const fightFieldQuerySuccessTotal = Metric.counter(
+  "team.fight_field.query.success",
+  {
+    description: "Total successful team fight field queries",
+    incremental: true,
+  }
+);
+
+export const fightFieldQueryErrorTotal = Metric.counter(
+  "team.fight_field.query.error",
+  {
+    description: "Total failed team fight field queries",
+    incremental: true,
+  }
+);
+
+export const fightFieldQueryDuration = Metric.histogram(
+  "team.fight_field.query.duration_ms",
+  MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
+  "Distribution of team fight field query duration in milliseconds"
+);

@@ -1,7 +1,7 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
-import { TendenciesContent } from "@/components/team/tendencies-content";
+import { FightMapContent } from "@/components/team/fight-map-content";
 import { AppRuntime } from "@/data/runtime";
-import { RouteTendenciesService } from "@/data/team/route-tendencies-service";
+import { FightFieldService } from "@/data/team/fight-field-service";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { loadCalibration } from "@/lib/map-calibration/load-calibration";
@@ -66,30 +66,24 @@ export default async function TendenciesPage(
     notFound();
   }
 
-  const tendencies = await AppRuntime.runPromise(
-    RouteTendenciesService.pipe(
-      Effect.flatMap((svc) => svc.getTendencies(teamId))
-    )
+  const views = await AppRuntime.runPromise(
+    FightFieldService.pipe(Effect.flatMap((svc) => svc.getFightFields(teamId)))
   );
 
-  // Presigned map images + transforms for the route preview thumbnails.
-  // Control maps have per-sub-map calibrations under different names, so
-  // their base names miss here and rows render without a preview.
+  // Presigned map images + transforms per view. Control sub-maps carry
+  // their own calibration names ("Busan: Downtown"), which is exactly what
+  // each view's mapName holds, so control maps get imagery for free.
   const calibrationEntries = await Promise.all(
-    tendencies.map(
-      async (map) =>
-        [map.mapName, await loadCalibration(map.mapName)] as const
+    views.map(
+      async (view) =>
+        [view.mapName, await loadCalibration(view.mapName)] as const
     )
   );
   const calibrations = Object.fromEntries(calibrationEntries);
 
   return (
     <DashboardLayout>
-      <TendenciesContent
-        teamId={teamId}
-        tendencies={tendencies}
-        calibrations={calibrations}
-      />
+      <FightMapContent views={views} calibrations={calibrations} />
     </DashboardLayout>
   );
 }
