@@ -4776,6 +4776,41 @@
           "activeUsers": "Active Users",
           "activeTeams": "Active Teams",
           "teamsCreated": "Teams Created"
+        },
+        "tabs": {
+          "growth": "Growth",
+          "adoption": "Feature Adoption",
+          "activity": "Activity",
+          "funnels": "Funnels"
+        },
+        "usage": {
+          "adoptionTitle": "Feature Adoption",
+          "adoptionDescription": "Unique users per feature over the last 30 days",
+          "activeUsersTitle": "Active Users",
+          "activeUsersDescription": "Daily active users over the last 30 days",
+          "hotColdTitle": "Page Usage",
+          "hotColdDescription": "Most- and least-visited pages over the last 30 days",
+          "uniqueUsers": "Unique users",
+          "totalEvents": "Total events",
+          "dau": "DAU",
+          "page": "Page",
+          "views": "Views",
+          "underused": "Underused",
+          "scorecard": {
+            "dau": "Daily Active",
+            "wau": "Weekly Active",
+            "mau": "Monthly Active",
+            "stickiness": "Stickiness",
+            "events30d": "Events (30d)",
+            "activeFeatures": "Active Features"
+          },
+          "funnels": {
+            "title": "Conversion Funnels",
+            "description": "Step-by-step conversion over the selected window",
+            "step": "Step",
+            "users": "Users",
+            "conversion": "Conversion"
+          }
         }
       },
       "title": "Admin Settings",

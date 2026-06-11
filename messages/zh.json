@@ -4688,6 +4688,41 @@
           "activeUsers": "活跃用户",
           "activeTeams": "活跃团队",
           "teamsCreated": "已创建团队"
+        },
+        "tabs": {
+          "growth": "增长",
+          "adoption": "功能采用",
+          "activity": "活动",
+          "funnels": "转化漏斗"
+        },
+        "usage": {
+          "adoptionTitle": "功能采用",
+          "adoptionDescription": "过去 30 天内每项功能的唯一用户数",
+          "activeUsersTitle": "活跃用户",
+          "activeUsersDescription": "过去 30 天的每日活跃用户数",
+          "hotColdTitle": "页面使用情况",
+          "hotColdDescription": "过去 30 天访问量最多和最少的页面",
+          "uniqueUsers": "唯一用户",
+          "totalEvents": "总事件数",
+          "dau": "DAU",
+          "page": "页面",
+          "views": "浏览量",
+          "underused": "低使用率",
+          "scorecard": {
+            "dau": "日活跃",
+            "wau": "周活跃",
+            "mau": "月活跃",
+            "stickiness": "粘性",
+            "events30d": "事件数 (30天)",
+            "activeFeatures": "活跃功能"
+          },
+          "funnels": {
+            "title": "转化漏斗",
+            "description": "所选时间窗口内的逐步转化情况",
+            "step": "步骤",
+            "users": "用户",
+            "conversion": "转化率"
+          }
         }
       }
     },

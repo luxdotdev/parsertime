@@ -4688,6 +4688,41 @@
           "activeUsers": "활성 사용자",
           "activeTeams": "활성 팀",
           "teamsCreated": "생성된 팀"
+        },
+        "tabs": {
+          "growth": "성장",
+          "adoption": "기능 도입",
+          "activity": "활동",
+          "funnels": "퍼널"
+        },
+        "usage": {
+          "adoptionTitle": "기능 도입",
+          "adoptionDescription": "최근 30일간 기능별 고유 사용자 수",
+          "activeUsersTitle": "활성 사용자",
+          "activeUsersDescription": "최근 30일간 일별 활성 사용자 수",
+          "hotColdTitle": "페이지 사용 현황",
+          "hotColdDescription": "최근 30일간 가장 많이 및 적게 방문한 페이지",
+          "uniqueUsers": "고유 사용자",
+          "totalEvents": "총 이벤트",
+          "dau": "DAU",
+          "page": "페이지",
+          "views": "조회수",
+          "underused": "저활용",
+          "scorecard": {
+            "dau": "일간 활성 사용자",
+            "wau": "주간 활성 사용자",
+            "mau": "월간 활성 사용자",
+            "stickiness": "고착도",
+            "events30d": "이벤트 (30일)",
+            "activeFeatures": "활성 기능"
+          },
+          "funnels": {
+            "title": "전환 퍼널",
+            "description": "선택한 기간 동안의 단계별 전환율",
+            "step": "단계",
+            "users": "사용자",
+            "conversion": "전환율"
+          }
         }
       }
     },
