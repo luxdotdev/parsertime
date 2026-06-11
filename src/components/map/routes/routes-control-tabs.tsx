@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { LoadedCalibration } from "@/lib/map-calibration/load-calibration";
 import type { ControlSubMapRoutes } from "@/lib/routes/routes-db";
 import { useTranslations } from "next-intl";
+import { RoutesEmptyState } from "./empty-state";
 import { RoutesView } from "./routes-view";
 
 type SubMapWithCalibration = ControlSubMapRoutes & {
@@ -34,9 +35,7 @@ export function RoutesControlTabs({
           className="space-y-4"
         >
           {sm.analysis.routes.length === 0 ? (
-            <div className="flex min-h-[300px] items-center justify-center rounded-lg border border-dashed">
-              <p className="text-muted-foreground text-sm">{t("empty")}</p>
-            </div>
+            <RoutesEmptyState message={t("empty")} />
           ) : (
             <RoutesView
               analysis={sm.analysis}

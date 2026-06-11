@@ -6,14 +6,7 @@ import prisma from "@/lib/prisma";
 import { getTranslations } from "next-intl/server";
 import { RoutesView } from "./routes-view";
 import { RoutesControlTabs } from "./routes-control-tabs";
-
-function EmptyState({ message }: { message: string }) {
-  return (
-    <div className="flex min-h-[300px] items-center justify-center rounded-lg border border-dashed">
-      <p className="text-muted-foreground text-sm">{message}</p>
-    </div>
-  );
-}
+import { RoutesEmptyState } from "./empty-state";
 
 export async function RoutesTab({ id }: { id: number }) {
   const [result, t] = await Promise.all([
@@ -24,7 +17,7 @@ export async function RoutesTab({ id }: { id: number }) {
   ]);
 
   if (result === null) {
-    return <EmptyState message={t("empty")} />;
+    return <RoutesEmptyState message={t("empty")} />;
   }
 
   if (result.type === "single") {
@@ -36,7 +29,7 @@ export async function RoutesTab({ id }: { id: number }) {
       ? await loadCalibration(matchStart.map_name)
       : null;
     if (!calibration) {
-      return <EmptyState message={t("noCalibration")} />;
+      return <RoutesEmptyState message={t("noCalibration")} />;
     }
     return (
       <RoutesView
@@ -60,7 +53,7 @@ export async function RoutesTab({ id }: { id: number }) {
   ).filter((sm): sm is NonNullable<typeof sm> => sm !== null);
 
   if (subMaps.length === 0) {
-    return <EmptyState message={t("noCalibration")} />;
+    return <RoutesEmptyState message={t("noCalibration")} />;
   }
 
   return <RoutesControlTabs subMaps={subMaps} />;
