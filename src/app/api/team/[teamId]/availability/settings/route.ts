@@ -1,5 +1,9 @@
-import { isAuthedToViewTeam, isTeamOwnerOrManager } from "@/lib/auth";
+import { auth, isAuthedToViewTeam, isTeamOwnerOrManager } from "@/lib/auth";
 import { isValidTimeZone } from "@/lib/availability/tz";
+import {
+  verifyUserCanUseChannel,
+  verifyUserInGuild,
+} from "@/lib/bot-discord-access";
 import prisma from "@/lib/prisma";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
@@ -82,13 +86,6 @@ export async function PUT(req: NextRequest, ctx: RouteCtx) {
     );
   }
 
-  if (data.reminderRoleId) {
-    return Response.json(
-      { error: "Reminder role mentions require verified role binding" },
-      { status: 400 }
-    );
-  }
-
   if (data.reminderGuildId || data.reminderChannelId) {
     if (!data.reminderGuildId || !data.reminderChannelId) {
       return Response.json(
@@ -97,17 +94,58 @@ export async function PUT(req: NextRequest, ctx: RouteCtx) {
       );
     }
 
-    const verifiedConfig = await prisma.botNotificationConfig.findFirst({
-      where: {
-        guildId: data.reminderGuildId,
-        channelId: data.reminderChannelId,
-        teamIds: { has: teamId },
-      },
-      select: { id: true },
-    });
-    if (!verifiedConfig) {
+    const session = await auth();
+    const user = session?.user?.email
+      ? await prisma.user.findUnique({
+          where: { email: session.user.email },
+          select: {
+            accounts: {
+              where: { provider: "discord" },
+              select: { providerAccountId: true },
+              take: 1,
+            },
+          },
+        })
+      : null;
+    const discordAccount = user?.accounts[0];
+    if (!discordAccount) {
       return Response.json(
-        { error: "Reminder channel is not verified for this team" },
+        { error: "Discord account not linked", code: "discord_not_linked" },
+        { status: 403 }
+      );
+    }
+
+    const membership = await verifyUserInGuild(
+      discordAccount.providerAccountId,
+      data.reminderGuildId
+    );
+    if (!membership.ok) {
+      if (membership.reason === "misconfigured") {
+        return Response.json(
+          { error: "Bot service not configured" },
+          { status: 503 }
+        );
+      }
+      return Response.json(
+        { error: "You are not a member of that server" },
+        { status: 403 }
+      );
+    }
+
+    const channelAccess = await verifyUserCanUseChannel(
+      discordAccount.providerAccountId,
+      data.reminderGuildId,
+      data.reminderChannelId
+    );
+    if (!channelAccess.ok) {
+      if (channelAccess.reason === "misconfigured") {
+        return Response.json(
+          { error: "Bot service not configured" },
+          { status: 503 }
+        );
+      }
+      return Response.json(
+        { error: "You cannot use that channel" },
         { status: 403 }
       );
     }
@@ -115,8 +153,8 @@ export async function PUT(req: NextRequest, ctx: RouteCtx) {
 
   const settings = await prisma.teamAvailabilitySettings.upsert({
     where: { teamId },
-    create: { teamId, ...data, reminderRoleId: null },
-    update: { ...data, reminderRoleId: null },
+    create: { teamId, ...data },
+    update: data,
   });
 
   return Response.json({ settings });

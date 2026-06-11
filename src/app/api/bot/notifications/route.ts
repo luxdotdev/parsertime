@@ -1,7 +1,10 @@
 import { auth, canManageTeam } from "@/lib/auth";
+import {
+  verifyUserCanUseChannel,
+  verifyUserInGuild,
+} from "@/lib/bot-discord-access";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { context, propagation } from "@opentelemetry/api";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
 
@@ -17,77 +20,6 @@ const UpdateConfigSchema = z.object({
   configId: z.string().min(1),
   teamIds: z.array(z.number().int().positive()).min(1).max(25),
 });
-
-async function verifyUserInGuild(
-  discordUserId: string,
-  guildId: string
-): Promise<
-  { ok: true } | { ok: false; reason: "misconfigured" | "forbidden" }
-> {
-  const botApiUrl = process.env.BOT_API_URL;
-  const botSecret = process.env.BOT_SECRET;
-
-  if (!botApiUrl || !botSecret) {
-    return { ok: false, reason: "misconfigured" };
-  }
-
-  const traceHeaders: Record<string, string> = {};
-  propagation.inject(context.active(), traceHeaders);
-
-  const response = await fetch(
-    `${botApiUrl}/api/guilds/${encodeURIComponent(guildId)}/members/${encodeURIComponent(discordUserId)}`,
-    {
-      headers: {
-        Authorization: `Bearer ${botSecret}`,
-        ...traceHeaders,
-      },
-    }
-  );
-
-  if (!response.ok) {
-    return { ok: false, reason: "forbidden" };
-  }
-
-  const data = (await response.json()) as { member?: boolean };
-  return data.member ? { ok: true } : { ok: false, reason: "forbidden" };
-}
-
-async function verifyUserCanUseChannel(
-  discordUserId: string,
-  guildId: string,
-  channelId: string
-): Promise<
-  { ok: true } | { ok: false; reason: "misconfigured" | "forbidden" }
-> {
-  const botApiUrl = process.env.BOT_API_URL;
-  const botSecret = process.env.BOT_SECRET;
-
-  if (!botApiUrl || !botSecret) {
-    return { ok: false, reason: "misconfigured" };
-  }
-
-  const traceHeaders: Record<string, string> = {};
-  propagation.inject(context.active(), traceHeaders);
-
-  const response = await fetch(
-    `${botApiUrl}/api/guilds/${encodeURIComponent(guildId)}/channels?userId=${encodeURIComponent(discordUserId)}`,
-    {
-      headers: {
-        Authorization: `Bearer ${botSecret}`,
-        ...traceHeaders,
-      },
-    }
-  );
-
-  if (!response.ok) {
-    return { ok: false, reason: "forbidden" };
-  }
-
-  const channels = (await response.json()) as { id?: string }[];
-  return channels.some((channel) => channel.id === channelId)
-    ? { ok: true }
-    : { ok: false, reason: "forbidden" };
-}
 
 export async function GET() {
   const wideEvent: Record<string, unknown> = {
