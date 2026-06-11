@@ -397,6 +397,17 @@
     "zenyatta": "Zenyatta"
   },
   "landingPage": {
+    "positional": {
+      "badge": "New in v3",
+      "title": "See the fight from above",
+      "description": "First-of-its-kind positional analytics for Overwatch 2. Every scrim becomes a top-down replay: watch rotations unfold, find the angles you keep dying to, and measure positioning with numbers no other tool has.",
+      "replayName": "Map replay viewer",
+      "replayDescription": "Scrub through any teamfight in a top-down view. Player paths, ult timings, and kill events plotted on calibrated map images.",
+      "heatmapsName": "Heatmaps",
+      "heatmapsDescription": "Kill, death, and presence density rendered per map and side. See exactly where fights are won and lost.",
+      "averagesName": "Positional averages",
+      "averagesDescription": "Engagement distance, high ground kill rate, isolation deaths: positioning metrics averaged across scrims and trended over time."
+    },
     "hero": {
       "liveData": "Live platform data",
       "eyebrow": "Scrim analytics · Overwatch 2",

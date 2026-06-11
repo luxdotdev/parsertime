@@ -15,6 +15,7 @@ import { Features } from "./features";
 import { Hero } from "./hero";
 import { HowItWorks } from "./how-it-works";
 import { LogoCloud } from "./logo-cloud";
+import { PositionalShowcase } from "./positional-showcase";
 import { Spotlight } from "./spotlight";
 import { Testimonial } from "./testimonial";
 
@@ -139,6 +140,28 @@ export async function V3LandingPage() {
 
         <TrackedSection name="logo-cloud">
           <LogoCloud title={t("logoCloud.title")} />
+        </TrackedSection>
+
+        <TrackedSection name="positional-showcase">
+          <PositionalShowcase
+            badge={t("positional.badge")}
+            title={t("positional.title")}
+            description={t("positional.description")}
+            subFeatures={[
+              {
+                name: t("positional.replayName"),
+                description: t("positional.replayDescription"),
+              },
+              {
+                name: t("positional.heatmapsName"),
+                description: t("positional.heatmapsDescription"),
+              },
+              {
+                name: t("positional.averagesName"),
+                description: t("positional.averagesDescription"),
+              },
+            ]}
+          />
         </TrackedSection>
 
         <TrackedSection name="features">

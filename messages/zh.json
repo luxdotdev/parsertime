@@ -397,6 +397,17 @@
     "zenyatta": "禅雅塔"
   },
   "landingPage": {
+    "positional": {
+      "badge": "v3 新功能",
+      "title": "俯瞰整场战斗",
+      "description": "首创的守望先锋 2 位置数据分析。每场训练赛都变成俯视回放：观察转点过程，找出你反复阵亡的角度，用其他工具都没有的数据衡量站位。",
+      "replayName": "地图回放查看器",
+      "replayDescription": "以俯视视角回放任意团战。玩家移动路径、大招时机和击杀事件都绘制在校准后的地图图像上。",
+      "heatmapsName": "热力图",
+      "heatmapsDescription": "按地图和攻防方渲染击杀、阵亡和占位密度。精确看到团战胜负发生的位置。",
+      "averagesName": "位置平均值",
+      "averagesDescription": "交战距离、高台击杀率、孤立阵亡率等站位指标，跨训练赛取平均并呈现趋势。"
+    },
     "hero": {
       "liveData": "实时平台数据",
       "eyebrow": "训练赛数据分析 · 守望先锋 2",
