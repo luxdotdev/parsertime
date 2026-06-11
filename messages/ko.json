@@ -1606,6 +1606,17 @@
     }
   },
   "tendenciesPage": {
+    "fightMap": {
+      "description": "최근 스크림 전체에서 팀이 한타를 이기고 지는 위치입니다. 초록색은 주로 이기는 지역, 빨간색은 고전하는 지역입니다.",
+      "fights": "결정적 한타 {count}회",
+      "overall": "한타 승률",
+      "unnamedArea": "이름 없는 지역",
+      "notEnoughFights": "아직 한타 데이터가 부족합니다 — 위치 데이터가 있는 결정적 한타가 {count}회 이상 필요합니다.",
+      "noCalibration": "이 맵의 보정된 이미지가 없습니다. 맵 보정 도구에서 보정하면 한타 맵이 활성화됩니다.",
+      "zone": "구역",
+      "record": "전적",
+      "winrate": "승률"
+    },
     "metadata": {
       "title": "경향 | Parsertime",
       "description": "맵별로 묶인 팀의 반복적인 이동 경로"

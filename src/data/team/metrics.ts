@@ -141,3 +141,25 @@ export const teamCacheMissTotal = Metric.counter("team.cache.miss", {
   description: "Total team data cache misses (triggered lookup)",
   incremental: true,
 });
+
+export const fightFieldQuerySuccessTotal = Metric.counter(
+  "team.fight_field.query.success",
+  {
+    description: "Total successful team fight field queries",
+    incremental: true,
+  }
+);
+
+export const fightFieldQueryErrorTotal = Metric.counter(
+  "team.fight_field.query.error",
+  {
+    description: "Total failed team fight field queries",
+    incremental: true,
+  }
+);
+
+export const fightFieldQueryDuration = Metric.histogram(
+  "team.fight_field.query.duration_ms",
+  MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
+  "Distribution of team fight field query duration in milliseconds"
+);

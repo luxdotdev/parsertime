@@ -1606,6 +1606,17 @@
     }
   },
   "tendenciesPage": {
+    "fightMap": {
+      "description": "Where your team wins and loses fights, pooled across recent scrims. Green areas are fights you usually win; red areas are where you struggle.",
+      "fights": "{count, plural, =1 {1 decisive fight} other {# decisive fights}}",
+      "overall": "Fight winrate",
+      "unnamedArea": "Unmarked area",
+      "notEnoughFights": "Not enough fight data yet — this view needs at least {count} decisive fights with positional data.",
+      "noCalibration": "No calibrated map image for this map. Calibrate it in the map calibration tool to unlock the fight map.",
+      "zone": "Zone",
+      "record": "Record",
+      "winrate": "Win rate"
+    },
     "metadata": {
       "title": "Tendencies | Parsertime",
       "description": "Recurring movement routes grouped by map for your team"
