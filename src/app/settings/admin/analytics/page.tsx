@@ -28,6 +28,7 @@ import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { projectMonthEnd } from "@/lib/admin/project-month-end";
 import {
   getDailyActiveSeries,
   getFeatureAdoption,
@@ -82,9 +83,15 @@ async function getMonthlyUserData(firstUserDate: Date) {
     )
   );
 
+  const projectedDelta = projectMonthEnd(
+    counts[counts.length - 1] ?? 0,
+    new Date()
+  ).projectedDelta;
+
   const historical = windows.map((w, i) => ({
     month: w.shortLabel,
     users: counts[i] ?? 0,
+    projected: i === windows.length - 1 ? projectedDelta : 0,
   }));
 
   const lastTwelveWindows = windows.slice(-12);
@@ -92,6 +99,7 @@ async function getMonthlyUserData(firstUserDate: Date) {
   const twelveMonth = lastTwelveWindows.map((w, i) => ({
     month: w.longLabel,
     users: lastTwelveCounts[i] ?? 0,
+    projected: i === lastTwelveWindows.length - 1 ? projectedDelta : 0,
   }));
 
   return { twelveMonth, historical };
@@ -153,9 +161,15 @@ async function getTeamCreationData(firstUserDate: Date) {
     )
   );
 
+  const projectedDelta = projectMonthEnd(
+    counts[counts.length - 1] ?? 0,
+    new Date()
+  ).projectedDelta;
+
   const historical = windows.map((w, i) => ({
     month: w.shortLabel,
     teams: counts[i] ?? 0,
+    projected: i === windows.length - 1 ? projectedDelta : 0,
   }));
 
   const lastTwelveWindows = windows.slice(-12);
@@ -163,6 +177,7 @@ async function getTeamCreationData(firstUserDate: Date) {
   const twelveMonth = lastTwelveWindows.map((w, i) => ({
     month: w.longLabel,
     teams: lastTwelveCounts[i] ?? 0,
+    projected: i === lastTwelveWindows.length - 1 ? projectedDelta : 0,
   }));
 
   return { twelveMonth, historical };

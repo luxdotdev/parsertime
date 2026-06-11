@@ -4775,7 +4775,8 @@
           "users": "Users",
           "activeUsers": "Active Users",
           "activeTeams": "Active Teams",
-          "teamsCreated": "Teams Created"
+          "teamsCreated": "Teams Created",
+          "projected": "Projected (rest of month)"
         },
         "tabs": {
           "growth": "Growth",

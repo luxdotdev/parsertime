@@ -22,6 +22,7 @@ type ChartConfig = {
 type TeamCreationData = {
   month: string;
   teams: number;
+  projected: number;
 };
 
 type TeamCreationChartProps = {
@@ -49,7 +50,14 @@ function renderChart(
           minTickGap={opts.shortTicks ? 0 : 24}
         />
         <ChartTooltip content={<ChartTooltipContent />} />
-        <Bar dataKey="teams" fill="var(--color-teams)" radius={4} />
+        <Bar dataKey="teams" stackId="a" fill="var(--color-teams)" radius={4} />
+        <Bar
+          dataKey="projected"
+          stackId="a"
+          fill="var(--color-projected)"
+          fillOpacity={0.4}
+          radius={4}
+        />
       </BarChart>
     </ChartContainer>
   );
@@ -63,6 +71,10 @@ export function TeamCreationChart({
   const chartConfig: ChartConfig = {
     teams: {
       label: t("teamsCreated"),
+      color: "var(--chart-3)",
+    },
+    projected: {
+      label: t("projected"),
       color: "var(--chart-3)",
     },
   };

@@ -4687,7 +4687,8 @@
           "users": "用户",
           "activeUsers": "活跃用户",
           "activeTeams": "活跃团队",
-          "teamsCreated": "已创建团队"
+          "teamsCreated": "已创建团队",
+          "projected": "本月预计 (剩余)"
         },
         "tabs": {
           "growth": "增长",

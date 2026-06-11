@@ -4687,7 +4687,8 @@
           "users": "사용자",
           "activeUsers": "활성 사용자",
           "activeTeams": "활성 팀",
-          "teamsCreated": "생성된 팀"
+          "teamsCreated": "생성된 팀",
+          "projected": "이번 달 예상 (남은 기간)"
         },
         "tabs": {
           "growth": "성장",

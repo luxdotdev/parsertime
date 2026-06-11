@@ -22,6 +22,7 @@ type ChartConfig = {
 type MonthlyUserData = {
   month: string;
   users: number;
+  projected: number;
 };
 
 type MonthlyUserChartProps = {
@@ -49,7 +50,14 @@ function renderChart(
           minTickGap={opts.shortTicks ? 0 : 24}
         />
         <ChartTooltip content={<ChartTooltipContent />} />
-        <Bar dataKey="users" fill="var(--color-users)" radius={4} />
+        <Bar dataKey="users" stackId="a" fill="var(--color-users)" radius={4} />
+        <Bar
+          dataKey="projected"
+          stackId="a"
+          fill="var(--color-projected)"
+          fillOpacity={0.4}
+          radius={4}
+        />
       </BarChart>
     </ChartContainer>
   );
@@ -63,6 +71,10 @@ export function MonthlyUserChart({
   const chartConfig: ChartConfig = {
     users: {
       label: t("users"),
+      color: "var(--chart-1)",
+    },
+    projected: {
+      label: t("projected"),
       color: "var(--chart-1)",
     },
   };
