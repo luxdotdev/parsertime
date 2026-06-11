@@ -105,7 +105,6 @@ async function loadFunnels(env: UsageEnv, days: number): Promise<FunnelResult[]>
   const names = [...new Set(FUNNELS.flatMap((f) => f.steps))];
   const rows = await prisma.usageEvent.findMany({
     where: { environment: env, ts: { gte: since }, name: { in: names }, userId: { not: null } },
-    orderBy: { ts: "asc" },
     select: { userId: true, name: true },
   });
   const funnelRows = rows.map((r) => ({ userId: r.userId as string, name: r.name }));

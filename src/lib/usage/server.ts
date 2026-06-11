@@ -1,7 +1,7 @@
 import "server-only";
 
 import prisma from "@/lib/prisma";
-import type { UsageEvent, UsageSource } from "@prisma/client";
+import type { UsageSource } from "@prisma/client";
 import { Context, Data, Effect, Layer, ManagedRuntime, Schedule } from "effect";
 import { resolveUsageEnv } from "./env";
 
@@ -20,7 +20,7 @@ export type TrackArgs = {
 };
 
 export type Service = {
-  track(args: TrackArgs): Effect.Effect<UsageEvent, never>;
+  track(args: TrackArgs): Effect.Effect<void, never>;
 };
 
 export class EventService extends Context.Tag("@app/usage/EventService")<
@@ -51,12 +51,13 @@ function createService(): Effect.Effect<Service, never> {
           Schedule.exponential(500).pipe(Schedule.compose(Schedule.recurs(2)))
         ),
         Effect.withSpan("usage.track", { attributes: { name: args.name } }),
+        Effect.asVoid,
         // Capture must never surface to the caller. Swallow failures so a DB
         // hiccup can't break the originating request or page.
         Effect.catchAll((error) =>
           Effect.logError(
             `usage.track failed for ${args.name}: ${String(error)}`
-          ).pipe(Effect.as(null as unknown as UsageEvent))
+          ).pipe(Effect.asVoid)
         )
       ),
   };

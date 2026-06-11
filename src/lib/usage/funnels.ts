@@ -17,8 +17,10 @@ export const FUNNELS: FunnelDef[] = [
 ];
 
 /**
- * Ordered funnel: a user counts toward step i only if they performed all of
- * steps 0..i (order along the timeline is assumed by row order per user).
+ * Funnel by step coverage: a user counts toward step i only if they performed
+ * every step 0..i (in any order — event sequence is not considered). Counts are
+ * therefore monotonic non-increasing. `conversion` is the fraction of the prior
+ * step's users (1 for the first step, 0 when the prior step had none).
  */
 export function computeFunnel(
   rows: FunnelEventRow[],
