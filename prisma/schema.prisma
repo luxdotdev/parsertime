@@ -2040,3 +2040,65 @@ model OverwatchPatch {
 
   @@unique([date])
 }
+
+// ---------------------------------------------------------------------------
+// Usage-analytics models — raw events + per-day rollups
+// ---------------------------------------------------------------------------
+
+enum UsageSource {
+  SERVER
+  CLIENT
+}
+
+enum UsageEnv {
+  PRODUCTION
+  PREVIEW
+  DEVELOPMENT
+}
+
+model UsageEvent {
+  id          BigInt      @id @default(autoincrement())
+  ts          DateTime    @default(now())
+  name        String
+  source      UsageSource
+  environment UsageEnv
+  userId      String?
+  teamId      Int?
+  path        String?
+  sessionId   String?
+  props       Json?
+
+  @@index([ts])
+  @@index([environment, name, ts])
+  @@index([userId, ts])
+  @@index([environment, path, ts])
+}
+
+model DailyFeatureRollup {
+  environment UsageEnv
+  day         String
+  name        String
+  uniqueUsers Int
+  uniqueTeams Int
+  totalEvents Int
+
+  @@id([environment, day, name])
+}
+
+model DailyPageRollup {
+  environment UsageEnv
+  day         String
+  path        String
+  views       Int
+  uniqueUsers Int
+
+  @@id([environment, day, path])
+}
+
+model UserActiveDay {
+  environment UsageEnv
+  day         String
+  userId      String
+
+  @@id([environment, day, userId])
+}
