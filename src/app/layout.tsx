@@ -18,11 +18,13 @@ import { WebVitals } from "@/lib/axiom/client";
 import { resolveAllFlags, toFlagValues } from "@/lib/flags-helpers";
 import { QueryProvider } from "@/lib/query";
 import { cn } from "@/lib/utils";
+import { UsageBeacon } from "@/components/usage/usage-beacon";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { FlagValues } from "flags/react";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
+import { Suspense } from "react";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
@@ -142,6 +144,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
               <Toaster />
               <SpeedInsights />
               <Analytics />
+              <Suspense fallback={null}>
+                <UsageBeacon />
+              </Suspense>
               <DevTools />
               <WebVitals />
             </ThemeProvider>
