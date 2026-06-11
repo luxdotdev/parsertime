@@ -11,6 +11,7 @@ import { TeamManagerPieChart } from "@/components/admin/team-manager-pie-chart";
 import { ActiveUsersChart } from "@/components/admin/usage/active-users-chart";
 import { EnvSelector } from "@/components/admin/usage/env-selector";
 import { FeatureAdoptionChart } from "@/components/admin/usage/feature-adoption-chart";
+import { FunnelChart } from "@/components/admin/usage/funnel-chart";
 import { HotColdTable } from "@/components/admin/usage/hot-cold-table";
 import { UsageScorecard } from "@/components/admin/usage/scorecard";
 import { NoAuthCard } from "@/components/auth/no-auth";
@@ -30,6 +31,7 @@ import prisma from "@/lib/prisma";
 import {
   getDailyActiveSeries,
   getFeatureAdoption,
+  getFunnels,
   getPageHeat,
   getScorecard,
 } from "@/lib/usage/queries";
@@ -440,6 +442,7 @@ export default async function AdminAnalyticsPage(props: {
     adoption,
     activeSeries,
     pageHeat,
+    funnels,
   ] = await Promise.all([
     getMonthlyUserData(firstUserDate),
     getScrimActivityData(),
@@ -453,6 +456,7 @@ export default async function AdminAnalyticsPage(props: {
     getFeatureAdoption(env),
     getDailyActiveSeries(env),
     getPageHeat(env),
+    getFunnels(env),
   ]);
 
   return (
@@ -473,6 +477,7 @@ export default async function AdminAnalyticsPage(props: {
           <TabsTrigger value="growth">{t("tabs.growth")}</TabsTrigger>
           <TabsTrigger value="adoption">{t("tabs.adoption")}</TabsTrigger>
           <TabsTrigger value="activity">{t("tabs.activity")}</TabsTrigger>
+          <TabsTrigger value="funnels">{t("tabs.funnels")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="growth" className="space-y-6">
@@ -631,6 +636,20 @@ export default async function AdminAnalyticsPage(props: {
             </CardHeader>
             <CardContent>
               <HotColdTable data={pageHeat} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="funnels" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("usage.funnels.title")}</CardTitle>
+              <CardDescription>{t("usage.funnels.description")}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-8">
+              {funnels.map((f) => (
+                <FunnelChart key={f.key} funnel={f} />
+              ))}
             </CardContent>
           </Card>
         </TabsContent>

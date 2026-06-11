@@ -2,6 +2,8 @@ import "server-only";
 
 import prisma from "@/lib/prisma";
 import type { UsageEnv } from "@prisma/client";
+import { unstable_cache } from "next/cache";
+import { FUNNELS, computeFunnel, type FunnelStep } from "./funnels";
 import { dayKey } from "./rollup";
 
 function daysAgoKey(n: number): string {
@@ -91,4 +93,30 @@ export async function getPageHeat(env: UsageEnv): Promise<PageHeatRow[]> {
   return grouped
     .map((g) => ({ path: g.path, views: g._sum.views ?? 0, uniqueUsers: g._max.uniqueUsers ?? 0 }))
     .sort((a, b) => b.views - a.views);
+}
+
+export type FunnelResult = { key: string; steps: FunnelStep[] };
+
+async function loadFunnels(env: UsageEnv, days: number): Promise<FunnelResult[]> {
+  const since = new Date();
+  since.setUTCDate(since.getUTCDate() - days);
+
+  // All event names referenced by any funnel, fetched once within the window.
+  const names = [...new Set(FUNNELS.flatMap((f) => f.steps))];
+  const rows = await prisma.usageEvent.findMany({
+    where: { environment: env, ts: { gte: since }, name: { in: names }, userId: { not: null } },
+    orderBy: { ts: "asc" },
+    select: { userId: true, name: true },
+  });
+  const funnelRows = rows.map((r) => ({ userId: r.userId as string, name: r.name }));
+
+  return FUNNELS.map((f) => ({ key: f.key, steps: computeFunnel(funnelRows, f.steps) }));
+}
+
+export function getFunnels(env: UsageEnv, days = 30): Promise<FunnelResult[]> {
+  return unstable_cache(
+    () => loadFunnels(env, days),
+    ["usage-funnels", env, String(days)],
+    { revalidate: 60 * 60 * 24 } // daily
+  )();
 }
