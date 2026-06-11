@@ -50,11 +50,12 @@ export function HeatmapCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const { containerRef, containerSize, view, handlers } = useMapViewport({
-    imageWidth,
-    imageHeight,
-    imageLoaded,
-  });
+  const { containerRef, containerSize, view, isDragging, handlers } =
+    useMapViewport({
+      imageWidth,
+      imageHeight,
+      imageLoaded,
+    });
   const [activeCategories, setActiveCategories] = useState<
     Set<HeatmapCategory>
   >(new Set(["damage", "healing", "kills"]));
@@ -231,6 +232,10 @@ export function HeatmapCanvas({
 
   function handlePointerMove(e: React.PointerEvent) {
     handlers.onPointerMove(e);
+    if (isDragging.current) {
+      if (hoveredKill) setHoveredKill(null);
+      return;
+    }
 
     if (!killsOnly) {
       if (hoveredKill) setHoveredKill(null);

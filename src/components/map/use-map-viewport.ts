@@ -142,6 +142,7 @@ export function useMapViewport({
     containerSize,
     view,
     setView,
+    isDragging: draggingRef,
     handlers: { onPointerDown, onPointerMove, onPointerUp, onKeyDown },
   };
 }
