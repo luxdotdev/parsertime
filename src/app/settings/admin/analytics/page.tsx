@@ -325,6 +325,7 @@ async function getUserActivityData(firstUserDate: Date) {
   const historical = windows.map((w, i) => ({
     month: w.shortLabel,
     activeUsers: counts[i] ?? 0,
+    inProgress: i === windows.length - 1,
   }));
 
   const lastTwelveWindows = windows.slice(-12);
@@ -332,6 +333,7 @@ async function getUserActivityData(firstUserDate: Date) {
   const twelveMonth = lastTwelveWindows.map((w, i) => ({
     month: w.longLabel,
     activeUsers: lastTwelveCounts[i] ?? 0,
+    inProgress: i === lastTwelveWindows.length - 1,
   }));
 
   const currentMonthActive = counts[counts.length - 1] ?? 0;
@@ -379,6 +381,7 @@ async function getTeamActivityData(firstUserDate: Date) {
   const historical = windows.map((w, i) => ({
     month: w.shortLabel,
     activeTeams: counts[i] ?? 0,
+    inProgress: i === windows.length - 1,
   }));
 
   const lastTwelveWindows = windows.slice(-12);
@@ -386,6 +389,7 @@ async function getTeamActivityData(firstUserDate: Date) {
   const twelveMonth = lastTwelveWindows.map((w, i) => ({
     month: w.longLabel,
     activeTeams: lastTwelveCounts[i] ?? 0,
+    inProgress: i === lastTwelveWindows.length - 1,
   }));
 
   const currentMonthActive = counts[counts.length - 1] ?? 0;

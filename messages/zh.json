@@ -1532,6 +1532,10 @@
       "clear": "清除"
     },
     "viewStats": "查看团队统计",
+    "overviewUnavailable": {
+      "title": "概览暂不可用",
+      "description": "仅凭一场训练赛无法识别哪个阵容是您的队伍。请再上传一场训练赛，然后返回此页面即可查看胜负和团队分析。"
+    },
     "positional": {
       "title": "站位数据",
       "description": "基于本场训练赛中包含站位数据的地图取平均。",
@@ -4688,7 +4692,8 @@
           "activeUsers": "活跃用户",
           "activeTeams": "活跃团队",
           "teamsCreated": "已创建团队",
-          "projected": "本月预计 (剩余)"
+          "projected": "本月预计 (剩余)",
+          "currentMonthInProgress": "本月仍在进行中"
         },
         "tabs": {
           "growth": "增长",

@@ -1532,6 +1532,10 @@
       "clear": "Clear"
     },
     "viewStats": "View team stats",
+    "overviewUnavailable": {
+      "title": "Overview not available yet",
+      "description": "We can't identify which roster is yours from a single scrim. Upload another scrim, then return to this page to view win/loss and team insights."
+    },
     "positional": {
       "title": "Positional stats",
       "description": "Averaged across this scrim's maps with positional data.",
@@ -4776,7 +4780,8 @@
           "activeUsers": "Active Users",
           "activeTeams": "Active Teams",
           "teamsCreated": "Teams Created",
-          "projected": "Projected (rest of month)"
+          "projected": "Projected (rest of month)",
+          "currentMonthInProgress": "Current month in progress"
         },
         "tabs": {
           "growth": "Growth",

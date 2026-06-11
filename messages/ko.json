@@ -1532,6 +1532,10 @@
       "clear": "초기화"
     },
     "viewStats": "팀 통계 보기",
+    "overviewUnavailable": {
+      "title": "개요를 아직 사용할 수 없습니다",
+      "description": "스크림 하나만으로는 어느 로스터가 우리 팀인지 식별할 수 없습니다. 스크림을 하나 더 업로드한 뒤 이 페이지로 돌아오면 승패와 팀 인사이트를 확인할 수 있습니다."
+    },
     "positional": {
       "title": "위치 통계",
       "description": "위치 데이터가 있는 이 스크림의 맵 전체 평균입니다.",
@@ -4688,7 +4692,8 @@
           "activeUsers": "활성 사용자",
           "activeTeams": "활성 팀",
           "teamsCreated": "생성된 팀",
-          "projected": "이번 달 예상 (남은 기간)"
+          "projected": "이번 달 예상 (남은 기간)",
+          "currentMonthInProgress": "이번 달은 진행 중입니다"
         },
         "tabs": {
           "growth": "성장",

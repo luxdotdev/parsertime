@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslations } from "next-intl";
+import type { DotProps } from "recharts";
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 type ChartConfig = {
@@ -22,7 +23,30 @@ type ChartConfig = {
 export type MonthlyActiveUsersData = {
   month: string;
   activeUsers: number;
+  inProgress: boolean;
 };
+
+type ActivityDotProps = DotProps & {
+  payload?: MonthlyActiveUsersData;
+  key?: string | number;
+};
+
+function ActivityDot({ cx, cy, payload, key }: ActivityDotProps) {
+  if (cx == null || cy == null) return <g key={key} />;
+  return payload?.inProgress ? (
+    <circle
+      key={key}
+      cx={cx}
+      cy={cy}
+      r={4}
+      fill="var(--background)"
+      stroke="var(--color-activeUsers)"
+      strokeWidth={2}
+    />
+  ) : (
+    <circle key={key} cx={cx} cy={cy} r={3} fill="var(--color-activeUsers)" />
+  );
+}
 
 type MonthlyActiveUsersChartProps = {
   twelveMonth: MonthlyActiveUsersData[];
@@ -33,11 +57,17 @@ function renderChart(
   data: MonthlyActiveUsersData[],
   opts: { chartConfig: ChartConfig; shortTicks: boolean }
 ) {
+  const lastIdx = data.length - 1;
+  const withTail = data.map((d, i) => ({
+    ...d,
+    tail: lastIdx >= 1 && i >= lastIdx - 1 ? d.activeUsers : null,
+  }));
+
   return (
     <ChartContainer config={opts.chartConfig} className="h-[200px] w-full">
       <LineChart
         accessibilityLayer
-        data={data}
+        data={withTail}
         margin={{ left: 12, right: 12 }}
       >
         <CartesianGrid vertical={false} />
@@ -64,8 +94,20 @@ function renderChart(
           type="monotone"
           stroke="var(--color-activeUsers)"
           strokeWidth={2}
-          dot={{ fill: "var(--color-activeUsers)", r: 3 }}
+          dot={(props) => ActivityDot(props as ActivityDotProps)}
           activeDot={{ r: 5 }}
+        />
+        <Line
+          dataKey="tail"
+          type="monotone"
+          stroke="var(--color-activeUsers)"
+          strokeWidth={2}
+          strokeDasharray="4 4"
+          dot={false}
+          activeDot={false}
+          connectNulls
+          isAnimationActive={false}
+          legendType="none"
         />
       </LineChart>
     </ChartContainer>
@@ -85,17 +127,22 @@ export function MonthlyActiveUsersChart({
   };
 
   return (
-    <Tabs defaultValue="twelve-months" className="w-full">
-      <TabsList className="mb-4">
-        <TabsTrigger value="twelve-months">{t("last12Months")}</TabsTrigger>
-        <TabsTrigger value="historical">{t("allTime")}</TabsTrigger>
-      </TabsList>
-      <TabsContent value="twelve-months">
-        {renderChart(twelveMonth, { chartConfig, shortTicks: true })}
-      </TabsContent>
-      <TabsContent value="historical">
-        {renderChart(historical, { chartConfig, shortTicks: false })}
-      </TabsContent>
-    </Tabs>
+    <div className="space-y-2">
+      <Tabs defaultValue="twelve-months" className="w-full">
+        <TabsList className="mb-4">
+          <TabsTrigger value="twelve-months">{t("last12Months")}</TabsTrigger>
+          <TabsTrigger value="historical">{t("allTime")}</TabsTrigger>
+        </TabsList>
+        <TabsContent value="twelve-months">
+          {renderChart(twelveMonth, { chartConfig, shortTicks: true })}
+        </TabsContent>
+        <TabsContent value="historical">
+          {renderChart(historical, { chartConfig, shortTicks: false })}
+        </TabsContent>
+      </Tabs>
+      <p className="text-muted-foreground text-xs">
+        {t("currentMonthInProgress")}
+      </p>
+    </div>
   );
 }
