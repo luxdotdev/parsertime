@@ -2295,6 +2295,7 @@
       "routeFallback": "路线 {n}",
       "loadingImage": "正在加载地图图片...",
       "canvasLabel": "绘制在地图图片上的玩家路线。",
+      "zoomHint": "{zoom, number}% · 滚动缩放 · 拖动平移",
       "filters": {
         "team": "队伍",
         "player": "玩家",

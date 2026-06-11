@@ -2295,6 +2295,7 @@
       "routeFallback": "Route {n}",
       "loadingImage": "Loading map image...",
       "canvasLabel": "Player routes drawn over the map image.",
+      "zoomHint": "{zoom, number}% · Scroll to zoom · Drag to pan",
       "filters": {
         "team": "Team",
         "player": "Player",
