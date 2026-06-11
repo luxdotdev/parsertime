@@ -32,6 +32,12 @@ export type MapTendencies = {
     routeCount: number;
     sharePercent: number;
     outcomes: { won: number; lost: number; unknown: number };
+    /** Representative route: geometry for previews, provenance for links. */
+    medoid: {
+      points: { x: number; z: number }[];
+      mapId: number;
+      scrimId: number;
+    };
   }[];
 };
 
@@ -99,8 +105,10 @@ export const make: Effect.Effect<
             orderBy: { date: "desc" },
             take: TENDENCIES_SCRIM_WINDOW,
             select: {
+              id: true,
               maps: {
                 select: {
+                  id: true,
                   name: true,
                   mapData: { select: { id: true } },
                 },
@@ -118,8 +126,13 @@ export const make: Effect.Effect<
         })
       );
 
-      // Collect MapData ids grouped by map name, capped per map name.
+      // Collect MapData ids grouped by map name, capped per map name, and
+      // remember each MapData's Map/Scrim provenance for medoid links.
       const mapDataIdsByMapName = new Map<string, number[]>();
+      const provenanceByMapDataId = new Map<
+        number,
+        { mapId: number; scrimId: number }
+      >();
       for (const scrim of scrims) {
         for (const map of scrim.maps) {
           const mapName = map.name;
@@ -128,6 +141,10 @@ export const make: Effect.Effect<
           for (const md of map.mapData) {
             if (ids.length >= TENDENCIES_MAX_MAPDATA) break;
             ids.push(md.id);
+            provenanceByMapDataId.set(md.id, {
+              mapId: map.id,
+              scrimId: scrim.id,
+            });
           }
           mapDataIdsByMapName.set(mapName, ids);
         }
@@ -168,7 +185,7 @@ export const make: Effect.Effect<
       const result: MapTendencies[] = [];
 
       for (const [mapName, mapDataIds] of mapDataIdsByMapName) {
-        const keptRoutes: AugmentedRoute[] = [];
+        const keptRoutes: { route: AugmentedRoute; mapDataId: number }[] = [];
 
         for (const mapDataId of mapDataIds) {
           const analysis = yield* Effect.tryPromise({
@@ -194,31 +211,43 @@ export const make: Effect.Effect<
           if (ourSide === null) continue;
 
           for (const route of analysis.routes) {
-            if (route.playerTeam === ourSide) keptRoutes.push(route);
+            if (route.playerTeam === ourSide) {
+              keptRoutes.push({ route, mapDataId });
+            }
           }
         }
 
         const totalRoutes = keptRoutes.length;
         if (totalRoutes === 0) continue;
 
-        const rawClusters = clusterRoutes(keptRoutes.map((r) => r.points));
-        const clusters = rawClusters.map((cluster) => {
+        const rawClusters = clusterRoutes(keptRoutes.map((k) => k.route.points));
+        const clusters: MapTendencies["clusters"] = [];
+        for (const cluster of rawClusters) {
           const counts = { won: 0, lost: 0, unknown: 0 };
           for (const idx of cluster.routeIndexes) {
-            const outcome = keptRoutes[idx].outcome;
+            const outcome = keptRoutes[idx].route.outcome;
             if (outcome === "WON") counts.won++;
             else if (outcome === "LOST") counts.lost++;
             else counts.unknown++;
           }
-          return {
-            label: keptRoutes[cluster.medoidIndex]?.signature ?? null,
+          const medoidRoute = keptRoutes[cluster.medoidIndex];
+          const provenance = provenanceByMapDataId.get(medoidRoute.mapDataId);
+          if (!provenance) continue; // can't happen: ids come from the same scan
+          clusters.push({
+            label: medoidRoute.route.signature ?? null,
             routeCount: cluster.routeIndexes.length,
             sharePercent: Math.round(
               (cluster.routeIndexes.length / totalRoutes) * 100
             ),
             outcomes: counts,
-          };
-        });
+            medoid: {
+              points: medoidRoute.route.points,
+              mapId: provenance.mapId,
+              scrimId: provenance.scrimId,
+            },
+          });
+        }
+        clusters.sort((a, b) => b.sharePercent - a.sharePercent);
 
         result.push({ mapName, totalRoutes, clusters });
       }

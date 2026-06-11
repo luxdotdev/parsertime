@@ -4,6 +4,7 @@ import { AppRuntime } from "@/data/runtime";
 import { RouteTendenciesService } from "@/data/team/route-tendencies-service";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
+import { loadCalibration } from "@/lib/map-calibration/load-calibration";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@prisma/client";
@@ -71,28 +72,23 @@ export default async function TendenciesPage(
     )
   );
 
-  const t = await getTranslations({
-    locale: params.locale,
-    namespace: "tendenciesPage",
-  });
+  // Presigned map images + transforms for the route preview thumbnails.
+  // Control maps have per-sub-map calibrations under different names, so
+  // their base names miss here and rows render without a preview.
+  const calibrationEntries = await Promise.all(
+    tendencies.map(
+      async (map) =>
+        [map.mapName, await loadCalibration(map.mapName)] as const
+    )
+  );
+  const calibrations = Object.fromEntries(calibrationEntries);
 
   return (
     <DashboardLayout>
       <TendenciesContent
+        teamId={teamId}
         tendencies={tendencies}
-        labels={{
-          title: t("title"),
-          description: t("description"),
-          empty: t("empty"),
-          totalRoutes: t("totalRoutes"),
-          route: t("route"),
-          share: t("share"),
-          routeColumn: t("routeColumn"),
-          outcomes: t("outcomes"),
-          won: t("won"),
-          lost: t("lost"),
-          unknown: t("unknown"),
-        }}
+        calibrations={calibrations}
       />
     </DashboardLayout>
   );
