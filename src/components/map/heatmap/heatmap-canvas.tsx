@@ -5,6 +5,7 @@ import {
   HEATMAP_RAMP,
 } from "@/components/map/heatmap/heatmap-render";
 import type { HeatmapSubMap, KillPoint } from "@/data/map/heatmap/types";
+import { useMapViewport } from "@/components/map/use-map-viewport";
 import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import { toHero, toTimestamp } from "@/lib/utils";
 import { useTheme } from "next-themes";
@@ -47,18 +48,13 @@ export function HeatmapCanvas({
   const t = useTranslations("mapPage.heatmap.canvas");
   const format = useFormatter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
-  const [view, setView] = useState({ offsetX: 0, offsetY: 0, zoom: 1 });
-  const viewRef = useRef(view);
-  useEffect(() => {
-    viewRef.current = view;
-  }, [view]);
-  const draggingRef = useRef(false);
-  const dragStartRef = useRef({ x: 0, y: 0 });
-  const rafRef = useRef<number | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 });
+  const { containerRef, containerSize, view, handlers } = useMapViewport({
+    imageWidth,
+    imageHeight,
+    imageLoaded,
+  });
   const [activeCategories, setActiveCategories] = useState<
     Set<HeatmapCategory>
   >(new Set(["damage", "healing", "kills"]));
@@ -83,34 +79,9 @@ export function HeatmapCanvas({
     img.onload = () => {
       imageRef.current = img;
       setImageLoaded(true);
-
-      if (containerRef.current) {
-        const container = containerRef.current;
-        const fitZoom = Math.min(
-          container.clientWidth / imageWidth,
-          container.clientHeight / imageHeight
-        );
-        setView({ offsetX: 0, offsetY: 0, zoom: fitZoom });
-      }
     };
     img.src = imageUrl;
-  }, [imageUrl, imageWidth, imageHeight]);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setCanvasSize({
-          width: entry.contentRect.width,
-          height: entry.contentRect.height,
-        });
-      }
-    });
-    observer.observe(container);
-    return () => observer.disconnect();
-  }, []);
+  }, [imageUrl]);
 
   const { team1, team2 } = useColorblindMode();
 
@@ -183,17 +154,17 @@ export function HeatmapCanvas({
     const img = imageRef.current;
     if (!canvas || !ctx || !img || !imageLoaded) return;
 
-    const currentView = viewRef.current;
+    const currentView = view;
     const dpr = window.devicePixelRatio ?? 1;
-    canvas.width = canvasSize.width * dpr;
-    canvas.height = canvasSize.height * dpr;
+    canvas.width = containerSize.width * dpr;
+    canvas.height = containerSize.height * dpr;
     ctx.scale(dpr, dpr);
 
     ctx.fillStyle = themeTokens.background;
-    ctx.fillRect(0, 0, canvasSize.width, canvasSize.height);
+    ctx.fillRect(0, 0, containerSize.width, containerSize.height);
 
     ctx.save();
-    ctx.translate(canvasSize.width / 2, canvasSize.height / 2);
+    ctx.translate(containerSize.width / 2, containerSize.height / 2);
     ctx.scale(currentView.zoom, currentView.zoom);
     ctx.translate(
       -imageWidth / 2 + currentView.offsetX / currentView.zoom,
@@ -223,7 +194,8 @@ export function HeatmapCanvas({
 
     ctx.restore();
   }, [
-    canvasSize,
+    containerSize,
+    view,
     imageLoaded,
     imageWidth,
     imageHeight,
@@ -238,14 +210,6 @@ export function HeatmapCanvas({
     return () => cancelAnimationFrame(raf);
   }, [render, view]);
 
-  const requestRender = useCallback(() => {
-    if (rafRef.current != null) return;
-    rafRef.current = requestAnimationFrame(() => {
-      rafRef.current = null;
-      render();
-    });
-  }, [render]);
-
   const [hoveredKill, setHoveredKill] = useState<{
     kill: KillPoint;
     screenX: number;
@@ -255,39 +219,18 @@ export function HeatmapCanvas({
   function screenToImage(screenX: number, screenY: number) {
     return {
       u:
-        (screenX - canvasSize.width / 2) / view.zoom +
+        (screenX - containerSize.width / 2) / view.zoom +
         imageWidth / 2 -
         view.offsetX / view.zoom,
       v:
-        (screenY - canvasSize.height / 2) / view.zoom +
+        (screenY - containerSize.height / 2) / view.zoom +
         imageHeight / 2 -
         view.offsetY / view.zoom,
     };
   }
 
-  function handlePointerDown(e: React.PointerEvent) {
-    if (e.button === 0) {
-      draggingRef.current = true;
-      dragStartRef.current = { x: e.clientX, y: e.clientY };
-      (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    }
-  }
-
   function handlePointerMove(e: React.PointerEvent) {
-    if (draggingRef.current) {
-      const dx = e.clientX - dragStartRef.current.x;
-      const dy = e.clientY - dragStartRef.current.y;
-      dragStartRef.current = { x: e.clientX, y: e.clientY };
-      const v = viewRef.current;
-      viewRef.current = {
-        ...v,
-        offsetX: v.offsetX + dx,
-        offsetY: v.offsetY + dy,
-      };
-      if (hoveredKill) setHoveredKill(null);
-      requestRender();
-      return;
-    }
+    handlers.onPointerMove(e);
 
     if (!killsOnly) {
       if (hoveredKill) setHoveredKill(null);
@@ -317,80 +260,6 @@ export function HeatmapCanvas({
       setHoveredKill({ kill: closest, screenX: sx, screenY: sy });
     } else if (hoveredKill) {
       setHoveredKill(null);
-    }
-  }
-
-  function handlePointerUp() {
-    if (draggingRef.current) {
-      draggingRef.current = false;
-      setView(viewRef.current);
-    }
-  }
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    function handler(e: WheelEvent) {
-      e.preventDefault();
-      const factor = e.deltaY > 0 ? 0.9 : 1.1;
-      const minZoom = canvasSize.height / imageHeight;
-      setView((v) => {
-        const newZoom = Math.max(minZoom, Math.min(10, v.zoom * factor));
-        if (newZoom <= minZoom) {
-          return { offsetX: 0, offsetY: 0, zoom: newZoom };
-        }
-        return { ...v, zoom: newZoom };
-      });
-    }
-    canvas.addEventListener("wheel", handler, { passive: false });
-    return () => canvas.removeEventListener("wheel", handler);
-  }, [canvasSize.height, imageHeight]);
-
-  function handleKeyDown(e: React.KeyboardEvent) {
-    const minZoom = canvasSize.height / imageHeight;
-    const panStep = e.shiftKey ? 0.025 : 0.1;
-    if (e.key === "+" || e.key === "=") {
-      e.preventDefault();
-      setView((v) => ({
-        ...v,
-        zoom: Math.min(10, v.zoom * 1.1),
-      }));
-      return;
-    }
-    if (e.key === "-" || e.key === "_") {
-      e.preventDefault();
-      setView((v) => {
-        const newZoom = Math.max(minZoom, v.zoom * 0.9);
-        if (newZoom <= minZoom)
-          return { offsetX: 0, offsetY: 0, zoom: newZoom };
-        return { ...v, zoom: newZoom };
-      });
-      return;
-    }
-    if (e.key === "0") {
-      e.preventDefault();
-      setView({ offsetX: 0, offsetY: 0, zoom: minZoom });
-      return;
-    }
-    if (e.key.startsWith("Arrow")) {
-      e.preventDefault();
-      const dx =
-        e.key === "ArrowLeft"
-          ? canvasSize.width * panStep
-          : e.key === "ArrowRight"
-            ? -canvasSize.width * panStep
-            : 0;
-      const dy =
-        e.key === "ArrowUp"
-          ? canvasSize.height * panStep
-          : e.key === "ArrowDown"
-            ? -canvasSize.height * panStep
-            : 0;
-      setView((v) => ({
-        ...v,
-        offsetX: v.offsetX + dx,
-        offsetY: v.offsetY + dy,
-      }));
     }
   }
 
@@ -431,19 +300,19 @@ export function HeatmapCanvas({
         // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus required for keyboard pan/zoom
         tabIndex={0}
         aria-describedby={killsOnly ? srListId : undefined}
-        onKeyDown={handleKeyDown}
+        onKeyDown={handlers.onKeyDown}
         className="bg-background focus-visible:ring-ring/50 relative min-h-[500px] w-full overflow-hidden rounded-lg border outline-none focus-visible:ring-[3px]"
       >
         <canvas
           ref={canvasRef}
           aria-label={t("canvasLabel")}
           role="img"
-          style={{ width: canvasSize.width, height: canvasSize.height }}
+          style={{ width: containerSize.width, height: containerSize.height }}
           className={`active:cursor-grabbing ${hoveredKill ? "cursor-pointer" : "cursor-grab"}`}
           onContextMenu={(e) => e.preventDefault()}
-          onPointerDown={handlePointerDown}
+          onPointerDown={handlers.onPointerDown}
           onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
+          onPointerUp={handlers.onPointerUp}
         />
         {killsOnly && (
           <ul
