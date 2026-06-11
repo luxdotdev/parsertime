@@ -11,6 +11,7 @@ import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import type { SVGProps } from "react";
 import { CtaSection } from "./cta-section";
+import { DataPipeline } from "./data-pipeline";
 import { Features } from "./features";
 import { Hero } from "./hero";
 import { HowItWorks } from "./how-it-works";
@@ -205,6 +206,23 @@ export async function V3LandingPage() {
                   "secondaryFeatures.fullyCustomizable.description"
                 ),
               },
+            }}
+          />
+        </TrackedSection>
+
+        <TrackedSection name="data-pipeline">
+          <DataPipeline
+            eyebrow={t("pipeline.eyebrow")}
+            title={t("pipeline.title")}
+            description={t("pipeline.description")}
+            sourcesLabel={t("pipeline.sourcesLabel")}
+            processingLabel={t("pipeline.processingLabel")}
+            outputsLabel={t("pipeline.outputsLabel")}
+            outputs={{
+              dashboards: t("pipeline.outputDashboards"),
+              ratings: t("pipeline.outputRatings"),
+              replays: t("pipeline.outputReplays"),
+              trends: t("pipeline.outputTrends"),
             }}
           />
         </TrackedSection>

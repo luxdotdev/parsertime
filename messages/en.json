@@ -397,6 +397,18 @@
     "zenyatta": "Zenyatta"
   },
   "landingPage": {
+    "pipeline": {
+      "eyebrow": "How it works",
+      "title": "From raw logs to coaching calls",
+      "description": "Drop your Workshop logs in after the block. Parsertime parses every event, computes ratings and positioning, and turns the night's scrims into dashboards before VOD review starts.",
+      "sourcesLabel": "Scrim logs",
+      "processingLabel": "Parsertime",
+      "outputsLabel": "Your dashboards",
+      "outputDashboards": "Team dashboards",
+      "outputRatings": "Hero skill ratings",
+      "outputReplays": "Replays & heatmaps",
+      "outputTrends": "Trend lines"
+    },
     "positional": {
       "badge": "New in v3",
       "title": "See the fight from above",

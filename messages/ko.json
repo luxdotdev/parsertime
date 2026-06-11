@@ -397,6 +397,18 @@
     "zenyatta": "젠야타"
   },
   "landingPage": {
+    "pipeline": {
+      "eyebrow": "작동 방식",
+      "title": "원시 로그에서 코칭 판단까지",
+      "description": "스크림 블록이 끝나면 워크샵 로그를 업로드하세요. Parsertime이 모든 이벤트를 파싱하고 레이팅과 포지셔닝을 계산해, VOD 리뷰가 시작되기 전에 그날의 스크림을 대시보드로 만들어 드립니다.",
+      "sourcesLabel": "스크림 로그",
+      "processingLabel": "Parsertime",
+      "outputsLabel": "대시보드",
+      "outputDashboards": "팀 대시보드",
+      "outputRatings": "영웅 스킬 레이팅",
+      "outputReplays": "리플레이 & 히트맵",
+      "outputTrends": "추세선"
+    },
     "positional": {
       "badge": "v3 신기능",
       "title": "전장을 위에서 내려다보세요",

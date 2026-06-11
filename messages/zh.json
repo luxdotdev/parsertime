@@ -397,6 +397,18 @@
     "zenyatta": "禅雅塔"
   },
   "landingPage": {
+    "pipeline": {
+      "eyebrow": "工作原理",
+      "title": "从原始日志到教练决策",
+      "description": "训练赛结束后上传工坊日志。Parsertime 解析每个事件，计算评分与站位数据，在 VOD 复盘开始前就把当晚的训练赛变成仪表盘。",
+      "sourcesLabel": "训练赛日志",
+      "processingLabel": "Parsertime",
+      "outputsLabel": "你的仪表盘",
+      "outputDashboards": "队伍仪表盘",
+      "outputRatings": "英雄技能评分",
+      "outputReplays": "回放与热力图",
+      "outputTrends": "趋势线"
+    },
     "positional": {
       "badge": "v3 新功能",
       "title": "俯瞰整场战斗",
