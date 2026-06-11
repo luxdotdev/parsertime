@@ -3,7 +3,10 @@ export type View = { offsetX: number; offsetY: number; zoom: number };
 export const MAX_ZOOM = 10;
 
 /** Zoom at which the image height exactly fills the container (the floor). */
-export function getMinZoom(containerHeight: number, imageHeight: number): number {
+export function getMinZoom(
+  containerHeight: number,
+  imageHeight: number
+): number {
   if (imageHeight <= 0) return 1;
   return containerHeight / imageHeight;
 }

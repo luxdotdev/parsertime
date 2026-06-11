@@ -23,7 +23,10 @@ export function RoutesControlTabs({
     <Tabs defaultValue={defaultTab} className="space-y-4">
       <TabsList>
         {subMaps.map((sm) => (
-          <TabsTrigger key={sm.calibrationMapName} value={sm.calibrationMapName}>
+          <TabsTrigger
+            key={sm.calibrationMapName}
+            value={sm.calibrationMapName}
+          >
             {sm.subMapName}
           </TabsTrigger>
         ))}
