@@ -754,8 +754,7 @@
       "coachingCanvas": "Canvas",
       "yourTeams": "Your Teams",
       "availability": "Availability",
-      "matchmaker": "Matchmaker",
-      "tendencies": "Tendencies"
+      "matchmaker": "Matchmaker"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "Search team...",
@@ -1615,7 +1614,16 @@
       "noCalibration": "No calibrated map image for this map. Calibrate it in the map calibration tool to unlock the fight map.",
       "zone": "Zone",
       "record": "Record",
-      "winrate": "Win rate"
+      "winrate": "Win rate",
+      "sectionEyebrow": "Fight map",
+      "sectionTitle": "Where you win and struggle",
+      "summaryFights": "Decisive fights",
+      "summaryFightsSub": "won or lost",
+      "summaryMaps": "Maps",
+      "summaryMapsSub": "with fight data",
+      "summaryStrongest": "Strongest map",
+      "summaryWeakest": "Weakest map",
+      "summaryNoRanking": "Not enough fights"
     },
     "metadata": {
       "title": "Tendencies | Parsertime",

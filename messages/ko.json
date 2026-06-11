@@ -789,8 +789,7 @@
       "coachingCanvas": "캔버스",
       "yourTeams": "내 팀",
       "availability": "가능 시간",
-      "matchmaker": "매치메이커",
-      "tendencies": "경향"
+      "matchmaker": "매치메이커"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "팀 검색...",
@@ -1615,7 +1614,16 @@
       "noCalibration": "이 맵의 보정된 이미지가 없습니다. 맵 보정 도구에서 보정하면 한타 맵이 활성화됩니다.",
       "zone": "구역",
       "record": "전적",
-      "winrate": "승률"
+      "winrate": "승률",
+      "sectionEyebrow": "한타 맵",
+      "sectionTitle": "이기는 곳과 고전하는 곳",
+      "summaryFights": "결정적 한타",
+      "summaryFightsSub": "승패 기준",
+      "summaryMaps": "맵",
+      "summaryMapsSub": "한타 데이터 보유",
+      "summaryStrongest": "강한 맵",
+      "summaryWeakest": "약한 맵",
+      "summaryNoRanking": "한타 부족"
     },
     "metadata": {
       "title": "경향 | Parsertime",

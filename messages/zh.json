@@ -789,8 +789,7 @@
       "coachingCanvas": "画布",
       "yourTeams": "你的队伍",
       "availability": "可用时间",
-      "matchmaker": "匹配工具",
-      "tendencies": "倾向"
+      "matchmaker": "匹配工具"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "搜索团队...",
@@ -1615,7 +1614,16 @@
       "noCalibration": "该地图没有校准图像。请在校准工具中完成校准以启用团战地图。",
       "zone": "区域",
       "record": "战绩",
-      "winrate": "胜率"
+      "winrate": "胜率",
+      "sectionEyebrow": "团战地图",
+      "sectionTitle": "优势区与劣势区",
+      "summaryFights": "决定性团战",
+      "summaryFightsSub": "已分胜负",
+      "summaryMaps": "地图",
+      "summaryMapsSub": "含团战数据",
+      "summaryStrongest": "最强地图",
+      "summaryWeakest": "最弱地图",
+      "summaryNoRanking": "团战不足"
     },
     "metadata": {
       "title": "倾向 | Parsertime",

@@ -39,8 +39,10 @@ import { UltimateEconomyCard } from "@/components/stats/team/ultimate-economy-ca
 import { WinLossStreaksCard } from "@/components/stats/team/win-loss-streaks-card";
 import { WinProbabilityInsights } from "@/components/stats/team/win-probability-insights";
 import { WinrateOverTimeChart } from "@/components/stats/team/winrate-over-time-chart";
+import { FightMapContent } from "@/components/team/fight-map-content";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppRuntime } from "@/data/runtime";
+import { FightFieldService } from "@/data/team/fight-field-service";
 import {
   TeamAbilityImpactService,
   TeamAnalyticsService,
@@ -69,6 +71,7 @@ import {
   ultimateImpactTool,
 } from "@/lib/flags";
 import { calculateHeroPickrateMatrix } from "@/lib/hero-pickrate-utils";
+import { loadCalibration } from "@/lib/map-calibration/load-calibration";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { isValidTimeframe, type Timeframe } from "@/lib/timeframe";
@@ -284,6 +287,7 @@ export default async function TeamStatsPage(
     simulationToolEnabled,
     ultimateImpactToolEnabled,
     heroPickrateRawData,
+    fightMapData,
   ] = await Promise.all([
     AppRuntime.runPromise(
       Effect.all(
@@ -430,6 +434,24 @@ export default async function TeamStatsPage(
         Effect.flatMap((svc) => svc.getHeroPickrateRawData(teamId, dateRange))
       )
     ),
+    // Fight map (tendencies): engagement-outcome field per map, pooled over a
+    // fixed recent-scrims window — independent of the timeframe picker. Gated
+    // by the positional flag, since the field is built from coordinate data.
+    positionalDataEnabled
+      ? AppRuntime.runPromise(
+          FightFieldService.pipe(
+            Effect.flatMap((svc) => svc.getFightFields(teamId))
+          )
+        ).then(async (views) => {
+          const entries = await Promise.all(
+            views.map(
+              async (view) =>
+                [view.mapName, await loadCalibration(view.mapName)] as const
+            )
+          );
+          return { views, calibrations: Object.fromEntries(entries) };
+        })
+      : Promise.resolve(null),
   ]);
   const heroPickrateMatrix = calculateHeroPickrateMatrix(heroPickrateRawData);
 
@@ -515,6 +537,11 @@ export default async function TeamStatsPage(
           {positionalDataEnabled && (
             <TabsTrigger value="positional" className={tabTriggerClass}>
               Positional
+            </TabsTrigger>
+          )}
+          {positionalDataEnabled && (
+            <TabsTrigger value="tendencies" className={tabTriggerClass}>
+              Tendencies
             </TabsTrigger>
           )}
           {simulationToolEnabled && (
@@ -904,6 +931,16 @@ export default async function TeamStatsPage(
             ) : (
               <PositionalStatsEmpty />
             )}
+          </TabsContent>
+        )}
+
+        {/* Tendencies Tab (fight map) */}
+        {positionalDataEnabled && fightMapData && (
+          <TabsContent value="tendencies" className="space-y-12">
+            <FightMapContent
+              views={fightMapData.views}
+              calibrations={fightMapData.calibrations}
+            />
           </TabsContent>
         )}
 

@@ -1,18 +1,16 @@
-import { FightMapCanvas } from "@/components/team/fight-map-canvas";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  StatRibbon,
+  type RibbonCell,
+} from "@/components/stats/team/stat-ribbon";
+import { FightMapCanvas } from "@/components/team/fight-map-canvas";
 import type {
   FightFieldResult,
   FightMapView,
 } from "@/data/team/fight-field-service";
 import { FIELD_MIN_TOTAL_FIGHTS } from "@/lib/fight-field";
 import type { LoadedCalibration } from "@/lib/map-calibration/load-calibration";
+import { cn } from "@/lib/utils";
 import { getTranslations } from "next-intl/server";
 
 type FightMapContentProps = {
@@ -36,16 +34,20 @@ function CalloutChip({
   const strong = polarity === "strong";
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs ${
-        strong
-          ? "border-green-500/30 bg-green-500/10 text-green-400"
-          : "border-red-500/30 bg-red-500/10 text-red-400"
-      }`}
+      className={cn(
+        "inline-flex items-center gap-2 rounded-sm px-2 py-1",
+        strong ? "bg-green-500/10" : "bg-red-500/10"
+      )}
     >
-      <span className="max-w-40 truncate font-medium">
+      <span className="text-foreground max-w-44 truncate text-xs font-medium">
         {zoneName ?? fallback}
       </span>
-      <span className="font-mono tabular-nums">
+      <span
+        className={cn(
+          "font-mono text-[11px] tabular-nums",
+          strong ? "text-green-400" : "text-red-400"
+        )}
+      >
         {won}–{lost}
       </span>
     </span>
@@ -62,27 +64,30 @@ async function MapSection({
   const t = await getTranslations("tendenciesPage.fightMap");
   const strong = view.namedCallouts.filter((c) => c.polarity === "strong");
   const weak = view.namedCallouts.filter((c) => c.polarity === "weak");
+  const winrate = view.overallWinratePercent;
 
   return (
-    <section className="space-y-3">
+    <article className="space-y-3 py-8 first:pt-0 last:pb-0">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h3 className="text-lg font-semibold tracking-tight">{view.mapName}</h3>
-        <div className="text-muted-foreground flex items-baseline gap-4 text-sm tabular-nums">
-          <span>{t("fights", { count: view.totalDecisiveFights })}</span>
-          {view.overallWinratePercent !== null && (
-            <span>
-              {t("overall")}{" "}
-              <span
-                className={`font-medium ${
-                  view.overallWinratePercent >= 55
-                    ? "text-green-400"
-                    : view.overallWinratePercent <= 45
-                      ? "text-red-400"
-                      : "text-foreground"
-                }`}
-              >
-                {Math.round(view.overallWinratePercent)}%
-              </span>
+        <h3 className="text-base font-semibold tracking-tight">
+          {view.mapName}
+        </h3>
+        <div className="flex items-baseline gap-4 font-mono text-xs tabular-nums">
+          <span className="text-muted-foreground">
+            {t("fights", { count: view.totalDecisiveFights })}
+          </span>
+          {winrate !== null && (
+            <span
+              className={cn(
+                winrate >= 55
+                  ? "text-green-400"
+                  : winrate <= 45
+                    ? "text-red-400"
+                    : "text-foreground"
+              )}
+            >
+              {Math.round(winrate)}%{" "}
+              <span className="text-muted-foreground">{t("overall")}</span>
             </span>
           )}
         </div>
@@ -108,11 +113,11 @@ async function MapSection({
       )}
 
       {view.field === null ? (
-        <div className="border-border bg-muted/20 text-muted-foreground rounded-lg border p-6 text-sm">
+        <div className="border-border bg-muted/20 text-muted-foreground rounded-md border px-4 py-6 text-sm">
           {t("notEnoughFights", { count: FIELD_MIN_TOTAL_FIGHTS })}
         </div>
       ) : calibration === null ? (
-        <div className="border-border bg-muted/20 text-muted-foreground rounded-lg border p-6 text-sm">
+        <div className="border-border bg-muted/20 text-muted-foreground rounded-md border px-4 py-6 text-sm">
           {t("noCalibration")}
         </div>
       ) : (
@@ -124,46 +129,59 @@ async function MapSection({
       )}
 
       {view.zoneScorecard !== null && view.zoneScorecard.length > 0 && (
-        <Table className="max-w-xl">
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t("zone")}</TableHead>
-              <TableHead className="text-right">{t("record")}</TableHead>
-              <TableHead className="text-right">{t("winrate")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {view.zoneScorecard.map((zone) => (
-              <TableRow key={zone.zoneName}>
-                <TableCell className="font-medium">{zone.zoneName}</TableCell>
-                <TableCell className="text-right font-mono text-sm tabular-nums">
-                  <span className="text-green-400">{zone.won}W</span>{" "}
-                  <span className="text-red-400">{zone.lost}L</span>
-                  {zone.even > 0 && (
-                    <span className="text-muted-foreground"> {zone.even}E</span>
-                  )}
-                </TableCell>
-                <TableCell
-                  className={`text-right font-mono text-sm tabular-nums ${
-                    zone.winratePercent === null
-                      ? "text-muted-foreground"
-                      : zone.winratePercent >= 55
-                        ? "text-green-400"
-                        : zone.winratePercent <= 45
-                          ? "text-red-400"
-                          : ""
-                  }`}
+        <div className="border-border max-w-xl overflow-hidden rounded-md border">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/30">
+              <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
+                <th className="px-4 py-2 text-left font-medium">{t("zone")}</th>
+                <th className="px-4 py-2 text-right font-medium">
+                  {t("record")}
+                </th>
+                <th className="px-4 py-2 text-right font-medium">
+                  {t("winrate")}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[var(--border)]">
+              {view.zoneScorecard.map((zone) => (
+                <tr
+                  key={zone.zoneName}
+                  className="hover:bg-muted/30 transition-colors"
                 >
-                  {zone.winratePercent === null
-                    ? "—"
-                    : `${zone.winratePercent}%`}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                  <td className="px-4 py-3 font-medium">{zone.zoneName}</td>
+                  <td className="px-4 py-3 text-right font-mono tabular-nums">
+                    <span className="text-green-400">{zone.won}W</span>{" "}
+                    <span className="text-red-400">{zone.lost}L</span>
+                    {zone.even > 0 && (
+                      <span className="text-muted-foreground">
+                        {" "}
+                        {zone.even}E
+                      </span>
+                    )}
+                  </td>
+                  <td
+                    className={cn(
+                      "px-4 py-3 text-right font-mono tabular-nums",
+                      zone.winratePercent === null
+                        ? "text-muted-foreground"
+                        : zone.winratePercent >= 55
+                          ? "text-green-400"
+                          : zone.winratePercent <= 45
+                            ? "text-red-400"
+                            : ""
+                    )}
+                  >
+                    {zone.winratePercent === null
+                      ? "—"
+                      : `${zone.winratePercent}%`}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
-    </section>
+    </article>
   );
 }
 
@@ -173,26 +191,75 @@ export async function FightMapContent({
 }: FightMapContentProps) {
   const t = await getTranslations("tendenciesPage");
 
-  return (
-    <div className="flex-1 space-y-10 p-8 pt-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">{t("title")}</h2>
-        <p className="text-muted-foreground mt-2 max-w-prose">
-          {t("fightMap.description")}
-        </p>
-      </div>
+  const header = (
+    <SectionHeader
+      eyebrow={t("fightMap.sectionEyebrow")}
+      title={t("fightMap.sectionTitle")}
+      description={t("fightMap.description")}
+    />
+  );
 
-      {views.length === 0 ? (
-        <p className="text-muted-foreground py-12 text-center">{t("empty")}</p>
-      ) : (
-        views.map((view) => (
-          <MapSection
-            key={view.mapName}
-            view={view}
-            calibration={calibrations[view.mapName] ?? null}
-          />
-        ))
-      )}
-    </div>
+  if (views.length === 0) {
+    return (
+      <section className="space-y-4">
+        {header}
+        <p className="text-muted-foreground text-sm">{t("empty")}</p>
+      </section>
+    );
+  }
+
+  const ranked = views
+    .filter((v) => v.overallWinratePercent !== null && v.field !== null)
+    .sort(
+      (a, b) => (b.overallWinratePercent ?? 0) - (a.overallWinratePercent ?? 0)
+    );
+  const strongest = ranked[0] ?? null;
+  const weakest = ranked.length > 1 ? ranked[ranked.length - 1] : null;
+  const totalFights = views.reduce((sum, v) => sum + v.totalDecisiveFights, 0);
+
+  const cells: RibbonCell[] = [
+    {
+      label: t("fightMap.summaryFights"),
+      value: String(totalFights),
+      sub: t("fightMap.summaryFightsSub"),
+      emphasis: true,
+    },
+    {
+      label: t("fightMap.summaryMaps"),
+      value: String(views.length),
+      sub: t("fightMap.summaryMapsSub"),
+    },
+    {
+      label: t("fightMap.summaryStrongest"),
+      value: strongest
+        ? `${Math.round(strongest.overallWinratePercent ?? 0)}%`
+        : "—",
+      sub: strongest ? strongest.mapName : t("fightMap.summaryNoRanking"),
+    },
+    {
+      label: t("fightMap.summaryWeakest"),
+      value: weakest
+        ? `${Math.round(weakest.overallWinratePercent ?? 0)}%`
+        : "—",
+      sub: weakest ? weakest.mapName : t("fightMap.summaryNoRanking"),
+    },
+  ];
+
+  return (
+    <>
+      <StatRibbon cells={cells} columns={4} />
+      <section className="space-y-6">
+        {header}
+        <div className="divide-y divide-[var(--border)]">
+          {views.map((view) => (
+            <MapSection
+              key={view.mapName}
+              view={view}
+              calibration={calibrations[view.mapName] ?? null}
+            />
+          ))}
+        </div>
+      </section>
+    </>
   );
 }
