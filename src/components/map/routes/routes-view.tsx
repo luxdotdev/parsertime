@@ -1,32 +1,13 @@
 "use client";
 
+import { useMapViewport } from "@/components/map/use-map-viewport";
 import type { RouteAnalysis } from "@/lib/routes/routes-db";
 import type { MapTransform } from "@/lib/map-calibration/types";
 import { worldToImage } from "@/lib/map-calibration/world-to-image";
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 
 type Outcome = "WON" | "LOST" | "UNKNOWN";
-
-type RoutesViewLabels = {
-  filters: {
-    team: string;
-    player: string;
-    round: string;
-    outcome: string;
-    kind: string;
-    cluster: string;
-    all: string;
-  };
-  outcomes: { won: string; lost: string; unknown: string };
-  kinds: { INITIAL: string; RESPAWN: string };
-  showAll: string;
-  clusterHeader: string;
-  routesLabel: string;
-  outcomesLabel: string;
-  routeFallback: string;
-  loadingImage: string;
-  canvasLabel: string;
-};
 
 type RoutesViewProps = {
   analysis: RouteAnalysis;
@@ -34,7 +15,6 @@ type RoutesViewProps = {
   imageWidth: number;
   imageHeight: number;
   transform: MapTransform;
-  labels: RoutesViewLabels;
 };
 
 const OUTCOME_COLORS: Record<Outcome, string> = {
@@ -51,7 +31,6 @@ export function RoutesView({
   imageWidth,
   imageHeight,
   transform,
-  labels,
 }: RoutesViewProps) {
   const { routes, clusters, team1Name, team2Name } = analysis;
 
@@ -136,7 +115,6 @@ export function RoutesView({
     <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
       <div className="space-y-3">
         <RouteFilters
-          labels={labels}
           teamOptions={teamOptions}
           playerOptions={playerOptions}
           roundOptions={roundOptions}
@@ -162,13 +140,11 @@ export function RoutesView({
           imageWidth={imageWidth}
           imageHeight={imageHeight}
           transform={transform}
-          labels={labels}
         />
       </div>
       <ClusterList
         clusters={clusters}
         routes={routes}
-        labels={labels}
         selectedCluster={selectedCluster}
         onSelect={(ci) =>
           setSelectedCluster((prev) => (prev === ci ? null : ci))
@@ -211,7 +187,6 @@ function Select({
 }
 
 function RouteFilters({
-  labels,
   teamOptions,
   playerOptions,
   roundOptions,
@@ -228,7 +203,6 @@ function RouteFilters({
   onKind,
   onShowAll,
 }: {
-  labels: RoutesViewLabels;
   teamOptions: string[];
   playerOptions: string[];
   roundOptions: number[];
@@ -245,11 +219,12 @@ function RouteFilters({
   onKind: (v: string) => void;
   onShowAll: (v: boolean) => void;
 }) {
-  const all = labels.filters.all;
+  const t = useTranslations("mapPage.routes");
+  const all = t("filters.all");
   return (
     <div className="flex flex-wrap items-end gap-3">
       <Select
-        label={labels.filters.team}
+        label={t("filters.team")}
         value={team}
         onChange={onTeam}
         options={[
@@ -258,7 +233,7 @@ function RouteFilters({
         ]}
       />
       <Select
-        label={labels.filters.player}
+        label={t("filters.player")}
         value={player}
         onChange={onPlayer}
         options={[
@@ -267,7 +242,7 @@ function RouteFilters({
         ]}
       />
       <Select
-        label={labels.filters.round}
+        label={t("filters.round")}
         value={round}
         onChange={onRound}
         options={[
@@ -279,24 +254,24 @@ function RouteFilters({
         ]}
       />
       <Select
-        label={labels.filters.outcome}
+        label={t("filters.outcome")}
         value={outcome}
         onChange={onOutcome}
         options={[
           { value: ALL, label: all },
-          { value: "WON", label: labels.outcomes.won },
-          { value: "LOST", label: labels.outcomes.lost },
-          { value: "UNKNOWN", label: labels.outcomes.unknown },
+          { value: "WON", label: t("outcomes.won") },
+          { value: "LOST", label: t("outcomes.lost") },
+          { value: "UNKNOWN", label: t("outcomes.unknown") },
         ]}
       />
       <Select
-        label={labels.filters.kind}
+        label={t("filters.kind")}
         value={kind}
         onChange={onKind}
         options={[
           { value: ALL, label: all },
-          { value: "INITIAL", label: labels.kinds.INITIAL },
-          { value: "RESPAWN", label: labels.kinds.RESPAWN },
+          { value: "INITIAL", label: t("kinds.initial") },
+          { value: "RESPAWN", label: t("kinds.respawn") },
         ]}
       />
       <label className="flex items-center gap-2 text-sm">
@@ -306,7 +281,7 @@ function RouteFilters({
           onChange={(e) => onShowAll(e.target.checked)}
           className="h-4 w-4"
         />
-        {labels.showAll}
+        {t("showAll")}
       </label>
     </div>
   );
@@ -321,7 +296,6 @@ function RouteCanvas({
   imageWidth,
   imageHeight,
   transform,
-  labels,
 }: {
   routes: RouteAnalysis["routes"];
   visibleRouteIndexes: number[];
@@ -331,23 +305,14 @@ function RouteCanvas({
   imageWidth: number;
   imageHeight: number;
   transform: MapTransform;
-  labels: RoutesViewLabels;
 }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [canvasWidth, setCanvasWidth] = useState(imageWidth);
+  const t = useTranslations("mapPage.routes");
   const [imageLoaded, setImageLoaded] = useState(false);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setCanvasWidth(entry.contentRect.width);
-      }
-    });
-    observer.observe(container);
-    return () => observer.disconnect();
-  }, []);
+  const { containerRef, containerSize, view, handlers } = useMapViewport({
+    imageWidth,
+    imageHeight,
+    imageLoaded,
+  });
 
   useEffect(() => {
     setImageLoaded(false);
@@ -357,11 +322,6 @@ function RouteCanvas({
     img.src = imageUrl;
   }, [imageUrl]);
 
-  // Static fit-to-width: scale the image down to the container width and
-  // place every route point with the same scale factor.
-  const scale = canvasWidth / imageWidth;
-  const canvasHeight = imageHeight * scale;
-
   const polylines = useMemo(() => {
     return visibleRouteIndexes.map((idx) => {
       const route = routes[idx];
@@ -369,7 +329,7 @@ function RouteCanvas({
       const points = route.points
         .map((p) => {
           const { u, v } = worldToImage({ x: p.x, y: p.z }, transform);
-          return `${(u * scale).toFixed(1)},${(v * scale).toFixed(1)}`;
+          return `${u.toFixed(1)},${v.toFixed(1)}`;
         })
         .join(" ");
       const highlighted = activeCluster === null || activeCluster === ci;
@@ -380,59 +340,75 @@ function RouteCanvas({
         highlighted,
       };
     });
-  }, [
-    visibleRouteIndexes,
-    routes,
-    clusterOfRoute,
-    transform,
-    scale,
-    activeCluster,
-  ]);
+  }, [visibleRouteIndexes, routes, clusterOfRoute, transform, activeCluster]);
+
+  const { width: cw, height: ch } = containerSize;
+  const layerTransform = `translate(${cw / 2}px, ${ch / 2}px) scale(${view.zoom}) translate(${-imageWidth / 2 + view.offsetX / view.zoom}px, ${-imageHeight / 2 + view.offsetY / view.zoom}px)`;
 
   return (
     <div
       ref={containerRef}
-      className="bg-background relative w-full overflow-hidden rounded-lg border"
-      style={{ height: imageLoaded ? canvasHeight : 500 }}
+      role="application"
+      // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus required for keyboard pan/zoom
+      tabIndex={0}
+      onKeyDown={handlers.onKeyDown}
+      onPointerDown={handlers.onPointerDown}
+      onPointerMove={handlers.onPointerMove}
+      onPointerUp={handlers.onPointerUp}
+      className="bg-background focus-visible:ring-ring/50 relative min-h-[500px] w-full cursor-grab overflow-hidden rounded-lg border outline-none focus-visible:ring-[3px] active:cursor-grabbing"
     >
       {imageLoaded && (
-        // oxlint-disable-next-line @next/next/no-img-element
-        <img
-          src={imageUrl}
-          alt={labels.canvasLabel}
-          width={canvasWidth}
-          height={canvasHeight}
-          draggable={false}
-          className="pointer-events-none absolute inset-0 max-w-none select-none"
-        />
-      )}
-      {imageLoaded && (
-        <svg
-          className="pointer-events-none absolute inset-0"
-          width={canvasWidth}
-          height={canvasHeight}
-          role="img"
-          aria-label={labels.canvasLabel}
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: imageWidth,
+            height: imageHeight,
+            transformOrigin: "0 0",
+            transform: layerTransform,
+          }}
         >
-          {polylines.map((pl) => (
-            <polyline
-              key={pl.key}
-              points={pl.points}
-              fill="none"
-              stroke={pl.color}
-              strokeWidth={pl.highlighted ? 3 : 2}
-              strokeLinejoin="round"
-              strokeLinecap="round"
-              opacity={pl.highlighted ? 0.95 : 0.25}
-            />
-          ))}
-        </svg>
+          {/* oxlint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={imageUrl}
+            alt={t("canvasLabel")}
+            width={imageWidth}
+            height={imageHeight}
+            draggable={false}
+            className="pointer-events-none absolute inset-0 max-w-none select-none"
+          />
+          <svg
+            className="pointer-events-none absolute inset-0"
+            width={imageWidth}
+            height={imageHeight}
+            role="img"
+            aria-label={t("canvasLabel")}
+          >
+            {polylines.map((pl) => (
+              <polyline
+                key={pl.key}
+                points={pl.points}
+                fill="none"
+                stroke={pl.color}
+                strokeWidth={pl.highlighted ? 3 : 2}
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+                opacity={pl.highlighted ? 0.95 : 0.25}
+              />
+            ))}
+          </svg>
+        </div>
       )}
       {!imageLoaded && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <p className="text-muted-foreground">{labels.loadingImage}</p>
+          <p className="text-muted-foreground">{t("loadingImage")}</p>
         </div>
       )}
+      <div className="bg-popover/95 text-muted-foreground absolute right-2 bottom-2 rounded-md border px-2.5 py-1.5 text-xs">
+        {t("zoomHint", { zoom: Math.round(view.zoom * 100) })}
+      </div>
     </div>
   );
 }
@@ -440,30 +416,27 @@ function RouteCanvas({
 function ClusterList({
   clusters,
   routes,
-  labels,
   selectedCluster,
   onSelect,
   onHover,
 }: {
   clusters: RouteAnalysis["clusters"];
   routes: RouteAnalysis["routes"];
-  labels: RoutesViewLabels;
   selectedCluster: number | null;
   onSelect: (ci: number) => void;
   onHover: (ci: number | null) => void;
 }) {
+  const t = useTranslations("mapPage.routes");
   return (
     <div className="space-y-2">
       <h3 className="text-sm font-semibold tracking-tight">
-        {labels.clusterHeader}
+        {t("clusters.header")}
       </h3>
       <ul className="space-y-1.5">
         {clusters.map((cluster, ci) => {
           const memberCount = cluster.routeIndexes.length;
           const { won, lost, unknown } = cluster.outcomes;
-          const label =
-            cluster.label ??
-            labels.routeFallback.replace("{n}", String(ci + 1));
+          const label = cluster.label ?? t("routeFallback", { n: ci + 1 });
           const medoidColor =
             OUTCOME_COLORS[routes[cluster.medoidIndex]?.outcome ?? "UNKNOWN"];
           const selected = selectedCluster === ci;
@@ -490,13 +463,10 @@ function ClusterList({
                   {label}
                 </span>
                 <span className="text-muted-foreground font-mono text-xs tabular-nums">
-                  {labels.routesLabel.replace("{count}", String(memberCount))}
+                  {t("clusters.routes", { count: memberCount })}
                 </span>
                 <span className="text-muted-foreground font-mono text-xs tabular-nums">
-                  {labels.outcomesLabel
-                    .replace("{won}", String(won))
-                    .replace("{lost}", String(lost))
-                    .replace("{unknown}", String(unknown))}
+                  {t("clusters.outcomes", { won, lost, unknown })}
                 </span>
               </button>
             </li>

@@ -1,105 +1,60 @@
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { RouteMiningService } from "@/data/map/route-mining-service";
-import {
-  loadCalibration,
-  type LoadedCalibration,
-} from "@/lib/map-calibration/load-calibration";
-import { CONTROL_OBJECTIVE_MAP } from "@/lib/map-calibration/control-map-index";
+import { loadCalibration } from "@/lib/map-calibration/load-calibration";
 import prisma from "@/lib/prisma";
 import { getTranslations } from "next-intl/server";
 import { RoutesView } from "./routes-view";
+import { RoutesControlTabs } from "./routes-control-tabs";
+import { RoutesEmptyState } from "./empty-state";
 
-/**
- * Server component for the Routes tab. Fetches the route analysis via
- * RouteMiningService (mirroring HeatmapTab's AppRuntime.runPromise pattern)
- * and loads the map calibration + presigned image URL the same way the
- * replay/heatmap services do (loadCalibration on the map name). The
- * interactive canvas + filters live in the RoutesView client child.
- */
 export async function RoutesTab({ id }: { id: number }) {
-  const [analysis, t] = await Promise.all([
+  const [result, t] = await Promise.all([
     AppRuntime.runPromise(
       RouteMiningService.pipe(Effect.flatMap((svc) => svc.getRouteAnalysis(id)))
     ),
     getTranslations("mapPage.routes"),
   ]);
 
-  if (analysis === null) {
-    return (
-      <div className="flex min-h-[300px] items-center justify-center rounded-lg border border-dashed">
-        <p className="text-muted-foreground text-sm">{t("empty")}</p>
-      </div>
-    );
+  if (result === null) {
+    return <RoutesEmptyState message={t("empty")} />;
   }
 
-  // Resolve the map name, then load the calibration for the SVG overlay.
-  // For control maps (multiple sub-map arenas) v1 falls back to the first
-  // available calibration; routes still render over a coherent backdrop.
-  const matchStart = await prisma.matchStart.findFirst({
-    where: { MapDataId: id },
-    select: { map_name: true },
-  });
-  const mapName = matchStart?.map_name ?? null;
-
-  let calibration: LoadedCalibration | null = null;
-  if (mapName) {
-    calibration = await loadCalibration(mapName);
+  if (result.type === "single") {
+    const matchStart = await prisma.matchStart.findFirst({
+      where: { MapDataId: id },
+      select: { map_name: true },
+    });
+    const calibration = matchStart?.map_name
+      ? await loadCalibration(matchStart.map_name)
+      : null;
     if (!calibration) {
-      const subMaps = CONTROL_OBJECTIVE_MAP[mapName];
-      if (subMaps) {
-        for (const subName of subMaps) {
-          calibration = await loadCalibration(subName);
-          if (calibration) break;
-        }
-      }
+      return <RoutesEmptyState message={t("noCalibration")} />;
     }
-  }
-
-  if (!calibration) {
     return (
-      <div className="flex min-h-[300px] items-center justify-center rounded-lg border border-dashed">
-        <p className="text-muted-foreground text-sm">{t("noCalibration")}</p>
-      </div>
+      <RoutesView
+        analysis={result.analysis}
+        imageUrl={calibration.imagePresignedUrl}
+        imageWidth={calibration.imageWidth}
+        imageHeight={calibration.imageHeight}
+        transform={calibration.transform}
+      />
     );
   }
 
-  const labels = {
-    filters: {
-      team: t("filters.team"),
-      player: t("filters.player"),
-      round: t("filters.round"),
-      outcome: t("filters.outcome"),
-      kind: t("filters.kind"),
-      cluster: t("filters.cluster"),
-      all: t("filters.all"),
-    },
-    outcomes: {
-      won: t("outcomes.won"),
-      lost: t("outcomes.lost"),
-      unknown: t("outcomes.unknown"),
-    },
-    kinds: {
-      INITIAL: t("kinds.initial"),
-      RESPAWN: t("kinds.respawn"),
-    },
-    showAll: t("showAll"),
-    clusterHeader: t("clusters.header"),
-    routesLabel: t("clusters.routes"),
-    outcomesLabel: t("clusters.outcomes"),
-    routeFallback: t("routeFallback"),
-    loadingImage: t("loadingImage"),
-    canvasLabel: t("canvasLabel"),
-  };
+  // Control: load each sub-map's calibration; keep the calibratable ones.
+  const subMaps = (
+    await Promise.all(
+      result.subMaps.map(async (sm) => {
+        const calibration = await loadCalibration(sm.calibrationMapName);
+        return calibration ? { ...sm, calibration } : null;
+      })
+    )
+  ).filter((sm): sm is NonNullable<typeof sm> => sm !== null);
 
-  return (
-    <RoutesView
-      analysis={analysis}
-      imageUrl={calibration.imagePresignedUrl}
-      imageWidth={calibration.imageWidth}
-      imageHeight={calibration.imageHeight}
-      transform={calibration.transform}
-      labels={labels}
-    />
-  );
+  if (subMaps.length === 0) {
+    return <RoutesEmptyState message={t("noCalibration")} />;
+  }
+
+  return <RoutesControlTabs subMaps={subMaps} />;
 }

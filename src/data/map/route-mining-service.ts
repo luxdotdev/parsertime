@@ -1,8 +1,8 @@
 import { EffectObservabilityLive } from "@/instrumentation";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import {
-  buildRouteAnalysisForMapData,
-  type RouteAnalysis,
+  buildRouteTabAnalysis,
+  type RouteAnalysisResult,
 } from "@/lib/routes/routes-db";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { MapQueryError } from "./errors";
@@ -17,7 +17,7 @@ import {
 export type RouteMiningServiceInterface = {
   readonly getRouteAnalysis: (
     mapDataId: number
-  ) => Effect.Effect<RouteAnalysis | null, MapQueryError>;
+  ) => Effect.Effect<RouteAnalysisResult | null, MapQueryError>;
 };
 
 export class RouteMiningService extends Context.Tag(
@@ -31,7 +31,7 @@ export const make: Effect.Effect<RouteMiningServiceInterface> = Effect.gen(
   function* () {
     function getRouteAnalysis(
       mapDataId: number
-    ): Effect.Effect<RouteAnalysis | null, MapQueryError> {
+    ): Effect.Effect<RouteAnalysisResult | null, MapQueryError> {
       const startTime = Date.now();
       const wideEvent: Record<string, unknown> = { mapDataId };
 
@@ -48,10 +48,10 @@ export const make: Effect.Effect<RouteMiningServiceInterface> = Effect.gen(
         wideEvent.resolvedMapDataId = resolvedId;
 
         const analysis = yield* Effect.tryPromise({
-          try: () => buildRouteAnalysisForMapData(resolvedId),
+          try: () => buildRouteTabAnalysis(resolvedId),
           catch: (error) =>
             new MapQueryError({
-              operation: "build route analysis for map data",
+              operation: "build route tab analysis for map data",
               cause: error,
             }),
         }).pipe(
@@ -67,8 +67,21 @@ export const make: Effect.Effect<RouteMiningServiceInterface> = Effect.gen(
           return null;
         }
 
-        wideEvent.route_count = analysis.routes.length;
-        wideEvent.cluster_count = analysis.clusters.length;
+        if (analysis.type === "single") {
+          wideEvent.route_count = analysis.analysis.routes.length;
+          wideEvent.cluster_count = analysis.analysis.clusters.length;
+          wideEvent.sub_map_count = 1;
+        } else {
+          wideEvent.route_count = analysis.subMaps.reduce(
+            (n, s) => n + s.analysis.routes.length,
+            0
+          );
+          wideEvent.cluster_count = analysis.subMaps.reduce(
+            (n, s) => n + s.analysis.clusters.length,
+            0
+          );
+          wideEvent.sub_map_count = analysis.subMaps.length;
+        }
         wideEvent.outcome = "success";
         yield* Metric.increment(routeMiningQuerySuccessTotal);
         return analysis;

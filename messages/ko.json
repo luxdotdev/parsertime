@@ -2295,6 +2295,7 @@
       "routeFallback": "경로 {n}",
       "loadingImage": "맵 이미지를 불러오는 중...",
       "canvasLabel": "맵 이미지 위에 그려진 플레이어 이동 경로입니다.",
+      "zoomHint": "{zoom, number}% · 스크롤로 확대/축소 · 드래그로 이동",
       "filters": {
         "team": "팀",
         "player": "플레이어",
