@@ -1,10 +1,11 @@
 "use client";
 
 import { useMapViewport } from "@/components/map/use-map-viewport";
+import { clampZoom, getMinZoom } from "@/components/map/viewport-math";
 import type { RouteAnalysis } from "@/lib/routes/routes-db";
 import type { MapTransform } from "@/lib/map-calibration/types";
 import { worldToImage } from "@/lib/map-calibration/world-to-image";
-import { useEffect, useId, useMemo, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
 type Outcome = "WON" | "LOST" | "UNKNOWN";
@@ -111,6 +112,21 @@ export function RoutesView({
 
   const activeCluster = selectedCluster ?? hoveredCluster;
 
+  // Calibration sanity: when most route points map outside the image, the
+  // map's calibration is wrong and the drawing would be meaningless noise.
+  const calibrationSuspect = useMemo(() => {
+    let inside = 0;
+    let total = 0;
+    for (const route of routes) {
+      for (const p of route.points) {
+        const { u, v } = worldToImage({ x: p.x, y: p.z }, transform);
+        total++;
+        if (u >= 0 && v >= 0 && u <= imageWidth && v <= imageHeight) inside++;
+      }
+    }
+    return total > 0 && inside / total < 0.5;
+  }, [routes, transform, imageWidth, imageHeight]);
+
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
       <div className="space-y-3">
@@ -140,6 +156,7 @@ export function RoutesView({
           imageWidth={imageWidth}
           imageHeight={imageHeight}
           transform={transform}
+          calibrationSuspect={calibrationSuspect}
         />
       </div>
       <ClusterList
@@ -296,6 +313,7 @@ function RouteCanvas({
   imageWidth,
   imageHeight,
   transform,
+  calibrationSuspect,
 }: {
   routes: RouteAnalysis["routes"];
   visibleRouteIndexes: number[];
@@ -305,14 +323,16 @@ function RouteCanvas({
   imageWidth: number;
   imageHeight: number;
   transform: MapTransform;
+  calibrationSuspect: boolean;
 }) {
   const t = useTranslations("mapPage.routes");
   const [imageLoaded, setImageLoaded] = useState(false);
-  const { containerRef, containerSize, view, handlers } = useMapViewport({
-    imageWidth,
-    imageHeight,
-    imageLoaded,
-  });
+  const { containerRef, containerSize, view, setView, handlers } =
+    useMapViewport({
+      imageWidth,
+      imageHeight,
+      imageLoaded,
+    });
 
   useEffect(() => {
     setImageLoaded(false);
@@ -326,15 +346,17 @@ function RouteCanvas({
     return visibleRouteIndexes.map((idx) => {
       const route = routes[idx];
       const ci = clusterOfRoute.get(idx) ?? null;
-      const points = route.points
-        .map((p) => {
-          const { u, v } = worldToImage({ x: p.x, y: p.z }, transform);
-          return `${u.toFixed(1)},${v.toFixed(1)}`;
-        })
+      const pts = route.points.map((p) => {
+        const { u, v } = worldToImage({ x: p.x, y: p.z }, transform);
+        return { u, v };
+      });
+      const points = pts
+        .map(({ u, v }) => `${u.toFixed(1)},${v.toFixed(1)}`)
         .join(" ");
       const highlighted = activeCluster === null || activeCluster === ci;
       return {
         key: idx,
+        pts,
         points,
         color: OUTCOME_COLORS[route.outcome],
         highlighted,
@@ -342,8 +364,75 @@ function RouteCanvas({
     });
   }, [visibleRouteIndexes, routes, clusterOfRoute, transform, activeCluster]);
 
+  // Bounding box of the drawn routes in image space (clamped to the image
+  // so a broken calibration can't explode the view).
+  const contentBounds = useMemo(() => {
+    let minU = Infinity;
+    let maxU = -Infinity;
+    let minV = Infinity;
+    let maxV = -Infinity;
+    for (const pl of polylines) {
+      for (const { u, v } of pl.pts) {
+        if (u < 0 || v < 0 || u > imageWidth || v > imageHeight) continue;
+        minU = Math.min(minU, u);
+        maxU = Math.max(maxU, u);
+        minV = Math.min(minV, v);
+        maxV = Math.max(maxV, v);
+      }
+    }
+    if (minU === Infinity || maxU - minU < 1 || maxV - minV < 1) return null;
+    return { minU, maxU, minV, maxV };
+  }, [polylines, imageWidth, imageHeight]);
+
+  // Fit the initial view to the routes, not the whole map image — the
+  // playable area is a fraction of these 8192px images, and a whole-image
+  // fit renders routes microscopic. Runs once per image; the user pans and
+  // zooms freely afterwards.
+  const fittedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!imageLoaded || !contentBounds) return;
+    if (fittedRef.current === imageUrl) return;
+    const container = containerRef.current;
+    if (!container) return;
+    const cw = container.clientWidth;
+    const ch = container.clientHeight;
+    if (cw <= 0 || ch <= 0) return;
+
+    const pad = 1.25;
+    const bw = (contentBounds.maxU - contentBounds.minU) * pad;
+    const bh = (contentBounds.maxV - contentBounds.minV) * pad;
+    const minZoom = getMinZoom(ch, imageHeight);
+    const zoom = clampZoom(Math.min(cw / bw, ch / bh), minZoom);
+    const centerU = (contentBounds.minU + contentBounds.maxU) / 2;
+    const centerV = (contentBounds.minV + contentBounds.maxV) / 2;
+    setView({
+      zoom,
+      offsetX: (imageWidth / 2 - centerU) * zoom,
+      offsetY: (imageHeight / 2 - centerV) * zoom,
+    });
+    fittedRef.current = imageUrl;
+  }, [
+    imageLoaded,
+    contentBounds,
+    imageUrl,
+    imageWidth,
+    imageHeight,
+    containerRef,
+    setView,
+  ]);
+
   const { width: cw, height: ch } = containerSize;
   const layerTransform = `translate(${cw / 2}px, ${ch / 2}px) scale(${view.zoom}) translate(${-imageWidth / 2 + view.offsetX / view.zoom}px, ${-imageHeight / 2 + view.offsetY / view.zoom}px)`;
+
+  if (calibrationSuspect) {
+    return (
+      <div className="border-destructive/40 bg-destructive/10 flex min-h-[200px] items-center justify-center rounded-lg border p-6">
+        <p className="text-destructive max-w-prose text-sm">
+          {t("calibrationWarning")}
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -385,6 +474,20 @@ function RouteCanvas({
             role="img"
             aria-label={t("canvasLabel")}
           >
+            {/* casing pass: dark halo so lines read over busy map art */}
+            {polylines.map((pl) => (
+              <polyline
+                key={`casing-${pl.key}`}
+                points={pl.points}
+                fill="none"
+                stroke="#09090b"
+                strokeWidth={pl.highlighted ? 5.5 : 4}
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+                opacity={pl.highlighted ? 0.85 : 0.2}
+              />
+            ))}
             {polylines.map((pl) => (
               <polyline
                 key={pl.key}
@@ -398,6 +501,35 @@ function RouteCanvas({
                 opacity={pl.highlighted ? 0.95 : 0.25}
               />
             ))}
+            {/* direction markers: dot at spawn, arrowhead at first contact */}
+            {polylines.map((pl) => {
+              if (pl.pts.length < 2) return null;
+              const start = pl.pts[0];
+              const end = pl.pts[pl.pts.length - 1];
+              const prev = pl.pts[pl.pts.length - 2];
+              const angle =
+                (Math.atan2(end.v - prev.v, end.u - prev.u) * 180) / Math.PI;
+              const size = 9 / view.zoom;
+              return (
+                <g key={`marker-${pl.key}`} opacity={pl.highlighted ? 0.95 : 0.25}>
+                  <circle
+                    cx={start.u}
+                    cy={start.v}
+                    r={4 / view.zoom}
+                    fill={pl.color}
+                    stroke="#09090b"
+                    strokeWidth={1.5 / view.zoom}
+                  />
+                  <polygon
+                    points={`0,${-size / 2} ${size},0 0,${size / 2}`}
+                    transform={`translate(${end.u}, ${end.v}) rotate(${angle})`}
+                    fill={pl.color}
+                    stroke="#09090b"
+                    strokeWidth={1 / view.zoom}
+                  />
+                </g>
+              );
+            })}
           </svg>
         </div>
       )}
