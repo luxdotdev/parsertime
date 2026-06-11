@@ -1,6 +1,8 @@
 import { ScrimOverviewTabs } from "@/components/scrim/scrim-overview-tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import type { ScrimPositionalArtifacts } from "@/data/scrim/positional-artifacts-service";
+import type { ScrimPositionalStats } from "@/data/scrim/positional-stats-service";
 import type { ScrimInsight, ScrimOverviewData } from "@/data/scrim/types";
 import { format } from "@/lib/utils";
 import {
@@ -115,7 +117,15 @@ function InsightIcon({ type }: { type: ScrimInsight["type"] }) {
   }
 }
 
-export function ScrimOverviewSection({ data }: { data: ScrimOverviewData }) {
+export function ScrimOverviewSection({
+  data,
+  positionalStats = null,
+  positionalArtifacts = null,
+}: {
+  data: ScrimOverviewData;
+  positionalStats?: ScrimPositionalStats | null;
+  positionalArtifacts?: ScrimPositionalArtifacts | null;
+}) {
   const t = useTranslations("scrimPage.overviewSummary");
 
   if (data.mapCount === 0 || data.teamPlayers.length === 0) {
@@ -180,7 +190,11 @@ export function ScrimOverviewSection({ data }: { data: ScrimOverviewData }) {
 
       <Separator />
 
-      <ScrimOverviewTabs data={data} />
+      <ScrimOverviewTabs
+        data={data}
+        positionalStats={positionalStats}
+        positionalArtifacts={positionalArtifacts}
+      />
     </section>
   );
 }

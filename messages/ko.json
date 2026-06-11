@@ -1236,7 +1236,8 @@
         "abilities": "능력 타이밍",
         "ultimates": "궁극기",
         "ultAdvantage": "궁극기 우위",
-        "swaps": "영웅 교체"
+        "swaps": "영웅 교체",
+        "positional": "포지셔닝"
       }
     },
     "overviewSections": {
@@ -1535,6 +1536,12 @@
     "positional": {
       "title": "위치 통계",
       "description": "위치 데이터가 있는 이 스크림의 맵 전체 평균입니다.",
+      "matrix": {
+        "below": "중앙값 미만",
+        "above": "중앙값 초과",
+        "legend": "색조는 각 값이 해당 스탯의 팀 중앙값에서 벗어난 정도를 나타냅니다."
+      },
+      "byZoneTitle": "구역별 승 / 패 / 무",
       "playerColumn": "선수",
       "stats": {
         "AVERAGE_ENGAGEMENT_DISTANCE": {
@@ -1580,6 +1587,7 @@
       "zonesTitle": "맵별 구역 장악",
       "routesTitle": "맵별 이동 경로",
       "routesSummary": "경로 {total}개 · {won}승 / {lost}패",
+      "routesUndecided": "미정",
       "zoneColumn": "구역",
       "teamColumn": "팀",
       "killsColumn": "킬",
@@ -6442,6 +6450,7 @@
       "zonesTitle": "맵별 구역 장악",
       "routesTitle": "맵별 이동 경로",
       "routesSummary": "경로 {total}개 · {won}승 / {lost}패",
+      "routesUndecided": "미정",
       "zoneColumn": "구역",
       "teamColumn": "팀",
       "killsColumn": "킬",

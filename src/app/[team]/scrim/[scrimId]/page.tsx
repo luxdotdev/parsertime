@@ -324,19 +324,24 @@ export default async function ScrimDashboardPage(
               </div>
             )}
 
-          {showOverview && (
+          {showOverview ? (
             <div className="mt-8">
-              <ScrimOverviewSection data={overviewData} />
-            </div>
-          )}
-
-          {showPositional && positionalStats && (
-            <div className="mt-8">
-              <PositionalStatsSection
-                data={positionalStats}
-                artifacts={positionalArtifacts}
+              <ScrimOverviewSection
+                data={overviewData}
+                positionalStats={positionalStats}
+                positionalArtifacts={positionalArtifacts}
               />
             </div>
+          ) : (
+            showPositional &&
+            positionalStats && (
+              <div className="mt-8">
+                <PositionalStatsSection
+                  data={positionalStats}
+                  artifacts={positionalArtifacts}
+                />
+              </div>
+            )
           )}
 
           {hasPerms && (

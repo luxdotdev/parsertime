@@ -1236,7 +1236,8 @@
         "abilities": "Ability Timing",
         "ultimates": "Ultimates",
         "ultAdvantage": "Ultimate Advantage",
-        "swaps": "Hero Swaps"
+        "swaps": "Hero Swaps",
+        "positional": "Positioning"
       }
     },
     "overviewSections": {
@@ -1535,6 +1536,12 @@
     "positional": {
       "title": "Positional stats",
       "description": "Averaged across this scrim's maps with positional data.",
+      "matrix": {
+        "below": "Below median",
+        "above": "Above median",
+        "legend": "Tint shows each value's deviation from the team median for that stat."
+      },
+      "byZoneTitle": "Won / lost / even by zone",
       "playerColumn": "Player",
       "stats": {
         "AVERAGE_ENGAGEMENT_DISTANCE": {
@@ -1580,6 +1587,7 @@
       "zonesTitle": "Zone control by map",
       "routesTitle": "Routes by map",
       "routesSummary": "{total} routes · {won} won / {lost} lost",
+      "routesUndecided": "Undecided",
       "zoneColumn": "Zone",
       "teamColumn": "Team",
       "killsColumn": "Kills",
@@ -7091,6 +7099,7 @@
       "zonesTitle": "Zone control by map",
       "routesTitle": "Routes by map",
       "routesSummary": "{total} routes · {won} won / {lost} lost",
+      "routesUndecided": "Undecided",
       "zoneColumn": "Zone",
       "teamColumn": "Team",
       "killsColumn": "Kills",

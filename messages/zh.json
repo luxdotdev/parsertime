@@ -1236,7 +1236,8 @@
         "abilities": "技能时机",
         "ultimates": "终极技能",
         "ultAdvantage": "终极技能优势",
-        "swaps": "英雄更换"
+        "swaps": "英雄更换",
+        "positional": "站位"
       }
     },
     "overviewSections": {
@@ -1535,6 +1536,12 @@
     "positional": {
       "title": "站位数据",
       "description": "基于本场训练赛中包含站位数据的地图取平均。",
+      "matrix": {
+        "below": "低于中位数",
+        "above": "高于中位数",
+        "legend": "色调表示每个数值相对于该项数据团队中位数的偏差。"
+      },
+      "byZoneTitle": "按区域划分的胜 / 负 / 平",
       "playerColumn": "选手",
       "stats": {
         "AVERAGE_ENGAGEMENT_DISTANCE": {
@@ -1580,6 +1587,7 @@
       "zonesTitle": "各地图区域控制",
       "routesTitle": "各地图路线",
       "routesSummary": "{total} 条路线 · {won} 胜 / {lost} 负",
+      "routesUndecided": "未定",
       "zoneColumn": "区域",
       "teamColumn": "队伍",
       "killsColumn": "击杀",
@@ -6442,6 +6450,7 @@
       "zonesTitle": "各地图区域控制",
       "routesTitle": "各地图路线",
       "routesSummary": "{total} 条路线 · {won} 胜 / {lost} 负",
+      "routesUndecided": "未定",
       "zoneColumn": "区域",
       "teamColumn": "队伍",
       "killsColumn": "击杀",

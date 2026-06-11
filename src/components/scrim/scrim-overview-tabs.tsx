@@ -13,6 +13,7 @@ import {
   ScrimUltimatesSection,
 } from "@/components/scrim/scrim-overview-sections";
 import { ScrimAbilityTimingSection } from "@/components/scrim/scrim-ability-timing-section";
+import { PositionalStatsSection } from "@/components/scrim/positional-stats-section";
 import { UltEconomyCard } from "@/components/stats/team/ult-economy-card";
 import {
   Accordion,
@@ -21,6 +22,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { ScrimPositionalArtifacts } from "@/data/scrim/positional-artifacts-service";
+import type { ScrimPositionalStats } from "@/data/scrim/positional-stats-service";
 import type { ScrimOverviewData } from "@/data/scrim/types";
 import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import {
@@ -28,6 +31,7 @@ import {
   ArrowRightLeft,
   ChevronsDownUp,
   ChevronsUpDown,
+  Crosshair,
   Gauge,
   Swords,
   Users,
@@ -36,10 +40,20 @@ import {
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
+export function ScrimOverviewTabs({
+  data,
+  positionalStats = null,
+  positionalArtifacts = null,
+}: {
+  data: ScrimOverviewData;
+  positionalStats?: ScrimPositionalStats | null;
+  positionalArtifacts?: ScrimPositionalArtifacts | null;
+}) {
   const t = useTranslations("scrimPage.overviewTabs");
   const hasAbilityData = data.abilityTimingAnalysis.rows.length > 0;
   const hasUltEconomy = data.ultEconomy.totalFights > 0;
+  const hasPositional =
+    positionalStats !== null && positionalStats.players.length > 0;
   const allSections = [
     "players",
     "fights",
@@ -47,6 +61,7 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
     "ultimates",
     ...(hasUltEconomy ? ["ult-advantage"] : []),
     "swaps",
+    ...(hasPositional ? ["positional"] : []),
   ];
 
   const [activeTab, setActiveTab] = useState("visualizations");
@@ -212,6 +227,26 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
               />
             </AccordionContent>
           </AccordionItem>
+
+          {hasPositional && positionalStats && (
+            <AccordionItem value="positional">
+              <AccordionTrigger>
+                <span className="flex items-center gap-2">
+                  <Crosshair
+                    className="text-muted-foreground size-4"
+                    aria-hidden="true"
+                  />
+                  {t("sections.positional")}
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="h-auto">
+                <PositionalStatsSection
+                  data={positionalStats}
+                  artifacts={positionalArtifacts}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          )}
         </Accordion>
       </TabsContent>
 
