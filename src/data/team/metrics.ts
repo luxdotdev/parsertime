@@ -66,9 +66,6 @@ export const teamExtendedDataQueryDuration = Metric.histogram(
   "Distribution of extended team data query duration in milliseconds"
 );
 
-
-
-
 export const positionalStatsQuerySuccessTotal = Metric.counter(
   "team.positional_stats.query.success",
   {

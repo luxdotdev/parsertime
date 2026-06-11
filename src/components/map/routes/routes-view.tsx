@@ -511,7 +511,10 @@ function RouteCanvas({
                 (Math.atan2(end.v - prev.v, end.u - prev.u) * 180) / Math.PI;
               const size = 9 / view.zoom;
               return (
-                <g key={`marker-${pl.key}`} opacity={pl.highlighted ? 0.95 : 0.25}>
+                <g
+                  key={`marker-${pl.key}`}
+                  opacity={pl.highlighted ? 0.95 : 0.25}
+                >
                   <circle
                     cx={start.u}
                     cy={start.v}

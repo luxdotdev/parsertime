@@ -49,10 +49,7 @@ test("returns true when the user belongs to the team", async () => {
   expect(prismaMock.team.findFirst).toHaveBeenCalledWith({
     where: {
       id: 345,
-      OR: [
-        { ownerId: "user-1" },
-        { users: { some: { id: "user-1" } } },
-      ],
+      OR: [{ ownerId: "user-1" }, { users: { some: { id: "user-1" } } }],
     },
     select: { id: true },
   });

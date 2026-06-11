@@ -132,7 +132,15 @@ export function FightMapCanvas({
       }
     };
     image.src = imagePresignedUrl;
-  }, [cells, crop, transform, imagePresignedUrl, visible, imageWidth, imageHeight]);
+  }, [
+    cells,
+    crop,
+    transform,
+    imagePresignedUrl,
+    visible,
+    imageWidth,
+    imageHeight,
+  ]);
 
   if (!crop) return null;
 

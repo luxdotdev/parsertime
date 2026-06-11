@@ -225,8 +225,7 @@ async function recomputeAllTsrsUnlocked() {
   }
 
   const todayMs = Date.now();
-  const recentCutoffMs =
-    todayMs - DISPLAY_ACTIVITY_WINDOW_DAYS * 86400 * 1000;
+  const recentCutoffMs = todayMs - DISPLAY_ACTIVITY_WINDOW_DAYS * 86400 * 1000;
 
   let replayed = 0;
   for (const match of matches) {
