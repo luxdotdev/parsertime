@@ -3139,7 +3139,10 @@
         "longStretch": "{team} held the upper hand for {duration}, peaking at {pct}% win probability.",
         "winStreak": "{team} ran off {count} straight fight wins from {from} to {to}.",
         "closing": "{team} closed out the map, taking {wins} of the final {of} fights.",
-        "topWpa": "{player} ({team}) swung the most win probability of anyone: {wpa}% across the map."
+        "topWpa": "{player} ({team}) swung the most win probability of anyone: {wpa}% across the map.",
+        "biggestSwingObjective": "Fight {fight} swung the map by {swing}% toward {team} — mostly from the objective progress and score it produced.",
+        "biggestSwingKills": "Fight {fight} swung the map by {swing}% toward {team} — mostly from the player advantage it created.",
+        "biggestSwingUlts": "Fight {fight} swung the map by {swing}% toward {team} — mostly from the ult economy it created."
       },
       "story": {
         "title": "How the map unfolded"

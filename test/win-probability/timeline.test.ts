@@ -320,16 +320,53 @@ describe("computeMatchStory — insights", () => {
       assists: [],
     })!;
     const keys = story.insights.map((i) => i.key);
-    expect(keys).toContain("insights.biggestSwing");
+    expect(keys.some((k) => k.startsWith("insights.biggestSwing"))).toBe(true);
     expect(keys).toContain("insights.ultCarryover");
     expect(story.insights.length).toBeLessThanOrEqual(6);
     // The story reads chronologically.
     const ts = story.insights.map((i) => i.t);
     expect([...ts].sort((a, b) => a - b)).toEqual(ts);
-    const swing = story.insights.find((i) => i.key === "insights.biggestSwing")!;
+    const swing = story.insights.find((i) =>
+      i.key.startsWith("insights.biggestSwing")
+    )!;
     expect(swing.values.fight).toBe(1); // 1-based for display
     expect(swing.fightIndex).toBe(0);
     expect(typeof swing.values.swing).toBe("number");
+  });
+
+  test("decomposes a swing into drivers and names the dominant one", () => {
+    // Bravo wins the fight AND flips the point: the objective change
+    // (holdsObjective weight) dwarfs the kill contribution.
+    const log = baseLog({
+      kills: [
+        { time: 100, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
+      ],
+      objectiveCaptured: [
+        { time: 50, team: "Alpha", roundNumber: 1, objectiveIndex: 0, progress1: 20, progress2: 0 },
+        { time: 103, team: "Bravo", roundNumber: 1, objectiveIndex: 0, progress1: 20, progress2: 10 },
+      ],
+    });
+    const story = computeMatchStory({
+      log,
+      artifact: testArtifact({ aliveDiff: 0.2, holdsObjective: 1.5 }),
+      engagements: [engagement(100, 103, "Bravo", { Bravo: 1 })],
+      assists: [],
+    })!;
+    const [fight] = story.fights;
+    // Objective flip dominates: holder went +1 → −1 across the fight.
+    expect(Math.abs(fight.drivers.objective)).toBeGreaterThan(
+      Math.abs(fight.drivers.kills)
+    );
+    expect(fight.drivers.objective).toBeLessThan(0); // flipped against team1
+    // Shares reassemble the swing (kills + objective + ults ≈ swing; "other"
+    // features are zero-weighted in this artifact).
+    const sum =
+      fight.drivers.objective + fight.drivers.kills + fight.drivers.ults;
+    expect(sum).toBeCloseTo(fight.swing, 5);
+    const swingBeat = story.insights.find((i) =>
+      i.key.startsWith("insights.biggestSwing")
+    )!;
+    expect(swingBeat.key).toBe("insights.biggestSwingObjective");
   });
 
   test("narrates the arc: streak, closing, and standout player", () => {

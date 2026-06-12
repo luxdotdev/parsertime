@@ -3139,7 +3139,10 @@
         "longStretch": "{team}이(가) {duration} 동안 우위를 유지했으며 승리 확률은 최고 {pct}%였습니다.",
         "winStreak": "{team}이(가) {from}부터 {to}까지 한타 {count}연승을 거뒀습니다.",
         "closing": "{team}이(가) 마지막 {of}번의 한타 중 {wins}번을 승리하며 맵을 마무리했습니다.",
-        "topWpa": "{player}({team})이(가) 맵 전체에서 가장 큰 승리 확률 변화를 만들었습니다: {wpa}%."
+        "topWpa": "{player}({team})이(가) 맵 전체에서 가장 큰 승리 확률 변화를 만들었습니다: {wpa}%.",
+        "biggestSwingObjective": "{fight}번째 한타로 승리 확률이 {team} 쪽으로 {swing}% 이동했습니다 — 주로 그 결과로 얻은 목표 진행도와 점수 때문입니다.",
+        "biggestSwingKills": "{fight}번째 한타로 승리 확률이 {team} 쪽으로 {swing}% 이동했습니다 — 주로 그 결과로 생긴 인원 우위 때문입니다.",
+        "biggestSwingUlts": "{fight}번째 한타로 승리 확률이 {team} 쪽으로 {swing}% 이동했습니다 — 주로 그 결과로 생긴 궁극기 경제 우위 때문입니다."
       },
       "story": {
         "title": "맵 전개 과정"

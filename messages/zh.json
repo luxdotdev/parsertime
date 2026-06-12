@@ -3139,7 +3139,10 @@
         "longStretch": "{team} 保持优势达 {duration}，胜率最高达 {pct}%。",
         "winStreak": "{team} 从 {from} 到 {to} 取得 {count} 场团战连胜。",
         "closing": "{team} 拿下最后 {of} 场团战中的 {wins} 场，终结了比赛。",
-        "topWpa": "{player}（{team}）带来全场最大的胜率变化：{wpa}%。"
+        "topWpa": "{player}（{team}）带来全场最大的胜率变化：{wpa}%。",
+        "biggestSwingObjective": "第 {fight} 场团战使胜率向 {team} 方向移动了 {swing}%——主要来自由此带来的目标进度和比分。",
+        "biggestSwingKills": "第 {fight} 场团战使胜率向 {team} 方向移动了 {swing}%——主要来自由此形成的人数优势。",
+        "biggestSwingUlts": "第 {fight} 场团战使胜率向 {team} 方向移动了 {swing}%——主要来自由此形成的大招经济优势。"
       },
       "story": {
         "title": "比赛走势"

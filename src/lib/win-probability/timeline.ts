@@ -1,4 +1,4 @@
-import { extractFeatures } from "./features";
+import { extractFeatures, FEATURE_NAMES } from "./features";
 import { statesAt } from "./game-state";
 import { type ModelArtifact, predictWinProbability } from "./model";
 import { roundLabels } from "./training/extract";
@@ -55,6 +55,9 @@ export type FightEntry = {
   wpBefore: number;
   wpAfter: number;
   swing: number; // team1 perspective
+  /** The swing split by what changed across the fight (linear model ⇒ the
+   * decomposition is exact in logit space, scaled onto the swing). */
+  drivers: { objective: number; kills: number; ults: number };
   carryover: { ultEconomy: number; stagger: number } | null;
   unattributedSwing: number;
 };
@@ -181,6 +184,62 @@ function computeSeries(
 
 const SYNTH_FIGHT_GAP_SECONDS = 15;
 
+type DriverGroup = "objective" | "kills" | "ults" | "other";
+
+/** Which narrative driver each model feature belongs to. */
+const FEATURE_DRIVER: Record<(typeof FEATURE_NAMES)[number], DriverGroup> = {
+  aliveDiff: "kills",
+  ultBankDiff: "ults",
+  scoreDiff: "objective",
+  timeRemainingNorm: "other",
+  objProgressOwn: "objective",
+  objProgressEnemy: "objective",
+  isAttacker: "other",
+  controlProgressOwn: "objective",
+  controlProgressEnemy: "objective",
+  holdsObjective: "objective",
+  roundNumberNorm: "other",
+  aliveDiff_x_objMax: "kills",
+  aliveDiff_x_controlMax: "kills",
+  ultBankDiff_x_timeRemaining: "ults",
+  scoreDiff_x_roundNumber: "objective",
+};
+
+/** Splits a fight's WP swing by what changed across it. With a logistic
+ * model, z_after − z_before = Σ wᵢ·Δxᵢ/σᵢ exactly; each group's logit share
+ * is scaled onto the (calibrated) swing. */
+function decomposeSwing(
+  artifact: ModelArtifact,
+  log: WPEventLog,
+  before: GameState,
+  after: GameState,
+  swing: number
+): FightEntry["drivers"] {
+  const model = artifact.modeFamilies[log.modeFamily];
+  if (model === null) return { objective: 0, kills: 0, ults: 0 };
+  const fBefore = extractFeatures(before);
+  const fAfter = extractFeatures(after);
+  const deltas: Record<DriverGroup, number> = {
+    objective: 0,
+    kills: 0,
+    ults: 0,
+    other: 0,
+  };
+  let total = 0;
+  for (let i = 0; i < FEATURE_NAMES.length; i++) {
+    const std = model.stds[i] === 0 ? 1 : model.stds[i];
+    const dz = (model.weights[i] * (fAfter[i] - fBefore[i])) / std;
+    deltas[FEATURE_DRIVER[FEATURE_NAMES[i]]] += dz;
+    total += dz;
+  }
+  if (Math.abs(total) < 1e-9) return { objective: 0, kills: 0, ults: 0 };
+  return {
+    objective: (swing * deltas.objective) / total,
+    kills: (swing * deltas.kills) / total,
+    ults: (swing * deltas.ults) / total,
+  };
+}
+
 /** Kills-only fallback for logs without positional data: spatial engagement
  * clustering needs coordinates, but a time-gap cluster over the kill feed
  * still yields a usable fight ledger (no zone labels). */
@@ -232,8 +291,17 @@ function buildLedger(
 
   for (let i = 0; i < sorted.length; i++) {
     const fight = sorted[i];
-    const wpBefore = wpAt(fight.start - EDGE_EPSILON);
-    const wpAfter = wpAt(fight.end + EDGE_EPSILON);
+    const stateBefore = statesAt(log, [fight.start - EDGE_EPSILON])[0].team1;
+    const stateAfter = statesAt(log, [fight.end + EDGE_EPSILON])[0].team1;
+    const wpBefore = wpOf(stateBefore);
+    const wpAfter = wpOf(stateAfter);
+    const drivers = decomposeSwing(
+      inputs.artifact,
+      log,
+      stateBefore,
+      stateAfter,
+      wpAfter - wpBefore
+    );
 
     function inWindow(t: number): boolean {
       return t >= fight.start - ULT_WINDOW_LEAD_SECONDS && t <= fight.end;
@@ -252,8 +320,8 @@ function buildLedger(
       previous !== undefined &&
       fight.start - previous.end <= CASCADE_WINDOW_SECONDS
     ) {
-      const entry = statesAt(log, [fight.start - EDGE_EPSILON])[0].team1;
-      const actual = wpOf(entry);
+      const entry = stateBefore;
+      const actual = wpBefore;
       carryover = {
         ultEconomy: actual - wpOf({ ...entry, ultBankDiff: 0 }),
         stagger: actual - wpOf({ ...entry, aliveDiff: 0 }),
@@ -273,6 +341,7 @@ function buildLedger(
       wpBefore,
       wpAfter,
       swing: wpAfter - wpBefore,
+      drivers,
       carryover,
       unattributedSwing: 0, // set by attributeWpa
     });
@@ -504,8 +573,24 @@ function generateStory(
     }
   }
   if (biggest !== null && Math.abs(biggest.swing) >= CASCADE_MIN_WP) {
+    // Name the dominant driver so the "why" is in the sentence — the
+    // decomposition is exact for the linear model, not a guess.
+    const drivers = biggest.drivers;
+    const dominant = (["objective", "kills", "ults"] as const).reduce((a, b) =>
+      Math.abs(drivers[a]) >= Math.abs(drivers[b]) ? a : b
+    );
+    const dominantShare =
+      Math.abs(drivers[dominant]) / Math.abs(biggest.swing);
+    const key =
+      dominantShare >= 0.4
+        ? {
+            objective: "insights.biggestSwingObjective",
+            kills: "insights.biggestSwingKills",
+            ults: "insights.biggestSwingUlts",
+          }[dominant]
+        : "insights.biggestSwing";
     beats.push({
-      key: "insights.biggestSwing",
+      key,
       values: {
         fight: biggest.index + 1,
         swing: pct(biggest.swing),

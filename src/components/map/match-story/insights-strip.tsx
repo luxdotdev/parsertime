@@ -8,7 +8,10 @@ type Translate = ReturnType<typeof useTranslations<"mapPage.matchStory">>;
 function insightText(t: Translate, insight: MatchStoryInsight): string | null {
   switch (insight.key) {
     case "insights.biggestSwing":
-      return t("insights.biggestSwing", {
+    case "insights.biggestSwingObjective":
+    case "insights.biggestSwingKills":
+    case "insights.biggestSwingUlts":
+      return t(insight.key, {
         fight: insight.values.fight as number,
         swing: insight.values.swing as number,
         team: insight.values.team as string,
