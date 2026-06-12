@@ -116,10 +116,28 @@ describe("WP reconstruction on a real parsed log", () => {
     expect(rows.length % 2).toBe(0);
 
     for (const row of rows) {
-      const [aliveDiff, ultBankDiff, , timeNorm, objOwn, objEnemy] =
-        row.features;
-      expect(Math.abs(aliveDiff)).toBeLessThanOrEqual(5);
-      expect(Math.abs(ultBankDiff)).toBeLessThanOrEqual(7); // echo-dup slack
+      // New feature order (21 features): tankAliveDiff[0], dpsAliveDiff[1],
+      // supportAliveDiff[2], tankUltDiff[3], dpsUltDiff[4], supportUltDiff[5],
+      // scoreDiff[6], timeRemainingNorm[7], objProgressOwn[8], objProgressEnemy[9], ...
+      const [
+        tankAliveDiff,
+        dpsAliveDiff,
+        supportAliveDiff,
+        ,
+        ,
+        ,
+        ,
+        timeNorm,
+        objOwn,
+        objEnemy,
+      ] = row.features;
+      // The fixture log omits hero data so all kills default to "Damage" role;
+      // role-split diffs can reach ±5 in that case. Sanity-check the sum.
+      const totalAliveDiff = tankAliveDiff + dpsAliveDiff + supportAliveDiff;
+      expect(Math.abs(tankAliveDiff)).toBeLessThanOrEqual(5);
+      expect(Math.abs(dpsAliveDiff)).toBeLessThanOrEqual(5);
+      expect(Math.abs(supportAliveDiff)).toBeLessThanOrEqual(5);
+      expect(Math.abs(totalAliveDiff)).toBeLessThanOrEqual(5);
       expect(timeNorm).toBeGreaterThanOrEqual(0);
       expect(timeNorm).toBeLessThanOrEqual(1);
       expect(objOwn).toBeGreaterThanOrEqual(0);
@@ -129,7 +147,7 @@ describe("WP reconstruction on a real parsed log", () => {
       expect([0, 1]).toContain(row.label);
     }
 
-    // Mirrored pairs: labels complement, aliveDiff negates.
+    // Mirrored pairs: labels complement, tankAliveDiff (pos 0) negates.
     for (let i = 0; i < rows.length; i += 2) {
       expect(rows[i].label + rows[i + 1].label).toBe(1);
       expect(rows[i].features[0]).toBe(-rows[i + 1].features[0]);

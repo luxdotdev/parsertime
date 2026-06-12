@@ -360,8 +360,12 @@ type DriverGroup = "objective" | "kills" | "ults" | "other";
 
 /** Which narrative driver each model feature belongs to. */
 const FEATURE_DRIVER: Record<(typeof FEATURE_NAMES)[number], DriverGroup> = {
-  aliveDiff: "kills",
-  ultBankDiff: "ults",
+  tankAliveDiff: "kills",
+  dpsAliveDiff: "kills",
+  supportAliveDiff: "kills",
+  tankUltDiff: "ults",
+  dpsUltDiff: "ults",
+  supportUltDiff: "ults",
   scoreDiff: "objective",
   timeRemainingNorm: "other",
   objProgressOwn: "objective",
@@ -371,6 +375,8 @@ const FEATURE_DRIVER: Record<(typeof FEATURE_NAMES)[number], DriverGroup> = {
   controlProgressEnemy: "objective",
   holdsObjective: "objective",
   roundNumberNorm: "other",
+  isOvertime: "other",
+  objectiveIndexNorm: "objective",
   aliveDiff_x_objMax: "kills",
   aliveDiff_x_controlMax: "kills",
   ultBankDiff_x_timeRemaining: "ults",
@@ -495,8 +501,24 @@ function buildLedger(
       const entry = stateBefore;
       const actual = wpBefore;
       carryover = {
-        ultEconomy: actual - wpOf({ ...entry, ultBankDiff: 0 }),
-        stagger: actual - wpOf({ ...entry, aliveDiff: 0 }),
+        ultEconomy:
+          actual -
+          wpOf({
+            ...entry,
+            ultBankDiff: 0,
+            tankUltDiff: 0,
+            dpsUltDiff: 0,
+            supportUltDiff: 0,
+          }),
+        stagger:
+          actual -
+          wpOf({
+            ...entry,
+            aliveDiff: 0,
+            tankAliveDiff: 0,
+            dpsAliveDiff: 0,
+            supportAliveDiff: 0,
+          }),
       };
     }
 

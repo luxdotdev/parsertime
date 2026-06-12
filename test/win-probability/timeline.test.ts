@@ -78,7 +78,7 @@ describe("computeMatchStory — series", () => {
   test("neutral states sit at 0.5 and the curve snaps to the round outcome", () => {
     const story = computeMatchStory({
       log: baseLog(),
-      artifact: testArtifact({ aliveDiff: 1 }),
+      artifact: testArtifact({ dpsAliveDiff: 1 }),
       engagements: [],
       assists: [],
     });
@@ -124,7 +124,7 @@ describe("computeMatchStory — series", () => {
           },
         ],
       }),
-      artifact: testArtifact({ aliveDiff: 1 }),
+      artifact: testArtifact({ dpsAliveDiff: 1 }),
       engagements: [],
       assists: [],
     })!;
@@ -135,7 +135,7 @@ describe("computeMatchStory — series", () => {
   });
 
   test("returns null when the mode family has no model", () => {
-    const artifact = testArtifact({ aliveDiff: 1 });
+    const artifact = testArtifact({ dpsAliveDiff: 1 });
     artifact.modeFamilies.control = null;
     expect(
       computeMatchStory({
@@ -177,7 +177,7 @@ describe("computeMatchStory — ledger and cascades", () => {
     });
     const story = computeMatchStory({
       log,
-      artifact: testArtifact({ aliveDiff: 1 }),
+      artifact: testArtifact({ dpsAliveDiff: 1 }),
       engagements: [engagement(100, 104, "Bravo", { Bravo: 3 })],
       assists: [],
     })!;
@@ -209,7 +209,7 @@ describe("computeMatchStory — ledger and cascades", () => {
     });
     const story = computeMatchStory({
       log,
-      artifact: testArtifact({ ultBankDiff: 1 }),
+      artifact: testArtifact({ dpsUltDiff: 1 }),
       engagements: [
         engagement(100, 101, "Bravo", { Bravo: 1 }),
         engagement(120, 130, "Bravo", { Bravo: 1 }),
@@ -247,7 +247,7 @@ describe("computeMatchStory — ledger and cascades", () => {
     });
     const story = computeMatchStory({
       log,
-      artifact: testArtifact({ aliveDiff: 1 }),
+      artifact: testArtifact({ dpsAliveDiff: 1 }),
       engagements: [
         engagement(50, 50, "Bravo", { Bravo: 1 }),
         engagement(150, 150, "Alpha", { Alpha: 1 }),
@@ -271,7 +271,7 @@ describe("computeMatchStory — ledger and cascades", () => {
     });
     const story = computeMatchStory({
       log,
-      artifact: testArtifact({ aliveDiff: 1 }),
+      artifact: testArtifact({ dpsAliveDiff: 1 }),
       engagements: [
         engagement(100, 100, "Bravo", { Bravo: 1 }),
         engagement(110, 115, "Bravo", { Bravo: 1 }),
@@ -305,7 +305,7 @@ describe("computeMatchStory — WPA", () => {
     });
     const story = computeMatchStory({
       log,
-      artifact: testArtifact({ aliveDiff: 1 }),
+      artifact: testArtifact({ dpsAliveDiff: 1 }),
       engagements: [engagement(100, 102, "Bravo", { Bravo: 2 })],
       assists: [{ time: 101, team: "Bravo", player: "b3" }],
     })!;
@@ -337,7 +337,7 @@ describe("computeMatchStory — WPA", () => {
     });
     const story = computeMatchStory({
       log,
-      artifact: testArtifact({ ultBankDiff: 1 }),
+      artifact: testArtifact({ dpsUltDiff: 1 }),
       engagements: [engagement(100, 105, "Bravo", {})],
       assists: [],
     })!;
@@ -378,7 +378,7 @@ describe("computeMatchStory — engagement fallback", () => {
     });
     const story = computeMatchStory({
       log,
-      artifact: testArtifact({ aliveDiff: 1 }),
+      artifact: testArtifact({ dpsAliveDiff: 1 }),
       engagements: [], // no positional data
       assists: [],
     })!;
@@ -424,7 +424,7 @@ describe("computeMatchStory — takeaways", () => {
     });
     const story = computeMatchStory({
       log,
-      artifact: testArtifact({ aliveDiff: 1 }),
+      artifact: testArtifact({ dpsAliveDiff: 1 }),
       engagements: [0, 1, 2].map((i) =>
         engagement(100 + i * 60, 102 + i * 60, "Bravo", { Bravo: 2 })
       ),
@@ -460,7 +460,7 @@ describe("computeMatchStory — takeaways", () => {
     });
     const story = computeMatchStory({
       log,
-      artifact: testArtifact({ aliveDiff: 1 }),
+      artifact: testArtifact({ dpsAliveDiff: 1 }),
       engagements: [engagement(100, 102, "Bravo", { Bravo: 1 })],
       assists: [],
     })!;
@@ -502,7 +502,7 @@ describe("computeMatchStory — insights", () => {
     });
     const story = computeMatchStory({
       log,
-      artifact: testArtifact({ aliveDiff: 0.6, ultBankDiff: 0.8 }),
+      artifact: testArtifact({ dpsAliveDiff: 0.6, dpsUltDiff: 0.8 }),
       engagements: [
         engagement(100, 103, "Bravo", { Bravo: 2 }),
         engagement(125, 135, "Bravo", { Bravo: 1 }),
@@ -558,7 +558,7 @@ describe("computeMatchStory — insights", () => {
     });
     const story = computeMatchStory({
       log,
-      artifact: testArtifact({ aliveDiff: 0.2, holdsObjective: 1.5 }),
+      artifact: testArtifact({ dpsAliveDiff: 0.2, holdsObjective: 1.5 }),
       engagements: [engagement(100, 103, "Bravo", { Bravo: 1 })],
       assists: [],
     })!;
@@ -606,7 +606,7 @@ describe("computeMatchStory — insights", () => {
     });
     const story = computeMatchStory({
       log,
-      artifact: testArtifact({ aliveDiff: 1 }),
+      artifact: testArtifact({ dpsAliveDiff: 1 }),
       engagements: kills.map((k) =>
         engagement(k.time, k.time + 5, "Bravo", { Bravo: 1 })
       ),
@@ -641,7 +641,7 @@ describe("computeMatchStory — insights", () => {
     });
     const story = computeMatchStory({
       log,
-      artifact: testArtifact({ aliveDiff: 1 }),
+      artifact: testArtifact({ dpsAliveDiff: 1 }),
       engagements: [
         engagement(100, 100, "Bravo", { Bravo: 1 }),
         engagement(110, 115, "Bravo", { Bravo: 1 }),
