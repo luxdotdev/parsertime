@@ -1,3 +1,4 @@
+import { getHeroRole, type RoleName } from "@/types/heroes";
 import {
   type GameState,
   RESPAWN_SECONDS,
@@ -6,7 +7,7 @@ import {
 } from "./types";
 
 type SweepEvent =
-  | { time: number; kind: "kill"; team: string; player: string }
+  | { time: number; kind: "kill"; team: string; player: string; hero?: string }
   | { time: number; kind: "rez"; team: string; player: string }
   | { time: number; kind: "ult_charged"; team: string; player: string }
   | { time: number; kind: "ult_start"; team: string; player: string }
@@ -37,6 +38,7 @@ function mergedEvents(log: WPEventLog): SweepEvent[] {
       kind: "kill",
       team: k.victimTeam,
       player: k.victimName,
+      hero: k.victimHero,
     });
   }
   for (const r of log.rezzes) {
@@ -108,7 +110,7 @@ function clampUnit(v: number): number {
  */
 export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
   const events = mergedEvents(log);
-  const deadUntil = new Map<string, number>(); // "team player" → respawn time
+  const deadUntil = new Map<string, { until: number; role: RoleName }>(); // "team player" → {until, role}
   const banked = { t1: new Set<string>(), t2: new Set<string>() };
   const progress = { t1: 0, t2: 0 }; // raw 0..100
   const control = { t1: 0, t2: 0 }; // raw 0..100, control-mode win %
@@ -135,7 +137,10 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
       const e = events[cursor];
       switch (e.kind) {
         case "kill":
-          deadUntil.set(`${e.team} ${e.player}`, e.time + RESPAWN_SECONDS);
+          deadUntil.set(`${e.team} ${e.player}`, {
+            until: e.time + RESPAWN_SECONDS,
+            role: getHeroRole(e.hero ?? ""),
+          });
           break;
         case "rez":
           deadUntil.delete(`${e.team} ${e.player}`);
@@ -200,13 +205,17 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
       cursor++;
     }
 
-    let dead1 = 0;
-    let dead2 = 0;
-    for (const [key, until] of deadUntil) {
-      if (until <= t) continue;
-      if (isTeam1(key.split(" ")[0])) dead1++;
-      else dead2++;
+    const dead = {
+      t1: { Tank: 0, Damage: 0, Support: 0 },
+      t2: { Tank: 0, Damage: 0, Support: 0 },
+    };
+    for (const [key, info] of deadUntil) {
+      if (info.until <= t) continue;
+      const side = isTeam1(key.split(" ")[0]) ? "t1" : "t2";
+      dead[side][info.role]++;
     }
+    const dead1 = dead.t1.Tank + dead.t1.Damage + dead.t1.Support;
+    const dead2 = dead.t2.Tank + dead.t2.Damage + dead.t2.Support;
 
     const round = log.rounds[roundIndex];
     const ended = round !== undefined && t >= round.end;
@@ -242,9 +251,9 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
         matchTime: t,
         roundNumber,
         aliveDiff: sign * (dead2 - dead1),
-        tankAliveDiff: 0,
-        dpsAliveDiff: 0,
-        supportAliveDiff: 0,
+        tankAliveDiff: sign * (dead.t2.Tank - dead.t1.Tank),
+        dpsAliveDiff: sign * (dead.t2.Damage - dead.t1.Damage),
+        supportAliveDiff: sign * (dead.t2.Support - dead.t1.Support),
         ultBankDiff: sign * (banked.t1.size - banked.t2.size),
         tankUltDiff: 0,
         dpsUltDiff: 0,

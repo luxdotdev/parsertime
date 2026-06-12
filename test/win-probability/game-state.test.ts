@@ -355,6 +355,49 @@ describe("statesAt", () => {
     expect(duringSecond.team1.holdsObjective).toBe(-1);
   });
 
+  test("role-split alive diffs bucket deaths by the victim's hero role", () => {
+    const log = baseLog({
+      kills: [
+        { time: 100, victimTeam: "Bravo", victimName: "b1", victimHero: "Reinhardt" },
+        { time: 101, victimTeam: "Bravo", victimName: "b2", victimHero: "Ana" },
+        { time: 102, victimTeam: "Alpha", victimName: "a1", victimHero: "Tracer" },
+      ],
+    });
+    const [s] = statesAt(log, [105]);
+    expect(s.team1.tankAliveDiff).toBe(1); // Rein down on Bravo
+    expect(s.team1.supportAliveDiff).toBe(1); // Ana down on Bravo
+    expect(s.team1.dpsAliveDiff).toBe(-1); // Tracer down on Alpha
+    expect(s.team1.aliveDiff).toBe(1); // sum invariant: 1 + 1 − 1
+    expect(s.team2.tankAliveDiff).toBe(-1); // mirror
+  });
+
+  test("role splits recover on respawn and rez, restoring the right slot", () => {
+    const log = baseLog({
+      kills: [
+        { time: 100, victimTeam: "Bravo", victimName: "b1", victimHero: "Winston" },
+        { time: 105, victimTeam: "Bravo", victimName: "b2", victimHero: "Lúcio" },
+      ],
+      rezzes: [{ time: 107, team: "Bravo", player: "b2" }],
+    });
+    // t=108: Winston still dead (respawns 110), Lúcio rezzed
+    const [s, after] = statesAt(log, [108, 111]);
+    expect(s.team1.tankAliveDiff).toBe(1);
+    expect(s.team1.supportAliveDiff).toBe(0);
+    expect(after.team1.tankAliveDiff).toBe(0); // respawned
+  });
+
+  test("a kill with no hero falls into the Damage bucket, keeping the sum invariant", () => {
+    const log = baseLog({
+      kills: [{ time: 100, victimTeam: "Bravo", victimName: "b1" }],
+    });
+    const [s] = statesAt(log, [102]);
+    expect(s.team1.dpsAliveDiff).toBe(1);
+    expect(s.team1.aliveDiff).toBe(1);
+    expect(
+      s.team1.tankAliveDiff + s.team1.dpsAliveDiff + s.team1.supportAliveDiff
+    ).toBe(s.team1.aliveDiff);
+  });
+
   test("snapshots are mirror images", () => {
     const log = baseLog({
       kills: [{ time: 100, victimTeam: "Bravo", victimName: "b1" }],
