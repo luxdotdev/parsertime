@@ -1,10 +1,13 @@
 #!/usr/bin/env bun
 
 import { PrismaPg } from "@prisma/adapter-pg";
+import { sanitizeDatabaseUrl } from "../src/lib/db-url.ts";
 import { PrismaClient } from "../src/generated/prisma/client.ts";
 
 const prisma = new PrismaClient({
-  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+  adapter: new PrismaPg({
+    connectionString: sanitizeDatabaseUrl(process.env.DATABASE_URL),
+  }),
 });
 
 const TIER_PRIORS = {

@@ -1,6 +1,7 @@
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { PrismaClient } from "@/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { sanitizeDatabaseUrl } from "@/lib/db-url";
 import sharp from "sharp";
 
 const REQUIRED_ENV_VARS = [
@@ -84,7 +85,9 @@ async function main() {
   checkEnvVars();
 
   const prisma = new PrismaClient({
-    adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+    adapter: new PrismaPg({
+      connectionString: sanitizeDatabaseUrl(process.env.DATABASE_URL),
+    }),
   });
 
   const s3Client = new S3Client({

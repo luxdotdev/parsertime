@@ -15,6 +15,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { sanitizeDatabaseUrl } from "@/lib/db-url";
 import { PrismaClient } from "@/generated/prisma/client";
 import type { RankedExportBundle } from "@/lib/ranked/export-schema";
 
@@ -91,7 +92,9 @@ async function main(): Promise<void> {
 
   const pool = new Pool({ connectionString: winrateUrl });
   const prisma = new PrismaClient({
-    adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+    adapter: new PrismaPg({
+      connectionString: sanitizeDatabaseUrl(process.env.DATABASE_URL),
+    }),
   });
 
   try {
