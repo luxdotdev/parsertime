@@ -1,13 +1,4 @@
-import { vi } from "vitest";
-
-vi.mock("@/lib/auth", () => ({ auth: vi.fn() }));
-vi.mock("@/lib/prisma", async () => {
-  const { mockDeep } = await import("vitest-mock-extended");
-  return { default: mockDeep() };
-});
-vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
-
-import { validateMatchInput } from "@/app/ranked/actions";
+import { validateMatchInput } from "@/app/ranked/validation";
 import { expect, test } from "vitest";
 
 const base = {
