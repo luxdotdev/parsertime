@@ -7,6 +7,7 @@ import { HeroServiceLive } from "./hero/service";
 import { HeroBanIntelligenceServiceLive } from "./intelligence/hero-ban-service";
 import { MapIntelligenceServiceLive } from "./intelligence/map-service";
 import { FightUltQualityServiceLive } from "./map/fight-ult-quality-service";
+import { MatchStoryServiceLive } from "./map/match-story-service";
 import { HeatmapServiceLive } from "./map/heatmap/service";
 import { MapGroupServiceLive } from "./map/group-service";
 import { MapHeroTrendsServiceLive } from "./map/hero-trends-service";
@@ -91,6 +92,7 @@ export const DataLayerLive = Layer.mergeAll(
   PlayerTelemetryServiceLive,
   RotationDeathServiceLive,
   FightUltQualityServiceLive,
+  MatchStoryServiceLive,
   RouteMiningServiceLive,
   MapGroupServiceLive,
   MapHeroTrendsServiceLive,
