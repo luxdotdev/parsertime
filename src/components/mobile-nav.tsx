@@ -16,6 +16,7 @@ import * as React from "react";
 
 const mainNav: { labelKey: string; href: Route }[] = [
   { labelKey: "dashboard", href: "/dashboard" },
+  { labelKey: "ranked", href: "/ranked" as Route },
   { labelKey: "stats", href: "/stats" },
   { labelKey: "heroStats", href: "/stats/hero" },
   { labelKey: "mapStats", href: "/stats/map" },

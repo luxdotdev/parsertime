@@ -64,6 +64,17 @@ export function MainNav({
             {t("dashboard")}
           </Link>
         </li>
+        <li>
+          <Link
+            href={"/ranked" as Route}
+            className={cn(
+              navLinkStyles,
+              pathname.startsWith("/ranked") && "text-primary"
+            )}
+          >
+            {t("ranked")}
+          </Link>
+        </li>
         <li className="group relative" onKeyDown={handleDropdownKeyDown}>
           <button
             type="button"

@@ -780,7 +780,8 @@
       "coachingCanvas": "Canvas",
       "yourTeams": "Your Teams",
       "availability": "Availability",
-      "matchmaker": "Matchmaker"
+      "matchmaker": "Matchmaker",
+      "ranked": "Ranked Tracker"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "Search team...",

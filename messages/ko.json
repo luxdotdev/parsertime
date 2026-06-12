@@ -815,7 +815,8 @@
       "coachingCanvas": "캔버스",
       "yourTeams": "내 팀",
       "availability": "가능 시간",
-      "matchmaker": "매치메이커"
+      "matchmaker": "매치메이커",
+      "ranked": "랭크 트래커"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "팀 검색...",

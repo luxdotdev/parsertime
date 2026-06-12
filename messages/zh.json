@@ -815,7 +815,8 @@
       "coachingCanvas": "画布",
       "yourTeams": "你的队伍",
       "availability": "可用时间",
-      "matchmaker": "匹配工具"
+      "matchmaker": "匹配工具",
+      "ranked": "排位追踪器"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "搜索团队...",
