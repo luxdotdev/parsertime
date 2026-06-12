@@ -47,7 +47,9 @@ function StatBlock({
   return (
     <div className="flex flex-col gap-0.5">
       <span className="text-muted-foreground text-xs">{label}</span>
-      <span className={cn("font-mono text-2xl font-bold tabular-nums", colorClass)}>
+      <span
+        className={cn("font-mono text-2xl font-bold tabular-nums", colorClass)}
+      >
         {value}
       </span>
     </div>
@@ -101,12 +103,20 @@ export function StreakChart({ data }: StreakChartProps) {
           />
           <StatBlock
             label={t("longestWinStreak")}
-            value={longestWinStreak > 0 ? t("winValue", { count: longestWinStreak }) : "\u2014"}
+            value={
+              longestWinStreak > 0
+                ? t("winValue", { count: longestWinStreak })
+                : "\u2014"
+            }
             colorClass={longestWinStreak > 0 ? "text-chart-win" : ""}
           />
           <StatBlock
             label={t("longestLossStreak")}
-            value={longestLossStreak > 0 ? t("lossValue", { count: longestLossStreak }) : "\u2014"}
+            value={
+              longestLossStreak > 0
+                ? t("lossValue", { count: longestLossStreak })
+                : "\u2014"
+            }
             colorClass={longestLossStreak > 0 ? "text-chart-loss" : ""}
           />
         </div>
@@ -119,7 +129,9 @@ export function StreakChart({ data }: StreakChartProps) {
             <div
               className="flex flex-wrap gap-1"
               role="list"
-              aria-label={t("lastGamesResults", { count: recentResults.length })}
+              aria-label={t("lastGamesResults", {
+                count: recentResults.length,
+              })}
             >
               {recentResults.map(({ matchId, result }, i) => (
                 <div key={matchId} role="listitem">

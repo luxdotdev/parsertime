@@ -160,7 +160,9 @@ async function main(): Promise<void> {
     // 3. Build Parsertime identity indexes
     // -----------------------------------------------------------------------
 
-    const ptUsers = await prisma.user.findMany({ select: { id: true, email: true } });
+    const ptUsers = await prisma.user.findMany({
+      select: { id: true, email: true },
+    });
     const ptByEmail = new Map<string, string>();
     for (const u of ptUsers) {
       if (u.email) ptByEmail.set(u.email, u.id);
@@ -210,9 +212,10 @@ async function main(): Promise<void> {
             mapType: m.mapType,
             result: m.result as "win" | "loss" | "draw",
             groupSize: m.groupSize,
-            playedAt: m.playedAt instanceof Date
-              ? m.playedAt.toISOString()
-              : new Date(m.playedAt).toISOString(),
+            playedAt:
+              m.playedAt instanceof Date
+                ? m.playedAt.toISOString()
+                : new Date(m.playedAt).toISOString(),
             heroes: heroesByMatchId.get(m.id) ?? [],
           })),
       };
@@ -276,7 +279,9 @@ async function main(): Promise<void> {
       }
     }
 
-    console.log(`\n[migrate] Summary — Linked: ${linked}, Parked: ${parked}, dryRun=${dryRun}`);
+    console.log(
+      `\n[migrate] Summary — Linked: ${linked}, Parked: ${parked}, dryRun=${dryRun}`
+    );
   } finally {
     await pool.end();
     await prisma.$disconnect();

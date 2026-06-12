@@ -60,7 +60,7 @@ export function RankedSummary({ matches }: Props) {
       {/* Overview row */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-mono uppercase tracking-widest text-muted-foreground">
+          <CardTitle className="text-muted-foreground font-mono text-sm tracking-widest uppercase">
             Ranked Overview
           </CardTitle>
         </CardHeader>
@@ -70,14 +70,14 @@ export function RankedSummary({ matches }: Props) {
               <span className="text-2xl font-bold tabular-nums">
                 {summary.winrate}%
               </span>
-              <span className="text-xs text-muted-foreground">Win rate</span>
+              <span className="text-muted-foreground text-xs">Win rate</span>
             </div>
             <div className="flex flex-col gap-0.5">
               <span className="text-2xl font-bold tabular-nums">
                 {summary.wins}W–{summary.losses}L
                 {summary.draws > 0 ? `–${summary.draws}D` : ""}
               </span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-muted-foreground text-xs">
                 {summary.totalMatches} matches
               </span>
             </div>
@@ -87,11 +87,11 @@ export function RankedSummary({ matches }: Props) {
                   {streakLabel}
                 </span>
               ) : (
-                <span className="text-2xl font-bold text-muted-foreground">
+                <span className="text-muted-foreground text-2xl font-bold">
                   —
                 </span>
               )}
-              <span className="text-xs text-muted-foreground">
+              <span className="text-muted-foreground text-xs">
                 Current streak
               </span>
             </div>
@@ -101,16 +101,18 @@ export function RankedSummary({ matches }: Props) {
                   <span className="truncate text-lg font-semibold">
                     {summary.bestMap}
                   </span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-muted-foreground text-xs">
                     Best map · {summary.bestMapWinrate}% WR
                   </span>
                 </>
               ) : (
                 <>
-                  <span className="text-2xl font-bold text-muted-foreground">
+                  <span className="text-muted-foreground text-2xl font-bold">
                     —
                   </span>
-                  <span className="text-xs text-muted-foreground">Best map</span>
+                  <span className="text-muted-foreground text-xs">
+                    Best map
+                  </span>
                 </>
               )}
             </div>
@@ -123,7 +125,7 @@ export function RankedSummary({ matches }: Props) {
         {top5Heroes.length > 0 && (
           <Card>
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-mono uppercase tracking-widest text-muted-foreground">
+              <CardTitle className="text-muted-foreground font-mono text-sm tracking-widest uppercase">
                 Top Heroes
               </CardTitle>
             </CardHeader>
@@ -138,7 +140,7 @@ export function RankedSummary({ matches }: Props) {
                       key={entry.hero}
                       className="flex items-center justify-between gap-2"
                     >
-                      <div className="flex items-center gap-2 min-w-0">
+                      <div className="flex min-w-0 items-center gap-2">
                         <Badge
                           variant="outline"
                           className="shrink-0 font-mono text-[10px]"
@@ -149,7 +151,7 @@ export function RankedSummary({ matches }: Props) {
                           {entry.hero}
                         </span>
                       </div>
-                      <div className="flex items-center gap-3 shrink-0 text-right font-mono text-xs tabular-nums text-muted-foreground">
+                      <div className="text-muted-foreground flex shrink-0 items-center gap-3 text-right font-mono text-xs tabular-nums">
                         <span>{entry.count}g</span>
                         {wrEntry ? (
                           <span className="w-12 text-right">
@@ -170,7 +172,7 @@ export function RankedSummary({ matches }: Props) {
         {/* Recent Form */}
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-mono uppercase tracking-widest text-muted-foreground">
+            <CardTitle className="text-muted-foreground font-mono text-sm tracking-widest uppercase">
               Recent Form
             </CardTitle>
           </CardHeader>
@@ -183,7 +185,7 @@ export function RankedSummary({ matches }: Props) {
                 <span className="text-xl font-bold tabular-nums">
                   {formResult.recent.winrate}%
                 </span>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-muted-foreground text-xs">
                   Recent WR (last {formResult.recent.total}g)
                 </span>
               </div>
@@ -191,7 +193,7 @@ export function RankedSummary({ matches }: Props) {
                 <span className="text-xl font-bold tabular-nums">
                   {formResult.overall.winrate}%
                 </span>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-muted-foreground text-xs">
                   Overall WR ({formResult.overall.total}g)
                 </span>
               </div>

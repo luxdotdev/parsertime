@@ -65,10 +65,7 @@ const ROLE_OPTIONS: {
   { value: "Support", labelKey: "roleSupport", icon: Heart },
 ];
 
-export function DashboardContent({
-  matches,
-  patches,
-}: DashboardContentProps) {
+export function DashboardContent({ matches, patches }: DashboardContentProps) {
   const t = useTranslations("ranked.dashboard");
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("all");
   const [periodId, setPeriodId] = useState<string>("all");
@@ -148,10 +145,7 @@ export function DashboardContent({
     () => getGroupSizeWinrates(filteredMatches),
     [filteredMatches]
   );
-  const roleStats = useMemo(
-    () => getRoleStats(periodMatches),
-    [periodMatches]
-  );
+  const roleStats = useMemo(() => getRoleStats(periodMatches), [periodMatches]);
   const oneTrick = useMemo(
     () => getOneTrickStats(filteredMatches),
     [filteredMatches]

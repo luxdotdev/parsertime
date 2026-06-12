@@ -50,10 +50,12 @@ function FormColumn({
   const t = useTranslations("ranked.charts.recentForm");
   return (
     <div className="flex flex-1 flex-col gap-3">
-      <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
+      <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
         {label}
       </p>
-      <p className={cn("font-mono text-4xl font-bold tabular-nums", colorClass)}>
+      <p
+        className={cn("font-mono text-4xl font-bold tabular-nums", colorClass)}
+      >
         {stats.winrate}%
       </p>
       <WinrateMiniBar stats={stats} />

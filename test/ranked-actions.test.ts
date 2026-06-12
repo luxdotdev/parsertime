@@ -13,7 +13,9 @@ test("accepts a valid match", () => {
   expect(validateMatchInput(base, 0)).toBeNull();
 });
 test("rejects an unknown map", () => {
-  expect(validateMatchInput({ ...base, map: "Nowhere" }, 0)).toMatch(/Invalid map/);
+  expect(validateMatchInput({ ...base, map: "Nowhere" }, 0)).toMatch(
+    /Invalid map/
+  );
 });
 test("rejects heroes not summing to 100", () => {
   const bad = { ...base, heroes: [{ hero: "Ana", percentage: 60 }] };

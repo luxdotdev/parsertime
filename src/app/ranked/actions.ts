@@ -55,7 +55,9 @@ export async function createMatches(
   return { success: true };
 }
 
-export async function deleteRankedMatch(matchId: string): Promise<ActionResult> {
+export async function deleteRankedMatch(
+  matchId: string
+): Promise<ActionResult> {
   const session = await auth();
   const email = session?.user?.email;
   if (!email) return { success: false, error: "Not authenticated" };

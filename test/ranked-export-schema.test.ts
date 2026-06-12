@@ -29,5 +29,7 @@ test("rejects a bundle with the wrong version", () => {
   expect(parseRankedBundle({ ...valid, version: 99 }).ok).toBe(false);
 });
 test("rejects a bundle missing user email", () => {
-  expect(parseRankedBundle({ ...valid, user: { oauthAccounts: [] } }).ok).toBe(false);
+  expect(parseRankedBundle({ ...valid, user: { oauthAccounts: [] } }).ok).toBe(
+    false
+  );
 });

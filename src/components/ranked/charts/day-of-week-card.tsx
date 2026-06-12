@@ -150,7 +150,9 @@ export function DayOfWeekCard({ result }: DayOfWeekCardProps) {
               {weekdayWinrate}%
             </p>
             <p className="text-muted-foreground text-xs">{t("weekdays")}</p>
-            <p className="text-muted-foreground/70 text-xs">{t("weekdayRange")}</p>
+            <p className="text-muted-foreground/70 text-xs">
+              {t("weekdayRange")}
+            </p>
           </div>
           <div className="text-center">
             <div className="flex items-center justify-center gap-1.5">
@@ -171,20 +173,20 @@ export function DayOfWeekCard({ result }: DayOfWeekCardProps) {
               )}
             </div>
             <p className="text-muted-foreground text-xs">{t("weekends")}</p>
-            <p className="text-muted-foreground/70 text-xs">{t("weekendRange")}</p>
+            <p className="text-muted-foreground/70 text-xs">
+              {t("weekendRange")}
+            </p>
           </div>
         </div>
 
         {bestDay && worstDay && bestDay !== worstDay && (
           <div className="grid grid-cols-2 gap-2">
-            <div className="border-border rounded-md border bg-primary/15 p-2 text-center">
-              <p className="text-sm font-semibold text-primary">
-                {bestDay}
-              </p>
+            <div className="border-border bg-primary/15 rounded-md border p-2 text-center">
+              <p className="text-primary text-sm font-semibold">{bestDay}</p>
               <p className="text-primary text-xs">{t("bestDay")}</p>
             </div>
-            <div className="border-border rounded-md border bg-destructive/15 p-2 text-center">
-              <p className="text-sm font-semibold text-destructive">
+            <div className="border-border bg-destructive/15 rounded-md border p-2 text-center">
+              <p className="text-destructive text-sm font-semibold">
                 {worstDay}
               </p>
               <p className="text-destructive text-xs">{t("toughestDay")}</p>

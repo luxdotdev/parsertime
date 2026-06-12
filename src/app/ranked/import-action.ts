@@ -32,7 +32,10 @@ export async function importRankedJson(raw: string): Promise<ImportResult> {
   const parsed = parseRankedBundle(json);
   if (!parsed.ok) return { success: false, error: parsed.error };
 
-  const { imported, skipped, invalid } = await importRankedBundle(user.id, parsed.bundle);
+  const { imported, skipped, invalid } = await importRankedBundle(
+    user.id,
+    parsed.bundle
+  );
   revalidatePath("/ranked");
   return { success: true, imported, skipped, invalid };
 }

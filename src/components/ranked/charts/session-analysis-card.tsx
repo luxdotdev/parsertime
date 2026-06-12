@@ -49,7 +49,7 @@ export function SessionAnalysisCard({ result }: SessionAnalysisCardProps) {
         />
         <div className="flex flex-col items-center gap-2 py-8 text-center">
           <p className="text-muted-foreground text-sm">{t("emptyTitle")}</p>
-          <p className="text-muted-foreground/70 text-xs text-pretty max-w-[220px]">
+          <p className="text-muted-foreground/70 max-w-[220px] text-xs text-pretty">
             {t("emptyHint")}
           </p>
         </div>
@@ -106,7 +106,7 @@ export function SessionAnalysisCard({ result }: SessionAnalysisCardProps) {
                     return (
                       <div className="flex flex-col gap-0.5 text-xs">
                         <span className="text-muted-foreground">{s.date}</span>
-                        <span className="font-mono tabular-nums font-medium">
+                        <span className="font-mono font-medium tabular-nums">
                           {t("tooltipWinrate", { winrate: s.winrate })}
                         </span>
                         <span className="text-muted-foreground">
@@ -131,10 +131,7 @@ export function SessionAnalysisCard({ result }: SessionAnalysisCardProps) {
             />
             <Bar dataKey="winrate" radius={[4, 4, 0, 0]} maxBarSize={32}>
               {recentSessions.map((s) => (
-                <Cell
-                  key={s.sessionIndex}
-                  fill={sessionBarColor(s.winrate)}
-                />
+                <Cell key={s.sessionIndex} fill={sessionBarColor(s.winrate)} />
               ))}
             </Bar>
           </BarChart>
@@ -151,20 +148,24 @@ export function SessionAnalysisCard({ result }: SessionAnalysisCardProps) {
             <p className="font-mono text-lg font-semibold tabular-nums">
               {avgGamesPerSession}
             </p>
-            <p className="text-muted-foreground text-xs">{t("gamesPerSession")}</p>
+            <p className="text-muted-foreground text-xs">
+              {t("gamesPerSession")}
+            </p>
           </div>
           <div className="text-center">
             <p className="font-mono text-lg font-semibold tabular-nums">
               {sessions.length}
             </p>
-            <p className="text-muted-foreground text-xs">{t("totalSessions")}</p>
+            <p className="text-muted-foreground text-xs">
+              {t("totalSessions")}
+            </p>
           </div>
         </div>
 
         {bestSession && worstSession && bestSession !== worstSession && (
           <div className="grid grid-cols-2 gap-2">
-            <div className="border-border rounded-md border bg-primary/15 p-2 text-center">
-              <p className="font-mono text-sm font-semibold tabular-nums text-primary">
+            <div className="border-border bg-primary/15 rounded-md border p-2 text-center">
+              <p className="text-primary font-mono text-sm font-semibold tabular-nums">
                 {bestSession.winrate}%
               </p>
               <p className="text-primary text-xs">{t("bestSession")}</p>
@@ -172,8 +173,8 @@ export function SessionAnalysisCard({ result }: SessionAnalysisCardProps) {
                 {bestSession.date}
               </p>
             </div>
-            <div className="border-border rounded-md border bg-destructive/15 p-2 text-center">
-              <p className="font-mono text-sm font-semibold tabular-nums text-destructive">
+            <div className="border-border bg-destructive/15 rounded-md border p-2 text-center">
+              <p className="text-destructive font-mono text-sm font-semibold tabular-nums">
                 {worstSession.winrate}%
               </p>
               <p className="text-destructive text-xs">{t("worstSession")}</p>

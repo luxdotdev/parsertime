@@ -240,10 +240,13 @@ export const config = {
         // Claim any ranked-tracker data parked for this user during migration.
         if (user.id) {
           try {
-            const { claimRankedDataForUser } = await import("@/lib/ranked/claim");
+            const { claimRankedDataForUser } =
+              await import("@/lib/ranked/claim");
             await claimRankedDataForUser(user.id);
           } catch (error) {
-            Logger.warn(`Ranked data auto-claim failed for ${user.email}: ${String(error)}`);
+            Logger.warn(
+              `Ranked data auto-claim failed for ${user.email}: ${String(error)}`
+            );
           }
         }
       }

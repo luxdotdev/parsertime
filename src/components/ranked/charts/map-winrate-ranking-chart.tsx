@@ -41,9 +41,7 @@ function ConfidenceStars({ count }: { count: 1 | 2 | 3 | 4 | 5 }) {
         <Star
           key={i}
           className={`size-2.5 ${
-            i < count
-              ? "fill-primary text-primary"
-              : "fill-muted text-muted"
+            i < count ? "fill-primary text-primary" : "fill-muted text-muted"
           }`}
           aria-hidden="true"
         />
@@ -104,7 +102,9 @@ function CustomTooltip({
           </span>
         </div>
         <div className="flex justify-between gap-4">
-          <span className="text-muted-foreground">{t("vsAvg", { overallWinrate })}</span>
+          <span className="text-muted-foreground">
+            {t("vsAvg", { overallWinrate })}
+          </span>
           <span
             className={`font-mono font-medium tabular-nums ${
               d.deviation > 0
@@ -132,7 +132,9 @@ function CustomTooltip({
   );
 }
 
-export function MapWinrateRankingChart({ result }: MapWinrateRankingChartProps) {
+export function MapWinrateRankingChart({
+  result,
+}: MapWinrateRankingChartProps) {
   const t = useTranslations("ranked.charts.mapWinrateRanking");
   const { data, overallWinrate, insight } = result;
 
@@ -155,74 +157,69 @@ export function MapWinrateRankingChart({ result }: MapWinrateRankingChartProps) 
         title={t("title")}
         description={description}
       />
-      <ChartContainer
-          config={chartConfig}
-          className="h-[400px] w-full"
+      <ChartContainer config={chartConfig} className="h-[400px] w-full">
+        <BarChart
+          data={mapsWithData}
+          layout="vertical"
+          margin={{ top: 4, right: 60, left: 8, bottom: 4 }}
         >
-          <BarChart
-            data={mapsWithData}
-            layout="vertical"
-            margin={{ top: 4, right: 60, left: 8, bottom: 4 }}
-          >
-            <CartesianGrid horizontal={false} />
-            <XAxis
-              type="number"
-              domain={[0, 100]}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(v) => `${v}%`}
-              fontSize={11}
-            />
-            <YAxis
-              type="category"
-              dataKey="name"
-              tickLine={false}
-              axisLine={false}
-              width={120}
-              fontSize={11}
-            />
-            <ReferenceLine
-              x={overallWinrate}
-              stroke="var(--muted-foreground)"
-              strokeDasharray="4 2"
-              strokeOpacity={0.5}
-              label={{
-                value: t("avgLabel", { overallWinrate }),
-                position: "insideTopRight",
-                fontSize: 10,
-                fill: "var(--muted-foreground)",
-              }}
-            />
-            <ChartTooltip
-              content={
-                <CustomTooltip overallWinrate={overallWinrate} />
-              }
-            />
-            <Bar dataKey="winrate" radius={[0, 4, 4, 0]} maxBarSize={20}>
-              {mapsWithData.map((entry) => (
-                <Cell
-                  key={entry.name}
-                  fill={
-                    entry.winrate >= 60
-                      ? "var(--chart-win)"
-                      : entry.winrate >= 50
-                        ? "var(--primary)"
-                        : entry.winrate >= 40
-                          ? "var(--muted-foreground)"
-                          : "var(--chart-loss)"
-                  }
-                  opacity={entry.hasEnoughData ? 1 : 0.55}
-                />
-              ))}
-            </Bar>
-          </BarChart>
-        </ChartContainer>
+          <CartesianGrid horizontal={false} />
+          <XAxis
+            type="number"
+            domain={[0, 100]}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={(v) => `${v}%`}
+            fontSize={11}
+          />
+          <YAxis
+            type="category"
+            dataKey="name"
+            tickLine={false}
+            axisLine={false}
+            width={120}
+            fontSize={11}
+          />
+          <ReferenceLine
+            x={overallWinrate}
+            stroke="var(--muted-foreground)"
+            strokeDasharray="4 2"
+            strokeOpacity={0.5}
+            label={{
+              value: t("avgLabel", { overallWinrate }),
+              position: "insideTopRight",
+              fontSize: 10,
+              fill: "var(--muted-foreground)",
+            }}
+          />
+          <ChartTooltip
+            content={<CustomTooltip overallWinrate={overallWinrate} />}
+          />
+          <Bar dataKey="winrate" radius={[0, 4, 4, 0]} maxBarSize={20}>
+            {mapsWithData.map((entry) => (
+              <Cell
+                key={entry.name}
+                fill={
+                  entry.winrate >= 60
+                    ? "var(--chart-win)"
+                    : entry.winrate >= 50
+                      ? "var(--primary)"
+                      : entry.winrate >= 40
+                        ? "var(--muted-foreground)"
+                        : "var(--chart-loss)"
+                }
+                opacity={entry.hasEnoughData ? 1 : 0.55}
+              />
+            ))}
+          </Bar>
+        </BarChart>
+      </ChartContainer>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
         <p className="text-muted-foreground text-xs">
           {t("footer", { count: totalGames, maps: mapsWithData.length })}
         </p>
-        <p className="text-muted-foreground text-xs flex items-center gap-1">
-          <AlertTriangle className="size-3 text-primary" aria-hidden="true" />
+        <p className="text-muted-foreground flex items-center gap-1 text-xs">
+          <AlertTriangle className="text-primary size-3" aria-hidden="true" />
           {t("fadedNote", { min: MAP_DETAILED_MIN_GAMES })}
         </p>
       </div>

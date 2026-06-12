@@ -54,9 +54,7 @@ export function MapTierListCard({ result }: MapTierListCardProps) {
   const t = useTranslations("ranked.charts.mapTierList");
   const { data } = result;
 
-  const tierGroups = TIERS.reduce<
-    Record<string, typeof data>
-  >((acc, tier) => {
+  const tierGroups = TIERS.reduce<Record<string, typeof data>>((acc, tier) => {
     acc[tier] = data.filter((d) => d.tier === tier && d.total > 0);
     return acc;
   }, {});
@@ -76,84 +74,84 @@ export function MapTierListCard({ result }: MapTierListCardProps) {
         description={description}
       />
       <TooltipProvider>
-          <div className="space-y-2" role="list" aria-label={t("listLabel")}>
-            {TIERS.map((tier) => {
-              const maps = tierGroups[tier] ?? [];
-              const config = TIER_CONFIG[tier];
+        <div className="space-y-2" role="list" aria-label={t("listLabel")}>
+          {TIERS.map((tier) => {
+            const maps = tierGroups[tier] ?? [];
+            const config = TIER_CONFIG[tier];
 
-              return (
+            return (
+              <div
+                key={tier}
+                className="flex min-h-[40px] items-start gap-3"
+                role="listitem"
+              >
                 <div
-                  key={tier}
-                  className="flex items-start gap-3 min-h-[40px]"
-                  role="listitem"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border text-sm font-bold"
+                  style={{ fontVariantNumeric: "tabular-nums" }}
+                  aria-label={t("tierLabel", {
+                    tier,
+                    description: t(`tierDescription.${tier}`),
+                  })}
                 >
-                  <div
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border text-sm font-bold"
-                    style={{ fontVariantNumeric: "tabular-nums" }}
-                    aria-label={t("tierLabel", {
-                      tier,
-                      description: t(`tierDescription.${tier}`),
-                    })}
-                  >
-                    <span className={config.headerClassName}>{tier}</span>
-                  </div>
-                  <div className="flex flex-1 flex-wrap items-center gap-1.5 py-1.5">
-                    {maps.length === 0 ? (
-                      <span className="text-muted-foreground/50 text-xs italic">
-                        —
-                      </span>
-                    ) : (
-                      maps.map((map) => (
-                        <Tooltip key={map.name}>
-                          <TooltipTrigger asChild>
-                            <div
-                              className={`flex cursor-default items-center gap-1 rounded border px-2 py-0.5 text-xs font-medium ${config.className}`}
-                            >
-                              {map.name}
-                              {!map.hasEnoughData && (
-                                <AlertTriangle
-                                  className="size-2.5 text-primary"
-                                  aria-label={t("lowSampleLabel")}
-                                />
-                              )}
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent side="top">
-                            <div className="space-y-1 text-xs">
-                              <p className="font-semibold">{map.name}</p>
-                              <p className="text-muted-foreground">
-                                {map.mapType}
-                              </p>
-                              <p>
-                                {map.draws > 0
-                                  ? t("winrateLineWithDraws", {
-                                      winrate: map.winrate,
-                                      wins: map.wins,
-                                      losses: map.losses,
-                                      draws: map.draws,
-                                    })
-                                  : t("winrateLine", {
-                                      winrate: map.winrate,
-                                      wins: map.wins,
-                                      losses: map.losses,
-                                    })}
-                              </p>
-                              {!map.hasEnoughData && (
-                                <p className="text-primary">
-                                  {t("lowConfidence", { count: map.total })}
-                                </p>
-                              )}
-                            </div>
-                          </TooltipContent>
-                        </Tooltip>
-                      ))
-                    )}
-                  </div>
+                  <span className={config.headerClassName}>{tier}</span>
                 </div>
-              );
-            })}
-          </div>
-        </TooltipProvider>
+                <div className="flex flex-1 flex-wrap items-center gap-1.5 py-1.5">
+                  {maps.length === 0 ? (
+                    <span className="text-muted-foreground/50 text-xs italic">
+                      —
+                    </span>
+                  ) : (
+                    maps.map((map) => (
+                      <Tooltip key={map.name}>
+                        <TooltipTrigger asChild>
+                          <div
+                            className={`flex cursor-default items-center gap-1 rounded border px-2 py-0.5 text-xs font-medium ${config.className}`}
+                          >
+                            {map.name}
+                            {!map.hasEnoughData && (
+                              <AlertTriangle
+                                className="text-primary size-2.5"
+                                aria-label={t("lowSampleLabel")}
+                              />
+                            )}
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">
+                          <div className="space-y-1 text-xs">
+                            <p className="font-semibold">{map.name}</p>
+                            <p className="text-muted-foreground">
+                              {map.mapType}
+                            </p>
+                            <p>
+                              {map.draws > 0
+                                ? t("winrateLineWithDraws", {
+                                    winrate: map.winrate,
+                                    wins: map.wins,
+                                    losses: map.losses,
+                                    draws: map.draws,
+                                  })
+                                : t("winrateLine", {
+                                    winrate: map.winrate,
+                                    wins: map.wins,
+                                    losses: map.losses,
+                                  })}
+                            </p>
+                            {!map.hasEnoughData && (
+                              <p className="text-primary">
+                                {t("lowConfidence", { count: map.total })}
+                              </p>
+                            )}
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    ))
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </TooltipProvider>
     </section>
   );
 }

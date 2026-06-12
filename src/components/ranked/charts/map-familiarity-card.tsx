@@ -210,7 +210,10 @@ export function MapFamiliarityCard({ result }: MapFamiliarityCardProps) {
         {avoidedMaps.length > 0 && (
           <div>
             <p className="text-muted-foreground mb-2 flex items-center gap-1.5 text-xs font-medium">
-              <AlertTriangle className="size-3 text-primary" aria-hidden="true" />
+              <AlertTriangle
+                className="text-primary size-3"
+                aria-hidden="true"
+              />
               {t("neverPlayed", { count: avoidedMaps.length })}
             </p>
             <div className="flex flex-wrap gap-1.5">

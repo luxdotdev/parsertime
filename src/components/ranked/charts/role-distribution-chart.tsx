@@ -61,61 +61,63 @@ export function RoleDistributionChart({ result }: RoleDistributionChartProps) {
           config={chartConfig}
           className="mx-auto aspect-square h-[250px]"
         >
-            <PieChart>
-              <ChartTooltip
-                content={
-                  <ChartTooltipContent
-                    formatter={(value, name) => (
-                      <div className="flex items-center gap-2">
-                        <span className="text-muted-foreground">{name}</span>
-                        <span className="font-mono font-medium tabular-nums">
-                          {distribution.find((d) => d.role === name)?.percentage ?? 0}%
-                        </span>
-                      </div>
-                    )}
-                    hideIndicator
-                  />
-                }
-              />
-              <Pie
-                data={pieData}
-                dataKey="value"
-                nameKey="role"
-                innerRadius={60}
-                strokeWidth={2}
-                stroke="var(--color-background)"
-              >
-                <Label
-                  content={({ viewBox }) => {
-                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                      return (
-                        <text
+          <PieChart>
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  formatter={(value, name) => (
+                    <div className="flex items-center gap-2">
+                      <span className="text-muted-foreground">{name}</span>
+                      <span className="font-mono font-medium tabular-nums">
+                        {distribution.find((d) => d.role === name)
+                          ?.percentage ?? 0}
+                        %
+                      </span>
+                    </div>
+                  )}
+                  hideIndicator
+                />
+              }
+            />
+            <Pie
+              data={pieData}
+              dataKey="value"
+              nameKey="role"
+              innerRadius={60}
+              strokeWidth={2}
+              stroke="var(--color-background)"
+            >
+              <Label
+                content={({ viewBox }) => {
+                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                    return (
+                      <text
+                        x={viewBox.cx}
+                        y={viewBox.cy}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                      >
+                        <tspan
                           x={viewBox.cx}
                           y={viewBox.cy}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
+                          className="fill-foreground text-2xl font-bold tabular-nums"
                         >
-                          <tspan
-                            x={viewBox.cx}
-                            y={viewBox.cy}
-                            className="fill-foreground text-2xl font-bold tabular-nums"
-                          >
-                            {insight.dominantRole}
-                          </tspan>
-                          <tspan
-                            x={viewBox.cx}
-                            y={(viewBox.cy ?? 0) + 22}
-                            className="fill-muted-foreground text-sm"
-                          >
-                            {insight.dominantPct}%
-                          </tspan>
-                        </text>
-                      );
-                    }
-                  }}
-                />
-              </Pie>
-            </PieChart>
+                          {insight.dominantRole}
+                        </tspan>
+                        <tspan
+                          x={viewBox.cx}
+                          y={(viewBox.cy ?? 0) + 22}
+                          className="fill-muted-foreground text-sm"
+                        >
+                          {insight.dominantPct}%
+                        </tspan>
+                      </text>
+                    );
+                  }
+                }}
+              />
+            </Pie>
+          </PieChart>
         </ChartContainer>
       ) : (
         <div className="flex h-[250px] items-center justify-center">

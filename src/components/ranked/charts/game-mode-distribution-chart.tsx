@@ -54,61 +54,61 @@ export function GameModeDistributionChart({
         config={chartConfig}
         className="mx-auto aspect-square h-[250px]"
       >
-          <PieChart>
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  formatter={(value, name) => (
-                    <div className="flex items-center gap-2">
-                      <span className="text-muted-foreground">{name}</span>
-                      <span className="font-mono font-medium tabular-nums">
-                        {t("matchesValue", { count: value as number })}
-                      </span>
-                    </div>
-                  )}
-                  hideIndicator
-                />
-              }
-            />
-            <Pie
-              data={pieData}
-              dataKey="count"
-              nameKey="mode"
-              innerRadius={60}
-              strokeWidth={2}
-              stroke="var(--color-background)"
-            >
-              <Label
-                content={({ viewBox }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                    return (
-                      <text
+        <PieChart>
+          <ChartTooltip
+            content={
+              <ChartTooltipContent
+                formatter={(value, name) => (
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground">{name}</span>
+                    <span className="font-mono font-medium tabular-nums">
+                      {t("matchesValue", { count: value as number })}
+                    </span>
+                  </div>
+                )}
+                hideIndicator
+              />
+            }
+          />
+          <Pie
+            data={pieData}
+            dataKey="count"
+            nameKey="mode"
+            innerRadius={60}
+            strokeWidth={2}
+            stroke="var(--color-background)"
+          >
+            <Label
+              content={({ viewBox }) => {
+                if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                  return (
+                    <text
+                      x={viewBox.cx}
+                      y={viewBox.cy}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                    >
+                      <tspan
                         x={viewBox.cx}
                         y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
+                        className="fill-foreground text-3xl font-bold tabular-nums"
                       >
-                        <tspan
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          className="fill-foreground text-3xl font-bold tabular-nums"
-                        >
-                          {totalMatches}
-                        </tspan>
-                        <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy ?? 0) + 24}
-                          className="fill-muted-foreground text-sm"
-                        >
-                          {t("matchesUnit")}
-                        </tspan>
-                      </text>
-                    );
-                  }
-                }}
-              />
-            </Pie>
-          </PieChart>
+                        {totalMatches}
+                      </tspan>
+                      <tspan
+                        x={viewBox.cx}
+                        y={(viewBox.cy ?? 0) + 24}
+                        className="fill-muted-foreground text-sm"
+                      >
+                        {t("matchesUnit")}
+                      </tspan>
+                    </text>
+                  );
+                }
+              }}
+            />
+          </Pie>
+        </PieChart>
       </ChartContainer>
       <div className="flex flex-wrap justify-center gap-3">
         {data.map((entry) => (

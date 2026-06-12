@@ -50,10 +50,10 @@ export function HeroPoolDiversityCard({ result }: HeroPoolDiversityCardProps) {
               className="flex flex-col items-center"
               aria-label={t("uniqueHeroesAriaLabel", { count: totalUnique })}
             >
-              <span className="text-4xl font-bold tabular-nums leading-none">
+              <span className="text-4xl leading-none font-bold tabular-nums">
                 {totalUnique}
               </span>
-              <span className="text-muted-foreground text-xs mt-1">
+              <span className="text-muted-foreground mt-1 text-xs">
                 {t("heroUnit", { count: totalUnique })}
               </span>
             </div>
@@ -61,43 +61,58 @@ export function HeroPoolDiversityCard({ result }: HeroPoolDiversityCardProps) {
         }
       />
       {hasData ? (
-          <div className="flex flex-col gap-4" role="list" aria-label={t("heroesByRoleAriaLabel")}>
-            {byRole.map((roleEntry) => {
-              const roleHeroes = heroList.filter((h) => h.role === roleEntry.role);
-              return (
-                <div key={roleEntry.role} className="flex flex-col gap-1.5" role="listitem">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="size-2.5 shrink-0 rounded-full"
-                      style={{ backgroundColor: roleEntry.fill }}
-                      aria-hidden="true"
-                    />
-                    <span className="text-sm font-medium">{roleEntry.role}</span>
-                    <span className="text-muted-foreground text-xs tabular-nums">
-                      {t("heroesLabel", { count: roleEntry.count })}
-                    </span>
-                  </div>
-                  {roleHeroes.length > 0 ? (
-                    <div className="flex flex-wrap gap-1.5 pl-4" aria-label={t("roleHeroesAriaLabel", { role: roleEntry.role })}>
-                      {roleHeroes.map(({ hero }) => (
-                        <span
-                          key={hero}
-                          className="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium"
-                          title={hero}
-                        >
-                          {hero}
-                        </span>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="pl-4 text-muted-foreground text-xs">
-                      {t("noRoleHeroes", { role: roleEntry.role })}
-                    </p>
-                  )}
+        <div
+          className="flex flex-col gap-4"
+          role="list"
+          aria-label={t("heroesByRoleAriaLabel")}
+        >
+          {byRole.map((roleEntry) => {
+            const roleHeroes = heroList.filter(
+              (h) => h.role === roleEntry.role
+            );
+            return (
+              <div
+                key={roleEntry.role}
+                className="flex flex-col gap-1.5"
+                role="listitem"
+              >
+                <div className="flex items-center gap-2">
+                  <span
+                    className="size-2.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: roleEntry.fill }}
+                    aria-hidden="true"
+                  />
+                  <span className="text-sm font-medium">{roleEntry.role}</span>
+                  <span className="text-muted-foreground text-xs tabular-nums">
+                    {t("heroesLabel", { count: roleEntry.count })}
+                  </span>
                 </div>
-              );
-            })}
-          </div>
+                {roleHeroes.length > 0 ? (
+                  <div
+                    className="flex flex-wrap gap-1.5 pl-4"
+                    aria-label={t("roleHeroesAriaLabel", {
+                      role: roleEntry.role,
+                    })}
+                  >
+                    {roleHeroes.map(({ hero }) => (
+                      <span
+                        key={hero}
+                        className="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium"
+                        title={hero}
+                      >
+                        {hero}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground pl-4 text-xs">
+                    {t("noRoleHeroes", { role: roleEntry.role })}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
       ) : (
         <div className="flex h-[200px] items-center justify-center">
           <p className="text-muted-foreground text-sm">{t("noData")}</p>

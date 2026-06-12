@@ -53,89 +53,87 @@ export function MapWinLossChart({ result }: MapWinLossChartProps) {
         description={description}
       />
       <ChartContainer config={chartConfig} className="h-[350px] w-full">
-          <BarChart
-            data={data}
-            margin={{ top: 4, right: 4, left: -20, bottom: 60 }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="name"
-              tickLine={false}
-              axisLine={false}
-              interval={0}
-              angle={-45}
-              textAnchor="end"
-              height={80}
-              fontSize={12}
-            />
-            <YAxis tickLine={false} axisLine={false} allowDecimals={false} />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  formatter={(value, name, item) => {
-                    const payload = item.payload as typeof data[number];
-                    const { wins, losses } = payload;
-                    const total = wins + losses;
-                    const winrate =
-                      total > 0 ? Math.round((wins / total) * 100) : 0;
+        <BarChart
+          data={data}
+          margin={{ top: 4, right: 4, left: -20, bottom: 60 }}
+        >
+          <CartesianGrid vertical={false} />
+          <XAxis
+            dataKey="name"
+            tickLine={false}
+            axisLine={false}
+            interval={0}
+            angle={-45}
+            textAnchor="end"
+            height={80}
+            fontSize={12}
+          />
+          <YAxis tickLine={false} axisLine={false} allowDecimals={false} />
+          <ChartTooltip
+            content={
+              <ChartTooltipContent
+                formatter={(value, name, item) => {
+                  const payload = item.payload as (typeof data)[number];
+                  const { wins, losses } = payload;
+                  const total = wins + losses;
+                  const winrate =
+                    total > 0 ? Math.round((wins / total) * 100) : 0;
 
-                    if (name === "losses") {
-                      return (
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-2">
-                            <span
-                              className="size-2.5 shrink-0 rounded-[2px]"
-                              style={{
-                                backgroundColor: "var(--chart-loss)",
-                              }}
-                            />
-                            <span className="text-muted-foreground">
-                              {t("losses")}
-                            </span>
-                            <span className="font-mono font-medium tabular-nums">
-                              {value}
-                            </span>
-                          </div>
-                          <div className="border-border border-t pt-1 text-xs">
-                            {t("winrateLabel")}{" "}
-                            <span className="font-medium tabular-nums">
-                              {winrate}%
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    }
+                  if (name === "losses") {
                     return (
-                      <div className="flex items-center gap-2">
-                        <span
-                          className="size-2.5 shrink-0 rounded-[2px]"
-                          style={{ backgroundColor: "var(--chart-win)" }}
-                        />
-                        <span className="text-muted-foreground">
-                          {t("wins")}
-                        </span>
-                        <span className="font-mono font-medium tabular-nums">
-                          {value}
-                        </span>
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="size-2.5 shrink-0 rounded-[2px]"
+                            style={{
+                              backgroundColor: "var(--chart-loss)",
+                            }}
+                          />
+                          <span className="text-muted-foreground">
+                            {t("losses")}
+                          </span>
+                          <span className="font-mono font-medium tabular-nums">
+                            {value}
+                          </span>
+                        </div>
+                        <div className="border-border border-t pt-1 text-xs">
+                          {t("winrateLabel")}{" "}
+                          <span className="font-medium tabular-nums">
+                            {winrate}%
+                          </span>
+                        </div>
                       </div>
                     );
-                  }}
-                />
-              }
-            />
-            <Bar
-              dataKey="wins"
-              stackId="stack"
-              fill="var(--color-wins)"
-              radius={[0, 0, 0, 0]}
-            />
-            <Bar
-              dataKey="losses"
-              stackId="stack"
-              fill="var(--color-losses)"
-              radius={[4, 4, 0, 0]}
-            />
-          </BarChart>
+                  }
+                  return (
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="size-2.5 shrink-0 rounded-[2px]"
+                        style={{ backgroundColor: "var(--chart-win)" }}
+                      />
+                      <span className="text-muted-foreground">{t("wins")}</span>
+                      <span className="font-mono font-medium tabular-nums">
+                        {value}
+                      </span>
+                    </div>
+                  );
+                }}
+              />
+            }
+          />
+          <Bar
+            dataKey="wins"
+            stackId="stack"
+            fill="var(--color-wins)"
+            radius={[0, 0, 0, 0]}
+          />
+          <Bar
+            dataKey="losses"
+            stackId="stack"
+            fill="var(--color-losses)"
+            radius={[4, 4, 0, 0]}
+          />
+        </BarChart>
       </ChartContainer>
       <p className="text-muted-foreground text-xs">
         {t("footer", { count: totalGames, maps: data.length })}

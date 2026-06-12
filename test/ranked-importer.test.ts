@@ -1,4 +1,7 @@
-import { buildMatchCreatePayloads, isValidImportMatch } from "@/lib/ranked/importer";
+import {
+  buildMatchCreatePayloads,
+  isValidImportMatch,
+} from "@/lib/ranked/importer";
 import type { RankedExportBundle } from "@/lib/ranked/export-schema";
 import { expect, test } from "vitest";
 
@@ -28,7 +31,11 @@ test("buildMatchCreatePayloads maps bundle matches to prisma create inputs", () 
 });
 
 test("buildMatchCreatePayloads skips already-imported sourceIds", () => {
-  const payloads = buildMatchCreatePayloads("user-1", bundle, new Set(["old-1"]));
+  const payloads = buildMatchCreatePayloads(
+    "user-1",
+    bundle,
+    new Set(["old-1"])
+  );
   expect(payloads).toHaveLength(0);
 });
 

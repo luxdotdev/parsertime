@@ -40,7 +40,9 @@ export function HeroWinrateChart({ result }: HeroWinrateChartProps) {
   }));
 
   const description =
-    insight.bestHero && insight.worstHero && insight.bestHero !== insight.worstHero
+    insight.bestHero &&
+    insight.worstHero &&
+    insight.bestHero !== insight.worstHero
       ? t("descriptionBestWorst", {
           bestHero: insight.bestHero,
           bestWinrate: insight.bestWinrate,
@@ -61,60 +63,62 @@ export function HeroWinrateChart({ result }: HeroWinrateChartProps) {
         description={description}
       />
       <ChartContainer config={chartConfig} className="h-[300px] w-full">
-          <BarChart
-            data={chartData}
-            layout="vertical"
-            margin={{ top: 4, right: 40, left: 0, bottom: 4 }}
-          >
-            <CartesianGrid horizontal={false} />
-            <XAxis
-              type="number"
-              domain={[0, 100]}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(value) => `${value}%`}
-            />
-            <YAxis
-              type="category"
-              dataKey="label"
-              tickLine={false}
-              axisLine={false}
-              width={120}
-              fontSize={12}
-            />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  formatter={(value, _name, item) => {
-                    const payload = item.payload as typeof chartData[number];
-                    return (
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-muted-foreground">{t("winrate")}</span>
-                          <span className="font-mono font-medium tabular-nums">
-                            {value}%
-                          </span>
-                        </div>
-                        <div className="text-muted-foreground text-xs">
-                          {t("winsTotal", { wins: payload.wins, total: payload.total })}
-                        </div>
+        <BarChart
+          data={chartData}
+          layout="vertical"
+          margin={{ top: 4, right: 40, left: 0, bottom: 4 }}
+        >
+          <CartesianGrid horizontal={false} />
+          <XAxis
+            type="number"
+            domain={[0, 100]}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={(value) => `${value}%`}
+          />
+          <YAxis
+            type="category"
+            dataKey="label"
+            tickLine={false}
+            axisLine={false}
+            width={120}
+            fontSize={12}
+          />
+          <ChartTooltip
+            content={
+              <ChartTooltipContent
+                formatter={(value, _name, item) => {
+                  const payload = item.payload as (typeof chartData)[number];
+                  return (
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground">
+                          {t("winrate")}
+                        </span>
+                        <span className="font-mono font-medium tabular-nums">
+                          {value}%
+                        </span>
                       </div>
-                    );
-                  }}
-                  hideIndicator
-                />
-              }
-            />
-            <Bar dataKey="winrate" radius={[0, 4, 4, 0]}>
-              {chartData.map((entry) => (
-                <Cell
-                  key={entry.hero}
-                  fill={winrateColor(entry.winrate)}
-                />
-              ))}
-            </Bar>
-          </BarChart>
-        </ChartContainer>
+                      <div className="text-muted-foreground text-xs">
+                        {t("winsTotal", {
+                          wins: payload.wins,
+                          total: payload.total,
+                        })}
+                      </div>
+                    </div>
+                  );
+                }}
+                hideIndicator
+              />
+            }
+          />
+          <Bar dataKey="winrate" radius={[0, 4, 4, 0]}>
+            {chartData.map((entry) => (
+              <Cell key={entry.hero} fill={winrateColor(entry.winrate)} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ChartContainer>
       <p className="text-muted-foreground text-xs">
         {t("footer", {
           min: HERO_WINRATE_MIN_MATCHES,

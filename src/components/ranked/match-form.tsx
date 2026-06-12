@@ -41,10 +41,23 @@ import {
   type RoleName,
 } from "@/types/heroes";
 import { RANKED_MAPS } from "@/lib/ranked/maps";
-import { cn, heroImageUrl, mapImageUrl, toKebabCase, useMapNames } from "@/lib/utils";
+import {
+  cn,
+  heroImageUrl,
+  mapImageUrl,
+  toKebabCase,
+  useMapNames,
+} from "@/lib/utils";
 import Fuse from "fuse.js";
 import { format } from "date-fns";
-import { CalendarIcon, Check, ChevronsUpDown, Plus, Trash2, X } from "lucide-react";
+import {
+  CalendarIcon,
+  Check,
+  ChevronsUpDown,
+  Plus,
+  Trash2,
+  X,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useEffect, useMemo, useState, useTransition } from "react";
@@ -311,11 +324,7 @@ export function MatchForm({ trigger }: MatchFormProps) {
             </Button>
           </div>
 
-          {error && (
-            <p className="mt-4 text-sm text-destructive">
-              {error}
-            </p>
-          )}
+          {error && <p className="text-destructive mt-4 text-sm">{error}</p>}
 
           <DialogFooter className="mt-6">
             <Button
@@ -397,13 +406,13 @@ function MatchEntryCard({
           >
             <ToggleGroupItem
               value="win"
-              className="flex-1 rounded-l-md! data-[state=on]:bg-primary/15 data-[state=on]:text-primary"
+              className="data-[state=on]:bg-primary/15 data-[state=on]:text-primary flex-1 rounded-l-md!"
             >
               {t("win")}
             </ToggleGroupItem>
             <ToggleGroupItem
               value="loss"
-              className="flex-1 data-[state=on]:bg-destructive/15 data-[state=on]:text-destructive"
+              className="data-[state=on]:bg-destructive/15 data-[state=on]:text-destructive flex-1"
             >
               {t("loss")}
             </ToggleGroupItem>
@@ -634,9 +643,7 @@ function HeroPicker({
             />
           ))}
           {totalPercentage !== 100 && (
-            <p className="text-xs text-destructive">
-              {t("percentSum")}
-            </p>
+            <p className="text-destructive text-xs">{t("percentSum")}</p>
           )}
         </div>
       )}

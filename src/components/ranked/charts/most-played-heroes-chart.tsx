@@ -85,55 +85,57 @@ export function MostPlayedHeroesChart({
         }
       />
       <ChartContainer config={chartConfig} className="h-[300px] w-full">
-          <BarChart
-            data={data}
-            margin={{ top: 4, right: 4, left: -20, bottom: 60 }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="hero"
-              tickLine={false}
-              axisLine={false}
-              interval={0}
-              angle={-45}
-              textAnchor="end"
-              height={80}
-              fontSize={12}
-            />
-            <YAxis tickLine={false} axisLine={false} allowDecimals={false} />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  formatter={(value, _name, item) => {
-                    const payload = item.payload as typeof data[number];
-                    return (
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-muted-foreground">{t("matches")}</span>
-                          <span className="font-mono font-medium tabular-nums">
-                            {value}
-                          </span>
-                        </div>
-                        <div className="text-muted-foreground text-xs">
-                          {t("roleLabel", { role: payload.role })}
-                        </div>
+        <BarChart
+          data={data}
+          margin={{ top: 4, right: 4, left: -20, bottom: 60 }}
+        >
+          <CartesianGrid vertical={false} />
+          <XAxis
+            dataKey="hero"
+            tickLine={false}
+            axisLine={false}
+            interval={0}
+            angle={-45}
+            textAnchor="end"
+            height={80}
+            fontSize={12}
+          />
+          <YAxis tickLine={false} axisLine={false} allowDecimals={false} />
+          <ChartTooltip
+            content={
+              <ChartTooltipContent
+                formatter={(value, _name, item) => {
+                  const payload = item.payload as (typeof data)[number];
+                  return (
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground">
+                          {t("matches")}
+                        </span>
+                        <span className="font-mono font-medium tabular-nums">
+                          {value}
+                        </span>
                       </div>
-                    );
-                  }}
-                  hideIndicator
-                />
-              }
-            />
-            <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-              {data.map((entry) => (
-                <Cell
-                  key={entry.hero}
-                  fill={ROLE_COLORS[entry.role] ?? "var(--chart-3)"}
-                />
-              ))}
-            </Bar>
-          </BarChart>
-        </ChartContainer>
+                      <div className="text-muted-foreground text-xs">
+                        {t("roleLabel", { role: payload.role })}
+                      </div>
+                    </div>
+                  );
+                }}
+                hideIndicator
+              />
+            }
+          />
+          <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+            {data.map((entry) => (
+              <Cell
+                key={entry.hero}
+                fill={ROLE_COLORS[entry.role] ?? "var(--chart-3)"}
+              />
+            ))}
+          </Bar>
+        </BarChart>
+      </ChartContainer>
       <div className="flex flex-wrap justify-center gap-3">
         {Object.entries(ROLE_COLORS).map(([role, color]) => (
           <div key={role} className="flex items-center gap-1.5 text-xs">

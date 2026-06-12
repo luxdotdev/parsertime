@@ -77,9 +77,7 @@ export function RepeatMapCard({ result }: RepeatMapCardProps) {
               className="text-muted-foreground size-8"
               aria-hidden="true"
             />
-            <p className="text-muted-foreground text-sm">
-              {t("emptyInsight")}
-            </p>
+            <p className="text-muted-foreground text-sm">{t("emptyInsight")}</p>
             <p className="text-muted-foreground/70 text-xs">
               {t("emptySubtext", { count: repeatTotal })}
             </p>

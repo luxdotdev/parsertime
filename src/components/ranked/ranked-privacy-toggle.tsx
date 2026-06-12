@@ -27,7 +27,9 @@ export function RankedPrivacyToggle({ initial }: RankedPrivacyToggleProps) {
     <div className="flex items-center justify-between">
       <div className="space-y-0.5">
         <p className="text-sm font-medium">{t("toggleLabel")}</p>
-        <p className="text-muted-foreground text-sm">{t("toggleDescription")}</p>
+        <p className="text-muted-foreground text-sm">
+          {t("toggleDescription")}
+        </p>
       </div>
       <Switch checked={checked} onCheckedChange={handleChange} />
     </div>

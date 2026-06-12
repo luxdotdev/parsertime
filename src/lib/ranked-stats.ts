@@ -1,4 +1,8 @@
-import { type RankedMap, RANKED_MAP_NAMES, RANKED_MAPS } from "@/lib/ranked/maps";
+import {
+  type RankedMap,
+  RANKED_MAP_NAMES,
+  RANKED_MAPS,
+} from "@/lib/ranked/maps";
 import { toKebabCase } from "@/lib/utils";
 import type { RoleName as HeroRole } from "@/types/heroes";
 import type { OverwatchPatch } from "@/types/overwatch-patches";

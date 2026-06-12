@@ -109,71 +109,69 @@ export function GroupSizeWinrateChart({ result }: GroupSizeWinrateChartProps) {
         description={description}
       />
       <ChartContainer config={chartConfig} className="h-[280px] w-full">
-          <BarChart
-            data={qualifiedData}
-            margin={{ top: 8, right: 8, left: -20, bottom: 4 }}
-          >
-            <CartesianGrid vertical={false} />
-            <XAxis
-              dataKey="label"
-              tickLine={false}
-              axisLine={false}
-              fontSize={12}
-            />
-            <YAxis
-              domain={[0, 100]}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(v) => `${v}%`}
-              fontSize={12}
-            />
-            <ReferenceLine
-              y={50}
-              stroke="var(--muted-foreground)"
-              strokeDasharray="4 4"
-              strokeOpacity={0.5}
-            />
-            <ChartTooltip
-              content={
-                <ChartTooltipContent
-                  formatter={(value, _name, item) => {
-                    const payload = item.payload as GroupSizeEntry;
-                    return (
-                      <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-muted-foreground">
-                            {t("winrate")}
-                          </span>
-                          <span className="font-mono font-medium tabular-nums">
-                            {value}%
-                          </span>
-                        </div>
-                        <div className="text-muted-foreground text-xs">
-                          {t("winLossGames", {
-                            wins: payload.wins,
-                            losses: payload.losses,
-                            total: payload.total,
-                          })}
-                        </div>
+        <BarChart
+          data={qualifiedData}
+          margin={{ top: 8, right: 8, left: -20, bottom: 4 }}
+        >
+          <CartesianGrid vertical={false} />
+          <XAxis
+            dataKey="label"
+            tickLine={false}
+            axisLine={false}
+            fontSize={12}
+          />
+          <YAxis
+            domain={[0, 100]}
+            tickLine={false}
+            axisLine={false}
+            tickFormatter={(v) => `${v}%`}
+            fontSize={12}
+          />
+          <ReferenceLine
+            y={50}
+            stroke="var(--muted-foreground)"
+            strokeDasharray="4 4"
+            strokeOpacity={0.5}
+          />
+          <ChartTooltip
+            content={
+              <ChartTooltipContent
+                formatter={(value, _name, item) => {
+                  const payload = item.payload as GroupSizeEntry;
+                  return (
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground">
+                          {t("winrate")}
+                        </span>
+                        <span className="font-mono font-medium tabular-nums">
+                          {value}%
+                        </span>
                       </div>
-                    );
-                  }}
-                  hideIndicator
-                />
-              }
-            />
-            <Bar dataKey="winrate" radius={[4, 4, 0, 0]}>
-              {qualifiedData.map((entry) => (
-                <Cell
-                  key={entry.groupSize}
-                  fill={winrateColor(entry.winrate)}
-                  opacity={
-                    entry.groupSize === insight.optimalSize ? 1 : 0.75
-                  }
-                />
-              ))}
-            </Bar>
-          </BarChart>
+                      <div className="text-muted-foreground text-xs">
+                        {t("winLossGames", {
+                          wins: payload.wins,
+                          losses: payload.losses,
+                          total: payload.total,
+                        })}
+                      </div>
+                    </div>
+                  );
+                }}
+                hideIndicator
+              />
+            }
+          />
+          <Bar dataKey="winrate" radius={[4, 4, 0, 0]}>
+            {qualifiedData.map((entry) => (
+              <Cell
+                key={entry.groupSize}
+                fill={winrateColor(entry.winrate)}
+                opacity={entry.groupSize === insight.optimalSize ? 1 : 0.75}
+              />
+            ))}
+          </Bar>
+        </BarChart>
       </ChartContainer>
       <p className="text-muted-foreground text-xs">
         {t("footer", {

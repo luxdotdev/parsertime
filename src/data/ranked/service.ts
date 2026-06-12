@@ -1,10 +1,7 @@
 import prisma from "@/lib/prisma";
 import { Context, Effect, Layer } from "effect";
 import { RankedQueryError } from "./errors";
-import type {
-  CreateRankedMatchInput,
-  RankedMatchWithHeroes,
-} from "./types";
+import type { CreateRankedMatchInput, RankedMatchWithHeroes } from "./types";
 
 export type RankedServiceInterface = {
   readonly getMatchesForUser: (
@@ -22,10 +19,9 @@ export type RankedServiceInterface = {
   ) => Effect.Effect<void, RankedQueryError>;
 };
 
-export class RankedService extends Context.Tag("@app/data/ranked/RankedService")<
-  RankedService,
-  RankedServiceInterface
->() {}
+export class RankedService extends Context.Tag(
+  "@app/data/ranked/RankedService"
+)<RankedService, RankedServiceInterface>() {}
 
 export const make: Effect.Effect<RankedServiceInterface> = Effect.sync(() => {
   function getMatchesForUser(userId: string) {

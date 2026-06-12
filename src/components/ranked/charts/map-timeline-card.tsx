@@ -66,9 +66,7 @@ export function MapTimelineCard({ result }: MapTimelineCardProps) {
     },
   } satisfies ChartConfig;
 
-  const [selectedMap, setSelectedMap] = useState<string>(
-    maps[0]?.map ?? ""
-  );
+  const [selectedMap, setSelectedMap] = useState<string>(maps[0]?.map ?? "");
 
   if (maps.length === 0) {
     return (
@@ -249,7 +247,9 @@ export function MapTimelineCard({ result }: MapTimelineCardProps) {
             <p className="font-mono text-lg font-semibold tabular-nums">
               {totalGames}
             </p>
-            <p className="text-muted-foreground text-xs">{t("statGamesTracked")}</p>
+            <p className="text-muted-foreground text-xs">
+              {t("statGamesTracked")}
+            </p>
           </div>
           <div className="text-center">
             <p className="font-mono text-lg font-semibold tabular-nums">

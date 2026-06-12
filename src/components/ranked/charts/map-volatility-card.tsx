@@ -32,9 +32,7 @@ function ConfidenceStars({ count }: { count: 1 | 2 | 3 | 4 | 5 }) {
         <Star
           key={i}
           className={`size-2.5 ${
-            i < count
-              ? "fill-primary text-primary"
-              : "fill-muted text-muted"
+            i < count ? "fill-primary text-primary" : "fill-muted text-muted"
           }`}
           aria-hidden="true"
         />
@@ -127,45 +125,45 @@ export function MapVolatilityCard({ result }: MapVolatilityCardProps) {
         description={description}
       />
       <ChartContainer config={chartConfig} className="h-[300px] w-full">
-          <BarChart
-            data={chartData}
-            layout="vertical"
-            margin={{ top: 4, right: 8, left: 8, bottom: 4 }}
-          >
-            <CartesianGrid horizontal={false} />
-            <XAxis
-              type="number"
-              domain={[0, 100]}
-              tickLine={false}
-              axisLine={false}
-              fontSize={11}
-            />
-            <YAxis
-              type="category"
-              dataKey="name"
-              tickLine={false}
-              axisLine={false}
-              width={120}
-              fontSize={11}
-            />
-            <ChartTooltip content={<CustomTooltip />} />
-            <Bar dataKey="volatility" radius={[0, 4, 4, 0]} maxBarSize={18}>
-              {chartData.map((entry) => (
-                <Cell
-                  key={entry.name}
-                  fill={
-                    entry.volatility >= 70
-                      ? "var(--chart-loss)"
-                      : entry.volatility >= 45
-                        ? "var(--muted-foreground)"
-                        : "var(--chart-win)"
-                  }
-                  opacity={entry.hasEnoughData ? 1 : 0.5}
-                />
-              ))}
-            </Bar>
-          </BarChart>
-        </ChartContainer>
+        <BarChart
+          data={chartData}
+          layout="vertical"
+          margin={{ top: 4, right: 8, left: 8, bottom: 4 }}
+        >
+          <CartesianGrid horizontal={false} />
+          <XAxis
+            type="number"
+            domain={[0, 100]}
+            tickLine={false}
+            axisLine={false}
+            fontSize={11}
+          />
+          <YAxis
+            type="category"
+            dataKey="name"
+            tickLine={false}
+            axisLine={false}
+            width={120}
+            fontSize={11}
+          />
+          <ChartTooltip content={<CustomTooltip />} />
+          <Bar dataKey="volatility" radius={[0, 4, 4, 0]} maxBarSize={18}>
+            {chartData.map((entry) => (
+              <Cell
+                key={entry.name}
+                fill={
+                  entry.volatility >= 70
+                    ? "var(--chart-loss)"
+                    : entry.volatility >= 45
+                      ? "var(--muted-foreground)"
+                      : "var(--chart-win)"
+                }
+                opacity={entry.hasEnoughData ? 1 : 0.5}
+              />
+            ))}
+          </Bar>
+        </BarChart>
+      </ChartContainer>
       <p className="text-muted-foreground text-xs">{t("footer")}</p>
     </section>
   );

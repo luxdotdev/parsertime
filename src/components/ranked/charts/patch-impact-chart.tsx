@@ -90,10 +90,8 @@ export function PatchImpactChart({
 
   const usedTypes = Array.from(new Set(visiblePatches.map((p) => p.type)));
 
-  const ribbonColumns = (Math.min(
-    Math.max(seasonBreakdown.length, 3),
-    6
-  ) ?? 3) as 3 | 4 | 5 | 6;
+  const ribbonColumns = (Math.min(Math.max(seasonBreakdown.length, 3), 6) ??
+    3) as 3 | 4 | 5 | 6;
 
   return (
     <>
@@ -207,7 +205,11 @@ export function PatchImpactChart({
                 {usedTypes.map((type) => {
                   const style = MARKER[type];
                   const legendKey =
-                    type === "mid-season" ? "legendMidSeason" : type === "hotfix" ? "legendHotfix" : "legendSeason";
+                    type === "mid-season"
+                      ? "legendMidSeason"
+                      : type === "hotfix"
+                        ? "legendHotfix"
+                        : "legendSeason";
                   return (
                     <span
                       key={type}
