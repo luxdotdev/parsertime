@@ -60,7 +60,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useId, useMemo, useState, useTransition } from "react";
 
 // Build hero/map data from @/types/* ----------------------------------------
 
@@ -461,6 +461,7 @@ function MapPicker({
 }) {
   const t = useTranslations("ranked.form");
   const [open, setOpen] = useState(false);
+  const listboxId = useId();
   const mapNames = useMapNames();
 
   const selectedDisplay = value
@@ -477,6 +478,7 @@ function MapPicker({
             variant="outline"
             role="combobox"
             aria-expanded={open}
+            aria-controls={listboxId}
             className="w-full justify-between font-normal"
           >
             {selectedDisplay ? (
@@ -497,6 +499,7 @@ function MapPicker({
           </Button>
         </PopoverTrigger>
         <PopoverContent
+          id={listboxId}
           className="w-(--radix-popover-trigger-width) p-0"
           align="start"
           onWheel={handleComboboxWheel}
@@ -756,6 +759,7 @@ function HeroCombobox({
   const t = useTranslations("ranked.form");
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const listboxId = useId();
 
   const fuse = useMemo(
     () =>
@@ -818,6 +822,7 @@ function HeroCombobox({
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          aria-controls={listboxId}
           className="w-full justify-between font-normal"
         >
           {t("addHero")}
@@ -825,6 +830,7 @@ function HeroCombobox({
         </Button>
       </PopoverTrigger>
       <PopoverContent
+        id={listboxId}
         className="w-(--radix-popover-trigger-width) p-0"
         align="start"
         onWheel={handleComboboxWheel}
