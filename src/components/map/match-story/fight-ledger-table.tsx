@@ -20,6 +20,52 @@ import { useMemo, useState } from "react";
  * fight win is what enabled the capture. */
 const CAPTURE_ATTACH_SECONDS = 12;
 
+type SortKey =
+  | "fight"
+  | "time"
+  | "zone"
+  | "result"
+  | "swing"
+  | "ults"
+  | "context";
+
+function maxCarry(f: FightEntry): number {
+  return f.carryover === null
+    ? 0
+    : Math.max(Math.abs(f.carryover.ultEconomy), Math.abs(f.carryover.stagger));
+}
+
+function SortHeader({
+  sortKey,
+  label,
+  className,
+  sort,
+  onToggle,
+}: {
+  sortKey: SortKey;
+  label: string;
+  className?: string;
+  sort: { key: SortKey; desc: boolean };
+  onToggle: (key: SortKey) => void;
+}) {
+  const active = sort.key === sortKey;
+  return (
+    <TableHead
+      className={className}
+      aria-sort={active ? (sort.desc ? "descending" : "ascending") : undefined}
+    >
+      <button
+        type="button"
+        onClick={() => onToggle(sortKey)}
+        className={active ? "text-foreground" : "hover:text-foreground"}
+      >
+        {label}
+        {active ? (sort.desc ? " ↓" : " ↑") : ""}
+      </button>
+    </TableHead>
+  );
+}
+
 function formatClock(seconds: number): string {
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);
@@ -74,6 +120,16 @@ export function FightLedgerTable({
 }) {
   const t = useTranslations("mapPage.matchStory.ledger");
   const tChart = useTranslations("mapPage.matchStory.chart");
+  const [sort, setSort] = useState<{ key: SortKey; desc: boolean }>({
+    key: "swing",
+    desc: true,
+  });
+
+  function toggleSort(key: SortKey): void {
+    setSort((prev) =>
+      prev.key === key ? { key, desc: !prev.desc } : { key, desc: true }
+    );
+  }
 
   // Each capture belongs to the first fight whose window contains it.
   const capturesByFight = useMemo(() => {
@@ -91,14 +147,37 @@ export function FightLedgerTable({
     }
     return map;
   }, [fights, objectiveMarkers]);
-  const [sortBySwing, setSortBySwing] = useState(true);
-  const sorted = useMemo(
-    () =>
-      [...fights].sort((a, b) =>
-        sortBySwing ? Math.abs(b.swing) - Math.abs(a.swing) : a.start - b.start
-      ),
-    [fights, sortBySwing]
-  );
+  const sorted = useMemo(() => {
+    function rank(f: FightEntry): number | string {
+      switch (sort.key) {
+        case "fight":
+          return f.index;
+        case "time":
+          return f.start;
+        case "zone":
+          return f.zoneName ?? "￿"; // missing zones sort last
+        case "result":
+          return f.winner ?? "￿"; // even fights sort last
+        case "swing":
+          return Math.abs(f.swing); // magnitude — the ledger's point
+        case "ults":
+          return f.ultsSpentTeam1 + f.ultsSpentTeam2;
+        case "context":
+          // Captures dominate, then inherited carryover magnitude.
+          return (capturesByFight.get(f.index)?.length ?? 0) * 10 + maxCarry(f);
+      }
+    }
+    const dir = sort.desc ? -1 : 1;
+    return [...fights].sort((a, b) => {
+      const ra = rank(a);
+      const rb = rank(b);
+      const cmp =
+        typeof ra === "string" || typeof rb === "string"
+          ? String(ra).localeCompare(String(rb))
+          : ra - rb;
+      return cmp === 0 ? a.start - b.start : dir * cmp;
+    });
+  }, [fights, sort, capturesByFight]);
   const hasZones = fights.some((f) => f.zoneName !== null);
   const maxSwing = Math.max(0.01, ...fights.map((f) => Math.abs(f.swing)));
 
@@ -106,31 +185,53 @@ export function FightLedgerTable({
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-12">{t("fight")}</TableHead>
-          <TableHead className="w-20">
-            <button
-              type="button"
-              onClick={() => setSortBySwing(false)}
-              className={sortBySwing ? "" : "text-foreground"}
-            >
-              {t("time")}
-              {sortBySwing ? "" : " ↓"}
-            </button>
-          </TableHead>
-          {hasZones ? <TableHead>{t("zone")}</TableHead> : null}
-          <TableHead>{t("result")}</TableHead>
-          <TableHead>
-            <button
-              type="button"
-              onClick={() => setSortBySwing(true)}
-              className={sortBySwing ? "text-foreground" : ""}
-            >
-              {t("swing")}
-              {sortBySwing ? " ↓" : ""}
-            </button>
-          </TableHead>
-          <TableHead className="w-20 text-right">{t("ults")}</TableHead>
-          <TableHead>{t("context")}</TableHead>
+          <SortHeader
+            sortKey="fight"
+            label={t("fight")}
+            className="w-12"
+            sort={sort}
+            onToggle={toggleSort}
+          />
+          <SortHeader
+            sortKey="time"
+            label={t("time")}
+            className="w-20"
+            sort={sort}
+            onToggle={toggleSort}
+          />
+          {hasZones ? (
+            <SortHeader
+              sortKey="zone"
+              label={t("zone")}
+              sort={sort}
+              onToggle={toggleSort}
+            />
+          ) : null}
+          <SortHeader
+            sortKey="result"
+            label={t("result")}
+            sort={sort}
+            onToggle={toggleSort}
+          />
+          <SortHeader
+            sortKey="swing"
+            label={t("swing")}
+            sort={sort}
+            onToggle={toggleSort}
+          />
+          <SortHeader
+            sortKey="ults"
+            label={t("ults")}
+            className="w-20 text-right"
+            sort={sort}
+            onToggle={toggleSort}
+          />
+          <SortHeader
+            sortKey="context"
+            label={t("context")}
+            sort={sort}
+            onToggle={toggleSort}
+          />
         </TableRow>
       </TableHeader>
       <TableBody onMouseLeave={() => onFocusFight(null)}>
