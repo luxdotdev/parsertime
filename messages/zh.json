@@ -7336,6 +7336,14 @@
     "emptyDescription": "开始记录您的游戏，查看跨地图、英雄和组队规模的胜率趋势。",
     "trackFirst": "记录首场对局",
     "addMatch": "添加对局",
+    "import": {
+      "title": "从 Winrate Tracker 导入",
+      "description": "上传旧网站的 JSON 导出文件以同步您的对局记录。",
+      "button": "选择导出文件",
+      "importing": "导入中…",
+      "done": "已导入 {imported} 场对局",
+      "failed": "导入失败"
+    },
     "metadata": {
       "title": "排位追踪器",
       "description": "追踪您的《守望先锋2》排位对局并分析您的表现。"

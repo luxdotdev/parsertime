@@ -7336,6 +7336,14 @@
     "emptyDescription": "게임을 기록하여 맵, 영웅, 파티 규모별 승률 추이를 확인하세요.",
     "trackFirst": "첫 번째 매치 기록하기",
     "addMatch": "매치 추가",
+    "import": {
+      "title": "Winrate Tracker에서 가져오기",
+      "description": "이전 사이트의 JSON 내보내기 파일을 업로드하여 매치를 동기화하세요.",
+      "button": "내보내기 파일 선택",
+      "importing": "가져오는 중…",
+      "done": "{imported}개의 매치를 가져왔습니다",
+      "failed": "가져오기 실패"
+    },
     "metadata": {
       "title": "랭크 트래커",
       "description": "오버워치 2 랭크 매치를 기록하고 실력을 분석하세요."

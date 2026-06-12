@@ -1,5 +1,6 @@
 import { MatchForm } from "@/components/ranked/match-form";
 import { DashboardContent } from "@/components/ranked/dashboard-content";
+import { ImportCard } from "@/components/ranked/import-card";
 import { Button } from "@/components/ui/button";
 import { RankedService } from "@/data/ranked";
 import { AppRuntime } from "@/data/runtime";
@@ -40,7 +41,10 @@ export default async function RankedPage() {
         <MatchForm trigger={<Button>{t("addMatch")}</Button>} />
       </div>
       {matches.length === 0 ? (
-        <p className="text-muted-foreground">{t("emptyDescription")}</p>
+        <div className="space-y-4">
+          <p className="text-muted-foreground">{t("emptyDescription")}</p>
+          <ImportCard />
+        </div>
       ) : (
         <DashboardContent matches={matches} />
       )}

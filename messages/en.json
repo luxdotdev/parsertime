@@ -7335,6 +7335,14 @@
     "emptyDescription": "Start logging your games to see winrate trends across maps, heroes, and group sizes.",
     "trackFirst": "Track your first match",
     "addMatch": "Add match",
+    "import": {
+      "title": "Import from Winrate Tracker",
+      "description": "Upload the JSON export from the old site to sync your matches.",
+      "button": "Choose export file",
+      "importing": "Importing…",
+      "done": "Imported {imported} matches",
+      "failed": "Import failed"
+    },
     "metadata": {
       "title": "Ranked Tracker",
       "description": "Track your ranked Overwatch 2 matches and analyze your performance."
