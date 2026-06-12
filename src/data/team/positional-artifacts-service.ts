@@ -114,7 +114,9 @@ export const make: Effect.Effect<
                 })
             )
           ),
-        { concurrency: "unbounded" }
+        // Bounded: each scrim lookup is a heavy positional read; unbounded
+        // fan-out over 10+ scrims monopolized the shared connection pool.
+        { concurrency: 3 }
       );
 
       const results = perScrim.filter(

@@ -50,6 +50,45 @@ export class TeamSharedDataService extends Context.Tag(
   "@app/data/team/TeamSharedDataService"
 )<TeamSharedDataService, TeamSharedDataServiceInterface>() {}
 
+/** Derives an option-filtered view from the superset without refetching.
+ * The team page requests up to five exclude/dateInfo variants concurrently;
+ * fetching each independently quintupled the heaviest read on the page and
+ * exhausted the connection pool. Excludes are a pure in-memory filter. */
+function deriveBaseTeamData(
+  superset: BaseTeamData,
+  options: BaseTeamDataOptions
+): BaseTeamData {
+  const { excludePush = false, excludeClash = false } = options;
+  if (!excludePush && !excludeClash) return superset;
+  const mapDataRecords = superset.mapDataRecords.filter((record) => {
+    if (!record.name) return false;
+    const mapType =
+      mapNameToMapTypeMapping[
+        record.name as keyof typeof mapNameToMapTypeMapping
+      ];
+    if (excludePush && mapType === $Enums.MapType.Push) return false;
+    if (excludeClash && mapType === $Enums.MapType.Clash) return false;
+    return true;
+  });
+  const allowed = new Set(mapDataRecords.map((record) => record.id));
+  function keep<T extends { MapDataId: number | null }>(rows: T[]): T[] {
+    return rows.filter(
+      (row) => row.MapDataId !== null && allowed.has(row.MapDataId)
+    );
+  }
+  return {
+    ...superset,
+    mapDataRecords,
+    mapDataIds: mapDataRecords.map((record) => record.id),
+    allPlayerStats: keep(superset.allPlayerStats),
+    matchStarts: keep(superset.matchStarts),
+    finalRounds: keep(superset.finalRounds),
+    captures: keep(superset.captures),
+    payloadProgresses: keep(superset.payloadProgresses),
+    pointProgresses: keep(superset.pointProgresses),
+  };
+}
+
 const CACHE_TTL = Duration.seconds(30);
 const CACHE_CAPACITY = 64;
 
@@ -468,8 +507,9 @@ export const make: Effect.Effect<TeamSharedDataServiceInterface> = Effect.gen(
 
       return Effect.gen(function* () {
         yield* Effect.annotateCurrentSpan("teamId", teamId);
-        // Call the local closure directly — no context dependency
-        const baseData = yield* getBaseTeamData(teamId, options);
+        // Goes through the superset cache so extended variants never
+        // re-trigger the heavy base fetch.
+        const baseData = yield* getBaseTeamDataDerived(teamId, options);
 
         if (baseData.mapDataIds.length === 0) {
           wideEvent.map_count = 0;
@@ -566,27 +606,45 @@ export const make: Effect.Effect<TeamSharedDataServiceInterface> = Effect.gen(
         ),
     });
 
-    function baseDataCacheKeyOf(teamId: number, options?: BaseTeamDataOptions) {
-      return `${teamId}:${JSON.stringify(options ?? {})}`;
+    // One superset fetch per (team, dateRange); every exclude/dateInfo
+    // variant derives from it in memory. includeDateInfo is always fetched —
+    // the extra Scrim fields are additive and cheap next to the stat tables.
+    function supersetCacheKeyOf(teamId: number, dateRange?: TeamDateRange) {
+      return `${teamId}:${JSON.stringify(dateRange ?? null)}`;
     }
 
-    const baseDataCache = yield* Cache.make({
+    const baseDataSupersetCache = yield* Cache.make({
       capacity: CACHE_CAPACITY,
       timeToLive: CACHE_TTL,
       lookup: (key: string) => {
-        const [teamIdStr, optionsJson] = [
-          key.slice(0, key.indexOf(":")),
-          key.slice(key.indexOf(":") + 1),
-        ];
-        const teamId = Number(teamIdStr);
-        const options = JSON.parse(optionsJson) as BaseTeamDataOptions;
-        return getBaseTeamData(teamId, options).pipe(
-          Effect.tap(() => Metric.increment(teamCacheMissTotal))
-        );
+        const teamId = Number(key.slice(0, key.indexOf(":")));
+        const dateRange = JSON.parse(
+          key.slice(key.indexOf(":") + 1)
+        ) as TeamDateRange | null;
+        return getBaseTeamData(teamId, {
+          includeDateInfo: true,
+          ...(dateRange === null ? {} : { dateRange }),
+        }).pipe(Effect.tap(() => Metric.increment(teamCacheMissTotal)));
       },
     });
 
-    const extendedDataCacheKeyOf = baseDataCacheKeyOf;
+    function getBaseTeamDataDerived(
+      teamId: number,
+      options?: BaseTeamDataOptions
+    ): Effect.Effect<BaseTeamData, TeamQueryError> {
+      return baseDataSupersetCache
+        .get(supersetCacheKeyOf(teamId, options?.dateRange))
+        .pipe(
+          Effect.map((superset) => deriveBaseTeamData(superset, options ?? {}))
+        );
+    }
+
+    function extendedDataCacheKeyOf(
+      teamId: number,
+      options?: BaseTeamDataOptions
+    ) {
+      return `${teamId}:${JSON.stringify(options ?? {})}`;
+    }
 
     const extendedDataCache = yield* Cache.make({
       capacity: CACHE_CAPACITY,
@@ -610,9 +668,9 @@ export const make: Effect.Effect<TeamSharedDataServiceInterface> = Effect.gen(
           .get(teamId)
           .pipe(Effect.tap(() => Metric.increment(teamCacheRequestTotal))),
       getBaseTeamData: (teamId: number, options?: BaseTeamDataOptions) =>
-        baseDataCache
-          .get(baseDataCacheKeyOf(teamId, options))
-          .pipe(Effect.tap(() => Metric.increment(teamCacheRequestTotal))),
+        getBaseTeamDataDerived(teamId, options).pipe(
+          Effect.tap(() => Metric.increment(teamCacheRequestTotal))
+        ),
       getExtendedTeamData: (teamId: number, options?: BaseTeamDataOptions) =>
         extendedDataCache
           .get(extendedDataCacheKeyOf(teamId, options))

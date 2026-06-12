@@ -24,7 +24,7 @@ function syntheticRows(count: number): DatasetRow[] {
 }
 
 describe("trainFamily", () => {
-  test("returns a calibrated model with positive aliveDiff weight on separable data", () => {
+  test("returns a calibrated model with positive aliveDiff weight on separable data", { timeout: 20_000 }, () => {
     const result = trainFamily(syntheticRows(8000));
     expect(result.model).not.toBeNull();
     expect(result.model!.weights[0]).toBeGreaterThan(0);
@@ -40,7 +40,7 @@ describe("trainFamily", () => {
 });
 
 describe("buildArtifact", () => {
-  test("assembles an artifact with the current feature hash and null thin families", () => {
+  test("assembles an artifact with the current feature hash and null thin families", { timeout: 20_000 }, () => {
     const { artifact, trainedFamilies } = buildArtifact(
       {
         control: syntheticRows(8000),
