@@ -12,6 +12,13 @@ type SweepEvent =
   | { time: number; kind: "ult_start"; team: string; player: string }
   | { time: number; kind: "round_start"; roundIndex: number }
   | { time: number; kind: "progress"; team: string; value: number }
+  | {
+      time: number;
+      kind: "objective_captured";
+      team: string;
+      progress1: number;
+      progress2: number;
+    }
   | { time: number; kind: "setup"; timeRemaining: number };
 
 function mergedEvents(log: WPEventLog): SweepEvent[] {
@@ -54,6 +61,15 @@ function mergedEvents(log: WPEventLog): SweepEvent[] {
       value: p.value,
     });
   }
+  for (const o of log.objectiveCaptured) {
+    events.push({
+      time: o.time,
+      kind: "objective_captured",
+      team: o.team,
+      progress1: o.progress1,
+      progress2: o.progress2,
+    });
+  }
   for (const s of log.setupCompletes) {
     events.push({
       time: s.time,
@@ -77,6 +93,8 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
   const deadUntil = new Map<string, number>(); // "team player" → respawn time
   const banked = { t1: new Set<string>(), t2: new Set<string>() };
   const progress = { t1: 0, t2: 0 }; // raw 0..100
+  const control = { t1: 0, t2: 0 }; // raw 0..100, control-mode win %
+  let holder: "t1" | "t2" | null = null;
   let roundIndex = 0;
   let setupBaseline: { time: number; remaining: number } | null = null;
 
@@ -110,10 +128,18 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
           roundIndex = e.roundIndex;
           progress.t1 = 0;
           progress.t2 = 0;
+          control.t1 = 0;
+          control.t2 = 0;
+          holder = null;
           break;
         case "progress":
           if (isTeam1(e.team)) progress.t1 = e.value;
           else progress.t2 = e.value;
+          break;
+        case "objective_captured":
+          control.t1 = e.progress1;
+          control.t2 = e.progress2;
+          holder = isTeam1(e.team) ? "t1" : "t2";
           break;
         case "setup":
           setupBaseline = { time: e.time, remaining: e.timeRemaining };
@@ -158,6 +184,13 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
         objProgressEnemy: clampUnit(
           (own === "t1" ? progress.t2 : progress.t1) / 100
         ),
+        controlProgressOwn: clampUnit(
+          (own === "t1" ? control.t1 : control.t2) / 100
+        ),
+        controlProgressEnemy: clampUnit(
+          (own === "t1" ? control.t2 : control.t1) / 100
+        ),
+        holdsObjective: holder === null ? 0 : holder === own ? 1 : -1,
         timeRemaining,
         isAttacker:
           capturing === (own === "t1" ? log.team1 : log.team2) ? 1 : 0,

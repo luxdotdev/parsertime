@@ -24,6 +24,7 @@ function baseLog(overrides: Partial<WPEventLog> = {}): WPEventLog {
       },
     ],
     progress: [],
+    objectiveCaptured: [],
     setupCompletes: [{ time: 0, roundNumber: 1, timeRemaining: 240 }],
     ...overrides,
   };
@@ -114,6 +115,47 @@ describe("statesAt", () => {
     const [early, late] = statesAt(log, [100, 290]);
     expect(early.team1.timeRemaining).toBe(140); // 240 − 100
     expect(late.team1.timeRemaining).toBe(0); // clamped
+  });
+
+  test("objective captures set control progress and holder, resetting per round", () => {
+    const log = baseLog({
+      rounds: [
+        {
+          roundNumber: 1,
+          start: 0,
+          end: 300,
+          capturingTeam: "Alpha",
+          startScore1: 0,
+          startScore2: 0,
+          endScore1: 1,
+          endScore2: 0,
+        },
+        {
+          roundNumber: 2,
+          start: 320,
+          end: 600,
+          capturingTeam: "Bravo",
+          startScore1: 1,
+          startScore2: 0,
+          endScore1: 1,
+          endScore2: 1,
+        },
+      ],
+      objectiveCaptured: [
+        { time: 100, team: "Alpha", progress1: 10, progress2: 0 },
+        { time: 200, team: "Bravo", progress1: 55, progress2: 1 },
+      ],
+    });
+    const [early, flipped, nextRound] = statesAt(log, [150, 250, 330]);
+    expect(early.team1.controlProgressOwn).toBeCloseTo(0.1);
+    expect(early.team1.holdsObjective).toBe(1);
+    expect(early.team2.holdsObjective).toBe(-1);
+    expect(flipped.team1.controlProgressOwn).toBeCloseTo(0.55);
+    expect(flipped.team1.controlProgressEnemy).toBeCloseTo(0.01);
+    expect(flipped.team1.holdsObjective).toBe(-1); // Bravo flipped it
+    // Round 2 reset: no captures yet.
+    expect(nextRound.team1.controlProgressOwn).toBe(0);
+    expect(nextRound.team1.holdsObjective).toBe(0);
   });
 
   test("snapshots are mirror images", () => {

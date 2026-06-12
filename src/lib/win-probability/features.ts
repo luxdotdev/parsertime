@@ -11,7 +11,11 @@ export const FEATURE_NAMES = [
   "objProgressOwn",
   "objProgressEnemy",
   "isAttacker",
+  "controlProgressOwn",
+  "controlProgressEnemy",
+  "holdsObjective",
   "aliveDiff_x_objMax",
+  "aliveDiff_x_controlMax",
   "ultBankDiff_x_timeRemaining",
 ] as const;
 
@@ -20,6 +24,7 @@ const TIME_NORM_SECONDS = 600;
 export function extractFeatures(s: GameState): number[] {
   const timeRemainingNorm = Math.min(1, s.timeRemaining / TIME_NORM_SECONDS);
   const objMax = Math.max(s.objProgressOwn, s.objProgressEnemy);
+  const controlMax = Math.max(s.controlProgressOwn, s.controlProgressEnemy);
   return [
     s.aliveDiff,
     s.ultBankDiff,
@@ -28,7 +33,11 @@ export function extractFeatures(s: GameState): number[] {
     s.objProgressOwn,
     s.objProgressEnemy,
     s.isAttacker,
+    s.controlProgressOwn,
+    s.controlProgressEnemy,
+    s.holdsObjective,
     s.aliveDiff * objMax,
+    s.aliveDiff * controlMax,
     s.ultBankDiff * timeRemainingNorm,
   ];
 }

@@ -1,10 +1,19 @@
-import { featureHash } from "@/lib/win-probability/features";
+import { FEATURE_NAMES, featureHash } from "@/lib/win-probability/features";
 import {
   type ModelArtifact,
   predictWinProbability,
   WPModelMismatchError,
 } from "@/lib/win-probability/model";
 import { describe, expect, test } from "vitest";
+
+const DIMS = FEATURE_NAMES.length;
+
+/** Zero vector with aliveDiff (index 0) set. */
+function vec(aliveDiff: number): number[] {
+  const v = new Array<number>(DIMS).fill(0);
+  v[0] = aliveDiff;
+  return v;
+}
 
 function artifact(overrides: Partial<ModelArtifact> = {}): ModelArtifact {
   return {
@@ -15,10 +24,10 @@ function artifact(overrides: Partial<ModelArtifact> = {}): ModelArtifact {
     modeFamilies: {
       control: {
         // Identity scaling; weight 1 on aliveDiff only, bias 0.
-        weights: [1, 0, 0, 0, 0, 0, 0, 0, 0],
+        weights: vec(1),
         bias: 0,
-        means: [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        stds: [1, 1, 1, 1, 1, 1, 1, 1, 1],
+        means: new Array<number>(DIMS).fill(0),
+        stds: new Array<number>(DIMS).fill(1),
         sampleCount: 50_000,
       },
       escort_hybrid: null,
@@ -32,27 +41,22 @@ function artifact(overrides: Partial<ModelArtifact> = {}): ModelArtifact {
 describe("predictWinProbability", () => {
   test("neutral state → 0.5; advantage raises WP symmetrically", () => {
     const a = artifact();
-    const neutral = [0, 0, 0, 0, 0, 0, 0, 0, 0];
-    const up2 = [2, 0, 0, 0, 0, 0, 0, 0, 0];
-    const down2 = [-2, 0, 0, 0, 0, 0, 0, 0, 0];
-    expect(predictWinProbability(a, "control", neutral)).toBeCloseTo(0.5);
-    const p = predictWinProbability(a, "control", up2)!;
-    const q = predictWinProbability(a, "control", down2)!;
+    expect(predictWinProbability(a, "control", vec(0))).toBeCloseTo(0.5);
+    const p = predictWinProbability(a, "control", vec(2))!;
+    const q = predictWinProbability(a, "control", vec(-2))!;
     expect(p).toBeGreaterThan(0.85);
     expect(p + q).toBeCloseTo(1);
   });
 
   test("returns null for a family with no model", () => {
-    expect(
-      predictWinProbability(artifact(), "push", [0, 0, 0, 0, 0, 0, 0, 0, 0])
-    ).toBeNull();
+    expect(predictWinProbability(artifact(), "push", vec(0))).toBeNull();
   });
 
   test("throws WPModelMismatchError on feature hash mismatch", () => {
     const stale = artifact({ featureHash: "deadbeef0000" });
-    expect(() =>
-      predictWinProbability(stale, "control", [0, 0, 0, 0, 0, 0, 0, 0, 0])
-    ).toThrow(WPModelMismatchError);
+    expect(() => predictWinProbability(stale, "control", vec(0))).toThrow(
+      WPModelMismatchError
+    );
   });
 
   test("throws WPModelMismatchError on feature length mismatch", () => {

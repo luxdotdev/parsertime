@@ -32,8 +32,11 @@ export type GameState = {
   aliveDiff: number; // −5..+5
   ultBankDiff: number; // banked (charged, unspent) ults
   scoreDiff: number;
-  objProgressOwn: number; // 0..1, latest progress attributed to own team
+  objProgressOwn: number; // 0..1, latest contest progress attributed to own team
   objProgressEnemy: number; // 0..1
+  controlProgressOwn: number; // 0..1, control-mode win % (0 outside control)
+  controlProgressEnemy: number; // 0..1
+  holdsObjective: -1 | 0 | 1; // own team holds the point (+1) / enemy (−1)
   timeRemaining: number; // seconds; 0 when unknown
   isAttacker: 0 | 1; // current round's capturing team is own team
 };
@@ -66,6 +69,13 @@ export type WPEventLog = {
   }[];
   /** Point + payload progress merged; value is the raw 0..100 figure. */
   progress: { time: number; team: string; value: number }[];
+  /** Control-mode capture flips: per-team win % at each capture. */
+  objectiveCaptured: {
+    time: number;
+    team: string;
+    progress1: number; // raw 0..100, team 1's control win %
+    progress2: number;
+  }[];
   setupCompletes: {
     time: number;
     roundNumber: number;

@@ -29,6 +29,7 @@ function log(overrides: Partial<WPEventLog> = {}): WPEventLog {
     ultStart: [],
     rounds: [round],
     progress: [],
+    objectiveCaptured: [],
     setupCompletes: [],
     ...overrides,
   };

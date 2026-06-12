@@ -120,6 +120,7 @@ export async function fetchEventLog(
     roundEnds,
     pointProgress,
     payloadProgress,
+    objectiveCaptured,
     setupCompletes,
   ] = await Promise.all([
     prisma.matchStart.findFirst({ where }),
@@ -131,6 +132,7 @@ export async function fetchEventLog(
     prisma.roundEnd.findMany({ where, orderBy: { round_number: "asc" } }),
     prisma.pointProgress.findMany({ where }),
     prisma.payloadProgress.findMany({ where }),
+    prisma.objectiveCaptured.findMany({ where }),
     prisma.setupComplete.findMany({ where }),
   ]);
 
@@ -196,6 +198,12 @@ export async function fetchEventLog(
         value: p.payload_capture_progress,
       })),
     ],
+    objectiveCaptured: objectiveCaptured.map((o) => ({
+      time: o.match_time,
+      team: o.capturing_team,
+      progress1: o.control_team_1_progress,
+      progress2: o.control_team_2_progress,
+    })),
     setupCompletes: setupCompletes.map((s) => ({
       time: s.match_time,
       roundNumber: s.round_number,

@@ -15,6 +15,9 @@ const state: GameState = {
   scoreDiff: 0,
   objProgressOwn: 0.5,
   objProgressEnemy: 0.9,
+  controlProgressOwn: 0.3,
+  controlProgressEnemy: 0.7,
+  holdsObjective: -1,
   timeRemaining: 300,
   isAttacker: 0,
 };
@@ -27,7 +30,10 @@ describe("extractFeatures", () => {
     expect(f.aliveDiff).toBe(2);
     expect(f.ultBankDiff).toBe(-1);
     expect(f.timeRemainingNorm).toBeCloseTo(0.5); // 300/600
+    expect(f.controlProgressOwn).toBeCloseTo(0.3);
+    expect(f.holdsObjective).toBe(-1);
     expect(f.aliveDiff_x_objMax).toBeCloseTo(2 * 0.9);
+    expect(f.aliveDiff_x_controlMax).toBeCloseTo(2 * 0.7);
     expect(f.ultBankDiff_x_timeRemaining).toBeCloseTo(-0.5);
   });
 
