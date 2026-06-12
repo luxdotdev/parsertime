@@ -55,9 +55,8 @@ async function main() {
   console.log(`\nWrote ${out} (families: ${trainedFamilies.join(", ")})`);
 
   if (process.argv.includes("--upload")) {
-    const { publishArtifact } = await import(
-      "@/lib/win-probability/artifact-store"
-    );
+    const { publishArtifact } =
+      await import("@/lib/win-probability/artifact-store");
     const published = await publishArtifact(artifact);
     console.log(
       `Published ${published.key} (model version ${published.modelVersion})`

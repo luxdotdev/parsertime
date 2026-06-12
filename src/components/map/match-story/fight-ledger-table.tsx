@@ -151,8 +151,7 @@ export function FightLedgerTable({
     const map = new Map<number, ObjectiveMarker[]>();
     for (const marker of objectiveMarkers) {
       const fight = ordered.find(
-        (f) =>
-          marker.t >= f.start && marker.t <= f.end + CAPTURE_ATTACH_SECONDS
+        (f) => marker.t >= f.start && marker.t <= f.end + CAPTURE_ATTACH_SECONDS
       );
       if (fight === undefined) continue;
       const list = map.get(fight.index) ?? [];

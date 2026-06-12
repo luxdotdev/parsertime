@@ -252,8 +252,22 @@ describe("statesAt", () => {
         },
       ],
       objectiveCaptured: [
-        { time: 100, team: "Alpha", roundNumber: 1, objectiveIndex: 0, progress1: 10, progress2: 0 },
-        { time: 200, team: "Bravo", roundNumber: 1, objectiveIndex: 0, progress1: 55, progress2: 1 },
+        {
+          time: 100,
+          team: "Alpha",
+          roundNumber: 1,
+          objectiveIndex: 0,
+          progress1: 10,
+          progress2: 0,
+        },
+        {
+          time: 200,
+          team: "Bravo",
+          roundNumber: 1,
+          objectiveIndex: 0,
+          progress1: 55,
+          progress2: 1,
+        },
       ],
     });
     const [early, flipped, nextRound] = statesAt(log, [150, 250, 330]);
@@ -271,8 +285,22 @@ describe("statesAt", () => {
   test("neutral 'All Teams' captures clear the holder without crediting a team", () => {
     const log = baseLog({
       objectiveCaptured: [
-        { time: 100, team: "Alpha", roundNumber: 1, objectiveIndex: 0, progress1: 20, progress2: 0 },
-        { time: 150, team: "All Teams", roundNumber: 1, objectiveIndex: 0, progress1: 20, progress2: 0 },
+        {
+          time: 100,
+          team: "Alpha",
+          roundNumber: 1,
+          objectiveIndex: 0,
+          progress1: 20,
+          progress2: 0,
+        },
+        {
+          time: 150,
+          team: "All Teams",
+          roundNumber: 1,
+          objectiveIndex: 0,
+          progress1: 20,
+          progress2: 0,
+        },
       ],
     });
     const [held, neutral] = statesAt(log, [120, 160]);
@@ -297,9 +325,23 @@ describe("statesAt", () => {
         },
       ],
       objectiveCaptured: [
-        { time: 100, team: "Alpha", roundNumber: 1, objectiveIndex: 0, progress1: 40, progress2: 5 },
+        {
+          time: 100,
+          team: "Alpha",
+          roundNumber: 1,
+          objectiveIndex: 0,
+          progress1: 40,
+          progress2: 5,
+        },
         // New point: Alpha held point 0 when it ended → Alpha 1-0.
-        { time: 250, team: "Bravo", roundNumber: 1, objectiveIndex: 1, progress1: 0, progress2: 30 },
+        {
+          time: 250,
+          team: "Bravo",
+          roundNumber: 1,
+          objectiveIndex: 1,
+          progress1: 0,
+          progress2: 30,
+        },
       ],
     });
     const [duringFirst, duringSecond] = statesAt(log, [120, 260]);

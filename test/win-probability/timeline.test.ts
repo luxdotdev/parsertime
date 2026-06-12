@@ -98,9 +98,30 @@ describe("computeMatchStory — series", () => {
     const story = computeMatchStory({
       log: baseLog({
         objectiveCaptured: [
-          { time: 50, team: "Alpha", roundNumber: 1, objectiveIndex: 0, progress1: 10, progress2: 0 },
-          { time: 90, team: "All Teams", roundNumber: 1, objectiveIndex: 0, progress1: 10, progress2: 0 },
-          { time: 120, team: "Bravo", roundNumber: 1, objectiveIndex: 0, progress1: 10, progress2: 5 },
+          {
+            time: 50,
+            team: "Alpha",
+            roundNumber: 1,
+            objectiveIndex: 0,
+            progress1: 10,
+            progress2: 0,
+          },
+          {
+            time: 90,
+            team: "All Teams",
+            roundNumber: 1,
+            objectiveIndex: 0,
+            progress1: 10,
+            progress2: 0,
+          },
+          {
+            time: 120,
+            team: "Bravo",
+            roundNumber: 1,
+            objectiveIndex: 0,
+            progress1: 10,
+            progress2: 5,
+          },
         ],
       }),
       artifact: testArtifact({ aliveDiff: 1 }),
@@ -131,9 +152,27 @@ describe("computeMatchStory — ledger and cascades", () => {
   test("a lost fight produces a negative swing of believable size", () => {
     const log = baseLog({
       kills: [
-        { time: 100, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
-        { time: 102, victimTeam: "Alpha", victimName: "a2", attackerTeam: "Bravo", attackerName: "b1" },
-        { time: 104, victimTeam: "Alpha", victimName: "a3", attackerTeam: "Bravo", attackerName: "b2" },
+        {
+          time: 100,
+          victimTeam: "Alpha",
+          victimName: "a1",
+          attackerTeam: "Bravo",
+          attackerName: "b1",
+        },
+        {
+          time: 102,
+          victimTeam: "Alpha",
+          victimName: "a2",
+          attackerTeam: "Bravo",
+          attackerName: "b1",
+        },
+        {
+          time: 104,
+          victimTeam: "Alpha",
+          victimName: "a3",
+          attackerTeam: "Bravo",
+          attackerName: "b2",
+        },
       ],
     });
     const story = computeMatchStory({
@@ -159,7 +198,13 @@ describe("computeMatchStory — ledger and cascades", () => {
       ],
       ultStart: [{ time: 100, team: "Alpha", player: "a1" }],
       kills: [
-        { time: 101, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
+        {
+          time: 101,
+          victimTeam: "Alpha",
+          victimName: "a1",
+          attackerTeam: "Bravo",
+          attackerName: "b1",
+        },
       ],
     });
     const story = computeMatchStory({
@@ -184,8 +229,20 @@ describe("computeMatchStory — ledger and cascades", () => {
     const log = baseLog({
       ultCharged: [{ time: 10, team: "Alpha", player: "a1" }],
       kills: [
-        { time: 50, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
-        { time: 150, victimTeam: "Bravo", victimName: "b1", attackerTeam: "Alpha", attackerName: "a1" },
+        {
+          time: 50,
+          victimTeam: "Alpha",
+          victimName: "a1",
+          attackerTeam: "Bravo",
+          attackerName: "b1",
+        },
+        {
+          time: 150,
+          victimTeam: "Bravo",
+          victimName: "b1",
+          attackerTeam: "Alpha",
+          attackerName: "a1",
+        },
       ],
     });
     const story = computeMatchStory({
@@ -203,7 +260,13 @@ describe("computeMatchStory — ledger and cascades", () => {
   test("limited logs (no ult events) suppress carryover entirely", () => {
     const log = baseLog({
       kills: [
-        { time: 100, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
+        {
+          time: 100,
+          victimTeam: "Alpha",
+          victimName: "a1",
+          attackerTeam: "Bravo",
+          attackerName: "b1",
+        },
       ],
     });
     const story = computeMatchStory({
@@ -224,8 +287,20 @@ describe("computeMatchStory — WPA", () => {
   test("each side's shares sum to its signed swing; final blows outweigh assists", () => {
     const log = baseLog({
       kills: [
-        { time: 100, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
-        { time: 102, victimTeam: "Alpha", victimName: "a2", attackerTeam: "Bravo", attackerName: "b2" },
+        {
+          time: 100,
+          victimTeam: "Alpha",
+          victimName: "a1",
+          attackerTeam: "Bravo",
+          attackerName: "b1",
+        },
+        {
+          time: 102,
+          victimTeam: "Alpha",
+          victimName: "a2",
+          attackerTeam: "Bravo",
+          attackerName: "b2",
+        },
       ],
     });
     const story = computeMatchStory({
@@ -239,7 +314,9 @@ describe("computeMatchStory — WPA", () => {
 
     // Bravo (winning side): b1, b2 one final blow each (1.0), b3 one assist (0.5).
     const bravoTotal =
-      byPlayer.get("b1")!.wpa + byPlayer.get("b2")!.wpa + byPlayer.get("b3")!.wpa;
+      byPlayer.get("b1")!.wpa +
+      byPlayer.get("b2")!.wpa +
+      byPlayer.get("b3")!.wpa;
     expect(bravoTotal).toBeCloseTo(-fight.swing, 5);
     expect(byPlayer.get("b1")!.wpa).toBeCloseTo(byPlayer.get("b2")!.wpa, 5);
     expect(byPlayer.get("b1")!.wpa).toBeGreaterThan(byPlayer.get("b3")!.wpa);
@@ -275,10 +352,28 @@ describe("computeMatchStory — engagement fallback", () => {
   test("synthesizes fights from kill clusters when no spatial engagements exist", () => {
     const log = baseLog({
       kills: [
-        { time: 100, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
-        { time: 104, victimTeam: "Alpha", victimName: "a2", attackerTeam: "Bravo", attackerName: "b2" },
+        {
+          time: 100,
+          victimTeam: "Alpha",
+          victimName: "a1",
+          attackerTeam: "Bravo",
+          attackerName: "b1",
+        },
+        {
+          time: 104,
+          victimTeam: "Alpha",
+          victimName: "a2",
+          attackerTeam: "Bravo",
+          attackerName: "b2",
+        },
         // 15s+ gap → second fight
-        { time: 150, victimTeam: "Bravo", victimName: "b1", attackerTeam: "Alpha", attackerName: "a1" },
+        {
+          time: 150,
+          victimTeam: "Bravo",
+          victimName: "b1",
+          attackerTeam: "Alpha",
+          attackerName: "a1",
+        },
       ],
     });
     const story = computeMatchStory({
@@ -301,8 +396,20 @@ describe("computeMatchStory — takeaways", () => {
     // Alpha loses three fights, dies first via a1 every time, and burns two
     // extra ults in each. The model is kills-driven → lossProfileKills.
     const kills = [0, 1, 2].flatMap((i) => [
-      { time: 100 + i * 60, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
-      { time: 102 + i * 60, victimTeam: "Alpha", victimName: "a2", attackerTeam: "Bravo", attackerName: "b2" },
+      {
+        time: 100 + i * 60,
+        victimTeam: "Alpha",
+        victimName: "a1",
+        attackerTeam: "Bravo",
+        attackerName: "b1",
+      },
+      {
+        time: 102 + i * 60,
+        victimTeam: "Alpha",
+        victimName: "a2",
+        attackerTeam: "Bravo",
+        attackerName: "b2",
+      },
     ]);
     const log = baseLog({
       kills,
@@ -342,7 +449,13 @@ describe("computeMatchStory — takeaways", () => {
   test("limited logs produce no ult-based takeaways", () => {
     const log = baseLog({
       kills: [
-        { time: 100, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
+        {
+          time: 100,
+          victimTeam: "Alpha",
+          victimName: "a1",
+          attackerTeam: "Bravo",
+          attackerName: "b1",
+        },
       ],
     });
     const story = computeMatchStory({
@@ -371,8 +484,20 @@ describe("computeMatchStory — insights", () => {
       ],
       ultStart: [{ time: 100, team: "Alpha", player: "a1" }],
       kills: [
-        { time: 101, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
-        { time: 103, victimTeam: "Alpha", victimName: "a2", attackerTeam: "Bravo", attackerName: "b1" },
+        {
+          time: 101,
+          victimTeam: "Alpha",
+          victimName: "a1",
+          attackerTeam: "Bravo",
+          attackerName: "b1",
+        },
+        {
+          time: 103,
+          victimTeam: "Alpha",
+          victimName: "a2",
+          attackerTeam: "Bravo",
+          attackerName: "b1",
+        },
       ],
     });
     const story = computeMatchStory({
@@ -404,11 +529,31 @@ describe("computeMatchStory — insights", () => {
     // (holdsObjective weight) dwarfs the kill contribution.
     const log = baseLog({
       kills: [
-        { time: 100, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
+        {
+          time: 100,
+          victimTeam: "Alpha",
+          victimName: "a1",
+          attackerTeam: "Bravo",
+          attackerName: "b1",
+        },
       ],
       objectiveCaptured: [
-        { time: 50, team: "Alpha", roundNumber: 1, objectiveIndex: 0, progress1: 20, progress2: 0 },
-        { time: 103, team: "Bravo", roundNumber: 1, objectiveIndex: 0, progress1: 20, progress2: 10 },
+        {
+          time: 50,
+          team: "Alpha",
+          roundNumber: 1,
+          objectiveIndex: 0,
+          progress1: 20,
+          progress2: 0,
+        },
+        {
+          time: 103,
+          team: "Bravo",
+          roundNumber: 1,
+          objectiveIndex: 0,
+          progress1: 20,
+          progress2: 10,
+        },
       ],
     });
     const story = computeMatchStory({
@@ -485,7 +630,13 @@ describe("computeMatchStory — insights", () => {
   test("limited logs (no ult events) emit no cascade insights", () => {
     const log = baseLog({
       kills: [
-        { time: 100, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
+        {
+          time: 100,
+          victimTeam: "Alpha",
+          victimName: "a1",
+          attackerTeam: "Bravo",
+          attackerName: "b1",
+        },
       ],
     });
     const story = computeMatchStory({
@@ -497,8 +648,8 @@ describe("computeMatchStory — insights", () => {
       ],
       assists: [],
     })!;
-    expect(
-      story.insights.every((i) => i.key !== "insights.ultCarryover")
-    ).toBe(true);
+    expect(story.insights.every((i) => i.key !== "insights.ultCarryover")).toBe(
+      true
+    );
   });
 });

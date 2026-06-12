@@ -48,7 +48,9 @@ function WpTooltip({
   const point = payload[0].payload as WpPoint;
   return (
     <div className="bg-popover text-popover-foreground border-border rounded-md border px-3 py-2 font-mono text-xs">
-      <div className="text-muted-foreground">{formatClock(label as number)}</div>
+      <div className="text-muted-foreground">
+        {formatClock(label as number)}
+      </div>
       <div className="tabular-nums">
         {team1}: {(wp * 100).toFixed(0)}%
       </div>
@@ -56,7 +58,8 @@ function WpTooltip({
         <div className="text-muted-foreground tabular-nums">
           {scoreLabel} {point.scoreDiff >= 0 ? "+" : ""}
           {point.scoreDiff}
-          {point.objOwn !== undefined && (point.objOwn > 0 || (point.objEnemy ?? 0) > 0)
+          {point.objOwn !== undefined &&
+          (point.objOwn > 0 || (point.objEnemy ?? 0) > 0)
             ? ` · ${objectiveLabel} ${Math.round((point.objOwn > 0 ? point.objOwn : (point.objEnemy ?? 0)) * 100)}%`
             : ""}
         </div>
@@ -103,7 +106,10 @@ export function WpTimelineChart({
         nextMarker < roundMarkers.length &&
         point.t >= roundMarkers[nextMarker]
       ) {
-        data.push({ t: (data[data.length - 1]?.t ?? point.t) + 0.01, wp: null });
+        data.push({
+          t: (data[data.length - 1]?.t ?? point.t) + 0.01,
+          wp: null,
+        });
         nextMarker++;
       }
       data.push(point.snap ? { ...point, wp: null } : point);
@@ -131,7 +137,10 @@ export function WpTimelineChart({
   const focused = focusFight === null ? null : fights[focusFight];
 
   return (
-    <div className="relative h-72 w-full" onMouseLeave={() => onFocusFight(null)}>
+    <div
+      className="relative h-72 w-full"
+      onMouseLeave={() => onFocusFight(null)}
+    >
       <span
         className="absolute top-1 left-14 font-mono text-[10px] tracking-[0.08em] uppercase"
         style={{ color: team1Color }}

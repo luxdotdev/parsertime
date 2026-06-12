@@ -65,10 +65,7 @@ describe("fitCalibration + applyCalibration", () => {
   });
 
   test("clamps outside the fitted range and stays within [0,1]", () => {
-    const map = fitCalibration(
-      [0.4, 0.4, 0.6, 0.6],
-      [0, 1, 1, 1]
-    );
+    const map = fitCalibration([0.4, 0.4, 0.6, 0.6], [0, 1, 1, 1]);
     expect(applyCalibration(map, 0)).toBeGreaterThanOrEqual(0);
     expect(applyCalibration(map, 1)).toBeLessThanOrEqual(1);
   });

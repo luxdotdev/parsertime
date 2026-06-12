@@ -210,8 +210,7 @@ export async function fetchEventLog(
     team1,
     team2,
     mapWinner:
-      !flashpointTie &&
-      (canonicalWinner === team1 || canonicalWinner === team2)
+      !flashpointTie && (canonicalWinner === team1 || canonicalWinner === team2)
         ? canonicalWinner
         : null,
     kills: kills.map((k) => ({

@@ -117,12 +117,7 @@ export function computeMatchStory(
     inputs.engagements.length > 0
       ? inputs.engagements
       : synthesizeEngagements(log);
-  const fights = buildLedger(
-    { ...inputs, engagements },
-    wpAt,
-    wpOf,
-    limited
-  );
+  const fights = buildLedger({ ...inputs, engagements }, wpAt, wpOf, limited);
   const wpa = attributeWpa(inputs, fights);
   const insights = generateStory(log, fights, points, wpa, limited);
   const takeaways = generateTakeaways(log, fights, limited);
@@ -640,11 +635,19 @@ function generateStory(
   }
 
   // Longest run of consecutive fight wins by one team.
-  let streak: { team: string; from: FightEntry; to: FightEntry; count: number } | null =
-    null;
+  let streak: {
+    team: string;
+    from: FightEntry;
+    to: FightEntry;
+    count: number;
+  } | null = null;
   {
-    let run: { team: string; from: FightEntry; to: FightEntry; count: number } | null =
-      null;
+    let run: {
+      team: string;
+      from: FightEntry;
+      to: FightEntry;
+      count: number;
+    } | null = null;
     for (const fight of fights) {
       if (fight.winner === null) continue;
       if (run === null || run.team !== fight.winner) {
@@ -681,7 +684,8 @@ function generateStory(
   if (opening.length >= 3 && (streak === null || streak.from.index > 1)) {
     const wins: Record<string, number> = {};
     for (const fight of opening) {
-      if (fight.winner !== null) wins[fight.winner] = (wins[fight.winner] ?? 0) + 1;
+      if (fight.winner !== null)
+        wins[fight.winner] = (wins[fight.winner] ?? 0) + 1;
     }
     for (const team of [log.team1, log.team2]) {
       if ((wins[team] ?? 0) >= opening.length - 1) {
@@ -698,8 +702,12 @@ function generateStory(
 
   // The defining stretch: longest span one team held a clear WP edge.
   {
-    let best: { team: string; start: number; end: number; peak: number } | null =
-      null;
+    let best: {
+      team: string;
+      start: number;
+      end: number;
+      peak: number;
+    } | null = null;
     let run: { team: string; start: number; end: number; peak: number } | null =
       null;
     for (const point of points) {
@@ -756,8 +764,7 @@ function generateStory(
     const dominant = (["objective", "kills", "ults"] as const).reduce((a, b) =>
       Math.abs(drivers[a]) >= Math.abs(drivers[b]) ? a : b
     );
-    const dominantShare =
-      Math.abs(drivers[dominant]) / Math.abs(biggest.swing);
+    const dominantShare = Math.abs(drivers[dominant]) / Math.abs(biggest.swing);
     const key =
       dominantShare >= 0.4
         ? {

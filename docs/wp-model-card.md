@@ -20,7 +20,7 @@ the map," which dilutes single-fight effects relative to Control.
 ## Training data
 
 All teams' parsed scrims, globally pooled and team-anonymous — the model
-learns *what game states win*, not anything about specific teams. From ~4,300
+learns _what game states win_, not anything about specific teams. From ~4,300
 usable maps the export produces ~2.07M labeled snapshots (one every 5 seconds
 plus every fight boundary, two mirrored rows per snapshot so the model is
 exactly antisymmetric between teams).
@@ -38,12 +38,12 @@ Game state is reconstructed from log events in one pass
 inference, and the artifact embeds a feature-list hash so a mismatched model
 refuses to load.
 
-| Group | Features |
-| --- | --- |
-| Kills | `aliveDiff` (respawn-adjusted, 10s constant), `aliveDiff × objMax`, `aliveDiff × controlMax` |
-| Ults | `ultBankDiff` (charged-unspent; survives death), `ultBankDiff × timeRemaining` |
+| Group     | Features                                                                                                                                      |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Kills     | `aliveDiff` (respawn-adjusted, 10s constant), `aliveDiff × objMax`, `aliveDiff × controlMax`                                                  |
+| Ults      | `ultBankDiff` (charged-unspent; survives death), `ultBankDiff × timeRemaining`                                                                |
 | Objective | `scoreDiff`, `objProgressOwn/Enemy` (contest %), `controlProgressOwn/Enemy` (control win %), `holdsObjective` (±1), `scoreDiff × roundNumber` |
-| Context | `timeRemainingNorm`, `isAttacker`, `roundNumberNorm` |
+| Context   | `timeRemainingNorm`, `isAttacker`, `roundNumberNorm`                                                                                          |
 
 Hand-built interactions stand in for what a gradient-boosted model would
 discover (a man advantage at 99% control is round-deciding; at 20% it is
@@ -54,12 +54,12 @@ three different ways; the domain rule subsumes them all).
 
 ## Per-family results (5-fold CV, grouped by map; calibrated outputs)
 
-| Family | Snapshots | Log loss (base 0.693) | Brier | Status |
-| --- | --- | --- | --- | --- |
-| Control | 815,020 | 0.6440 | 0.2266 | shipped |
-| Escort/Hybrid | 1,237,514 | 0.6705 | 0.2391 | shipped |
-| Flashpoint | 16,476 | 0.6232 | 0.2258 | shipped |
-| Push | 4,924 | — | — | disabled (no labels) |
+| Family        | Snapshots | Log loss (base 0.693) | Brier  | Status               |
+| ------------- | --------- | --------------------- | ------ | -------------------- |
+| Control       | 815,020   | 0.6440                | 0.2266 | shipped              |
+| Escort/Hybrid | 1,237,514 | 0.6705                | 0.2391 | shipped              |
+| Flashpoint    | 16,476    | 0.6232                | 0.2258 | shipped              |
+| Push          | 4,924     | —                     | —      | disabled (no labels) |
 
 Cross-validation folds are **grouped by map** — snapshots from the same round
 are heavily autocorrelated, and a random split would leak and flatter every
