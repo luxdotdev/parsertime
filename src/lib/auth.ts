@@ -236,6 +236,16 @@ export const config = {
         } catch (error) {
           handleEmailError(error);
         }
+
+        // Claim any ranked-tracker data parked for this user during migration.
+        if (user.id) {
+          try {
+            const { claimRankedDataForUser } = await import("@/lib/ranked/claim");
+            await claimRankedDataForUser(user.id);
+          } catch (error) {
+            Logger.warn(`Ranked data auto-claim failed for ${user.email}: ${String(error)}`);
+          }
+        }
       }
     },
     async createUser({ user }) {
