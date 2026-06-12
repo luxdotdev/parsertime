@@ -518,4 +518,84 @@ describe("statesAt", () => {
     expect(s.team1.timeRemaining).toBe(0);
     expect(s.team1.isOvertime).toBe(0);
   });
+
+  test("objective index follows round_start, progress ticks, and captures", () => {
+    const log = baseLog({
+      modeFamily: "escort_hybrid",
+      rounds: [
+        {
+          roundNumber: 1,
+          start: 0,
+          end: 400,
+          capturingTeam: "Alpha",
+          startScore1: 0,
+          startScore2: 0,
+          endScore1: 2,
+          endScore2: 0,
+          objectiveIndex: 0,
+        },
+      ],
+      progress: [
+        { time: 100, team: "Alpha", value: 50, roundNumber: 1, objectiveIndex: 0 },
+        { time: 200, team: "Alpha", value: 10, roundNumber: 1, objectiveIndex: 1 },
+      ],
+    });
+    const [atStart, firstPoint, secondPoint] = statesAt(log, [10, 150, 250]);
+    expect(atStart.team1.objectiveIndex).toBe(0);
+    expect(firstPoint.team1.objectiveIndex).toBe(0);
+    expect(secondPoint.team1.objectiveIndex).toBe(1);
+  });
+
+  test("objective index is null when logs carry none, and stale ticks don't move it", () => {
+    const log = baseLog({
+      modeFamily: "escort_hybrid",
+      rounds: [
+        {
+          roundNumber: 1,
+          start: 0,
+          end: 320,
+          capturingTeam: "Alpha",
+          startScore1: 0,
+          startScore2: 0,
+          endScore1: 0,
+          endScore2: 3,
+        },
+        {
+          roundNumber: 2,
+          start: 320,
+          end: 600,
+          capturingTeam: "Bravo",
+          startScore1: 0,
+          startScore2: 3,
+          endScore1: 1,
+          endScore2: 3,
+          objectiveIndex: 0,
+        },
+      ],
+      progress: [
+        // Mis-stamped defender spill (Alpha defends r2): must not move the index.
+        { time: 325, team: "Alpha", value: 100, roundNumber: 2, objectiveIndex: 2 },
+      ],
+    });
+    const [r1, r2] = statesAt(log, [100, 330]);
+    expect(r1.team1.objectiveIndex).toBe(null); // round 1 had no index in the log
+    expect(r2.team1.objectiveIndex).toBe(0); // spill swallowed, round_start value holds
+  });
+
+  test("control: captures keep the objective index current", () => {
+    const log = baseLog({
+      objectiveCaptured: [
+        {
+          time: 100,
+          team: "Alpha",
+          roundNumber: 1,
+          objectiveIndex: 0,
+          progress1: 10,
+          progress2: 0,
+        },
+      ],
+    });
+    const [s] = statesAt(log, [120]);
+    expect(s.team1.objectiveIndex).toBe(0);
+  });
 });

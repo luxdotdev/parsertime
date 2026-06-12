@@ -25,6 +25,7 @@ type SweepEvent =
       team: string;
       value: number;
       roundNumber: number;
+      objectiveIndex?: number;
     }
   | {
       time: number;
@@ -79,6 +80,7 @@ function mergedEvents(log: WPEventLog): SweepEvent[] {
       team: p.team,
       value: p.value,
       roundNumber: p.roundNumber,
+      objectiveIndex: p.objectiveIndex,
     });
   }
   for (const o of log.objectiveCaptured) {
@@ -138,6 +140,10 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
   // Flashpoint emits a single round_start, so its running score is derived:
   // each objective-index transition credits the team holding the dying point.
   const derivedScore = { t1: 0, t2: 0 };
+  // Which point/checkpoint is contested right now (for the model feature).
+  // Distinct from `objectiveIndex` above, which exists to detect flashpoint
+  // flips and must only move on objective_captured events.
+  let contestedIndex: number | null = null;
   let roundIndex = 0;
   let setupBaseline: {
     time: number;
@@ -182,6 +188,7 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
           control.t2 = 0;
           holder = null;
           objectiveIndex = null;
+          contestedIndex = log.rounds[e.roundIndex]?.objectiveIndex ?? null;
           break;
         case "progress":
           // Stale spill: a previous round's tick arriving after the next
@@ -201,6 +208,7 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
           }
           if (isTeam1(e.team)) progress.t1 = e.value;
           else progress.t2 = e.value;
+          if (e.objectiveIndex !== undefined) contestedIndex = e.objectiveIndex;
           break;
         case "objective_captured": {
           if (e.roundNumber < (log.rounds[roundIndex]?.roundNumber ?? 0)) {
@@ -219,6 +227,7 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
           // "All Teams" (neutral unlock) and unknown names clear the holder.
           holder =
             e.team === log.team1 ? "t1" : e.team === log.team2 ? "t2" : null;
+          contestedIndex = e.objectiveIndex;
           break;
         }
         case "setup":
@@ -323,7 +332,7 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
         isAttacker:
           capturing === (own === "t1" ? log.team1 : log.team2) ? 1 : 0,
         isOvertime,
-        objectiveIndex: null,
+        objectiveIndex: contestedIndex,
       };
     }
 
