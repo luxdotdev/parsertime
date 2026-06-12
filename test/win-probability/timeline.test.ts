@@ -195,3 +195,54 @@ describe("computeMatchStory — ledger and cascades", () => {
     expect(story.fights[1].carryover).toBeNull();
   });
 });
+
+describe("computeMatchStory — WPA", () => {
+  test("each side's shares sum to its signed swing; final blows outweigh assists", () => {
+    const log = baseLog({
+      kills: [
+        { time: 100, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
+        { time: 102, victimTeam: "Alpha", victimName: "a2", attackerTeam: "Bravo", attackerName: "b2" },
+      ],
+    });
+    const story = computeMatchStory({
+      log,
+      artifact: testArtifact({ aliveDiff: 1 }),
+      engagements: [engagement(100, 102, "Bravo", { Bravo: 2 })],
+      assists: [{ time: 101, team: "Bravo", player: "b3" }],
+    })!;
+    const [fight] = story.fights;
+    const byPlayer = new Map(story.wpa.map((p) => [p.player, p]));
+
+    // Bravo (winning side): b1, b2 one final blow each (1.0), b3 one assist (0.5).
+    const bravoTotal =
+      byPlayer.get("b1")!.wpa + byPlayer.get("b2")!.wpa + byPlayer.get("b3")!.wpa;
+    expect(bravoTotal).toBeCloseTo(-fight.swing, 5);
+    expect(byPlayer.get("b1")!.wpa).toBeCloseTo(byPlayer.get("b2")!.wpa, 5);
+    expect(byPlayer.get("b1")!.wpa).toBeGreaterThan(byPlayer.get("b3")!.wpa);
+
+    // Alpha (losing side): a1 died first (weight 2), a2 second (weight 1).
+    const a1 = byPlayer.get("a1")!;
+    const a2 = byPlayer.get("a2")!;
+    expect(a1.wpa + a2.wpa).toBeCloseTo(fight.swing, 5);
+    expect(a1.wpa).toBeLessThan(a2.wpa); // first death carries more blame
+    expect(a1.byFight[0].fightIndex).toBe(0);
+  });
+
+  test("a side with no attributable events leaves its swing unattributed", () => {
+    // Bravo wins on enemy ult-overspend with zero Bravo events in the log.
+    const log = baseLog({
+      ultCharged: [{ time: 50, team: "Alpha", player: "a1" }],
+      ultStart: [{ time: 100, team: "Alpha", player: "a1" }],
+    });
+    const story = computeMatchStory({
+      log,
+      artifact: testArtifact({ ultBankDiff: 1 }),
+      engagements: [engagement(100, 105, "Bravo", {})],
+      assists: [],
+    })!;
+    const [fight] = story.fights;
+    expect(fight.unattributedSwing).not.toBe(0);
+    const bravoPlayers = story.wpa.filter((p) => p.team === "Bravo");
+    expect(bravoPlayers).toHaveLength(0);
+  });
+});

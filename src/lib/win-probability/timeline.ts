@@ -91,7 +91,7 @@ export function computeMatchStory(
 
   const points = computeSeries(log, wpAt);
   const fights = buildLedger(inputs, wpAt, wpOf, limited);
-  const wpa = attributeWpa();
+  const wpa = attributeWpa(inputs, fights);
   const insights = generateInsights();
 
   return {
@@ -191,9 +191,91 @@ function buildLedger(
   return entries;
 }
 
-// Tasks 3–4 replace these stubs with WPA and insights.
-function attributeWpa(): PlayerWpa[] {
-  return [];
+const WEIGHT_FINAL_BLOW = 1.0;
+const WEIGHT_ASSIST = 0.5;
+const WEIGHT_ULT_SPENT = 0.5;
+const WEIGHT_FIRST_DEATH = 2.0;
+const WEIGHT_DEATH = 1.0;
+
+/**
+ * Attribution by convention: the winning side splits its swing by
+ * contribution (final blows, assists, ults), the losing side by fault
+ * (deaths — first heaviest — and ults burned). Sides with no attributable
+ * events leave their swing explicitly unattributed rather than inventing
+ * an even split across unknown rosters.
+ */
+function attributeWpa(
+  inputs: MatchStoryInputs,
+  fights: FightEntry[]
+): PlayerWpa[] {
+  const { log, assists } = inputs;
+  const totals = new Map<string, PlayerWpa>();
+
+  function credit(
+    team: string,
+    player: string,
+    fightIndex: number,
+    share: number
+  ): void {
+    const id = `${team} ${player}`;
+    const existing = totals.get(id) ?? { player, team, wpa: 0, byFight: [] };
+    existing.wpa += share;
+    existing.byFight.push({ fightIndex, share });
+    totals.set(id, existing);
+  }
+
+  for (const fight of fights) {
+    function inWindow(t: number): boolean {
+      return (
+        t >= fight.start - ULT_WINDOW_LEAD_SECONDS &&
+        t <= fight.end + EDGE_EPSILON
+      );
+    }
+    const kills = log.kills.filter((k) => inWindow(k.time));
+    const fightAssists = assists.filter((a) => inWindow(a.time));
+    const ults = log.ultStart.filter((u) => inWindow(u.time));
+
+    for (const team of [log.team1, log.team2]) {
+      const sideSwing = team === log.team1 ? fight.swing : -fight.swing;
+      const weights = new Map<string, number>();
+      function add(player: string, w: number): void {
+        weights.set(player, (weights.get(player) ?? 0) + w);
+      }
+
+      if (sideSwing >= 0) {
+        for (const k of kills) {
+          if (k.attackerTeam === team && k.attackerName !== undefined) {
+            add(k.attackerName, WEIGHT_FINAL_BLOW);
+          }
+        }
+        for (const a of fightAssists) {
+          if (a.team === team) add(a.player, WEIGHT_ASSIST);
+        }
+        for (const u of ults) {
+          if (u.team === team) add(u.player, WEIGHT_ULT_SPENT);
+        }
+      } else {
+        const deaths = kills.filter((k) => k.victimTeam === team);
+        deaths.forEach((k, i) => {
+          add(k.victimName, i === 0 ? WEIGHT_FIRST_DEATH : WEIGHT_DEATH);
+        });
+        for (const u of ults) {
+          if (u.team === team) add(u.player, WEIGHT_ULT_SPENT);
+        }
+      }
+
+      const total = [...weights.values()].reduce((a, b) => a + b, 0);
+      if (total === 0) {
+        fight.unattributedSwing += sideSwing;
+        continue;
+      }
+      for (const [player, w] of weights) {
+        credit(team, player, fight.index, sideSwing * (w / total));
+      }
+    }
+  }
+
+  return [...totals.values()].sort((a, b) => b.wpa - a.wpa);
 }
 function generateInsights(): MatchStoryInsight[] {
   return [];
