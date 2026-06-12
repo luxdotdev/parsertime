@@ -161,22 +161,24 @@ export async function queryTsrLeaderboard(
             },
           })
         : Promise.resolve(
-            [] as Prisma.PromiseReturnType<
-              typeof prisma.playerTsr.findMany<{
-                include: {
-                  player: {
-                    select: {
-                      faceitNickname: true;
-                      battletag: true;
-                      rosterEntries: {
-                        select: { match: { select: { finishedAt: true } } };
-                        orderBy: { match: { finishedAt: "desc" } };
-                        take: 1;
+            [] as Awaited<
+              ReturnType<
+                typeof prisma.playerTsr.findMany<{
+                  include: {
+                    player: {
+                      select: {
+                        faceitNickname: true;
+                        battletag: true;
+                        rosterEntries: {
+                          select: { match: { select: { finishedAt: true } } };
+                          orderBy: { match: { finishedAt: "desc" } };
+                          take: 1;
+                        };
                       };
                     };
                   };
-                };
-              }>
+                }>
+              >
             >
           ),
       prisma.playerTsr.count({

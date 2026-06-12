@@ -257,7 +257,9 @@ async function loadChunk(
     }),
   ]);
 
-  const mapNameById = new Map(mapDatas.map((md) => [md.id, md.Map?.name ?? null]));
+  const mapNameById = new Map(
+    mapDatas.map((md) => [md.id, md.Map?.name ?? null])
+  );
   const killsByMap = groupRows(kills);
   const damageByMap = groupRows(damage);
   const healingByMap = groupRows(healing);

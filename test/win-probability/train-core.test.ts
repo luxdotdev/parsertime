@@ -24,15 +24,19 @@ function syntheticRows(count: number): DatasetRow[] {
 }
 
 describe("trainFamily", () => {
-  test("returns a calibrated model with positive aliveDiff weight on separable data", { timeout: 20_000 }, () => {
-    const result = trainFamily(syntheticRows(8000));
-    expect(result.model).not.toBeNull();
-    expect(result.model!.weights[0]).toBeGreaterThan(0);
-    expect(result.model!.sampleCount).toBe(8000);
-    expect(result.model!.calibration).toBeDefined();
-    expect(result.model!.metrics).toBeDefined();
-    expect(result.report.length).toBeGreaterThan(0);
-  });
+  test(
+    "returns a calibrated model with positive aliveDiff weight on separable data",
+    { timeout: 20_000 },
+    () => {
+      const result = trainFamily(syntheticRows(8000));
+      expect(result.model).not.toBeNull();
+      expect(result.model!.weights[0]).toBeGreaterThan(0);
+      expect(result.model!.sampleCount).toBe(8000);
+      expect(result.model!.calibration).toBeDefined();
+      expect(result.model!.metrics).toBeDefined();
+      expect(result.report.length).toBeGreaterThan(0);
+    }
+  );
 
   test("returns null below MIN_FAMILY_ROWS", () => {
     expect(trainFamily(syntheticRows(100)).model).toBeNull();
@@ -40,20 +44,24 @@ describe("trainFamily", () => {
 });
 
 describe("buildArtifact", () => {
-  test("assembles an artifact with the current feature hash and null thin families", { timeout: 20_000 }, () => {
-    const { artifact, trainedFamilies } = buildArtifact(
-      {
-        control: syntheticRows(8000),
-        escort_hybrid: [],
-        push: [],
-        flashpoint: [],
-      },
-      3
-    );
-    expect(artifact.featureHash).toBe(featureHash());
-    expect(artifact.modelVersion).toBe(3);
-    expect(artifact.modeFamilies.control).not.toBeNull();
-    expect(artifact.modeFamilies.push).toBeNull();
-    expect(trainedFamilies).toEqual(["control"]);
-  });
+  test(
+    "assembles an artifact with the current feature hash and null thin families",
+    { timeout: 20_000 },
+    () => {
+      const { artifact, trainedFamilies } = buildArtifact(
+        {
+          control: syntheticRows(8000),
+          escort_hybrid: [],
+          push: [],
+          flashpoint: [],
+        },
+        3
+      );
+      expect(artifact.featureHash).toBe(featureHash());
+      expect(artifact.modelVersion).toBe(3);
+      expect(artifact.modeFamilies.control).not.toBeNull();
+      expect(artifact.modeFamilies.push).toBeNull();
+      expect(trainedFamilies).toEqual(["control"]);
+    }
+  );
 });

@@ -410,8 +410,7 @@ async function computeEngagementsForChunk(
 
   const result = new Map<number, EngagementWithZone[]>();
   for (const id of mapDataIds) {
-    const zonesAt =
-      contexts.get(id)?.zonesAt ?? EMPTY_ZONE_CONTEXT.zonesAt;
+    const zonesAt = contexts.get(id)?.zonesAt ?? EMPTY_ZONE_CONTEXT.zonesAt;
     result.set(
       id,
       computeEngagementsFromEvents(

@@ -7,7 +7,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
-import type { TournamentFormat, TournamentStatus } from "@/generated/prisma/client";
+import type {
+  TournamentFormat,
+  TournamentStatus,
+} from "@/generated/prisma/client";
 import type { Route } from "next";
 
 type TournamentCardProps = {

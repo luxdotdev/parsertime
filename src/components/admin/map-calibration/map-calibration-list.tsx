@@ -10,7 +10,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import type { MapCalibration, MapCalibrationAnchor } from "@/generated/prisma/browser";
+import type {
+  MapCalibration,
+  MapCalibrationAnchor,
+} from "@/generated/prisma/browser";
 import type { Route } from "next";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
