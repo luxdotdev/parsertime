@@ -1,9 +1,10 @@
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
-import { getEngagementsForMapData } from "@/lib/ult-quality-db";
+import { groupKillsIntoFightsByMapDataId } from "@/lib/utils";
 import { loadLatestArtifact } from "@/lib/win-probability/artifact-store";
 import {
   computeMatchStory,
+  type EngagementLike,
   type MatchStoryData,
 } from "@/lib/win-probability/timeline";
 import { fetchEventLog } from "@/lib/win-probability/training/extract";
@@ -47,11 +48,35 @@ async function assembleStory(
   if (log === null) return null; // unsupported mode or missing rounds
 
   const where = { MapDataId: resolvedId };
-  const [engagements, offensive, defensive] = await Promise.all([
-    getEngagementsForMapData(resolvedId),
+  const [fights, offensive, defensive] = await Promise.all([
+    // The canonical fight grouping — identical boundaries to the killfeed.
+    // (The spatial engagement clustering chains drifting fights into long
+    // blobs by design; wrong unit for a fight ledger.)
+    groupKillsIntoFightsByMapDataId(resolvedId),
     prisma.offensiveAssist.findMany({ where }),
     prisma.defensiveAssist.findMany({ where }),
   ]);
+  const engagements: EngagementLike[] = fights.map((fight) => {
+    const killsByTeam: Record<string, number> = {};
+    const participants: string[] = [];
+    for (const kill of fight.kills) {
+      killsByTeam[kill.attacker_team] =
+        (killsByTeam[kill.attacker_team] ?? 0) + 1;
+      for (const name of [kill.attacker_name, kill.victim_name]) {
+        if (!participants.includes(name)) participants.push(name);
+      }
+    }
+    const k1 = killsByTeam[log.team1] ?? 0;
+    const k2 = killsByTeam[log.team2] ?? 0;
+    return {
+      start: fight.start,
+      end: fight.end,
+      zoneName: null,
+      winner: k1 > k2 ? log.team1 : k2 > k1 ? log.team2 : null,
+      killsByTeam,
+      participants,
+    };
+  });
   const assists = [...offensive, ...defensive].map((a) => ({
     time: a.match_time,
     team: a.player_team,
