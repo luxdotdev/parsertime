@@ -384,6 +384,8 @@ describe("statesAt", () => {
     expect(s.team1.tankAliveDiff).toBe(1);
     expect(s.team1.supportAliveDiff).toBe(0);
     expect(after.team1.tankAliveDiff).toBe(0); // respawned
+    expect(after.team1.supportAliveDiff).toBe(0);
+    expect(after.team1.dpsAliveDiff).toBe(0);
   });
 
   test("a kill with no hero falls into the Damage bucket, keeping the sum invariant", () => {
@@ -407,5 +409,8 @@ describe("statesAt", () => {
     expect(s.team1.aliveDiff).toBe(-s.team2.aliveDiff);
     expect(s.team1.ultBankDiff).toBe(-s.team2.ultBankDiff);
     expect(s.team1.objProgressOwn).toBe(s.team2.objProgressEnemy);
+    expect(s.team1.tankAliveDiff).toBe(-s.team2.tankAliveDiff);
+    expect(s.team1.dpsAliveDiff).toBe(-s.team2.dpsAliveDiff);
+    expect(s.team1.supportAliveDiff).toBe(-s.team2.supportAliveDiff);
   });
 });
