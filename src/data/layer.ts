@@ -53,10 +53,12 @@ import { BroadcastServiceLive } from "./tournament/broadcast-service";
 import { TournamentServiceLive } from "./tournament/tournament-service";
 import { TournamentTeamSharedDataServiceLive } from "./tournament-team/shared-data-service";
 import { TournamentTeamStatsServiceLive } from "./tournament-team/stats-service";
+import { RankedServiceLive } from "./ranked/service";
 import { UserServiceLive } from "./user/service";
 
 export const DataLayerLive = Layer.mergeAll(
   UserServiceLive,
+  RankedServiceLive,
   DataLabelingServiceLive,
   HeroServiceLive,
   TournamentServiceLive,
