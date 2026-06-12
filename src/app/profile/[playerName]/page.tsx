@@ -6,6 +6,7 @@ import { PersonalRecords } from "@/components/profile/personal-records";
 import { PlayStyleIndicator } from "@/components/profile/play-style-indicator";
 import { PositioningCard } from "@/components/profile/positioning-card";
 import { ProfileHeader } from "@/components/profile/profile-header";
+import { RankedSummary } from "@/components/profile/ranked-summary";
 import { RecentActivityCalendar } from "@/components/profile/recent-activity-calendar";
 import { SkillRatingDetail } from "@/components/profile/skill-rating-card";
 import {
@@ -16,6 +17,7 @@ import { SectionHeader } from "@/components/stats/team/section-header";
 import { StatRibbon } from "@/components/stats/team/stat-ribbon";
 import { PlayerTargetsTab } from "@/components/targets/player-targets-tab";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RankedService } from "@/data/ranked";
 import { ScrimService } from "@/data/scrim";
 import {
   calculateTargetProgress,
@@ -401,6 +403,15 @@ export default async function ProfilePage(
     }
   }
 
+  const showRanked = user?.rankedStatsPublic === true;
+  const rankedMatches = showRanked
+    ? await AppRuntime.runPromise(
+        RankedService.pipe(
+          Effect.flatMap((svc) => svc.getMatchesForUser(user.id))
+        )
+      )
+    : [];
+
   return (
     <div className="px-6 pt-8 pb-16 sm:px-10">
       <ProfileHeader
@@ -453,6 +464,11 @@ export default async function ProfilePage(
           {user && (
             <TabsTrigger value="achievements" className={tabTriggerClass}>
               Achievements
+            </TabsTrigger>
+          )}
+          {showRanked && rankedMatches.length > 0 && (
+            <TabsTrigger value="ranked" className={tabTriggerClass}>
+              Ranked
             </TabsTrigger>
           )}
         </TabsList>
@@ -723,6 +739,11 @@ export default async function ProfilePage(
         <TabsContent value="achievements" className="space-y-6">
           <Achievements user={user!} />
         </TabsContent>
+        {showRanked && rankedMatches.length > 0 && (
+          <TabsContent value="ranked" className="space-y-6">
+            <RankedSummary matches={rankedMatches} />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

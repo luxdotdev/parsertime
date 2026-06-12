@@ -5758,7 +5758,8 @@
       "error": "Error loading data",
       "empty": "No data available",
       "viewProfile": "View Profile →"
-    }
+    },
+    "rankedTab": "Ranked"
   },
   "positioningCard": {
     "title": "Positioning",

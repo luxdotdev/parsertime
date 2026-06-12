@@ -5538,7 +5538,8 @@
       "error": "加载数据时出错",
       "empty": "暂无可用数据",
       "viewProfile": "查看资料 →"
-    }
+    },
+    "rankedTab": "排位"
   },
   "notFound": {
     "404": "404",
