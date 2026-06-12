@@ -35,7 +35,7 @@ type SweepEvent =
       progress1: number;
       progress2: number;
     }
-  | { time: number; kind: "setup"; timeRemaining: number };
+  | { time: number; kind: "setup"; timeRemaining: number; roundNumber: number };
 
 function mergedEvents(log: WPEventLog): SweepEvent[] {
   const events: SweepEvent[] = [];
@@ -97,6 +97,7 @@ function mergedEvents(log: WPEventLog): SweepEvent[] {
       time: s.time,
       kind: "setup",
       timeRemaining: s.timeRemaining,
+      roundNumber: s.roundNumber,
     });
   }
   // At equal timestamps, round_start sorts last: the dying round's final
@@ -138,7 +139,11 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
   // each objective-index transition credits the team holding the dying point.
   const derivedScore = { t1: 0, t2: 0 };
   let roundIndex = 0;
-  let setupBaseline: { time: number; remaining: number } | null = null;
+  let setupBaseline: {
+    time: number;
+    remaining: number;
+    roundNumber: number;
+  } | null = null;
 
   function isTeam1(team: string): boolean {
     return team === log.team1;
@@ -217,7 +222,11 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
           break;
         }
         case "setup":
-          setupBaseline = { time: e.time, remaining: e.timeRemaining };
+          setupBaseline = {
+            time: e.time,
+            remaining: e.timeRemaining,
+            roundNumber: e.roundNumber,
+          };
           break;
       }
       cursor++;
@@ -262,6 +271,20 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
         ? 0
         : Math.max(0, setupBaseline.remaining - (t - setupBaseline.time));
 
+    // Overtime: the clock ran out but round_end hasn't come — the round only
+    // persists because the attacker is touching. Escort/hybrid only: control
+    // has no clock, and flashpoint's single-round_start log shape makes
+    // timeRemaining unreliable mid-map.
+    const isOvertime: 0 | 1 =
+      log.modeFamily === "escort_hybrid" &&
+      setupBaseline !== null &&
+      setupBaseline.roundNumber === roundNumber &&
+      timeRemaining === 0 &&
+      round !== undefined &&
+      t < round.end
+        ? 1
+        : 0;
+
     const bank = {
       t1: { Tank: 0, Damage: 0, Support: 0 },
       t2: { Tank: 0, Damage: 0, Support: 0 },
@@ -300,7 +323,7 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
         timeRemaining,
         isAttacker:
           capturing === (own === "t1" ? log.team1 : log.team2) ? 1 : 0,
-        isOvertime: 0,
+        isOvertime,
         objectiveIndex: null,
       };
     }

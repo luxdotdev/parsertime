@@ -455,4 +455,67 @@ describe("statesAt", () => {
     expect(s.team1.dpsUltDiff).toBe(1);
     expect(s.team1.ultBankDiff).toBe(1);
   });
+
+  test("escort/hybrid: overtime flips on when the clock expires but the round persists", () => {
+    const log = baseLog({
+      modeFamily: "escort_hybrid",
+      rounds: [
+        {
+          roundNumber: 1,
+          start: 0,
+          end: 400, // round outlives the 240s clock → 240..400 is overtime
+          capturingTeam: "Alpha",
+          startScore1: 0,
+          startScore2: 0,
+          endScore1: 1,
+          endScore2: 0,
+        },
+      ],
+    });
+    const [regulation, overtime, ended] = statesAt(log, [200, 300, 400]);
+    expect(regulation.team1.isOvertime).toBe(0);
+    expect(overtime.team1.isOvertime).toBe(1);
+    expect(overtime.team2.isOvertime).toBe(1); // both perspectives agree
+    expect(ended.team1.isOvertime).toBe(0); // round over
+  });
+
+  test("overtime requires the current round's setup baseline", () => {
+    // Round 2 has no setup_complete yet at t=330 — the stale round-1 baseline
+    // (expired long ago) must not flag a fresh round as overtime.
+    const log = baseLog({
+      modeFamily: "escort_hybrid",
+      rounds: [
+        {
+          roundNumber: 1,
+          start: 0,
+          end: 300,
+          capturingTeam: "Alpha",
+          startScore1: 0,
+          startScore2: 0,
+          endScore1: 0,
+          endScore2: 3,
+        },
+        {
+          roundNumber: 2,
+          start: 320,
+          end: 600,
+          capturingTeam: "Bravo",
+          startScore1: 0,
+          startScore2: 3,
+          endScore1: 1,
+          endScore2: 3,
+        },
+      ],
+      setupCompletes: [{ time: 0, roundNumber: 1, timeRemaining: 240 }],
+    });
+    const [s] = statesAt(log, [330]);
+    expect(s.team1.isOvertime).toBe(0);
+  });
+
+  test("control never reports overtime", () => {
+    const log = baseLog(); // control, clock baseline expires at t=240
+    const [s] = statesAt(log, [290]);
+    expect(s.team1.timeRemaining).toBe(0);
+    expect(s.team1.isOvertime).toBe(0);
+  });
 });
