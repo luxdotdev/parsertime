@@ -95,9 +95,9 @@ describe("statesAt", () => {
         },
       ],
       progress: [
-        { time: 200, team: "Alpha", value: 60 },
-        { time: 250, team: "Alpha", value: 99 },
-        { time: 400, team: "Bravo", value: 10 },
+        { time: 200, team: "Alpha", value: 60, roundNumber: 1 },
+        { time: 250, team: "Alpha", value: 99, roundNumber: 1 },
+        { time: 400, team: "Bravo", value: 10, roundNumber: 2 },
       ],
     });
     const [r1, r2] = statesAt(log, [260, 401]);
@@ -109,6 +109,44 @@ describe("statesAt", () => {
     expect(r2.team1.scoreDiff).toBe(1); // 1–0 entering round 2
     expect(r2.team2.isAttacker).toBe(1);
     expect(r2.team1.isAttacker).toBe(0);
+  });
+
+  test("progress events from an earlier round are stale and ignored", () => {
+    // Round 1's final ticks can arrive seconds after round 2 starts; their
+    // round number marks them stale. Later-round events (flashpoint's
+    // r2..r6 under a single round_start) must still apply.
+    const log = baseLog({
+      rounds: [
+        {
+          roundNumber: 1,
+          start: 0,
+          end: 320,
+          capturingTeam: "Alpha",
+          startScore1: 0,
+          startScore2: 0,
+          endScore1: 1,
+          endScore2: 0,
+        },
+        {
+          roundNumber: 2,
+          start: 320,
+          end: 600,
+          capturingTeam: "Bravo",
+          startScore1: 1,
+          startScore2: 0,
+          endScore1: 1,
+          endScore2: 1,
+        },
+      ],
+      progress: [
+        { time: 323, team: "Alpha", value: 96, roundNumber: 1 }, // stale spill
+        { time: 340, team: "Bravo", value: 15, roundNumber: 2 },
+        { time: 350, team: "Bravo", value: 20, roundNumber: 6 }, // later round: applies
+      ],
+    });
+    const [s] = statesAt(log, [360]);
+    expect(s.team1.objProgressOwn).toBe(0); // spill swallowed
+    expect(s.team1.objProgressEnemy).toBeCloseTo(0.2);
   });
 
   test("a progress tick sharing the round-start timestamp belongs to the dying round", () => {
@@ -137,7 +175,7 @@ describe("statesAt", () => {
           endScore2: 1,
         },
       ],
-      progress: [{ time: 320, team: "Alpha", value: 100 }],
+      progress: [{ time: 320, team: "Alpha", value: 100, roundNumber: 1 }],
     });
     const [inRound2] = statesAt(log, [330]);
     expect(inRound2.team1.objProgressOwn).toBe(0);
@@ -176,8 +214,8 @@ describe("statesAt", () => {
         },
       ],
       objectiveCaptured: [
-        { time: 100, team: "Alpha", objectiveIndex: 0, progress1: 10, progress2: 0 },
-        { time: 200, team: "Bravo", objectiveIndex: 0, progress1: 55, progress2: 1 },
+        { time: 100, team: "Alpha", roundNumber: 1, objectiveIndex: 0, progress1: 10, progress2: 0 },
+        { time: 200, team: "Bravo", roundNumber: 1, objectiveIndex: 0, progress1: 55, progress2: 1 },
       ],
     });
     const [early, flipped, nextRound] = statesAt(log, [150, 250, 330]);
@@ -195,8 +233,8 @@ describe("statesAt", () => {
   test("neutral 'All Teams' captures clear the holder without crediting a team", () => {
     const log = baseLog({
       objectiveCaptured: [
-        { time: 100, team: "Alpha", objectiveIndex: 0, progress1: 20, progress2: 0 },
-        { time: 150, team: "All Teams", objectiveIndex: 0, progress1: 20, progress2: 0 },
+        { time: 100, team: "Alpha", roundNumber: 1, objectiveIndex: 0, progress1: 20, progress2: 0 },
+        { time: 150, team: "All Teams", roundNumber: 1, objectiveIndex: 0, progress1: 20, progress2: 0 },
       ],
     });
     const [held, neutral] = statesAt(log, [120, 160]);
@@ -221,9 +259,9 @@ describe("statesAt", () => {
         },
       ],
       objectiveCaptured: [
-        { time: 100, team: "Alpha", objectiveIndex: 0, progress1: 40, progress2: 5 },
+        { time: 100, team: "Alpha", roundNumber: 1, objectiveIndex: 0, progress1: 40, progress2: 5 },
         // New point: Alpha held point 0 when it ended → Alpha 1-0.
-        { time: 250, team: "Bravo", objectiveIndex: 1, progress1: 0, progress2: 30 },
+        { time: 250, team: "Bravo", roundNumber: 1, objectiveIndex: 1, progress1: 0, progress2: 30 },
       ],
     });
     const [duringFirst, duringSecond] = statesAt(log, [120, 260]);

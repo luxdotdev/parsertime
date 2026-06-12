@@ -70,12 +70,14 @@ export type WPEventLog = {
     endScore1: number;
     endScore2: number;
   }[];
-  /** Point + payload progress merged; value is the raw 0..100 figure. */
-  progress: { time: number; team: string; value: number }[];
+  /** Point + payload progress merged; value is the raw 0..100 figure.
+   * roundNumber marks stale spillover from a previous round. */
+  progress: { time: number; team: string; value: number; roundNumber: number }[];
   /** Control-mode capture flips: per-team win % at each capture. */
   objectiveCaptured: {
     time: number;
     team: string;
+    roundNumber: number;
     objectiveIndex: number;
     progress1: number; // raw 0..100, team 1's control win %
     progress2: number;

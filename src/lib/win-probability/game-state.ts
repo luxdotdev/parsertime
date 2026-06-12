@@ -11,11 +11,18 @@ type SweepEvent =
   | { time: number; kind: "ult_charged"; team: string; player: string }
   | { time: number; kind: "ult_start"; team: string; player: string }
   | { time: number; kind: "round_start"; roundIndex: number }
-  | { time: number; kind: "progress"; team: string; value: number }
+  | {
+      time: number;
+      kind: "progress";
+      team: string;
+      value: number;
+      roundNumber: number;
+    }
   | {
       time: number;
       kind: "objective_captured";
       team: string;
+      roundNumber: number;
       objectiveIndex: number;
       progress1: number;
       progress2: number;
@@ -60,6 +67,7 @@ function mergedEvents(log: WPEventLog): SweepEvent[] {
       kind: "progress",
       team: p.team,
       value: p.value,
+      roundNumber: p.roundNumber,
     });
   }
   for (const o of log.objectiveCaptured) {
@@ -67,6 +75,7 @@ function mergedEvents(log: WPEventLog): SweepEvent[] {
       time: o.time,
       kind: "objective_captured",
       team: o.team,
+      roundNumber: o.roundNumber,
       objectiveIndex: o.objectiveIndex,
       progress1: o.progress1,
       progress2: o.progress2,
@@ -147,10 +156,19 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
           objectiveIndex = null;
           break;
         case "progress":
+          // Stale spill: a previous round's tick arriving after the next
+          // round started. Later round numbers are fine (flashpoint emits
+          // r2..r6 under a single round_start).
+          if (e.roundNumber < (log.rounds[roundIndex]?.roundNumber ?? 0)) {
+            break;
+          }
           if (isTeam1(e.team)) progress.t1 = e.value;
           else progress.t2 = e.value;
           break;
         case "objective_captured": {
+          if (e.roundNumber < (log.rounds[roundIndex]?.roundNumber ?? 0)) {
+            break;
+          }
           if (objectiveIndex !== null && e.objectiveIndex !== objectiveIndex) {
             // A new point: credit whoever held the old one, reset its state.
             if (holder !== null) derivedScore[holder]++;
