@@ -8,6 +8,7 @@ import { MapCardWithSelection } from "@/components/scrim/map-card-with-selection
 import { PositionalStatsSection } from "@/components/scrim/positional-stats-section";
 import { ScrimOverviewUnavailable } from "@/components/scrim/scrim-overview-unavailable";
 import { ScrimWpaSection } from "@/components/scrim/scrim-wpa-section";
+import { Suspense } from "react";
 import {
   ScrimOverviewSection,
   WinLossBadge,
@@ -408,7 +409,11 @@ export default async function ScrimDashboardPage(
             )}
           </div>
 
-          <ScrimWpaSection scrimId={id} />
+          {/* Streams in after the page: aggregating WPA across a scrim's maps
+              is the heaviest read on this page and must never block it. */}
+          <Suspense fallback={null}>
+            <ScrimWpaSection scrimId={id} />
+          </Suspense>
         </div>
 
         {mapComparisonEnabled && teamId && (

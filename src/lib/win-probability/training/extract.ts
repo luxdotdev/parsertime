@@ -114,12 +114,23 @@ export async function fetchEventLog(
   mapDataId: number
 ): Promise<WPEventLog | null> {
   const where = { MapDataId: mapDataId };
+  // Two sequential batches, not one 11-wide Promise.all: the serverless
+  // Prisma pool is small (connection_limit 5) and shared across concurrent
+  // requests on the same instance — grabbing the whole pool at once starves
+  // every other page render.
+  const [matchStart, kills, rezzes, ultCharged, ultStart] = await Promise.all([
+    prisma.matchStart.findFirst({ where }),
+    prisma.kill.findMany({ where, orderBy: { match_time: "asc" } }),
+    prisma.mercyRez.findMany({ where }),
+    prisma.ultimateCharged.findMany({ where }),
+    prisma.ultimateStart.findMany({ where }),
+  ]);
+
+  if (matchStart === null) return null;
+  const modeFamily = mapTypeToModeFamily(matchStart.map_type);
+  if (modeFamily === null) return null;
+
   const [
-    matchStart,
-    kills,
-    rezzes,
-    ultCharged,
-    ultStart,
     roundStarts,
     roundEnds,
     pointProgress,
@@ -127,11 +138,6 @@ export async function fetchEventLog(
     objectiveCaptured,
     setupCompletes,
   ] = await Promise.all([
-    prisma.matchStart.findFirst({ where }),
-    prisma.kill.findMany({ where, orderBy: { match_time: "asc" } }),
-    prisma.mercyRez.findMany({ where }),
-    prisma.ultimateCharged.findMany({ where }),
-    prisma.ultimateStart.findMany({ where }),
     prisma.roundStart.findMany({ where, orderBy: { round_number: "asc" } }),
     prisma.roundEnd.findMany({ where, orderBy: { round_number: "asc" } }),
     prisma.pointProgress.findMany({ where }),
@@ -139,10 +145,6 @@ export async function fetchEventLog(
     prisma.objectiveCaptured.findMany({ where }),
     prisma.setupComplete.findMany({ where }),
   ]);
-
-  if (matchStart === null) return null;
-  const modeFamily = mapTypeToModeFamily(matchStart.map_type);
-  if (modeFamily === null) return null;
 
   const ends = new Map(roundEnds.map((r) => [r.round_number, r]));
   const rounds = roundStarts.flatMap((rs) => {

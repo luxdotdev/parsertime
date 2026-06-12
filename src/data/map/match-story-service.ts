@@ -37,6 +37,29 @@ export class MatchStoryService extends Context.Tag(
   "@app/data/map/MatchStoryService"
 )<MatchStoryService, MatchStoryServiceInterface>() {}
 
+/** A map's story is immutable for a given model version, so results are
+ * cached per instance. Without this, every page view re-runs the full
+ * event fan-out and starves the (5-connection) Prisma pool under
+ * concurrent requests — the staging incident of 2026-06-12. */
+const STORY_CACHE_CAP = 128;
+const storyCache = new Map<string, MatchStoryResult | null>();
+
+function cacheGet(key: string): MatchStoryResult | null | undefined {
+  if (!storyCache.has(key)) return undefined;
+  const value = storyCache.get(key)!;
+  // Refresh recency (Map preserves insertion order).
+  storyCache.delete(key);
+  storyCache.set(key, value);
+  return value;
+}
+
+function cacheSet(key: string, value: MatchStoryResult | null): void {
+  storyCache.set(key, value);
+  if (storyCache.size > STORY_CACHE_CAP) {
+    storyCache.delete(storyCache.keys().next().value!);
+  }
+}
+
 async function assembleStory(
   mapDataId: number
 ): Promise<MatchStoryResult | null> {
@@ -44,8 +67,15 @@ async function assembleStory(
   if (artifact === null) return null;
 
   const resolvedId = await resolveMapDataId(mapDataId);
+  const cacheKey = `${resolvedId}:v${artifact.modelVersion}`;
+  const cached = cacheGet(cacheKey);
+  if (cached !== undefined) return cached;
+
   const log = await fetchEventLog(resolvedId);
-  if (log === null) return null; // unsupported mode or missing rounds
+  if (log === null) {
+    cacheSet(cacheKey, null);
+    return null; // unsupported mode or missing rounds
+  }
 
   const where = { MapDataId: resolvedId };
   const [fights, offensive, defensive] = await Promise.all([
@@ -84,8 +114,10 @@ async function assembleStory(
   }));
 
   const data = computeMatchStory({ log, artifact, engagements, assists });
-  if (data === null) return { status: "no_family_model" };
-  return { status: "ready", data };
+  const result: MatchStoryResult =
+    data === null ? { status: "no_family_model" } : { status: "ready", data };
+  cacheSet(cacheKey, result);
+  return result;
 }
 
 async function aggregateScrimWpa(
