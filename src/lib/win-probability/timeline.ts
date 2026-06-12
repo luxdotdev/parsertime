@@ -10,7 +10,19 @@ export const ULT_WINDOW_LEAD_SECONDS = 3;
 export { CASCADE_MIN_WP } from "./types";
 const EDGE_EPSILON = 0.5;
 
-export type WpPoint = { t: number; wp: number };
+export type WpPoint = {
+  t: number;
+  wp: number;
+  /** Terminal round-outcome point: rendered as a dot, excluded from the line. */
+  snap?: boolean;
+  /** State context for tooltips (team1 perspective). */
+  scoreDiff?: number;
+  objOwn?: number;
+  objEnemy?: number;
+};
+
+/** An objective event worth annotating on the curve (capture / point flip). */
+export type ObjectiveMarker = { t: number; team: string };
 
 export type EngagementLike = {
   start: number;
@@ -63,6 +75,7 @@ export type MatchStoryInsight = {
 export type MatchStoryData = {
   teams: { team1: string; team2: string };
   points: WpPoint[];
+  objectiveMarkers: ObjectiveMarker[];
   roundMarkers: number[];
   fights: FightEntry[];
   wpa: PlayerWpa[];
@@ -89,7 +102,7 @@ export function computeMatchStory(
     return wpOf(statesAt(log, [t])[0].team1);
   }
 
-  const points = computeSeries(log, wpAt);
+  const points = computeSeries(log, wpOf);
   const engagements =
     inputs.engagements.length > 0
       ? inputs.engagements
@@ -103,9 +116,16 @@ export function computeMatchStory(
   const wpa = attributeWpa(inputs, fights);
   const insights = generateInsights(log, fights, limited);
 
+  // Captures and point flips — the score/objective changes that drive the
+  // biggest WP moves, surfaced so the curve's shifts have visible causes.
+  const objectiveMarkers: ObjectiveMarker[] = log.objectiveCaptured
+    .filter((o) => o.team === log.team1 || o.team === log.team2)
+    .map((o) => ({ t: o.time, team: o.team }));
+
   return {
     teams: { team1: log.team1, team2: log.team2 },
     points,
+    objectiveMarkers,
     roundMarkers: log.rounds.map((r) => r.start),
     fights,
     wpa,
@@ -116,25 +136,40 @@ export function computeMatchStory(
 
 function computeSeries(
   log: WPEventLog,
-  wpAt: (t: number) => number
+  wpOf: (state: GameState) => number
 ): WpPoint[] {
   const labels = roundLabels(log);
   const points: WpPoint[] = [];
   for (const round of log.rounds) {
+    const times: number[] = [];
     for (let t = round.start; t < round.end; t += SERIES_INTERVAL_SECONDS) {
-      points.push({ t, wp: wpAt(t) });
+      times.push(t);
+    }
+    const snapshots = statesAt(log, times);
+    for (let i = 0; i < times.length; i++) {
+      const state = snapshots[i].team1;
+      points.push({
+        t: times[i],
+        wp: wpOf(state),
+        scoreDiff: state.scoreDiff,
+        objOwn: state.objProgressOwn,
+        objEnemy: state.objProgressEnemy,
+      });
     }
     const winner = labels.get(round.roundNumber);
     // The curve always terminates at the outcome (1/0); unlabeled rounds
-    // (non-control ties) end on the model's last word instead.
+    // (non-control ties) end on the model's last word instead. Snap points
+    // render as outcome dots, never as part of the line.
+    const endState = statesAt(log, [round.end])[0].team1;
     points.push({
       t: round.end,
       wp:
         winner === undefined || winner === null
-          ? wpAt(round.end)
+          ? wpOf(endState)
           : winner === log.team1
             ? 1
             : 0,
+      snap: winner !== undefined && winner !== null,
     });
   }
   return points;

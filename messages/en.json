@@ -3101,7 +3101,10 @@
       "chart": {
         "winProbability": "Win probability",
         "round": "Round {round}",
-        "time": "Time"
+        "time": "Time",
+        "score": "Score",
+        "objective": "Obj",
+        "capture": "{team} took the objective"
       },
       "ledger": {
         "title": "Fight ledger",

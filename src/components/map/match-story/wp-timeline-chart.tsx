@@ -1,6 +1,10 @@
 "use client";
 
-import type { FightEntry, WpPoint } from "@/lib/win-probability/timeline";
+import type {
+  FightEntry,
+  ObjectiveMarker,
+  WpPoint,
+} from "@/lib/win-probability/timeline";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import type { TooltipProps } from "recharts";
@@ -31,16 +35,32 @@ function WpTooltip({
   payload,
   label,
   team1,
-}: TooltipProps<ValueType, NameType> & { team1: string }) {
+  scoreLabel,
+  objectiveLabel,
+}: TooltipProps<ValueType, NameType> & {
+  team1: string;
+  scoreLabel: string;
+  objectiveLabel: string;
+}) {
   if (!active || !payload?.length) return null;
   const wp = payload[0].value;
   if (typeof wp !== "number") return null;
+  const point = payload[0].payload as WpPoint;
   return (
     <div className="bg-popover text-popover-foreground border-border rounded-md border px-3 py-2 font-mono text-xs">
-      <div>{formatClock(label as number)}</div>
+      <div className="text-muted-foreground">{formatClock(label as number)}</div>
       <div className="tabular-nums">
         {team1}: {(wp * 100).toFixed(0)}%
       </div>
+      {point.scoreDiff !== undefined ? (
+        <div className="text-muted-foreground tabular-nums">
+          {scoreLabel} {point.scoreDiff >= 0 ? "+" : ""}
+          {point.scoreDiff}
+          {point.objOwn !== undefined && (point.objOwn > 0 || (point.objEnemy ?? 0) > 0)
+            ? ` · ${objectiveLabel} ${Math.round((point.objOwn > 0 ? point.objOwn : (point.objEnemy ?? 0)) * 100)}%`
+            : ""}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -50,6 +70,7 @@ const TICK = { fill: "var(--muted-foreground)", fontSize: 11 } as const;
 export function WpTimelineChart({
   points,
   fights,
+  objectiveMarkers,
   roundMarkers,
   teams,
   team1Color,
@@ -60,6 +81,7 @@ export function WpTimelineChart({
 }: {
   points: WpPoint[];
   fights: FightEntry[];
+  objectiveMarkers: ObjectiveMarker[];
   roundMarkers: number[];
   teams: { team1: string; team2: string };
   team1Color: string;
@@ -70,10 +92,11 @@ export function WpTimelineChart({
 }) {
   const t = useTranslations("mapPage.matchStory.chart");
 
-  // Break the line between rounds: each round is its own arc that ends on
-  // its outcome dot, instead of a needle connecting 0/1 to the next round.
+  // Break the line between rounds, and keep snap points (round outcomes)
+  // out of the line entirely — they render as floating outcome dots, not
+  // needles connecting 0/1 to the neighbouring samples.
   const chartData = useMemo(() => {
-    const data: { t: number; wp: number | null }[] = [];
+    const data: (Omit<WpPoint, "wp"> & { wp: number | null })[] = [];
     let nextMarker = 1;
     for (const point of points) {
       if (
@@ -83,27 +106,27 @@ export function WpTimelineChart({
         data.push({ t: (data[data.length - 1]?.t ?? point.t) + 0.01, wp: null });
         nextMarker++;
       }
-      data.push(point);
+      data.push(point.snap ? { ...point, wp: null } : point);
     }
     return data;
   }, [points, roundMarkers]);
 
   // Round outcome dots, colored by who took the round.
-  const outcomes = useMemo(() => {
-    const ends: { t: number; wp: number }[] = [];
-    for (let i = 0; i < points.length; i++) {
-      const isLast = i === points.length - 1;
-      const isRoundEnd =
-        !isLast &&
-        roundMarkers.some(
-          (m, idx) => idx > 0 && points[i + 1].t >= m && points[i].t < m
-        );
-      if ((isLast || isRoundEnd) && (points[i].wp === 0 || points[i].wp === 1)) {
-        ends.push(points[i]);
-      }
-    }
-    return ends;
-  }, [points, roundMarkers]);
+  const outcomes = useMemo(() => points.filter((p) => p.snap), [points]);
+
+  // Pin each capture marker to the curve's height at that moment.
+  const captureDots = useMemo(
+    () =>
+      objectiveMarkers.flatMap((marker) => {
+        let wp: number | null = null;
+        for (const p of points) {
+          if (p.t > marker.t) break;
+          if (!p.snap) wp = p.wp;
+        }
+        return wp === null ? [] : [{ ...marker, wp }];
+      }),
+    [objectiveMarkers, points]
+  );
 
   const focused = focusFight === null ? null : fights[focusFight];
 
@@ -145,7 +168,13 @@ export function WpTimelineChart({
             width={44}
           />
           <Tooltip
-            content={<WpTooltip team1={teams.team1} />}
+            content={
+              <WpTooltip
+                team1={teams.team1}
+                scoreLabel={t("score")}
+                objectiveLabel={t("objective")}
+              />
+            }
             cursor={{ stroke: "var(--border)" }}
           />
           <ReferenceLine y={0.5} stroke="var(--border)" strokeDasharray="4 4" />
@@ -188,6 +217,32 @@ export function WpTimelineChart({
               fill={o.wp === 1 ? team1Color : team2Color}
               stroke="var(--background)"
               isFront
+            />
+          ))}
+          {captureDots.map((c) => (
+            <ReferenceDot
+              key={`capture-${c.t}-${c.team}`}
+              x={c.t}
+              y={c.wp}
+              isFront
+              shape={(props: { cx?: number; cy?: number }) => {
+                const cx = props.cx ?? 0;
+                const cy = props.cy ?? 0;
+                return (
+                  <rect
+                    x={cx - 3.5}
+                    y={cy - 3.5}
+                    width={7}
+                    height={7}
+                    transform={`rotate(45 ${cx} ${cy})`}
+                    fill={c.team === teams.team1 ? team1Color : team2Color}
+                    stroke="var(--background)"
+                    strokeWidth={1}
+                  >
+                    <title>{t("capture", { team: c.team })}</title>
+                  </rect>
+                );
+              }}
             />
           ))}
           {fights.map((f) => {

@@ -3101,7 +3101,10 @@
       "chart": {
         "winProbability": "승리 확률",
         "round": "{round}라운드",
-        "time": "시간"
+        "time": "시간",
+        "score": "점수",
+        "objective": "목표",
+        "capture": "{team}이(가) 목표를 차지했습니다"
       },
       "ledger": {
         "title": "한타 기록",

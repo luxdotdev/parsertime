@@ -52,6 +52,7 @@ export function MatchStoryExplorer({
       <WpTimelineChart
         points={data.points}
         fights={data.fights}
+        objectiveMarkers={data.objectiveMarkers}
         roundMarkers={data.roundMarkers}
         teams={data.teams}
         team1Color={team1Color}

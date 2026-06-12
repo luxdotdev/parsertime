@@ -87,8 +87,30 @@ describe("computeMatchStory — series", () => {
     const last = story!.points[story!.points.length - 1];
     expect(last.t).toBe(200);
     expect(last.wp).toBe(1); // Alpha won the round → snap to 1
+    expect(last.snap).toBe(true); // outcome dot, not part of the line
+    expect(story!.points[0].snap).toBeUndefined();
+    expect(story!.points[0].scoreDiff).toBe(0); // tooltip context present
     expect(story!.roundMarkers).toEqual([0]);
     expect(story!.limited).toBe(true); // no ult events in this log
+  });
+
+  test("objective captures become team-attributed markers; neutral unlocks are dropped", () => {
+    const story = computeMatchStory({
+      log: baseLog({
+        objectiveCaptured: [
+          { time: 50, team: "Alpha", roundNumber: 1, objectiveIndex: 0, progress1: 10, progress2: 0 },
+          { time: 90, team: "All Teams", roundNumber: 1, objectiveIndex: 0, progress1: 10, progress2: 0 },
+          { time: 120, team: "Bravo", roundNumber: 1, objectiveIndex: 0, progress1: 10, progress2: 5 },
+        ],
+      }),
+      artifact: testArtifact({ aliveDiff: 1 }),
+      engagements: [],
+      assists: [],
+    })!;
+    expect(story.objectiveMarkers).toEqual([
+      { t: 50, team: "Alpha" },
+      { t: 120, team: "Bravo" },
+    ]);
   });
 
   test("returns null when the mode family has no model", () => {

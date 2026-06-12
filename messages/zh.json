@@ -3101,7 +3101,10 @@
       "chart": {
         "winProbability": "胜率",
         "round": "第 {round} 回合",
-        "time": "时间"
+        "time": "时间",
+        "score": "比分",
+        "objective": "目标",
+        "capture": "{team} 占领了目标"
       },
       "ledger": {
         "title": "团战记录",

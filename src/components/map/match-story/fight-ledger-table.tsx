@@ -114,17 +114,21 @@ export function FightLedgerTable({
               : f.winner === teams.team2
                 ? team2Color
                 : null;
-          const carryParts: string[] = [];
+          // Show any carryover ≥1 point (dim); ≥ the insight threshold reads
+          // emphasized. Hiding sub-threshold values entirely erased real
+          // information on modes where ult economy moves map WP only a little.
+          const carryParts: { text: string; strong: boolean }[] = [];
           if (f.carryover !== null) {
-            if (Math.abs(f.carryover.ultEconomy) >= CASCADE_MIN_WP) {
-              carryParts.push(
-                `${t("ultEconomy")} ${(f.carryover.ultEconomy * 100).toFixed(0)}%`
-              );
-            }
-            if (Math.abs(f.carryover.stagger) >= CASCADE_MIN_WP) {
-              carryParts.push(
-                `${t("stagger")} ${(f.carryover.stagger * 100).toFixed(0)}%`
-              );
+            for (const [label, value] of [
+              [t("ultEconomy"), f.carryover.ultEconomy],
+              [t("stagger"), f.carryover.stagger],
+            ] as const) {
+              if (Math.abs(value) >= 0.005) {
+                carryParts.push({
+                  text: `${label} ${value > 0 ? "+" : "−"}${Math.abs(value * 100).toFixed(0)}%`,
+                  strong: Math.abs(value) >= CASCADE_MIN_WP,
+                });
+              }
             }
           }
           return (
@@ -172,8 +176,25 @@ export function FightLedgerTable({
               <TableCell className="text-right font-mono tabular-nums">
                 {f.ultsSpentTeam1}–{f.ultsSpentTeam2}
               </TableCell>
-              <TableCell className="text-muted-foreground text-xs">
-                {carryParts.length > 0 ? carryParts.join(", ") : "—"}
+              <TableCell className="text-xs">
+                {carryParts.length > 0 ? (
+                  <span className="flex flex-col">
+                    {carryParts.map((part) => (
+                      <span
+                        key={part.text}
+                        className={
+                          part.strong
+                            ? "text-foreground"
+                            : "text-muted-foreground"
+                        }
+                      >
+                        {part.text}
+                      </span>
+                    ))}
+                  </span>
+                ) : (
+                  <span className="text-muted-foreground">—</span>
+                )}
               </TableCell>
             </TableRow>
           );
