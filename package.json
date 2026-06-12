@@ -18,7 +18,9 @@
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
-    "db:deploy": "prisma migrate deploy"
+    "db:deploy": "prisma migrate deploy",
+    "wp:export": "bun scripts/wp/export-dataset.ts",
+    "wp:train": "bun scripts/wp/train.ts"
   },
   "dependencies": {
     "@ai-sdk/react": "^3.0.136",

@@ -1,7 +1,9 @@
+import prisma from "@/lib/prisma";
 import { extractFeatures } from "@/lib/win-probability/features";
 import { statesAt } from "@/lib/win-probability/game-state";
 import {
   type DatasetRow,
+  mapTypeToModeFamily,
   SNAPSHOT_INTERVAL_SECONDS,
   type WPEventLog,
 } from "@/lib/win-probability/types";
@@ -100,4 +102,104 @@ export function buildRows(log: WPEventLog, matchId: number): DatasetRow[] {
     );
   }
   return rows;
+}
+
+/** Loads one map's events and normalizes them into a WPEventLog.
+ * Returns null for unsupported modes (Clash) or maps without round data. */
+export async function fetchEventLog(
+  mapDataId: number
+): Promise<WPEventLog | null> {
+  const where = { MapDataId: mapDataId };
+  const [
+    matchStart,
+    kills,
+    rezzes,
+    ultCharged,
+    ultStart,
+    roundStarts,
+    roundEnds,
+    pointProgress,
+    payloadProgress,
+    setupCompletes,
+  ] = await Promise.all([
+    prisma.matchStart.findFirst({ where }),
+    prisma.kill.findMany({ where, orderBy: { match_time: "asc" } }),
+    prisma.mercyRez.findMany({ where }),
+    prisma.ultimateCharged.findMany({ where }),
+    prisma.ultimateStart.findMany({ where }),
+    prisma.roundStart.findMany({ where, orderBy: { round_number: "asc" } }),
+    prisma.roundEnd.findMany({ where, orderBy: { round_number: "asc" } }),
+    prisma.pointProgress.findMany({ where }),
+    prisma.payloadProgress.findMany({ where }),
+    prisma.setupComplete.findMany({ where }),
+  ]);
+
+  if (matchStart === null) return null;
+  const modeFamily = mapTypeToModeFamily(matchStart.map_type);
+  if (modeFamily === null) return null;
+
+  const ends = new Map(roundEnds.map((r) => [r.round_number, r]));
+  const rounds = roundStarts.flatMap((rs) => {
+    const re = ends.get(rs.round_number);
+    if (re === undefined) return [];
+    return [
+      {
+        roundNumber: rs.round_number,
+        start: rs.match_time,
+        end: re.match_time,
+        capturingTeam: rs.capturing_team,
+        startScore1: rs.team_1_score,
+        startScore2: rs.team_2_score,
+        endScore1: re.team_1_score,
+        endScore2: re.team_2_score,
+      },
+    ];
+  });
+  if (rounds.length === 0) return null;
+
+  return {
+    modeFamily,
+    team1: matchStart.team_1_name,
+    team2: matchStart.team_2_name,
+    kills: kills.map((k) => ({
+      time: k.match_time,
+      victimTeam: k.victim_team,
+      victimName: k.victim_name,
+      attackerTeam: k.attacker_team,
+      attackerName: k.attacker_name,
+    })),
+    rezzes: rezzes.map((r) => ({
+      time: r.match_time,
+      team: r.resurrectee_team,
+      player: r.resurrectee_player,
+    })),
+    ultCharged: ultCharged.map((u) => ({
+      time: u.match_time,
+      team: u.player_team,
+      player: u.player_name,
+    })),
+    ultStart: ultStart.map((u) => ({
+      time: u.match_time,
+      team: u.player_team,
+      player: u.player_name,
+    })),
+    rounds,
+    progress: [
+      ...pointProgress.map((p) => ({
+        time: p.match_time,
+        team: p.capturing_team,
+        value: p.point_capture_progress,
+      })),
+      ...payloadProgress.map((p) => ({
+        time: p.match_time,
+        team: p.capturing_team,
+        value: p.payload_capture_progress,
+      })),
+    ],
+    setupCompletes: setupCompletes.map((s) => ({
+      time: s.match_time,
+      roundNumber: s.round_number,
+      timeRemaining: s.match_time_remaining,
+    })),
+  };
 }

@@ -58,3 +58,6 @@ docs/superpowers/
 
 # git worktrees
 .worktrees/
+
+# WP training output (derived from user data — never commit)
+artifacts/
