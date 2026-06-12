@@ -302,7 +302,10 @@ export function FightLedgerTable({
                 )}
               </TableCell>
               <TableCell>
-                <span className="flex items-center gap-3">
+                <span
+                  className="flex items-center gap-3"
+                  title={`${t("driverObjective")} ${(f.drivers.objective * 100).toFixed(0)}% · ${t("driverKills")} ${(f.drivers.kills * 100).toFixed(0)}% · ${t("driverUlts")} ${(f.drivers.ults * 100).toFixed(0)}%`}
+                >
                   <SwingBar
                     swing={f.swing}
                     maxSwing={maxSwing}

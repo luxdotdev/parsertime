@@ -87,6 +87,9 @@ export type MatchStoryData = {
   fights: FightEntry[];
   wpa: PlayerWpa[];
   insights: MatchStoryInsight[];
+  /** Coaching prescriptions for team 1 (the viewing team), each citing the
+   * fights it was detected from. */
+  takeaways: MatchStoryInsight[];
   limited: boolean;
 };
 
@@ -122,6 +125,7 @@ export function computeMatchStory(
   );
   const wpa = attributeWpa(inputs, fights);
   const insights = generateStory(log, fights, points, wpa, limited);
+  const takeaways = generateTakeaways(log, fights, limited);
 
   // Captures and point flips — the score/objective changes that drive the
   // biggest WP moves, surfaced so the curve's shifts have visible causes.
@@ -137,8 +141,181 @@ export function computeMatchStory(
     fights,
     wpa,
     insights,
+    takeaways,
     limited,
   };
+}
+
+const MAX_TAKEAWAYS = 4;
+const LOSS_SWING_FLOOR = -0.02;
+const CARRY_TAKEAWAY_FLOOR = 0.02;
+const FIRST_DEATH_MIN = 3;
+const LOSS_PROFILE_SHARE = 0.45;
+
+function fightList(fights: FightEntry[]): string {
+  return fights.map((f) => `#${f.index + 1}`).join(", ");
+}
+
+/** Recurring, fixable patterns in team 1's losses — each one cites the
+ * fights it was detected from and carries an estimated WP cost. */
+function generateTakeaways(
+  log: WPEventLog,
+  fights: FightEntry[],
+  limited: boolean
+): MatchStoryInsight[] {
+  const takeaways: (MatchStoryInsight & { cost: number })[] = [];
+  const losses = fights.filter((f) => f.swing <= LOSS_SWING_FLOOR);
+
+  // The loss profile: where team 1's lost win probability actually came
+  // from, using the exact per-fight driver decomposition.
+  if (losses.length >= 2) {
+    const sums = { objective: 0, kills: 0, ults: 0 };
+    for (const fight of losses) {
+      sums.objective += Math.min(0, fight.drivers.objective);
+      sums.kills += Math.min(0, fight.drivers.kills);
+      sums.ults += Math.min(0, fight.drivers.ults);
+    }
+    const total = -(sums.objective + sums.kills + sums.ults);
+    if (total > 0) {
+      const dominant = (["objective", "kills", "ults"] as const).reduce(
+        (a, b) => (sums[a] <= sums[b] ? a : b) // most negative
+      );
+      const share = -sums[dominant] / total;
+      if (share >= LOSS_PROFILE_SHARE) {
+        takeaways.push({
+          key: {
+            objective: "takeaways.lossProfileObjective",
+            kills: "takeaways.lossProfileKills",
+            ults: "takeaways.lossProfileUlts",
+          }[dominant],
+          values: { pct: Math.round(share * 100), count: losses.length },
+          priority: 95,
+          t: losses[0].start,
+          fightIndex: losses[0].index,
+          cost: total, // headline: sorts by everything it explains
+        });
+      }
+    }
+  }
+
+  // Ult overspend: lost fights where team 1 burned more ults than the enemy.
+  if (!limited) {
+    const overspends = losses.filter(
+      (f) => f.ultsSpentTeam1 - f.ultsSpentTeam2 >= 2
+    );
+    if (overspends.length > 0) {
+      const extra = overspends.reduce(
+        (a, f) => a + (f.ultsSpentTeam1 - f.ultsSpentTeam2),
+        0
+      );
+      const cost = overspends.reduce((a, f) => a + Math.abs(f.swing), 0);
+      takeaways.push({
+        key: "takeaways.ultDiscipline",
+        values: {
+          extra,
+          count: overspends.length,
+          fights: fightList(overspends),
+        },
+        priority: 90,
+        t: overspends[0].start,
+        fightIndex: overspends[0].index,
+        cost,
+      });
+    }
+
+    // Stagger bleed: fights entered down players from the previous fight.
+    const staggered = fights.filter(
+      (f) =>
+        f.carryover !== null && f.carryover.stagger <= -CARRY_TAKEAWAY_FLOOR
+    );
+    if (staggered.length > 0) {
+      const cost = staggered.reduce(
+        (a, f) => a + Math.abs(f.carryover!.stagger),
+        0
+      );
+      takeaways.push({
+        key: "takeaways.staggers",
+        values: {
+          count: staggered.length,
+          cost: Math.round(cost * 100),
+          fights: fightList(staggered),
+        },
+        priority: 85,
+        t: staggered[0].start,
+        fightIndex: staggered[0].index,
+        cost,
+      });
+    }
+
+    // Ult-economy deficit: fights taken while down on banked ults.
+    const deficits = losses.filter(
+      (f) =>
+        f.carryover !== null && f.carryover.ultEconomy <= -CARRY_TAKEAWAY_FLOOR
+    );
+    if (deficits.length > 0) {
+      const cost = deficits.reduce(
+        (a, f) => a + Math.abs(f.carryover!.ultEconomy),
+        0
+      );
+      takeaways.push({
+        key: "takeaways.ultDeficit",
+        values: {
+          count: deficits.length,
+          cost: Math.round(cost * 100),
+          fights: fightList(deficits),
+        },
+        priority: 80,
+        t: deficits[0].start,
+        fightIndex: deficits[0].index,
+        cost,
+      });
+    }
+  }
+
+  // Recurring first deaths in lost fights.
+  if (losses.length >= FIRST_DEATH_MIN) {
+    const firstDeaths = new Map<string, FightEntry[]>();
+    for (const fight of losses) {
+      const first = [...log.kills]
+        .sort((a, b) => a.time - b.time)
+        .find(
+          (k) =>
+            k.victimTeam === log.team1 &&
+            k.time >= fight.start - ULT_WINDOW_LEAD_SECONDS &&
+            k.time <= fight.end + EDGE_EPSILON
+        );
+      if (first === undefined) continue;
+      const list = firstDeaths.get(first.victimName) ?? [];
+      list.push(fight);
+      firstDeaths.set(first.victimName, list);
+    }
+    for (const [player, playerFights] of firstDeaths) {
+      if (
+        playerFights.length >= FIRST_DEATH_MIN &&
+        playerFights.length * 2 >= losses.length
+      ) {
+        const cost = playerFights.reduce((a, f) => a + Math.abs(f.swing), 0);
+        takeaways.push({
+          key: "takeaways.firstDeaths",
+          values: {
+            player,
+            count: playerFights.length,
+            of: losses.length,
+            fights: fightList(playerFights),
+          },
+          priority: 88,
+          t: playerFights[0].start,
+          fightIndex: playerFights[0].index,
+          cost,
+        });
+      }
+    }
+  }
+
+  return takeaways
+    .sort((a, b) => b.cost - a.cost)
+    .slice(0, MAX_TAKEAWAYS)
+    .map(({ cost: _cost, ...beat }) => beat);
 }
 
 function computeSeries(

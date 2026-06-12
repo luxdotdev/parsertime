@@ -3120,7 +3120,10 @@
         "even": "Even",
         "ultEconomy": "ult economy",
         "stagger": "stagger",
-        "context": "Context"
+        "context": "Context",
+        "driverObjective": "objective",
+        "driverKills": "kills",
+        "driverUlts": "ults"
       },
       "wpa": {
         "title": "Win probability added",
@@ -3146,6 +3149,16 @@
       },
       "story": {
         "title": "How the map unfolded"
+      },
+      "takeaways": {
+        "title": "Where {team} can improve",
+        "lossProfileObjective": "{pct}% of your lost win probability across {count} losing fights came through the objective — lost fights converting into captures and score. Plan the post-fight reset to deny the cap, not just the refight.",
+        "lossProfileKills": "{pct}% of your lost win probability across {count} losing fights came from player-count deficits. The fights themselves are the problem — review positioning and target priority first.",
+        "lossProfileUlts": "{pct}% of your lost win probability across {count} losing fights came from ult economy. Track enemy banks and stop taking fights into charged ults.",
+        "ultDiscipline": "You spent {extra} more ults than the enemy across {count} losing fights ({fights}). Review what triggered those commits — late ults in a lost fight fund the enemy's next push.",
+        "staggers": "Staggered deaths bled into {count} fights ({fights}), costing roughly {cost}% win probability. Reset together instead of trickling back in.",
+        "ultDeficit": "You took {count} fights ({fights}) while down on ult economy, costing about {cost}%. Delay the re-engage until the banks even out.",
+        "firstDeaths": "{player} died first in {count} of your {of} losing fights ({fights}). Review those openings — the first death sets the fight's trajectory."
       }
     }
   },

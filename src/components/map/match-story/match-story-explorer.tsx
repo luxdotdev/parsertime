@@ -45,6 +45,7 @@ export function MatchStoryExplorer({
   return (
     <div className="space-y-6">
       <InsightsStrip
+        title={t("story.title")}
         insights={data.insights}
         focusFight={focusFight}
         onFocusFight={setFocusFight}
@@ -58,6 +59,12 @@ export function MatchStoryExplorer({
         team1Color={team1Color}
         team2Color={team2Color}
         numberedFights={numberedFights}
+        focusFight={focusFight}
+        onFocusFight={setFocusFight}
+      />
+      <InsightsStrip
+        title={t("takeaways.title", { team: data.teams.team1 })}
+        insights={data.takeaways}
         focusFight={focusFight}
         onFocusFight={setFocusFight}
       />

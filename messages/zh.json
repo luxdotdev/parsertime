@@ -3120,7 +3120,10 @@
         "even": "平",
         "ultEconomy": "大招经济",
         "stagger": "梯次阵亡",
-        "context": "背景"
+        "context": "背景",
+        "driverObjective": "目标",
+        "driverKills": "击杀",
+        "driverUlts": "大招"
       },
       "wpa": {
         "title": "胜率贡献值",
@@ -3146,6 +3149,16 @@
       },
       "story": {
         "title": "比赛走势"
+      },
+      "takeaways": {
+        "title": "{team} 的改进方向",
+        "lossProfileObjective": "在 {count} 场失利团战中，你方损失的胜率有 {pct}% 来自目标——团战失利转化为占领和比分。规划战后重整以阻止占领，而不只是再打一波。",
+        "lossProfileKills": "在 {count} 场失利团战中，你方损失的胜率有 {pct}% 来自人数劣势。问题出在团战本身——优先复盘站位和集火目标。",
+        "lossProfileUlts": "在 {count} 场失利团战中，你方损失的胜率有 {pct}% 来自大招经济。关注敌方大招储备，不要在对方大招充能完毕时开团。",
+        "ultDiscipline": "在 {count} 场失利团战（{fights}）中，你方比敌方多用了 {extra} 个大招。复盘这些大招的使用时机——败局中的大招会为敌方下一波进攻买单。",
+        "staggers": "梯次阵亡影响了 {count} 场团战（{fights}），损失约 {cost}% 胜率。整队重整，不要逐个回场。",
+        "ultDeficit": "在大招经济落后的情况下接了 {count} 场团战（{fights}），损失约 {cost}%。等大招差距拉平后再接战。",
+        "firstDeaths": "{player} 在 {of} 场失利团战中有 {count} 场（{fights}）率先阵亡。复盘这些开局——首死决定团战走向。"
       }
     }
   },

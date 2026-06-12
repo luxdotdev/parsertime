@@ -296,6 +296,71 @@ describe("computeMatchStory — engagement fallback", () => {
   });
 });
 
+describe("computeMatchStory — takeaways", () => {
+  test("detects the loss profile, ult overspend, and recurring first deaths", () => {
+    // Alpha loses three fights, dies first via a1 every time, and burns two
+    // extra ults in each. The model is kills-driven → lossProfileKills.
+    const kills = [0, 1, 2].flatMap((i) => [
+      { time: 100 + i * 60, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
+      { time: 102 + i * 60, victimTeam: "Alpha", victimName: "a2", attackerTeam: "Bravo", attackerName: "b2" },
+    ]);
+    const log = baseLog({
+      kills,
+      ultCharged: [0, 1, 2].flatMap((i) => [
+        { time: 90 + i * 60, team: "Alpha", player: "a3" },
+        { time: 91 + i * 60, team: "Alpha", player: "a4" },
+      ]),
+      ultStart: [0, 1, 2].flatMap((i) => [
+        { time: 100 + i * 60, team: "Alpha", player: "a3" },
+        { time: 101 + i * 60, team: "Alpha", player: "a4" },
+      ]),
+    });
+    const story = computeMatchStory({
+      log,
+      artifact: testArtifact({ aliveDiff: 1 }),
+      engagements: [0, 1, 2].map((i) =>
+        engagement(100 + i * 60, 102 + i * 60, "Bravo", { Bravo: 2 })
+      ),
+      assists: [],
+    })!;
+    const keys = story.takeaways.map((i) => i.key);
+    expect(keys).toContain("takeaways.lossProfileKills");
+    expect(keys).toContain("takeaways.ultDiscipline");
+    expect(keys).toContain("takeaways.firstDeaths");
+    const firstDeaths = story.takeaways.find(
+      (i) => i.key === "takeaways.firstDeaths"
+    )!;
+    expect(firstDeaths.values.player).toBe("a1");
+    expect(firstDeaths.values.count).toBe(3);
+    const overspend = story.takeaways.find(
+      (i) => i.key === "takeaways.ultDiscipline"
+    )!;
+    expect(overspend.values.extra).toBe(6); // two extra ults × three fights
+    expect(story.takeaways.length).toBeLessThanOrEqual(4);
+  });
+
+  test("limited logs produce no ult-based takeaways", () => {
+    const log = baseLog({
+      kills: [
+        { time: 100, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
+      ],
+    });
+    const story = computeMatchStory({
+      log,
+      artifact: testArtifact({ aliveDiff: 1 }),
+      engagements: [engagement(100, 102, "Bravo", { Bravo: 1 })],
+      assists: [],
+    })!;
+    expect(
+      story.takeaways.every(
+        (i) =>
+          i.key !== "takeaways.ultDiscipline" &&
+          i.key !== "takeaways.ultDeficit"
+      )
+    ).toBe(true);
+  });
+});
+
 describe("computeMatchStory — insights", () => {
   test("emits a biggest-swing insight and a cascade insight above threshold", () => {
     const log = baseLog({

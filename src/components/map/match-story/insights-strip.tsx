@@ -60,6 +60,38 @@ function insightText(t: Translate, insight: MatchStoryInsight): string | null {
         team: insight.values.team as string,
         wpa: insight.values.wpa as number,
       });
+    case "takeaways.lossProfileObjective":
+    case "takeaways.lossProfileKills":
+    case "takeaways.lossProfileUlts":
+      return t(insight.key, {
+        pct: insight.values.pct as number,
+        count: insight.values.count as number,
+      });
+    case "takeaways.ultDiscipline":
+      return t("takeaways.ultDiscipline", {
+        extra: insight.values.extra as number,
+        count: insight.values.count as number,
+        fights: insight.values.fights as string,
+      });
+    case "takeaways.staggers":
+      return t("takeaways.staggers", {
+        count: insight.values.count as number,
+        cost: insight.values.cost as number,
+        fights: insight.values.fights as string,
+      });
+    case "takeaways.ultDeficit":
+      return t("takeaways.ultDeficit", {
+        count: insight.values.count as number,
+        cost: insight.values.cost as number,
+        fights: insight.values.fights as string,
+      });
+    case "takeaways.firstDeaths":
+      return t("takeaways.firstDeaths", {
+        player: insight.values.player as string,
+        count: insight.values.count as number,
+        of: insight.values.of as number,
+        fights: insight.values.fights as string,
+      });
     default:
       return null;
   }
@@ -75,10 +107,12 @@ function insightFigure(insight: MatchStoryInsight): number | null {
 }
 
 export function InsightsStrip({
+  title,
   insights,
   focusFight,
   onFocusFight,
 }: {
+  title: string;
   insights: MatchStoryInsight[];
   focusFight: number | null;
   onFocusFight: (index: number | null) => void;
@@ -88,7 +122,7 @@ export function InsightsStrip({
   return (
     <div className="border-border border">
       <p className="text-muted-foreground border-border border-b px-3 py-1.5 font-mono text-[10px] tracking-[0.08em] uppercase">
-        {t("story.title")}
+        {title}
       </p>
       <ul className="divide-border divide-y">
         {insights.map((insight) => {
