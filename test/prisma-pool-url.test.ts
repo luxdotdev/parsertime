@@ -1,36 +1,43 @@
-import { databaseUrlWithPoolDefaults } from "@/lib/prisma";
+import { poolOptionsFromUrl } from "@/lib/prisma";
 import { describe, expect, test } from "vitest";
 
-describe("databaseUrlWithPoolDefaults", () => {
-  test("appends pool params to a URL that already has query params", () => {
-    const url = databaseUrlWithPoolDefaults(
+describe("poolOptionsFromUrl", () => {
+  test("applies pool defaults when the URL has none", () => {
+    const opts = poolOptionsFromUrl(
       "postgresql://user:pass@db.example.com:5432/app?sslmode=verify-full&sslrootcert=system"
-    )!;
-    const parsed = new URL(url);
-    expect(parsed.searchParams.get("connection_limit")).toBe("15");
-    expect(parsed.searchParams.get("pool_timeout")).toBe("20");
+    );
+    expect(opts.max).toBe(15);
+    expect(opts.connectionTimeoutMillis).toBe(20_000);
+    expect(opts.idleTimeoutMillis).toBe(300_000);
+    const parsed = new URL(opts.connectionString!);
     expect(parsed.searchParams.get("sslmode")).toBe("verify-full");
     expect(parsed.searchParams.get("sslrootcert")).toBe("system");
   });
 
-  test("explicit values in the URL win over the defaults", () => {
-    const url = databaseUrlWithPoolDefaults(
-      "postgresql://user:pass@db.example.com:5432/app?connection_limit=30"
-    )!;
-    const parsed = new URL(url);
-    expect(parsed.searchParams.get("connection_limit")).toBe("30");
-    expect(parsed.searchParams.get("pool_timeout")).toBe("20");
-  });
-
-  test("handles a bare URL with no query params", () => {
-    const url = databaseUrlWithPoolDefaults(
+  test("explicit URL params win and are stripped from the connection string", () => {
+    const opts = poolOptionsFromUrl(
+      "postgresql://user:pass@db.example.com:5432/app?connection_limit=30&pool_timeout=5"
+    );
+    expect(opts.max).toBe(30);
+    expect(opts.connectionTimeoutMillis).toBe(5_000);
+    expect(opts.connectionString).toBe(
       "postgresql://user:pass@db.example.com:5432/app"
-    )!;
-    expect(new URL(url).searchParams.get("connection_limit")).toBe("15");
+    );
   });
 
-  test("passes through undefined and unparseable values", () => {
-    expect(databaseUrlWithPoolDefaults(undefined)).toBeUndefined();
-    expect(databaseUrlWithPoolDefaults("not a url")).toBe("not a url");
+  test("preserves other query params while stripping pool params", () => {
+    const opts = poolOptionsFromUrl(
+      "postgresql://user:pass@db.example.com:5432/app?sslmode=require&connection_limit=8"
+    );
+    expect(opts.max).toBe(8);
+    expect(opts.connectionString).toBe(
+      "postgresql://user:pass@db.example.com:5432/app?sslmode=require"
+    );
+  });
+
+  test("falls back gracefully on missing or malformed URLs", () => {
+    expect(poolOptionsFromUrl(undefined).connectionString).toBeUndefined();
+    expect(poolOptionsFromUrl("not a url").connectionString).toBe("not a url");
+    expect(poolOptionsFromUrl("not a url").max).toBe(15);
   });
 });

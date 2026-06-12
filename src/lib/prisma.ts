@@ -1,33 +1,47 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-/** Pool sizing belongs in the connection string, but the env URL already
- * carries TLS params and a dashboard edit appended with a second `?` makes
- * the pool params part of the sslrootcert value — Prisma silently falls
- * back to its tiny default (5) and the dashboards starve under load.
- * Enforce sane defaults here; explicit values in the URL still win. */
-export function databaseUrlWithPoolDefaults(
-  raw: string | undefined
-): string | undefined {
-  if (!raw) return undefined;
+/** Pool sizing used to ride along in the connection string
+ * (connection_limit / pool_timeout) because dashboard edits to the env URL
+ * kept mangling it. The pg driver ignores those params, so translate them
+ * into Pool options; explicit values in the URL still win over our
+ * defaults. Idle timeout mirrors Prisma v6 (300s) — pg's default of 10s
+ * would churn connections. */
+export function poolOptionsFromUrl(raw: string | undefined): {
+  connectionString: string | undefined;
+  max: number;
+  connectionTimeoutMillis: number;
+  idleTimeoutMillis: number;
+} {
+  const defaults = {
+    connectionString: raw,
+    max: 15,
+    connectionTimeoutMillis: 20_000,
+    idleTimeoutMillis: 300_000,
+  };
+  if (!raw) return defaults;
   try {
     const url = new URL(raw);
-    if (!url.searchParams.has("connection_limit")) {
-      url.searchParams.set("connection_limit", "15");
-    }
-    if (!url.searchParams.has("pool_timeout")) {
-      url.searchParams.set("pool_timeout", "20");
-    }
-    return url.toString();
+    const connectionLimit = url.searchParams.get("connection_limit");
+    const poolTimeout = url.searchParams.get("pool_timeout");
+    url.searchParams.delete("connection_limit");
+    url.searchParams.delete("pool_timeout");
+    return {
+      connectionString: url.toString(),
+      max: connectionLimit ? Number(connectionLimit) : defaults.max,
+      connectionTimeoutMillis: poolTimeout
+        ? Number(poolTimeout) * 1000
+        : defaults.connectionTimeoutMillis,
+      idleTimeoutMillis: defaults.idleTimeoutMillis,
+    };
   } catch {
-    return raw;
+    return defaults;
   }
 }
 
 function prismaClientSingleton() {
-  const datasourceUrl = databaseUrlWithPoolDefaults(process.env.DATABASE_URL);
-  return new PrismaClient(
-    datasourceUrl === undefined ? undefined : { datasourceUrl }
-  );
+  const adapter = new PrismaPg(poolOptionsFromUrl(process.env.DATABASE_URL));
+  return new PrismaClient({ adapter });
 }
 
 declare global {
