@@ -92,6 +92,16 @@ export function toKebabCase(str: string): string {
   );
 }
 
+const PARSERTIME_BASE = "https://parsertime.app";
+
+export function mapImageUrl(mapName: string): string {
+  return `${PARSERTIME_BASE}/maps/${toKebabCase(mapName)}.webp`;
+}
+
+export function heroImageUrl(heroName: string): string {
+  return `${PARSERTIME_BASE}/heroes/${toHero(heroName)}.png`;
+}
+
 /**
  * Returns the number of minutes from a number of seconds.
  *

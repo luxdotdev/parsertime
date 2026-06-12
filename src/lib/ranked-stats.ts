@@ -6,6 +6,7 @@ type MapType = (typeof mapNameToMapTypeMapping)[MapName];
 const MAPS = (Object.entries(mapNameToMapTypeMapping) as [MapName, MapType][]).map(
   ([name, type]) => ({ name, type })
 );
+const MAP_TYPES: MapType[] = [...new Set(MAPS.map((m) => m.type))];
 
 type MatchHeroData = {
   id: string;
@@ -1998,6 +1999,7 @@ function getDayOfWeekStats(matches: MatchData[]): DayOfWeekResult {
 }
 
 export {
+  MAP_TYPES,
   GROUP_SIZE_MIN_MATCHES,
   HERO_MAP_MIN_GAMES,
   HERO_WINRATE_MIN_MATCHES,
@@ -2078,4 +2080,5 @@ export type {
   SessionEntry,
   StreakData,
   SummaryStats,
+  MapType,
 };
