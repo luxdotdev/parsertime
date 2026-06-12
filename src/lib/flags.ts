@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { vercelAdapter } from "@flags-sdk/vercel";
-import type { $Enums } from "@prisma/client";
+import type { $Enums } from "@/generated/prisma/client";
 import { dedupe, flag } from "flags/next";
 
 type Entities = {

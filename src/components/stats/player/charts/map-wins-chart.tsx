@@ -3,7 +3,7 @@
 import type { Winrate } from "@/data/scrim/types";
 import { cn, toKebabCase, toTitleCase, useMapNames } from "@/lib/utils";
 import { type MapName, mapNameToMapTypeMapping } from "@/types/map";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import { useTranslations } from "next-intl";
 import {
   Bar,

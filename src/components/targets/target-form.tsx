@@ -26,7 +26,7 @@ import {
   getDefaultDirection,
   getStatsForRole,
 } from "@/lib/target-stats";
-import type { PlayerTarget } from "@prisma/client";
+import type { PlayerTarget } from "@/generated/prisma/browser";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

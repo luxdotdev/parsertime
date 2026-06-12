@@ -7,7 +7,7 @@ import {
   TeamTsrConfidence,
   TeamTsrSource,
   TsrRegion,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 
 const SOURCE_TO_PRISMA: Record<
   "tsr" | "predicted" | "csr_fallback",

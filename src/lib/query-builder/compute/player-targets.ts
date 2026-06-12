@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma";
 import type { ComputedRow } from "@/lib/query-builder/aggregate";
 import { TARGET_STATS, type TargetStatKey } from "@/lib/target-stats";
 import { removeDuplicateRows } from "@/lib/utils";
-import type { PlayerStat, PlayerTarget } from "@prisma/client";
+import type { PlayerStat, PlayerTarget } from "@/generated/prisma/client";
 
 type ScrimPoint = {
   scrimId: number;

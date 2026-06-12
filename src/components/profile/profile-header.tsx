@@ -7,7 +7,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useTitleTranslation } from "@/lib/utils";
-import type { BillingPlan, Title } from "@prisma/client";
+import type { BillingPlan, Title } from "@/generated/prisma/client";
 import Image from "next/image";
 
 type ProfileHeaderProps = {

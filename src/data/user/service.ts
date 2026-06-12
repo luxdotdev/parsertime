@@ -1,7 +1,7 @@
 import { EffectObservabilityLive } from "@/instrumentation";
 import prisma from "@/lib/prisma";
-import type { AppSettings, Team, User } from "@prisma/client";
-import { $Enums } from "@prisma/client";
+import type { AppSettings, Team, User } from "@/generated/prisma/client";
+import { $Enums } from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { UserQueryError } from "./errors";
 import {

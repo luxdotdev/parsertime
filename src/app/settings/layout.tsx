@@ -5,7 +5,7 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/client";
 import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 

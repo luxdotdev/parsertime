@@ -1,6 +1,6 @@
 import { processUltCombos } from "@/data/team/ult-combos";
 import type { ExtendedTeamData } from "@/data/team/shared-core";
-import type { Kill, MercyRez, UltimateStart } from "@prisma/client";
+import type { Kill, MercyRez, UltimateStart } from "@/generated/prisma/client";
 import { describe, expect, it } from "vitest";
 
 const MAP = 1;

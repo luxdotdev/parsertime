@@ -30,7 +30,7 @@ import type { ScoutingTeam } from "@/data/scouting/types";
 import { ClientOnly } from "@/lib/client-only";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { Team } from "@prisma/client";
+import type { Team } from "@/generated/prisma/browser";
 import { CheckIcon, ChevronDownIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import Image from "next/image";

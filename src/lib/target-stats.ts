@@ -1,4 +1,4 @@
-import type { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@/generated/prisma/client";
 
 export type TargetStatKey = Extract<
   keyof PlayerStat,

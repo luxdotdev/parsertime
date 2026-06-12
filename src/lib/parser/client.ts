@@ -1,6 +1,6 @@
 import { headers } from "@/lib/headers";
 import type { ParserData } from "@/types/parser";
-import type { $Enums } from "@prisma/client";
+import type { $Enums } from "@/generated/prisma/client";
 
 const TXT_FILE = "text/plain";
 

@@ -5,7 +5,7 @@ import {
   type PayloadProgress,
   type PointProgress,
   type RoundEnd,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 
 const PROGRESS_COMPARISON_EPSILON = 0.05;
 

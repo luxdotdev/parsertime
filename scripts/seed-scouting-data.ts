@@ -5,8 +5,8 @@ import {
   type MapType,
   type RosterCategory,
   type RosterRole,
-} from "@prisma/client";
-import { JsonValue } from "@prisma/client/runtime/library";
+} from "@/generated/prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 
@@ -209,7 +209,7 @@ async function seedMatch(tournamentId: number, match: MatchData) {
       winnerFullName: cleanTeamName(match.winnerFullName),
       matchDate,
       mvp: match.mvp,
-      vods: (match.vods as unknown as JsonValue[]) ?? [],
+      vods: (match.vods as unknown as Prisma.JsonValue[]) ?? [],
       matchRoomUrl: match.matchRoomUrl ?? null,
     },
   });

@@ -1,6 +1,6 @@
 import { auth, getCurrentUser, isAdminUser } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/client";
 import { unauthorized } from "next/navigation";
 import type { NextRequest } from "next/server";
 import { z } from "zod";

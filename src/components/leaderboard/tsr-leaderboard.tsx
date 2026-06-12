@@ -19,7 +19,7 @@ import type {
   TsrSortKey,
 } from "@/lib/tsr/leaderboard";
 import { cn } from "@/lib/utils";
-import { FaceitTier, TsrRegion } from "@prisma/client";
+import { FaceitTier, TsrRegion } from "@/generated/prisma/browser";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useFormatter, useTranslations } from "next-intl";

@@ -7,7 +7,7 @@ import { StatsTable } from "@/components/player/stats-table";
 import { CardIcon } from "@/components/ui/card-icon";
 import { cn, round, toMins } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
-import type { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@/generated/prisma/client";
 import { getTranslations } from "next-intl/server";
 
 export async function AllHeroes({

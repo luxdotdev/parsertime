@@ -24,7 +24,7 @@ import {
   mapSelectionStore,
   selectIsMapSelected,
 } from "@/stores/map-selection-store";
-import type { Map } from "@prisma/client";
+import type { Map } from "@/generated/prisma/browser";
 import { useSelector } from "@xstate/store/react";
 import type { Route } from "next";
 import { useTranslations } from "next-intl";

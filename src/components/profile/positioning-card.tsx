@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { CalculatedStat, CalculatedStatType } from "@prisma/client";
+import type { CalculatedStat, CalculatedStatType } from "@/generated/prisma/browser";
 import { useTranslations } from "next-intl";
 
 type PositioningCardProps = {

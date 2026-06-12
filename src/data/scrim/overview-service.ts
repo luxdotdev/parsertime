@@ -49,7 +49,7 @@ import {
   type ObjectiveCaptured,
   type PlayerStat,
   type RoundEnd,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { ScrimQueryError } from "./errors";
 import {

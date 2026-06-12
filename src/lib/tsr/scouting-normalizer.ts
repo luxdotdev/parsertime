@@ -1,4 +1,4 @@
-import type { MapType } from "@prisma/client";
+import type { MapType } from "@/generated/prisma/client";
 import type {
   FaceitMatchDetail,
   FaceitMatchStats,

@@ -18,7 +18,7 @@ import {
   TeamSharedDataService,
   TeamSharedDataServiceLive,
 } from "@/data/team/shared-data-service";
-import type { MapType } from "@prisma/client";
+import type { MapType } from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { HeroBanIntelligenceQueryError } from "./errors";
 import {

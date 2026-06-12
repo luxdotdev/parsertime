@@ -1,4 +1,4 @@
-import type { MapType } from "@prisma/client";
+import type { MapType } from "@/generated/prisma/client";
 
 export type MatchResult = "win" | "loss";
 

@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import type { Route } from "next";
-import type { FaceitTier, TsrRegion } from "@prisma/client";
+import type { FaceitTier, TsrRegion } from "@/generated/prisma/client";
 import { useTranslations } from "next-intl";
 import type { TierBand } from "@/lib/tsr/tier-bucket";
 

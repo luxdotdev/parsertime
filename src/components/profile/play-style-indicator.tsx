@@ -1,7 +1,7 @@
 "use client";
 
 import { ChartContainer } from "@/components/ui/chart";
-import type { CalculatedStatType } from "@prisma/client";
+import type { CalculatedStatType } from "@/generated/prisma/browser";
 import {
   PolarAngleAxis,
   PolarGrid,

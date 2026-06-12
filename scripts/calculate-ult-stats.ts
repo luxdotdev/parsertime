@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { getUltQualityStatsForMapData } from "@/lib/ult-quality-db";
 import { ULT_STAT_TYPES } from "@/lib/ult-quality";
 import { heroRoleMapping, type HeroName } from "@/types/heroes";
-import type { CalculatedStatType, Role } from "@prisma/client";
+import type { CalculatedStatType, Role } from "@/generated/prisma/client";
 
 async function processMap(mapDataId: number, scrimId: number) {
   const players = await prisma.playerStat.findMany({

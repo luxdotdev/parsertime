@@ -13,7 +13,7 @@ import type {
   PayloadProgress,
   PointProgress,
   RoundEnd,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 import { Effect } from "effect";
 
 function byMap<T extends { MapDataId: number | null }>(

@@ -40,7 +40,7 @@ import {
   ChevronUpDownIcon,
   ChevronUpIcon,
 } from "@heroicons/react/20/solid";
-import type { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@/generated/prisma/browser";
 import { StarFilledIcon } from "@radix-ui/react-icons";
 import { GeistMono } from "geist/font/mono";
 import type { Route } from "next";

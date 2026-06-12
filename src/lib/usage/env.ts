@@ -1,4 +1,4 @@
-import type { UsageEnv } from "@prisma/client";
+import type { UsageEnv } from "@/generated/prisma/client";
 
 /**
  * Authoritative environment stamp, read server-side from VERCEL_ENV.

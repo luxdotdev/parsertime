@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { TournamentStatus } from "@prisma/client";
+import type { TournamentStatus } from "@/generated/prisma/browser";
 import { MoreHorizontal, Play, Square, Ban, RotateCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

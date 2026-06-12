@@ -1,4 +1,4 @@
-import type { Kill } from "@prisma/client";
+import type { Kill } from "@/generated/prisma/client";
 import type { Fight } from "@/lib/utils";
 
 export type RotationDeathConfig = {

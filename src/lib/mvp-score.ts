@@ -2,7 +2,7 @@ import { AppRuntime } from "@/data/runtime";
 import { ScrimService } from "@/data/scrim";
 import type { HeroName } from "@/types/heroes";
 import { Effect } from "effect";
-import type { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@/generated/prisma/client";
 import {
   compareMultipleStatsToDistribution,
   type ValidStatColumn,

@@ -1,6 +1,6 @@
 import type { ConfidenceMetadata } from "@/lib/confidence";
 import type { DataAvailabilityProfile } from "@/lib/data-availability";
-import type { MapType } from "@prisma/client";
+import type { MapType } from "@/generated/prisma/client";
 
 // Hero Ban Intelligence types
 

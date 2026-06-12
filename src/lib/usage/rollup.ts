@@ -1,4 +1,4 @@
-import type { UsageEnv } from "@prisma/client";
+import type { UsageEnv } from "@/generated/prisma/client";
 
 export type RawEventRow = {
   name: string;

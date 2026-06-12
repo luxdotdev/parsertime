@@ -3,7 +3,7 @@ import { AppRuntime } from "@/data/runtime";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { groupKillsIntoFights, removeDuplicateRows } from "@/lib/utils";
-import type { Kill } from "@prisma/client";
+import type { Kill } from "@/generated/prisma/client";
 import { Effect } from "effect";
 
 type Fight = {

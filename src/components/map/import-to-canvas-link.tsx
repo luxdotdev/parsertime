@@ -9,7 +9,7 @@ import {
   coachingCanvasStore,
   flushCanvasToLocalStorage,
 } from "@/stores/coaching-canvas-store";
-import type { Kill } from "@prisma/client";
+import type { Kill } from "@/generated/prisma/browser";
 import type { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";

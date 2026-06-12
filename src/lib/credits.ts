@@ -15,7 +15,7 @@ import type {
   CreditTransactionType,
   Prisma,
   UserCredits,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 
 export type UserCreditsSnapshot = UserCredits;
 

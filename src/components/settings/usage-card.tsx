@@ -7,7 +7,7 @@ import {
   TEAM_CREATION_LIMIT,
   TEAM_MEMBER_LIMIT,
 } from "@/lib/usage";
-import type { $Enums } from "@prisma/client";
+import type { $Enums } from "@/generated/prisma/browser";
 import { ExternalLink } from "lucide-react";
 import type { Route } from "next";
 import { useTranslations } from "next-intl";

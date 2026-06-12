@@ -35,7 +35,7 @@ import {
 } from "@/lib/utils";
 import { SUBROLE_ORDER, type RoleName, type SubroleName } from "@/types/heroes";
 import type { OverwatchPatch } from "@/types/overwatch-patches";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import { CheckIcon, ChevronsUpDownIcon, LayersIcon } from "lucide-react";
 import Image from "next/image";
 import { useFormatter, useTranslations } from "next-intl";

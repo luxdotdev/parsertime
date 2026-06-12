@@ -6,7 +6,7 @@ import type {
 } from "@/data/team/types";
 import type { ValidStatColumn } from "@/lib/stat-percentiles";
 import type { HeroName, RoleName } from "@/types/heroes";
-import type { MapType } from "@prisma/client";
+import type { MapType } from "@/generated/prisma/client";
 import { Schema as S } from "effect";
 import type { PlayerUltComparison, SubroleUltTiming } from "./ult-helpers";
 

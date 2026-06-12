@@ -6,7 +6,7 @@ import { removeDuplicateRows } from "@/lib/utils";
 import { authenticateBotSecret } from "@/lib/bot-auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { Prisma, type PlayerStat } from "@prisma/client";
+import { Prisma, type PlayerStat } from "@/generated/prisma/client";
 import { trace } from "@opentelemetry/api";
 import type { NextRequest } from "next/server";
 

@@ -24,7 +24,7 @@ import {
 import type { Winrate } from "@/data/scrim/types";
 import { cn } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
-import type { Kill, PlayerStat, Scrim } from "@prisma/client";
+import type { Kill, PlayerStat, Scrim } from "@/generated/prisma/browser";
 import { addMonths, addWeeks, addYears } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";

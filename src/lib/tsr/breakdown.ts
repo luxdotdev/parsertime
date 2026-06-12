@@ -10,7 +10,7 @@ import {
   FaceitTier,
   TsrRosterOverrideAction,
   type TsrRegion,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 
 export type TsrBreakdownFactor = {
   key:

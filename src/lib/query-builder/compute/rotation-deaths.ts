@@ -8,7 +8,7 @@ import {
   type DamageEvent,
 } from "@/lib/replay/rotation-death-detection";
 import { groupEventsIntoFights, mercyRezToKillEvent } from "@/lib/utils";
-import type { Kill } from "@prisma/client";
+import type { Kill } from "@/generated/prisma/client";
 
 type DamageRow = DamageEvent & { MapDataId: number | null };
 

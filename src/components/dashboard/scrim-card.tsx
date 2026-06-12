@@ -8,7 +8,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Scrim } from "@prisma/client";
+import type { Scrim } from "@/generated/prisma/browser";
 import { CalendarIcon, Pencil2Icon, PersonIcon } from "@radix-ui/react-icons";
 import { BadgeCheck } from "lucide-react";
 import type { Route } from "next";

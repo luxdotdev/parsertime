@@ -8,7 +8,7 @@ import {
   mercyRezToKillEvent,
   ultimateStartToKillEvent,
 } from "@/lib/utils";
-import type { Kill } from "@prisma/client";
+import type { Kill } from "@/generated/prisma/client";
 
 type FightEvent = Kill & { ultimate_id?: number };
 

@@ -3,7 +3,7 @@ import {
   processUltEconomy,
   type UltChargedRecord,
 } from "@/data/team/ult-economy";
-import type { Kill, UltimateStart } from "@prisma/client";
+import type { Kill, UltimateStart } from "@/generated/prisma/client";
 import { describe, expect, it } from "vitest";
 
 const MAP = 1;

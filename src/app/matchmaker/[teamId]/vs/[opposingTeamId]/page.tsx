@@ -13,7 +13,7 @@ import { getMatchmakerCandidates } from "@/lib/matchmaker/candidates";
 import { SkillDeviation } from "@/components/matchmaker/skill-deviation";
 import { SendRequestButton } from "@/components/matchmaker/send-request-button";
 import { TeamTsrCard } from "@/components/team/team-tsr-card";
-import { FaceitTier, UserRole } from "@prisma/client";
+import { FaceitTier, UserRole } from "@/generated/prisma/client";
 import { getFormatter, getTranslations } from "next-intl/server";
 
 type PageProps = {

@@ -3,8 +3,8 @@ import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import type { Prisma } from "@prisma/client";
-import { $Enums } from "@prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
+import { $Enums } from "@/generated/prisma/client";
 import { forbidden, unauthorized } from "next/navigation";
 import { type NextRequest, NextResponse } from "next/server";
 

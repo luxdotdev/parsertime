@@ -6,7 +6,7 @@ import {
   type Kill,
   type MercyRez,
   type UltimateStart,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { useMessages, useTranslations } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";

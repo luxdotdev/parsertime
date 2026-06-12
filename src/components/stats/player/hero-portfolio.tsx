@@ -2,7 +2,7 @@
 
 import { cn, toHero, useHeroNames } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
-import type { Kill, PlayerStat } from "@prisma/client";
+import type { Kill, PlayerStat } from "@/generated/prisma/browser";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 

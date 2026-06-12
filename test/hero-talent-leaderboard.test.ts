@@ -1,5 +1,5 @@
 import { buildHeroTalentLeaderboard } from "@/lib/hero-talent-leaderboard";
-import type { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@/generated/prisma/client";
 import { describe, expect, test } from "vitest";
 
 function makeStat(

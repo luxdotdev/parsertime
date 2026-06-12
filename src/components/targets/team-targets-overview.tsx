@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import type { ScrimStatPoint, TargetProgress } from "@/data/player/types";
 import type { RoleName } from "@/lib/target-stats";
 import { cn } from "@/lib/utils";
-import type { PlayerTarget } from "@prisma/client";
+import type { PlayerTarget } from "@/generated/prisma/browser";
 import { Lock } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";

@@ -11,7 +11,7 @@ import {
   ROLE_SUBROLES,
   SUBROLE_DISPLAY_NAMES,
 } from "@/types/heroes";
-import type { Kill } from "@prisma/client";
+import type { Kill } from "@/generated/prisma/client";
 import {
   Cache,
   Context,

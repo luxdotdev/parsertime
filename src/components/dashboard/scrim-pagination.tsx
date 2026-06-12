@@ -33,7 +33,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { Scrim } from "@prisma/client";
+import type { Scrim } from "@/generated/prisma/browser";
 import { useQuery } from "@tanstack/react-query";
 import { motion, useReducedMotion } from "framer-motion";
 import { ChevronLeftIcon, ChevronRightIcon, Info, Search } from "lucide-react";

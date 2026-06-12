@@ -2,7 +2,7 @@
 
 import { calculateStats } from "@/lib/calculate-stats";
 import prisma from "@/lib/prisma";
-import { type CalculatedStatType, type Role } from "@prisma/client";
+import { type CalculatedStatType, type Role } from "@/generated/prisma/client";
 
 async function getUniquePlayersForMap(mapDataId: number): Promise<string[]> {
   const players = await prisma.playerStat.findMany({

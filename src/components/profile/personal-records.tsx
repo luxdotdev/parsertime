@@ -1,7 +1,7 @@
 "use client";
 
 import { toTimestampWithHours } from "@/lib/utils";
-import type { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@/generated/prisma/browser";
 import { Award, Crosshair, Heart, Shield, Zap } from "lucide-react";
 
 type PersonalRecordsProps = {

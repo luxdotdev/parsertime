@@ -33,7 +33,7 @@ import {
 } from "@/data/map/killfeed/types";
 import { useGoToReplay } from "@/components/map/map-tabs";
 import { cn, toHero, toKebabCase, toTimestamp } from "@/lib/utils";
-import type { Kill, RoundEnd } from "@prisma/client";
+import type { Kill, RoundEnd } from "@/generated/prisma/browser";
 import { GeistMono } from "geist/font/mono";
 import { useTranslations } from "next-intl";
 import Image from "next/image";

@@ -19,8 +19,8 @@ import type {
   PlayerStat,
   PointProgress,
   RoundEnd,
-} from "@prisma/client";
-import { Prisma, type $Enums } from "@prisma/client";
+} from "@/generated/prisma/client";
+import { Prisma, type $Enums } from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 
 import { MapQueryError } from "./errors";

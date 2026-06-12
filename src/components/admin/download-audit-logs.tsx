@@ -7,7 +7,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { serializeCsv } from "@/lib/csv";
-import type { AuditLog } from "@prisma/client";
+import type { AuditLog } from "@/generated/prisma/browser";
 import { Download, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

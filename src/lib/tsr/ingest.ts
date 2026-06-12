@@ -21,7 +21,7 @@ import {
   FaceitTier,
   Prisma,
   TsrRegion,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 
 function normalizeStatus(raw: string): FaceitMatchStatus | null {
   const s = raw.toUpperCase();

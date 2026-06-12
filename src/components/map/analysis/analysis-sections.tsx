@@ -25,7 +25,7 @@ import type {
 } from "@/data/scrim/types";
 import { toHero, toKebabCase, toTimestamp } from "@/lib/utils";
 import type { RoleName } from "@/types/heroes";
-import type { Kill } from "@prisma/client";
+import type { Kill } from "@/generated/prisma/browser";
 import { Crosshair, Route, Skull, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";

@@ -10,7 +10,7 @@ import { worldToImage } from "@/lib/map-calibration/world-to-image";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { heroRoleMapping, type HeroName } from "@/types/heroes";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { MapQueryError } from "./errors";
 import { mapCacheMissTotal, mapCacheRequestTotal } from "./metrics";

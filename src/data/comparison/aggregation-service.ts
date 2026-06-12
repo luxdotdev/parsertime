@@ -7,7 +7,7 @@ import {
   type MapType,
   type PlayerStat,
   Prisma,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import {
   aggregatePlayerStats,

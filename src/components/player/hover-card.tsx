@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/hover-card";
 import { Link } from "@/components/ui/link";
 import { toHero, toTimestampWithHours, useHeroNames } from "@/lib/utils";
-import { BillingPlan } from "@prisma/client";
+import { BillingPlan } from "@/generated/prisma/browser";
 import { useQuery } from "@tanstack/react-query";
 import type { Route } from "next";
 import { useTranslations } from "next-intl";

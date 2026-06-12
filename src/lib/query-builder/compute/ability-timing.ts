@@ -9,7 +9,7 @@ import {
   type Fight,
 } from "@/lib/utils";
 import { allHeroes, type AbilityImpact } from "@/types/heroes";
-import type { Kill } from "@prisma/client";
+import type { Kill } from "@/generated/prisma/client";
 
 type AbilityEvent = {
   match_time: number;

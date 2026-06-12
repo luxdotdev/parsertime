@@ -1,7 +1,7 @@
 "use client";
 
 import { format } from "@/lib/utils";
-import type { Kill } from "@prisma/client";
+import type { Kill } from "@/generated/prisma/browser";
 import { useTranslations } from "next-intl";
 import {
   Cell,

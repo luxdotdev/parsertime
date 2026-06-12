@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { adjacentBuckets, sameBucket } from "@/lib/matchmaker/adjacency";
-import { FaceitTier } from "@prisma/client";
+import { FaceitTier } from "@/generated/prisma/client";
 
 describe("adjacency", () => {
   it("Mid Masters has Low Masters and High Masters as adjacent", () => {

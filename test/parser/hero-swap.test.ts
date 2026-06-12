@@ -8,7 +8,7 @@ vi.mock("@/lib/prisma", async () => {
 import prismaMock from "@/lib/__mocks__/prisma";
 import { createHeroSwapRows } from "@/lib/parser";
 import type { HeroSwapTableRow, ParserData } from "@/types/parser";
-import type { HeroSwap } from "@prisma/client";
+import type { HeroSwap } from "@/generated/prisma/client";
 import { expect, test } from "vitest";
 
 test("should return the generated hero swap row", async () => {

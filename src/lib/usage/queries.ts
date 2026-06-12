@@ -1,7 +1,7 @@
 import "server-only";
 
 import prisma from "@/lib/prisma";
-import type { UsageEnv } from "@prisma/client";
+import type { UsageEnv } from "@/generated/prisma/client";
 import { unstable_cache } from "next/cache";
 import { FUNNELS, computeFunnel, type FunnelStep } from "./funnels";
 import { dayKey } from "./rollup";

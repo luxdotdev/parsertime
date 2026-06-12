@@ -10,7 +10,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { cn } from "@/lib/utils";
-import type { CalculatedStatType } from "@prisma/client";
+import type { CalculatedStatType } from "@/generated/prisma/browser";
 import { ChartBar } from "lucide-react";
 import { Area, AreaChart, Bar, BarChart, XAxis } from "recharts";
 

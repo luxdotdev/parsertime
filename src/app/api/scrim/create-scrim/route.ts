@@ -23,7 +23,7 @@ import {
   sendDiscordWebhook,
 } from "@/lib/webhooks";
 import type { ParserData } from "@/types/parser";
-import type { User } from "@prisma/client";
+import type { User } from "@/generated/prisma/client";
 import { Ratelimit } from "@upstash/ratelimit";
 import { ipAddress } from "@vercel/functions";
 import { kv } from "@vercel/kv";

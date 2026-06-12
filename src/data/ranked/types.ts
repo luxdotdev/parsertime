@@ -1,4 +1,4 @@
-import type { RankedMatch, RankedMatchHero } from "@prisma/client";
+import type { RankedMatch, RankedMatchHero } from "@/generated/prisma/client";
 
 export type RankedMatchWithHeroes = RankedMatch & {
   heroes: RankedMatchHero[];

@@ -1,7 +1,7 @@
 import "server-only";
 
 import prisma from "@/lib/prisma";
-import type { UsageSource } from "@prisma/client";
+import type { UsageSource } from "@/generated/prisma/client";
 import { Context, Data, Effect, Layer, ManagedRuntime, Schedule } from "effect";
 import { resolveUsageEnv } from "./env";
 

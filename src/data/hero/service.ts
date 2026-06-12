@@ -1,8 +1,8 @@
 import { EffectObservabilityLive } from "@/instrumentation";
 import prisma from "@/lib/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
-import type { Kill, PlayerStat } from "@prisma/client";
-import { Prisma } from "@prisma/client";
+import type { Kill, PlayerStat } from "@/generated/prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { HeroQueryError } from "./errors";
 import {

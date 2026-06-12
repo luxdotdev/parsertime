@@ -1,4 +1,4 @@
-import type { MapType, RosterRole } from "@prisma/client";
+import type { MapType, RosterRole } from "@/generated/prisma/client";
 
 export type UnlabeledMatchSummary = {
   id: number;

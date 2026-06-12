@@ -2,7 +2,7 @@ import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import prisma from "@/lib/prisma";
 import type { BillingPlans } from "@/types/billing-plans";
-import type { User } from "@prisma/client";
+import type { User } from "@/generated/prisma/client";
 import { get } from "@vercel/edge-config";
 import { Effect } from "effect";
 import type { Session } from "next-auth";

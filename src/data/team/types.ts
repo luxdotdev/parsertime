@@ -6,8 +6,8 @@ import type {
   PayloadProgress,
   PointProgress,
   RoundEnd,
-} from "@prisma/client";
-import type { $Enums } from "@prisma/client";
+} from "@/generated/prisma/client";
+import type { $Enums } from "@/generated/prisma/client";
 import { Schema as S } from "effect";
 import type { SubroleUltTiming } from "@/data/scrim/ult-helpers";
 

@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ScrimStatPoint, TargetProgress } from "@/data/player/types";
 import { type RoleName, getStatsForRole } from "@/lib/target-stats";
-import type { PlayerTarget } from "@prisma/client";
+import type { PlayerTarget } from "@/generated/prisma/browser";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";

@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
 import { CONTROL_OBJECTIVE_MAP } from "@/lib/map-calibration/control-map-index";
 import prisma from "@/lib/prisma";
 import {

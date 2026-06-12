@@ -4,7 +4,7 @@ import { ComparisonAggregationService } from "@/data/comparison";
 import { auth, canViewTeam, getCurrentUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import type { HeroName } from "@/types/heroes";
-import { MapType } from "@prisma/client";
+import { MapType } from "@/generated/prisma/client";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 

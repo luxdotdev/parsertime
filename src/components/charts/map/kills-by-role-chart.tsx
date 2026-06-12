@@ -2,7 +2,7 @@
 
 import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
-import type { Kill } from "@prisma/client";
+import type { Kill } from "@/generated/prisma/browser";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import {

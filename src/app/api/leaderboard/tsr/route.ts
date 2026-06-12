@@ -4,7 +4,7 @@ import {
   type TsrSortKey,
   queryTsrLeaderboard,
 } from "@/lib/tsr/leaderboard";
-import { FaceitTier, TsrRegion } from "@prisma/client";
+import { FaceitTier, TsrRegion } from "@/generated/prisma/client";
 
 export const runtime = "nodejs";
 

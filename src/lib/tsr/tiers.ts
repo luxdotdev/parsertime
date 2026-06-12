@@ -1,4 +1,4 @@
-import { FaceitTier, TsrRegion } from "@prisma/client";
+import { FaceitTier, TsrRegion } from "@/generated/prisma/client";
 
 // OW2 standard play is 5v5. Reject mini-format events (1v1/2v2/3v3 duels,
 // brawl learnings) — they run under the literal "faceit" organizer and would

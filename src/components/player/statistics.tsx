@@ -2,7 +2,7 @@ import { AllHeroes } from "@/components/player/all-heroes";
 import { SpecificHero } from "@/components/player/specific-hero";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getHeroNames, toHero } from "@/lib/utils";
-import type { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@/generated/prisma/client";
 import { getTranslations } from "next-intl/server";
 
 export async function Statistics({

@@ -22,7 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn, round, toMins } from "@/lib/utils";
-import type { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@/generated/prisma/browser";
 import { GeistMono } from "geist/font/mono";
 import { useTranslations } from "next-intl";
 

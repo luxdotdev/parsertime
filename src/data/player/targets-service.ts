@@ -2,8 +2,8 @@ import { EffectObservabilityLive } from "@/instrumentation";
 import prisma from "@/lib/prisma";
 import type { TargetStatKey } from "@/lib/target-stats";
 import { removeDuplicateRows, toMins } from "@/lib/utils";
-import type { PlayerStat, PlayerTarget } from "@prisma/client";
-import { Prisma } from "@prisma/client";
+import type { PlayerStat, PlayerTarget } from "@/generated/prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { TargetsQueryError } from "./errors";
 import {

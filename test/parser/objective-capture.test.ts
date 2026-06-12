@@ -8,7 +8,7 @@ vi.mock("@/lib/prisma", async () => {
 import prismaMock from "@/lib/__mocks__/prisma";
 import { createObjectiveCapturedRows } from "@/lib/parser";
 import type { ObjectiveCapturedTableRow, ParserData } from "@/types/parser";
-import type { ObjectiveCaptured } from "@prisma/client";
+import type { ObjectiveCaptured } from "@/generated/prisma/client";
 import { expect, test } from "vitest";
 
 test("should return the generated objective capture row", async () => {

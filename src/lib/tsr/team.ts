@@ -2,7 +2,7 @@ import { getCompositeSRLeaderboard } from "@/lib/hero-rating";
 import prisma from "@/lib/prisma";
 import { getPlayerTsrByBattletag } from "@/lib/tsr/lookup";
 import type { HeroName } from "@/types/heroes";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 
 export type TeamTsrSource = "tsr" | "predicted" | "csr_fallback";
 export type TeamTsrConfidence = "high" | "medium" | "low";

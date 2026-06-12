@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import type { Scrim } from "@prisma/client";
+import type { Scrim } from "@/generated/prisma/browser";
 import { useMemo, useState } from "react";
 
 type RecentActivityCalendarProps = {

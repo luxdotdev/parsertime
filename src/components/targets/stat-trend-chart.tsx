@@ -10,7 +10,7 @@ import {
 import type { ScrimStatPoint } from "@/data/player/types";
 import { getStatConfig } from "@/lib/target-stats";
 import { round } from "@/lib/utils";
-import type { PlayerTarget } from "@prisma/client";
+import type { PlayerTarget } from "@/generated/prisma/browser";
 import { TrendingDownIcon, TrendingUpIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";

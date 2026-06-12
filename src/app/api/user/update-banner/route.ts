@@ -2,7 +2,7 @@ import { auditLog } from "@/lib/audit-logs";
 import { getCurrentUser, isAdminUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { $Enums, type User } from "@prisma/client";
+import { $Enums, type User } from "@/generated/prisma/client";
 import { unauthorized } from "next/navigation";
 import { after, type NextRequest } from "next/server";
 import { z } from "zod";

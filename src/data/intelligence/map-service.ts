@@ -23,7 +23,7 @@ import {
   SCRIM_CONFIDENCE_THRESHOLDS,
   type DataAvailabilityProfile,
 } from "@/lib/data-availability";
-import type { MapType } from "@prisma/client";
+import type { MapType } from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { MapIntelligenceQueryError } from "./errors";
 import {

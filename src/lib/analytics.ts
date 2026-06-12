@@ -9,7 +9,7 @@ import {
   round,
 } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
-import type { RoundEnd, UltimateCharged, UltimateStart } from "@prisma/client";
+import type { RoundEnd, UltimateCharged, UltimateStart } from "@/generated/prisma/client";
 import { Effect } from "effect";
 
 export async function getAverageUltChargeTime(id: number, playerName: string) {

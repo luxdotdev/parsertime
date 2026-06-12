@@ -1,5 +1,5 @@
 import { TIER_FLOOR_MARKERS } from "@/lib/tsr/breakdown";
-import { FaceitTier } from "@prisma/client";
+import { FaceitTier } from "@/generated/prisma/client";
 
 export type TierBand = "Low" | "Mid" | "High";
 

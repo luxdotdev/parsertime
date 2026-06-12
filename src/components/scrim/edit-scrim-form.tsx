@@ -65,7 +65,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { HeroBan, Map, Scrim, Team } from "@prisma/client";
+import type { HeroBan, Map, Scrim, Team } from "@/generated/prisma/browser";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useQueryClient } from "@tanstack/react-query";
 import { useFormatter, useTranslations } from "next-intl";

@@ -6,7 +6,7 @@ import {
   SPATIAL_STAT_TYPES,
 } from "@/lib/spatial-stats";
 import { heroRoleMapping, type HeroName } from "@/types/heroes";
-import type { CalculatedStatType, Role } from "@prisma/client";
+import type { CalculatedStatType, Role } from "@/generated/prisma/client";
 
 async function processMap(mapDataId: number, scrimId: number) {
   const players = await prisma.playerStat.findMany({

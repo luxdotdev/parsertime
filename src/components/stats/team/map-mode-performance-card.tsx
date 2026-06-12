@@ -3,7 +3,7 @@
 import { SectionHeader } from "@/components/stats/team/section-header";
 import type { MapModePerformance } from "@/data/team/types";
 import { cn, toTimestampWithHours } from "@/lib/utils";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import { useTranslations } from "next-intl";
 import {
   Bar,

@@ -18,7 +18,7 @@ import {
   round,
 } from "@/lib/utils";
 import { heroPriority, type HeroName, heroRoleMapping } from "@/types/heroes";
-import type { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@/generated/prisma/client";
 import prisma from "./prisma";
 
 export async function calculateStats(mapDataId: number, playerName: string) {

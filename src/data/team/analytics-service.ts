@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import { calculateWinner } from "@/lib/winrate";
 import type { HeroName } from "@/types/heroes";
 import { mapNameToMapTypeMapping } from "@/types/map";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/client";
 import {
   Cache,
   Context,

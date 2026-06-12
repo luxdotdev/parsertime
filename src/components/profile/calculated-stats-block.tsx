@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { CalculatedStat } from "@prisma/client";
+import type { CalculatedStat } from "@/generated/prisma/browser";
 import { useState } from "react";
 
 type Props = {

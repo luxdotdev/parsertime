@@ -5,7 +5,7 @@ import {
   scaleAdjustedCsrPeerDelta,
 } from "@/lib/adjusted-csr";
 import { TIER_PRIORS } from "@/lib/tsr/constants";
-import { FaceitTier } from "@prisma/client";
+import { FaceitTier } from "@/generated/prisma/client";
 import { describe, expect, it } from "vitest";
 
 describe("adjusted CSR formula", () => {

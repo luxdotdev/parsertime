@@ -2,7 +2,7 @@ import { getCurrentUser, isAdminUser } from "@/lib/auth";
 import { dataLabeling } from "@/lib/flags";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
 import { forbidden, unauthorized } from "next/navigation";
 import { NextResponse } from "next/server";
 import { z } from "zod";

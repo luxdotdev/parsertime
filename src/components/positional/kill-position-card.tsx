@@ -3,7 +3,7 @@
 import type { LoadedCalibration } from "@/lib/map-calibration/load-calibration";
 import { worldToImage } from "@/lib/map-calibration/world-to-image";
 import { toHero } from "@/lib/utils";
-import type { Kill } from "@prisma/client";
+import type { Kill } from "@/generated/prisma/browser";
 import { Skull } from "lucide-react";
 import Image from "next/image";
 

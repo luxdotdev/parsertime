@@ -4,7 +4,7 @@ import { calculateWinner } from "@/lib/winrate";
 import { mapNameToMapTypeMapping } from "@/types/map";
 import type { HeroName } from "@/types/heroes";
 import { roleHeroMapping } from "@/types/heroes";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/client";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { TournamentTeamQueryError } from "./errors";

@@ -37,7 +37,7 @@ import type { RoleName } from "@/lib/target-stats";
 import { cn, toHero, toTimestampWithHours } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import type { PagePropsWithLocale } from "@/types/next";
-import { $Enums, Prisma, type Scrim } from "@prisma/client";
+import { $Enums, Prisma, type Scrim } from "@/generated/prisma/client";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 

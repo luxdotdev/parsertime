@@ -5,7 +5,7 @@ import {
   type DamageEvent,
 } from "@/lib/replay/rotation-death-detection";
 import type { Fight } from "@/lib/utils";
-import type { Kill } from "@prisma/client";
+import type { Kill } from "@/generated/prisma/client";
 import { describe, expect, test } from "vitest";
 
 function makeKill(overrides: Partial<Kill> = {}): Kill {

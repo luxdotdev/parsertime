@@ -4,7 +4,7 @@ import { UserService } from "@/data/user";
 import { auditLog } from "@/lib/audit-logs";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import type { User } from "@prisma/client";
+import type { User } from "@/generated/prisma/client";
 import { unauthorized } from "next/navigation";
 import { after, type NextRequest } from "next/server";
 import { z } from "zod";

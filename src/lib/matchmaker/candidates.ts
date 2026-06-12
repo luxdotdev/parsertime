@@ -6,7 +6,7 @@ import {
 import { upsertTeamTsrSnapshot } from "@/lib/matchmaker/snapshot";
 import { getBlockedTeamIds } from "@/lib/team-ops/blacklist";
 import prisma from "@/lib/prisma";
-import type { FaceitTier, TeamTsrSource, TsrRegion } from "@prisma/client";
+import type { FaceitTier, TeamTsrSource, TsrRegion } from "@/generated/prisma/client";
 
 const W_REGION = 1.0;
 const W_BRACKET = 0.5;

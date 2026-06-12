@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import type { TournamentMatchStatus } from "@prisma/client";
+import type { TournamentMatchStatus } from "@/generated/prisma/browser";
 import { BarChart3 } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";

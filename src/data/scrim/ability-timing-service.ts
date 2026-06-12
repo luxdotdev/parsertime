@@ -14,7 +14,7 @@ import {
 import type { AbilityImpact } from "@/types/heroes";
 import { allHeroes } from "@/types/heroes";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
-import type { Kill } from "@prisma/client";
+import type { Kill } from "@/generated/prisma/client";
 import { ScrimQueryError } from "./errors";
 import {
   scrimAbilityTimingDuration,

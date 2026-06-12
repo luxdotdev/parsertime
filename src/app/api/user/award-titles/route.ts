@@ -3,7 +3,7 @@ import { Logger } from "@/lib/logger";
 import { notifications } from "@/lib/notifications";
 import prisma from "@/lib/prisma";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/client";
 import { get } from "@vercel/edge-config";
 import type { NextRequest } from "next/server";
 

@@ -1,4 +1,4 @@
-import type { FaceitTier } from "@prisma/client";
+import type { FaceitTier } from "@/generated/prisma/client";
 
 export const TIER_PRIORS: Record<FaceitTier, number> = {
   UNCLASSIFIED: 2500,

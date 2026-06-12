@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/tooltip";
 import type { PlayerTsrSnapshot } from "@/lib/tsr/lookup";
 import { cn, toHero } from "@/lib/utils";
-import type { FaceitTier } from "@prisma/client";
+import type { FaceitTier } from "@/generated/prisma/client";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 

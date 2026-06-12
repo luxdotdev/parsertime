@@ -18,7 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { User } from "@prisma/client";
+import type { User } from "@/generated/prisma/browser";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

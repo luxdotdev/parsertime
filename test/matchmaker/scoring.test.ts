@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { scoreCandidate } from "@/lib/matchmaker/candidates";
-import { FaceitTier, TsrRegion } from "@prisma/client";
+import { FaceitTier, TsrRegion } from "@/generated/prisma/client";
 
 const searcher = {
   rating: 3300,

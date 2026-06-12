@@ -10,7 +10,7 @@ import prisma from "@/lib/prisma";
 import type { ComputedRow } from "@/lib/query-builder/aggregate";
 import { getTeamData } from "@/lib/query-builder/compute/shared";
 import type { HeroName } from "@/types/heroes";
-import { CalculatedStatType, type CalculatedStat } from "@prisma/client";
+import { CalculatedStatType, type CalculatedStat } from "@/generated/prisma/client";
 
 type MapStat = {
   player: string;

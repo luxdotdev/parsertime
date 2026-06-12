@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 
 type HeroRole = "Tank" | "Damage" | "Support";
 

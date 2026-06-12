@@ -42,7 +42,7 @@ import {
   type RoleName,
   type SubroleName,
 } from "@/types/heroes";
-import { $Enums, type Kill } from "@prisma/client";
+import { $Enums, type Kill } from "@/generated/prisma/client";
 import { getTranslations } from "next-intl/server";
 
 export async function DefaultOverview({

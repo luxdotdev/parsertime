@@ -10,7 +10,7 @@ import type {
 } from "@/lib/tsr/breakdown";
 import { RECENCY_HALF_LIFE_DAYS, TIER_RANK } from "@/lib/tsr/constants";
 import { cn } from "@/lib/utils";
-import { FaceitTier, TsrRegion } from "@prisma/client";
+import { FaceitTier, TsrRegion } from "@/generated/prisma/browser";
 import { useFormatter, useTranslations } from "next-intl";
 
 type DetailMessages = ReturnType<typeof useTranslations>;

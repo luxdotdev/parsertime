@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { useCreditBalance } from "@/hooks/use-credits";
 import { formatCents } from "@/lib/chat-pricing";
-import type { CreditTransactionType } from "@prisma/client";
+import type { CreditTransactionType } from "@/generated/prisma/browser";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

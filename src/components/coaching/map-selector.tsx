@@ -29,7 +29,7 @@ import type { LoadedCalibration } from "@/lib/map-calibration/load-calibration";
 import { cn, toKebabCase, useMapNames } from "@/lib/utils";
 import { coachingCanvasStore } from "@/stores/coaching-canvas-store";
 import { mapNameToMapTypeMapping, type MapName } from "@/types/map";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import { useSelector } from "@xstate/store/react";
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 import { useTranslations } from "next-intl";

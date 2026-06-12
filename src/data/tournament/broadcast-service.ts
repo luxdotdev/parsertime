@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
 import { heroRoleMapping } from "@/types/heroes";
-import { Prisma, type PlayerStat } from "@prisma/client";
+import { Prisma, type PlayerStat } from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { BroadcastQueryError } from "./errors";
 import {

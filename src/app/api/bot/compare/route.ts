@@ -4,7 +4,7 @@ import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
 import { trace } from "@opentelemetry/api";
-import { Prisma, type PlayerStat } from "@prisma/client";
+import { Prisma, type PlayerStat } from "@/generated/prisma/client";
 import type { NextRequest } from "next/server";
 
 async function getPlayerStats(playerName: string) {

@@ -4,7 +4,7 @@ import type {
   GetAppSettingsResponse,
   UpdateAppSettingsRequest,
 } from "@/app/api/user/app-settings/route";
-import type { $Enums } from "@prisma/client";
+import type { $Enums } from "@/generated/prisma/browser";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { createContext, use } from "react";
 

@@ -36,7 +36,7 @@ import {
 import prisma from "@/lib/prisma";
 import { toTitleCase } from "@/lib/utils";
 import type { ParserData } from "@/types/parser";
-import type { Role } from "@prisma/client";
+import type { Role } from "@/generated/prisma/client";
 import type { Session } from "next-auth";
 
 export type InsertProgress = (completed: number, total: number) => void;

@@ -5,7 +5,7 @@ import { createNewMap } from "@/lib/parser";
 import prisma from "@/lib/prisma";
 import { advanceMatch } from "@/lib/tournaments/advancement";
 import { calculateWinner } from "@/lib/winrate";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 import type { ParserData } from "@/types/parser";
 import { Ratelimit } from "@upstash/ratelimit";
 import { kv } from "@vercel/kv";

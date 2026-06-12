@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { serializeCsv } from "@/lib/csv";
-import type { $Enums, Kill } from "@prisma/client";
+import type { $Enums, Kill } from "@/generated/prisma/browser";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 

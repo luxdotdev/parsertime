@@ -1,5 +1,5 @@
 import type { HeroName } from "@/types/heroes";
-import type { CalculatedStat, MapType, PlayerStat } from "@prisma/client";
+import type { CalculatedStat, MapType, PlayerStat } from "@/generated/prisma/client";
 
 export type AggregatedStats = {
   eliminations: number;

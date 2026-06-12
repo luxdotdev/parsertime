@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import type { AuditLog } from "@prisma/client";
+import type { AuditLog } from "@/generated/prisma/client";
 import { Context, Effect, Layer, ManagedRuntime, Schedule } from "effect";
 import { DatabaseError } from "./errors";
 import type { AuditLogArgs } from "./types";

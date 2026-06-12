@@ -1,5 +1,5 @@
 import { EffectObservabilityLive } from "@/instrumentation";
-import type { CalculatedStat, PlayerStat } from "@prisma/client";
+import type { CalculatedStat, PlayerStat } from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { calculateTrends } from "./computation";
 import {

@@ -1,6 +1,6 @@
 import { TIER_FLOOR_MARKERS } from "@/lib/tsr/breakdown";
 import { cn } from "@/lib/utils";
-import { FaceitTier } from "@prisma/client";
+import { FaceitTier } from "@/generated/prisma/client";
 import { useFormatter, useTranslations } from "next-intl";
 
 type Props = {

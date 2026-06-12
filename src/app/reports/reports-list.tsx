@@ -10,7 +10,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
-import type { ChatReport } from "@prisma/client";
+import type { ChatReport } from "@/generated/prisma/browser";
 import {
   ChevronLeft,
   ChevronRight,

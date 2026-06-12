@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { cn, toKebabCase } from "@/lib/utils";
 import { mapNameToMapTypeMapping } from "@/types/map";
-import type { $Enums } from "@prisma/client";
+import type { $Enums } from "@/generated/prisma/browser";
 import { Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";

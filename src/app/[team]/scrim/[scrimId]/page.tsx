@@ -34,7 +34,7 @@ import { auth, canManageTeam, isAuthedToViewScrim } from "@/lib/auth";
 import { mapComparison, overviewCard, positionalData } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/client";
 import { BadgeCheck } from "lucide-react";
 import { ExclamationTriangleIcon, Pencil2Icon } from "@radix-ui/react-icons";
 import type { Metadata, Route } from "next";

@@ -34,8 +34,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import type { AuditLog } from "@prisma/client";
-import { $Enums } from "@prisma/client";
+import type { AuditLog } from "@/generated/prisma/browser";
+import { $Enums } from "@/generated/prisma/browser";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { addWeeks } from "date-fns";
 import {

@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { calculateWinner } from "@/lib/winrate";
-import type { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@/generated/prisma/client";
 import {
   Cache,
   Context,

@@ -1,5 +1,5 @@
 import { heroRoleMapping, type HeroName } from "@/types/heroes";
-import type { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@/generated/prisma/client";
 
 type HeroRole = "Tank" | "Damage" | "Support";
 

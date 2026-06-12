@@ -4,7 +4,7 @@ import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import type { Team } from "@prisma/client";
+import type { Team } from "@/generated/prisma/client";
 import { unauthorized } from "next/navigation";
 
 export type GetTeamsResponse = {

@@ -5,7 +5,7 @@ import {
   isScrimRequestLinkable,
   LINKAGE_WINDOW_DAYS,
 } from "@/lib/team-ops/linkage";
-import type { ScrimFeedbackVerdict } from "@prisma/client";
+import type { ScrimFeedbackVerdict } from "@/generated/prisma/client";
 
 export type LinkableRequest = {
   scrimRequestId: string;

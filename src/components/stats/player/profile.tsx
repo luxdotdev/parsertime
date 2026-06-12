@@ -27,7 +27,7 @@ import type { Winrate } from "@/data/scrim/types";
 import type { NonMappableStat, Stat } from "@/lib/player-charts";
 import { cn, toHero, useHeroNames } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
-import type { Kill, PlayerStat, Scrim } from "@prisma/client";
+import type { Kill, PlayerStat, Scrim } from "@/generated/prisma/browser";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import type { Route } from "next";

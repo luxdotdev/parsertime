@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Logger } from "@/lib/logger";
-import type { Team } from "@prisma/client";
+import type { Team } from "@/generated/prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { upload } from "@vercel/blob/client";
 import { useTranslations } from "next-intl";

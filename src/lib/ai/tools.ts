@@ -23,7 +23,7 @@ import { ULT_STAT_TYPES } from "@/lib/ult-quality";
 import { round } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
 import { allHeroes } from "@/types/heroes";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
 import { tool } from "ai";
 import { z } from "zod";
 import {

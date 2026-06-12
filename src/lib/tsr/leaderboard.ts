@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import type { FaceitTier, Prisma, TsrRegion } from "@prisma/client";
+import type { FaceitTier, Prisma, TsrRegion } from "@/generated/prisma/client";
 
 export type TsrLeaderboardRow = {
   rank: number;

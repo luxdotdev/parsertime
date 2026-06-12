@@ -12,7 +12,7 @@ import type {
   ParserData,
   RemechChargedTableRow,
 } from "@/types/parser";
-import type { DvaRemech, RemechCharged } from "@prisma/client";
+import type { DvaRemech, RemechCharged } from "@/generated/prisma/client";
 import { expect, test } from "vitest";
 
 test("should return the generated D.Va remech row", async () => {

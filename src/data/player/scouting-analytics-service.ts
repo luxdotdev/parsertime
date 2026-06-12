@@ -4,7 +4,7 @@ import type { ValidStatColumn } from "@/lib/stat-percentiles";
 import { removeDuplicateRows } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
 import { heroRoleMapping } from "@/types/heroes";
-import { CalculatedStatType, type PlayerStat, Prisma } from "@prisma/client";
+import { CalculatedStatType, type PlayerStat, Prisma } from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { ScoutingAnalyticsQueryError } from "./errors";
 import {

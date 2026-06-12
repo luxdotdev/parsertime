@@ -8,7 +8,7 @@ vi.mock("@/lib/prisma", async () => {
 import prismaMock from "@/lib/__mocks__/prisma";
 import { createMercyRezRows } from "@/lib/parser";
 import type { MercyRezTableRow, ParserData } from "@/types/parser";
-import type { MercyRez } from "@prisma/client";
+import type { MercyRez } from "@/generated/prisma/client";
 import { expect, test } from "vitest";
 
 test("should return the generated mercy rez row", async () => {

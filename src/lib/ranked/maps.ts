@@ -1,6 +1,6 @@
 import { toKebabCase } from "@/lib/utils";
 import { mapNameToMapTypeMapping, type MapName } from "@/types/map";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/client";
 
 /**
  * Seasonal variants and casing duplicates excluded from the ranked tracker,

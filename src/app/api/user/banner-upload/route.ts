@@ -1,7 +1,7 @@
 import { getCurrentUser, isAdminUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { $Enums, type User } from "@prisma/client";
+import { $Enums, type User } from "@/generated/prisma/client";
 import { Ratelimit } from "@upstash/ratelimit";
 import { track } from "@vercel/analytics/server";
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";

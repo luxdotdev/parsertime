@@ -24,7 +24,7 @@ import type { Winrate } from "@/data/scrim/types";
 import type { NonMappableStat, Stat } from "@/lib/player-charts";
 import { cn, toHero, useHeroNames } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
-import type { Kill, PlayerStat, Scrim } from "@prisma/client";
+import type { Kill, PlayerStat, Scrim } from "@/generated/prisma/browser";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import type { Route } from "next";
 import { useTranslations } from "next-intl";

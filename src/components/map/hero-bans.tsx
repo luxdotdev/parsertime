@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import { cn, toHero } from "@/lib/utils";
-import type { HeroBan } from "@prisma/client";
+import type { HeroBan } from "@/generated/prisma/browser";
 import { Ban } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";

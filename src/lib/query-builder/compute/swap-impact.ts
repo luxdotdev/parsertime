@@ -11,7 +11,7 @@ import {
   buildProgressMaps,
   findTeamNameForMapInMemory,
 } from "@/data/team/shared-core";
-import type { HeroSwap, MatchEnd } from "@prisma/client";
+import type { HeroSwap, MatchEnd } from "@/generated/prisma/client";
 
 function byMap<T extends { MapDataId: number | null }>(
   rows: T[]

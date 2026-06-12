@@ -2,7 +2,7 @@ import "server-only";
 import prisma from "@/lib/prisma";
 import { blacklistKey } from "@/lib/team-ops/blacklist-key";
 import { buildBlockedTeamIdSet } from "@/lib/team-ops/blocked-set";
-import type { TeamBlacklistSource } from "@prisma/client";
+import type { TeamBlacklistSource } from "@/generated/prisma/client";
 
 export type BlacklistRow = {
   id: string;

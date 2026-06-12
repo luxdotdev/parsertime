@@ -13,7 +13,7 @@ import {
 import { getMapUltAdvantage } from "@/data/map/ult-advantage";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
-import type { Kill } from "@prisma/client";
+import type { Kill } from "@/generated/prisma/client";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { getTranslations } from "next-intl/server";
 

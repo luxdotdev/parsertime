@@ -7,7 +7,7 @@ import type {
   PointProgress,
   RoundEnd,
   UltimateStart,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 
 export type BaseTeamData = {
   teamId: number;

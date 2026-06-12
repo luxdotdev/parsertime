@@ -1,5 +1,5 @@
 import type { ParserData } from "@/types/parser";
-import type { $Enums } from "@prisma/client";
+import type { $Enums } from "@/generated/prisma/client";
 
 export async function parseDataFromXLSXBinary(data: string | ArrayBuffer) {
   const XLSX = await import("xlsx");

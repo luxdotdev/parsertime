@@ -35,7 +35,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ClientOnly } from "@/lib/client-only";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { $Enums, type AppliedTitle, type User } from "@prisma/client";
+import { $Enums, type AppliedTitle, type User } from "@/generated/prisma/browser";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";

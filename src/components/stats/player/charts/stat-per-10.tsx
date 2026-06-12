@@ -2,7 +2,7 @@
 
 import type { NonMappableStat, Stat } from "@/lib/player-charts";
 import { cn, format, round, toMins } from "@/lib/utils";
-import type { PlayerStat, Scrim } from "@prisma/client";
+import type { PlayerStat, Scrim } from "@/generated/prisma/browser";
 import { TrendingDownIcon, TrendingUpIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

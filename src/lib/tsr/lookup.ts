@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import type { FaceitTier, TsrRegion } from "@prisma/client";
+import type { FaceitTier, TsrRegion } from "@/generated/prisma/client";
 
 export type PlayerTsrSnapshot = {
   rating: number;

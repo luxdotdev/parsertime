@@ -1,7 +1,7 @@
 import { getAdvancement, getNextMatch } from "@/lib/tournaments/bracket";
 import { transitionToPlayoffs } from "@/lib/tournaments/round-robin";
 import prisma from "@/lib/prisma";
-import type { BracketSide } from "@prisma/client";
+import type { BracketSide } from "@/generated/prisma/client";
 
 type MatchWithContext = {
   id: number;

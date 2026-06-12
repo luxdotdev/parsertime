@@ -6,7 +6,7 @@ import {
 import prisma from "@/lib/prisma";
 import { TIER_PRIORS } from "@/lib/tsr/constants";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
-import { FaceitTier, Prisma } from "@prisma/client";
+import { FaceitTier, Prisma } from "@/generated/prisma/client";
 
 export const ADJUSTED_CSR_PEER_DELTA_SCALE = 450;
 export const ADJUSTED_CSR_BASELINE_SHRINKAGE = 25;

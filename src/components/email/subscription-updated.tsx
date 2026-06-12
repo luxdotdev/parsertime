@@ -1,5 +1,5 @@
 import { toTitleCase } from "@/lib/utils";
-import type { User } from "@prisma/client";
+import type { User } from "@/generated/prisma/client";
 import {
   Body,
   Container,
