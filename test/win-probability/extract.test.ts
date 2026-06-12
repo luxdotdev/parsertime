@@ -23,6 +23,7 @@ function log(overrides: Partial<WPEventLog> = {}): WPEventLog {
     modeFamily: "control",
     team1: "Alpha",
     team2: "Bravo",
+    mapWinner: null,
     kills: [],
     rezzes: [],
     ultCharged: [],
@@ -69,6 +70,20 @@ describe("roundLabels", () => {
       rounds: [{ ...round, endScore1: 2, endScore2: 2 }],
     });
     expect(roundLabels(tied).get(1)).toBeNull();
+  });
+
+  test("non-control: canonical mapWinner labels score-tied maps", () => {
+    const distanceWin = log({
+      modeFamily: "escort_hybrid",
+      mapWinner: "Bravo",
+      rounds: [{ ...round, endScore1: 2, endScore2: 2 }],
+    });
+    expect(roundLabels(distanceWin).get(1)).toBe("Bravo");
+  });
+
+  test("control ignores mapWinner — rounds are labeled individually", () => {
+    const l = log({ mapWinner: "Bravo" });
+    expect(roundLabels(l).get(1)).toBe("Alpha"); // score delta wins round 1
   });
 });
 

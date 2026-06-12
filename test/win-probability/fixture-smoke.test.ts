@@ -46,6 +46,7 @@ function workbookToEventLog(data: ParserData): WPEventLog | null {
     modeFamily,
     team1,
     team2,
+    mapWinner: null, // score fallback suffices for the control fixture
     kills: rowsOf(data, "kill").map((r) => ({
       time: Number(r[1]),
       victimTeam: String(r[5]),
@@ -84,6 +85,7 @@ function workbookToEventLog(data: ParserData): WPEventLog | null {
     objectiveCaptured: rowsOf(data, "objective_captured").map((r) => ({
       time: Number(r[1]),
       team: String(r[3]),
+      objectiveIndex: Number(r[4]),
       progress1: Number(r[5]),
       progress2: Number(r[6]),
     })),

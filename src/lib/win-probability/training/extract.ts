@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { calculateWinner } from "@/lib/winrate";
 import { extractFeatures } from "@/lib/win-probability/features";
 import { statesAt } from "@/lib/win-probability/game-state";
 import {
@@ -63,7 +64,7 @@ export function roundLabels(log: WPEventLog): Map<number, string | null> {
     return labels;
   }
   const last = log.rounds[log.rounds.length - 1];
-  const winner =
+  const scoreWinner =
     last === undefined
       ? null
       : last.endScore1 > last.endScore2
@@ -71,6 +72,9 @@ export function roundLabels(log: WPEventLog): Map<number, string | null> {
         : last.endScore2 > last.endScore1
           ? log.team2
           : null;
+  // mapWinner carries calculateWinner's captures→distance→score verdict and
+  // labels the ~45% of escort/hybrid maps whose final scores tie.
+  const winner = log.mapWinner ?? scoreWinner;
   for (const r of log.rounds) labels.set(r.roundNumber, winner);
   return labels;
 }
@@ -159,10 +163,31 @@ export async function fetchEventLog(
   });
   if (rounds.length === 0) return null;
 
+  const team1 = matchStart.team_1_name;
+  const team2 = matchStart.team_2_name;
+  const canonicalWinner = calculateWinner({
+    matchDetails: matchStart,
+    finalRound: roundEnds[roundEnds.length - 1] ?? null,
+    team1Captures: objectiveCaptured.filter((o) => o.capturing_team === team1),
+    team2Captures: objectiveCaptured.filter((o) => o.capturing_team === team2),
+    team1PayloadProgress: payloadProgress.filter(
+      (p) => p.capturing_team === team1
+    ),
+    team2PayloadProgress: payloadProgress.filter(
+      (p) => p.capturing_team === team2
+    ),
+    team1PointProgress: pointProgress.filter((p) => p.capturing_team === team1),
+    team2PointProgress: pointProgress.filter((p) => p.capturing_team === team2),
+  });
+
   return {
     modeFamily,
-    team1: matchStart.team_1_name,
-    team2: matchStart.team_2_name,
+    team1,
+    team2,
+    mapWinner:
+      canonicalWinner === team1 || canonicalWinner === team2
+        ? canonicalWinner
+        : null,
     kills: kills.map((k) => ({
       time: k.match_time,
       victimTeam: k.victim_team,
@@ -201,6 +226,7 @@ export async function fetchEventLog(
     objectiveCaptured: objectiveCaptured.map((o) => ({
       time: o.match_time,
       team: o.capturing_team,
+      objectiveIndex: o.objective_index,
       progress1: o.control_team_1_progress,
       progress2: o.control_team_2_progress,
     })),

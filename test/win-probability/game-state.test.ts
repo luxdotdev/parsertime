@@ -7,6 +7,7 @@ function baseLog(overrides: Partial<WPEventLog> = {}): WPEventLog {
     modeFamily: "control",
     team1: "Alpha",
     team2: "Bravo",
+    mapWinner: null,
     kills: [],
     rezzes: [],
     ultCharged: [],
@@ -142,8 +143,8 @@ describe("statesAt", () => {
         },
       ],
       objectiveCaptured: [
-        { time: 100, team: "Alpha", progress1: 10, progress2: 0 },
-        { time: 200, team: "Bravo", progress1: 55, progress2: 1 },
+        { time: 100, team: "Alpha", objectiveIndex: 0, progress1: 10, progress2: 0 },
+        { time: 200, team: "Bravo", objectiveIndex: 0, progress1: 55, progress2: 1 },
       ],
     });
     const [early, flipped, nextRound] = statesAt(log, [150, 250, 330]);
@@ -156,6 +157,51 @@ describe("statesAt", () => {
     // Round 2 reset: no captures yet.
     expect(nextRound.team1.controlProgressOwn).toBe(0);
     expect(nextRound.team1.holdsObjective).toBe(0);
+  });
+
+  test("neutral 'All Teams' captures clear the holder without crediting a team", () => {
+    const log = baseLog({
+      objectiveCaptured: [
+        { time: 100, team: "Alpha", objectiveIndex: 0, progress1: 20, progress2: 0 },
+        { time: 150, team: "All Teams", objectiveIndex: 0, progress1: 20, progress2: 0 },
+      ],
+    });
+    const [held, neutral] = statesAt(log, [120, 160]);
+    expect(held.team1.holdsObjective).toBe(1);
+    expect(neutral.team1.holdsObjective).toBe(0);
+    expect(neutral.team2.holdsObjective).toBe(0);
+  });
+
+  test("flashpoint: objective index changes credit the holder and reset point state", () => {
+    const log = baseLog({
+      modeFamily: "flashpoint",
+      rounds: [
+        {
+          roundNumber: 1,
+          start: 0,
+          end: 800,
+          capturingTeam: "Alpha",
+          startScore1: 0,
+          startScore2: 0,
+          endScore1: 2,
+          endScore2: 3,
+        },
+      ],
+      objectiveCaptured: [
+        { time: 100, team: "Alpha", objectiveIndex: 0, progress1: 40, progress2: 5 },
+        // New point: Alpha held point 0 when it ended → Alpha 1-0.
+        { time: 250, team: "Bravo", objectiveIndex: 1, progress1: 0, progress2: 30 },
+      ],
+    });
+    const [duringFirst, duringSecond] = statesAt(log, [120, 260]);
+    expect(duringFirst.team1.scoreDiff).toBe(0);
+    expect(duringFirst.team1.controlProgressOwn).toBeCloseTo(0.4);
+    // Point 1 underway: Alpha's derived score 1, Bravo 0; control state is fresh.
+    expect(duringSecond.team1.scoreDiff).toBe(1);
+    expect(duringSecond.team2.scoreDiff).toBe(-1);
+    expect(duringSecond.team1.controlProgressOwn).toBe(0);
+    expect(duringSecond.team1.controlProgressEnemy).toBeCloseTo(0.3);
+    expect(duringSecond.team1.holdsObjective).toBe(-1);
   });
 
   test("snapshots are mirror images", () => {

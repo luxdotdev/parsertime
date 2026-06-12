@@ -47,6 +47,9 @@ export type WPEventLog = {
   modeFamily: ModeFamily;
   team1: string;
   team2: string;
+  /** Canonical map winner (calculateWinner semantics: captures → distance →
+   * score). null = unknown; non-control labeling falls back to score diff. */
+  mapWinner: string | null;
   kills: {
     time: number;
     victimTeam: string;
@@ -73,6 +76,7 @@ export type WPEventLog = {
   objectiveCaptured: {
     time: number;
     team: string;
+    objectiveIndex: number;
     progress1: number; // raw 0..100, team 1's control win %
     progress2: number;
   }[];

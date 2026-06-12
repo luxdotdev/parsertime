@@ -16,6 +16,7 @@ type SweepEvent =
       time: number;
       kind: "objective_captured";
       team: string;
+      objectiveIndex: number;
       progress1: number;
       progress2: number;
     }
@@ -66,6 +67,7 @@ function mergedEvents(log: WPEventLog): SweepEvent[] {
       time: o.time,
       kind: "objective_captured",
       team: o.team,
+      objectiveIndex: o.objectiveIndex,
       progress1: o.progress1,
       progress2: o.progress2,
     });
@@ -95,6 +97,10 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
   const progress = { t1: 0, t2: 0 }; // raw 0..100
   const control = { t1: 0, t2: 0 }; // raw 0..100, control-mode win %
   let holder: "t1" | "t2" | null = null;
+  let objectiveIndex: number | null = null;
+  // Flashpoint emits a single round_start, so its running score is derived:
+  // each objective-index transition credits the team holding the dying point.
+  const derivedScore = { t1: 0, t2: 0 };
   let roundIndex = 0;
   let setupBaseline: { time: number; remaining: number } | null = null;
 
@@ -131,16 +137,28 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
           control.t1 = 0;
           control.t2 = 0;
           holder = null;
+          objectiveIndex = null;
           break;
         case "progress":
           if (isTeam1(e.team)) progress.t1 = e.value;
           else progress.t2 = e.value;
           break;
-        case "objective_captured":
+        case "objective_captured": {
+          if (objectiveIndex !== null && e.objectiveIndex !== objectiveIndex) {
+            // A new point: credit whoever held the old one, reset its state.
+            if (holder !== null) derivedScore[holder]++;
+            control.t1 = 0;
+            control.t2 = 0;
+            holder = null;
+          }
+          objectiveIndex = e.objectiveIndex;
           control.t1 = e.progress1;
           control.t2 = e.progress2;
-          holder = isTeam1(e.team) ? "t1" : "t2";
+          // "All Teams" (neutral unlock) and unknown names clear the holder.
+          holder =
+            e.team === log.team1 ? "t1" : e.team === log.team2 ? "t2" : null;
           break;
+        }
         case "setup":
           setupBaseline = { time: e.time, remaining: e.timeRemaining };
           break;
@@ -158,10 +176,24 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
 
     const round = log.rounds[roundIndex];
     const ended = round !== undefined && t >= round.end;
+    // Flashpoint logs emit one round_start for the whole map, so its round
+    // scores are frozen at 0 — use the derived per-point score instead.
     const score1 =
-      round === undefined ? 0 : ended ? round.endScore1 : round.startScore1;
+      log.modeFamily === "flashpoint"
+        ? derivedScore.t1
+        : round === undefined
+          ? 0
+          : ended
+            ? round.endScore1
+            : round.startScore1;
     const score2 =
-      round === undefined ? 0 : ended ? round.endScore2 : round.startScore2;
+      log.modeFamily === "flashpoint"
+        ? derivedScore.t2
+        : round === undefined
+          ? 0
+          : ended
+            ? round.endScore2
+            : round.startScore2;
     const roundNumber = round?.roundNumber ?? 0;
     const capturing = round?.capturingTeam ?? "";
     const timeRemaining =
