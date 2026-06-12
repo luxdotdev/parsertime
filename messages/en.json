@@ -7327,5 +7327,16 @@
       "nextPage": "Next page",
       "next": "Next"
     }
+  },
+  "ranked": {
+    "title": "Ranked Tracker",
+    "emptyTitle": "No matches tracked yet",
+    "emptyDescription": "Start logging your games to see winrate trends across maps, heroes, and group sizes.",
+    "trackFirst": "Track your first match",
+    "addMatch": "Add match",
+    "metadata": {
+      "title": "Ranked Tracker",
+      "description": "Track your ranked Overwatch 2 matches and analyze your performance."
+    }
   }
 }

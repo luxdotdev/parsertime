@@ -7328,5 +7328,16 @@
       "nextPage": "下一页",
       "next": "下一页"
     }
+  },
+  "ranked": {
+    "title": "排位追踪器",
+    "emptyTitle": "暂无记录的对局",
+    "emptyDescription": "开始记录您的游戏，查看跨地图、英雄和组队规模的胜率趋势。",
+    "trackFirst": "记录首场对局",
+    "addMatch": "添加对局",
+    "metadata": {
+      "title": "排位追踪器",
+      "description": "追踪您的《守望先锋2》排位对局并分析您的表现。"
+    }
   }
 }
