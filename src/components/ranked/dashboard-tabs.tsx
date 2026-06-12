@@ -20,6 +20,7 @@ import { MapWinLossChart } from "@/components/ranked/charts/map-win-loss-chart";
 import { MapWinrateRankingChart } from "@/components/ranked/charts/map-winrate-ranking-chart";
 import { MostPlayedHeroesChart } from "@/components/ranked/charts/most-played-heroes-chart";
 import { OneTrickDetectionCard } from "@/components/ranked/charts/one-trick-detection-card";
+import { PatchImpactChart } from "@/components/ranked/charts/patch-impact-chart";
 import { RecentFormChart } from "@/components/ranked/charts/recent-form-chart";
 import { RepeatMapCard } from "@/components/ranked/charts/repeat-map-card";
 import { RoleDistributionChart } from "@/components/ranked/charts/role-distribution-chart";
@@ -47,13 +48,16 @@ import type {
   MatchData,
   MostPlayedHeroResult,
   OneTrickResult,
+  PatchTimelineResult,
   RecentFormData,
   RepeatMapResult,
   RoleStatsResult,
   RollingWinrateResult,
+  SeasonBreakdownEntry,
   SessionAnalysisResult,
   StreakData,
 } from "@/lib/ranked-stats";
+import type { OverwatchPatch } from "@/types/overwatch-patches";
 const tabTriggerClass =
   "text-muted-foreground hover:text-foreground data-[state=active]:text-foreground border-0 border-b-2 border-b-transparent data-[state=active]:border-b-primary rounded-none bg-transparent px-0 pb-3 pt-1 font-mono text-[11px] tracking-[0.16em] uppercase shadow-none data-[state=active]:shadow-none data-[state=active]:bg-transparent dark:bg-transparent dark:data-[state=active]:bg-transparent dark:data-[state=active]:border-b-primary transition-colors";
 
@@ -84,6 +88,9 @@ type DashboardTabsProps = {
   mapTimeline: MapTimelineResult;
   sessionAnalysis: SessionAnalysisResult;
   dayOfWeekStats: DayOfWeekResult;
+  patchTimeline: PatchTimelineResult;
+  seasonBreakdown: SeasonBreakdownEntry[];
+  patches: OverwatchPatch[];
 };
 
 export function DashboardTabs({
@@ -110,6 +117,9 @@ export function DashboardTabs({
   mapTimeline,
   sessionAnalysis,
   dayOfWeekStats,
+  patchTimeline,
+  seasonBreakdown,
+  patches,
 }: DashboardTabsProps) {
   return (
     <Tabs defaultValue="overview" className="space-y-8">
@@ -125,6 +135,9 @@ export function DashboardTabs({
         </TabsTrigger>
         <TabsTrigger value="time" className={tabTriggerClass}>
           Time
+        </TabsTrigger>
+        <TabsTrigger value="patches" className={tabTriggerClass}>
+          Patches
         </TabsTrigger>
         <TabsTrigger value="groups" className={tabTriggerClass}>
           Groups
@@ -189,6 +202,14 @@ export function DashboardTabs({
           <SessionAnalysisCard result={sessionAnalysis} />
           <DayOfWeekCard result={dayOfWeekStats} />
         </div>
+      </TabsContent>
+
+      <TabsContent value="patches" className="space-y-8">
+        <PatchImpactChart
+          timeline={patchTimeline}
+          seasonBreakdown={seasonBreakdown}
+          patches={patches}
+        />
       </TabsContent>
 
       <TabsContent value="groups" className="space-y-8">

@@ -14,6 +14,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  buildPatchPeriods,
+  filterMatchesByPeriod,
   filterMatchesByRole,
   getActivityHeatmapData,
   getDayOfWeekStats,
@@ -31,20 +33,24 @@ import {
   getMapWinLossData,
   getMostPlayedHeroes,
   getOneTrickStats,
+  getPatchTimelineData,
   getRecentFormData,
   getRepeatMapData,
   getRollingWinrateData,
   getRoleStats,
+  getSeasonBreakdown,
   getSessionAnalysis,
   getStreakData,
   getSummaryStats,
   type MatchData,
   type RoleFilter,
 } from "@/lib/ranked-stats";
-import { Plus, Shield, Swords, Heart } from "lucide-react";
+import type { OverwatchPatch } from "@/types/overwatch-patches";
+import { CalendarRange, Heart, Plus, Shield, Swords } from "lucide-react";
 
 type DashboardContentProps = {
   matches: MatchData[];
+  patches: OverwatchPatch[];
 };
 
 const ROLE_OPTIONS: { value: RoleFilter; label: string; icon: typeof Shield }[] = [
@@ -54,12 +60,42 @@ const ROLE_OPTIONS: { value: RoleFilter; label: string; icon: typeof Shield }[] 
   { value: "Support", label: "Support", icon: Heart },
 ];
 
-export function DashboardContent({ matches }: DashboardContentProps) {
+export function DashboardContent({
+  matches,
+  patches,
+}: DashboardContentProps) {
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("all");
+  const [periodId, setPeriodId] = useState<string>("all");
 
+  const periods = useMemo(() => buildPatchPeriods(patches), [patches]);
+  const selectedPeriod = useMemo(
+    () => periods.find((p) => p.id === periodId) ?? null,
+    [periods, periodId]
+  );
+
+  // Period scopes everything (all roles); role narrows it further. The Patches
+  // tab uses the period-unscoped, role-filtered set so it always shows the full
+  // patch history regardless of the active season filter.
+  const periodMatches = useMemo(
+    () => filterMatchesByPeriod(matches, selectedPeriod),
+    [matches, selectedPeriod]
+  );
   const filteredMatches = useMemo(
+    () => filterMatchesByRole(periodMatches, roleFilter),
+    [periodMatches, roleFilter]
+  );
+  const allTimeRoleMatches = useMemo(
     () => filterMatchesByRole(matches, roleFilter),
     [matches, roleFilter]
+  );
+
+  const patchTimeline = useMemo(
+    () => getPatchTimelineData(allTimeRoleMatches),
+    [allTimeRoleMatches]
+  );
+  const seasonBreakdown = useMemo(
+    () => getSeasonBreakdown(allTimeRoleMatches, patches),
+    [allTimeRoleMatches, patches]
   );
 
   const summaryStats = useMemo(
@@ -106,7 +142,10 @@ export function DashboardContent({ matches }: DashboardContentProps) {
     () => getGroupSizeWinrates(filteredMatches),
     [filteredMatches]
   );
-  const roleStats = useMemo(() => getRoleStats(matches), [matches]);
+  const roleStats = useMemo(
+    () => getRoleStats(periodMatches),
+    [periodMatches]
+  );
   const oneTrick = useMemo(
     () => getOneTrickStats(filteredMatches),
     [filteredMatches]
@@ -154,7 +193,30 @@ export function DashboardContent({ matches }: DashboardContentProps) {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-end">
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        {periods.length > 0 && (
+          <Select value={periodId} onValueChange={setPeriodId}>
+            <SelectTrigger
+              size="sm"
+              aria-label="Filter by season or patch"
+              className="w-auto"
+            >
+              <CalendarRange className="size-4" aria-hidden="true" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All time</SelectItem>
+              {periods.map((p) => (
+                <SelectItem key={p.id} value={p.id}>
+                  {p.kind === "mid-season" ? (
+                    <span className="text-muted-foreground">↳</span>
+                  ) : null}
+                  {p.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         <div className="flex items-center gap-2">
           <Select
             value={roleFilter}
@@ -209,6 +271,9 @@ export function DashboardContent({ matches }: DashboardContentProps) {
         mapTimeline={mapTimeline}
         sessionAnalysis={sessionAnalysis}
         dayOfWeekStats={dayOfWeekStats}
+        patchTimeline={patchTimeline}
+        seasonBreakdown={seasonBreakdown}
+        patches={patches}
       />
 
       <MatchList matches={filteredMatches} />

@@ -1,6 +1,7 @@
 import { type RankedMap, RANKED_MAP_NAMES, RANKED_MAPS } from "@/lib/ranked/maps";
 import { toKebabCase } from "@/lib/utils";
 import type { RoleName as HeroRole } from "@/types/heroes";
+import type { OverwatchPatch } from "@/types/overwatch-patches";
 
 // The canonical ranked map universe (deduped, seasonal variants removed). Used
 // for every "all maps" / never-played calculation so stored matches always
@@ -455,6 +456,170 @@ function getRollingWinrateData(
   }
 
   return { data, insight: { trend, peakWinrate, currentWinrate, window } };
+}
+
+// --- Patch / Season analysis ---
+
+export type PatchPeriodKind = "season" | "mid-season";
+
+export type PatchPeriod = {
+  id: string;
+  label: string;
+  /** Season name, used to group the filter options. */
+  group: string;
+  kind: PatchPeriodKind;
+  fromMs: number;
+  /** Exclusive upper bound; Infinity for the most recent window. */
+  toMs: number;
+};
+
+/** Patch dates are date-only (yyyy-mm-dd); treat them as UTC midnight. */
+function parsePatchMs(date: string): number {
+  return new Date(`${date}T00:00:00Z`).getTime();
+}
+
+/**
+ * Build the selectable date windows for the season/patch filter from the
+ * Overwatch patch history. Each SEASON yields a full-season window; each
+ * MID_SEASON patch yields a sub-window running until the next patch boundary.
+ * Hotfixes are not selectable windows (they still render as timeline markers).
+ * Newest season first; within a season the full-season option precedes its
+ * mid-season windows.
+ */
+export function buildPatchPeriods(patches: OverwatchPatch[]): PatchPeriod[] {
+  const seasons = patches
+    .filter((p) => p.type === "season")
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const boundaries = patches
+    .filter((p) => p.type === "season" || p.type === "mid-season")
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  const groups = seasons.map((season, i) => {
+    const from = parsePatchMs(season.date);
+    const to =
+      i + 1 < seasons.length ? parsePatchMs(seasons[i + 1].date) : Infinity;
+
+    const group: PatchPeriod[] = [
+      {
+        id: season.date,
+        label: season.name,
+        group: season.name,
+        kind: "season",
+        fromMs: from,
+        toMs: to,
+      },
+    ];
+
+    boundaries
+      .filter(
+        (b) =>
+          b.type === "mid-season" &&
+          parsePatchMs(b.date) >= from &&
+          parsePatchMs(b.date) < to
+      )
+      .forEach((mid) => {
+        const midFrom = parsePatchMs(mid.date);
+        const next = boundaries.find((b) => parsePatchMs(b.date) > midFrom);
+        group.push({
+          id: mid.date,
+          label: mid.name,
+          group: season.name,
+          kind: "mid-season",
+          fromMs: midFrom,
+          toMs: next ? parsePatchMs(next.date) : Infinity,
+        });
+      });
+
+    return group;
+  });
+
+  return groups.reverse().flat();
+}
+
+export function filterMatchesByPeriod(
+  matches: MatchData[],
+  period: PatchPeriod | null
+): MatchData[] {
+  if (!period) return matches;
+  return matches.filter((m) => {
+    const t = new Date(m.playedAt).getTime();
+    return t >= period.fromMs && t < period.toMs;
+  });
+}
+
+export type PatchTimelinePoint = { ts: number; rollingWinrate: number };
+
+export type PatchTimelineResult = {
+  data: PatchTimelinePoint[];
+  minTs: number;
+  maxTs: number;
+};
+
+/** Rolling winrate indexed by match timestamp, so patch dates can be overlaid. */
+export function getPatchTimelineData(
+  matches: MatchData[],
+  window = ROLLING_WINDOW
+): PatchTimelineResult {
+  const sorted = [...matches].sort(
+    (a, b) => new Date(a.playedAt).getTime() - new Date(b.playedAt).getTime()
+  );
+  const data: PatchTimelinePoint[] = sorted.map((match, i) => {
+    const slice = sorted.slice(Math.max(0, i - window + 1), i + 1);
+    const wins = slice.filter((m) => m.result === "win").length;
+    return {
+      ts: new Date(match.playedAt).getTime(),
+      rollingWinrate: Math.round((wins / slice.length) * 100),
+    };
+  });
+  return {
+    data,
+    minTs: data.length > 0 ? data[0].ts : 0,
+    maxTs: data.length > 0 ? data[data.length - 1].ts : 0,
+  };
+}
+
+export type SeasonBreakdownEntry = {
+  name: string;
+  games: number;
+  wins: number;
+  losses: number;
+  draws: number;
+  winrate: number;
+};
+
+/** Per-season win/loss totals, newest season first, seasons with games only. */
+export function getSeasonBreakdown(
+  matches: MatchData[],
+  patches: OverwatchPatch[]
+): SeasonBreakdownEntry[] {
+  const seasons = patches
+    .filter((p) => p.type === "season")
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  return seasons
+    .map((season, i) => {
+      const from = parsePatchMs(season.date);
+      const to =
+        i + 1 < seasons.length ? parsePatchMs(seasons[i + 1].date) : Infinity;
+      const inSeason = matches.filter((m) => {
+        const t = new Date(m.playedAt).getTime();
+        return t >= from && t < to;
+      });
+      const wins = inSeason.filter((m) => m.result === "win").length;
+      const losses = inSeason.filter((m) => m.result === "loss").length;
+      const draws = inSeason.filter((m) => m.result === "draw").length;
+      const decided = wins + losses;
+      return {
+        name: season.name,
+        games: inSeason.length,
+        wins,
+        losses,
+        draws,
+        winrate: decided > 0 ? Math.round((wins / decided) * 100) : 0,
+      };
+    })
+    .filter((e) => e.games > 0)
+    .reverse();
 }
 
 // --- Activity Heatmap ---

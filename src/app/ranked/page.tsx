@@ -10,6 +10,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { getOverwatchPatches } from "@/data/overwatch/patches-service";
 import { RankedService } from "@/data/ranked";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
@@ -39,9 +40,14 @@ export default async function RankedPage() {
   );
   if (!user) redirect("/sign-in");
 
-  const matches = await AppRuntime.runPromise(
-    RankedService.pipe(Effect.flatMap((svc) => svc.getMatchesForUser(user.id)))
-  );
+  const [matches, patches] = await Promise.all([
+    AppRuntime.runPromise(
+      RankedService.pipe(
+        Effect.flatMap((svc) => svc.getMatchesForUser(user.id))
+      )
+    ),
+    getOverwatchPatches(),
+  ]);
 
   return (
     <div className="px-6 pt-8 pb-16 sm:px-10">
@@ -80,7 +86,7 @@ export default async function RankedPage() {
         </div>
       ) : (
         <div className="mt-6">
-          <DashboardContent matches={matches} />
+          <DashboardContent matches={matches} patches={patches} />
         </div>
       )}
     </div>
