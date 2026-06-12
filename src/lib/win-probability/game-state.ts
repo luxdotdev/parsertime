@@ -9,7 +9,14 @@ import {
 type SweepEvent =
   | { time: number; kind: "kill"; team: string; player: string; hero?: string }
   | { time: number; kind: "rez"; team: string; player: string }
-  | { time: number; kind: "ult_charged"; team: string; player: string }
+  | {
+      time: number;
+      kind: "ult_charged";
+      team: string;
+      player: string;
+      hero?: string;
+      heroDuplicated?: boolean;
+    }
   | { time: number; kind: "ult_start"; team: string; player: string }
   | { time: number; kind: "round_start"; roundIndex: number }
   | {
@@ -50,6 +57,8 @@ function mergedEvents(log: WPEventLog): SweepEvent[] {
       kind: "ult_charged",
       team: u.team,
       player: u.player,
+      hero: u.hero,
+      heroDuplicated: u.heroDuplicated,
     });
   }
   for (const u of log.ultStart) {
@@ -104,6 +113,12 @@ function clampUnit(v: number): number {
   return Math.min(1, Math.max(0, v));
 }
 
+/** A duplicated ult belongs to Echo (Damage), not the copied hero's role. */
+function ultRole(hero: string | undefined, duplicated: boolean | undefined): RoleName {
+  if (duplicated === true) return "Damage";
+  return getHeroRole(hero ?? "");
+}
+
 /**
  * Single chronological sweep. `times` must be ascending. Returns one
  * Snapshot per requested time with both team perspectives.
@@ -111,7 +126,10 @@ function clampUnit(v: number): number {
 export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
   const events = mergedEvents(log);
   const deadUntil = new Map<string, { until: number; role: RoleName }>(); // "team player" → {until, role}
-  const banked = { t1: new Set<string>(), t2: new Set<string>() };
+  const banked = {
+    t1: new Map<string, RoleName>(),
+    t2: new Map<string, RoleName>(),
+  };
   const progress = { t1: 0, t2: 0 }; // raw 0..100
   const control = { t1: 0, t2: 0 }; // raw 0..100, control-mode win %
   let holder: "t1" | "t2" | null = null;
@@ -125,7 +143,7 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
   function isTeam1(team: string): boolean {
     return team === log.team1;
   }
-  function bankOf(team: string): Set<string> {
+  function bankOf(team: string): Map<string, RoleName> {
     return isTeam1(team) ? banked.t1 : banked.t2;
   }
 
@@ -146,7 +164,7 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
           deadUntil.delete(`${e.team} ${e.player}`);
           break;
         case "ult_charged":
-          bankOf(e.team).add(e.player);
+          bankOf(e.team).set(e.player, ultRole(e.hero, e.heroDuplicated));
           break;
         case "ult_start":
           bankOf(e.team).delete(e.player);
@@ -244,6 +262,13 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
         ? 0
         : Math.max(0, setupBaseline.remaining - (t - setupBaseline.time));
 
+    const bank = {
+      t1: { Tank: 0, Damage: 0, Support: 0 },
+      t2: { Tank: 0, Damage: 0, Support: 0 },
+    };
+    for (const role of banked.t1.values()) bank.t1[role]++;
+    for (const role of banked.t2.values()) bank.t2[role]++;
+
     function perspective(own: "t1" | "t2"): GameState {
       const sign = own === "t1" ? 1 : -1;
       return {
@@ -255,9 +280,9 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
         dpsAliveDiff: sign * (dead.t2.Damage - dead.t1.Damage),
         supportAliveDiff: sign * (dead.t2.Support - dead.t1.Support),
         ultBankDiff: sign * (banked.t1.size - banked.t2.size),
-        tankUltDiff: 0,
-        dpsUltDiff: 0,
-        supportUltDiff: 0,
+        tankUltDiff: sign * (bank.t1.Tank - bank.t2.Tank),
+        dpsUltDiff: sign * (bank.t1.Damage - bank.t2.Damage),
+        supportUltDiff: sign * (bank.t1.Support - bank.t2.Support),
         scoreDiff: sign * (score1 - score2),
         objProgressOwn: clampUnit(
           (own === "t1" ? progress.t1 : progress.t2) / 100

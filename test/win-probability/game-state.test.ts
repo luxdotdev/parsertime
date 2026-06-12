@@ -412,5 +412,47 @@ describe("statesAt", () => {
     expect(s.team1.tankAliveDiff).toBe(-s.team2.tankAliveDiff);
     expect(s.team1.dpsAliveDiff).toBe(-s.team2.dpsAliveDiff);
     expect(s.team1.supportAliveDiff).toBe(-s.team2.supportAliveDiff);
+    expect(s.team1.tankUltDiff).toBe(-s.team2.tankUltDiff);
+    expect(s.team1.dpsUltDiff).toBe(-s.team2.dpsUltDiff);
+    expect(s.team1.supportUltDiff).toBe(-s.team2.supportUltDiff);
+  });
+
+  test("role-split ult bank buckets by hero role and survives death", () => {
+    const log = baseLog({
+      ultCharged: [
+        { time: 50, team: "Alpha", player: "a1", hero: "Sigma" },
+        { time: 60, team: "Alpha", player: "a2", hero: "Kiriko" },
+        { time: 70, team: "Bravo", player: "b1", hero: "Sojourn" },
+      ],
+      ultStart: [{ time: 80, team: "Alpha", player: "a1" }],
+      kills: [{ time: 75, victimTeam: "Alpha", victimName: "a2", victimHero: "Kiriko" }],
+    });
+    const [t78, t85] = statesAt(log, [78, 85]);
+    expect(t78.team1.tankUltDiff).toBe(1); // Sigma banked
+    expect(t78.team1.supportUltDiff).toBe(1); // Kiriko banked (dead, keeps charge)
+    expect(t78.team1.dpsUltDiff).toBe(-1); // Sojourn banked on Bravo
+    expect(t78.team1.ultBankDiff).toBe(1); // sum invariant
+    expect(t85.team1.tankUltDiff).toBe(0); // Sigma spent
+    expect(t85.team1.ultBankDiff).toBe(0);
+  });
+
+  test("an Echo-duplicated ult counts as Damage, not the copied hero's role", () => {
+    const log = baseLog({
+      ultCharged: [
+        { time: 50, team: "Alpha", player: "a1", hero: "Ana", heroDuplicated: true },
+      ],
+    });
+    const [s] = statesAt(log, [60]);
+    expect(s.team1.dpsUltDiff).toBe(1);
+    expect(s.team1.supportUltDiff).toBe(0);
+  });
+
+  test("an ult charge with no hero falls into the Damage bucket", () => {
+    const log = baseLog({
+      ultCharged: [{ time: 50, team: "Alpha", player: "a1" }],
+    });
+    const [s] = statesAt(log, [60]);
+    expect(s.team1.dpsUltDiff).toBe(1);
+    expect(s.team1.ultBankDiff).toBe(1);
   });
 });
