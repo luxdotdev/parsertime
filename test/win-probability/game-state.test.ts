@@ -149,6 +149,44 @@ describe("statesAt", () => {
     expect(s.team1.objProgressEnemy).toBeCloseTo(0.2);
   });
 
+  test("escort/hybrid: only the round's attacker can generate progress", () => {
+    // Loggers sometimes stamp a dying round's final tick with the NEW round's
+    // number, defeating staleness checks. Domain rule: the defender cannot
+    // push the payload — non-attacker progress is noise.
+    const log = baseLog({
+      modeFamily: "escort_hybrid",
+      rounds: [
+        {
+          roundNumber: 1,
+          start: 0,
+          end: 320,
+          capturingTeam: "Alpha",
+          startScore1: 0,
+          startScore2: 0,
+          endScore1: 0,
+          endScore2: 3,
+        },
+        {
+          roundNumber: 2,
+          start: 320,
+          end: 600,
+          capturingTeam: "Bravo",
+          startScore1: 0,
+          startScore2: 3,
+          endScore1: 1,
+          endScore2: 3,
+        },
+      ],
+      progress: [
+        { time: 325, team: "Alpha", value: 100, roundNumber: 2 }, // mis-stamped spill
+        { time: 400, team: "Bravo", value: 40, roundNumber: 2 },
+      ],
+    });
+    const [s] = statesAt(log, [410]);
+    expect(s.team1.objProgressOwn).toBe(0); // Alpha defends r2 — no progress
+    expect(s.team1.objProgressEnemy).toBeCloseTo(0.4);
+  });
+
   test("a progress tick sharing the round-start timestamp belongs to the dying round", () => {
     // Real logs emit round 1's final 100% tick at the same instant round 2
     // starts; it must be swallowed by the reset, not leak into round 2.

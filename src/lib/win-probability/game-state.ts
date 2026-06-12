@@ -162,6 +162,15 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
           if (e.roundNumber < (log.rounds[roundIndex]?.roundNumber ?? 0)) {
             break;
           }
+          // Escort/Hybrid: only the round's attacker pushes — spill ticks
+          // sometimes carry the NEW round's number, so staleness alone is
+          // not enough. The defender cannot generate progress.
+          if (
+            log.modeFamily === "escort_hybrid" &&
+            e.team !== log.rounds[roundIndex]?.capturingTeam
+          ) {
+            break;
+          }
           if (isTeam1(e.team)) progress.t1 = e.value;
           else progress.t2 = e.value;
           break;
