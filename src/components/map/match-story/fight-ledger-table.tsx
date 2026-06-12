@@ -11,7 +11,7 @@ import {
 import type { FightEntry } from "@/lib/win-probability/timeline";
 import { CASCADE_MIN_WP } from "@/lib/win-probability/types";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 function formatClock(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -19,56 +19,101 @@ function formatClock(seconds: number): string {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
+/** Inline diverging bar: zero-centered, width ∝ |swing|, hue = gaining team. */
+function SwingBar({
+  swing,
+  maxSwing,
+  team1Color,
+  team2Color,
+}: {
+  swing: number;
+  maxSwing: number;
+  team1Color: string;
+  team2Color: string;
+}) {
+  const half = Math.min(1, Math.abs(swing) / maxSwing) * 50;
+  const color = swing >= 0 ? team1Color : team2Color;
+  return (
+    <span aria-hidden className="bg-muted relative block h-1.5 w-24">
+      <span className="bg-border absolute inset-y-0 left-1/2 w-px" />
+      <span
+        className="absolute inset-y-0"
+        style={{
+          backgroundColor: color,
+          left: swing >= 0 ? "50%" : `${50 - half}%`,
+          width: `${half}%`,
+        }}
+      />
+    </span>
+  );
+}
+
 export function FightLedgerTable({
   fights,
-  team1,
+  teams,
+  team1Color,
+  team2Color,
+  focusFight,
+  onFocusFight,
 }: {
   fights: FightEntry[];
-  team1: string;
+  teams: { team1: string; team2: string };
+  team1Color: string;
+  team2Color: string;
+  focusFight: number | null;
+  onFocusFight: (index: number | null) => void;
 }) {
   const t = useTranslations("mapPage.matchStory.ledger");
   const [sortBySwing, setSortBySwing] = useState(true);
-  const sorted = [...fights].sort((a, b) =>
-    sortBySwing ? Math.abs(b.swing) - Math.abs(a.swing) : a.start - b.start
+  const sorted = useMemo(
+    () =>
+      [...fights].sort((a, b) =>
+        sortBySwing ? Math.abs(b.swing) - Math.abs(a.swing) : a.start - b.start
+      ),
+    [fights, sortBySwing]
   );
+  const hasZones = fights.some((f) => f.zoneName !== null);
+  const maxSwing = Math.max(0.01, ...fights.map((f) => Math.abs(f.swing)));
 
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>{t("fight")}</TableHead>
-          <TableHead>
+          <TableHead className="w-12">{t("fight")}</TableHead>
+          <TableHead className="w-20">
             <button
               type="button"
               onClick={() => setSortBySwing(false)}
-              className={sortBySwing ? "" : "text-primary"}
+              className={sortBySwing ? "" : "text-foreground"}
             >
               {t("time")}
+              {sortBySwing ? "" : " ↓"}
             </button>
           </TableHead>
-          <TableHead>{t("zone")}</TableHead>
+          {hasZones ? <TableHead>{t("zone")}</TableHead> : null}
           <TableHead>{t("result")}</TableHead>
           <TableHead>
             <button
               type="button"
               onClick={() => setSortBySwing(true)}
-              className={sortBySwing ? "text-primary" : ""}
+              className={sortBySwing ? "text-foreground" : ""}
             >
               {t("swing")}
+              {sortBySwing ? " ↓" : ""}
             </button>
           </TableHead>
-          <TableHead>{t("ults")}</TableHead>
+          <TableHead className="w-20 text-right">{t("ults")}</TableHead>
           <TableHead>{t("carryover")}</TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody>
+      <TableBody onMouseLeave={() => onFocusFight(null)}>
         {sorted.map((f) => {
-          const result =
-            f.winner === null
-              ? t("even")
-              : f.winner === team1
-                ? t("won")
-                : t("lost");
+          const winnerColor =
+            f.winner === teams.team1
+              ? team1Color
+              : f.winner === teams.team2
+                ? team2Color
+                : null;
           const carryParts: string[] = [];
           if (f.carryover !== null) {
             if (Math.abs(f.carryover.ultEconomy) >= CASCADE_MIN_WP) {
@@ -83,22 +128,48 @@ export function FightLedgerTable({
             }
           }
           return (
-            <TableRow key={f.index}>
+            <TableRow
+              key={f.index}
+              data-state={focusFight === f.index ? "selected" : undefined}
+              onMouseEnter={() => onFocusFight(f.index)}
+              className="cursor-default"
+            >
               <TableCell className="font-mono tabular-nums">
                 {f.index + 1}
               </TableCell>
               <TableCell className="font-mono tabular-nums">
                 {formatClock(f.start)}
               </TableCell>
-              <TableCell>{f.zoneName ?? "—"}</TableCell>
-              <TableCell>{result}</TableCell>
-              <TableCell
-                className={`font-mono tabular-nums ${f.swing >= 0 ? "text-primary" : "text-destructive"}`}
-              >
-                {f.swing >= 0 ? "+" : ""}
-                {(f.swing * 100).toFixed(0)}%
+              {hasZones ? <TableCell>{f.zoneName ?? "—"}</TableCell> : null}
+              <TableCell>
+                {winnerColor !== null ? (
+                  <span className="flex items-center gap-2">
+                    <span
+                      aria-hidden
+                      className="size-2 shrink-0 rounded-full"
+                      style={{ backgroundColor: winnerColor }}
+                    />
+                    {f.winner}
+                  </span>
+                ) : (
+                  <span className="text-muted-foreground">{t("even")}</span>
+                )}
               </TableCell>
-              <TableCell className="font-mono tabular-nums">
+              <TableCell>
+                <span className="flex items-center gap-3">
+                  <SwingBar
+                    swing={f.swing}
+                    maxSwing={maxSwing}
+                    team1Color={team1Color}
+                    team2Color={team2Color}
+                  />
+                  <span className="w-12 text-right font-mono tabular-nums">
+                    {f.swing >= 0 ? "+" : "−"}
+                    {Math.abs(f.swing * 100).toFixed(0)}%
+                  </span>
+                </span>
+              </TableCell>
+              <TableCell className="text-right font-mono tabular-nums">
                 {f.ultsSpentTeam1}–{f.ultsSpentTeam2}
               </TableCell>
               <TableCell className="text-muted-foreground text-xs">

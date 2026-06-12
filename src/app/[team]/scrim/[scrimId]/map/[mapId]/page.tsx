@@ -313,7 +313,13 @@ export default async function MapDashboardPage(
                         {
                           value: "story",
                           label: t("tabs.story"),
-                          content: <MatchStoryTab result={matchStory} />,
+                          content: (
+                            <MatchStoryTab
+                              result={matchStory}
+                              team1Color={team1}
+                              team2Color={team2}
+                            />
+                          ),
                         },
                       ]
                     : []),
