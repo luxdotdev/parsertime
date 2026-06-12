@@ -1,6 +1,8 @@
 import { logger } from "@/lib/axiom/server";
+import { makePoolMetricsLive } from "@/lib/db-metrics";
+import { getDbPool } from "@/lib/prisma";
 import { DevTools } from "@effect/experimental";
-import { NodeSdk } from "@effect/opentelemetry";
+import { Metrics, NodeSdk, Resource } from "@effect/opentelemetry";
 import { metrics } from "@opentelemetry/api";
 import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-proto";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
@@ -23,7 +25,7 @@ import {
   PrismaInstrumentation,
   registerInstrumentations,
 } from "@prisma/instrumentation";
-import { Layer, Logger } from "effect";
+import { Effect, Fiber, Layer, Logger } from "effect";
 import type { Instrumentation } from "next";
 import { version } from "../package.json";
 
@@ -99,7 +101,36 @@ export function registerNode() {
 
   metrics.setGlobalMeterProvider(meterProvider);
 
+  // Single process-wide reader for Effect's global metric registry.
+  // Without this, Effect metrics (email.*, *.query.*, db.pool.*) are
+  // recorded but never exported — services only mount the logger layer.
+  const EffectMetricsLive = Metrics.layer(
+    () =>
+      new PeriodicExportingMetricReader({
+        exporter: new OTLPMetricExporter(METRIC_EXPORTER_CONFIG),
+        exportIntervalMillis: 10_000,
+        exportTimeoutMillis: 5_000,
+      })
+  ).pipe(
+    Layer.provide(
+      Resource.layer({
+        serviceName: SERVICE_NAME,
+        serviceVersion: SERVICE_VERSION,
+        attributes: { [ATTR_DEPLOYMENT_ENVIRONMENT_NAME]: ENVIRONMENT },
+      })
+    )
+  );
+
+  const effectMetricsFiber = Effect.runFork(
+    Layer.launch(
+      makePoolMetricsLive(getDbPool()).pipe(Layer.provide(EffectMetricsLive))
+    )
+  );
+
   process.on("SIGTERM", async () => {
+    await Effect.runPromise(Fiber.interrupt(effectMetricsFiber)).catch(
+      () => {}
+    );
     await Promise.allSettled([
       provider.forceFlush(),
       meterProvider.forceFlush(),
