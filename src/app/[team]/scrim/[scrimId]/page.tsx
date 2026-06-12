@@ -7,6 +7,7 @@ import { CompareSelectedButton } from "@/components/scrim/compare-selected-butto
 import { MapCardWithSelection } from "@/components/scrim/map-card-with-selection";
 import { PositionalStatsSection } from "@/components/scrim/positional-stats-section";
 import { ScrimOverviewUnavailable } from "@/components/scrim/scrim-overview-unavailable";
+import { ScrimWpaSection } from "@/components/scrim/scrim-wpa-section";
 import {
   ScrimOverviewSection,
   WinLossBadge,
@@ -406,6 +407,8 @@ export default async function ScrimDashboardPage(
               </Alert>
             )}
           </div>
+
+          <ScrimWpaSection scrimId={id} />
         </div>
 
         {mapComparisonEnabled && teamId && (
