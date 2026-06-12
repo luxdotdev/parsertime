@@ -11,8 +11,27 @@ import { auth } from "@/lib/auth";
 import { scoutingTool } from "@/lib/flags";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
-import type { Route } from "next";
+import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
+
+export async function generateMetadata(
+  props: PageProps<"/[team]/scrim/[scrimId]/edit">
+): Promise<Metadata> {
+  const params = await props.params;
+  const t = await getTranslations("scrimPage.editMetadata");
+  const scrim = await AppRuntime.runPromise(
+    ScrimService.pipe(
+      Effect.flatMap((svc) => svc.getScrim(parseInt(params.scrimId)))
+    )
+  );
+
+  if (!scrim) return { title: "Edit Scrim | Parsertime" };
+
+  return {
+    title: t("title", { scrimName: scrim.name }),
+    description: t("description", { scrimName: scrim.name }),
+  };
+}
 
 export default async function EditScrimPage(
   props: PageProps<"/[team]/scrim/[scrimId]/edit">

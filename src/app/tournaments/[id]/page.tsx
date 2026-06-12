@@ -12,9 +12,32 @@ import { tournament } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { Effect } from "effect";
 import { ArrowLeft } from "lucide-react";
-import type { Route } from "next";
+import type { Metadata, Route } from "next";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+export async function generateMetadata(props: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await props.params;
+  const t = await getTranslations("tournamentsPage.detail.metadata");
+  const tournamentId = Number(id);
+
+  const record = Number.isNaN(tournamentId)
+    ? null
+    : await prisma.tournament.findUnique({
+        where: { id: tournamentId },
+        select: { name: true },
+      });
+
+  if (!record) return { title: "Tournament | Parsertime" };
+
+  return {
+    title: t("title", { name: record.name }),
+    description: t("description", { name: record.name }),
+  };
+}
 
 export default async function TournamentDetailPage(props: {
   params: Promise<{ id: string }>;

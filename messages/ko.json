@@ -159,7 +159,11 @@
     "savedQuery": "쿼리 저장됨",
     "saveFailed": "쿼리를 저장할 수 없습니다.",
     "noAccessTitle": "쿼리할 팀이 없습니다",
-    "noAccessBody": "아직 접근 가능한 팀이 없습니다. 팀에 참여하거나 생성하여 스크림 데이터를 쿼리하세요."
+    "noAccessBody": "아직 접근 가능한 팀이 없습니다. 팀에 참여하거나 생성하여 스크림 데이터를 쿼리하세요.",
+    "metadata": {
+      "title": "쿼리 빌더 | Parsertime",
+      "description": "오버워치 스크림 데이터로 맞춤 쿼리를 만드세요."
+    }
   },
   "analyst": {
     "metadata": {
@@ -573,6 +577,10 @@
       "verification": "토큰이 만료되었거나 이미 사용되었습니다. 다시 시도해 주세요.",
       "adapterError": "데이터베이스 어댑터 오류가 발생했습니다. 쿠키를 삭제한 후 다시 시도해 보세요. 문제가 계속되면 지원 팀에 문의해 주세요.",
       "default": "로그인 중 알 수 없는 오류가 발생했습니다. 지원 팀에 문의해 주세요."
+    },
+    "metadata": {
+      "title": "인증 오류 | Parsertime",
+      "description": "로그인 중 문제가 발생했습니다."
     }
   },
   "noAuth": {
@@ -583,7 +591,11 @@
   "verifyRequest": {
     "title": "로그인 링크를 이메일에서 확인하세요",
     "description": "로그인 링크가 포함된 이메일을 보냈습니다. 이메일의 링크를 클릭하여 로그인 절차를 완료하세요.",
-    "back": "홈으로 돌아가기"
+    "back": "홈으로 돌아가기",
+    "metadata": {
+      "title": "이메일을 확인하세요 | Parsertime",
+      "description": "계속하려면 로그인 링크를 이메일로 보냈습니다."
+    }
   },
   "signInPage": {
     "metadataSignIn": {
@@ -627,7 +639,7 @@
   "dashboard": {
     "metadata": {
       "title": "대시보드 | Parsertime",
-      "description": "Parsertime은 오버워치 스크림 분석 도구입니다.",
+      "description": "스크림, 맵, 팀 성과를 한눈에 확인하세요.",
       "ogTitle": "대시보드 | Parsertime",
       "ogDescription": "Parsertime은 오버워치 스크림 분석 도구입니다."
     },
@@ -1003,7 +1015,11 @@
     },
     "settingsPage": {
       "title": "가능 시간 설정",
-      "description": "팀의 공유 가능 시간 캘린더가 작동하는 방식을 설정하세요."
+      "description": "팀의 공유 가능 시간 캘린더가 작동하는 방식을 설정하세요.",
+      "metadata": {
+        "title": "가능 시간 설정 | Parsertime",
+        "description": "팀의 가능 시간 일정과 시간대를 설정하세요."
+      }
     },
     "settingsForm": {
       "slotGranularity": "슬롯 간격",
@@ -1082,14 +1098,22 @@
         },
         "signIn": "로그인해서 팀 스크림 보기",
         "learnMore": "Parsertime 더 알아보기"
+      },
+      "metadata": {
+        "title": "가용 시간 입력 | Parsertime",
+        "description": "스크림이 가능한 시간을 표시하세요."
       }
+    },
+    "metadata": {
+      "title": "가능 시간 | Parsertime",
+      "description": "팀원들이 언제 가능한지 확인하고 모두의 일정에 맞춰 스크림을 계획하세요."
     }
   },
   "scrimPage": {
     "metadata": {
       "scrim": "스크림",
       "title": "{scrimName} 개요 | Parsertime",
-      "description": "Parsertime에서 {scrimName}의 개요입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "description": "{scrimName} 개요 — 이 오버워치 스크림의 맵 결과, 플레이어 통계, 교전 분석입니다.",
       "ogTitle": "{scrimName} 개요 | Parsertime",
       "ogDescription": "Parsertime에서 {scrimName}의 개요입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
       "ogImage": "{scrimName} 개요"
@@ -1627,6 +1651,10 @@
       "killsColumn": "킬",
       "deathsColumn": "데스",
       "ultsColumn": "궁극기"
+    },
+    "editMetadata": {
+      "title": "{scrimName} 편집 | Parsertime",
+      "description": "{scrimName}의 세부 정보와 설정을 편집하세요."
     }
   },
   "mapGroupsPage": {
@@ -4021,7 +4049,7 @@
   "teamPage": {
     "metadata": {
       "title": "팀 | Parsertime",
-      "description": "Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "description": "오버워치 팀, 로스터, 스크림 기록을 만들고 관리하세요.",
       "ogTitle": "팀 | Parsertime",
       "ogDescription": "Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
       "ogImage": "팀"
@@ -4253,6 +4281,10 @@
         "errorTitle": "오류",
         "errorDescription": "오류가 발생했습니다: {res}"
       }
+    },
+    "joinMetadata": {
+      "title": "팀 참가 | Parsertime",
+      "description": "초대를 수락하고 Parsertime에서 오버워치 팀에 참가하세요."
     }
   },
   "settingsPage": {
@@ -4613,7 +4645,7 @@
       },
       "user-search": {
         "metadata": {
-          "title": "사용자 검색 — 관리자 | Enter Queue",
+          "title": "사용자 검색 — 관리자 | Parsertime",
           "description": "고급 필터 옵션으로 사용자를 검색합니다."
         },
         "title": "사용자 검색",
@@ -4826,6 +4858,12 @@
         "errorTitle2": "오류가 발생했습니다",
         "errorDescription2": "메시지를 보내는 중 오류가 발생했습니다. 나중에 다시 시도하세요."
       }
+    },
+    "metadata": {
+      "title": "문의하기 | Parsertime",
+      "description": "Parsertime 팀에 문의하세요.",
+      "ogTitle": "문의하기 | Parsertime",
+      "ogDescription": "Parsertime 팀에 문의하세요."
     }
   },
   "aboutPage": {
@@ -5067,7 +5105,7 @@
   "privacyPage": {
     "metadata": {
       "title": "개인정보처리방침 | Parsertime",
-      "description": "오버워치 스크림 분석 도구 Parsertime의 개인정보처리방침입니다.",
+      "description": "Parsertime이 데이터를 수집, 사용, 보호하는 방식을 안내합니다.",
       "ogTitle": "개인정보처리방침 | Parsertime",
       "ogDescription": "오버워치 스크림 분석 도구 Parsertime의 개인정보처리방침입니다."
     },
@@ -5119,7 +5157,7 @@
   "termsPage": {
     "metadata": {
       "title": "서비스 이용약관 | Parsertime",
-      "description": "오버워치 스크림 분석 도구 Parsertime의 서비스 이용약관입니다.",
+      "description": "Parsertime 사용에 적용되는 약관입니다.",
       "ogTitle": "서비스 이용약관 | Parsertime",
       "ogDescription": "오버워치 스크림 분석 도구 Parsertime의 서비스 이용약관입니다."
     },
@@ -5844,7 +5882,7 @@
   "demoPage": {
     "metadata": {
       "title": "{mapName} 데모 | Parsertime",
-      "description": "Parsertime에서 {mapName}에 대한 데모 개요입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
+      "description": "{mapName} 데모 개요 — 샘플 데이터로 Parsertime의 오버워치 스크림 분석을 살펴보세요.",
       "ogTitle": "{mapName} 데모 | Parsertime",
       "ogDescription": "Parsertime에서 {mapName}에 대한 데모 개요입니다. Parsertime은 오버워치 스크림을 분석하는 도구입니다.",
       "ogImage": "{mapName} 데모"
@@ -5871,7 +5909,11 @@
     "delete": "삭제",
     "delete-error": "알림 삭제 실패",
     "notification-created": "알림 생성 성공",
-    "create-notification-error": "알림 생성 실패"
+    "create-notification-error": "알림 생성 실패",
+    "metadata": {
+      "title": "알림 | Parsertime",
+      "description": "최신 Parsertime 알림과 팀 활동입니다."
+    }
   },
   "positioningCard": {
     "title": "포지셔닝",
@@ -7294,6 +7336,10 @@
       "progressTowardRich": "목표 {targetDirection}{targetPercent}까지 <percentValue>{percent}</percentValue> 달성했습니다.",
       "increased": "증가",
       "decreased": "감소"
+    },
+    "metadata": {
+      "title": "선수 목표 | Parsertime",
+      "description": "팀원의 성장 목표를 설정하고 추적하세요."
     }
   },
   "chartComponents": {
@@ -7350,7 +7396,7 @@
       "failed": "가져오기 실패"
     },
     "metadata": {
-      "title": "랭크 트래커",
+      "title": "랭크 트래커 | Parsertime",
       "description": "오버워치 2 랭크 매치를 기록하고 실력을 분석하세요."
     },
     "dashboard": {
@@ -7914,6 +7960,42 @@
       "toggleLabel": "내 프로필에 랭크 통계 표시",
       "toggleDescription": "다른 사람들이 내 공개 프로필에서 랭크 성적 요약을 볼 수 있도록 합니다.",
       "toggleError": "개인정보 설정을 업데이트할 수 없습니다"
+    }
+  },
+  "tournamentsPage": {
+    "metadata": {
+      "title": "토너먼트 | Parsertime",
+      "description": "오버워치 토너먼트를 운영하고 추적하세요 — 대진표, 경기, 팀 통계."
+    },
+    "create": {
+      "metadata": {
+        "title": "토너먼트 만들기 | Parsertime",
+        "description": "새 오버워치 토너먼트 대진표를 설정하세요."
+      }
+    },
+    "detail": {
+      "metadata": {
+        "title": "{name} | Parsertime",
+        "description": "{name}의 대진표, 경기, 순위입니다."
+      }
+    },
+    "match": {
+      "metadata": {
+        "title": "{team1} vs {team2} | Parsertime",
+        "description": "{team1} vs {team2}의 경기 세부 정보와 맵 결과입니다."
+      }
+    },
+    "teamStats": {
+      "metadata": {
+        "title": "{team} — 토너먼트 통계 | Parsertime",
+        "description": "{team}의 토너먼트 성과 분석입니다."
+      }
+    }
+  },
+  "debugPage": {
+    "metadata": {
+      "title": "디버그 | Parsertime",
+      "description": "내부 디버깅 도구입니다."
     }
   }
 }

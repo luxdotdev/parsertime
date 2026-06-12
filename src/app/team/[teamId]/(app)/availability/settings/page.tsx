@@ -3,8 +3,14 @@ import { isTeamOwnerOrManager } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
 
 type PageProps = { params: Promise<{ teamId: string }> };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("availability.settingsPage.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 export default async function AvailabilitySettingsPage({ params }: PageProps) {
   const { teamId: raw } = await params;

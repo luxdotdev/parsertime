@@ -9,9 +9,36 @@ import { TournamentService } from "@/data/tournament";
 import { auth, canViewTournament, getCurrentUser } from "@/lib/auth";
 import { tournament } from "@/lib/flags";
 import { ArrowLeft } from "lucide-react";
-import type { Route } from "next";
+import type { Metadata, Route } from "next";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+export async function generateMetadata(props: {
+  params: Promise<{ id: string; matchId: string }>;
+}): Promise<Metadata> {
+  const { matchId } = await props.params;
+  const t = await getTranslations("tournamentsPage.match.metadata");
+  const id = Number(matchId);
+
+  const match = Number.isNaN(id)
+    ? null
+    : await AppRuntime.runPromise(
+        TournamentService.pipe(
+          Effect.flatMap((svc) => svc.getTournamentMatch(id))
+        )
+      );
+
+  if (!match) return { title: "Match | Parsertime" };
+
+  const team1 = match.team1?.name ?? "TBD";
+  const team2 = match.team2?.name ?? "TBD";
+
+  return {
+    title: t("title", { team1, team2 }),
+    description: t("description", { team1, team2 }),
+  };
+}
 
 export default async function TournamentMatchPage(props: {
   params: Promise<{ id: string; matchId: string }>;

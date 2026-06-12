@@ -14,11 +14,17 @@ import prisma from "@/lib/prisma";
 import type { RoleName } from "@/lib/target-stats";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import { $Enums } from "@prisma/client";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
 type Props = {
   params: Promise<{ teamId: string }>;
 };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("targets.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 export default async function TeamTargetsPage(props: Props) {
   const params = await props.params;

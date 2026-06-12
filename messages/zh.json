@@ -159,7 +159,11 @@
     "savedQuery": "查询已保存",
     "saveFailed": "无法保存查询。",
     "noAccessTitle": "没有可查询的团队",
-    "noAccessBody": "你还无权访问任何团队。加入或创建团队以查询其训练赛数据。"
+    "noAccessBody": "你还无权访问任何团队。加入或创建团队以查询其训练赛数据。",
+    "metadata": {
+      "title": "查询构建器 | Parsertime",
+      "description": "在您的《守望先锋》训练赛数据上构建自定义查询。"
+    }
   },
   "analyst": {
     "metadata": {
@@ -573,6 +577,10 @@
       "verification": "令牌已过期或已被使用。请重试。",
       "adapterError": "数据库适配器出现错误。请尝试清除您的 Cookie 后重试。如果问题仍然存在，请联系支持团队。",
       "default": "登录时发生未知错误。请联系支持。"
+    },
+    "metadata": {
+      "title": "身份验证错误 | Parsertime",
+      "description": "登录时出现问题。"
     }
   },
   "noAuth": {
@@ -583,7 +591,11 @@
   "verifyRequest": {
     "title": "检查您的电子邮件以获取登录链接",
     "description": "我们已向您发送了一封带有登录链接的电子邮件。点击电子邮件中的链接以完成登录过程。",
-    "back": "返回首页"
+    "back": "返回首页",
+    "metadata": {
+      "title": "请查收邮件 | Parsertime",
+      "description": "我们已向您发送登录链接以继续。"
+    }
   },
   "signInPage": {
     "metadataSignIn": {
@@ -627,7 +639,7 @@
   "dashboard": {
     "metadata": {
       "title": "仪表盘 | Parsertime",
-      "description": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "description": "一目了然地查看您的训练赛、地图和团队表现。",
       "ogTitle": "仪表盘 | Parsertime",
       "ogDescription": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
     },
@@ -1003,7 +1015,11 @@
     },
     "settingsPage": {
       "title": "可用时间设置",
-      "description": "配置队伍共享可用时间日历的工作方式。"
+      "description": "配置队伍共享可用时间日历的工作方式。",
+      "metadata": {
+        "title": "可用时间设置 | Parsertime",
+        "description": "配置团队的可用时间安排和时区。"
+      }
     },
     "settingsForm": {
       "slotGranularity": "时间段粒度",
@@ -1082,14 +1098,22 @@
         },
         "signIn": "登录以查看队伍训练赛",
         "learnMore": "进一步了解 Parsertime"
+      },
+      "metadata": {
+        "title": "填写可用时间 | Parsertime",
+        "description": "标记您可以参加训练赛的时间。"
       }
+    },
+    "metadata": {
+      "title": "可用时间 | Parsertime",
+      "description": "查看团队成员的空闲时间，围绕每个人的日程安排训练赛。"
     }
   },
   "scrimPage": {
     "metadata": {
       "scrim": "训练赛",
       "title": "{scrimName} 概述 | Parsertime",
-      "description": "在 Parsertime 上查看 {scrimName} 的概述。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "description": "{scrimName} 概览 — 这场《守望先锋》训练赛的地图结果、玩家数据和团战分析。",
       "ogTitle": "{scrimName} 概述 | Parsertime",
       "ogDescription": "在 Parsertime 上查看 {scrimName} 的概述。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
       "ogImage": "{scrimName} 概述"
@@ -1627,6 +1651,10 @@
       "killsColumn": "击杀",
       "deathsColumn": "死亡",
       "ultsColumn": "终极技能"
+    },
+    "editMetadata": {
+      "title": "编辑 {scrimName} | Parsertime",
+      "description": "编辑 {scrimName} 的详情和设置。"
     }
   },
   "mapGroupsPage": {
@@ -4021,7 +4049,7 @@
   "teamPage": {
     "metadata": {
       "title": "团队 | Parsertime",
-      "description": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "description": "创建和管理您的《守望先锋》团队、阵容和训练赛记录。",
       "ogTitle": "团队 | Parsertime",
       "ogDescription": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
       "ogImage": "团队"
@@ -4253,6 +4281,10 @@
         "errorTitle": "发生错误",
         "errorDescription": "发生错误：{res}"
       }
+    },
+    "joinMetadata": {
+      "title": "加入团队 | Parsertime",
+      "description": "接受邀请，在 Parsertime 上加入您的《守望先锋》团队。"
     }
   },
   "settingsPage": {
@@ -4613,7 +4645,7 @@
       },
       "user-search": {
         "metadata": {
-          "title": "用户搜索 — 管理员 | Enter Queue",
+          "title": "用户搜索 — 管理员 | Parsertime",
           "description": "使用高级筛选选项搜索用户"
         },
         "title": "用户搜索",
@@ -4826,6 +4858,12 @@
         "errorTitle2": "发生错误",
         "errorDescription2": "发送消息时发生错误。请稍后再试。"
       }
+    },
+    "metadata": {
+      "title": "联系我们 | Parsertime",
+      "description": "联系 Parsertime 团队。",
+      "ogTitle": "联系我们 | Parsertime",
+      "ogDescription": "联系 Parsertime 团队。"
     }
   },
   "aboutPage": {
@@ -5067,7 +5105,7 @@
   "privacyPage": {
     "metadata": {
       "title": "隐私政策 | Parsertime",
-      "description": "Parsertime 的隐私政策，Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "description": "Parsertime 如何收集、使用和保护您的数据。",
       "ogTitle": "隐私政策 | Parsertime",
       "ogDescription": "Parsertime 的隐私政策，Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
     },
@@ -5119,7 +5157,7 @@
   "termsPage": {
     "metadata": {
       "title": "服务条款 | Parsertime",
-      "description": "Parsertime 的服务条款，Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "description": "管辖您使用 Parsertime 的条款。",
       "ogTitle": "服务条款 | Parsertime",
       "ogDescription": "Parsertime 的服务条款，Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
     },
@@ -5844,7 +5882,7 @@
   "demoPage": {
     "metadata": {
       "title": "{mapName} 演示 | Parsertime",
-      "description": "Parsertime 上 {mapName} 的演示概览。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "description": "{mapName} 演示概览 — 通过示例数据探索 Parsertime 的《守望先锋》训练赛分析。",
       "ogTitle": "{mapName} 演示 | Parsertime",
       "ogDescription": "Parsertime 上 {mapName} 的演示概览。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
       "ogImage": "{mapName} 演示"
@@ -5871,7 +5909,11 @@
     "delete": "删除",
     "delete-error": "删除通知失败",
     "notification-created": "通知创建成功",
-    "create-notification-error": "创建通知失败"
+    "create-notification-error": "创建通知失败",
+    "metadata": {
+      "title": "通知 | Parsertime",
+      "description": "您最新的 Parsertime 提醒和团队动态。"
+    }
   },
   "positioningCard": {
     "title": "站位",
@@ -7294,6 +7336,10 @@
       "progressTowardRich": "您已完成目标 {targetDirection}{targetPercent} 的 <percentValue>{percent}</percentValue>。",
       "increased": "提高",
       "decreased": "降低"
+    },
+    "metadata": {
+      "title": "选手目标 | Parsertime",
+      "description": "为您的团队设定并追踪选手成长目标。"
     }
   },
   "chartComponents": {
@@ -7350,7 +7396,7 @@
       "failed": "导入失败"
     },
     "metadata": {
-      "title": "排位追踪器",
+      "title": "排位追踪器 | Parsertime",
       "description": "追踪您的《守望先锋2》排位对局并分析您的表现。"
     },
     "dashboard": {
@@ -7914,6 +7960,42 @@
       "toggleLabel": "在我的主页显示排位统计",
       "toggleDescription": "让他人在您的公开主页上查看您的排位表现摘要。",
       "toggleError": "无法更新您的隐私设置"
+    }
+  },
+  "tournamentsPage": {
+    "metadata": {
+      "title": "锦标赛 | Parsertime",
+      "description": "举办并追踪您的《守望先锋》锦标赛 — 对阵图、比赛和团队数据。"
+    },
+    "create": {
+      "metadata": {
+        "title": "创建锦标赛 | Parsertime",
+        "description": "设置新的《守望先锋》锦标赛对阵图。"
+      }
+    },
+    "detail": {
+      "metadata": {
+        "title": "{name} | Parsertime",
+        "description": "{name} 的对阵图、比赛和排名。"
+      }
+    },
+    "match": {
+      "metadata": {
+        "title": "{team1} vs {team2} | Parsertime",
+        "description": "{team1} vs {team2} 的比赛详情和地图结果。"
+      }
+    },
+    "teamStats": {
+      "metadata": {
+        "title": "{team} — 锦标赛数据 | Parsertime",
+        "description": "{team} 的锦标赛表现分析。"
+      }
+    }
+  },
+  "debugPage": {
+    "metadata": {
+      "title": "调试 | Parsertime",
+      "description": "内部调试工具。"
     }
   }
 }

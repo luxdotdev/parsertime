@@ -159,7 +159,11 @@
     "savedQuery": "Query saved",
     "saveFailed": "Could not save the query.",
     "noAccessTitle": "No teams to query",
-    "noAccessBody": "You do not have access to any teams yet. Join or create a team to start querying its scrim data."
+    "noAccessBody": "You do not have access to any teams yet. Join or create a team to start querying its scrim data.",
+    "metadata": {
+      "title": "Query Builder | Parsertime",
+      "description": "Build custom queries across your Overwatch scrim data."
+    }
   },
   "analyst": {
     "metadata": {
@@ -573,6 +577,10 @@
       "verification": "The token has expired or has already been used. Please try again.",
       "adapterError": "There was an error with the database adapter. Please try clearing your cookies and try again. If the problem persists, please contact support.",
       "default": "There was an unknown error signing in. Please contact support."
+    },
+    "metadata": {
+      "title": "Authentication Error | Parsertime",
+      "description": "Something went wrong while signing you in."
     }
   },
   "noAuth": {
@@ -583,7 +591,11 @@
   "verifyRequest": {
     "title": "Check your email for a sign-in link",
     "description": "We've sent an email to you with a link to sign in. Click the link in the email to complete the sign-in process.",
-    "back": "Back to Home"
+    "back": "Back to Home",
+    "metadata": {
+      "title": "Check Your Email | Parsertime",
+      "description": "We sent you a sign-in link to continue."
+    }
   },
   "signInPage": {
     "metadataSignIn": {
@@ -627,7 +639,7 @@
   "dashboard": {
     "metadata": {
       "title": "Dashboard | Parsertime",
-      "description": "Parsertime is a tool for analyzing Overwatch scrims.",
+      "description": "Your scrims, maps, and team performance at a glance.",
       "ogTitle": "Dashboard | Parsertime",
       "ogDescription": "Parsertime is a tool for analyzing Overwatch scrims."
     },
@@ -1003,7 +1015,11 @@
     },
     "settingsPage": {
       "title": "Availability settings",
-      "description": "Configure how the shared availability calendar works for your team."
+      "description": "Configure how the shared availability calendar works for your team.",
+      "metadata": {
+        "title": "Availability Settings | Parsertime",
+        "description": "Configure your team's availability schedule and time zone."
+      }
     },
     "settingsForm": {
       "slotGranularity": "Slot granularity",
@@ -1082,14 +1098,22 @@
         },
         "signIn": "Sign in to see your team's scrims",
         "learnMore": "Learn more about Parsertime"
+      },
+      "metadata": {
+        "title": "Set Your Availability | Parsertime",
+        "description": "Mark the times you're available for scrims."
       }
+    },
+    "metadata": {
+      "title": "Availability | Parsertime",
+      "description": "See when your team is free and plan scrims around everyone's schedule."
     }
   },
   "scrimPage": {
     "metadata": {
       "scrim": "Scrim",
       "title": "{scrimName} Overview | Parsertime",
-      "description": "Overview for {scrimName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "description": "Overview for {scrimName} — map results, player stats, and fight breakdowns from this Overwatch scrim.",
       "ogTitle": "{scrimName} Overview | Parsertime",
       "ogDescription": "Overview for {scrimName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
       "ogImage": "{scrimName} Overview"
@@ -1627,6 +1651,10 @@
       "killsColumn": "Kills",
       "deathsColumn": "Deaths",
       "ultsColumn": "Ults"
+    },
+    "editMetadata": {
+      "title": "Edit {scrimName} | Parsertime",
+      "description": "Edit details and settings for {scrimName}."
     }
   },
   "mapGroupsPage": {
@@ -4127,7 +4155,7 @@
   "teamPage": {
     "metadata": {
       "title": "Teams | Parsertime",
-      "description": "Parsertime is a tool for analyzing Overwatch scrims.",
+      "description": "Create and manage your Overwatch teams, rosters, and scrim history.",
       "ogTitle": "Teams | Parsertime",
       "ogDescription": "Parsertime is a tool for analyzing Overwatch scrims.",
       "ogImage": "Teams"
@@ -4359,7 +4387,11 @@
       "usage": "{current} of {allowed} used"
     },
     "viewStats": "View stats",
-    "viewAvailability": "Availability"
+    "viewAvailability": "Availability",
+    "joinMetadata": {
+      "title": "Join a Team | Parsertime",
+      "description": "Accept your invite and join your Overwatch team on Parsertime."
+    }
   },
   "settingsPage": {
     "metadata": {
@@ -4701,7 +4733,7 @@
       },
       "user-search": {
         "metadata": {
-          "title": "User Search — Admin | Enter Queue",
+          "title": "User Search — Admin | Parsertime",
           "description": "Search for users with advanced filtering options"
         },
         "title": "User Search",
@@ -4932,6 +4964,12 @@
         "errorTitle2": "An error occurred",
         "errorDescription2": "An error occurred while sending your message. Please try again later."
       }
+    },
+    "metadata": {
+      "title": "Contact | Parsertime",
+      "description": "Get in touch with the Parsertime team.",
+      "ogTitle": "Contact | Parsertime",
+      "ogDescription": "Get in touch with the Parsertime team."
     }
   },
   "aboutPage": {
@@ -5173,7 +5211,7 @@
   "privacyPage": {
     "metadata": {
       "title": "Privacy Policy | Parsertime",
-      "description": "Privacy Policy for Parsertime - A tool for analyzing Overwatch scrims.",
+      "description": "How Parsertime collects, uses, and protects your data.",
       "ogTitle": "Privacy Policy | Parsertime",
       "ogDescription": "Privacy Policy for Parsertime - A tool for analyzing Overwatch scrims."
     },
@@ -5225,7 +5263,7 @@
   "termsPage": {
     "metadata": {
       "title": "Terms of Service | Parsertime",
-      "description": "Terms of Service for Parsertime - A tool for analyzing Overwatch scrims.",
+      "description": "The terms governing your use of Parsertime.",
       "ogTitle": "Terms of Service | Parsertime",
       "ogDescription": "Terms of Service for Parsertime - A tool for analyzing Overwatch scrims."
     },
@@ -5497,7 +5535,7 @@
   "demoPage": {
     "metadata": {
       "title": "{mapName} Demo | Parsertime",
-      "description": "Demo overview for {mapName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "description": "Demo overview for {mapName} — explore Parsertime's Overwatch scrim analytics with sample data.",
       "ogTitle": "{mapName} Demo | Parsertime",
       "ogDescription": "Demo overview for {mapName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
       "ogImage": "{mapName} Demo"
@@ -5524,7 +5562,11 @@
     "notification-created": "Notification created successfully",
     "create-notification-error": "Failed to create notification",
     "error-loading-description": "Please try refreshing the page.",
-    "no-notifications-description": "You'll see notifications here when they arrive."
+    "no-notifications-description": "You'll see notifications here when they arrive.",
+    "metadata": {
+      "title": "Notifications | Parsertime",
+      "description": "Your latest Parsertime alerts and team activity."
+    }
   },
   "matchmaker": {
     "title": "Scrim matchmaker",
@@ -7293,6 +7335,10 @@
       "progressTowardRich": "You're <percentValue>{percent}</percentValue> of the way to your target of {targetDirection}{targetPercent}.",
       "increased": "increased",
       "decreased": "decreased"
+    },
+    "metadata": {
+      "title": "Player Targets | Parsertime",
+      "description": "Set and track player development targets for your team."
     }
   },
   "chartComponents": {
@@ -7349,7 +7395,7 @@
       "failed": "Import failed"
     },
     "metadata": {
-      "title": "Ranked Tracker",
+      "title": "Ranked Tracker | Parsertime",
       "description": "Track your ranked Overwatch 2 matches and analyze your performance."
     },
     "dashboard": {
@@ -7913,6 +7959,42 @@
       "toggleLabel": "Show ranked stats on my profile",
       "toggleDescription": "Let others see a summary of your ranked performance on your public profile.",
       "toggleError": "Couldn't update your privacy setting"
+    }
+  },
+  "tournamentsPage": {
+    "metadata": {
+      "title": "Tournaments | Parsertime",
+      "description": "Run and track your Overwatch tournaments — brackets, matches, and team stats."
+    },
+    "create": {
+      "metadata": {
+        "title": "Create Tournament | Parsertime",
+        "description": "Set up a new Overwatch tournament bracket."
+      }
+    },
+    "detail": {
+      "metadata": {
+        "title": "{name} | Parsertime",
+        "description": "Bracket, matches, and standings for {name}."
+      }
+    },
+    "match": {
+      "metadata": {
+        "title": "{team1} vs {team2} | Parsertime",
+        "description": "Match details and map results for {team1} vs {team2}."
+      }
+    },
+    "teamStats": {
+      "metadata": {
+        "title": "{team} — Tournament Stats | Parsertime",
+        "description": "Tournament performance breakdown for {team}."
+      }
+    }
+  },
+  "debugPage": {
+    "metadata": {
+      "title": "Debug | Parsertime",
+      "description": "Internal debugging tools."
     }
   }
 }

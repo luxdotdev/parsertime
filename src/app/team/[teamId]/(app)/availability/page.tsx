@@ -7,8 +7,14 @@ import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getFormatter, getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
 
 type PageProps = { params: Promise<{ teamId: string }> };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("availability.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 export default async function AvailabilityIndexPage({ params }: PageProps) {
   const { teamId: raw } = await params;

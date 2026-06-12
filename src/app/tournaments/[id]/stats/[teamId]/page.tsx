@@ -42,10 +42,33 @@ import { tournament, simulationTool, ultimateImpactTool } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import { getMapNames } from "@/lib/utils";
 import { ArrowLeft } from "lucide-react";
-import type { Route } from "next";
+import type { Metadata, Route } from "next";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+export async function generateMetadata(props: {
+  params: Promise<{ id: string; teamId: string }>;
+}): Promise<Metadata> {
+  const { teamId } = await props.params;
+  const t = await getTranslations("tournamentsPage.teamStats.metadata");
+  const id = Number(teamId);
+
+  const team = Number.isNaN(id)
+    ? null
+    : await prisma.tournamentTeam.findUnique({
+        where: { id },
+        select: { name: true },
+      });
+
+  if (!team) return { title: "Tournament Stats | Parsertime" };
+
+  return {
+    title: t("title", { team: team.name }),
+    description: t("description", { team: team.name }),
+  };
+}
 
 export default async function TournamentTeamStatsPage(props: {
   params: Promise<{ id: string; teamId: string }>;
