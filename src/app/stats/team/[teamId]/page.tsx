@@ -160,6 +160,11 @@ function formatTimeframeLabel(timeframe: Timeframe): string {
 const tabTriggerClass =
   "text-muted-foreground hover:text-foreground data-[state=active]:text-foreground border-0 border-b-2 border-b-transparent data-[state=active]:border-b-primary rounded-none bg-transparent px-0 pb-3 pt-1 font-mono text-[11px] tracking-[0.16em] uppercase shadow-none data-[state=active]:shadow-none data-[state=active]:bg-transparent dark:bg-transparent dark:data-[state=active]:bg-transparent dark:data-[state=active]:border-b-primary transition-colors";
 
+// The heaviest dashboard in the app: dozens of services over a shared
+// connection pool. The platform default (20s on preview) is too tight for
+// a cold cache; warm renders are far faster.
+export const maxDuration = 60;
+
 export default async function TeamStatsPage(
   props: PagePropsWithLocale<"/stats/team/[teamId]"> & {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

@@ -172,6 +172,35 @@ export const make: Effect.Effect<
 
       const views: FightMapView[] = [];
 
+      // Prefetch engagements for every eligible map with bounded
+      // concurrency. The previous fully-sequential fetch took
+      // (maps × query time) of wall clock and timed out the page.
+      const PREFETCH_CONCURRENCY = 3;
+      const eligibleIds: number[] = [];
+      for (const [, mapDataIds] of mapDataIdsByMapName) {
+        for (const mapDataId of mapDataIds) {
+          const side = findTeamNameForMapInMemory(
+            mapDataId,
+            allPlayerStats,
+            teamRosterSet
+          );
+          if (side !== null) eligibleIds.push(mapDataId);
+        }
+      }
+      const engagementsByMapData = new Map<number, EngagementWithZone[]>();
+      for (let i = 0; i < eligibleIds.length; i += PREFETCH_CONCURRENCY) {
+        const batch = eligibleIds.slice(i, i + PREFETCH_CONCURRENCY);
+        const results = yield* Effect.tryPromise({
+          try: () => Promise.all(batch.map((id) => getEngagementsForMapData(id))),
+          catch: (error) =>
+            new TeamQueryError({
+              operation: "fetch engagements for fight fields",
+              cause: error,
+            }),
+        });
+        batch.forEach((id, j) => engagementsByMapData.set(id, results[j]));
+      }
+
       for (const [mapName, mapDataIds] of mapDataIdsByMapName) {
         const subMaps = CONTROL_OBJECTIVE_MAP[mapName];
         // One pool per display map: the base name, or each control sub-map.
@@ -202,14 +231,7 @@ export const make: Effect.Effect<
           );
           if (ourSide === null) continue;
 
-          const engagements = yield* Effect.tryPromise({
-            try: () => getEngagementsForMapData(mapDataId),
-            catch: (error) =>
-              new TeamQueryError({
-                operation: "fetch engagements for fight fields",
-                cause: error,
-              }),
-          });
+          const engagements = engagementsByMapData.get(mapDataId) ?? [];
           if (engagements.length === 0) continue;
 
           const rounds = roundStartsByMapData.get(mapDataId) ?? [];

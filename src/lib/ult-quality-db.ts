@@ -180,7 +180,35 @@ export async function getUltQualityStatsForMapData(
 
 export type EngagementWithZone = Engagement & { zoneName: string | null };
 
-export async function getEngagementsForMapData(
+/** Engagements are immutable once a map is parsed, and the damage fetch
+ * behind them is one of the heaviest reads in the app — memoize per map.
+ * The cache stores promises so concurrent requests share one in-flight
+ * computation; failures evict so errors aren't cached. */
+const ENGAGEMENT_CACHE_CAP = 256;
+const engagementCache = new Map<number, Promise<EngagementWithZone[]>>();
+
+export function getEngagementsForMapData(
+  mapDataId: number
+): Promise<EngagementWithZone[]> {
+  const hit = engagementCache.get(mapDataId);
+  if (hit !== undefined) {
+    // Refresh recency (Map preserves insertion order).
+    engagementCache.delete(mapDataId);
+    engagementCache.set(mapDataId, hit);
+    return hit;
+  }
+  const pending = computeEngagementsForMapData(mapDataId).catch((error) => {
+    engagementCache.delete(mapDataId);
+    throw error;
+  });
+  engagementCache.set(mapDataId, pending);
+  if (engagementCache.size > ENGAGEMENT_CACHE_CAP) {
+    engagementCache.delete(engagementCache.keys().next().value!);
+  }
+  return pending;
+}
+
+async function computeEngagementsForMapData(
   mapDataId: number
 ): Promise<EngagementWithZone[]> {
   const [kills, damage] = await Promise.all([
