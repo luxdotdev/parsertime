@@ -208,6 +208,9 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
           }
           if (isTeam1(e.team)) progress.t1 = e.value;
           else progress.t2 = e.value;
+          // Control maps: only objective_captured moves the index; progress
+          // ticks on control don't carry objectiveIndex in the current
+          // extraction.
           if (e.objectiveIndex !== undefined) contestedIndex = e.objectiveIndex;
           break;
         case "objective_captured": {

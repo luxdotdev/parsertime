@@ -353,6 +353,7 @@ describe("statesAt", () => {
     expect(duringSecond.team1.controlProgressOwn).toBe(0);
     expect(duringSecond.team1.controlProgressEnemy).toBeCloseTo(0.3);
     expect(duringSecond.team1.holdsObjective).toBe(-1);
+    expect(duringSecond.team1.objectiveIndex).toBe(1); // capture of point 1 moved the index
   });
 
   test("role-split alive diffs bucket deaths by the victim's hero role", () => {
