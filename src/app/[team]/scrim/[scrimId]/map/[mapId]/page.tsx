@@ -13,6 +13,7 @@ import { HeroBans } from "@/components/map/hero-bans";
 import { Killfeed } from "@/components/map/killfeed";
 import { MapEvents } from "@/components/map/map-events";
 import { MapTabs } from "@/components/map/map-tabs";
+import { MatchStoryTab } from "@/components/map/match-story/match-story-tab";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
 import { MobileNav } from "@/components/mobile-nav";
 import { Notifications } from "@/components/notifications";
@@ -24,6 +25,7 @@ import { MapTabsSkeleton } from "@/components/map/map-tabs-skeleton";
 import { Suspense, ViewTransition } from "react";
 import { UserNav } from "@/components/user-nav";
 import { VodOverview } from "@/components/vods/vod-overview";
+import { MatchStoryService } from "@/data/map/match-story-service";
 import { PlayerService } from "@/data/player";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
@@ -131,6 +133,7 @@ export default async function MapDashboardPage(
     dataToolsEnabled,
     tournamentEnabled,
     coachingCanvasEnabled,
+    matchStory,
   ] = await Promise.all([
     AppRuntime.runPromise(
       PlayerService.pipe(Effect.flatMap((svc) => svc.getMostPlayedHeroes(id)))
@@ -164,6 +167,13 @@ export default async function MapDashboardPage(
     dataLabeling(),
     tournament(),
     coachingCanvas(),
+    // A story failure must never break the map page — the tab just hides.
+    AppRuntime.runPromise(
+      MatchStoryService.pipe(
+        Effect.flatMap((svc) => svc.getMatchStory(mapDataId)),
+        Effect.catchAll(() => Effect.succeed(null))
+      )
+    ),
   ]);
 
   const translatedMapName = await translateMapName(
@@ -298,6 +308,15 @@ export default async function MapDashboardPage(
                       />
                     ),
                   },
+                  ...(matchStory !== null
+                    ? [
+                        {
+                          value: "story",
+                          label: t("tabs.story"),
+                          content: <MatchStoryTab result={matchStory} />,
+                        },
+                      ]
+                    : []),
                   ...(positionalDataEnabled
                     ? [
                         {
