@@ -61,3 +61,6 @@ docs/superpowers/
 
 # WP training output (derived from user data — never commit)
 artifacts/
+
+# Prisma generated client
+src/generated/
