@@ -1,3 +1,4 @@
+import { applyCalibration, type CalibrationMap } from "./calibration";
 import { FEATURE_NAMES, featureHash } from "./features";
 import type { ModeFamily } from "./types";
 
@@ -7,6 +8,8 @@ export type FamilyModel = {
   means: number[];
   stds: number[];
   sampleCount: number;
+  /** Isotonic recalibration fitted on held-out CV predictions. */
+  calibration?: CalibrationMap;
   /** Grouped-CV metrics recorded at training time (absent on test fixtures). */
   metrics?: { logLoss: number; brier: number; baseRate: number };
 };
@@ -59,5 +62,8 @@ export function predictWinProbability(
     const std = model.stds[i] === 0 ? 1 : model.stds[i];
     z += model.weights[i] * ((features[i] - model.means[i]) / std);
   }
-  return sigmoid(z);
+  const raw = sigmoid(z);
+  return model.calibration === undefined
+    ? raw
+    : applyCalibration(model.calibration, raw);
 }

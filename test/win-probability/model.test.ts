@@ -64,4 +64,11 @@ describe("predictWinProbability", () => {
       WPModelMismatchError
     );
   });
+
+  test("applies the calibration map when present", () => {
+    const a = artifact();
+    // Map everything to 0.5 — flat calibration.
+    a.modeFamilies.control!.calibration = { x: [0, 1], y: [0.5, 0.5] };
+    expect(predictWinProbability(a, "control", vec(2))).toBeCloseTo(0.5);
+  });
 });

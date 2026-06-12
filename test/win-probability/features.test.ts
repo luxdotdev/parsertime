@@ -35,6 +35,15 @@ describe("extractFeatures", () => {
     expect(f.aliveDiff_x_objMax).toBeCloseTo(2 * 0.9);
     expect(f.aliveDiff_x_controlMax).toBeCloseTo(2 * 0.7);
     expect(f.ultBankDiff_x_timeRemaining).toBeCloseTo(-0.5);
+    expect(f.roundNumberNorm).toBeCloseTo(0.25); // round 1 of 4
+    expect(f.scoreDiff_x_roundNumber).toBe(0); // scoreDiff 0
+  });
+
+  test("round context features scale with round number and score", () => {
+    const vec = extractFeatures({ ...state, roundNumber: 3, scoreDiff: -2 });
+    const f = Object.fromEntries(FEATURE_NAMES.map((n, i) => [n, vec[i]]));
+    expect(f.roundNumberNorm).toBeCloseTo(0.75);
+    expect(f.scoreDiff_x_roundNumber).toBeCloseTo(-1.5);
   });
 
   test("timeRemainingNorm clamps at 1", () => {

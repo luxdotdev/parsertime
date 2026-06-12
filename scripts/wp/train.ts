@@ -1,5 +1,9 @@
 #!/usr/bin/env bun
 
+import {
+  applyCalibration,
+  fitCalibration,
+} from "@/lib/win-probability/calibration";
 import { featureHash, FEATURE_NAMES } from "@/lib/win-probability/features";
 import type { FamilyModel, ModelArtifact } from "@/lib/win-probability/model";
 import { runGroupedCV } from "@/lib/win-probability/training/cv";
@@ -7,7 +11,11 @@ import {
   fitLogisticRegression,
   standardize,
 } from "@/lib/win-probability/training/lr";
-import { checkGates } from "@/lib/win-probability/training/metrics";
+import {
+  calibrationBins,
+  checkGates,
+  logLoss,
+} from "@/lib/win-probability/training/metrics";
 import {
   type DatasetRow,
   MODE_FAMILIES,
@@ -49,7 +57,7 @@ function trainFamily(family: ModeFamily): FamilyModel | null {
   console.log(
     `  CV log loss ${cv.pooled.logLoss.toFixed(4)}, Brier ${cv.pooled.brier.toFixed(4)}, base rate ${cv.pooled.baseRate.toFixed(3)}`
   );
-  console.log("  calibration (bins with n>0):");
+  console.log("  raw calibration (bins with n>0):");
   for (const bin of cv.pooled.bins) {
     if (bin.n === 0) continue;
     console.log(
@@ -57,10 +65,26 @@ function trainFamily(family: ModeFamily): FamilyModel | null {
     );
   }
 
+  // Isotonic recalibration fitted on the held-out CV predictions; the gates
+  // judge the calibrated outputs — what the product will actually display.
+  const calibration = fitCalibration(cv.pooled.preds, cv.pooled.labels);
+  const calibratedPreds = cv.pooled.preds.map((p) =>
+    applyCalibration(calibration, p)
+  );
+  const calibratedLogLoss = logLoss(calibratedPreds, cv.pooled.labels);
+  const calibratedBins = calibrationBins(calibratedPreds, cv.pooled.labels, 10);
+  console.log(`  calibrated log loss ${calibratedLogLoss.toFixed(4)}:`);
+  for (const bin of calibratedBins) {
+    if (bin.n === 0) continue;
+    console.log(
+      `    [${bin.lo.toFixed(1)},${bin.hi.toFixed(1)}) pred ${bin.meanPred.toFixed(3)} obs ${bin.meanLabel.toFixed(3)} n=${bin.n}`
+    );
+  }
+
   const gates = checkGates({
-    logLoss: cv.pooled.logLoss,
+    logLoss: calibratedLogLoss,
     baseRate: cv.pooled.baseRate,
-    bins: cv.pooled.bins,
+    bins: calibratedBins,
   });
   if (!gates.pass) {
     for (const failure of gates.failures) {
@@ -85,8 +109,9 @@ function trainFamily(family: ModeFamily): FamilyModel | null {
     means,
     stds,
     sampleCount: rows.length,
+    calibration,
     metrics: {
-      logLoss: cv.pooled.logLoss,
+      logLoss: calibratedLogLoss,
       brier: cv.pooled.brier,
       baseRate: cv.pooled.baseRate,
     },

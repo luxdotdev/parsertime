@@ -30,6 +30,9 @@ export type CVResult = {
     brier: number;
     bins: CalibrationBin[];
     baseRate: number;
+    /** Held-out predictions/labels across all folds — calibration input. */
+    preds: number[];
+    labels: number[];
   };
 };
 
@@ -80,6 +83,8 @@ export function runGroupedCV(
       brier: brier(pooledPreds, pooledLabels),
       bins: calibrationBins(pooledPreds, pooledLabels, 10),
       baseRate,
+      preds: pooledPreds,
+      labels: pooledLabels,
     },
   };
 }
