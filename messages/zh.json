@@ -1655,6 +1655,11 @@
     "editMetadata": {
       "title": "编辑 {scrimName} | Parsertime",
       "description": "编辑 {scrimName} 的详情和设置。"
+    },
+    "wpa": {
+      "title": "胜率贡献值",
+      "description": "按选手汇总本次训练赛全部地图的 WPA。",
+      "maps": "{count} 张地图"
     }
   },
   "mapGroupsPage": {
@@ -2374,7 +2379,8 @@
       "vod": "VOD",
       "heatmap": "热力图",
       "replay": "回放",
-      "routes": "路线"
+      "routes": "路线",
+      "story": "比赛故事"
     },
     "routes": {
       "calibrationWarning": "该地图的坐标校准无效——大多数记录位置落在地图图像之外，无法正确绘制路线。请在校准工具中使用至少 4 个锚点重新校准。",
@@ -3086,6 +3092,46 @@
     },
     "heroBans": {
       "bannedBy": "{hero} 被 {team} 禁用"
+    },
+    "matchStory": {
+      "title": "比赛故事",
+      "description": "从 {team1} 视角呈现的逐团战胜率变化。",
+      "limited": "该日志缺少终极技能事件。胜率曲线不含大招经济，连锁洞察已禁用。",
+      "noModel": "该游戏模式的全局数据还不足。",
+      "chart": {
+        "winProbability": "胜率",
+        "round": "第 {round} 回合",
+        "time": "时间"
+      },
+      "ledger": {
+        "title": "团战记录",
+        "fight": "团战",
+        "time": "时间",
+        "zone": "区域",
+        "result": "结果",
+        "swing": "波动",
+        "ults": "大招",
+        "carryover": "延续",
+        "won": "胜",
+        "lost": "负",
+        "even": "平",
+        "ultEconomy": "大招经济",
+        "stagger": "梯次阵亡"
+      },
+      "wpa": {
+        "title": "胜率贡献值",
+        "subtitle": "按约定分配——由最后一击、助攻、阵亡和大招使用来拆分每场团战的波动。展开行可查看明细。",
+        "player": "选手",
+        "team": "队伍",
+        "total": "WPA",
+        "fightShare": "第 {fight} 场团战：{share}%"
+      },
+      "insights": {
+        "title": "关键时刻",
+        "biggestSwing": "第 {fight} 场团战使胜率向 {team} 方向移动了 {swing}%。",
+        "ultCarryover": "第 {prevFight} 场团战的大招经济使 {team} 进入第 {fight} 场团战时损失约 {cost}% 胜率。",
+        "staggerCarryover": "第 {fight} 场团战前的梯次阵亡使 {team} 损失约 {cost}% 胜率。"
+      }
     }
   },
   "scoutingPage": {

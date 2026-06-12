@@ -1655,6 +1655,11 @@
     "editMetadata": {
       "title": "Edit {scrimName} | Parsertime",
       "description": "Edit details and settings for {scrimName}."
+    },
+    "wpa": {
+      "title": "Win probability added",
+      "description": "Per-player WPA summed across this scrim's maps.",
+      "maps": "{count, plural, one {# map} other {# maps}}"
     }
   },
   "mapGroupsPage": {
@@ -2374,7 +2379,8 @@
       "vod": "VOD",
       "heatmap": "Heatmap",
       "replay": "Replay",
-      "routes": "Routes"
+      "routes": "Routes",
+      "story": "Match Story"
     },
     "routes": {
       "calibrationWarning": "This map's calibration is invalid — most recorded positions land outside the map image, so routes can't be drawn meaningfully. Recalibrate this map in the calibration tool (use at least 4 anchors).",
@@ -3086,6 +3092,46 @@
     },
     "heroBans": {
       "bannedBy": "{hero} banned by {team}"
+    },
+    "matchStory": {
+      "title": "Match story",
+      "description": "Win probability over the map, fight by fight, from {team1}'s perspective.",
+      "limited": "Ultimate events are missing from this log. Win probability is shown without ult economy and cascade insights are disabled.",
+      "noModel": "Not enough league-wide data for this game mode yet.",
+      "chart": {
+        "winProbability": "Win probability",
+        "round": "Round {round}",
+        "time": "Time"
+      },
+      "ledger": {
+        "title": "Fight ledger",
+        "fight": "Fight",
+        "time": "Time",
+        "zone": "Zone",
+        "result": "Result",
+        "swing": "Swing",
+        "ults": "Ults",
+        "carryover": "Carryover",
+        "won": "Won",
+        "lost": "Lost",
+        "even": "Even",
+        "ultEconomy": "ult economy",
+        "stagger": "stagger"
+      },
+      "wpa": {
+        "title": "Win probability added",
+        "subtitle": "Attribution by convention — final blows, assists, deaths, and ult usage split each fight's swing. Expand a row to audit it.",
+        "player": "Player",
+        "team": "Team",
+        "total": "WPA",
+        "fightShare": "Fight {fight}: {share}%"
+      },
+      "insights": {
+        "title": "Key moments",
+        "biggestSwing": "Fight {fight} swung the map by {swing}% toward {team}.",
+        "ultCarryover": "Ult economy from fight {prevFight} carried an estimated {cost}% win-probability penalty for {team} into fight {fight}.",
+        "staggerCarryover": "Staggered deaths before fight {fight} cost {team} an estimated {cost}% win probability."
+      }
     }
   },
   "scoutingPage": {

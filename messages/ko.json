@@ -1655,6 +1655,11 @@
     "editMetadata": {
       "title": "{scrimName} 편집 | Parsertime",
       "description": "{scrimName}의 세부 정보와 설정을 편집하세요."
+    },
+    "wpa": {
+      "title": "승리 확률 기여도",
+      "description": "이 스크림의 전체 맵에 대해 합산한 플레이어별 WPA입니다.",
+      "maps": "{count}개 맵"
     }
   },
   "mapGroupsPage": {
@@ -2374,7 +2379,8 @@
       "vod": "VOD",
       "heatmap": "히트맵",
       "replay": "리플레이",
-      "routes": "이동 경로"
+      "routes": "이동 경로",
+      "story": "경기 스토리"
     },
     "routes": {
       "calibrationWarning": "이 맵의 좌표 보정이 잘못되어 대부분의 위치가 맵 이미지 밖에 표시됩니다. 보정 도구에서 앵커를 4개 이상 사용해 다시 보정해 주세요.",
@@ -3086,6 +3092,46 @@
     },
     "heroBans": {
       "bannedBy": "{hero} 영웅이 {team}에 의해 밴됨"
+    },
+    "matchStory": {
+      "title": "경기 스토리",
+      "description": "{team1} 관점에서 본 한타별 승리 확률 변화입니다.",
+      "limited": "이 로그에는 궁극기 이벤트가 없습니다. 승리 확률은 궁극기 경제 없이 표시되며 연쇄 인사이트는 비활성화됩니다.",
+      "noModel": "이 게임 모드에 대한 리그 전체 데이터가 아직 충분하지 않습니다.",
+      "chart": {
+        "winProbability": "승리 확률",
+        "round": "{round}라운드",
+        "time": "시간"
+      },
+      "ledger": {
+        "title": "한타 기록",
+        "fight": "한타",
+        "time": "시간",
+        "zone": "구역",
+        "result": "결과",
+        "swing": "변동",
+        "ults": "궁극기",
+        "carryover": "이월",
+        "won": "승리",
+        "lost": "패배",
+        "even": "무승부",
+        "ultEconomy": "궁극기 경제",
+        "stagger": "스태거"
+      },
+      "wpa": {
+        "title": "승리 확률 기여도",
+        "subtitle": "규약 기반 배분 — 막타, 어시스트, 데스, 궁극기 사용으로 각 한타의 변동을 나눕니다. 행을 펼쳐 자세히 확인하세요.",
+        "player": "플레이어",
+        "team": "팀",
+        "total": "WPA",
+        "fightShare": "{fight}번째 한타: {share}%"
+      },
+      "insights": {
+        "title": "주요 순간",
+        "biggestSwing": "{fight}번째 한타로 승리 확률이 {team} 쪽으로 {swing}% 이동했습니다.",
+        "ultCarryover": "{prevFight}번째 한타의 궁극기 경제로 인해 {team}은(는) {fight}번째 한타에 약 {cost}%의 승리 확률 손해를 안고 진입했습니다.",
+        "staggerCarryover": "{fight}번째 한타 전 스태거 데스로 {team}이(가) 약 {cost}%의 승리 확률을 잃었습니다."
+      }
     }
   },
   "scoutingPage": {
