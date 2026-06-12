@@ -4459,6 +4459,10 @@
           "discordNotLinked": "알림을 설정하려면 Discord 계정을 연결하세요.",
           "notGuildMember": "해당 Discord 서버의 멤버여야 합니다."
         }
+      },
+      "ranked": {
+        "title": "랭크 통계",
+        "description": "공개 프로필에서 랭크 통계를 볼 수 있는 사람을 설정합니다."
       }
     },
     "admin": {
@@ -7347,6 +7351,12 @@
     "metadata": {
       "title": "랭크 트래커",
       "description": "오버워치 2 랭크 매치를 기록하고 실력을 분석하세요."
+    }
+  },
+  "settings": {
+    "ranked": {
+      "toggleLabel": "내 프로필에 랭크 통계 표시",
+      "toggleDescription": "다른 사람들이 내 공개 프로필에서 랭크 성적 요약을 볼 수 있도록 합니다."
     }
   }
 }

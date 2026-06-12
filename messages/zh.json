@@ -4459,6 +4459,10 @@
           "discordNotLinked": "请关联您的 Discord 账号以配置通知。",
           "notGuildMember": "您必须是该 Discord 服务器的成员。"
         }
+      },
+      "ranked": {
+        "title": "排位统计",
+        "description": "控制谁可以在您的公开主页上查看您的排位统计。"
       }
     },
     "admin": {
@@ -7347,6 +7351,12 @@
     "metadata": {
       "title": "排位追踪器",
       "description": "追踪您的《守望先锋2》排位对局并分析您的表现。"
+    }
+  },
+  "settings": {
+    "ranked": {
+      "toggleLabel": "在我的主页显示排位统计",
+      "toggleDescription": "让他人在您的公开主页上查看您的排位表现摘要。"
     }
   }
 }

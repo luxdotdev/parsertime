@@ -4565,6 +4565,10 @@
           "discordNotLinked": "Link your Discord account to configure notifications.",
           "notGuildMember": "You must be a member of that Discord server."
         }
+      },
+      "ranked": {
+        "title": "Ranked Stats",
+        "description": "Control who can see your ranked stats on your public profile."
       }
     },
     "admin": {
@@ -7346,6 +7350,12 @@
     "metadata": {
       "title": "Ranked Tracker",
       "description": "Track your ranked Overwatch 2 matches and analyze your performance."
+    }
+  },
+  "settings": {
+    "ranked": {
+      "toggleLabel": "Show ranked stats on my profile",
+      "toggleDescription": "Let others see a summary of your ranked performance on your public profile."
     }
   }
 }
