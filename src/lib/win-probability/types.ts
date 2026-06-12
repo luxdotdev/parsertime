@@ -105,3 +105,7 @@ export type DatasetRow = {
 
 export const RESPAWN_SECONDS = 10;
 export const SNAPSHOT_INTERVAL_SECONDS = 5;
+/** Minimum |WP delta| before a cascade carryover is surfaced to users.
+ * Lives here (dependency-free) so client components can import it without
+ * dragging the timeline's server-side module graph into the bundle. */
+export const CASCADE_MIN_WP = 0.05;

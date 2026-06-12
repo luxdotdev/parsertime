@@ -2,12 +2,12 @@ import { extractFeatures } from "./features";
 import { statesAt } from "./game-state";
 import { type ModelArtifact, predictWinProbability } from "./model";
 import { roundLabels } from "./training/extract";
-import type { GameState, WPEventLog } from "./types";
+import { CASCADE_MIN_WP, type GameState, type WPEventLog } from "./types";
 
 export const SERIES_INTERVAL_SECONDS = 5;
 export const CASCADE_WINDOW_SECONDS = 60;
-export const CASCADE_MIN_WP = 0.05;
 export const ULT_WINDOW_LEAD_SECONDS = 3;
+export { CASCADE_MIN_WP } from "./types";
 const EDGE_EPSILON = 0.5;
 
 export type WpPoint = { t: number; wp: number };

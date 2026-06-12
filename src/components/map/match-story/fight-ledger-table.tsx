@@ -8,10 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  CASCADE_MIN_WP,
-  type FightEntry,
-} from "@/lib/win-probability/timeline";
+import type { FightEntry } from "@/lib/win-probability/timeline";
+import { CASCADE_MIN_WP } from "@/lib/win-probability/types";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
