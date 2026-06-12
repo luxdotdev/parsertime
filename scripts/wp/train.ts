@@ -1,21 +1,7 @@
 #!/usr/bin/env bun
 
-import {
-  applyCalibration,
-  fitCalibration,
-} from "@/lib/win-probability/calibration";
-import { featureHash, FEATURE_NAMES } from "@/lib/win-probability/features";
-import type { FamilyModel, ModelArtifact } from "@/lib/win-probability/model";
-import { runGroupedCV } from "@/lib/win-probability/training/cv";
-import {
-  fitLogisticRegression,
-  standardize,
-} from "@/lib/win-probability/training/lr";
-import {
-  calibrationBins,
-  checkGates,
-  logLoss,
-} from "@/lib/win-probability/training/metrics";
+import { FEATURE_NAMES } from "@/lib/win-probability/features";
+import { buildArtifact } from "@/lib/win-probability/training/train-core";
 import {
   type DatasetRow,
   MODE_FAMILIES,
@@ -25,8 +11,6 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 
 const OUT_DIR = "artifacts/wp";
-const MIN_FAMILY_ROWS = 5000;
-const FIT = { learningRate: 0.5, epochs: 300, l2: 1e-4 };
 
 function readCsv(family: ModeFamily): DatasetRow[] {
   const file = path.join(OUT_DIR, `dataset-${family}.csv`);
@@ -43,103 +27,42 @@ function readCsv(family: ModeFamily): DatasetRow[] {
   });
 }
 
-function trainFamily(family: ModeFamily): FamilyModel | null {
-  const rows = readCsv(family);
-  console.log(`\n=== ${family}: ${rows.length} rows ===`);
-  if (rows.length < MIN_FAMILY_ROWS) {
-    console.log(
-      `  below MIN_FAMILY_ROWS (${MIN_FAMILY_ROWS}) — family disabled`
-    );
-    return null;
-  }
+async function main() {
+  const rowsByFamily = Object.fromEntries(
+    MODE_FAMILIES.map((f) => [f, readCsv(f)])
+  ) as Record<ModeFamily, DatasetRow[]>;
 
-  const cv = runGroupedCV(rows, 5, FIT);
-  console.log(
-    `  CV log loss ${cv.pooled.logLoss.toFixed(4)}, Brier ${cv.pooled.brier.toFixed(4)}, base rate ${cv.pooled.baseRate.toFixed(3)}`
-  );
-  console.log("  raw calibration (bins with n>0):");
-  for (const bin of cv.pooled.bins) {
-    if (bin.n === 0) continue;
-    console.log(
-      `    [${bin.lo.toFixed(1)},${bin.hi.toFixed(1)}) pred ${bin.meanPred.toFixed(3)} obs ${bin.meanLabel.toFixed(3)} n=${bin.n}`
-    );
-  }
-
-  // Isotonic recalibration fitted on the held-out CV predictions; the gates
-  // judge the calibrated outputs — what the product will actually display.
-  const calibration = fitCalibration(cv.pooled.preds, cv.pooled.labels);
-  const calibratedPreds = cv.pooled.preds.map((p) =>
-    applyCalibration(calibration, p)
-  );
-  const calibratedLogLoss = logLoss(calibratedPreds, cv.pooled.labels);
-  const calibratedBins = calibrationBins(calibratedPreds, cv.pooled.labels, 10);
-  console.log(`  calibrated log loss ${calibratedLogLoss.toFixed(4)}:`);
-  for (const bin of calibratedBins) {
-    if (bin.n === 0) continue;
-    console.log(
-      `    [${bin.lo.toFixed(1)},${bin.hi.toFixed(1)}) pred ${bin.meanPred.toFixed(3)} obs ${bin.meanLabel.toFixed(3)} n=${bin.n}`
-    );
-  }
-
-  const gates = checkGates({
-    logLoss: calibratedLogLoss,
-    baseRate: cv.pooled.baseRate,
-    bins: calibratedBins,
-  });
-  if (!gates.pass) {
-    for (const failure of gates.failures) {
-      console.error(`  GATE FAIL: ${failure}`);
-    }
-    return null;
-  }
-
-  const { Xs, means, stds } = standardize(rows.map((r) => r.features));
-  const { weights, bias } = fitLogisticRegression(
-    Xs,
-    rows.map((r) => r.label),
-    FIT
-  );
-  console.log("  weights:");
-  FEATURE_NAMES.forEach((name, i) => {
-    console.log(`    ${name}: ${weights[i].toFixed(4)}`);
-  });
-  return {
-    weights,
-    bias,
-    means,
-    stds,
-    sampleCount: rows.length,
-    calibration,
-    metrics: {
-      logLoss: calibratedLogLoss,
-      brier: cv.pooled.brier,
-      baseRate: cv.pooled.baseRate,
-    },
-  };
-}
-
-function main() {
-  const modeFamilies = {} as ModelArtifact["modeFamilies"];
+  const { artifact, reports, trainedFamilies } = buildArtifact(rowsByFamily, 1);
   for (const family of MODE_FAMILIES) {
-    modeFamilies[family] = trainFamily(family);
+    console.log(`\n=== ${family} ===`);
+    for (const line of reports[family]) console.log(`  ${line}`);
+    const model = artifact.modeFamilies[family];
+    if (model !== null) {
+      console.log("  weights:");
+      FEATURE_NAMES.forEach((name, i) => {
+        console.log(`    ${name}: ${model.weights[i].toFixed(4)}`);
+      });
+    }
   }
 
-  const trained = MODE_FAMILIES.filter((f) => modeFamilies[f] !== null);
-  if (trained.length === 0) {
+  if (trainedFamilies.length === 0) {
     console.error("\nNo family passed gates — refusing to write an artifact.");
     process.exit(1);
   }
 
-  const artifact: ModelArtifact = {
-    schemaVersion: 1,
-    modelVersion: 1,
-    createdAt: new Date().toISOString(),
-    featureHash: featureHash(),
-    modeFamilies,
-  };
   const out = path.join(OUT_DIR, "model-v1.json");
   fs.writeFileSync(out, JSON.stringify(artifact, null, 2));
-  console.log(`\nWrote ${out} (families: ${trained.join(", ")})`);
+  console.log(`\nWrote ${out} (families: ${trainedFamilies.join(", ")})`);
+
+  if (process.argv.includes("--upload")) {
+    const { publishArtifact } = await import(
+      "@/lib/win-probability/artifact-store"
+    );
+    const published = await publishArtifact(artifact);
+    console.log(
+      `Published ${published.key} (model version ${published.modelVersion})`
+    );
+  }
 }
 
-main();
+await main();
