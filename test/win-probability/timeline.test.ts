@@ -58,19 +58,21 @@ function baseLog(overrides: Partial<WPEventLog> = {}): WPEventLog {
   };
 }
 
-const engagement = (
+function engagement(
   start: number,
   end: number,
   winner: string | null,
   kills: Record<string, number>
-) => ({
-  start,
-  end,
-  zoneName: "Point A",
-  winner,
-  killsByTeam: kills,
-  participants: [] as string[],
-});
+) {
+  return {
+    start,
+    end,
+    zoneName: "Point A",
+    winner,
+    killsByTeam: kills,
+    participants: [] as string[],
+  };
+}
 
 describe("computeMatchStory — series", () => {
   test("neutral states sit at 0.5 and the curve snaps to the round outcome", () => {
@@ -244,5 +246,61 @@ describe("computeMatchStory — WPA", () => {
     expect(fight.unattributedSwing).not.toBe(0);
     const bravoPlayers = story.wpa.filter((p) => p.team === "Bravo");
     expect(bravoPlayers).toHaveLength(0);
+  });
+});
+
+describe("computeMatchStory — insights", () => {
+  test("emits a biggest-swing insight and a cascade insight above threshold", () => {
+    const log = baseLog({
+      ultCharged: [
+        { time: 50, team: "Bravo", player: "b1" },
+        { time: 52, team: "Bravo", player: "b2" },
+        { time: 54, team: "Alpha", player: "a1" },
+      ],
+      ultStart: [{ time: 100, team: "Alpha", player: "a1" }],
+      kills: [
+        { time: 101, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
+        { time: 103, victimTeam: "Alpha", victimName: "a2", attackerTeam: "Bravo", attackerName: "b1" },
+      ],
+    });
+    const story = computeMatchStory({
+      log,
+      artifact: testArtifact({ aliveDiff: 0.6, ultBankDiff: 0.8 }),
+      engagements: [
+        engagement(100, 103, "Bravo", { Bravo: 2 }),
+        engagement(125, 135, "Bravo", { Bravo: 1 }),
+      ],
+      assists: [],
+    })!;
+    const keys = story.insights.map((i) => i.key);
+    expect(keys).toContain("insights.biggestSwing");
+    expect(keys).toContain("insights.ultCarryover");
+    expect(story.insights.length).toBeLessThanOrEqual(4);
+    // Sorted by priority, descending.
+    const priorities = story.insights.map((i) => i.priority);
+    expect([...priorities].sort((a, b) => b - a)).toEqual(priorities);
+    const swing = story.insights.find((i) => i.key === "insights.biggestSwing")!;
+    expect(swing.values.fight).toBe(1); // 1-based for display
+    expect(typeof swing.values.swing).toBe("number");
+  });
+
+  test("limited logs (no ult events) emit no cascade insights", () => {
+    const log = baseLog({
+      kills: [
+        { time: 100, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
+      ],
+    });
+    const story = computeMatchStory({
+      log,
+      artifact: testArtifact({ aliveDiff: 1 }),
+      engagements: [
+        engagement(100, 100, "Bravo", { Bravo: 1 }),
+        engagement(110, 115, "Bravo", { Bravo: 1 }),
+      ],
+      assists: [],
+    })!;
+    expect(
+      story.insights.every((i) => i.key !== "insights.ultCarryover")
+    ).toBe(true);
   });
 });

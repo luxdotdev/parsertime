@@ -92,7 +92,7 @@ export function computeMatchStory(
   const points = computeSeries(log, wpAt);
   const fights = buildLedger(inputs, wpAt, wpOf, limited);
   const wpa = attributeWpa(inputs, fights);
-  const insights = generateInsights();
+  const insights = generateInsights(log, fights, limited);
 
   return {
     teams: { team1: log.team1, team2: log.team2 },
@@ -277,6 +277,66 @@ function attributeWpa(
 
   return [...totals.values()].sort((a, b) => b.wpa - a.wpa);
 }
-function generateInsights(): MatchStoryInsight[] {
-  return [];
+const MAX_INSIGHTS = 4;
+
+function generateInsights(
+  log: WPEventLog,
+  fights: FightEntry[],
+  limited: boolean
+): MatchStoryInsight[] {
+  const insights: MatchStoryInsight[] = [];
+  function pct(v: number): number {
+    return Math.round(Math.abs(v) * 100);
+  }
+
+  let biggest: FightEntry | null = null;
+  for (const fight of fights) {
+    if (biggest === null || Math.abs(fight.swing) > Math.abs(biggest.swing)) {
+      biggest = fight;
+    }
+  }
+  if (biggest !== null && Math.abs(biggest.swing) >= CASCADE_MIN_WP) {
+    insights.push({
+      key: "insights.biggestSwing",
+      values: {
+        fight: biggest.index + 1,
+        swing: pct(biggest.swing),
+        team: biggest.swing > 0 ? log.team1 : log.team2,
+      },
+      priority: 90,
+    });
+  }
+
+  if (!limited) {
+    for (const fight of fights) {
+      if (fight.carryover === null) continue;
+      if (Math.abs(fight.carryover.ultEconomy) >= CASCADE_MIN_WP) {
+        insights.push({
+          key: "insights.ultCarryover",
+          values: {
+            fight: fight.index + 1,
+            prevFight: fight.index, // 1-based previous fight
+            cost: pct(fight.carryover.ultEconomy),
+            team: fight.carryover.ultEconomy < 0 ? log.team1 : log.team2,
+          },
+          priority: 80,
+        });
+      }
+      if (Math.abs(fight.carryover.stagger) >= CASCADE_MIN_WP) {
+        insights.push({
+          key: "insights.staggerCarryover",
+          values: {
+            fight: fight.index + 1,
+            cost: pct(fight.carryover.stagger),
+            team: fight.carryover.stagger < 0 ? log.team1 : log.team2,
+          },
+          priority: 75,
+        });
+      }
+    }
+  }
+
+  return insights
+    .sort((a, b) => b.priority - a.priority)
+    .slice(0, MAX_INSIGHTS);
 }
