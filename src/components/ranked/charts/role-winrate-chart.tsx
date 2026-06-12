@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
   ChartTooltip,
@@ -58,26 +51,27 @@ export function RoleWinrateChart({ result }: RoleWinrateChartProps) {
 
   if (qualifiedData.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Which role wins you games?</CardTitle>
-          <CardDescription>{description}</CardDescription>
-        </CardHeader>
-        <CardContent className="flex h-[280px] items-center justify-center">
+      <section className="space-y-4">
+        <SectionHeader
+          eyebrow="Roles"
+          title="Which role wins you games?"
+          description={description}
+        />
+        <div className="flex h-[280px] items-center justify-center">
           <p className="text-muted-foreground text-sm">No data yet</p>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Which role wins you games?</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[280px] w-full">
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Roles"
+        title="Which role wins you games?"
+        description={description}
+      />
+      <ChartContainer config={chartConfig} className="h-[280px] w-full">
           <BarChart
             data={qualifiedData}
             layout="vertical"
@@ -148,15 +142,12 @@ export function RoleWinrateChart({ result }: RoleWinrateChartProps) {
               ))}
             </Bar>
           </BarChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-xs">
-          Minimum {ROLE_WINRATE_MIN_MATCHES} games required per role &middot;
-          showing {qualifiedData.length}{" "}
-          {qualifiedData.length === 1 ? "role" : "roles"}
-        </p>
-      </CardFooter>
-    </Card>
+      </ChartContainer>
+      <p className="text-muted-foreground text-xs">
+        Minimum {ROLE_WINRATE_MIN_MATCHES} games required per role &middot;
+        showing {qualifiedData.length}{" "}
+        {qualifiedData.length === 1 ? "role" : "roles"}
+      </p>
+    </section>
   );
 }

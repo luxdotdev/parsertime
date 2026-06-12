@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
   ChartTooltip,
@@ -39,8 +32,8 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const SWAP_COLOR = "oklch(0.65 0.18 160)";
-const STAY_COLOR = "oklch(0.65 0.18 25)";
+const SWAP_COLOR = "var(--chart-1)";
+const STAY_COLOR = "var(--chart-2)";
 
 function buildDescription(result: HeroSwapResult): string {
   const { swapTotal, noSwapTotal } = result;
@@ -65,13 +58,13 @@ export function HeroSwapAnalyticsChart({ result }: HeroSwapAnalyticsChartProps) 
         : `+${deltaAbs}% when staying`;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Does switching heroes win games?</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {hasEnoughData ? (
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Hero swaps"
+        title="Does switching heroes win games?"
+        description={description}
+      />
+      {hasEnoughData ? (
           <ChartContainer config={chartConfig} className="h-[220px] w-full">
             <BarChart
               data={data}
@@ -147,15 +140,14 @@ export function HeroSwapAnalyticsChart({ result }: HeroSwapAnalyticsChartProps) 
               </Bar>
             </BarChart>
           </ChartContainer>
-        ) : (
-          <div className="flex h-[220px] items-center justify-center">
-            <p className="text-muted-foreground text-sm">
-              Need at least 3 swap matches and 3 non-swap matches
-            </p>
-          </div>
-        )}
-      </CardContent>
-      <CardFooter className="flex flex-wrap items-center justify-between gap-2">
+      ) : (
+        <div className="flex h-[220px] items-center justify-center">
+          <p className="text-muted-foreground text-sm">
+            Need at least 3 swap matches and 3 non-swap matches
+          </p>
+        </div>
+      )}
+      <div className="flex flex-wrap items-center justify-between gap-2">
         {hasEnoughData && (
           <p className="text-sm font-medium tabular-nums">{deltaLabel}</p>
         )}
@@ -165,7 +157,7 @@ export function HeroSwapAnalyticsChart({ result }: HeroSwapAnalyticsChartProps) 
             <> &middot; {swapTotal} swap{swapTotal === 1 ? "" : "s"}, {noSwapTotal} single-hero</>
           )}
         </p>
-      </CardFooter>
-    </Card>
+      </div>
+    </section>
   );
 }

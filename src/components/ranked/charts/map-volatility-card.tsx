@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
   ChartTooltip,
@@ -38,7 +31,7 @@ function ConfidenceStars({ count }: { count: 1 | 2 | 3 | 4 | 5 }) {
           key={i}
           className={`size-2.5 ${
             i < count
-              ? "fill-amber-400 text-amber-400"
+              ? "fill-primary text-primary"
               : "fill-muted text-muted"
           }`}
           aria-hidden="true"
@@ -118,18 +111,18 @@ export function MapVolatilityCard({ result }: MapVolatilityCardProps) {
     .sort((a, b) => b.volatility - a.volatility)
     .slice(0, 15);
 
+  const description = insight.mostVolatile
+    ? `${insight.mostVolatile} is your most unpredictable map — results vary widely`
+    : "How consistent your results are on each map";
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Map Volatility</CardTitle>
-        <CardDescription>
-          {insight.mostVolatile
-            ? `${insight.mostVolatile} is your most unpredictable map — results vary widely`
-            : "How consistent your results are on each map"}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Map performance"
+        title="Map Volatility"
+        description={description}
+      />
+      <ChartContainer config={chartConfig} className="h-[300px] w-full">
           <BarChart
             data={chartData}
             layout="vertical"
@@ -158,10 +151,10 @@ export function MapVolatilityCard({ result }: MapVolatilityCardProps) {
                   key={entry.name}
                   fill={
                     entry.volatility >= 70
-                      ? "oklch(0.65 0.18 30)"
+                      ? "var(--chart-loss)"
                       : entry.volatility >= 45
-                        ? "oklch(0.72 0.15 50)"
-                        : "oklch(0.65 0.18 160)"
+                        ? "var(--muted-foreground)"
+                        : "var(--chart-win)"
                   }
                   opacity={entry.hasEnoughData ? 1 : 0.5}
                 />
@@ -169,13 +162,10 @@ export function MapVolatilityCard({ result }: MapVolatilityCardProps) {
             </Bar>
           </BarChart>
         </ChartContainer>
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-xs">
-          High volatility means your results swing dramatically — these are your
-          &ldquo;coin-flip&rdquo; maps
-        </p>
-      </CardFooter>
-    </Card>
+      <p className="text-muted-foreground text-xs">
+        High volatility means your results swing dramatically — these are your
+        &ldquo;coin-flip&rdquo; maps
+      </p>
+    </section>
   );
 }

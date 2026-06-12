@@ -48,8 +48,8 @@ const GROUP_SIZE_LABELS: Record<number, string> = {
 
 function ResultBadge({ result }: { result: string }) {
   const styles = {
-    win: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
-    loss: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400",
+    win: "bg-primary/15 text-primary",
+    loss: "bg-destructive/15 text-destructive",
     draw: "bg-muted text-muted-foreground",
   };
 
@@ -126,18 +126,23 @@ export function MatchList({ matches }: { matches: MatchData[] }) {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold tracking-tight text-balance">
-          Recent Matches
-          <span className="text-muted-foreground ml-2 text-sm font-normal">
-            (last 7 days)
-          </span>
-        </h2>
-        {totalPages > 1 && (
-          <span className="text-muted-foreground text-xs">
-            {start}–{end} of {recentMatches.length}
-          </span>
-        )}
+      <div>
+        <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+          History
+        </p>
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-semibold tracking-tight">
+            Recent matches
+            <span className="text-muted-foreground ml-2 text-sm font-normal">
+              (last 7 days)
+            </span>
+          </h2>
+          {totalPages > 1 && (
+            <span className="text-muted-foreground text-xs">
+              {start}–{end} of {recentMatches.length}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="space-y-2">

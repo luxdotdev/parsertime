@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
   ChartTooltip,
@@ -43,19 +36,19 @@ export function GameModeDistributionChart({
   const chartConfig = buildChartConfig(data);
   const pieData = data.map((d) => ({ ...d, name: d.mode }));
 
+  const description = `${insight.dominantMode} makes up ${insight.dominantPct}% of your games`;
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>What modes do you play?</CardTitle>
-        <CardDescription>
-          {insight.dominantMode} makes up {insight.dominantPct}% of your games
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square h-[250px]"
-        >
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Game modes"
+        title="What modes do you play?"
+        description={description}
+      />
+      <ChartContainer
+        config={chartConfig}
+        className="mx-auto aspect-square h-[250px]"
+      >
           <PieChart>
             <ChartTooltip
               content={
@@ -111,9 +104,8 @@ export function GameModeDistributionChart({
               />
             </Pie>
           </PieChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter className="flex flex-wrap justify-center gap-3">
+      </ChartContainer>
+      <div className="flex flex-wrap justify-center gap-3">
         {data.map((entry) => (
           <div key={entry.mode} className="flex items-center gap-1.5 text-xs">
             <span
@@ -123,7 +115,7 @@ export function GameModeDistributionChart({
             <span className="text-muted-foreground">{entry.mode}</span>
           </div>
         ))}
-      </CardFooter>
-    </Card>
+      </div>
+    </section>
   );
 }

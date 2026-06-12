@@ -319,7 +319,7 @@ export function MatchForm({ trigger }: MatchFormProps) {
           </div>
 
           {error && (
-            <p className="mt-4 text-sm text-red-600 dark:text-red-400">
+            <p className="mt-4 text-sm text-destructive">
               {error}
             </p>
           )}
@@ -401,13 +401,13 @@ function MatchEntryCard({
           >
             <ToggleGroupItem
               value="win"
-              className="flex-1 rounded-l-md! data-[state=on]:bg-green-100 data-[state=on]:text-green-800 dark:data-[state=on]:bg-green-900/30 dark:data-[state=on]:text-green-400"
+              className="flex-1 rounded-l-md! data-[state=on]:bg-primary/15 data-[state=on]:text-primary"
             >
               Win
             </ToggleGroupItem>
             <ToggleGroupItem
               value="loss"
-              className="flex-1 data-[state=on]:bg-red-100 data-[state=on]:text-red-800 dark:data-[state=on]:bg-red-900/30 dark:data-[state=on]:text-red-400"
+              className="flex-1 data-[state=on]:bg-destructive/15 data-[state=on]:text-destructive"
             >
               Loss
             </ToggleGroupItem>
@@ -588,7 +588,7 @@ function HeroPicker({
             className={`text-xs tabular-nums ${
               totalPercentage === 100
                 ? "text-muted-foreground"
-                : "text-red-600 dark:text-red-400"
+                : "text-destructive"
             }`}
           >
             {totalPercentage}%
@@ -609,7 +609,7 @@ function HeroPicker({
             />
           ))}
           {totalPercentage !== 100 && (
-            <p className="text-xs text-red-600 dark:text-red-400">
+            <p className="text-xs text-destructive">
               Percentages must sum to 100
             </p>
           )}

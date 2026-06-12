@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
   ChartTooltip,
@@ -37,18 +30,20 @@ export function MapWinLossChart({ result }: MapWinLossChartProps) {
 
   const totalGames = data.reduce((sum, d) => sum + d.wins + d.losses, 0);
 
+  const worstNote =
+    insight.worstMap !== insight.bestMap
+      ? ` \u2014 ${insight.worstMap} is your toughest at ${insight.worstWinrate}%`
+      : "";
+  const description = `${insight.bestMap} is your best map at ${insight.bestWinrate}% winrate${worstNote}`;
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Where do you win most?</CardTitle>
-        <CardDescription>
-          {insight.bestMap} is your best map at {insight.bestWinrate}% winrate
-          {insight.worstMap !== insight.bestMap &&
-            ` \u2014 ${insight.worstMap} is your toughest at ${insight.worstWinrate}%`}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[350px] w-full">
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Map performance"
+        title="Where do you win most?"
+        description={description}
+      />
+      <ChartContainer config={chartConfig} className="h-[350px] w-full">
           <BarChart
             data={data}
             margin={{ top: 4, right: 4, left: -20, bottom: 60 }}
@@ -130,13 +125,10 @@ export function MapWinLossChart({ result }: MapWinLossChartProps) {
               radius={[4, 4, 0, 0]}
             />
           </BarChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-xs">
-          Based on {totalGames} matches across {data.length} maps
-        </p>
-      </CardFooter>
-    </Card>
+      </ChartContainer>
+      <p className="text-muted-foreground text-xs">
+        Based on {totalGames} matches across {data.length} maps
+      </p>
+    </section>
   );
 }

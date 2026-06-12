@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   Tooltip,
   TooltipContent,
@@ -23,18 +16,18 @@ type BestHeroPerMapCardProps = {
 };
 
 const ROLE_COLORS: Record<string, string> = {
-  Tank: "bg-blue-500/15 text-blue-700 dark:text-blue-400",
-  Damage: "bg-red-500/15 text-red-700 dark:text-red-400",
-  Support: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
+  Tank: "bg-primary/15 text-primary",
+  Damage: "bg-muted text-foreground",
+  Support: "bg-muted/50 text-muted-foreground",
 };
 
 const MAP_TYPE_COLORS: Record<string, string> = {
-  Control: "bg-violet-500/15 text-violet-700 dark:text-violet-400",
-  Escort: "bg-orange-500/15 text-orange-700 dark:text-orange-400",
-  Hybrid: "bg-cyan-500/15 text-cyan-700 dark:text-cyan-400",
-  Push: "bg-pink-500/15 text-pink-700 dark:text-pink-400",
-  Flashpoint: "bg-amber-500/15 text-amber-700 dark:text-amber-400",
-  Clash: "bg-rose-500/15 text-rose-700 dark:text-rose-400",
+  Control: "bg-muted text-foreground",
+  Escort: "bg-muted text-foreground",
+  Hybrid: "bg-muted text-foreground",
+  Push: "bg-muted text-foreground",
+  Flashpoint: "bg-muted text-foreground",
+  Clash: "bg-muted text-foreground",
 };
 
 export function BestHeroPerMapCard({ result }: BestHeroPerMapCardProps) {
@@ -42,39 +35,33 @@ export function BestHeroPerMapCard({ result }: BestHeroPerMapCardProps) {
 
   if (bestHeroPerMap.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Best Hero per Map</CardTitle>
-          <CardDescription>
-            Play at least {HERO_MAP_MIN_GAMES} games with a hero on a map to see
-            your best picks
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground py-8 text-center text-sm">
-            No qualifying data yet
-          </p>
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader
+          eyebrow="Hero × map"
+          title="Best Hero per Map"
+          description={`Play at least ${HERO_MAP_MIN_GAMES} games with a hero on a map to see your best picks`}
+        />
+        <p className="text-muted-foreground py-8 text-center text-sm">
+          No qualifying data yet
+        </p>
+      </section>
     );
   }
 
+  const description = `Your highest-winrate hero on each map (min ${HERO_MAP_MIN_GAMES} games) with 95% confidence intervals`;
+
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-start justify-between gap-2">
-          <div>
-            <CardTitle>Best Hero per Map</CardTitle>
-            <CardDescription>
-              Your highest-winrate hero on each map (min {HERO_MAP_MIN_GAMES}{" "}
-              games) with 95% confidence intervals
-            </CardDescription>
-          </div>
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Hero × map"
+        title="Best Hero per Map"
+        description={description}
+        rightSlot={
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
-                  className="text-muted-foreground hover:text-foreground mt-1 shrink-0"
+                  className="text-muted-foreground hover:text-foreground shrink-0"
                   aria-label="About confidence intervals"
                 >
                   <Info className="size-4" />
@@ -89,10 +76,9 @@ export function BestHeroPerMapCard({ result }: BestHeroPerMapCardProps) {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
+        }
+      />
+      <div className="overflow-x-auto">
           <table className="w-full text-sm" aria-label="Best hero per map">
             <thead>
               <tr className="border-border border-b">
@@ -161,7 +147,7 @@ export function BestHeroPerMapCard({ result }: BestHeroPerMapCardProps) {
                               className={`font-mono text-xs tabular-nums ${
                                 isNarrow
                                   ? "text-muted-foreground"
-                                  : "text-amber-500"
+                                  : "text-primary"
                               }`}
                             >
                               {entry.confidenceLow}%–{entry.confidenceHigh}%
@@ -186,13 +172,10 @@ export function BestHeroPerMapCard({ result }: BestHeroPerMapCardProps) {
             </tbody>
           </table>
         </div>
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-xs">
-          Amber intervals are wide — the true winrate could vary significantly.
-          Play more games to increase confidence.
-        </p>
-      </CardFooter>
-    </Card>
+      <p className="text-muted-foreground text-xs">
+        Highlighted intervals are wide — the true winrate could vary
+        significantly. Play more games to increase confidence.
+      </p>
+    </section>
   );
 }

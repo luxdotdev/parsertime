@@ -5,6 +5,8 @@ export type RibbonCell = {
   value: string;
   sub?: string;
   emphasis?: boolean;
+  /** Override the default `text-2xl` value sizing (e.g. long string values). */
+  valueClassName?: string;
 };
 
 type StatRibbonProps = {
@@ -35,7 +37,8 @@ export function StatRibbon({ cells, columns = 4 }: StatRibbonProps) {
           <dd
             className={cn(
               "font-mono text-2xl leading-none font-semibold tabular-nums",
-              cell.emphasis ? "text-primary" : "text-foreground"
+              cell.emphasis ? "text-primary" : "text-foreground",
+              cell.valueClassName
             )}
           >
             {cell.value}

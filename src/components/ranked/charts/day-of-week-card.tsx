@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
   ChartTooltip,
@@ -35,9 +28,8 @@ function dayBarColor(winrate: number, total: number): string {
 }
 
 function deltaBadgeClasses(delta: number): string {
-  if (delta > 0)
-    return "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400";
-  if (delta < 0) return "bg-red-500/10 text-red-700 dark:text-red-400";
+  if (delta > 0) return "bg-primary/15 text-primary";
+  if (delta < 0) return "bg-destructive/15 text-destructive";
   return "bg-muted text-muted-foreground";
 }
 
@@ -49,34 +41,32 @@ export function DayOfWeekCard({ result }: DayOfWeekCardProps) {
 
   if (!hasData) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Best Day to Play</CardTitle>
-          <CardDescription>
-            Are you better on weekdays or weekends?
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center gap-2 py-8 text-center">
-            <p className="text-muted-foreground text-sm">No matches yet</p>
-            <p className="text-muted-foreground/70 text-xs">
-              Track matches across different days to see when you perform best.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader
+          eyebrow="Weekly rhythm"
+          title="Best Day to Play"
+          description="Are you better on weekdays or weekends?"
+        />
+        <div className="flex flex-col items-center gap-2 py-8 text-center">
+          <p className="text-muted-foreground text-sm">No matches yet</p>
+          <p className="text-muted-foreground/70 text-xs">
+            Track matches across different days to see when you perform best.
+          </p>
+        </div>
+      </section>
     );
   }
 
   const delta = weekendWinrate - weekdayWinrate;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Best Day to Play</CardTitle>
-        <CardDescription>{insight}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Weekly rhythm"
+        title="Best Day to Play"
+        description={insight}
+      />
+      <div className="space-y-4">
         <ChartContainer config={chartConfig} className="h-[220px] w-full">
           <BarChart
             data={data}
@@ -167,30 +157,28 @@ export function DayOfWeekCard({ result }: DayOfWeekCardProps) {
 
         {bestDay && worstDay && bestDay !== worstDay && (
           <div className="grid grid-cols-2 gap-2">
-            <div className="rounded-md bg-emerald-500/10 p-2 text-center">
-              <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+            <div className="border-border rounded-md border bg-primary/15 p-2 text-center">
+              <p className="text-sm font-semibold text-primary">
                 {bestDay}
               </p>
-              <p className="text-xs text-emerald-700/80 dark:text-emerald-400/80">
+              <p className="text-primary text-xs">
                 Best day
               </p>
             </div>
-            <div className="rounded-md bg-red-500/10 p-2 text-center">
-              <p className="text-sm font-semibold text-red-700 dark:text-red-400">
+            <div className="border-border rounded-md border bg-destructive/15 p-2 text-center">
+              <p className="text-sm font-semibold text-destructive">
                 {worstDay}
               </p>
-              <p className="text-xs text-red-700/80 dark:text-red-400/80">
+              <p className="text-destructive text-xs">
                 Toughest day
               </p>
             </div>
           </div>
         )}
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-xs">
-          Matches are attributed to the day the session started.
-        </p>
-      </CardFooter>
-    </Card>
+      </div>
+      <p className="text-muted-foreground text-xs">
+        Matches are attributed to the day the session started.
+      </p>
+    </section>
   );
 }

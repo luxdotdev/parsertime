@@ -44,10 +44,17 @@ export default async function RankedPage() {
   );
 
   return (
-    <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
-      <h1 className="mb-6 text-2xl font-bold tracking-tight">{t("title")}</h1>
+    <div className="px-6 pt-8 pb-16 sm:px-10">
+      <header className="border-border border-b pb-6">
+        <p className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
+          Personal analytics
+        </p>
+        <h1 className="mt-3 text-4xl leading-none font-semibold tracking-tight">
+          {t("title")}
+        </h1>
+      </header>
       {matches.length === 0 ? (
-        <div className="space-y-6">
+        <div className="mt-8 space-y-6">
           <Empty>
             <EmptyHeader>
               <EmptyMedia variant="icon">
@@ -72,7 +79,9 @@ export default async function RankedPage() {
           </div>
         </div>
       ) : (
-        <DashboardContent matches={matches} />
+        <div className="mt-6">
+          <DashboardContent matches={matches} />
+        </div>
       )}
     </div>
   );

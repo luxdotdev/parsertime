@@ -54,7 +54,11 @@ import type {
   SessionAnalysisResult,
   StreakData,
 } from "@/lib/ranked-stats";
-import { Clock, Crosshair, LayoutGrid, Map, Shield, Users } from "lucide-react";
+const tabTriggerClass =
+  "text-muted-foreground hover:text-foreground data-[state=active]:text-foreground border-0 border-b-2 border-b-transparent data-[state=active]:border-b-primary rounded-none bg-transparent px-0 pb-3 pt-1 font-mono text-[11px] tracking-[0.16em] uppercase shadow-none data-[state=active]:shadow-none data-[state=active]:bg-transparent dark:bg-transparent dark:data-[state=active]:bg-transparent dark:data-[state=active]:border-b-primary transition-colors";
+
+const groupLabelClass =
+  "text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase";
 
 type DashboardTabsProps = {
   mapWinLoss: MapWinLossResult;
@@ -108,53 +112,29 @@ export function DashboardTabs({
   dayOfWeekStats,
 }: DashboardTabsProps) {
   return (
-    <Tabs defaultValue="overview">
-      <TabsList className="h-auto w-full">
-        <TabsTrigger
-          value="overview"
-          className="h-auto flex-col gap-0.5 py-2 sm:flex-row sm:gap-1.5 sm:py-1 sm:h-[calc(100%-1px)]"
-        >
-          <LayoutGrid className="size-4" aria-hidden="true" />
-          <span className="text-[10px] sm:text-sm">Overview</span>
+    <Tabs defaultValue="overview" className="space-y-8">
+      <TabsList className="border-border h-auto w-full justify-start gap-6 overflow-x-auto rounded-none border-b bg-transparent p-0">
+        <TabsTrigger value="overview" className={tabTriggerClass}>
+          Overview
         </TabsTrigger>
-        <TabsTrigger
-          value="heroes"
-          className="h-auto flex-col gap-0.5 py-2 sm:flex-row sm:gap-1.5 sm:py-1 sm:h-[calc(100%-1px)]"
-        >
-          <Crosshair className="size-4" aria-hidden="true" />
-          <span className="text-[10px] sm:text-sm">Heroes</span>
+        <TabsTrigger value="heroes" className={tabTriggerClass}>
+          Heroes
         </TabsTrigger>
-        <TabsTrigger
-          value="maps"
-          className="h-auto flex-col gap-0.5 py-2 sm:flex-row sm:gap-1.5 sm:py-1 sm:h-[calc(100%-1px)]"
-        >
-          <Map className="size-4" aria-hidden="true" />
-          <span className="text-[10px] sm:text-sm">Maps</span>
+        <TabsTrigger value="maps" className={tabTriggerClass}>
+          Maps
         </TabsTrigger>
-        <TabsTrigger
-          value="time"
-          className="h-auto flex-col gap-0.5 py-2 sm:flex-row sm:gap-1.5 sm:py-1 sm:h-[calc(100%-1px)]"
-        >
-          <Clock className="size-4" aria-hidden="true" />
-          <span className="text-[10px] sm:text-sm">Time</span>
+        <TabsTrigger value="time" className={tabTriggerClass}>
+          Time
         </TabsTrigger>
-        <TabsTrigger
-          value="groups"
-          className="h-auto flex-col gap-0.5 py-2 sm:flex-row sm:gap-1.5 sm:py-1 sm:h-[calc(100%-1px)]"
-        >
-          <Users className="size-4" aria-hidden="true" />
-          <span className="text-[10px] sm:text-sm">Groups</span>
+        <TabsTrigger value="groups" className={tabTriggerClass}>
+          Groups
         </TabsTrigger>
-        <TabsTrigger
-          value="roles"
-          className="h-auto flex-col gap-0.5 py-2 sm:flex-row sm:gap-1.5 sm:py-1 sm:h-[calc(100%-1px)]"
-        >
-          <Shield className="size-4" aria-hidden="true" />
-          <span className="text-[10px] sm:text-sm">Roles</span>
+        <TabsTrigger value="roles" className={tabTriggerClass}>
+          Roles
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="overview" className="space-y-4 pt-4">
+      <TabsContent value="overview" className="space-y-8">
         <MapWinLossChart result={mapWinLoss} />
         <div className="grid gap-4 md:grid-cols-2">
           <GameModeDistributionChart result={gameModeDistribution} />
@@ -162,12 +142,12 @@ export function DashboardTabs({
         </div>
       </TabsContent>
 
-      <TabsContent value="heroes" className="space-y-4 pt-4">
+      <TabsContent value="heroes" className="space-y-8">
         <div className="grid gap-4 md:grid-cols-2">
           <MostPlayedHeroesChart result={mostPlayedHeroes} matches={matches} />
           <HeroWinrateChart result={heroWinrates} />
         </div>
-        <p className="text-sm font-semibold tracking-tight">Hero Deep Dives</p>
+        <p className={groupLabelClass}>Hero Deep Dives</p>
         <div className="grid gap-4 md:grid-cols-2">
           <OneTrickDetectionCard result={oneTrick} />
           <HeroPoolDiversityCard result={heroPoolDiversity} />
@@ -175,30 +155,30 @@ export function DashboardTabs({
         <HeroSwapAnalyticsChart result={heroSwapStats} />
       </TabsContent>
 
-      <TabsContent value="maps" className="space-y-4 pt-4">
+      <TabsContent value="maps" className="space-y-8">
         <MapWinrateRankingChart result={mapDetailedStats} />
         <div className="grid gap-4 md:grid-cols-2">
           <MapTierListCard result={mapDetailedStats} />
           <MapVolatilityCard result={mapDetailedStats} />
         </div>
-        <p className="text-sm font-semibold tracking-tight">
+        <p className={groupLabelClass}>
           Hero &times; Map Analysis
         </p>
         <HeroMapSynergyMatrix result={heroMapSynergy} />
         <BestHeroPerMapCard result={heroMapSynergy} />
-        <p className="text-sm font-semibold tracking-tight">Map Mastery</p>
+        <p className={groupLabelClass}>Map Mastery</p>
         <div className="grid gap-4 md:grid-cols-2">
           <MapLearningCurveCard result={mapLearningCurve} />
           <MapTimelineCard result={mapTimeline} />
         </div>
-        <p className="text-sm font-semibold tracking-tight">Patterns</p>
+        <p className={groupLabelClass}>Patterns</p>
         <div className="grid gap-4 md:grid-cols-2">
           <MapFamiliarityCard result={mapFamiliarity} />
           <RepeatMapCard result={repeatMapData} />
         </div>
       </TabsContent>
 
-      <TabsContent value="time" className="space-y-4 pt-4">
+      <TabsContent value="time" className="space-y-8">
         <WinrateTrendChart result={rollingWinrate} />
         <div className="grid gap-4 md:grid-cols-2">
           <ActivityHeatmap result={activityHeatmap} />
@@ -211,14 +191,14 @@ export function DashboardTabs({
         </div>
       </TabsContent>
 
-      <TabsContent value="groups" className="space-y-4 pt-4">
+      <TabsContent value="groups" className="space-y-8">
         <div className="grid gap-4 md:grid-cols-2">
           <GroupSizeWinrateChart result={groupSizeWinrates} />
           <GroupSizeBreakdownChart result={groupSizeWinrates} />
         </div>
       </TabsContent>
 
-      <TabsContent value="roles" className="space-y-4 pt-4">
+      <TabsContent value="roles" className="space-y-8">
         <div className="grid gap-4 md:grid-cols-2">
           <RoleDistributionChart result={roleStats} />
           <RoleWinrateChart result={roleStats} />

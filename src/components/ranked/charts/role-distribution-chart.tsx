@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
   ChartTooltip,
@@ -52,17 +45,17 @@ export function RoleDistributionChart({ result }: RoleDistributionChartProps) {
     : "Log some matches to see how you spread your time across roles";
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Where do you spend your time?</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {hasData ? (
-          <ChartContainer
-            config={chartConfig}
-            className="mx-auto aspect-square h-[250px]"
-          >
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Roles"
+        title="Where do you spend your time?"
+        description={description}
+      />
+      {hasData ? (
+        <ChartContainer
+          config={chartConfig}
+          className="mx-auto aspect-square h-[250px]"
+        >
             <PieChart>
               <ChartTooltip
                 content={
@@ -118,14 +111,13 @@ export function RoleDistributionChart({ result }: RoleDistributionChartProps) {
                 />
               </Pie>
             </PieChart>
-          </ChartContainer>
-        ) : (
-          <div className="flex h-[250px] items-center justify-center">
-            <p className="text-muted-foreground text-sm">No data yet</p>
-          </div>
-        )}
-      </CardContent>
-      <CardFooter className="flex flex-wrap justify-center gap-3">
+        </ChartContainer>
+      ) : (
+        <div className="flex h-[250px] items-center justify-center">
+          <p className="text-muted-foreground text-sm">No data yet</p>
+        </div>
+      )}
+      <div className="flex flex-wrap justify-center gap-3">
         {distribution.map((entry) => (
           <div key={entry.role} className="flex items-center gap-1.5 text-xs">
             <span
@@ -136,7 +128,7 @@ export function RoleDistributionChart({ result }: RoleDistributionChartProps) {
             <span className="text-muted-foreground">{entry.role}</span>
           </div>
         ))}
-      </CardFooter>
-    </Card>
+      </div>
+    </section>
   );
 }

@@ -1,14 +1,7 @@
 "use client";
 
+import { SectionHeader } from "@/components/stats/team/section-header";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   Tooltip,
   TooltipContent,
@@ -39,21 +32,33 @@ function winrateToColor(
     };
   }
   if (winrate >= 70) {
-    return { bg: "oklch(0.40 0.14 160)", text: "oklch(0.95 0.05 160)" };
+    return { bg: "var(--chart-win)", text: "var(--primary-foreground)" };
   }
   if (winrate >= 60) {
-    return { bg: "oklch(0.52 0.16 160)", text: "oklch(0.97 0.02 160)" };
+    return {
+      bg: "color-mix(in oklch, var(--chart-win) 70%, var(--muted))",
+      text: "var(--primary-foreground)",
+    };
   }
   if (winrate >= 50) {
-    return { bg: "oklch(0.65 0.15 160)", text: "oklch(0.15 0.03 160)" };
+    return {
+      bg: "color-mix(in oklch, var(--chart-win) 35%, var(--muted))",
+      text: "var(--foreground)",
+    };
   }
   if (winrate >= 40) {
-    return { bg: "oklch(0.72 0.15 50)", text: "oklch(0.20 0.05 50)" };
+    return {
+      bg: "color-mix(in oklch, var(--chart-loss) 35%, var(--muted))",
+      text: "var(--foreground)",
+    };
   }
   if (winrate >= 30) {
-    return { bg: "oklch(0.62 0.18 25)", text: "oklch(0.97 0.02 25)" };
+    return {
+      bg: "color-mix(in oklch, var(--chart-loss) 70%, var(--muted))",
+      text: "var(--primary-foreground)",
+    };
   }
-  return { bg: "oklch(0.48 0.18 25)", text: "oklch(0.97 0.02 25)" };
+  return { bg: "var(--chart-loss)", text: "var(--primary-foreground)" };
 }
 
 export function HeroMapSynergyMatrix({ result }: HeroMapSynergyMatrixProps) {
@@ -70,33 +75,28 @@ export function HeroMapSynergyMatrix({ result }: HeroMapSynergyMatrixProps) {
 
   if (heroes.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Hero × Map Synergy</CardTitle>
-          <CardDescription>
-            Track enough matches to see which heroes work best on each map
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground py-8 text-center text-sm">
-            No data available yet
-          </p>
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader
+          eyebrow="Hero × map"
+          title="Hero × Map Synergy"
+          description="Track enough matches to see which heroes work best on each map"
+        />
+        <p className="text-muted-foreground py-8 text-center text-sm">
+          No data available yet
+        </p>
+      </section>
     );
   }
 
+  const description = `Which heroes win on which maps — cells with fewer than ${HERO_MAP_MIN_GAMES} games are shown as —`;
+
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <CardTitle>Hero × Map Synergy</CardTitle>
-            <CardDescription>
-              Which heroes win on which maps — cells with fewer than{" "}
-              {HERO_MAP_MIN_GAMES} games are shown as —
-            </CardDescription>
-          </div>
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Hero × map"
+        title="Hero × Map Synergy"
+        description={description}
+        rightSlot={
           <div
             className="flex flex-wrap gap-1"
             role="group"
@@ -115,9 +115,9 @@ export function HeroMapSynergyMatrix({ result }: HeroMapSynergyMatrixProps) {
               </Button>
             ))}
           </div>
-        </div>
-      </CardHeader>
-      <CardContent>
+        }
+      />
+      <div>
         {displayMaps.length === 0 ? (
           <p className="text-muted-foreground py-8 text-center text-sm">
             No {typeFilter} maps played yet
@@ -246,33 +246,33 @@ export function HeroMapSynergyMatrix({ result }: HeroMapSynergyMatrixProps) {
           {[
             {
               label: "≥70%",
-              bg: "oklch(0.40 0.14 160)",
-              text: "oklch(0.95 0.05 160)",
+              bg: "var(--chart-win)",
+              text: "var(--primary-foreground)",
             },
             {
               label: "60–69%",
-              bg: "oklch(0.52 0.16 160)",
-              text: "oklch(0.97 0.02 160)",
+              bg: "color-mix(in oklch, var(--chart-win) 70%, var(--muted))",
+              text: "var(--primary-foreground)",
             },
             {
               label: "50–59%",
-              bg: "oklch(0.65 0.15 160)",
-              text: "oklch(0.15 0.03 160)",
+              bg: "color-mix(in oklch, var(--chart-win) 35%, var(--muted))",
+              text: "var(--foreground)",
             },
             {
               label: "40–49%",
-              bg: "oklch(0.72 0.15 50)",
-              text: "oklch(0.20 0.05 50)",
+              bg: "color-mix(in oklch, var(--chart-loss) 35%, var(--muted))",
+              text: "var(--foreground)",
             },
             {
               label: "30–39%",
-              bg: "oklch(0.62 0.18 25)",
-              text: "oklch(0.97 0.02 25)",
+              bg: "color-mix(in oklch, var(--chart-loss) 70%, var(--muted))",
+              text: "var(--primary-foreground)",
             },
             {
               label: "<30%",
-              bg: "oklch(0.48 0.18 25)",
-              text: "oklch(0.97 0.02 25)",
+              bg: "var(--chart-loss)",
+              text: "var(--primary-foreground)",
             },
           ].map(({ label, bg, text }) => (
             <div key={label} className="flex items-center gap-1">
@@ -297,14 +297,12 @@ export function HeroMapSynergyMatrix({ result }: HeroMapSynergyMatrixProps) {
         </div>
           </>
         )}
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-xs">
-          Showing top {heroes.length} heroes by play frequency across{" "}
-          {displayMaps.length} maps
-          {typeFilter !== "All" ? ` (${typeFilter} only)` : ""}
-        </p>
-      </CardFooter>
-    </Card>
+      </div>
+      <p className="text-muted-foreground text-xs">
+        Showing top {heroes.length} heroes by play frequency across{" "}
+        {displayMaps.length} maps
+        {typeFilter !== "All" ? ` (${typeFilter} only)` : ""}
+      </p>
+    </section>
   );
 }

@@ -1,15 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
   ChartTooltip,
@@ -58,16 +50,17 @@ export function MostPlayedHeroesChart({
   const filterLabel =
     modeFilter === "all" ? "across all modes" : `in ${modeFilter}`;
 
+  const description = insight.topHero
+    ? `${insight.topHero} is your go-to ${filterLabel} with ${insight.topCount} games`
+    : "Play more matches to see hero stats";
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Who do you play most?</CardTitle>
-        <CardDescription>
-          {insight.topHero
-            ? `${insight.topHero} is your go-to ${filterLabel} with ${insight.topCount} games`
-            : "Play more matches to see hero stats"}
-        </CardDescription>
-        <CardAction>
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Hero performance"
+        title="Who do you play most?"
+        description={description}
+        rightSlot={
           <Select value={modeFilter} onValueChange={setModeFilter}>
             <SelectTrigger size="sm" aria-label="Filter by game mode">
               <SelectValue />
@@ -81,10 +74,9 @@ export function MostPlayedHeroesChart({
               ))}
             </SelectContent>
           </Select>
-        </CardAction>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+        }
+      />
+      <ChartContainer config={chartConfig} className="h-[300px] w-full">
           <BarChart
             data={data}
             margin={{ top: 4, right: 4, left: -20, bottom: 60 }}
@@ -134,8 +126,7 @@ export function MostPlayedHeroesChart({
             </Bar>
           </BarChart>
         </ChartContainer>
-      </CardContent>
-      <CardFooter className="flex flex-wrap justify-center gap-3">
+      <div className="flex flex-wrap justify-center gap-3">
         {Object.entries(ROLE_COLORS).map(([role, color]) => (
           <div key={role} className="flex items-center gap-1.5 text-xs">
             <span
@@ -145,7 +136,7 @@ export function MostPlayedHeroesChart({
             <span className="text-muted-foreground">{role}</span>
           </div>
         ))}
-      </CardFooter>
-    </Card>
+      </div>
+    </section>
   );
 }

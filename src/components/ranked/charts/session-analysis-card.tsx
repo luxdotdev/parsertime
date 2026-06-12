@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
   ChartTooltip,
@@ -47,36 +40,34 @@ export function SessionAnalysisCard({ result }: SessionAnalysisCardProps) {
 
   if (sessions.length < 2) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Session Performance</CardTitle>
-          <CardDescription>
-            How do you perform within a single session?
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col items-center gap-2 py-8 text-center">
-            <p className="text-muted-foreground text-sm">
-              Not enough sessions yet
-            </p>
-            <p className="text-muted-foreground/70 text-xs text-pretty max-w-[220px]">
-              Sessions are groups of games played within 3 hours of each
-              other. Play more matches to see trends.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader
+          eyebrow="Sessions"
+          title="Session Performance"
+          description="How do you perform within a single session?"
+        />
+        <div className="flex flex-col items-center gap-2 py-8 text-center">
+          <p className="text-muted-foreground text-sm">
+            Not enough sessions yet
+          </p>
+          <p className="text-muted-foreground/70 text-xs text-pretty max-w-[220px]">
+            Sessions are groups of games played within 3 hours of each
+            other. Play more matches to see trends.
+          </p>
+        </div>
+      </section>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Session Performance</CardTitle>
-        <CardDescription>{insight}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <ChartContainer config={chartConfig} className="h-[200px] w-full">
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Sessions"
+        title="Session Performance"
+        description={insight}
+      />
+      <div className="space-y-4">
+        <ChartContainer config={chartConfig} className="h-[220px] w-full">
           <BarChart
             data={recentSessions}
             margin={{ top: 4, right: 8, left: -8, bottom: 4 }}
@@ -157,22 +148,22 @@ export function SessionAnalysisCard({ result }: SessionAnalysisCardProps) {
 
         {bestSession && worstSession && bestSession !== worstSession && (
           <div className="grid grid-cols-2 gap-2">
-            <div className="rounded-md bg-emerald-500/10 p-2 text-center">
-              <p className="font-mono text-sm font-semibold tabular-nums text-emerald-700 dark:text-emerald-400">
+            <div className="border-border rounded-md border bg-primary/15 p-2 text-center">
+              <p className="font-mono text-sm font-semibold tabular-nums text-primary">
                 {bestSession.winrate}%
               </p>
-              <p className="text-xs text-emerald-700/80 dark:text-emerald-400/80">
+              <p className="text-primary text-xs">
                 Best session
               </p>
               <p className="text-muted-foreground text-xs">
                 {bestSession.date}
               </p>
             </div>
-            <div className="rounded-md bg-red-500/10 p-2 text-center">
-              <p className="font-mono text-sm font-semibold tabular-nums text-red-700 dark:text-red-400">
+            <div className="border-border rounded-md border bg-destructive/15 p-2 text-center">
+              <p className="font-mono text-sm font-semibold tabular-nums text-destructive">
                 {worstSession.winrate}%
               </p>
-              <p className="text-xs text-red-700/80 dark:text-red-400/80">
+              <p className="text-destructive text-xs">
                 Worst session
               </p>
               <p className="text-muted-foreground text-xs">
@@ -181,14 +172,12 @@ export function SessionAnalysisCard({ result }: SessionAnalysisCardProps) {
             </div>
           </div>
         )}
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-xs">
-          Sessions are groups of games played within 3 hours of each other.
-          Showing the last {recentSessions.length} session
-          {recentSessions.length !== 1 ? "s" : ""}.
-        </p>
-      </CardFooter>
-    </Card>
+      </div>
+      <p className="text-muted-foreground text-xs">
+        Sessions are groups of games played within 3 hours of each other.
+        Showing the last {recentSessions.length} session
+        {recentSessions.length !== 1 ? "s" : ""}.
+      </p>
+    </section>
   );
 }

@@ -1,11 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import { cn } from "@/lib/utils";
 import type { StreakData } from "@/lib/ranked-stats";
 
@@ -84,12 +77,13 @@ export function StreakChart({ data }: StreakChartProps) {
         : "No active streak";
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Streak</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-5">
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Streaks"
+        title="Streak"
+        description={description}
+      />
+      <div className="space-y-5">
         <div className="flex items-end gap-6">
           <StatBlock
             label="Current streak"
@@ -126,12 +120,10 @@ export function StreakChart({ data }: StreakChartProps) {
             </div>
           </div>
         )}
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-xs">
-          Most recent results shown left to right
-        </p>
-      </CardFooter>
-    </Card>
+      </div>
+      <p className="text-muted-foreground text-xs">
+        Most recent results shown left to right
+      </p>
+    </section>
   );
 }

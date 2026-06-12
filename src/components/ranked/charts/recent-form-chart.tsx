@@ -1,11 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import { cn } from "@/lib/utils";
 import type { RecentFormData } from "@/lib/ranked-stats";
 
@@ -112,38 +105,34 @@ export function RecentFormChart({ data, window = 20 }: RecentFormChartProps) {
         : "";
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Recent form</CardTitle>
-        <CardDescription>
-          {trendDescription(trend, window, delta)}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-start gap-4">
-          <FormColumn
-            label={`Last ${window} games`}
-            stats={recent}
-            colorClass={recentColorClass}
-          />
-          <div className="flex shrink-0 flex-col items-center gap-2 pt-8">
-            <div className="bg-border h-12 w-px" aria-hidden="true" />
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Recent form"
+        title="Recent form"
+        description={trendDescription(trend, window, delta)}
+      />
+      <div className="flex items-stretch gap-6">
+        <FormColumn
+          label={`Last ${window} games`}
+          stats={recent}
+          colorClass={recentColorClass}
+        />
+        <div className="relative flex shrink-0 self-stretch">
+          <div className="bg-border h-full w-px" aria-hidden="true" />
+          <div className="bg-background absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 py-1">
             <DeltaBadge delta={delta} />
-            <div className="bg-border h-12 w-px" aria-hidden="true" />
           </div>
-          <FormColumn
-            label="All time"
-            stats={overall}
-            colorClass="text-muted-foreground"
-          />
         </div>
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-xs">
-          Comparing last {Math.min(window, recent.total)} games vs.{" "}
-          {overall.total} total
-        </p>
-      </CardFooter>
-    </Card>
+        <FormColumn
+          label="All time"
+          stats={overall}
+          colorClass="text-muted-foreground"
+        />
+      </div>
+      <p className="text-muted-foreground text-xs">
+        Comparing last {Math.min(window, recent.total)} games vs.{" "}
+        {overall.total} total
+      </p>
+    </section>
   );
 }

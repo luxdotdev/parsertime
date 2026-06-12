@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
   ChartTooltip,
@@ -41,7 +34,7 @@ const chartConfig = {
 
 function winrateColor(winrate: number): string {
   if (winrate >= 60) return "var(--chart-win)";
-  if (winrate >= 50) return "oklch(0.8 0.15 85)";
+  if (winrate >= 50) return "var(--primary)";
   return "var(--chart-loss)";
 }
 
@@ -80,30 +73,29 @@ export function GroupSizeWinrateChart({ result }: GroupSizeWinrateChartProps) {
 
   if (qualifiedData.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Better together?</CardTitle>
-          <CardDescription>
-            Play more matches across different group sizes to see your trends
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex h-[280px] items-center justify-center">
+      <section className="space-y-4">
+        <SectionHeader
+          eyebrow="Group size"
+          title="Better together?"
+          description="Play more matches across different group sizes to see your trends"
+        />
+        <div className="flex h-[280px] items-center justify-center">
           <p className="text-muted-foreground text-sm">No data yet</p>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   const description = buildDescription(insight, data);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Better together?</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[280px] w-full">
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Group size"
+        title="Better together?"
+        description={description}
+      />
+      <ChartContainer config={chartConfig} className="h-[280px] w-full">
           <BarChart
             data={qualifiedData}
             margin={{ top: 8, right: 8, left: -20, bottom: 4 }}
@@ -164,14 +156,11 @@ export function GroupSizeWinrateChart({ result }: GroupSizeWinrateChartProps) {
               ))}
             </Bar>
           </BarChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-xs">
-          Minimum {GROUP_SIZE_MIN_MATCHES} games required per group size
-          &middot; showing {qualifiedData.length} sizes
-        </p>
-      </CardFooter>
-    </Card>
+      </ChartContainer>
+      <p className="text-muted-foreground text-xs">
+        Minimum {GROUP_SIZE_MIN_MATCHES} games required per group size &middot;
+        showing {qualifiedData.length} sizes
+      </p>
+    </section>
   );
 }

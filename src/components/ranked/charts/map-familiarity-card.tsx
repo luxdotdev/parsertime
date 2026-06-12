@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
   ChartTooltip,
@@ -47,12 +40,12 @@ function VarietyMeter({ score }: { score: number }) {
 
   const colorClass =
     score >= 75
-      ? "bg-emerald-500"
+      ? "bg-primary"
       : score >= 50
-        ? "bg-blue-500"
+        ? "bg-primary/70"
         : score >= 25
-          ? "bg-amber-500"
-          : "bg-red-500";
+          ? "bg-primary/40"
+          : "bg-destructive";
 
   return (
     <div className="flex items-center gap-2">
@@ -89,18 +82,17 @@ export function MapFamiliarityCard({ result }: MapFamiliarityCardProps) {
   const totalGames = data.reduce((sum, d) => sum + d.gamesPlayed, 0);
   const top15 = data.slice(0, 15);
 
+  const description = `${totalMapsPlayed} of ${totalMapsAvailable} maps played${
+    avoidedMaps.length > 0 ? ` — ${avoidedMaps.length} never encountered` : ""
+  }`;
+
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1">
-            <CardTitle>Map Familiarity</CardTitle>
-            <CardDescription>
-              {totalMapsPlayed} of {totalMapsAvailable} maps played
-              {avoidedMaps.length > 0 &&
-                ` — ${avoidedMaps.length} never encountered`}
-            </CardDescription>
-          </div>
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Map mastery"
+        title="Map Familiarity"
+        description={description}
+        rightSlot={
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -120,15 +112,15 @@ export function MapFamiliarityCard({ result }: MapFamiliarityCardProps) {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        </div>
-        <div className="mt-1">
-          <p className="text-muted-foreground mb-1.5 text-xs font-medium">
-            Map variety score
-          </p>
-          <VarietyMeter score={varietyScore} />
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+        }
+      />
+      <div>
+        <p className="text-muted-foreground mb-1.5 text-xs font-medium">
+          Map variety score
+        </p>
+        <VarietyMeter score={varietyScore} />
+      </div>
+      <div className="space-y-4">
         <ChartContainer config={chartConfig} className="h-[240px] w-full">
           <BarChart
             data={top15}
@@ -186,7 +178,8 @@ export function MapFamiliarityCard({ result }: MapFamiliarityCardProps) {
               {top15.map((entry, i) => (
                 <Cell
                   key={entry.name}
-                  fill={`oklch(0.60 0.14 ${220 + i * 4})`}
+                  fill="var(--primary)"
+                  fillOpacity={Math.max(0.35, 1 - i * 0.05)}
                 />
               ))}
             </Bar>
@@ -197,7 +190,7 @@ export function MapFamiliarityCard({ result }: MapFamiliarityCardProps) {
         {avoidedMaps.length > 0 && (
           <div>
             <p className="text-muted-foreground mb-2 flex items-center gap-1.5 text-xs font-medium">
-              <AlertTriangle className="size-3 text-amber-500" aria-hidden="true" />
+              <AlertTriangle className="size-3 text-primary" aria-hidden="true" />
               Maps you&apos;ve never played ({avoidedMaps.length})
             </p>
             <div className="flex flex-wrap gap-1.5">
@@ -218,13 +211,10 @@ export function MapFamiliarityCard({ result }: MapFamiliarityCardProps) {
             </div>
           </div>
         )}
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-xs">
-          {totalGames} total games — showing top {top15.length} most-played
-          maps
-        </p>
-      </CardFooter>
-    </Card>
+      </div>
+      <p className="text-muted-foreground text-xs">
+        {totalGames} total games — showing top {top15.length} most-played maps
+      </p>
+    </section>
   );
 }

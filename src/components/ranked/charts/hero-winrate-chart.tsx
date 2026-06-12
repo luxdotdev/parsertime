@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
   ChartTooltip,
@@ -32,7 +25,7 @@ const chartConfig = {
 
 function winrateColor(winrate: number): string {
   if (winrate >= 60) return "var(--chart-win)";
-  if (winrate >= 50) return "oklch(0.8 0.15 85)";
+  if (winrate >= 50) return "var(--primary)";
   return "var(--chart-loss)";
 }
 
@@ -52,13 +45,13 @@ export function HeroWinrateChart({ result }: HeroWinrateChartProps) {
         : "Play more matches to see hero winrates";
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Who do you win with?</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Hero performance"
+        title="Who do you win with?"
+        description={description}
+      />
+      <ChartContainer config={chartConfig} className="h-[300px] w-full">
           <BarChart
             data={chartData}
             layout="vertical"
@@ -113,13 +106,10 @@ export function HeroWinrateChart({ result }: HeroWinrateChartProps) {
             </Bar>
           </BarChart>
         </ChartContainer>
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-xs">
-          Minimum {HERO_WINRATE_MIN_MATCHES} matches required &middot; showing{" "}
-          {data.length} heroes
-        </p>
-      </CardFooter>
-    </Card>
+      <p className="text-muted-foreground text-xs">
+        Minimum {HERO_WINRATE_MIN_MATCHES} matches required &middot; showing{" "}
+        {data.length} heroes
+      </p>
+    </section>
   );
 }

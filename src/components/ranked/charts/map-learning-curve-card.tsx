@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
   ChartLegend,
@@ -43,20 +36,16 @@ export function MapLearningCurveCard({ result }: MapLearningCurveCardProps) {
 
   if (qualified.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Map Learning Curve</CardTitle>
-          <CardDescription>
-            Play at least {MAP_LEARNING_MIN_GAMES} games on a map to see your
-            improvement over time
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground py-8 text-center text-sm">
-            Not enough data yet — need {MAP_LEARNING_MIN_GAMES}+ games per map
-          </p>
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader
+          eyebrow="Map mastery"
+          title="Map Learning Curve"
+          description={`Play at least ${MAP_LEARNING_MIN_GAMES} games on a map to see your improvement over time`}
+        />
+        <p className="text-muted-foreground py-8 text-center text-sm">
+          Not enough data yet — need {MAP_LEARNING_MIN_GAMES}+ games per map
+        </p>
+      </section>
     );
   }
 
@@ -67,23 +56,19 @@ export function MapLearningCurveCard({ result }: MapLearningCurveCardProps) {
         ? `${insight.mostDeclined} is your toughest to master (${insight.declineDelta}%)`
         : "Comparing your early vs recent performance per map";
 
+  const description =
+    insight.mostImproved && insight.improvementDelta > 0
+      ? `You've improved most on ${insight.mostImproved} (+${insight.improvementDelta}%) — first half vs second half of games`
+      : "First half vs second half of your games on each map";
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Map Learning Curve</CardTitle>
-        <CardDescription>
-          {insight.mostImproved && insight.improvementDelta > 0 ? (
-            <>
-              You&apos;ve improved most on {insight.mostImproved} (+
-              {insight.improvementDelta}%) — first half vs second half of games
-            </>
-          ) : (
-            "First half vs second half of your games on each map"
-          )}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Map mastery"
+        title="Map Learning Curve"
+        description={description}
+      />
+      <ChartContainer config={chartConfig} className="h-[300px] w-full">
           <BarChart
             data={qualified}
             margin={{ top: 4, right: 8, left: -8, bottom: 60 }}
@@ -135,11 +120,11 @@ export function MapLearningCurveCard({ result }: MapLearningCurveCardProps) {
                           </div>
                           <div className="border-border border-t pt-1 text-xs">
                             {delta > 0 ? (
-                              <span className="flex items-center gap-1 text-emerald-500">
+                              <span className="flex items-center gap-1 text-chart-win">
                                 <TrendingUp className="size-3" />+{delta}% improvement
                               </span>
                             ) : delta < 0 ? (
-                              <span className="flex items-center gap-1 text-red-500">
+                              <span className="flex items-center gap-1 text-chart-loss">
                                 <TrendingDown className="size-3" />
                                 {delta}% decline
                               </span>
@@ -185,14 +170,11 @@ export function MapLearningCurveCard({ result }: MapLearningCurveCardProps) {
             <ChartLegend content={<ChartLegendContent />} />
           </BarChart>
         </ChartContainer>
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-xs">
-          Requires {MAP_LEARNING_MIN_GAMES}+ games per map. Showing{" "}
-          {qualified.length} qualifying map{qualified.length !== 1 ? "s" : ""}
-          {insightText ? ` — ${insightText}` : ""}
-        </p>
-      </CardFooter>
-    </Card>
+      <p className="text-muted-foreground text-xs">
+        Requires {MAP_LEARNING_MIN_GAMES}+ games per map. Showing{" "}
+        {qualified.length} qualifying map{qualified.length !== 1 ? "s" : ""}
+        {insightText ? ` — ${insightText}` : ""}
+      </p>
+    </section>
   );
 }

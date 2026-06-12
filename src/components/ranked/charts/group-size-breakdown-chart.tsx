@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
   ChartTooltip,
@@ -64,28 +57,27 @@ export function GroupSizeBreakdownChart({
 
   if (data.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Where do you play most?</CardTitle>
-          <CardDescription>
-            Track more matches to see your group habits
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex h-[280px] items-center justify-center">
+      <section className="space-y-4">
+        <SectionHeader
+          eyebrow="Group size"
+          title="Where do you play most?"
+          description="Track more matches to see your group habits"
+        />
+        <div className="flex h-[280px] items-center justify-center">
           <p className="text-muted-foreground text-sm">No data yet</p>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Where do you play most?</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[280px] w-full">
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Group size"
+        title="Where do you play most?"
+        description={description}
+      />
+      <ChartContainer config={chartConfig} className="h-[280px] w-full">
           <BarChart
             data={data}
             margin={{ top: 8, right: 8, left: -20, bottom: 4 }}
@@ -170,14 +162,11 @@ export function GroupSizeBreakdownChart({
               radius={[4, 4, 0, 0]}
             />
           </BarChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-xs">
-          Based on {totalGames} matches across {data.length} group size
-          {data.length !== 1 ? "s" : ""}
-        </p>
-      </CardFooter>
-    </Card>
+      </ChartContainer>
+      <p className="text-muted-foreground text-xs">
+        Based on {totalGames} matches across {data.length} group size
+        {data.length !== 1 ? "s" : ""}
+      </p>
+    </section>
   );
 }

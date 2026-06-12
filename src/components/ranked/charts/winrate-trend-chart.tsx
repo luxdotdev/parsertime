@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
   ChartTooltip,
@@ -53,15 +46,16 @@ export function WinrateTrendChart({ result }: WinrateTrendChartProps) {
 
   if (data.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Are you improving?</CardTitle>
-          <CardDescription>Track more matches to see your trend</CardDescription>
-        </CardHeader>
-        <CardContent className="flex h-[280px] items-center justify-center">
+      <section className="space-y-4">
+        <SectionHeader
+          eyebrow="Trend"
+          title="Are you improving?"
+          description="Track more matches to see your trend"
+        />
+        <div className="flex h-[280px] items-center justify-center">
           <p className="text-muted-foreground text-sm">No data yet</p>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
     );
   }
 
@@ -73,13 +67,13 @@ export function WinrateTrendChart({ result }: WinrateTrendChartProps) {
   );
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Are you improving?</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[280px] w-full">
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Trend"
+        title="Are you improving?"
+        description={description}
+      />
+      <ChartContainer config={chartConfig} className="h-[280px] w-full">
           <LineChart
             data={data}
             margin={{ top: 8, right: 8, left: -20, bottom: 4 }}
@@ -147,13 +141,10 @@ export function WinrateTrendChart({ result }: WinrateTrendChartProps) {
             />
           </LineChart>
         </ChartContainer>
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-xs">
-          {insight.window}-game rolling average &middot; {data.length} games
-          total &middot; peak {insight.peakWinrate}%
-        </p>
-      </CardFooter>
-    </Card>
+      <p className="text-muted-foreground text-xs">
+        {insight.window}-game rolling average &middot; {data.length} games total
+        &middot; peak {insight.peakWinrate}%
+      </p>
+    </section>
   );
 }

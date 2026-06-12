@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   Tooltip,
   TooltipContent,
@@ -62,13 +55,13 @@ export function ActivityHeatmap({ result }: ActivityHeatmapProps) {
     : "Log matches to see your activity pattern";
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>When do you play?</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <TooltipProvider delayDuration={0}>
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Activity"
+        title="When do you play?"
+        description={description}
+      />
+      <TooltipProvider delayDuration={0}>
           <div className="w-full overflow-x-auto">
             <div className="inline-flex flex-col gap-1">
               <div className="mb-1 flex gap-1 pl-9">
@@ -122,7 +115,7 @@ export function ActivityHeatmap({ result }: ActivityHeatmapProps) {
                                 backgroundColor:
                                   cell.count === 0
                                     ? "var(--muted)"
-                                    : `color-mix(in oklch, var(--chart-win) ${Math.round(opacity * 100)}%, var(--muted) ${Math.round((1 - opacity) * 100)}%)`,
+                                    : `color-mix(in oklch, var(--primary) ${Math.round(opacity * 100)}%, var(--muted) ${Math.round((1 - opacity) * 100)}%)`,
                               }}
                             />
                           </TooltipTrigger>
@@ -147,7 +140,7 @@ export function ActivityHeatmap({ result }: ActivityHeatmapProps) {
                       backgroundColor:
                         level === 0
                           ? "var(--muted)"
-                          : `color-mix(in oklch, var(--chart-win) ${Math.round(level * 100)}%, var(--muted) ${Math.round((1 - level) * 100)}%)`,
+                          : `color-mix(in oklch, var(--primary) ${Math.round(level * 100)}%, var(--muted) ${Math.round((1 - level) * 100)}%)`,
                     }}
                   />
                 ))}
@@ -156,14 +149,11 @@ export function ActivityHeatmap({ result }: ActivityHeatmapProps) {
             </div>
           </div>
         </TooltipProvider>
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-xs">
-          {insight.totalActiveDays} active day
-          {insight.totalActiveDays === 1 ? "" : "s"} in the last{" "}
-          {Math.round(data.length / 7)} weeks
-        </p>
-      </CardFooter>
-    </Card>
+      <p className="text-muted-foreground text-xs">
+        {insight.totalActiveDays} active day
+        {insight.totalActiveDays === 1 ? "" : "s"} in the last{" "}
+        {Math.round(data.length / 7)} weeks
+      </p>
+    </section>
   );
 }

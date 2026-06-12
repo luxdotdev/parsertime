@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import type { HeroPoolDiversityResult } from "@/lib/ranked-stats";
 
 type HeroPoolDiversityCardProps = {
@@ -33,16 +27,15 @@ export function HeroPoolDiversityCard({ result }: HeroPoolDiversityCardProps) {
   const description = buildDescription(result);
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex flex-col gap-1.5">
-            <CardTitle>How wide is your hero pool?</CardTitle>
-            <CardDescription>{description}</CardDescription>
-          </div>
-          {hasData && (
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Hero pool"
+        title="How wide is your hero pool?"
+        description={description}
+        rightSlot={
+          hasData ? (
             <div
-              className="flex shrink-0 flex-col items-center"
+              className="flex flex-col items-center"
               aria-label={`${totalUnique} unique heroes`}
             >
               <span className="text-4xl font-bold tabular-nums leading-none">
@@ -52,11 +45,10 @@ export function HeroPoolDiversityCard({ result }: HeroPoolDiversityCardProps) {
                 {totalUnique === 1 ? "hero" : "heroes"}
               </span>
             </div>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent>
-        {hasData ? (
+          ) : undefined
+        }
+      />
+      {hasData ? (
           <div className="flex flex-col gap-4" role="list" aria-label="Heroes by role">
             {byRole.map((roleEntry) => {
               const roleHeroes = heroList.filter((h) => h.role === roleEntry.role);
@@ -94,12 +86,11 @@ export function HeroPoolDiversityCard({ result }: HeroPoolDiversityCardProps) {
               );
             })}
           </div>
-        ) : (
-          <div className="flex h-[200px] items-center justify-center">
-            <p className="text-muted-foreground text-sm">No data yet</p>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      ) : (
+        <div className="flex h-[200px] items-center justify-center">
+          <p className="text-muted-foreground text-sm">No data yet</p>
+        </div>
+      )}
+    </section>
   );
 }

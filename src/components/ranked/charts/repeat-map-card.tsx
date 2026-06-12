@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
   ChartTooltip,
@@ -52,21 +45,22 @@ export function RepeatMapCard({ result }: RepeatMapCardProps) {
     },
   ];
 
+  const description = hasEnoughData
+    ? delta > 5
+      ? `You play better on repeat maps — +${delta}% when the map reappears in your session`
+      : delta < -5
+        ? `You underperform on repeat maps — ${delta}% when the map reappears`
+        : "Repeat maps have little impact on your performance"
+    : "Does seeing the same map twice in a session affect your winrate?";
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Repeat Map Performance</CardTitle>
-        <CardDescription>
-          {hasEnoughData
-            ? delta > 5
-              ? `You play better on repeat maps — +${delta}% when the map reappears in your session`
-              : delta < -5
-                ? `You underperform on repeat maps — ${delta}% when the map reappears`
-                : "Repeat maps have little impact on your performance"
-            : "Does seeing the same map twice in a session affect your winrate?"}
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Map mastery"
+        title="Repeat Map Performance"
+        description={description}
+      />
+      <div className="space-y-4">
         {!hasEnoughData ? (
           <div className="flex flex-col items-center gap-2 py-6 text-center">
             <AlertTriangle
@@ -129,7 +123,7 @@ export function RepeatMapCard({ result }: RepeatMapCardProps) {
                         entry.winrate >= 55
                           ? "var(--chart-win)"
                           : entry.winrate >= 45
-                            ? "oklch(0.72 0.15 50)"
+                            ? "var(--primary)"
                             : "var(--chart-loss)"
                       }
                     />
@@ -163,8 +157,8 @@ export function RepeatMapCard({ result }: RepeatMapCardProps) {
               <div
                 className={`flex items-center gap-2 rounded-md p-2 text-sm ${
                   delta > 0
-                    ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-                    : "bg-red-500/10 text-red-700 dark:text-red-400"
+                    ? "bg-primary/15 text-primary"
+                    : "bg-destructive/15 text-destructive"
                 }`}
               >
                 {delta > 0 ? (
@@ -180,13 +174,11 @@ export function RepeatMapCard({ result }: RepeatMapCardProps) {
             )}
           </>
         )}
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-xs">
-          Sessions grouped by calendar day — a repeat is when the same map
-          appears more than once
-        </p>
-      </CardFooter>
-    </Card>
+      </div>
+      <p className="text-muted-foreground text-xs">
+        Sessions grouped by calendar day — a repeat is when the same map
+        appears more than once
+      </p>
+    </section>
   );
 }

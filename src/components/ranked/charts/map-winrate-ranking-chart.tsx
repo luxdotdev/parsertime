@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
   ChartTooltip,
@@ -47,7 +40,7 @@ function ConfidenceStars({ count }: { count: 1 | 2 | 3 | 4 | 5 }) {
           key={i}
           className={`size-2.5 ${
             i < count
-              ? "fill-amber-400 text-amber-400"
+              ? "fill-primary text-primary"
               : "fill-muted text-muted"
           }`}
           aria-hidden="true"
@@ -112,9 +105,9 @@ function CustomTooltip({
           <span
             className={`font-mono font-medium tabular-nums ${
               d.deviation > 0
-                ? "text-emerald-500"
+                ? "text-primary"
                 : d.deviation < 0
-                  ? "text-red-500"
+                  ? "text-destructive"
                   : "text-muted-foreground"
             }`}
           >
@@ -126,7 +119,7 @@ function CustomTooltip({
           <ConfidenceStars count={d.confidenceStars} />
         </div>
         {!d.hasEnoughData && (
-          <p className="text-amber-500 mt-1 flex items-center gap-1">
+          <p className="text-primary mt-1 flex items-center gap-1">
             <AlertTriangle className="size-3" aria-hidden="true" />
             Low sample — {d.total} game{d.total !== 1 ? "s" : ""}
           </p>
@@ -142,18 +135,18 @@ export function MapWinrateRankingChart({ result }: MapWinrateRankingChartProps) 
   const totalGames = data.reduce((sum, d) => sum + d.total, 0);
   const mapsWithData = data.filter((d) => d.total > 0);
 
+  const description = insight.bestMap
+    ? `${insight.bestMap} is your strongest at ${insight.bestWinrate}% — ${insight.worstMap} is your toughest at ${insight.worstWinrate}%`
+    : "No map data yet";
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Map Winrate Rankings</CardTitle>
-        <CardDescription>
-          {insight.bestMap
-            ? `${insight.bestMap} is your strongest at ${insight.bestWinrate}% — ${insight.worstMap} is your toughest at ${insight.worstWinrate}%`
-            : "No map data yet"}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Map performance"
+        title="Map Winrate Rankings"
+        description={description}
+      />
+      <ChartContainer
           config={chartConfig}
           className="h-[400px] w-full"
         >
@@ -204,9 +197,9 @@ export function MapWinrateRankingChart({ result }: MapWinrateRankingChartProps) 
                     entry.winrate >= 60
                       ? "var(--chart-win)"
                       : entry.winrate >= 50
-                        ? "oklch(0.72 0.15 160)"
+                        ? "var(--primary)"
                         : entry.winrate >= 40
-                          ? "oklch(0.72 0.15 50)"
+                          ? "var(--muted-foreground)"
                           : "var(--chart-loss)"
                   }
                   opacity={entry.hasEnoughData ? 1 : 0.55}
@@ -215,16 +208,15 @@ export function MapWinrateRankingChart({ result }: MapWinrateRankingChartProps) 
             </Bar>
           </BarChart>
         </ChartContainer>
-      </CardContent>
-      <CardFooter className="flex flex-wrap items-center gap-x-4 gap-y-1">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
         <p className="text-muted-foreground text-xs">
           {totalGames} games across {mapsWithData.length} maps
         </p>
         <p className="text-muted-foreground text-xs flex items-center gap-1">
-          <AlertTriangle className="size-3 text-amber-500" aria-hidden="true" />
+          <AlertTriangle className="size-3 text-primary" aria-hidden="true" />
           Faded bars have fewer than {MAP_DETAILED_MIN_GAMES} games
         </p>
-      </CardFooter>
-    </Card>
+      </div>
+    </section>
   );
 }

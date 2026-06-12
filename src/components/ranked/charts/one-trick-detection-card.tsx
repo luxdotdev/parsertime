@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ONE_TRICK_THRESHOLD,
   SPECIALIST_THRESHOLD,
@@ -23,23 +16,23 @@ const LABEL_STYLES: Record<
   { bg: string; text: string }
 > = {
   "One-Trick": {
-    bg: "bg-red-500/10",
-    text: "text-red-600 dark:text-red-400",
+    bg: "bg-destructive/15",
+    text: "text-destructive",
   },
   Specialist: {
-    bg: "bg-amber-500/10",
-    text: "text-amber-600 dark:text-amber-400",
+    bg: "bg-primary/15",
+    text: "text-primary",
   },
   Diverse: {
-    bg: "bg-emerald-500/10",
-    text: "text-emerald-600 dark:text-emerald-400",
+    bg: "bg-muted",
+    text: "text-muted-foreground",
   },
 };
 
 const ROLE_COLORS: Record<string, string> = {
-  Tank: "oklch(0.65 0.18 250)",
-  Damage: "oklch(0.65 0.18 25)",
-  Support: "oklch(0.65 0.18 160)",
+  Tank: "var(--chart-1)",
+  Damage: "var(--chart-2)",
+  Support: "var(--chart-3)",
 };
 
 export function OneTrickDetectionCard({ result }: OneTrickDetectionCardProps) {
@@ -48,13 +41,13 @@ export function OneTrickDetectionCard({ result }: OneTrickDetectionCardProps) {
   const labelStyle = LABEL_STYLES[label];
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Are you a one-trick?</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {hasData ? (
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Hero pool"
+        title="Are you a one-trick?"
+        description={description}
+      />
+      {hasData ? (
           <div className="flex flex-col gap-5">
             <div className="flex items-baseline gap-3">
               <span className="text-5xl font-bold tabular-nums">
@@ -103,19 +96,16 @@ export function OneTrickDetectionCard({ result }: OneTrickDetectionCardProps) {
               })}
             </div>
           </div>
-        ) : (
-          <div className="flex h-[200px] items-center justify-center">
-            <p className="text-muted-foreground text-sm">No data yet</p>
-          </div>
-        )}
-      </CardContent>
-      {hasData && (
-        <CardFooter>
-          <p className="text-muted-foreground text-xs">
-            Based on weighted playtime &middot; One-Trick ≥ {ONE_TRICK_THRESHOLD}% &middot; Specialist ≥ {SPECIALIST_THRESHOLD}%
-          </p>
-        </CardFooter>
+      ) : (
+        <div className="flex h-[200px] items-center justify-center">
+          <p className="text-muted-foreground text-sm">No data yet</p>
+        </div>
       )}
-    </Card>
+      {hasData && (
+        <p className="text-muted-foreground text-xs">
+          Based on weighted playtime &middot; One-Trick ≥ {ONE_TRICK_THRESHOLD}% &middot; Specialist ≥ {SPECIALIST_THRESHOLD}%
+        </p>
+      )}
+    </section>
   );
 }

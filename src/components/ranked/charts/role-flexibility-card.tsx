@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import type { RoleStatsResult } from "@/lib/ranked-stats";
 
 type RoleFlexibilityCardProps = {
@@ -18,16 +12,16 @@ const LABEL_STYLES: Record<
   { bg: string; text: string }
 > = {
   Adaptive: {
-    bg: "bg-emerald-500/10",
-    text: "text-emerald-600 dark:text-emerald-400",
+    bg: "bg-primary/15",
+    text: "text-primary",
   },
   Flexible: {
-    bg: "bg-blue-500/10",
-    text: "text-blue-600 dark:text-blue-400",
+    bg: "bg-muted",
+    text: "text-foreground",
   },
   Specialist: {
-    bg: "bg-amber-500/10",
-    text: "text-amber-600 dark:text-amber-400",
+    bg: "bg-muted",
+    text: "text-muted-foreground",
   },
 };
 
@@ -38,13 +32,13 @@ export function RoleFlexibilityCard({ result }: RoleFlexibilityCardProps) {
   const labelStyle = LABEL_STYLES[flexibility.label] ?? LABEL_STYLES.Specialist;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Role flexibility</CardTitle>
-        <CardDescription>{flexibility.description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {hasData ? (
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Roles"
+        title="Role flexibility"
+        description={flexibility.description}
+      />
+      {hasData ? (
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
             <div className="flex items-baseline gap-3">
               <span className="text-5xl font-bold tabular-nums">
@@ -74,12 +68,11 @@ export function RoleFlexibilityCard({ result }: RoleFlexibilityCardProps) {
               ))}
             </div>
           </div>
-        ) : (
-          <div className="flex h-16 items-center justify-center">
-            <p className="text-muted-foreground text-sm">No data yet</p>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      ) : (
+        <div className="flex h-16 items-center justify-center">
+          <p className="text-muted-foreground text-sm">No data yet</p>
+        </div>
+      )}
+    </section>
   );
 }

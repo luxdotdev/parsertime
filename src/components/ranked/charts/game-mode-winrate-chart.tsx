@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
   ChartTooltip,
@@ -48,13 +41,13 @@ export function GameModeWinrateChart({ result }: GameModeWinrateChartProps) {
         : "Play more matches to see mode winrates";
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Which modes suit you?</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[250px] w-full">
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Game modes"
+        title="Which modes suit you?"
+        description={description}
+      />
+      <ChartContainer config={chartConfig} className="h-[250px] w-full">
           <BarChart
             data={data}
             layout="vertical"
@@ -118,13 +111,10 @@ export function GameModeWinrateChart({ result }: GameModeWinrateChartProps) {
               ))}
             </Bar>
           </BarChart>
-        </ChartContainer>
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-xs">
-          Dashed line marks 50% winrate
-        </p>
-      </CardFooter>
-    </Card>
+      </ChartContainer>
+      <p className="text-muted-foreground text-xs">
+        Dashed line marks 50% winrate
+      </p>
+    </section>
   );
 }

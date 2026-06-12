@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   Tooltip,
   TooltipContent,
@@ -24,20 +18,20 @@ const TIER_CONFIG = {
   S: {
     label: "S",
     description: "Dominant",
-    className: "bg-amber-500/15 text-amber-600 border-amber-500/30 dark:text-amber-400",
-    headerClassName: "text-amber-600 dark:text-amber-400",
+    className: "bg-primary/15 text-primary border-primary/30",
+    headerClassName: "text-primary",
   },
   A: {
     label: "A",
     description: "Strong",
-    className: "bg-emerald-500/15 text-emerald-700 border-emerald-500/30 dark:text-emerald-400",
-    headerClassName: "text-emerald-600 dark:text-emerald-400",
+    className: "bg-primary/10 text-primary/90 border-primary/20",
+    headerClassName: "text-primary/90",
   },
   B: {
     label: "B",
     description: "Solid",
-    className: "bg-blue-500/15 text-blue-700 border-blue-500/30 dark:text-blue-400",
-    headerClassName: "text-blue-600 dark:text-blue-400",
+    className: "bg-muted text-foreground border-border",
+    headerClassName: "text-foreground",
   },
   C: {
     label: "C",
@@ -48,8 +42,8 @@ const TIER_CONFIG = {
   D: {
     label: "D",
     description: "Struggling",
-    className: "bg-red-500/15 text-red-700 border-red-500/30 dark:text-red-400",
-    headerClassName: "text-red-600 dark:text-red-400",
+    className: "bg-destructive/15 text-destructive border-destructive/30",
+    headerClassName: "text-destructive",
   },
 } as const;
 
@@ -67,18 +61,19 @@ export function MapTierListCard({ result }: MapTierListCardProps) {
 
   const totalMaps = data.filter((d) => d.total > 0).length;
 
+  const description =
+    totalMaps > 0
+      ? `Your ${totalMaps} played maps ranked by winrate and confidence`
+      : "Play more maps to generate a tier list";
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Map Tier List</CardTitle>
-        <CardDescription>
-          {totalMaps > 0
-            ? `Your ${totalMaps} played maps ranked by winrate and confidence`
-            : "Play more maps to generate a tier list"}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <TooltipProvider>
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Map performance"
+        title="Map Tier List"
+        description={description}
+      />
+      <TooltipProvider>
           <div className="space-y-2" role="list" aria-label="Map tier list">
             {TIERS.map((tier) => {
               const maps = tierGroups[tier] ?? [];
@@ -112,7 +107,7 @@ export function MapTierListCard({ result }: MapTierListCardProps) {
                               {map.name}
                               {!map.hasEnoughData && (
                                 <AlertTriangle
-                                  className="size-2.5 text-amber-500"
+                                  className="size-2.5 text-primary"
                                   aria-label="Low sample size"
                                 />
                               )}
@@ -129,7 +124,7 @@ export function MapTierListCard({ result }: MapTierListCardProps) {
                                 {map.draws > 0 ? ` / ${map.draws}D` : ""})
                               </p>
                               {!map.hasEnoughData && (
-                                <p className="text-amber-500">
+                                <p className="text-primary">
                                   Low confidence — only {map.total} game
                                   {map.total !== 1 ? "s" : ""}
                                 </p>
@@ -145,7 +140,6 @@ export function MapTierListCard({ result }: MapTierListCardProps) {
             })}
           </div>
         </TooltipProvider>
-      </CardContent>
-    </Card>
+    </section>
   );
 }

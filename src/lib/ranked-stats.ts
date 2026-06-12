@@ -753,10 +753,12 @@ function getGroupSizeWinrates(matches: MatchData[]): GroupSizeResult {
 
 // --- Role Stats ---
 
+// Achromatic amber ramp, kept in sync with the role encoding in
+// most-played-heroes-chart.tsx so roles read the same across every surface.
 const ROLE_COLORS: Record<string, string> = {
-  Tank: "oklch(0.65 0.18 250)",
-  Damage: "oklch(0.65 0.18 25)",
-  Support: "oklch(0.65 0.18 160)",
+  Tank: "var(--chart-2)",
+  Damage: "var(--chart-4)",
+  Support: "var(--chart-win)",
 };
 
 const ROLES = ["Tank", "Damage", "Support"] as const;

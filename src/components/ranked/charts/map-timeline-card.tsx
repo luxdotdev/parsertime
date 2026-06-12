@@ -1,13 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
   ChartTooltip,
@@ -43,8 +37,8 @@ function ResultBadge({
   index: number;
 }) {
   const colors = {
-    win: "bg-emerald-500 text-white",
-    loss: "bg-red-500 text-white",
+    win: "bg-primary text-primary-foreground",
+    loss: "bg-destructive text-white",
     draw: "bg-muted text-muted-foreground",
   } as const;
 
@@ -68,19 +62,16 @@ export function MapTimelineCard({ result }: MapTimelineCardProps) {
 
   if (maps.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Win/Loss Timeline</CardTitle>
-          <CardDescription>
-            Track your recent performance on each map
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground py-8 text-center text-sm">
-            No map data yet
-          </p>
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader
+          eyebrow="Map mastery"
+          title="Win/Loss Timeline"
+          description="Track your recent performance on each map"
+        />
+        <p className="text-muted-foreground py-8 text-center text-sm">
+          No map data yet
+        </p>
+      </section>
     );
   }
 
@@ -105,28 +96,26 @@ export function MapTimelineCard({ result }: MapTimelineCardProps) {
   const overallWinrate =
     totalGames > 0 ? Math.round((totalWins / totalGames) * 100) : 0;
 
+  const lastPlayedText =
+    lastPlayedDaysAgo === null
+      ? ""
+      : lastPlayedDaysAgo === 0
+        ? " — played today"
+        : lastPlayedDaysAgo === 1
+          ? " — played yesterday"
+          : ` — last played ${lastPlayedDaysAgo} days ago`;
+
+  const description = `Last ${history.length} game${
+    history.length !== 1 ? "s" : ""
+  } on ${mapData.map}${lastPlayedText}`;
+
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
-            <CardTitle>Win/Loss Timeline</CardTitle>
-            <CardDescription>
-              Last {history.length} game{history.length !== 1 ? "s" : ""} on{" "}
-              {mapData.map}
-              {lastPlayedDaysAgo !== null && (
-                <>
-                  {" "}
-                  &mdash;{" "}
-                  {lastPlayedDaysAgo === 0
-                    ? "played today"
-                    : lastPlayedDaysAgo === 1
-                      ? "played yesterday"
-                      : `last played ${lastPlayedDaysAgo} days ago`}
-                </>
-              )}
-            </CardDescription>
-          </div>
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow="Map mastery"
+        title="Win/Loss Timeline"
+        description={description}
+        rightSlot={
           <Select value={selectedMap} onValueChange={setSelectedMap}>
             <SelectTrigger
               className="w-[180px] shrink-0"
@@ -142,9 +131,9 @@ export function MapTimelineCard({ result }: MapTimelineCardProps) {
               ))}
             </SelectContent>
           </Select>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+        }
+      />
+      <div className="space-y-4">
         {/* Result icon row */}
         <div>
           <p className="text-muted-foreground mb-2 text-xs font-medium">
@@ -254,7 +243,7 @@ export function MapTimelineCard({ result }: MapTimelineCardProps) {
             <p className="text-muted-foreground text-xs">Avg gap</p>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
