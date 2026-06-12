@@ -35,6 +35,10 @@
     {
       "path": "/api/cron/usage-rollup",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/wp-retrain",
+      "schedule": "0 7 * * 1"
     }
   ],
   "regions": ["iad1"]
