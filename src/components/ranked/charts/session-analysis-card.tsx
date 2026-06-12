@@ -8,6 +8,7 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import type { SessionAnalysisResult, SessionEntry } from "@/lib/ranked-stats";
+import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";
 
 type SessionAnalysisCardProps = {
@@ -27,13 +28,13 @@ function sessionBarColor(winrate: number): string {
 }
 
 export function SessionAnalysisCard({ result }: SessionAnalysisCardProps) {
+  const t = useTranslations("ranked.charts.sessionAnalysis");
   const {
     sessions,
     avgSessionWinrate,
     avgGamesPerSession,
     bestSession,
     worstSession,
-    insight,
   } = result;
 
   const recentSessions = sessions.slice(-20);
@@ -42,28 +43,37 @@ export function SessionAnalysisCard({ result }: SessionAnalysisCardProps) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Sessions"
-          title="Session Performance"
-          description="How do you perform within a single session?"
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          description={t("emptyDescription")}
         />
         <div className="flex flex-col items-center gap-2 py-8 text-center">
-          <p className="text-muted-foreground text-sm">
-            Not enough sessions yet
-          </p>
+          <p className="text-muted-foreground text-sm">{t("emptyTitle")}</p>
           <p className="text-muted-foreground/70 text-xs text-pretty max-w-[220px]">
-            Sessions are groups of games played within 3 hours of each
-            other. Play more matches to see trends.
+            {t("emptyHint")}
           </p>
         </div>
       </section>
     );
   }
 
+  const insight =
+    sessions.length === 1
+      ? t("insightSingle", {
+          winrate: avgSessionWinrate,
+          games: avgGamesPerSession,
+        })
+      : t("insightMany", {
+          sessions: sessions.length,
+          winrate: avgSessionWinrate,
+          games: avgGamesPerSession,
+        });
+
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Sessions"
-        title="Session Performance"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={insight}
       />
       <div className="space-y-4">
@@ -97,15 +107,20 @@ export function SessionAnalysisCard({ result }: SessionAnalysisCardProps) {
                       <div className="flex flex-col gap-0.5 text-xs">
                         <span className="text-muted-foreground">{s.date}</span>
                         <span className="font-mono tabular-nums font-medium">
-                          {s.winrate}% winrate
+                          {t("tooltipWinrate", { winrate: s.winrate })}
                         </span>
                         <span className="text-muted-foreground">
-                          {s.wins}W – {s.losses}L &middot; {s.gamesPlayed}{" "}
-                          game{s.gamesPlayed !== 1 ? "s" : ""}
+                          {t("tooltipRecord", {
+                            wins: s.wins,
+                            losses: s.losses,
+                            games: s.gamesPlayed,
+                          })}
                         </span>
                         {s.durationMinutes !== null && (
                           <span className="text-muted-foreground">
-                            ~{s.durationMinutes} min session
+                            {t("tooltipDuration", {
+                              minutes: s.durationMinutes,
+                            })}
                           </span>
                         )}
                       </div>
@@ -130,19 +145,19 @@ export function SessionAnalysisCard({ result }: SessionAnalysisCardProps) {
             <p className="font-mono text-lg font-semibold tabular-nums">
               {avgSessionWinrate}%
             </p>
-            <p className="text-muted-foreground text-xs">Avg winrate</p>
+            <p className="text-muted-foreground text-xs">{t("avgWinrate")}</p>
           </div>
           <div className="text-center">
             <p className="font-mono text-lg font-semibold tabular-nums">
               {avgGamesPerSession}
             </p>
-            <p className="text-muted-foreground text-xs">Games / session</p>
+            <p className="text-muted-foreground text-xs">{t("gamesPerSession")}</p>
           </div>
           <div className="text-center">
             <p className="font-mono text-lg font-semibold tabular-nums">
               {sessions.length}
             </p>
-            <p className="text-muted-foreground text-xs">Total sessions</p>
+            <p className="text-muted-foreground text-xs">{t("totalSessions")}</p>
           </div>
         </div>
 
@@ -152,9 +167,7 @@ export function SessionAnalysisCard({ result }: SessionAnalysisCardProps) {
               <p className="font-mono text-sm font-semibold tabular-nums text-primary">
                 {bestSession.winrate}%
               </p>
-              <p className="text-primary text-xs">
-                Best session
-              </p>
+              <p className="text-primary text-xs">{t("bestSession")}</p>
               <p className="text-muted-foreground text-xs">
                 {bestSession.date}
               </p>
@@ -163,9 +176,7 @@ export function SessionAnalysisCard({ result }: SessionAnalysisCardProps) {
               <p className="font-mono text-sm font-semibold tabular-nums text-destructive">
                 {worstSession.winrate}%
               </p>
-              <p className="text-destructive text-xs">
-                Worst session
-              </p>
+              <p className="text-destructive text-xs">{t("worstSession")}</p>
               <p className="text-muted-foreground text-xs">
                 {worstSession.date}
               </p>
@@ -174,9 +185,7 @@ export function SessionAnalysisCard({ result }: SessionAnalysisCardProps) {
         )}
       </div>
       <p className="text-muted-foreground text-xs">
-        Sessions are groups of games played within 3 hours of each other.
-        Showing the last {recentSessions.length} session
-        {recentSessions.length !== 1 ? "s" : ""}.
+        {t("footer", { count: recentSessions.length })}
       </p>
     </section>
   );

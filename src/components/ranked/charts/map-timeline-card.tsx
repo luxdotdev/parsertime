@@ -16,25 +16,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { MapTimelineResult } from "@/lib/ranked-stats";
+import { useTranslations } from "next-intl";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 type MapTimelineCardProps = {
   result: MapTimelineResult;
 };
 
-const chartConfig = {
-  winrate: {
-    label: "Cumulative winrate",
-    color: "var(--chart-win)",
-  },
-} satisfies ChartConfig;
-
 function ResultBadge({
   result,
   index,
+  t,
 }: {
   result: "win" | "loss" | "draw";
   index: number;
+  t: ReturnType<typeof useTranslations>;
 }) {
   const colors = {
     win: "bg-primary text-primary-foreground",
@@ -42,19 +38,33 @@ function ResultBadge({
     draw: "bg-muted text-muted-foreground",
   } as const;
 
+  const resultLabel = t(`result.${result}`);
+
   return (
     <div
       className={`flex h-8 w-8 shrink-0 items-center justify-center rounded text-[10px] font-bold ${colors[result]}`}
-      title={`Game ${index + 1}: ${result}`}
-      aria-label={`Game ${index + 1}: ${result}`}
+      title={t("badgeTitle", { index: index + 1, result: resultLabel })}
+      aria-label={t("badgeTitle", { index: index + 1, result: resultLabel })}
     >
-      {result === "win" ? "W" : result === "loss" ? "L" : "D"}
+      {result === "win"
+        ? t("resultShort.win")
+        : result === "loss"
+          ? t("resultShort.loss")
+          : t("resultShort.draw")}
     </div>
   );
 }
 
 export function MapTimelineCard({ result }: MapTimelineCardProps) {
+  const t = useTranslations("ranked.charts.mapTimeline");
   const { maps } = result;
+
+  const chartConfig = {
+    winrate: {
+      label: t("legendCumulative"),
+      color: "var(--chart-win)",
+    },
+  } satisfies ChartConfig;
 
   const [selectedMap, setSelectedMap] = useState<string>(
     maps[0]?.map ?? ""
@@ -64,12 +74,12 @@ export function MapTimelineCard({ result }: MapTimelineCardProps) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Map mastery"
-          title="Win/Loss Timeline"
-          description="Track your recent performance on each map"
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          description={t("emptyDescription")}
         />
         <p className="text-muted-foreground py-8 text-center text-sm">
-          No map data yet
+          {t("emptyState")}
         </p>
       </section>
     );
@@ -100,14 +110,15 @@ export function MapTimelineCard({ result }: MapTimelineCardProps) {
     lastPlayedDaysAgo === null
       ? ""
       : lastPlayedDaysAgo === 0
-        ? " — played today"
+        ? ` — ${t("lastPlayedToday")}`
         : lastPlayedDaysAgo === 1
-          ? " — played yesterday"
-          : ` — last played ${lastPlayedDaysAgo} days ago`;
+          ? ` — ${t("lastPlayedYesterday")}`
+          : ` — ${t("lastPlayedDaysAgo", { days: lastPlayedDaysAgo })}`;
 
-  const description = `Last ${history.length} game${
-    history.length !== 1 ? "s" : ""
-  } on ${mapData.map}${lastPlayedText}`;
+  const description = `${t("description", {
+    count: history.length,
+    map: mapData.map,
+  })}${lastPlayedText}`;
 
   return (
     <section className="space-y-4">
@@ -119,7 +130,7 @@ export function MapTimelineCard({ result }: MapTimelineCardProps) {
           <Select value={selectedMap} onValueChange={setSelectedMap}>
             <SelectTrigger
               className="w-[180px] shrink-0"
-              aria-label="Select map"
+              aria-label={t("selectMap")}
             >
               <SelectValue />
             </SelectTrigger>
@@ -137,16 +148,20 @@ export function MapTimelineCard({ result }: MapTimelineCardProps) {
         {/* Result icon row */}
         <div>
           <p className="text-muted-foreground mb-2 text-xs font-medium">
-            Recent results (oldest → newest)
+            {t("recentResults")}
           </p>
           <div
             className="flex flex-wrap gap-1"
             role="list"
-            aria-label={`Recent results on ${mapData.map}`}
+            aria-label={t("recentResultsAria", { map: mapData.map })}
           >
             {[...history].reverse().map((entry, i) => (
               <div key={entry.playedAt.toISOString()} role="listitem">
-                <ResultBadge result={entry.result} index={history.length - 1 - i} />
+                <ResultBadge
+                  result={entry.result}
+                  index={history.length - 1 - i}
+                  t={t}
+                />
               </div>
             ))}
           </div>
@@ -156,7 +171,7 @@ export function MapTimelineCard({ result }: MapTimelineCardProps) {
         {sparklineData.length >= 2 && (
           <div>
             <p className="text-muted-foreground mb-2 text-xs font-medium">
-              Cumulative winrate over time
+              {t("cumulativeWinrate")}
             </p>
             <ChartContainer config={chartConfig} className="h-[120px] w-full">
               <AreaChart
@@ -203,7 +218,7 @@ export function MapTimelineCard({ result }: MapTimelineCardProps) {
                     <ChartTooltipContent
                       formatter={(value) => (
                         <span className="font-mono tabular-nums">
-                          {value}% winrate
+                          {t("tooltipWinrate", { value: Number(value) })}
                         </span>
                       )}
                     />
@@ -228,19 +243,19 @@ export function MapTimelineCard({ result }: MapTimelineCardProps) {
             <p className="font-mono text-lg font-semibold tabular-nums">
               {overallWinrate}%
             </p>
-            <p className="text-muted-foreground text-xs">Overall</p>
+            <p className="text-muted-foreground text-xs">{t("statOverall")}</p>
           </div>
           <div className="text-center">
             <p className="font-mono text-lg font-semibold tabular-nums">
               {totalGames}
             </p>
-            <p className="text-muted-foreground text-xs">Games tracked</p>
+            <p className="text-muted-foreground text-xs">{t("statGamesTracked")}</p>
           </div>
           <div className="text-center">
             <p className="font-mono text-lg font-semibold tabular-nums">
               {rotationGapDays !== null ? `${rotationGapDays}d` : "—"}
             </p>
-            <p className="text-muted-foreground text-xs">Avg gap</p>
+            <p className="text-muted-foreground text-xs">{t("statAvgGap")}</p>
           </div>
         </div>
       </div>

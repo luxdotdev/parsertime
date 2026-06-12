@@ -12,25 +12,27 @@ import {
 import { MAP_LEARNING_MIN_GAMES } from "@/lib/ranked-stats";
 import type { MapLearningResult } from "@/lib/ranked-stats";
 import { TrendingDown, TrendingUp } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, ReferenceLine, XAxis, YAxis } from "recharts";
 
 type MapLearningCurveCardProps = {
   result: MapLearningResult;
 };
 
-const chartConfig = {
-  earlyWinrate: {
-    label: "Early games",
-    color: "var(--chart-3)",
-  },
-  lateWinrate: {
-    label: "Recent games",
-    color: "var(--chart-win)",
-  },
-} satisfies ChartConfig;
-
 export function MapLearningCurveCard({ result }: MapLearningCurveCardProps) {
+  const t = useTranslations("ranked.charts.mapLearningCurve");
   const { data, insight } = result;
+
+  const chartConfig = {
+    earlyWinrate: {
+      label: t("legendEarly"),
+      color: "var(--chart-3)",
+    },
+    lateWinrate: {
+      label: t("legendRecent"),
+      color: "var(--chart-win)",
+    },
+  } satisfies ChartConfig;
 
   const qualified = data.filter((d) => d.hasEnoughData);
 
@@ -38,12 +40,12 @@ export function MapLearningCurveCard({ result }: MapLearningCurveCardProps) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Map mastery"
-          title="Map Learning Curve"
-          description={`Play at least ${MAP_LEARNING_MIN_GAMES} games on a map to see your improvement over time`}
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          description={t("emptyDescription", { minGames: MAP_LEARNING_MIN_GAMES })}
         />
         <p className="text-muted-foreground py-8 text-center text-sm">
-          Not enough data yet — need {MAP_LEARNING_MIN_GAMES}+ games per map
+          {t("emptyState", { minGames: MAP_LEARNING_MIN_GAMES })}
         </p>
       </section>
     );
@@ -51,21 +53,30 @@ export function MapLearningCurveCard({ result }: MapLearningCurveCardProps) {
 
   const insightText =
     insight.mostImproved && insight.improvementDelta > 0
-      ? `You've improved most on ${insight.mostImproved} (+${insight.improvementDelta}%)`
+      ? t("insightImproved", {
+          map: insight.mostImproved,
+          delta: insight.improvementDelta,
+        })
       : insight.mostDeclined && insight.declineDelta < 0
-        ? `${insight.mostDeclined} is your toughest to master (${insight.declineDelta}%)`
-        : "Comparing your early vs recent performance per map";
+        ? t("insightDeclined", {
+            map: insight.mostDeclined,
+            delta: insight.declineDelta,
+          })
+        : t("insightNeutral");
 
   const description =
     insight.mostImproved && insight.improvementDelta > 0
-      ? `You've improved most on ${insight.mostImproved} (+${insight.improvementDelta}%) — first half vs second half of games`
-      : "First half vs second half of your games on each map";
+      ? t("descriptionImproved", {
+          map: insight.mostImproved,
+          delta: insight.improvementDelta,
+        })
+      : t("descriptionDefault");
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Map mastery"
-        title="Map Learning Curve"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
       />
       <ChartContainer config={chartConfig} className="h-[300px] w-full">
@@ -112,7 +123,7 @@ export function MapLearningCurveCard({ result }: MapLearningCurveCardProps) {
                               style={{ backgroundColor: "var(--chart-win)" }}
                             />
                             <span className="text-muted-foreground">
-                              Recent ({d.lateGames}g)
+                              {t("tooltipRecent", { games: d.lateGames })}
                             </span>
                             <span className="font-mono font-medium tabular-nums">
                               {value}%
@@ -121,16 +132,17 @@ export function MapLearningCurveCard({ result }: MapLearningCurveCardProps) {
                           <div className="border-border border-t pt-1 text-xs">
                             {delta > 0 ? (
                               <span className="flex items-center gap-1 text-chart-win">
-                                <TrendingUp className="size-3" />+{delta}% improvement
+                                <TrendingUp className="size-3" />
+                                {t("tooltipImprovement", { delta })}
                               </span>
                             ) : delta < 0 ? (
                               <span className="flex items-center gap-1 text-chart-loss">
                                 <TrendingDown className="size-3" />
-                                {delta}% decline
+                                {t("tooltipDecline", { delta })}
                               </span>
                             ) : (
                               <span className="text-muted-foreground">
-                                No change
+                                {t("tooltipNoChange")}
                               </span>
                             )}
                           </div>
@@ -144,7 +156,7 @@ export function MapLearningCurveCard({ result }: MapLearningCurveCardProps) {
                           style={{ backgroundColor: "var(--chart-3)" }}
                         />
                         <span className="text-muted-foreground">
-                          Early ({d.earlyGames}g)
+                          {t("tooltipEarly", { games: d.earlyGames })}
                         </span>
                         <span className="font-mono font-medium tabular-nums">
                           {value}%
@@ -171,8 +183,10 @@ export function MapLearningCurveCard({ result }: MapLearningCurveCardProps) {
           </BarChart>
         </ChartContainer>
       <p className="text-muted-foreground text-xs">
-        Requires {MAP_LEARNING_MIN_GAMES}+ games per map. Showing{" "}
-        {qualified.length} qualifying map{qualified.length !== 1 ? "s" : ""}
+        {t("footer", {
+          minGames: MAP_LEARNING_MIN_GAMES,
+          count: qualified.length,
+        })}
         {insightText ? ` — ${insightText}` : ""}
       </p>
     </section>

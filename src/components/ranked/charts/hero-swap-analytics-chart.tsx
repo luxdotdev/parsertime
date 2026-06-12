@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
@@ -35,33 +36,34 @@ const chartConfig = {
 const SWAP_COLOR = "var(--chart-1)";
 const STAY_COLOR = "var(--chart-2)";
 
-function buildDescription(result: HeroSwapResult): string {
-  const { swapTotal, noSwapTotal } = result;
-  if (swapTotal < 3 || noSwapTotal < 3) {
-    return "Track more matches to see if swapping heroes helps you win";
-  }
-  return result.insight;
-}
-
 export function HeroSwapAnalyticsChart({ result }: HeroSwapAnalyticsChartProps) {
+  const t = useTranslations("ranked.charts.heroSwap");
   const { data, delta, swapTotal, noSwapTotal } = result;
   const hasEnoughData = swapTotal >= 3 && noSwapTotal >= 3;
-  const description = buildDescription(result);
 
   const swapsWin = delta > 0;
   const deltaAbs = Math.abs(delta);
+
+  const description = !hasEnoughData
+    ? t("descriptionTrackMore")
+    : deltaAbs < 2
+      ? t("descriptionNoImpact")
+      : swapsWin
+        ? t("descriptionSwapBoost", { delta: deltaAbs })
+        : t("descriptionStayAdvantage", { delta: deltaAbs });
+
   const deltaLabel =
     deltaAbs < 2
-      ? "No meaningful difference"
+      ? t("deltaNoDifference")
       : swapsWin
-        ? `+${deltaAbs}% when swapping`
-        : `+${deltaAbs}% when staying`;
+        ? t("deltaSwapping", { delta: deltaAbs })
+        : t("deltaStaying", { delta: deltaAbs });
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Hero swaps"
-        title="Does switching heroes win games?"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
       />
       {hasEnoughData ? (
@@ -101,13 +103,13 @@ export function HeroSwapAnalyticsChart({ result }: HeroSwapAnalyticsChartProps) 
                       return (
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-muted-foreground">Winrate</span>
+                            <span className="text-muted-foreground">{t("winrate")}</span>
                             <span className="font-mono font-medium tabular-nums">
                               {value}%
                             </span>
                           </div>
                           <div className="text-muted-foreground text-xs">
-                            {payload.wins}W &middot; {payload.total} games
+                            {t("winsTotal", { wins: payload.wins, total: payload.total })}
                           </div>
                         </div>
                       );
@@ -143,7 +145,7 @@ export function HeroSwapAnalyticsChart({ result }: HeroSwapAnalyticsChartProps) 
       ) : (
         <div className="flex h-[220px] items-center justify-center">
           <p className="text-muted-foreground text-sm">
-            Need at least 3 swap matches and 3 non-swap matches
+            {t("emptyState")}
           </p>
         </div>
       )}
@@ -152,9 +154,9 @@ export function HeroSwapAnalyticsChart({ result }: HeroSwapAnalyticsChartProps) 
           <p className="text-sm font-medium tabular-nums">{deltaLabel}</p>
         )}
         <p className="text-muted-foreground text-xs">
-          Swap = 2+ heroes each played ≥ {SWAP_MIN_PERCENTAGE}% of match
+          {t("footerRule", { pct: SWAP_MIN_PERCENTAGE })}
           {hasEnoughData && (
-            <> &middot; {swapTotal} swap{swapTotal === 1 ? "" : "s"}, {noSwapTotal} single-hero</>
+            <> &middot; {t("footerCounts", { swaps: swapTotal, single: noSwapTotal })}</>
           )}
         </p>
       </div>

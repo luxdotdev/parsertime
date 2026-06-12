@@ -8,6 +8,7 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import type { RoleStatsResult } from "@/lib/ranked-stats";
+import { useTranslations } from "next-intl";
 import { Label, Pie, PieChart } from "recharts";
 
 type RoleDistributionChartProps = {
@@ -28,6 +29,7 @@ function buildChartConfig(
 }
 
 export function RoleDistributionChart({ result }: RoleDistributionChartProps) {
+  const t = useTranslations("ranked.charts.roleDistribution");
   const { distribution, insight } = result;
 
   const totalWeight = distribution.reduce((sum, d) => sum + d.weightedCount, 0);
@@ -41,14 +43,17 @@ export function RoleDistributionChart({ result }: RoleDistributionChartProps) {
   }));
 
   const description = hasData
-    ? `You spend ${insight.dominantPct}% of your time on ${insight.dominantRole}`
-    : "Log some matches to see how you spread your time across roles";
+    ? t("description", {
+        pct: insight.dominantPct,
+        role: insight.dominantRole,
+      })
+    : t("descriptionEmpty");
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Roles"
-        title="Where do you spend your time?"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
       />
       {hasData ? (
@@ -114,7 +119,7 @@ export function RoleDistributionChart({ result }: RoleDistributionChartProps) {
         </ChartContainer>
       ) : (
         <div className="flex h-[250px] items-center justify-center">
-          <p className="text-muted-foreground text-sm">No data yet</p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </div>
       )}
       <div className="flex flex-wrap justify-center gap-3">

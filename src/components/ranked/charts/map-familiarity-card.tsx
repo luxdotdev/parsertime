@@ -15,28 +15,28 @@ import {
 } from "@/components/ui/tooltip";
 import type { MapFamiliarityResult } from "@/lib/ranked-stats";
 import { AlertTriangle, Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";
 
 type MapFamiliarityCardProps = {
   result: MapFamiliarityResult;
 };
 
-const chartConfig = {
-  gamesPlayed: {
-    label: "Games played",
-    color: "var(--chart-1)",
-  },
-} satisfies ChartConfig;
-
-function VarietyMeter({ score }: { score: number }) {
+function VarietyMeter({
+  score,
+  t,
+}: {
+  score: number;
+  t: ReturnType<typeof useTranslations>;
+}) {
   const label =
     score >= 75
-      ? "Diverse"
+      ? t("varietyDiverse")
       : score >= 50
-        ? "Moderate"
+        ? t("varietyModerate")
         : score >= 25
-          ? "Focused"
-          : "Concentrated";
+          ? t("varietyFocused")
+          : t("varietyConcentrated");
 
   const colorClass =
     score >= 75
@@ -55,7 +55,7 @@ function VarietyMeter({ score }: { score: number }) {
         aria-valuenow={score}
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-label={`Map variety score: ${score}/100 — ${label}`}
+        aria-label={t("varietyScoreAria", { score, label })}
       >
         <div
           className={`h-full rounded-full transition-all ${colorClass}`}
@@ -71,6 +71,7 @@ function VarietyMeter({ score }: { score: number }) {
 }
 
 export function MapFamiliarityCard({ result }: MapFamiliarityCardProps) {
+  const t = useTranslations("ranked.charts.mapFamiliarity");
   const {
     data,
     varietyScore,
@@ -79,18 +80,33 @@ export function MapFamiliarityCard({ result }: MapFamiliarityCardProps) {
     totalMapsAvailable,
   } = result;
 
+  const chartConfig = {
+    gamesPlayed: {
+      label: t("legendGamesPlayed"),
+      color: "var(--chart-1)",
+    },
+  } satisfies ChartConfig;
+
   const totalGames = data.reduce((sum, d) => sum + d.gamesPlayed, 0);
   const top15 = data.slice(0, 15);
 
-  const description = `${totalMapsPlayed} of ${totalMapsAvailable} maps played${
-    avoidedMaps.length > 0 ? ` — ${avoidedMaps.length} never encountered` : ""
-  }`;
+  const description =
+    avoidedMaps.length > 0
+      ? t("descriptionWithAvoided", {
+          played: totalMapsPlayed,
+          available: totalMapsAvailable,
+          avoided: avoidedMaps.length,
+        })
+      : t("description", {
+          played: totalMapsPlayed,
+          available: totalMapsAvailable,
+        });
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Map mastery"
-        title="Map Familiarity"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
         rightSlot={
           <TooltipProvider>
@@ -98,17 +114,13 @@ export function MapFamiliarityCard({ result }: MapFamiliarityCardProps) {
               <TooltipTrigger asChild>
                 <button
                   className="text-muted-foreground hover:text-foreground mt-0.5 shrink-0"
-                  aria-label="About variety score"
+                  aria-label={t("aboutVarietyScore")}
                 >
                   <Info className="size-4" />
                 </button>
               </TooltipTrigger>
               <TooltipContent className="max-w-56">
-                <p className="text-xs">
-                  Variety score (0–100) measures how evenly your games are
-                  distributed across all available maps. 100 means perfectly
-                  equal time on every map.
-                </p>
+                <p className="text-xs">{t("varietyScoreExplanation")}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -116,9 +128,9 @@ export function MapFamiliarityCard({ result }: MapFamiliarityCardProps) {
       />
       <div>
         <p className="text-muted-foreground mb-1.5 text-xs font-medium">
-          Map variety score
+          {t("mapVarietyScore")}
         </p>
-        <VarietyMeter score={varietyScore} />
+        <VarietyMeter score={varietyScore} t={t} />
       </div>
       <div className="space-y-4">
         <ChartContainer config={chartConfig} className="h-[240px] w-full">
@@ -155,17 +167,25 @@ export function MapFamiliarityCard({ result }: MapFamiliarityCardProps) {
                           {d.mapType}
                         </span>
                         <span>
-                          {value} game{Number(value) !== 1 ? "s" : ""} (
-                          {d.pctOfTotal}% of total)
+                          {t("tooltipGames", {
+                            count: Number(value),
+                            pct: d.pctOfTotal,
+                          })}
                         </span>
                         {d.lastResults.length > 0 && (
                           <span className="text-muted-foreground">
-                            Last {d.lastResults.length}:{" "}
-                            {d.lastResults
-                              .map((r) =>
-                                r === "win" ? "W" : r === "loss" ? "L" : "D"
-                              )
-                              .join(" ")}
+                            {t("tooltipLast", {
+                              count: d.lastResults.length,
+                              results: d.lastResults
+                                .map((r) =>
+                                  r === "win"
+                                    ? t("resultShort.win")
+                                    : r === "loss"
+                                      ? t("resultShort.loss")
+                                      : t("resultShort.draw")
+                                )
+                                .join(" "),
+                            })}
                           </span>
                         )}
                       </div>
@@ -191,7 +211,7 @@ export function MapFamiliarityCard({ result }: MapFamiliarityCardProps) {
           <div>
             <p className="text-muted-foreground mb-2 flex items-center gap-1.5 text-xs font-medium">
               <AlertTriangle className="size-3 text-primary" aria-hidden="true" />
-              Maps you&apos;ve never played ({avoidedMaps.length})
+              {t("neverPlayed", { count: avoidedMaps.length })}
             </p>
             <div className="flex flex-wrap gap-1.5">
               {avoidedMaps.map((m) => (
@@ -213,7 +233,7 @@ export function MapFamiliarityCard({ result }: MapFamiliarityCardProps) {
         )}
       </div>
       <p className="text-muted-foreground text-xs">
-        {totalGames} total games — showing top {top15.length} most-played maps
+        {t("footer", { total: totalGames, top: top15.length })}
       </p>
     </section>
   );

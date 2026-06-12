@@ -9,19 +9,15 @@ import {
 } from "@/components/ui/chart";
 import type { RepeatMapResult } from "@/lib/ranked-stats";
 import { AlertTriangle, TrendingDown, TrendingUp } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";
 
 type RepeatMapCardProps = {
   result: RepeatMapResult;
 };
 
-const chartConfig = {
-  winrate: {
-    label: "Winrate",
-  },
-} satisfies ChartConfig;
-
 export function RepeatMapCard({ result }: RepeatMapCardProps) {
+  const t = useTranslations("ranked.charts.repeatMap");
   const {
     firstOccurrenceWinrate,
     repeatWinrate,
@@ -29,35 +25,49 @@ export function RepeatMapCard({ result }: RepeatMapCardProps) {
     repeatTotal,
     delta,
     hasEnoughData,
-    insight,
   } = result;
+
+  const chartConfig = {
+    winrate: {
+      label: t("legendWinrate"),
+    },
+  } satisfies ChartConfig;
 
   const chartData = [
     {
-      label: "First time",
+      label: t("labelFirstTime"),
       winrate: firstOccurrenceWinrate,
       total: firstOccurrenceTotal,
     },
     {
-      label: "Repeat",
+      label: t("labelRepeat"),
       winrate: repeatWinrate,
       total: repeatTotal,
     },
   ];
 
+  // Reconstructed insight (mirrors ranked-stats.ts): better/worse variants
+  // keyed by delta sign, with the worse variant using the absolute delta.
+  const insightText =
+    Math.abs(delta) < 5
+      ? t("insightNeutral")
+      : delta > 0
+        ? t("insightBetter", { delta })
+        : t("insightWorse", { delta: Math.abs(delta) });
+
   const description = hasEnoughData
     ? delta > 5
-      ? `You play better on repeat maps — +${delta}% when the map reappears in your session`
+      ? t("descriptionBetter", { delta })
       : delta < -5
-        ? `You underperform on repeat maps — ${delta}% when the map reappears`
-        : "Repeat maps have little impact on your performance"
-    : "Does seeing the same map twice in a session affect your winrate?";
+        ? t("descriptionWorse", { delta })
+        : t("descriptionNeutral")
+    : t("descriptionEmpty");
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Map mastery"
-        title="Repeat Map Performance"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
       />
       <div className="space-y-4">
@@ -67,11 +77,11 @@ export function RepeatMapCard({ result }: RepeatMapCardProps) {
               className="text-muted-foreground size-8"
               aria-hidden="true"
             />
-            <p className="text-muted-foreground text-sm">{insight}</p>
+            <p className="text-muted-foreground text-sm">
+              {t("emptyInsight")}
+            </p>
             <p className="text-muted-foreground/70 text-xs">
-              {repeatTotal} repeat{" "}
-              {repeatTotal !== 1 ? "instances" : "instance"} recorded — need
-              5+
+              {t("emptySubtext", { count: repeatTotal })}
             </p>
           </div>
         ) : (
@@ -104,10 +114,10 @@ export function RepeatMapCard({ result }: RepeatMapCardProps) {
                           <div className="flex flex-col gap-0.5 text-xs">
                             <span className="font-medium">{d.label}</span>
                             <span className="font-mono tabular-nums">
-                              {value}% winrate
+                              {t("tooltipWinrate", { value: Number(value) })}
                             </span>
                             <span className="text-muted-foreground">
-                              {d.total} game{d.total !== 1 ? "s" : ""}
+                              {t("tooltipGames", { count: d.total })}
                             </span>
                           </div>
                         );
@@ -137,18 +147,22 @@ export function RepeatMapCard({ result }: RepeatMapCardProps) {
                 <p className="font-mono text-2xl font-semibold tabular-nums">
                   {firstOccurrenceWinrate}%
                 </p>
-                <p className="text-muted-foreground text-xs">First time</p>
+                <p className="text-muted-foreground text-xs">
+                  {t("statFirstTime")}
+                </p>
                 <p className="text-muted-foreground/70 text-xs">
-                  {firstOccurrenceTotal} games
+                  {t("statGames", { count: firstOccurrenceTotal })}
                 </p>
               </div>
               <div className="text-center">
                 <p className="font-mono text-2xl font-semibold tabular-nums">
                   {repeatWinrate}%
                 </p>
-                <p className="text-muted-foreground text-xs">Repeat</p>
+                <p className="text-muted-foreground text-xs">
+                  {t("statRepeat")}
+                </p>
                 <p className="text-muted-foreground/70 text-xs">
-                  {repeatTotal} games
+                  {t("statGames", { count: repeatTotal })}
                 </p>
               </div>
             </div>
@@ -169,16 +183,13 @@ export function RepeatMapCard({ result }: RepeatMapCardProps) {
                     aria-hidden="true"
                   />
                 )}
-                <span>{insight}</span>
+                <span>{insightText}</span>
               </div>
             )}
           </>
         )}
       </div>
-      <p className="text-muted-foreground text-xs">
-        Sessions grouped by calendar day — a repeat is when the same map
-        appears more than once
-      </p>
+      <p className="text-muted-foreground text-xs">{t("footer")}</p>
     </section>
   );
 }

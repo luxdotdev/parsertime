@@ -47,23 +47,29 @@ import {
 } from "@/lib/ranked-stats";
 import type { OverwatchPatch } from "@/types/overwatch-patches";
 import { CalendarRange, Heart, Plus, Shield, Swords } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type DashboardContentProps = {
   matches: MatchData[];
   patches: OverwatchPatch[];
 };
 
-const ROLE_OPTIONS: { value: RoleFilter; label: string; icon: typeof Shield }[] = [
-  { value: "all", label: "All Roles", icon: Swords },
-  { value: "Tank", label: "Tank", icon: Shield },
-  { value: "Damage", label: "Damage", icon: Swords },
-  { value: "Support", label: "Support", icon: Heart },
+const ROLE_OPTIONS: {
+  value: RoleFilter;
+  labelKey: string;
+  icon: typeof Shield;
+}[] = [
+  { value: "all", labelKey: "roleAll", icon: Swords },
+  { value: "Tank", labelKey: "roleTank", icon: Shield },
+  { value: "Damage", labelKey: "roleDamage", icon: Swords },
+  { value: "Support", labelKey: "roleSupport", icon: Heart },
 ];
 
 export function DashboardContent({
   matches,
   patches,
 }: DashboardContentProps) {
+  const t = useTranslations("ranked.dashboard");
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("all");
   const [periodId, setPeriodId] = useState<string>("all");
 
@@ -198,14 +204,14 @@ export function DashboardContent({
           <Select value={periodId} onValueChange={setPeriodId}>
             <SelectTrigger
               size="sm"
-              aria-label="Filter by season or patch"
+              aria-label={t("filterBySeason")}
               className="w-auto"
             >
               <CalendarRange className="size-4" aria-hidden="true" />
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All time</SelectItem>
+              <SelectItem value="all">{t("allTime")}</SelectItem>
               {periods.map((p) => (
                 <SelectItem key={p.id} value={p.id}>
                   {p.kind === "mid-season" ? (
@@ -222,14 +228,14 @@ export function DashboardContent({
             value={roleFilter}
             onValueChange={(v) => setRoleFilter(v as RoleFilter)}
           >
-            <SelectTrigger size="sm" aria-label="Filter by role">
+            <SelectTrigger size="sm" aria-label={t("filterByRole")}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {ROLE_OPTIONS.map(({ value, label, icon: Icon }) => (
+              {ROLE_OPTIONS.map(({ value, labelKey, icon: Icon }) => (
                 <SelectItem key={value} value={value}>
                   <Icon className="size-4" aria-hidden="true" />
-                  {label}
+                  {t(labelKey)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -238,7 +244,7 @@ export function DashboardContent({
             trigger={
               <Button className="active:scale-[0.97]">
                 <Plus className="mr-1.5 size-4" />
-                Track match
+                {t("trackMatch")}
               </Button>
             }
           />

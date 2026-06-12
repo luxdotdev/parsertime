@@ -8,6 +8,7 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import type { GameModeDistResult } from "@/lib/ranked-stats";
+import { useTranslations } from "next-intl";
 import { Label, Pie, PieChart } from "recharts";
 
 type GameModeDistributionChartProps = {
@@ -30,19 +31,23 @@ function buildChartConfig(
 export function GameModeDistributionChart({
   result,
 }: GameModeDistributionChartProps) {
+  const t = useTranslations("ranked.charts.gameModeDistribution");
   const { data, insight } = result;
 
   const totalMatches = data.reduce((sum, d) => sum + d.count, 0);
   const chartConfig = buildChartConfig(data);
   const pieData = data.map((d) => ({ ...d, name: d.mode }));
 
-  const description = `${insight.dominantMode} makes up ${insight.dominantPct}% of your games`;
+  const description = t("description", {
+    mode: insight.dominantMode,
+    pct: insight.dominantPct,
+  });
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Game modes"
-        title="What modes do you play?"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
       />
       <ChartContainer
@@ -57,7 +62,7 @@ export function GameModeDistributionChart({
                     <div className="flex items-center gap-2">
                       <span className="text-muted-foreground">{name}</span>
                       <span className="font-mono font-medium tabular-nums">
-                        {value} matches
+                        {t("matchesValue", { count: value as number })}
                       </span>
                     </div>
                   )}
@@ -95,7 +100,7 @@ export function GameModeDistributionChart({
                           y={(viewBox.cy ?? 0) + 24}
                           className="fill-muted-foreground text-sm"
                         >
-                          matches
+                          {t("matchesUnit")}
                         </tspan>
                       </text>
                     );

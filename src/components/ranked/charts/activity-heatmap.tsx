@@ -8,6 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { ActivityHeatmapResult } from "@/lib/ranked-stats";
+import { useTranslations } from "next-intl";
 
 type ActivityHeatmapProps = {
   result: ActivityHeatmapResult;
@@ -39,6 +40,7 @@ function cellOpacity(count: number, maxCount: number): number {
 }
 
 export function ActivityHeatmap({ result }: ActivityHeatmapProps) {
+  const t = useTranslations("ranked.charts.activityHeatmap");
   const { data, maxCount, insight } = result;
 
   const weeks: { date: string; count: number }[][] = [];
@@ -51,14 +53,17 @@ export function ActivityHeatmap({ result }: ActivityHeatmapProps) {
   const hasData = data.some((d) => d.count > 0);
 
   const description = hasData
-    ? `Most active on ${insight.peakDayOfWeek}s \u2014 averaging ${insight.avgGamesPerActiveDay} games on days you play`
-    : "Log matches to see your activity pattern";
+    ? t("description", {
+        day: insight.peakDayOfWeek,
+        avg: insight.avgGamesPerActiveDay,
+      })
+    : t("emptyDescription");
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Activity"
-        title="When do you play?"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
       />
       <TooltipProvider delayDuration={0}>
@@ -75,7 +80,7 @@ export function ActivityHeatmap({ result }: ActivityHeatmapProps) {
                 ))}
               </div>
 
-              <div role="grid" aria-label="Activity heatmap">
+              <div role="grid" aria-label={t("gridLabel")}>
                 {Array.from({ length: 7 }, (_, dayIndex) => (
                   <div
                     key={DAY_LABELS[dayIndex]}
@@ -102,8 +107,11 @@ export function ActivityHeatmap({ result }: ActivityHeatmapProps) {
                       const opacity = cellOpacity(cell.count, maxCount);
                       const label =
                         cell.count === 0
-                          ? `${formatDateLabel(cell.date)} — no games`
-                          : `${formatDateLabel(cell.date)} — ${cell.count} game${cell.count === 1 ? "" : "s"}`;
+                          ? t("cellNoGames", { date: formatDateLabel(cell.date) })
+                          : t("cellGames", {
+                              date: formatDateLabel(cell.date),
+                              count: cell.count,
+                            });
                       return (
                         <Tooltip key={cell.date}>
                           <TooltipTrigger asChild>
@@ -130,7 +138,9 @@ export function ActivityHeatmap({ result }: ActivityHeatmapProps) {
               </div>
 
               <div className="mt-1 flex items-center gap-2 pl-9">
-                <span className="text-muted-foreground text-[10px]">Less</span>
+                <span className="text-muted-foreground text-[10px]">
+                  {t("less")}
+                </span>
                 {[0, 0.2, 0.4, 0.7, 1].map((level) => (
                   <div
                     key={level}
@@ -144,15 +154,18 @@ export function ActivityHeatmap({ result }: ActivityHeatmapProps) {
                     }}
                   />
                 ))}
-                <span className="text-muted-foreground text-[10px]">More</span>
+                <span className="text-muted-foreground text-[10px]">
+                  {t("more")}
+                </span>
               </div>
             </div>
           </div>
         </TooltipProvider>
       <p className="text-muted-foreground text-xs">
-        {insight.totalActiveDays} active day
-        {insight.totalActiveDays === 1 ? "" : "s"} in the last{" "}
-        {Math.round(data.length / 7)} weeks
+        {t("footer", {
+          days: insight.totalActiveDays,
+          weeks: Math.round(data.length / 7),
+        })}
       </p>
     </section>
   );

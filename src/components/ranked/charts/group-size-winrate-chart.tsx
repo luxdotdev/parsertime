@@ -12,6 +12,7 @@ import {
   type GroupSizeEntry,
   type GroupSizeResult,
 } from "@/lib/ranked-stats";
+import { useTranslations } from "next-intl";
 import {
   Bar,
   BarChart,
@@ -38,61 +39,73 @@ function winrateColor(winrate: number): string {
   return "var(--chart-loss)";
 }
 
+type DescriptionResult = {
+  key: string;
+  args: { winrate: number; label: string; games?: number; diff?: number };
+};
+
 function buildDescription(
   insight: GroupSizeResult["insight"],
   data: GroupSizeEntry[]
-): string {
-  if (!insight.hasEnoughData) {
-    return "Play more matches across different group sizes to see your trends";
-  }
-
+): DescriptionResult {
   const optimalGames = data.find((e) => e.groupSize === insight.optimalSize);
-  const base = `You win ${insight.optimalWinrate}% as ${insight.optimalLabel} \u2014 your best group configuration`;
-  const withCount = optimalGames
-    ? `${base} with ${optimalGames.total} games`
-    : base;
+  const baseArgs = {
+    winrate: insight.optimalWinrate,
+    label: insight.optimalLabel,
+  };
 
   if (
     insight.soloWinrate !== null &&
     insight.optimalSize !== 1 &&
     insight.optimalWinrate > insight.soloWinrate
   ) {
-    const diff = Math.round(
-      (insight.optimalWinrate - insight.soloWinrate) * 10
-    ) / 10;
-    return `${withCount} (+${diff}% vs. solo)`;
+    const diff =
+      Math.round((insight.optimalWinrate - insight.soloWinrate) * 10) / 10;
+    return optimalGames
+      ? {
+          key: "descriptionWithCountAndDiff",
+          args: { ...baseArgs, games: optimalGames.total, diff },
+        }
+      : { key: "descriptionWithDiff", args: { ...baseArgs, diff } };
   }
 
-  return withCount;
+  return optimalGames
+    ? {
+        key: "descriptionWithCount",
+        args: { ...baseArgs, games: optimalGames.total },
+      }
+    : { key: "description", args: baseArgs };
 }
 
 export function GroupSizeWinrateChart({ result }: GroupSizeWinrateChartProps) {
+  const t = useTranslations("ranked.charts.groupSizeWinrate");
   const { data, insight } = result;
 
   const qualifiedData = data.filter((e) => e.total >= GROUP_SIZE_MIN_MATCHES);
 
-  if (qualifiedData.length === 0) {
+  if (qualifiedData.length === 0 || !insight.hasEnoughData) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Group size"
-          title="Better together?"
-          description="Play more matches across different group sizes to see your trends"
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          description={t("descriptionEmpty")}
         />
         <div className="flex h-[280px] items-center justify-center">
-          <p className="text-muted-foreground text-sm">No data yet</p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </div>
       </section>
     );
   }
 
-  const description = buildDescription(insight, data);
+  const descriptionResult = buildDescription(insight, data);
+  const description = t(descriptionResult.key, descriptionResult.args);
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Group size"
-        title="Better together?"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
       />
       <ChartContainer config={chartConfig} className="h-[280px] w-full">
@@ -128,14 +141,19 @@ export function GroupSizeWinrateChart({ result }: GroupSizeWinrateChartProps) {
                     return (
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-muted-foreground">Winrate</span>
+                          <span className="text-muted-foreground">
+                            {t("winrate")}
+                          </span>
                           <span className="font-mono font-medium tabular-nums">
                             {value}%
                           </span>
                         </div>
                         <div className="text-muted-foreground text-xs">
-                          {payload.wins}W / {payload.losses}L &middot;{" "}
-                          {payload.total} games
+                          {t("winLossGames", {
+                            wins: payload.wins,
+                            losses: payload.losses,
+                            total: payload.total,
+                          })}
                         </div>
                       </div>
                     );
@@ -158,8 +176,10 @@ export function GroupSizeWinrateChart({ result }: GroupSizeWinrateChartProps) {
           </BarChart>
       </ChartContainer>
       <p className="text-muted-foreground text-xs">
-        Minimum {GROUP_SIZE_MIN_MATCHES} games required per group size &middot;
-        showing {qualifiedData.length} sizes
+        {t("footer", {
+          min: GROUP_SIZE_MIN_MATCHES,
+          showing: qualifiedData.length,
+        })}
       </p>
     </section>
   );

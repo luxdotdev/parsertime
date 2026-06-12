@@ -11,6 +11,7 @@ import {
 import { MAP_TYPES } from "@/lib/ranked-stats";
 import type { HeroMapSynergyResult } from "@/lib/ranked-stats";
 import { HERO_MAP_MIN_GAMES } from "@/lib/ranked-stats";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 type HeroMapSynergyMatrixProps = {
@@ -62,6 +63,7 @@ function winrateToColor(
 }
 
 export function HeroMapSynergyMatrix({ result }: HeroMapSynergyMatrixProps) {
+  const t = useTranslations("ranked.charts.heroMapSynergy");
   const { matrix, heroes, maps, bestHeroPerMap } = result;
   const [typeFilter, setTypeFilter] = useState<MapTypeFilter>("All");
 
@@ -77,30 +79,30 @@ export function HeroMapSynergyMatrix({ result }: HeroMapSynergyMatrixProps) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Hero × map"
-          title="Hero × Map Synergy"
-          description="Track enough matches to see which heroes work best on each map"
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          description={t("descriptionEmptyHeader")}
         />
         <p className="text-muted-foreground py-8 text-center text-sm">
-          No data available yet
+          {t("noData")}
         </p>
       </section>
     );
   }
 
-  const description = `Which heroes win on which maps — cells with fewer than ${HERO_MAP_MIN_GAMES} games are shown as —`;
+  const description = t("description", { min: HERO_MAP_MIN_GAMES });
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Hero × map"
-        title="Hero × Map Synergy"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
         rightSlot={
           <div
             className="flex flex-wrap gap-1"
             role="group"
-            aria-label="Filter by map type"
+            aria-label={t("filterGroupLabel")}
           >
             {MAP_TYPE_FILTERS.map((type) => (
               <Button
@@ -111,7 +113,7 @@ export function HeroMapSynergyMatrix({ result }: HeroMapSynergyMatrixProps) {
                 onClick={() => setTypeFilter(type)}
                 aria-pressed={typeFilter === type}
               >
-                {type}
+                {type === "All" ? t("filterAll") : type}
               </Button>
             ))}
           </div>
@@ -120,14 +122,14 @@ export function HeroMapSynergyMatrix({ result }: HeroMapSynergyMatrixProps) {
       <div>
         {displayMaps.length === 0 ? (
           <p className="text-muted-foreground py-8 text-center text-sm">
-            No {typeFilter} maps played yet
+            {t("noMapsOfType", { type: typeFilter })}
           </p>
         ) : (
           <>
         <div className="overflow-x-auto">
           <div
             role="grid"
-            aria-label="Hero-map winrate matrix"
+            aria-label={t("matrixLabel")}
             style={{
               display: "grid",
               gridTemplateColumns: `minmax(90px, 120px) repeat(${displayMaps.length}, minmax(44px, 1fr))`,
@@ -138,9 +140,9 @@ export function HeroMapSynergyMatrix({ result }: HeroMapSynergyMatrixProps) {
               <div
                 role="columnheader"
                 className="border-border bg-card sticky left-0 z-10 border-b px-2 pb-1.5 text-xs font-medium"
-                aria-label="Hero / Map"
+                aria-label={t("heroMapHeader")}
               >
-                <span className="text-muted-foreground">Hero / Map</span>
+                <span className="text-muted-foreground">{t("heroMapHeader")}</span>
               </div>
               {displayMaps.map((map) => (
                 <TooltipProvider key={map}>
@@ -201,8 +203,13 @@ export function HeroMapSynergyMatrix({ result }: HeroMapSynergyMatrixProps) {
                             }}
                             aria-label={
                               hasData
-                                ? `${hero} on ${map}: ${winrate}% winrate from ${cell?.total} games`
-                                : `${hero} on ${map}: insufficient data`
+                                ? t("cellLabel", {
+                                    hero,
+                                    map,
+                                    winrate,
+                                    games: cell?.total ?? 0,
+                                  })
+                                : t("cellLabelInsufficient", { hero, map })
                             }
                           >
                             {hasData ? `${winrate}%` : "—"}
@@ -211,22 +218,28 @@ export function HeroMapSynergyMatrix({ result }: HeroMapSynergyMatrixProps) {
                         <TooltipContent side="top">
                           <div className="space-y-1 text-xs">
                             <p className="font-semibold">
-                              {hero} on {map}
+                              {t("cellTitle", { hero, map })}
                             </p>
                             {hasData ? (
                               <>
-                                <p>{winrate}% winrate</p>
+                                <p>{t("cellWinrate", { winrate })}</p>
                                 <p className="text-muted-foreground">
-                                  {cell?.wins}W /{" "}
-                                  {(cell?.total ?? 0) - (cell?.wins ?? 0)}L
-                                  &nbsp;({cell?.total} games)
+                                  {t("cellRecord", {
+                                    wins: cell?.wins ?? 0,
+                                    losses:
+                                      (cell?.total ?? 0) - (cell?.wins ?? 0),
+                                    games: cell?.total ?? 0,
+                                  })}
                                 </p>
                               </>
                             ) : (
                               <p className="text-muted-foreground">
                                 {cell && cell.total > 0
-                                  ? `Only ${cell.total} game${cell.total !== 1 ? "s" : ""} — need ${HERO_MAP_MIN_GAMES}+`
-                                  : "No games played"}
+                                  ? t("cellInsufficient", {
+                                      count: cell.total,
+                                      min: HERO_MAP_MIN_GAMES,
+                                    })
+                                  : t("cellNoGames")}
                               </p>
                             )}
                           </div>
@@ -242,7 +255,7 @@ export function HeroMapSynergyMatrix({ result }: HeroMapSynergyMatrixProps) {
 
         {/* Legend */}
         <div className="mt-4 flex flex-wrap items-center gap-2">
-          <span className="text-muted-foreground text-xs">Winrate:</span>
+          <span className="text-muted-foreground text-xs">{t("legendWinrate")}</span>
           {[
             {
               label: "≥70%",
@@ -291,7 +304,7 @@ export function HeroMapSynergyMatrix({ result }: HeroMapSynergyMatrixProps) {
               aria-hidden="true"
             />
             <span className="text-muted-foreground text-[11px]">
-              &lt;{HERO_MAP_MIN_GAMES} games
+              {t("legendLowGames", { min: HERO_MAP_MIN_GAMES })}
             </span>
           </div>
         </div>
@@ -299,9 +312,16 @@ export function HeroMapSynergyMatrix({ result }: HeroMapSynergyMatrixProps) {
         )}
       </div>
       <p className="text-muted-foreground text-xs">
-        Showing top {heroes.length} heroes by play frequency across{" "}
-        {displayMaps.length} maps
-        {typeFilter !== "All" ? ` (${typeFilter} only)` : ""}
+        {typeFilter === "All"
+          ? t("footer", {
+              heroes: heroes.length,
+              maps: displayMaps.length,
+            })
+          : t("footerFiltered", {
+              heroes: heroes.length,
+              maps: displayMaps.length,
+              type: typeFilter,
+            })}
       </p>
     </section>
   );

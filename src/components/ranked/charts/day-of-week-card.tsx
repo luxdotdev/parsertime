@@ -8,6 +8,7 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import type { DayOfWeekEntry, DayOfWeekResult } from "@/lib/ranked-stats";
+import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";
 
 type DayOfWeekCardProps = {
@@ -34,8 +35,8 @@ function deltaBadgeClasses(delta: number): string {
 }
 
 export function DayOfWeekCard({ result }: DayOfWeekCardProps) {
-  const { data, bestDay, worstDay, weekdayWinrate, weekendWinrate, insight } =
-    result;
+  const t = useTranslations("ranked.charts.dayOfWeek");
+  const { data, bestDay, worstDay, weekdayWinrate, weekendWinrate } = result;
 
   const hasData = data.some((d) => d.total > 0);
 
@@ -43,15 +44,13 @@ export function DayOfWeekCard({ result }: DayOfWeekCardProps) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Weekly rhythm"
-          title="Best Day to Play"
-          description="Are you better on weekdays or weekends?"
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          description={t("emptyDescription")}
         />
         <div className="flex flex-col items-center gap-2 py-8 text-center">
-          <p className="text-muted-foreground text-sm">No matches yet</p>
-          <p className="text-muted-foreground/70 text-xs">
-            Track matches across different days to see when you perform best.
-          </p>
+          <p className="text-muted-foreground text-sm">{t("emptyTitle")}</p>
+          <p className="text-muted-foreground/70 text-xs">{t("emptyHint")}</p>
         </div>
       </section>
     );
@@ -59,11 +58,20 @@ export function DayOfWeekCard({ result }: DayOfWeekCardProps) {
 
   const delta = weekendWinrate - weekdayWinrate;
 
+  const insight =
+    weekdayWinrate === weekendWinrate
+      ? t("insightStable", { winrate: weekdayWinrate, day: bestDay })
+      : t("insightDelta", {
+          delta: Math.abs(weekendWinrate - weekdayWinrate),
+          when: weekendWinrate > weekdayWinrate ? "weekend" : "weekday",
+          day: bestDay,
+        });
+
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Weekly rhythm"
-        title="Best Day to Play"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={insight}
       />
       <div className="space-y-4">
@@ -99,19 +107,28 @@ export function DayOfWeekCard({ result }: DayOfWeekCardProps) {
                     if (d.total === 0) {
                       return (
                         <span className="text-muted-foreground text-xs">
-                          No games on {d.day}
+                          {t("tooltipNoGames", { day: d.day })}
                         </span>
                       );
                     }
                     return (
                       <div className="flex flex-col gap-0.5 text-xs">
                         <span className="font-mono font-medium tabular-nums">
-                          {d.winrate}% winrate
+                          {t("tooltipWinrate", { winrate: d.winrate })}
                         </span>
                         <span className="text-muted-foreground">
-                          {d.wins}W – {d.losses}L
-                          {d.draws > 0 ? ` – ${d.draws}D` : ""} &middot;{" "}
-                          {d.total} game{d.total !== 1 ? "s" : ""}
+                          {d.draws > 0
+                            ? t("tooltipRecordWithDraws", {
+                                wins: d.wins,
+                                losses: d.losses,
+                                draws: d.draws,
+                                total: d.total,
+                              })
+                            : t("tooltipRecord", {
+                                wins: d.wins,
+                                losses: d.losses,
+                                total: d.total,
+                              })}
                         </span>
                       </div>
                     );
@@ -132,8 +149,8 @@ export function DayOfWeekCard({ result }: DayOfWeekCardProps) {
             <p className="font-mono text-lg font-semibold tabular-nums">
               {weekdayWinrate}%
             </p>
-            <p className="text-muted-foreground text-xs">Weekdays</p>
-            <p className="text-muted-foreground/70 text-xs">Mon – Thu</p>
+            <p className="text-muted-foreground text-xs">{t("weekdays")}</p>
+            <p className="text-muted-foreground/70 text-xs">{t("weekdayRange")}</p>
           </div>
           <div className="text-center">
             <div className="flex items-center justify-center gap-1.5">
@@ -143,15 +160,18 @@ export function DayOfWeekCard({ result }: DayOfWeekCardProps) {
               {delta !== 0 && (
                 <span
                   className={`rounded px-1 py-0.5 text-[10px] font-semibold tabular-nums ${deltaBadgeClasses(delta)}`}
-                  aria-label={`${Math.abs(delta)}% ${delta > 0 ? "better" : "worse"} than weekdays`}
+                  aria-label={t("deltaLabel", {
+                    delta: Math.abs(delta),
+                    direction: delta > 0 ? "better" : "worse",
+                  })}
                 >
                   {delta > 0 ? "+" : ""}
                   {delta}%
                 </span>
               )}
             </div>
-            <p className="text-muted-foreground text-xs">Weekends</p>
-            <p className="text-muted-foreground/70 text-xs">Fri – Sun</p>
+            <p className="text-muted-foreground text-xs">{t("weekends")}</p>
+            <p className="text-muted-foreground/70 text-xs">{t("weekendRange")}</p>
           </div>
         </div>
 
@@ -161,24 +181,18 @@ export function DayOfWeekCard({ result }: DayOfWeekCardProps) {
               <p className="text-sm font-semibold text-primary">
                 {bestDay}
               </p>
-              <p className="text-primary text-xs">
-                Best day
-              </p>
+              <p className="text-primary text-xs">{t("bestDay")}</p>
             </div>
             <div className="border-border rounded-md border bg-destructive/15 p-2 text-center">
               <p className="text-sm font-semibold text-destructive">
                 {worstDay}
               </p>
-              <p className="text-destructive text-xs">
-                Toughest day
-              </p>
+              <p className="text-destructive text-xs">{t("toughestDay")}</p>
             </div>
           </div>
         )}
       </div>
-      <p className="text-muted-foreground text-xs">
-        Matches are attributed to the day the session started.
-      </p>
+      <p className="text-muted-foreground text-xs">{t("footer")}</p>
     </section>
   );
 }

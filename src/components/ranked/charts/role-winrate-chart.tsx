@@ -12,6 +12,7 @@ import {
   type RoleStatsResult,
   type RoleWinrateEntry,
 } from "@/lib/ranked-stats";
+import { useTranslations } from "next-intl";
 import {
   Bar,
   BarChart,
@@ -32,33 +33,31 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-function buildDescription(result: RoleStatsResult): string {
-  const { insight } = result;
-  if (!insight.hasEnoughData) {
-    return `Play at least ${ROLE_WINRATE_MIN_MATCHES} matches per role to see winrates`;
-  }
-  return `You win most as ${insight.bestRole} — ${insight.bestWinrate}% winrate`;
-}
-
 export function RoleWinrateChart({ result }: RoleWinrateChartProps) {
+  const t = useTranslations("ranked.charts.roleWinrate");
   const { winrates, insight } = result;
 
   const qualifiedData = winrates.filter(
     (r) => r.total >= ROLE_WINRATE_MIN_MATCHES
   );
 
-  const description = buildDescription(result);
+  const description = !insight.hasEnoughData
+    ? t("descriptionEmpty", { min: ROLE_WINRATE_MIN_MATCHES })
+    : t("description", {
+        role: insight.bestRole,
+        winrate: insight.bestWinrate,
+      });
 
   if (qualifiedData.length === 0) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Roles"
-          title="Which role wins you games?"
+          eyebrow={t("eyebrow")}
+          title={t("title")}
           description={description}
         />
         <div className="flex h-[280px] items-center justify-center">
-          <p className="text-muted-foreground text-sm">No data yet</p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </div>
       </section>
     );
@@ -67,8 +66,8 @@ export function RoleWinrateChart({ result }: RoleWinrateChartProps) {
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Roles"
-        title="Which role wins you games?"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
       />
       <ChartContainer config={chartConfig} className="h-[280px] w-full">
@@ -107,14 +106,19 @@ export function RoleWinrateChart({ result }: RoleWinrateChartProps) {
                     return (
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-muted-foreground">Winrate</span>
+                          <span className="text-muted-foreground">
+                            {t("winrate")}
+                          </span>
                           <span className="font-mono font-medium tabular-nums">
                             {value}%
                           </span>
                         </div>
                         <div className="text-muted-foreground text-xs">
-                          {payload.wins}W / {payload.losses}L &middot;{" "}
-                          {payload.total} games
+                          {t("winLossGames", {
+                            wins: payload.wins,
+                            losses: payload.losses,
+                            total: payload.total,
+                          })}
                         </div>
                       </div>
                     );
@@ -144,9 +148,10 @@ export function RoleWinrateChart({ result }: RoleWinrateChartProps) {
           </BarChart>
       </ChartContainer>
       <p className="text-muted-foreground text-xs">
-        Minimum {ROLE_WINRATE_MIN_MATCHES} games required per role &middot;
-        showing {qualifiedData.length}{" "}
-        {qualifiedData.length === 1 ? "role" : "roles"}
+        {t("footer", {
+          min: ROLE_WINRATE_MIN_MATCHES,
+          showing: qualifiedData.length,
+        })}
       </p>
     </section>
   );

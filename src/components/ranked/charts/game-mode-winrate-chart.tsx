@@ -8,6 +8,7 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import type { GameModeWinrateResult } from "@/lib/ranked-stats";
+import { useTranslations } from "next-intl";
 import {
   Bar,
   BarChart,
@@ -29,22 +30,31 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function GameModeWinrateChart({ result }: GameModeWinrateChartProps) {
+  const t = useTranslations("ranked.charts.gameModeWinrate");
   const { data, insight } = result;
 
   const description =
     insight.bestMode &&
     insight.worstMode &&
     insight.bestMode !== insight.worstMode
-      ? `You dominate ${insight.bestMode} at ${insight.bestWinrate}% but struggle on ${insight.worstMode} at ${insight.worstWinrate}%`
+      ? t("descriptionBestWorst", {
+          bestMode: insight.bestMode,
+          bestWinrate: insight.bestWinrate,
+          worstMode: insight.worstMode,
+          worstWinrate: insight.worstWinrate,
+        })
       : insight.bestMode
-        ? `${insight.bestMode} is your strongest mode at ${insight.bestWinrate}%`
-        : "Play more matches to see mode winrates";
+        ? t("descriptionBest", {
+            bestMode: insight.bestMode,
+            bestWinrate: insight.bestWinrate,
+          })
+        : t("descriptionEmpty");
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Game modes"
-        title="Which modes suit you?"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
       />
       <ChartContainer config={chartConfig} className="h-[250px] w-full">
@@ -83,13 +93,18 @@ export function GameModeWinrateChart({ result }: GameModeWinrateChartProps) {
                     return (
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-muted-foreground">Winrate</span>
+                          <span className="text-muted-foreground">
+                            {t("winrate")}
+                          </span>
                           <span className="font-mono font-medium tabular-nums">
                             {value}%
                           </span>
                         </div>
                         <div className="text-muted-foreground text-xs">
-                          {payload.wins}W / {payload.total} games
+                          {t("winsOverGames", {
+                            wins: payload.wins,
+                            total: payload.total,
+                          })}
                         </div>
                       </div>
                     );
@@ -112,9 +127,7 @@ export function GameModeWinrateChart({ result }: GameModeWinrateChartProps) {
             </Bar>
           </BarChart>
       </ChartContainer>
-      <p className="text-muted-foreground text-xs">
-        Dashed line marks 50% winrate
-      </p>
+      <p className="text-muted-foreground text-xs">{t("footer")}</p>
     </section>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { SectionHeader } from "@/components/stats/team/section-header";
 import type { RoleStatsResult } from "@/lib/ranked-stats";
 
@@ -26,17 +27,26 @@ const LABEL_STYLES: Record<
 };
 
 export function RoleFlexibilityCard({ result }: RoleFlexibilityCardProps) {
+  const t = useTranslations("ranked.charts.roleFlexibility");
   const { distribution, flexibility } = result;
 
   const hasData = distribution.some((d) => d.weightedCount > 0);
   const labelStyle = LABEL_STYLES[flexibility.label] ?? LABEL_STYLES.Specialist;
 
+  const dominantRole = distribution[0]?.role ?? "";
+  const description =
+    flexibility.score >= 80
+      ? t("descriptionAdaptive")
+      : flexibility.score >= 55
+        ? t("descriptionFlexible", { role: dominantRole })
+        : t("descriptionSpecialist", { role: dominantRole });
+
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Roles"
-        title="Role flexibility"
-        description={flexibility.description}
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        description={description}
       />
       {hasData ? (
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
@@ -47,7 +57,7 @@ export function RoleFlexibilityCard({ result }: RoleFlexibilityCardProps) {
               <span
                 className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${labelStyle.bg} ${labelStyle.text}`}
               >
-                {flexibility.label}
+                {t(`labels.${flexibility.label}`)}
               </span>
             </div>
             <div className="flex flex-wrap gap-x-6 gap-y-2">
@@ -70,7 +80,7 @@ export function RoleFlexibilityCard({ result }: RoleFlexibilityCardProps) {
           </div>
       ) : (
         <div className="flex h-16 items-center justify-center">
-          <p className="text-muted-foreground text-sm">No data yet</p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </div>
       )}
     </section>

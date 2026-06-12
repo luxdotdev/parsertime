@@ -8,6 +8,7 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import type { RollingWinrateEntry, RollingWinrateResult } from "@/lib/ranked-stats";
+import { useTranslations } from "next-intl";
 import {
   CartesianGrid,
   Line,
@@ -28,49 +29,43 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-function trendLabel(
-  trend: "improving" | "declining" | "stable",
-  current: number,
-  peak: number,
-  window: number
-): string {
-  if (trend === "improving")
-    return `On the rise \u2014 your last ${window}-game average is ${current}%`;
-  if (trend === "declining")
-    return `Trending down \u2014 peaked at ${peak}%, currently ${current}%`;
-  return `Holding steady around ${current}% over recent games`;
-}
-
 export function WinrateTrendChart({ result }: WinrateTrendChartProps) {
+  const t = useTranslations("ranked.charts.winrateTrend");
   const { data, insight } = result;
 
   if (data.length === 0) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Trend"
-          title="Are you improving?"
-          description="Track more matches to see your trend"
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          description={t("emptyDescription")}
         />
         <div className="flex h-[280px] items-center justify-center">
-          <p className="text-muted-foreground text-sm">No data yet</p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </div>
       </section>
     );
   }
 
-  const description = trendLabel(
-    insight.trend,
-    insight.currentWinrate,
-    insight.peakWinrate,
-    insight.window
-  );
+  const description =
+    insight.trend === "improving"
+      ? t("trendImproving", {
+          window: insight.window,
+          current: insight.currentWinrate,
+        })
+      : insight.trend === "declining"
+        ? t("trendDeclining", {
+            peak: insight.peakWinrate,
+            current: insight.currentWinrate,
+          })
+        : t("trendStable", { current: insight.currentWinrate });
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Trend"
-        title="Are you improving?"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
       />
       <ChartContainer config={chartConfig} className="h-[280px] w-full">
@@ -115,14 +110,17 @@ export function WinrateTrendChart({ result }: WinrateTrendChartProps) {
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
                           <span className="text-muted-foreground">
-                            Rolling winrate
+                            {t("tooltipLabel")}
                           </span>
                           <span className="font-mono font-medium tabular-nums">
                             {value}%
                           </span>
                         </div>
                         <div className="text-muted-foreground text-xs">
-                          Game #{payload.gameIndex} &middot; {payload.date}
+                          {t("tooltipMeta", {
+                            game: payload.gameIndex,
+                            date: payload.date,
+                          })}
                         </div>
                       </div>
                     );
@@ -142,8 +140,11 @@ export function WinrateTrendChart({ result }: WinrateTrendChartProps) {
           </LineChart>
         </ChartContainer>
       <p className="text-muted-foreground text-xs">
-        {insight.window}-game rolling average &middot; {data.length} games total
-        &middot; peak {insight.peakWinrate}%
+        {t("footer", {
+          window: insight.window,
+          total: data.length,
+          peak: insight.peakWinrate,
+        })}
       </p>
     </section>
   );

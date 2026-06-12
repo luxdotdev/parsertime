@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
@@ -30,6 +31,7 @@ function winrateColor(winrate: number): string {
 }
 
 export function HeroWinrateChart({ result }: HeroWinrateChartProps) {
+  const t = useTranslations("ranked.charts.heroWinrate");
   const { data, insight } = result;
 
   const chartData = data.map((entry) => ({
@@ -39,16 +41,23 @@ export function HeroWinrateChart({ result }: HeroWinrateChartProps) {
 
   const description =
     insight.bestHero && insight.worstHero && insight.bestHero !== insight.worstHero
-      ? `${insight.bestHero} leads at ${insight.bestWinrate}% \u2014 ${insight.worstHero} could use more practice`
+      ? t("descriptionBestWorst", {
+          bestHero: insight.bestHero,
+          bestWinrate: insight.bestWinrate,
+          worstHero: insight.worstHero,
+        })
       : insight.bestHero
-        ? `${insight.bestHero} is your top performer at ${insight.bestWinrate}%`
-        : "Play more matches to see hero winrates";
+        ? t("descriptionBest", {
+            bestHero: insight.bestHero,
+            bestWinrate: insight.bestWinrate,
+          })
+        : t("descriptionEmpty");
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Hero performance"
-        title="Who do you win with?"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
       />
       <ChartContainer config={chartConfig} className="h-[300px] w-full">
@@ -81,13 +90,13 @@ export function HeroWinrateChart({ result }: HeroWinrateChartProps) {
                     return (
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-muted-foreground">Winrate</span>
+                          <span className="text-muted-foreground">{t("winrate")}</span>
                           <span className="font-mono font-medium tabular-nums">
                             {value}%
                           </span>
                         </div>
                         <div className="text-muted-foreground text-xs">
-                          {payload.wins}W / {payload.total} games
+                          {t("winsTotal", { wins: payload.wins, total: payload.total })}
                         </div>
                       </div>
                     );
@@ -107,8 +116,10 @@ export function HeroWinrateChart({ result }: HeroWinrateChartProps) {
           </BarChart>
         </ChartContainer>
       <p className="text-muted-foreground text-xs">
-        Minimum {HERO_WINRATE_MIN_MATCHES} matches required &middot; showing{" "}
-        {data.length} heroes
+        {t("footer", {
+          min: HERO_WINRATE_MIN_MATCHES,
+          count: data.length,
+        })}
       </p>
     </section>
   );

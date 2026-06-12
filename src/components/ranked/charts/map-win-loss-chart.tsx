@@ -8,6 +8,7 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import type { MapWinLossResult } from "@/lib/ranked-stats";
+import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 type MapWinLossChartProps = {
@@ -26,21 +27,29 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function MapWinLossChart({ result }: MapWinLossChartProps) {
+  const t = useTranslations("ranked.charts.mapWinLoss");
   const { data, insight } = result;
 
   const totalGames = data.reduce((sum, d) => sum + d.wins + d.losses, 0);
 
-  const worstNote =
+  const description =
     insight.worstMap !== insight.bestMap
-      ? ` \u2014 ${insight.worstMap} is your toughest at ${insight.worstWinrate}%`
-      : "";
-  const description = `${insight.bestMap} is your best map at ${insight.bestWinrate}% winrate${worstNote}`;
+      ? t("descriptionWithWorst", {
+          bestMap: insight.bestMap,
+          bestWinrate: insight.bestWinrate,
+          worstMap: insight.worstMap,
+          worstWinrate: insight.worstWinrate,
+        })
+      : t("description", {
+          bestMap: insight.bestMap,
+          bestWinrate: insight.bestWinrate,
+        });
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Map performance"
-        title="Where do you win most?"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
       />
       <ChartContainer config={chartConfig} className="h-[350px] w-full">
@@ -81,14 +90,14 @@ export function MapWinLossChart({ result }: MapWinLossChartProps) {
                               }}
                             />
                             <span className="text-muted-foreground">
-                              Losses
+                              {t("losses")}
                             </span>
                             <span className="font-mono font-medium tabular-nums">
                               {value}
                             </span>
                           </div>
                           <div className="border-border border-t pt-1 text-xs">
-                            Winrate:{" "}
+                            {t("winrateLabel")}{" "}
                             <span className="font-medium tabular-nums">
                               {winrate}%
                             </span>
@@ -102,7 +111,9 @@ export function MapWinLossChart({ result }: MapWinLossChartProps) {
                           className="size-2.5 shrink-0 rounded-[2px]"
                           style={{ backgroundColor: "var(--chart-win)" }}
                         />
-                        <span className="text-muted-foreground">Wins</span>
+                        <span className="text-muted-foreground">
+                          {t("wins")}
+                        </span>
                         <span className="font-mono font-medium tabular-nums">
                           {value}
                         </span>
@@ -127,7 +138,7 @@ export function MapWinLossChart({ result }: MapWinLossChartProps) {
           </BarChart>
       </ChartContainer>
       <p className="text-muted-foreground text-xs">
-        Based on {totalGames} matches across {data.length} maps
+        {t("footer", { count: totalGames, maps: data.length })}
       </p>
     </section>
   );

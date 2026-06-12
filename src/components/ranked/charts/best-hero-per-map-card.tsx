@@ -11,6 +11,7 @@ import { HERO_MAP_MIN_GAMES } from "@/lib/ranked-stats";
 import type { HeroMapSynergyResult } from "@/lib/ranked-stats";
 import { heroImageUrl, mapImageUrl } from "@/lib/utils";
 import { Info } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 
 type BestHeroPerMapCardProps = {
@@ -20,6 +21,7 @@ type BestHeroPerMapCardProps = {
 type BestHeroEntry = HeroMapSynergyResult["bestHeroPerMap"][number];
 
 function MapBestHeroCard({ entry }: { entry: BestHeroEntry }) {
+  const t = useTranslations("ranked.charts.bestHeroPerMap");
   const ciWidth = entry.confidenceHigh - entry.confidenceLow;
   const isNarrow = ciWidth <= 20;
   const winrateColor =
@@ -72,7 +74,11 @@ function MapBestHeroCard({ entry }: { entry: BestHeroEntry }) {
           <div
             className="bg-muted relative h-1.5 w-full overflow-hidden rounded-full"
             role="img"
-            aria-label={`Winrate ${entry.winrate}%, 95% confidence interval ${entry.confidenceLow}% to ${entry.confidenceHigh}%`}
+            aria-label={t("ciAriaLabel", {
+              winrate: entry.winrate,
+              low: entry.confidenceLow,
+              high: entry.confidenceHigh,
+            })}
           >
             <div
               className={`absolute h-full ${
@@ -90,9 +96,12 @@ function MapBestHeroCard({ entry }: { entry: BestHeroEntry }) {
           </div>
           <div className="text-muted-foreground mt-1 flex items-center justify-between font-mono text-[10px] tabular-nums">
             <span className={isNarrow ? "" : "text-primary"}>
-              {entry.confidenceLow}%–{entry.confidenceHigh}% CI
+              {t("ciRange", {
+                low: entry.confidenceLow,
+                high: entry.confidenceHigh,
+              })}
             </span>
-            <span>{entry.total} games</span>
+            <span>{t("games", { count: entry.total })}</span>
           </div>
         </div>
       </div>
@@ -101,30 +110,31 @@ function MapBestHeroCard({ entry }: { entry: BestHeroEntry }) {
 }
 
 export function BestHeroPerMapCard({ result }: BestHeroPerMapCardProps) {
+  const t = useTranslations("ranked.charts.bestHeroPerMap");
   const { bestHeroPerMap } = result;
 
   if (bestHeroPerMap.length === 0) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Hero × map"
-          title="Best Hero per Map"
-          description={`Play at least ${HERO_MAP_MIN_GAMES} games with a hero on a map to see your best picks`}
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          description={t("descriptionEmptyHeader", { min: HERO_MAP_MIN_GAMES })}
         />
         <p className="text-muted-foreground py-8 text-center text-sm">
-          No qualifying data yet
+          {t("noData")}
         </p>
       </section>
     );
   }
 
-  const description = `Your highest-winrate hero on each map (min ${HERO_MAP_MIN_GAMES} games). The bar shows the 95% confidence interval; the tick marks the winrate.`;
+  const description = t("description", { min: HERO_MAP_MIN_GAMES });
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Hero × map"
-        title="Best Hero per Map"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
         rightSlot={
           <TooltipProvider>
@@ -132,17 +142,13 @@ export function BestHeroPerMapCard({ result }: BestHeroPerMapCardProps) {
               <TooltipTrigger asChild>
                 <button
                   className="text-muted-foreground hover:text-foreground shrink-0"
-                  aria-label="About confidence intervals"
+                  aria-label={t("infoAriaLabel")}
                 >
                   <Info className="size-4" />
                 </button>
               </TooltipTrigger>
               <TooltipContent className="max-w-56">
-                <p className="text-xs">
-                  Wilson score intervals account for sample size. A wide bar
-                  (highlighted) means the estimate is unreliable — play more
-                  games to narrow it.
-                </p>
+                <p className="text-xs">{t("infoTooltip")}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

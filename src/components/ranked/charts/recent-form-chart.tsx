@@ -1,6 +1,7 @@
 import { SectionHeader } from "@/components/stats/team/section-header";
 import { cn } from "@/lib/utils";
 import type { RecentFormData } from "@/lib/ranked-stats";
+import { useTranslations } from "next-intl";
 
 type RecentFormChartProps = {
   data: RecentFormData;
@@ -46,6 +47,7 @@ function FormColumn({
   stats: FormStats;
   colorClass?: string;
 }) {
+  const t = useTranslations("ranked.charts.recentForm");
   return (
     <div className="flex flex-1 flex-col gap-3">
       <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
@@ -56,19 +58,27 @@ function FormColumn({
       </p>
       <WinrateMiniBar stats={stats} />
       <p className="text-muted-foreground text-xs tabular-nums">
-        {stats.wins}W &ndash; {stats.losses}L
-        {stats.draws > 0 ? ` \u2013 ${stats.draws}D` : ""}
-        <span className="ml-1 opacity-60">({stats.total} games)</span>
+        {stats.draws > 0
+          ? t("recordWithDraws", {
+              wins: stats.wins,
+              losses: stats.losses,
+              draws: stats.draws,
+            })
+          : t("record", { wins: stats.wins, losses: stats.losses })}
+        <span className="ml-1 opacity-60">
+          {t("gamesCount", { count: stats.total })}
+        </span>
       </p>
     </div>
   );
 }
 
 function DeltaBadge({ delta }: { delta: number }) {
+  const t = useTranslations("ranked.charts.recentForm");
   const positive = delta >= 0;
   return (
     <div
-      aria-label={`${positive ? "+" : ""}${delta}% compared to overall`}
+      aria-label={t("deltaLabel", { sign: positive ? "+" : "", delta })}
       className={cn(
         "flex h-7 items-center rounded-full px-2.5 text-xs font-semibold tabular-nums",
         positive
@@ -82,19 +92,8 @@ function DeltaBadge({ delta }: { delta: number }) {
   );
 }
 
-function trendDescription(
-  trend: "improving" | "declining" | "stable",
-  window: number,
-  delta: number
-): string {
-  if (trend === "improving")
-    return `Up ${delta}% vs. your all-time average over your last ${window} games`;
-  if (trend === "declining")
-    return `Down ${Math.abs(delta)}% vs. your all-time average over your last ${window} games`;
-  return `Performing in line with your all-time average`;
-}
-
 export function RecentFormChart({ data, window = 20 }: RecentFormChartProps) {
+  const t = useTranslations("ranked.charts.recentForm");
   const { recent, overall, delta, trend } = data;
 
   const recentColorClass =
@@ -104,16 +103,23 @@ export function RecentFormChart({ data, window = 20 }: RecentFormChartProps) {
         ? "text-chart-loss"
         : "";
 
+  const description =
+    trend === "improving"
+      ? t("trendImproving", { delta, window })
+      : trend === "declining"
+        ? t("trendDeclining", { delta: Math.abs(delta), window })
+        : t("trendStable");
+
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Recent form"
-        title="Recent form"
-        description={trendDescription(trend, window, delta)}
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        description={description}
       />
       <div className="flex items-stretch gap-6">
         <FormColumn
-          label={`Last ${window} games`}
+          label={t("lastGames", { window })}
           stats={recent}
           colorClass={recentColorClass}
         />
@@ -124,14 +130,16 @@ export function RecentFormChart({ data, window = 20 }: RecentFormChartProps) {
           </div>
         </div>
         <FormColumn
-          label="All time"
+          label={t("allTime")}
           stats={overall}
           colorClass="text-muted-foreground"
         />
       </div>
       <p className="text-muted-foreground text-xs">
-        Comparing last {Math.min(window, recent.total)} games vs.{" "}
-        {overall.total} total
+        {t("footer", {
+          recent: Math.min(window, recent.total),
+          total: overall.total,
+        })}
       </p>
     </section>
   );

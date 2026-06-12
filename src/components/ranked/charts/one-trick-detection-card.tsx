@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ONE_TRICK_THRESHOLD,
@@ -36,15 +37,24 @@ const ROLE_COLORS: Record<string, string> = {
 };
 
 export function OneTrickDetectionCard({ result }: OneTrickDetectionCardProps) {
-  const { topHero: _topHero, topHeroPct, label, description, topHeroesData } = result;
+  const t = useTranslations("ranked.charts.oneTrick");
+  const { topHero, topHeroPct, label, topHeroesData } = result;
   const hasData = topHeroesData.length > 0;
   const labelStyle = LABEL_STYLES[label];
+
+  const description = !hasData
+    ? t("descriptionEmpty")
+    : label === "One-Trick"
+      ? t("descriptionOneTrick", { hero: topHero, pct: topHeroPct })
+      : label === "Specialist"
+        ? t("descriptionSpecialist", { hero: topHero })
+        : t("descriptionDiverse");
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Hero pool"
-        title="Are you a one-trick?"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
       />
       {hasData ? (
@@ -56,10 +66,10 @@ export function OneTrickDetectionCard({ result }: OneTrickDetectionCardProps) {
               <span
                 className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${labelStyle.bg} ${labelStyle.text}`}
               >
-                {label}
+                {t(`labels.${label}`)}
               </span>
             </div>
-            <div className="flex flex-col gap-2" role="list" aria-label="Hero playtime breakdown">
+            <div className="flex flex-col gap-2" role="list" aria-label={t("breakdownAriaLabel")}>
               {topHeroesData.map((entry, i) => {
                 const isTop = i === 0;
                 const barColor = isTop
@@ -87,7 +97,7 @@ export function OneTrickDetectionCard({ result }: OneTrickDetectionCardProps) {
                     </div>
                     <span
                       className="w-10 shrink-0 text-right text-xs tabular-nums text-muted-foreground"
-                      aria-label={`${entry.pct} percent`}
+                      aria-label={t("percentAriaLabel", { pct: entry.pct })}
                     >
                       {entry.pct}%
                     </span>
@@ -98,12 +108,15 @@ export function OneTrickDetectionCard({ result }: OneTrickDetectionCardProps) {
           </div>
       ) : (
         <div className="flex h-[200px] items-center justify-center">
-          <p className="text-muted-foreground text-sm">No data yet</p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </div>
       )}
       {hasData && (
         <p className="text-muted-foreground text-xs">
-          Based on weighted playtime &middot; One-Trick ≥ {ONE_TRICK_THRESHOLD}% &middot; Specialist ≥ {SPECIALIST_THRESHOLD}%
+          {t("footer", {
+            oneTrick: ONE_TRICK_THRESHOLD,
+            specialist: SPECIALIST_THRESHOLD,
+          })}
         </p>
       )}
     </section>

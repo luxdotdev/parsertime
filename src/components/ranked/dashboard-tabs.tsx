@@ -58,6 +58,7 @@ import type {
   StreakData,
 } from "@/lib/ranked-stats";
 import type { OverwatchPatch } from "@/types/overwatch-patches";
+import { useTranslations } from "next-intl";
 const tabTriggerClass =
   "text-muted-foreground hover:text-foreground data-[state=active]:text-foreground border-0 border-b-2 border-b-transparent data-[state=active]:border-b-primary rounded-none bg-transparent px-0 pb-3 pt-1 font-mono text-[11px] tracking-[0.16em] uppercase shadow-none data-[state=active]:shadow-none data-[state=active]:bg-transparent dark:bg-transparent dark:data-[state=active]:bg-transparent dark:data-[state=active]:border-b-primary transition-colors";
 
@@ -121,29 +122,30 @@ export function DashboardTabs({
   seasonBreakdown,
   patches,
 }: DashboardTabsProps) {
+  const t = useTranslations("ranked.tabs");
   return (
     <Tabs defaultValue="overview" className="space-y-8">
       <TabsList className="border-border h-auto w-full justify-start gap-6 overflow-x-auto rounded-none border-b bg-transparent p-0">
         <TabsTrigger value="overview" className={tabTriggerClass}>
-          Overview
+          {t("overview")}
         </TabsTrigger>
         <TabsTrigger value="heroes" className={tabTriggerClass}>
-          Heroes
+          {t("heroes")}
         </TabsTrigger>
         <TabsTrigger value="maps" className={tabTriggerClass}>
-          Maps
+          {t("maps")}
         </TabsTrigger>
         <TabsTrigger value="time" className={tabTriggerClass}>
-          Time
+          {t("time")}
         </TabsTrigger>
         <TabsTrigger value="patches" className={tabTriggerClass}>
-          Patches
+          {t("patches")}
         </TabsTrigger>
         <TabsTrigger value="groups" className={tabTriggerClass}>
-          Groups
+          {t("groups")}
         </TabsTrigger>
         <TabsTrigger value="roles" className={tabTriggerClass}>
-          Roles
+          {t("roles")}
         </TabsTrigger>
       </TabsList>
 
@@ -160,7 +162,7 @@ export function DashboardTabs({
           <MostPlayedHeroesChart result={mostPlayedHeroes} matches={matches} />
           <HeroWinrateChart result={heroWinrates} />
         </div>
-        <p className={groupLabelClass}>Hero Deep Dives</p>
+        <p className={groupLabelClass}>{t("heroDeepDives")}</p>
         <div className="grid gap-4 md:grid-cols-2">
           <OneTrickDetectionCard result={oneTrick} />
           <HeroPoolDiversityCard result={heroPoolDiversity} />
@@ -174,17 +176,15 @@ export function DashboardTabs({
           <MapTierListCard result={mapDetailedStats} />
           <MapVolatilityCard result={mapDetailedStats} />
         </div>
-        <p className={groupLabelClass}>
-          Hero &times; Map Analysis
-        </p>
+        <p className={groupLabelClass}>{t("heroMapAnalysis")}</p>
         <HeroMapSynergyMatrix result={heroMapSynergy} />
         <BestHeroPerMapCard result={heroMapSynergy} />
-        <p className={groupLabelClass}>Map Mastery</p>
+        <p className={groupLabelClass}>{t("mapMastery")}</p>
         <div className="grid gap-4 md:grid-cols-2">
           <MapLearningCurveCard result={mapLearningCurve} />
           <MapTimelineCard result={mapTimeline} />
         </div>
-        <p className={groupLabelClass}>Patterns</p>
+        <p className={groupLabelClass}>{t("patterns")}</p>
         <div className="grid gap-4 md:grid-cols-2">
           <MapFamiliarityCard result={mapFamiliarity} />
           <RepeatMapCard result={repeatMapData} />

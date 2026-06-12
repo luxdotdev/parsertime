@@ -9,6 +9,7 @@ import {
 import { MAP_DETAILED_MIN_GAMES } from "@/lib/ranked-stats";
 import type { MapDetailedResult } from "@/lib/ranked-stats";
 import { AlertTriangle, Star } from "lucide-react";
+import { useTranslations } from "next-intl";
 import {
   Bar,
   BarChart,
@@ -30,10 +31,11 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 function ConfidenceStars({ count }: { count: 1 | 2 | 3 | 4 | 5 }) {
+  const t = useTranslations("ranked.charts.mapWinrateRanking");
   return (
     <span
       className="flex shrink-0 items-center gap-0.5"
-      aria-label={`Confidence: ${count} out of 5 stars`}
+      aria-label={t("confidenceStarsLabel", { count })}
     >
       {Array.from({ length: 5 }, (_, i) => (
         <Star
@@ -72,16 +74,17 @@ function CustomTooltip({
   payload?: { payload: TooltipPayload }[];
   overallWinrate: number;
 }) {
+  const t = useTranslations("ranked.charts.mapWinrateRanking");
   if (!active || !payload?.length) return null;
   const d = payload[0]?.payload;
   if (!d) return null;
 
   const deviationLabel =
     d.deviation > 0
-      ? `+${d.deviation}% above average`
+      ? t("deviationAbove", { deviation: d.deviation })
       : d.deviation < 0
-        ? `${d.deviation}% below average`
-        : "At average";
+        ? t("deviationBelow", { deviation: d.deviation })
+        : t("deviationAt");
 
   return (
     <div className="bg-background border-border rounded-lg border p-3 shadow-lg">
@@ -89,19 +92,19 @@ function CustomTooltip({
       <p className="text-muted-foreground mb-2 text-xs">{d.mapType}</p>
       <div className="space-y-1 text-xs">
         <div className="flex justify-between gap-4">
-          <span className="text-muted-foreground">Winrate</span>
+          <span className="text-muted-foreground">{t("winrate")}</span>
           <span className="font-mono font-medium tabular-nums">
             {d.winrate}%
           </span>
         </div>
         <div className="flex justify-between gap-4">
-          <span className="text-muted-foreground">W / L / D</span>
+          <span className="text-muted-foreground">{t("wld")}</span>
           <span className="font-mono tabular-nums">
             {d.wins} / {d.losses} / {d.draws}
           </span>
         </div>
         <div className="flex justify-between gap-4">
-          <span className="text-muted-foreground">vs. your avg ({overallWinrate}%)</span>
+          <span className="text-muted-foreground">{t("vsAvg", { overallWinrate })}</span>
           <span
             className={`font-mono font-medium tabular-nums ${
               d.deviation > 0
@@ -115,13 +118,13 @@ function CustomTooltip({
           </span>
         </div>
         <div className="flex items-center justify-between gap-4">
-          <span className="text-muted-foreground">Confidence</span>
+          <span className="text-muted-foreground">{t("confidence")}</span>
           <ConfidenceStars count={d.confidenceStars} />
         </div>
         {!d.hasEnoughData && (
           <p className="text-primary mt-1 flex items-center gap-1">
             <AlertTriangle className="size-3" aria-hidden="true" />
-            Low sample — {d.total} game{d.total !== 1 ? "s" : ""}
+            {t("lowSample", { count: d.total })}
           </p>
         )}
       </div>
@@ -130,20 +133,26 @@ function CustomTooltip({
 }
 
 export function MapWinrateRankingChart({ result }: MapWinrateRankingChartProps) {
+  const t = useTranslations("ranked.charts.mapWinrateRanking");
   const { data, overallWinrate, insight } = result;
 
   const totalGames = data.reduce((sum, d) => sum + d.total, 0);
   const mapsWithData = data.filter((d) => d.total > 0);
 
   const description = insight.bestMap
-    ? `${insight.bestMap} is your strongest at ${insight.bestWinrate}% — ${insight.worstMap} is your toughest at ${insight.worstWinrate}%`
-    : "No map data yet";
+    ? t("insight", {
+        bestMap: insight.bestMap,
+        bestWinrate: insight.bestWinrate,
+        worstMap: insight.worstMap,
+        worstWinrate: insight.worstWinrate,
+      })
+    : t("insightEmpty");
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Map performance"
-        title="Map Winrate Rankings"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
       />
       <ChartContainer
@@ -178,7 +187,7 @@ export function MapWinrateRankingChart({ result }: MapWinrateRankingChartProps) 
               strokeDasharray="4 2"
               strokeOpacity={0.5}
               label={{
-                value: `Avg ${overallWinrate}%`,
+                value: t("avgLabel", { overallWinrate }),
                 position: "insideTopRight",
                 fontSize: 10,
                 fill: "var(--muted-foreground)",
@@ -210,11 +219,11 @@ export function MapWinrateRankingChart({ result }: MapWinrateRankingChartProps) 
         </ChartContainer>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
         <p className="text-muted-foreground text-xs">
-          {totalGames} games across {mapsWithData.length} maps
+          {t("footer", { count: totalGames, maps: mapsWithData.length })}
         </p>
         <p className="text-muted-foreground text-xs flex items-center gap-1">
           <AlertTriangle className="size-3 text-primary" aria-hidden="true" />
-          Faded bars have fewer than {MAP_DETAILED_MIN_GAMES} games
+          {t("fadedNote", { min: MAP_DETAILED_MIN_GAMES })}
         </p>
       </div>
     </section>

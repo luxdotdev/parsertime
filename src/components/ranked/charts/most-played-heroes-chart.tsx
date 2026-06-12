@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   ChartContainer,
@@ -40,6 +41,7 @@ export function MostPlayedHeroesChart({
   result: initialResult,
   matches,
 }: MostPlayedHeroesChartProps) {
+  const t = useTranslations("ranked.charts.mostPlayedHeroes");
   const [modeFilter, setModeFilter] = useState<string>("all");
 
   const { data, insight } = useMemo(() => {
@@ -47,26 +49,32 @@ export function MostPlayedHeroesChart({
     return getMostPlayedHeroes(matches, modeFilter as MapType);
   }, [modeFilter, matches, initialResult]);
 
-  const filterLabel =
-    modeFilter === "all" ? "across all modes" : `in ${modeFilter}`;
-
   const description = insight.topHero
-    ? `${insight.topHero} is your go-to ${filterLabel} with ${insight.topCount} games`
-    : "Play more matches to see hero stats";
+    ? modeFilter === "all"
+      ? t("descriptionAllModes", {
+          hero: insight.topHero,
+          count: insight.topCount,
+        })
+      : t("descriptionMode", {
+          hero: insight.topHero,
+          mode: modeFilter,
+          count: insight.topCount,
+        })
+    : t("descriptionEmpty");
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Hero performance"
-        title="Who do you play most?"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
         rightSlot={
           <Select value={modeFilter} onValueChange={setModeFilter}>
-            <SelectTrigger size="sm" aria-label="Filter by game mode">
+            <SelectTrigger size="sm" aria-label={t("filterAriaLabel")}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Modes</SelectItem>
+              <SelectItem value="all">{t("allModes")}</SelectItem>
               {MAP_TYPES.map((type) => (
                 <SelectItem key={type} value={type}>
                   {type}
@@ -101,13 +109,13 @@ export function MostPlayedHeroesChart({
                     return (
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-muted-foreground">Matches</span>
+                          <span className="text-muted-foreground">{t("matches")}</span>
                           <span className="font-mono font-medium tabular-nums">
                             {value}
                           </span>
                         </div>
                         <div className="text-muted-foreground text-xs">
-                          Role: {payload.role}
+                          {t("roleLabel", { role: payload.role })}
                         </div>
                       </div>
                     );
@@ -133,7 +141,7 @@ export function MostPlayedHeroesChart({
               className="size-2.5 shrink-0 rounded-full"
               style={{ backgroundColor: color }}
             />
-            <span className="text-muted-foreground">{role}</span>
+            <span className="text-muted-foreground">{t(`roles.${role}`)}</span>
           </div>
         ))}
       </div>

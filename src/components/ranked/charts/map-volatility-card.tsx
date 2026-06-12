@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/chart";
 import { Star } from "lucide-react";
 import type { MapDetailedResult } from "@/lib/ranked-stats";
+import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from "recharts";
 
 type MapVolatilityCardProps = {
@@ -21,10 +22,11 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 function ConfidenceStars({ count }: { count: 1 | 2 | 3 | 4 | 5 }) {
+  const t = useTranslations("ranked.charts.mapVolatility");
   return (
     <span
       className="flex shrink-0 items-center gap-0.5"
-      aria-label={`${count} out of 5 stars`}
+      aria-label={t("confidenceStarsLabel", { count })}
     >
       {Array.from({ length: 5 }, (_, i) => (
         <Star
@@ -57,20 +59,21 @@ function CustomTooltip({
   active?: boolean;
   payload?: { payload: TooltipPayload }[];
 }) {
+  const t = useTranslations("ranked.charts.mapVolatility");
   if (!active || !payload?.length) return null;
   const d = payload[0]?.payload;
   if (!d) return null;
 
   const volatilityLabel =
     d.volatility >= 80
-      ? "Extremely unpredictable"
+      ? t("assessmentExtreme")
       : d.volatility >= 60
-        ? "Highly volatile"
+        ? t("assessmentHigh")
         : d.volatility >= 40
-          ? "Moderately volatile"
+          ? t("assessmentModerate")
           : d.volatility >= 20
-            ? "Fairly consistent"
-            : "Very consistent";
+            ? t("assessmentFairly")
+            : t("assessmentVery");
 
   return (
     <div className="bg-background border-border rounded-lg border p-3 shadow-lg">
@@ -78,25 +81,25 @@ function CustomTooltip({
       <p className="text-muted-foreground mb-2 text-xs">{d.mapType}</p>
       <div className="space-y-1 text-xs">
         <div className="flex justify-between gap-4">
-          <span className="text-muted-foreground">Volatility</span>
+          <span className="text-muted-foreground">{t("volatility")}</span>
           <span className="font-mono font-medium tabular-nums">
             {d.volatility}/100
           </span>
         </div>
         <div className="flex justify-between gap-4">
-          <span className="text-muted-foreground">Assessment</span>
+          <span className="text-muted-foreground">{t("assessment")}</span>
           <span className="font-medium">{volatilityLabel}</span>
         </div>
         <div className="flex justify-between gap-4">
-          <span className="text-muted-foreground">Winrate</span>
+          <span className="text-muted-foreground">{t("winrate")}</span>
           <span className="font-mono tabular-nums">{d.winrate}%</span>
         </div>
         <div className="flex items-center justify-between gap-4">
-          <span className="text-muted-foreground">Confidence</span>
+          <span className="text-muted-foreground">{t("confidence")}</span>
           <ConfidenceStars count={d.confidenceStars} />
         </div>
         <p className="text-muted-foreground/70 mt-1 border-t pt-1">
-          {d.total} game{d.total !== 1 ? "s" : ""} played
+          {t("gamesPlayed", { count: d.total })}
         </p>
       </div>
     </div>
@@ -104,6 +107,7 @@ function CustomTooltip({
 }
 
 export function MapVolatilityCard({ result }: MapVolatilityCardProps) {
+  const t = useTranslations("ranked.charts.mapVolatility");
   const { data, insight } = result;
 
   const chartData = [...data]
@@ -112,14 +116,14 @@ export function MapVolatilityCard({ result }: MapVolatilityCardProps) {
     .slice(0, 15);
 
   const description = insight.mostVolatile
-    ? `${insight.mostVolatile} is your most unpredictable map — results vary widely`
-    : "How consistent your results are on each map";
+    ? t("insight", { mostVolatile: insight.mostVolatile })
+    : t("insightEmpty");
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Map performance"
-        title="Map Volatility"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
       />
       <ChartContainer config={chartConfig} className="h-[300px] w-full">
@@ -162,10 +166,7 @@ export function MapVolatilityCard({ result }: MapVolatilityCardProps) {
             </Bar>
           </BarChart>
         </ChartContainer>
-      <p className="text-muted-foreground text-xs">
-        High volatility means your results swing dramatically — these are your
-        &ldquo;coin-flip&rdquo; maps
-      </p>
+      <p className="text-muted-foreground text-xs">{t("footer")}</p>
     </section>
   );
 }

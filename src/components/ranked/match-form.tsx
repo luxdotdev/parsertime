@@ -45,6 +45,7 @@ import { cn, heroImageUrl, mapImageUrl, toKebabCase, useMapNames } from "@/lib/u
 import Fuse from "fuse.js";
 import { format } from "date-fns";
 import { CalendarIcon, Check, ChevronsUpDown, Plus, Trash2, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useEffect, useMemo, useState, useTransition } from "react";
 
@@ -92,12 +93,12 @@ function handleComboboxWheel(e: React.WheelEvent<HTMLDivElement>) {
 }
 
 const GROUP_SIZE_OPTIONS = [
-  { value: "1", label: "Solo" },
-  { value: "2", label: "Duo" },
-  { value: "3", label: "3-Stack" },
-  { value: "4", label: "4-Stack" },
-  { value: "5", label: "5-Stack" },
-];
+  { value: "1", labelKey: "groupSizeSolo" },
+  { value: "2", labelKey: "groupSizeDuo" },
+  { value: "3", labelKey: "groupSizeStack3" },
+  { value: "4", labelKey: "groupSizeStack4" },
+  { value: "5", labelKey: "groupSizeStack5" },
+] as const;
 
 function createEmptyMatch(): MatchEntry {
   return {
@@ -161,6 +162,7 @@ type MatchFormProps = {
 };
 
 export function MatchForm({ trigger }: MatchFormProps) {
+  const t = useTranslations("ranked.form");
   const [open, setOpen] = useState(false);
   const [matches, setMatches] = useState<MatchEntry[]>([createEmptyMatch()]);
   const [error, setError] = useState<string | null>(null);
@@ -225,22 +227,20 @@ export function MatchForm({ trigger }: MatchFormProps) {
     for (let i = 0; i < matches.length; i++) {
       const m = matches[i];
       if (!m.map) {
-        setError(`Match ${i + 1}: Select a map`);
+        setError(t("errorSelectMap", { n: i + 1 }));
         return;
       }
       if (!m.result) {
-        setError(`Match ${i + 1}: Select a result`);
+        setError(t("errorSelectResult", { n: i + 1 }));
         return;
       }
       if (m.heroes.length === 0) {
-        setError(`Match ${i + 1}: Add at least one hero`);
+        setError(t("errorAddHero", { n: i + 1 }));
         return;
       }
       const total = m.heroes.reduce((sum, h) => sum + h.percentage, 0);
       if (total !== 100) {
-        setError(
-          `Match ${i + 1}: Hero percentages must sum to 100 (currently ${total})`
-        );
+        setError(t("errorHeroSum", { n: i + 1, total }));
         return;
       }
     }
@@ -264,7 +264,7 @@ export function MatchForm({ trigger }: MatchFormProps) {
         setMatches([createEmptyMatch()]);
         setError(null);
       } else {
-        setError(result.error ?? "Something went wrong");
+        setError(result.error ?? t("errorGeneric"));
       }
     });
   }
@@ -274,9 +274,9 @@ export function MatchForm({ trigger }: MatchFormProps) {
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Track Matches</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription className="text-pretty">
-            Log your recent games. You can add multiple matches at once.
+            {t("description")}
           </DialogDescription>
         </DialogHeader>
 
@@ -307,7 +307,7 @@ export function MatchForm({ trigger }: MatchFormProps) {
               className="w-full"
             >
               <Plus className="mr-1.5 size-4" />
-              Add another match
+              {t("addAnother")}
             </Button>
           </div>
 
@@ -324,8 +324,8 @@ export function MatchForm({ trigger }: MatchFormProps) {
               className="active:scale-[0.97]"
             >
               {isPending
-                ? "Submitting..."
-                : `Submit ${matches.length > 1 ? `${matches.length} matches` : "match"}`}
+                ? t("submitting")
+                : t("submit", { count: matches.length })}
             </Button>
           </DialogFooter>
         </form>
@@ -355,17 +355,20 @@ function MatchEntryCard({
   onRemoveHero,
   onUpdateHeroPercentage,
 }: MatchEntryCardProps) {
+  const t = useTranslations("ranked.form");
   return (
     <fieldset className="border-border space-y-4 rounded-lg border p-4">
       <div className="flex items-center justify-between">
-        <legend className="text-sm font-medium">Match {matchIndex + 1}</legend>
+        <legend className="text-sm font-medium">
+          {t("matchHeading", { n: matchIndex + 1 })}
+        </legend>
         {totalMatches > 1 && (
           <Button
             type="button"
             variant="ghost"
             size="icon-sm"
             onClick={onRemove}
-            aria-label={`Remove match ${matchIndex + 1}`}
+            aria-label={t("removeMatch", { n: matchIndex + 1 })}
           >
             <Trash2 className="size-4" />
           </Button>
@@ -382,7 +385,7 @@ function MatchEntryCard({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <label className="text-sm font-medium">Result</label>
+          <label className="text-sm font-medium">{t("result")}</label>
           <ToggleGroup
             type="single"
             variant="outline"
@@ -396,22 +399,22 @@ function MatchEntryCard({
               value="win"
               className="flex-1 rounded-l-md! data-[state=on]:bg-primary/15 data-[state=on]:text-primary"
             >
-              Win
+              {t("win")}
             </ToggleGroupItem>
             <ToggleGroupItem
               value="loss"
               className="flex-1 data-[state=on]:bg-destructive/15 data-[state=on]:text-destructive"
             >
-              Loss
+              {t("loss")}
             </ToggleGroupItem>
             <ToggleGroupItem value="draw" className="flex-1 rounded-r-md!">
-              Draw
+              {t("draw")}
             </ToggleGroupItem>
           </ToggleGroup>
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-sm font-medium">Group Size</label>
+          <label className="text-sm font-medium">{t("groupSize")}</label>
           <Select
             value={match.groupSize}
             onValueChange={(value) => onUpdate({ groupSize: value })}
@@ -422,7 +425,7 @@ function MatchEntryCard({
             <SelectContent>
               {GROUP_SIZE_OPTIONS.map((opt) => (
                 <SelectItem key={opt.value} value={opt.value}>
-                  {opt.label}
+                  {t(opt.labelKey)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -447,6 +450,7 @@ function MapPicker({
   value: string;
   onChange: (map: string) => void;
 }) {
+  const t = useTranslations("ranked.form");
   const [open, setOpen] = useState(false);
   const mapNames = useMapNames();
 
@@ -456,7 +460,7 @@ function MapPicker({
 
   return (
     <div className="space-y-1.5">
-      <label className="text-sm font-medium">Map</label>
+      <label className="text-sm font-medium">{t("map")}</label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -478,7 +482,7 @@ function MapPicker({
                 <span className="truncate">{selectedDisplay}</span>
               </span>
             ) : (
-              "Select map..."
+              t("selectMap")
             )}
             <ChevronsUpDown className="ml-auto size-4 shrink-0 opacity-50" />
           </Button>
@@ -489,9 +493,9 @@ function MapPicker({
           onWheel={handleComboboxWheel}
         >
           <Command filter={fuzzyScore}>
-            <CommandInput placeholder="Search maps..." />
+            <CommandInput placeholder={t("searchMaps")} />
             <CommandList>
-              <CommandEmpty>No maps found.</CommandEmpty>
+              <CommandEmpty>{t("noMaps")}</CommandEmpty>
               <CommandGroup>
                 {MAPS.map((map) => {
                   const displayName =
@@ -539,6 +543,8 @@ function DateTimePicker({
   value: Date;
   onChange: (date: Date) => void;
 }) {
+  const t = useTranslations("ranked.form");
+
   function handleDaySelect(day: Date | undefined) {
     if (!day) return;
     const updated = new Date(day);
@@ -553,7 +559,7 @@ function DateTimePicker({
 
   return (
     <div className="space-y-1.5">
-      <label className="text-sm font-medium">Date &amp; Time</label>
+      <label className="text-sm font-medium">{t("dateTime")}</label>
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -592,6 +598,7 @@ function HeroPicker({
   onRemoveHero: (hero: string) => void;
   onUpdatePercentage: (hero: string, percentage: number) => void;
 }) {
+  const t = useTranslations("ranked.form");
   const selectedHeroNames = new Set(heroes.map((h) => h.hero));
   const totalPercentage = heroes.reduce((sum, h) => sum + h.percentage, 0);
   const preferredRole =
@@ -600,7 +607,7 @@ function HeroPicker({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <label className="text-sm font-medium">Heroes Played</label>
+        <label className="text-sm font-medium">{t("heroesPlayed")}</label>
         {heroes.length > 0 && (
           <span
             className={`text-xs tabular-nums ${
@@ -609,7 +616,7 @@ function HeroPicker({
                 : "text-destructive"
             }`}
           >
-            {totalPercentage}%
+            {t("percentTotal", { total: totalPercentage })}
           </span>
         )}
       </div>
@@ -628,7 +635,7 @@ function HeroPicker({
           ))}
           {totalPercentage !== 100 && (
             <p className="text-xs text-destructive">
-              Percentages must sum to 100
+              {t("percentSum")}
             </p>
           )}
         </div>
@@ -652,6 +659,7 @@ function HeroRow({
   onRemove: () => void;
   onUpdatePercentage: (percentage: number) => void;
 }) {
+  const t = useTranslations("ranked.form");
   const [rawValue, setRawValue] = useState(String(selection.percentage));
   const activePreset = PERCENTAGE_PRESETS.find(
     (p) => p === selection.percentage
@@ -684,7 +692,7 @@ function HeroRow({
                 : "bg-background hover:bg-muted border"
             }`}
           >
-            {preset}%
+            {t("percentTotal", { total: preset })}
           </button>
         ))}
       </div>
@@ -708,13 +716,13 @@ function HeroRow({
           }
         }}
         className="border-input bg-background h-9 w-16 rounded-md border px-2 text-center text-sm tabular-nums"
-        aria-label={`Percentage for ${selection.hero}`}
+        aria-label={t("percentageFor", { hero: selection.hero })}
       />
 
       <button
         type="button"
         onClick={onRemove}
-        aria-label={`Remove ${selection.hero}`}
+        aria-label={t("removeHero", { hero: selection.hero })}
         className="text-muted-foreground hover:text-foreground min-h-[44px] min-w-[44px] rounded-md p-2"
       >
         <X className="size-4" />
@@ -738,6 +746,7 @@ function HeroCombobox({
   preferredRole: RoleName | undefined;
   onSelect: (hero: string) => void;
 }) {
+  const t = useTranslations("ranked.form");
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -804,7 +813,7 @@ function HeroCombobox({
           aria-expanded={open}
           className="w-full justify-between font-normal"
         >
-          Add hero...
+          {t("addHero")}
           <ChevronsUpDown className="ml-auto size-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -815,12 +824,12 @@ function HeroCombobox({
       >
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder="Search heroes..."
+            placeholder={t("searchHeroes")}
             value={search}
             onValueChange={setSearch}
           />
           <CommandList>
-            <CommandEmpty>No heroes found.</CommandEmpty>
+            <CommandEmpty>{t("noHeroes")}</CommandEmpty>
             {groupedHeroes.map(({ role, heroes }) => (
               <CommandGroup key={role} heading={role}>
                 {heroes.map((name) => (

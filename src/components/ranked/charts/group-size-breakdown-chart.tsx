@@ -8,6 +8,7 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import type { GroupSizeResult } from "@/lib/ranked-stats";
+import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 type GroupSizeBreakdownChartProps = {
@@ -25,46 +26,53 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-function buildDescription(result: GroupSizeResult): string {
+type DescriptionResult = { key: string; args?: Record<string, number> };
+
+function buildDescription(result: GroupSizeResult): DescriptionResult {
   const { data } = result;
-  if (data.length === 0) return "Track more matches to see your group habits";
+  if (data.length === 0) return { key: "descriptionEmpty" };
 
   const total = data.reduce((sum, e) => sum + e.total, 0);
-  if (total === 0) return "Track more matches to see your group habits";
+  if (total === 0) return { key: "descriptionEmpty" };
 
   const soloEntry = data.find((e) => e.groupSize === 1);
   const soloGames = soloEntry?.total ?? 0;
   const groupedGames = total - soloGames;
 
   if (soloGames === 0) {
-    return `All ${total} games played grouped`;
+    return { key: "descriptionAllGrouped", args: { total } };
   }
   if (groupedGames === 0) {
-    return `All ${total} games played solo`;
+    return { key: "descriptionAllSolo", args: { total } };
   }
 
   const soloPct = Math.round((soloGames / total) * 100);
-  return `${soloPct}% of your ${total} games are solo \u2014 ${100 - soloPct}% grouped`;
+  return {
+    key: "descriptionMixed",
+    args: { soloPct, total, groupedPct: 100 - soloPct },
+  };
 }
 
 export function GroupSizeBreakdownChart({
   result,
 }: GroupSizeBreakdownChartProps) {
+  const t = useTranslations("ranked.charts.groupSizeBreakdown");
   const { data } = result;
 
-  const description = buildDescription(result);
+  const descriptionResult = buildDescription(result);
+  const description = t(descriptionResult.key, descriptionResult.args);
   const totalGames = data.reduce((sum, e) => sum + e.total, 0);
 
   if (data.length === 0) {
     return (
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Group size"
-          title="Where do you play most?"
-          description="Track more matches to see your group habits"
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          description={t("descriptionEmpty")}
         />
         <div className="flex h-[280px] items-center justify-center">
-          <p className="text-muted-foreground text-sm">No data yet</p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </div>
       </section>
     );
@@ -73,8 +81,8 @@ export function GroupSizeBreakdownChart({
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Group size"
-        title="Where do you play most?"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
       />
       <ChartContainer config={chartConfig} className="h-[280px] w-full">
@@ -111,7 +119,7 @@ export function GroupSizeBreakdownChart({
                               style={{ backgroundColor: "var(--chart-loss)" }}
                             />
                             <span className="text-muted-foreground">
-                              Losses
+                              {t("losses")}
                             </span>
                             <span className="font-mono font-medium tabular-nums">
                               {value}
@@ -119,15 +127,19 @@ export function GroupSizeBreakdownChart({
                           </div>
                           {draws > 0 && (
                             <div className="text-muted-foreground text-xs">
-                              {draws} draw{draws !== 1 ? "s" : ""}
+                              {t("draws", { count: draws })}
                             </div>
                           )}
                           <div className="border-border border-t pt-1 text-xs">
-                            Winrate:{" "}
-                            <span className="font-medium tabular-nums">
-                              {winrate}%
-                            </span>{" "}
-                            over {total} games
+                            {t.rich("winrateOverGames", {
+                              winrate,
+                              total,
+                              b: (chunks) => (
+                                <span className="font-medium tabular-nums">
+                                  {chunks}
+                                </span>
+                              ),
+                            })}
                           </div>
                         </div>
                       );
@@ -139,7 +151,9 @@ export function GroupSizeBreakdownChart({
                           className="size-2.5 shrink-0 rounded-[2px]"
                           style={{ backgroundColor: "var(--chart-win)" }}
                         />
-                        <span className="text-muted-foreground">Wins</span>
+                        <span className="text-muted-foreground">
+                          {t("wins")}
+                        </span>
                         <span className="font-mono font-medium tabular-nums">
                           {wins}
                         </span>
@@ -164,8 +178,7 @@ export function GroupSizeBreakdownChart({
           </BarChart>
       </ChartContainer>
       <p className="text-muted-foreground text-xs">
-        Based on {totalGames} matches across {data.length} group size
-        {data.length !== 1 ? "s" : ""}
+        {t("footer", { count: totalGames, sizes: data.length })}
       </p>
     </section>
   );

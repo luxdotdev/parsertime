@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/tooltip";
 import type { MapDetailedResult } from "@/lib/ranked-stats";
 import { AlertTriangle } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type MapTierListCardProps = {
   result: MapDetailedResult;
@@ -50,6 +51,7 @@ const TIER_CONFIG = {
 const TIERS = ["S", "A", "B", "C", "D"] as const;
 
 export function MapTierListCard({ result }: MapTierListCardProps) {
+  const t = useTranslations("ranked.charts.mapTierList");
   const { data } = result;
 
   const tierGroups = TIERS.reduce<
@@ -63,18 +65,18 @@ export function MapTierListCard({ result }: MapTierListCardProps) {
 
   const description =
     totalMaps > 0
-      ? `Your ${totalMaps} played maps ranked by winrate and confidence`
-      : "Play more maps to generate a tier list";
+      ? t("description", { count: totalMaps })
+      : t("descriptionEmpty");
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Map performance"
-        title="Map Tier List"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
       />
       <TooltipProvider>
-          <div className="space-y-2" role="list" aria-label="Map tier list">
+          <div className="space-y-2" role="list" aria-label={t("listLabel")}>
             {TIERS.map((tier) => {
               const maps = tierGroups[tier] ?? [];
               const config = TIER_CONFIG[tier];
@@ -88,7 +90,10 @@ export function MapTierListCard({ result }: MapTierListCardProps) {
                   <div
                     className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border text-sm font-bold"
                     style={{ fontVariantNumeric: "tabular-nums" }}
-                    aria-label={`Tier ${tier}: ${config.description}`}
+                    aria-label={t("tierLabel", {
+                      tier,
+                      description: t(`tierDescription.${tier}`),
+                    })}
                   >
                     <span className={config.headerClassName}>{tier}</span>
                   </div>
@@ -108,7 +113,7 @@ export function MapTierListCard({ result }: MapTierListCardProps) {
                               {!map.hasEnoughData && (
                                 <AlertTriangle
                                   className="size-2.5 text-primary"
-                                  aria-label="Low sample size"
+                                  aria-label={t("lowSampleLabel")}
                                 />
                               )}
                             </div>
@@ -120,13 +125,22 @@ export function MapTierListCard({ result }: MapTierListCardProps) {
                                 {map.mapType}
                               </p>
                               <p>
-                                {map.winrate}% winrate ({map.wins}W / {map.losses}L
-                                {map.draws > 0 ? ` / ${map.draws}D` : ""})
+                                {map.draws > 0
+                                  ? t("winrateLineWithDraws", {
+                                      winrate: map.winrate,
+                                      wins: map.wins,
+                                      losses: map.losses,
+                                      draws: map.draws,
+                                    })
+                                  : t("winrateLine", {
+                                      winrate: map.winrate,
+                                      wins: map.wins,
+                                      losses: map.losses,
+                                    })}
                               </p>
                               {!map.hasEnoughData && (
                                 <p className="text-primary">
-                                  Low confidence — only {map.total} game
-                                  {map.total !== 1 ? "s" : ""}
+                                  {t("lowConfidence", { count: map.total })}
                                 </p>
                               )}
                             </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { SectionHeader } from "@/components/stats/team/section-header";
 import type { HeroPoolDiversityResult } from "@/lib/ranked-stats";
 
@@ -7,49 +8,60 @@ type HeroPoolDiversityCardProps = {
   result: HeroPoolDiversityResult;
 };
 
-function buildDescription(result: HeroPoolDiversityResult): string {
-  if (result.totalUnique === 0) return "No matches tracked yet";
+type DiversityTranslator = ReturnType<
+  typeof useTranslations<"ranked.charts.heroPoolDiversity">
+>;
+
+function buildDescription(
+  result: HeroPoolDiversityResult,
+  t: DiversityTranslator
+): string {
+  if (result.totalUnique === 0) return t("descriptionNoMatches");
 
   const rolesWithHeroes = result.byRole.filter((r) => r.count > 0);
-  if (rolesWithHeroes.length === 0) return "No hero data available";
+  if (rolesWithHeroes.length === 0) return t("descriptionNoHeroData");
 
   if (rolesWithHeroes.length === 3) {
-    return `You've played ${result.totalUnique} unique ${result.totalUnique === 1 ? "hero" : "heroes"} across all 3 roles`;
+    return t("descriptionAllRoles", { count: result.totalUnique });
   }
 
   const dominant = result.byRole.reduce((a, b) => (a.count > b.count ? a : b));
-  return `Your pool is concentrated in ${dominant.role} — ${result.totalUnique} unique ${result.totalUnique === 1 ? "hero" : "heroes"} total`;
+  return t("descriptionConcentrated", {
+    role: dominant.role,
+    count: result.totalUnique,
+  });
 }
 
 export function HeroPoolDiversityCard({ result }: HeroPoolDiversityCardProps) {
+  const t = useTranslations("ranked.charts.heroPoolDiversity");
   const { totalUnique, byRole, heroList } = result;
   const hasData = totalUnique > 0;
-  const description = buildDescription(result);
+  const description = buildDescription(result, t);
 
   return (
     <section className="space-y-4">
       <SectionHeader
-        eyebrow="Hero pool"
-        title="How wide is your hero pool?"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         description={description}
         rightSlot={
           hasData ? (
             <div
               className="flex flex-col items-center"
-              aria-label={`${totalUnique} unique heroes`}
+              aria-label={t("uniqueHeroesAriaLabel", { count: totalUnique })}
             >
               <span className="text-4xl font-bold tabular-nums leading-none">
                 {totalUnique}
               </span>
               <span className="text-muted-foreground text-xs mt-1">
-                {totalUnique === 1 ? "hero" : "heroes"}
+                {t("heroUnit", { count: totalUnique })}
               </span>
             </div>
           ) : undefined
         }
       />
       {hasData ? (
-          <div className="flex flex-col gap-4" role="list" aria-label="Heroes by role">
+          <div className="flex flex-col gap-4" role="list" aria-label={t("heroesByRoleAriaLabel")}>
             {byRole.map((roleEntry) => {
               const roleHeroes = heroList.filter((h) => h.role === roleEntry.role);
               return (
@@ -62,11 +74,11 @@ export function HeroPoolDiversityCard({ result }: HeroPoolDiversityCardProps) {
                     />
                     <span className="text-sm font-medium">{roleEntry.role}</span>
                     <span className="text-muted-foreground text-xs tabular-nums">
-                      {roleEntry.count} {roleEntry.count === 1 ? "hero" : "heroes"}
+                      {t("heroesLabel", { count: roleEntry.count })}
                     </span>
                   </div>
                   {roleHeroes.length > 0 ? (
-                    <div className="flex flex-wrap gap-1.5 pl-4" aria-label={`${roleEntry.role} heroes`}>
+                    <div className="flex flex-wrap gap-1.5 pl-4" aria-label={t("roleHeroesAriaLabel", { role: roleEntry.role })}>
                       {roleHeroes.map(({ hero }) => (
                         <span
                           key={hero}
@@ -79,7 +91,7 @@ export function HeroPoolDiversityCard({ result }: HeroPoolDiversityCardProps) {
                     </div>
                   ) : (
                     <p className="pl-4 text-muted-foreground text-xs">
-                      No {roleEntry.role.toLowerCase()} heroes played yet
+                      {t("noRoleHeroes", { role: roleEntry.role })}
                     </p>
                   )}
                 </div>
@@ -88,7 +100,7 @@ export function HeroPoolDiversityCard({ result }: HeroPoolDiversityCardProps) {
           </div>
       ) : (
         <div className="flex h-[200px] items-center justify-center">
-          <p className="text-muted-foreground text-sm">No data yet</p>
+          <p className="text-muted-foreground text-sm">{t("noData")}</p>
         </div>
       )}
     </section>

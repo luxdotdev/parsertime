@@ -7,6 +7,7 @@ import type {
   SeasonBreakdownEntry,
 } from "@/lib/ranked-stats";
 import type { OverwatchPatch, PatchType } from "@/types/overwatch-patches";
+import { useTranslations } from "next-intl";
 import {
   CartesianGrid,
   Line,
@@ -31,20 +32,18 @@ type PatchImpactChartProps = {
 
 const MARKER: Record<
   PatchType,
-  { stroke: string; dash?: string; opacity: number; label: string }
+  { stroke: string; dash?: string; opacity: number }
 > = {
-  season: { stroke: "var(--primary)", opacity: 0.9, label: "Season" },
+  season: { stroke: "var(--primary)", opacity: 0.9 },
   "mid-season": {
     stroke: "var(--muted-foreground)",
     dash: "5 3",
     opacity: 0.8,
-    label: "Mid-season",
   },
   hotfix: {
     stroke: "var(--muted-foreground)",
     dash: "1 4",
     opacity: 0.55,
-    label: "Hotfix",
   },
 };
 
@@ -63,13 +62,14 @@ function TimelineTooltip({
   active,
   payload,
 }: TooltipProps<ValueType, NameType>) {
+  const t = useTranslations("ranked.charts.patchImpact");
   if (!active || !payload?.length) return null;
   const point = payload[0].payload as { ts: number; rollingWinrate: number };
   return (
     <div className="bg-popover text-popover-foreground border-border rounded-md border px-3 py-2 shadow-xl">
       <p className="text-xs font-semibold">{formatDate(point.ts)}</p>
       <p className="font-mono text-sm tabular-nums">
-        {point.rollingWinrate}% rolling winrate
+        {t("tooltipWinrate", { winrate: point.rollingWinrate })}
       </p>
     </div>
   );
@@ -80,6 +80,7 @@ export function PatchImpactChart({
   seasonBreakdown,
   patches,
 }: PatchImpactChartProps) {
+  const t = useTranslations("ranked.charts.patchImpact");
   const { data, minTs, maxTs } = timeline;
 
   const visiblePatches = patches.filter((p) => {
@@ -99,16 +100,20 @@ export function PatchImpactChart({
       {seasonBreakdown.length > 0 ? (
         <section className="space-y-4">
           <SectionHeader
-            eyebrow="Seasons"
-            title="Winrate by season"
-            description="Your record within each ranked season."
+            eyebrow={t("seasonsEyebrow")}
+            title={t("seasonsTitle")}
+            description={t("seasonsDescription")}
           />
           <StatRibbon
             columns={ribbonColumns}
             cells={seasonBreakdown.map((s, i) => ({
               label: s.name,
               value: `${s.winrate}%`,
-              sub: `${s.wins}W – ${s.losses}L · ${s.games} games`,
+              sub: t("seasonRecord", {
+                wins: s.wins,
+                losses: s.losses,
+                games: s.games,
+              }),
               emphasis: i === 0,
             }))}
           />
@@ -117,13 +122,13 @@ export function PatchImpactChart({
 
       <section className="space-y-4">
         <SectionHeader
-          eyebrow="Patch impact"
-          title="How patches move your winrate"
-          description="Rolling winrate over time. Vertical lines mark Overwatch patches, so you can see how the meta shifts line up with your form."
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          description={t("description")}
         />
         {data.length === 0 ? (
           <p className="text-muted-foreground py-8 text-center text-sm">
-            Not enough games to chart a timeline yet
+            {t("empty")}
           </p>
         ) : (
           <>
@@ -201,6 +206,8 @@ export function PatchImpactChart({
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
                 {usedTypes.map((type) => {
                   const style = MARKER[type];
+                  const legendKey =
+                    type === "mid-season" ? "legendMidSeason" : type === "hotfix" ? "legendHotfix" : "legendSeason";
                   return (
                     <span
                       key={type}
@@ -214,7 +221,7 @@ export function PatchImpactChart({
                         }}
                         aria-hidden="true"
                       />
-                      {style.label}
+                      {t(legendKey)}
                     </span>
                   );
                 })}

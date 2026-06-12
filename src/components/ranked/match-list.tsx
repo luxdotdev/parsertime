@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { heroImageUrl, mapImageUrl } from "@/lib/utils";
 import { format, subDays } from "date-fns";
 import { ChevronLeft, ChevronRight, Trash2, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useMemo, useState, useTransition } from "react";
 
@@ -38,19 +39,26 @@ type MatchData = {
   heroes: MatchHeroData[];
 };
 
-const GROUP_SIZE_LABELS: Record<number, string> = {
-  1: "Solo",
-  2: "Duo",
-  3: "3-Stack",
-  4: "4-Stack",
-  5: "5-Stack",
+const GROUP_SIZE_LABEL_KEYS: Record<number, string> = {
+  1: "groupSolo",
+  2: "groupDuo",
+  3: "group3Stack",
+  4: "group4Stack",
+  5: "group5Stack",
 };
 
 function ResultBadge({ result }: { result: string }) {
+  const t = useTranslations("ranked.matchList");
   const styles = {
     win: "bg-primary/15 text-primary",
     loss: "bg-destructive/15 text-destructive",
     draw: "bg-muted text-muted-foreground",
+  };
+
+  const labelKeys = {
+    win: "resultWin",
+    loss: "resultLoss",
+    draw: "resultDraw",
   };
 
   return (
@@ -59,12 +67,13 @@ function ResultBadge({ result }: { result: string }) {
         styles[result as keyof typeof styles] ?? styles.draw
       }`}
     >
-      {result}
+      {t(labelKeys[result as keyof typeof labelKeys] ?? labelKeys.draw)}
     </span>
   );
 }
 
 function DeleteMatchDialog({ matchId }: { matchId: string }) {
+  const t = useTranslations("ranked.matchList");
   const [isPending, startTransition] = useTransition();
 
   function handleDelete() {
@@ -79,7 +88,7 @@ function DeleteMatchDialog({ matchId }: { matchId: string }) {
         <Button
           variant="ghost"
           size="icon-sm"
-          aria-label="Delete match"
+          aria-label={t("deleteMatchAria")}
           disabled={isPending}
         >
           <Trash2 className="size-4" />
@@ -87,15 +96,15 @@ function DeleteMatchDialog({ matchId }: { matchId: string }) {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete match?</AlertDialogTitle>
+          <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
           <AlertDialogDescription className="text-pretty">
-            This will permanently remove this match from your history.
+            {t("deleteBody")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
           <AlertDialogAction variant="destructive" onClick={handleDelete}>
-            {isPending ? "Deleting..." : "Delete"}
+            {isPending ? t("deleting") : t("delete")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -104,6 +113,7 @@ function DeleteMatchDialog({ matchId }: { matchId: string }) {
 }
 
 export function MatchList({ matches }: { matches: MatchData[] }) {
+  const t = useTranslations("ranked.matchList");
   const [page, setPage] = useState(1);
 
   const recentMatches = useMemo(() => {
@@ -128,18 +138,22 @@ export function MatchList({ matches }: { matches: MatchData[] }) {
     <div className="space-y-3">
       <div>
         <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
-          History
+          {t("eyebrow")}
         </p>
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold tracking-tight">
-            Recent matches
+            {t("recentMatches")}
             <span className="text-muted-foreground ml-2 text-sm font-normal">
-              (last 7 days)
+              {t("lastSevenDays")}
             </span>
           </h2>
           {totalPages > 1 && (
             <span className="text-muted-foreground text-xs">
-              {start}–{end} of {recentMatches.length}
+              {t("counter", {
+                start,
+                end,
+                total: recentMatches.length,
+              })}
             </span>
           )}
         </div>
@@ -158,22 +172,22 @@ export function MatchList({ matches }: { matches: MatchData[] }) {
             size="sm"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={safePage === 1}
-            aria-label="Previous page"
+            aria-label={t("previousAria")}
           >
             <ChevronLeft className="size-4" aria-hidden="true" />
-            Previous
+            {t("previous")}
           </Button>
           <span className="text-muted-foreground text-sm">
-            Page {safePage} of {totalPages}
+            {t("pageOf", { page: safePage, total: totalPages })}
           </span>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={safePage === totalPages}
-            aria-label="Next page"
+            aria-label={t("nextAria")}
           >
-            Next
+            {t("next")}
             <ChevronRight className="size-4" aria-hidden="true" />
           </Button>
         </div>
@@ -183,6 +197,8 @@ export function MatchList({ matches }: { matches: MatchData[] }) {
 }
 
 function MatchCard({ match }: { match: MatchData }) {
+  const t = useTranslations("ranked.matchList");
+  const groupLabelKey = GROUP_SIZE_LABEL_KEYS[match.groupSize];
   return (
     <div className="border-border flex items-center gap-4 rounded-lg border p-3">
       <Image
@@ -203,7 +219,9 @@ function MatchCard({ match }: { match: MatchData }) {
           <span>{format(new Date(match.playedAt), "MMM d, yyyy")}</span>
           <span className="flex items-center gap-1">
             <Users className="size-3" />
-            {GROUP_SIZE_LABELS[match.groupSize] ?? `${match.groupSize}-Stack`}
+            {groupLabelKey
+              ? t(groupLabelKey)
+              : t("groupNStack", { count: match.groupSize })}
           </span>
         </div>
 
