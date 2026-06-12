@@ -13,7 +13,7 @@ import {
   TENDENCIES_SCRIM_WINDOW,
 } from "@/lib/routes/constants";
 import {
-  getEngagementsForMapData,
+  getEngagementsForMapDataBatch,
   type EngagementWithZone,
 } from "@/lib/ult-quality-db";
 import {
@@ -172,10 +172,9 @@ export const make: Effect.Effect<
 
       const views: FightMapView[] = [];
 
-      // Prefetch engagements for every eligible map with bounded
-      // concurrency. The previous fully-sequential fetch took
-      // (maps × query time) of wall clock and timed out the page.
-      const PREFETCH_CONCURRENCY = 3;
+      // Prefetch engagements for every eligible map in one batched call:
+      // cache hits resolve from the shared memo, misses load chunk-wise
+      // with `IN` queries instead of a per-map battery.
       const eligibleIds: number[] = [];
       for (const [, mapDataIds] of mapDataIdsByMapName) {
         for (const mapDataId of mapDataIds) {
@@ -187,19 +186,14 @@ export const make: Effect.Effect<
           if (side !== null) eligibleIds.push(mapDataId);
         }
       }
-      const engagementsByMapData = new Map<number, EngagementWithZone[]>();
-      for (let i = 0; i < eligibleIds.length; i += PREFETCH_CONCURRENCY) {
-        const batch = eligibleIds.slice(i, i + PREFETCH_CONCURRENCY);
-        const results = yield* Effect.tryPromise({
-          try: () => Promise.all(batch.map((id) => getEngagementsForMapData(id))),
-          catch: (error) =>
-            new TeamQueryError({
-              operation: "fetch engagements for fight fields",
-              cause: error,
-            }),
-        });
-        batch.forEach((id, j) => engagementsByMapData.set(id, results[j]));
-      }
+      const engagementsByMapData = yield* Effect.tryPromise({
+        try: () => getEngagementsForMapDataBatch(eligibleIds),
+        catch: (error) =>
+          new TeamQueryError({
+            operation: "fetch engagements for fight fields",
+            cause: error,
+          }),
+      });
 
       for (const [mapName, mapDataIds] of mapDataIdsByMapName) {
         const subMaps = CONTROL_OBJECTIVE_MAP[mapName];

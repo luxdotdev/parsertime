@@ -167,9 +167,92 @@ function pushSample(
   }
 }
 
-async function loadRouteContext(
-  mapDataId: number
-): Promise<RouteContext | null> {
+/** The event rows route extraction consumes; satisfied structurally by
+ * `PositionalEventBundle` from `@/lib/positional-events`. */
+export type RouteEventInputs = {
+  kills: {
+    match_time: number;
+    attacker_name: string;
+    attacker_team: string;
+    victim_name: string;
+    victim_team: string;
+    attacker_x: number | null;
+    attacker_z: number | null;
+    victim_x: number | null;
+    victim_z: number | null;
+  }[];
+  damage: {
+    match_time: number;
+    attacker_name: string;
+    attacker_team: string;
+    victim_name: string;
+    victim_team: string;
+    attacker_x: number | null;
+    attacker_z: number | null;
+    victim_x: number | null;
+    victim_z: number | null;
+  }[];
+  healing: {
+    match_time: number;
+    healer_name: string;
+    healer_team: string;
+    healer_x: number | null;
+    healer_z: number | null;
+    healee_name: string;
+    healee_team: string;
+    healee_x: number | null;
+    healee_z: number | null;
+  }[];
+  ability1: {
+    match_time: number;
+    player_name: string;
+    player_team: string;
+    player_x: number | null;
+    player_z: number | null;
+  }[];
+  ability2: {
+    match_time: number;
+    player_name: string;
+    player_team: string;
+    player_x: number | null;
+    player_z: number | null;
+  }[];
+  ultStarts: {
+    match_time: number;
+    player_name: string;
+    player_team: string;
+    player_x: number | null;
+    player_z: number | null;
+  }[];
+  ultEnds: {
+    match_time: number;
+    player_name: string;
+    player_team: string;
+    player_x: number | null;
+    player_z: number | null;
+  }[];
+  objectiveUpdated: { match_time: number; round_number: number }[];
+  objectiveCaptured: { match_time: number; capturing_team: string }[];
+  roundStarts: {
+    match_time: number;
+    round_number: number;
+    objective_index: number;
+  }[];
+  roundEnds: {
+    match_time: number;
+    round_number: number;
+    team_1_score: number;
+    team_2_score: number;
+  }[];
+  matchStart: {
+    team_1_name: string;
+    team_2_name: string;
+    map_name: string;
+    map_type: string;
+  } | null;
+};
+
+async function loadRouteEvents(mapDataId: number): Promise<RouteEventInputs> {
   const [
     kills,
     damage,
@@ -304,6 +387,42 @@ async function loadRouteContext(
       },
     }),
   ]);
+
+  return {
+    kills,
+    damage,
+    healing,
+    ability1,
+    ability2,
+    ultStarts,
+    ultEnds,
+    objectiveUpdated,
+    objectiveCaptured,
+    roundStarts,
+    roundEnds,
+    matchStart,
+  };
+}
+
+/** Everything `loadRouteContext` derives except the zone context, built
+ * purely from preloaded event rows so batch callers skip the queries. */
+export function buildRouteContextFromEvents(
+  events: RouteEventInputs
+): Omit<RouteContext, "zoneContext"> | null {
+  const {
+    kills,
+    damage,
+    healing,
+    ability1,
+    ability2,
+    ultStarts,
+    ultEnds,
+    objectiveUpdated,
+    objectiveCaptured,
+    roundStarts,
+    roundEnds,
+    matchStart,
+  } = events;
 
   const samples: RouteSample[] = [];
   for (const k of kills) {
@@ -488,12 +607,9 @@ async function loadRouteContext(
     else if (!outcomes.has(round)) outcomes.set(round, null);
   }
 
-  const zoneContext = await loadZoneContext(mapDataId);
-
   return {
     routes,
     outcomes,
-    zoneContext,
     team1Name,
     team2Name,
     mapName: matchStart?.map_name ?? null,
@@ -502,6 +618,32 @@ async function loadRouteContext(
       objective_index: r.objective_index,
     })),
   };
+}
+
+async function loadRouteContext(
+  mapDataId: number
+): Promise<RouteContext | null> {
+  const events = await loadRouteEvents(mapDataId);
+  const base = buildRouteContextFromEvents(events);
+  if (!base) return null;
+  return { ...base, zoneContext: await loadZoneContext(mapDataId) };
+}
+
+/** Flat route analysis from preloaded events — the batch pipelines'
+ * zero-query counterpart of `buildRouteAnalysisForMapData`. */
+export function buildRouteAnalysisFromEvents(
+  events: RouteEventInputs,
+  zoneContext: ZoneContext
+): RouteAnalysis | null {
+  const base = buildRouteContextFromEvents(events);
+  if (!base) return null;
+  return buildSubMapRoutes(
+    base.routes,
+    base.outcomes,
+    zoneContext,
+    base.team1Name,
+    base.team2Name
+  );
 }
 
 function buildSubMapRoutes(

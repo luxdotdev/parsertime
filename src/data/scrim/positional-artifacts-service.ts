@@ -9,11 +9,19 @@ import {
   summarizeEngagements,
   type EngagementSummary,
 } from "@/lib/engagement-rollups";
+import { loadPositionalEventBundles } from "@/lib/positional-events";
 import prisma from "@/lib/prisma";
-import { buildRouteAnalysisForMapData } from "@/lib/routes/routes-db";
-import { getEngagementsForMapData } from "@/lib/ult-quality-db";
+import { buildRouteAnalysisFromEvents } from "@/lib/routes/routes-db";
+import {
+  computeEngagementsFromEvents,
+  primeEngagementCache,
+} from "@/lib/ult-quality-db";
 import { sumZoneRows, type ZoneCountRow } from "@/lib/zones/analytics";
-import { buildZoneAnalyticsForMapData } from "@/data/map/zone-analytics-service";
+import { buildZoneRowsFromEvents } from "@/data/map/zone-analytics-service";
+import {
+  buildZoneContextsForMaps,
+  EMPTY_ZONE_CONTEXT,
+} from "@/lib/zones/zone-context";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { ScrimQueryError } from "./errors";
 import {
@@ -185,69 +193,80 @@ export const make: Effect.Effect<
         return null;
       }
 
-      const perMap = yield* Effect.forEach(
-        resolved,
-        ({ mapDataId, mapName, ourSide }) =>
-          Effect.gen(function* () {
-            const [engs, za, ra] = yield* Effect.all(
-              [
-                Effect.tryPromise({
-                  try: () => getEngagementsForMapData(mapDataId),
-                  catch: (error) =>
-                    new ScrimQueryError({
-                      operation: "getScrimPositionalArtifacts.getEngagements",
-                      cause: error,
-                    }),
-                }),
-                Effect.tryPromise({
-                  try: () => buildZoneAnalyticsForMapData(mapDataId),
-                  catch: (error) =>
-                    new ScrimQueryError({
-                      operation: "getScrimPositionalArtifacts.buildZones",
-                      cause: error,
-                    }),
-                }),
-                Effect.tryPromise({
-                  try: () => buildRouteAnalysisForMapData(mapDataId),
-                  catch: (error) =>
-                    new ScrimQueryError({
-                      operation: "getScrimPositionalArtifacts.buildRoutes",
-                      cause: error,
-                    }),
-                }),
-              ],
-              { concurrency: "unbounded" }
-            );
-
-            const summary = summarizeEngagements(
-              engs.map((e) => ({ winner: e.winner, zoneName: e.zoneName })),
-              ourSide
-            );
-
-            const zoneRows = za?.rows ?? [];
-
-            let total = 0;
-            let won = 0;
-            let lost = 0;
-            if (ra !== null) {
-              for (const route of ra.routes) {
-                if (route.playerTeam !== ourSide) continue;
-                total++;
-                if (route.outcome === "WON") won++;
-                else if (route.outcome === "LOST") lost++;
-              }
-            }
-
-            const result: PerMapResult = {
-              mapName,
-              summary,
-              zoneRows,
-              route: { total, won, lost },
-            };
-            return result;
+      // Batched reads: every event table fetched once per chunk of maps
+      // (`MapDataId IN`) instead of ~20 queries per map — the per-map
+      // battery starved the connection pool on cold team dashboards.
+      const resolvedIds = resolved.map((r) => r.mapDataId);
+      const bundles = yield* Effect.tryPromise({
+        try: () => loadPositionalEventBundles(resolvedIds),
+        catch: (error) =>
+          new ScrimQueryError({
+            operation: "getScrimPositionalArtifacts.loadEventBundles",
+            cause: error,
           }),
-        { concurrency: "unbounded" }
-      );
+      });
+      const zoneContexts = yield* Effect.tryPromise({
+        try: () =>
+          buildZoneContextsForMaps(
+            resolvedIds.map((mapDataId) => ({
+              mapDataId,
+              mapName: bundles.get(mapDataId)?.mapName ?? null,
+              roundStarts: bundles.get(mapDataId)?.roundStarts ?? [],
+            }))
+          ),
+        catch: (error) =>
+          new ScrimQueryError({
+            operation: "getScrimPositionalArtifacts.buildZoneContexts",
+            cause: error,
+          }),
+      });
+
+      const perMap = resolved.map(({ mapDataId, mapName, ourSide }) => {
+        const bundle = bundles.get(mapDataId);
+        const ctx = zoneContexts.get(mapDataId) ?? EMPTY_ZONE_CONTEXT;
+
+        const engs = bundle
+          ? computeEngagementsFromEvents(
+              bundle.kills,
+              bundle.damage,
+              ctx.zonesAt
+            )
+          : [];
+        // Other surfaces (fight fields, ult quality) ask for the same
+        // engagements per map — let them hit the memo instead of refetching.
+        primeEngagementCache(mapDataId, engs);
+
+        const summary = summarizeEngagements(
+          engs.map((e) => ({ winner: e.winner, zoneName: e.zoneName })),
+          ourSide
+        );
+
+        const za = bundle
+          ? buildZoneRowsFromEvents(bundle.kills, bundle.ultStarts, ctx.zonesAt)
+          : null;
+        const zoneRows = za?.rows ?? [];
+
+        const ra = bundle ? buildRouteAnalysisFromEvents(bundle, ctx) : null;
+        let total = 0;
+        let won = 0;
+        let lost = 0;
+        if (ra !== null) {
+          for (const route of ra.routes) {
+            if (route.playerTeam !== ourSide) continue;
+            total++;
+            if (route.outcome === "WON") won++;
+            else if (route.outcome === "LOST") lost++;
+          }
+        }
+
+        const result: PerMapResult = {
+          mapName,
+          summary,
+          zoneRows,
+          route: { total, won, lost },
+        };
+        return result;
+      });
 
       // engagements: merge across every non-skipped MapData.
       const engagements = mergeEngagementSummaries(

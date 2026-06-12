@@ -15,6 +15,10 @@ import {
   type UltQualityStats,
 } from "@/lib/ult-quality";
 import type { TaggableZone } from "@/lib/zones/tag";
+import {
+  buildZoneContextsForMaps,
+  EMPTY_ZONE_CONTEXT,
+} from "@/lib/zones/zone-context";
 
 export type ZoneContext = {
   zonesAt: (matchTime: number) => TaggableZone[];
@@ -180,12 +184,94 @@ export async function getUltQualityStatsForMapData(
 
 export type EngagementWithZone = Engagement & { zoneName: string | null };
 
+export type EngagementSourceRow = {
+  match_time: number;
+  attacker_name: string;
+  attacker_team: string;
+  victim_name: string;
+  victim_team: string;
+  attacker_x: number | null;
+  attacker_z: number | null;
+  victim_x: number | null;
+  victim_z: number | null;
+};
+
+function buildEngagementEvents(
+  kills: EngagementSourceRow[],
+  damage: EngagementSourceRow[]
+): EngagementEvent[] {
+  const events: EngagementEvent[] = [];
+  function push(row: EngagementSourceRow, kind: "kill" | "damage"): void {
+    const x = row.victim_x ?? row.attacker_x;
+    const z = row.victim_z ?? row.attacker_z;
+    if (x == null || z == null) return;
+    events.push({
+      match_time: row.match_time,
+      x,
+      z,
+      kind,
+      attackerTeam: row.attacker_team,
+      attackerName: row.attacker_name,
+      victimTeam: row.victim_team,
+      victimName: row.victim_name,
+    });
+  }
+  for (const k of kills) push(k, "kill");
+  for (const d of damage) push(d, "damage");
+  return events;
+}
+
+function clusterAndTag(
+  events: EngagementEvent[],
+  zonesAt: (matchTime: number) => TaggableZone[]
+): EngagementWithZone[] {
+  return clusterEngagements(events).map((engagement) => ({
+    ...engagement,
+    zoneName:
+      tagZone(
+        engagement.centroid.x,
+        engagement.centroid.z,
+        zonesAt(engagement.start)
+      )?.name ?? null,
+  }));
+}
+
+/** Pure path for callers that already hold the kill/damage rows and a
+ * zone context (the batched positional pipelines). */
+export function computeEngagementsFromEvents(
+  kills: EngagementSourceRow[],
+  damage: EngagementSourceRow[],
+  zonesAt: (matchTime: number) => TaggableZone[]
+): EngagementWithZone[] {
+  return clusterAndTag(buildEngagementEvents(kills, damage), zonesAt);
+}
+
 /** Engagements are immutable once a map is parsed, and the damage fetch
  * behind them is one of the heaviest reads in the app — memoize per map.
  * The cache stores promises so concurrent requests share one in-flight
  * computation; failures evict so errors aren't cached. */
 const ENGAGEMENT_CACHE_CAP = 256;
 const engagementCache = new Map<number, Promise<EngagementWithZone[]>>();
+
+function cacheEngagementPromise(
+  mapDataId: number,
+  pending: Promise<EngagementWithZone[]>
+): void {
+  engagementCache.set(mapDataId, pending);
+  if (engagementCache.size > ENGAGEMENT_CACHE_CAP) {
+    engagementCache.delete(engagementCache.keys().next().value!);
+  }
+}
+
+/** Seed the cache with engagements another pipeline already computed
+ * (e.g. the scrim positional batch), so later per-map lookups are free. */
+export function primeEngagementCache(
+  mapDataId: number,
+  engagements: EngagementWithZone[]
+): void {
+  if (engagementCache.has(mapDataId)) return;
+  cacheEngagementPromise(mapDataId, Promise.resolve(engagements));
+}
 
 export function getEngagementsForMapData(
   mapDataId: number
@@ -201,11 +287,141 @@ export function getEngagementsForMapData(
     engagementCache.delete(mapDataId);
     throw error;
   });
-  engagementCache.set(mapDataId, pending);
-  if (engagementCache.size > ENGAGEMENT_CACHE_CAP) {
-    engagementCache.delete(engagementCache.keys().next().value!);
-  }
+  cacheEngagementPromise(mapDataId, pending);
   return pending;
+}
+
+/** How many maps' kill/damage rows one batched fetch may hold at once. */
+const ENGAGEMENT_BATCH_CHUNK = 10;
+
+/**
+ * Batched engagement lookup: cache hits resolve from the LRU, misses load
+ * chunk-wise with `MapDataId IN (...)` (2 event queries + 1 calibration
+ * query per chunk) instead of 4+ queries per map. Concurrent callers
+ * share in-flight chunk computations through the same promise cache.
+ */
+export function getEngagementsForMapDataBatch(
+  mapDataIds: number[]
+): Promise<Map<number, EngagementWithZone[]>> {
+  const pending = new Map<number, Promise<EngagementWithZone[]>>();
+  const misses: number[] = [];
+  for (const id of new Set(mapDataIds)) {
+    const hit = engagementCache.get(id);
+    if (hit !== undefined) {
+      engagementCache.delete(id);
+      engagementCache.set(id, hit);
+      pending.set(id, hit);
+    } else {
+      misses.push(id);
+    }
+  }
+
+  // Chain chunks sequentially so a 50-map cold start doesn't flood the
+  // pool; each chunk is only ~3 queries.
+  let previousChunk: Promise<unknown> = Promise.resolve();
+  for (let i = 0; i < misses.length; i += ENGAGEMENT_BATCH_CHUNK) {
+    const chunk = misses.slice(i, i + ENGAGEMENT_BATCH_CHUNK);
+    const chunkResult = previousChunk.then(() =>
+      computeEngagementsForChunk(chunk)
+    );
+    previousChunk = chunkResult.catch(() => undefined);
+    for (const id of chunk) {
+      const perMap = chunkResult.then((byMap) => byMap.get(id) ?? []);
+      perMap.catch(() => engagementCache.delete(id));
+      cacheEngagementPromise(id, perMap);
+      pending.set(id, perMap);
+    }
+  }
+
+  return (async () => {
+    const result = new Map<number, EngagementWithZone[]>();
+    for (const [id, promise] of pending) {
+      result.set(id, await promise);
+    }
+    return result;
+  })();
+}
+
+async function computeEngagementsForChunk(
+  mapDataIds: number[]
+): Promise<Map<number, EngagementWithZone[]>> {
+  const where = { MapDataId: { in: mapDataIds } };
+  const select = {
+    MapDataId: true,
+    match_time: true,
+    attacker_name: true,
+    attacker_team: true,
+    victim_name: true,
+    victim_team: true,
+    attacker_x: true,
+    attacker_z: true,
+    victim_x: true,
+    victim_z: true,
+  };
+  const [kills, damage, mapDatas, roundStarts] = await Promise.all([
+    prisma.kill.findMany({ where, select }),
+    prisma.damage.findMany({ where, select }),
+    prisma.mapData.findMany({
+      where: { id: { in: mapDataIds } },
+      select: { id: true, Map: { select: { name: true } } },
+    }),
+    prisma.roundStart.findMany({
+      where,
+      select: { MapDataId: true, match_time: true, objective_index: true },
+      orderBy: { match_time: "asc" },
+    }),
+  ]);
+
+  const killsByMap = new Map<number, EngagementSourceRow[]>();
+  const damageByMap = new Map<number, EngagementSourceRow[]>();
+  for (const { MapDataId, ...row } of kills) {
+    if (MapDataId == null) continue;
+    const list = killsByMap.get(MapDataId) ?? [];
+    list.push(row);
+    killsByMap.set(MapDataId, list);
+  }
+  for (const { MapDataId, ...row } of damage) {
+    if (MapDataId == null) continue;
+    const list = damageByMap.get(MapDataId) ?? [];
+    list.push(row);
+    damageByMap.set(MapDataId, list);
+  }
+  const roundStartsByMap = new Map<
+    number,
+    { match_time: number; objective_index: number }[]
+  >();
+  for (const r of roundStarts) {
+    if (r.MapDataId == null) continue;
+    const list = roundStartsByMap.get(r.MapDataId) ?? [];
+    list.push({ match_time: r.match_time, objective_index: r.objective_index });
+    roundStartsByMap.set(r.MapDataId, list);
+  }
+  const mapNameById = new Map(
+    mapDatas.map((md) => [md.id, md.Map?.name ?? null])
+  );
+
+  const contexts = await buildZoneContextsForMaps(
+    mapDataIds.map((id) => ({
+      mapDataId: id,
+      mapName: mapNameById.get(id) ?? null,
+      roundStarts: roundStartsByMap.get(id) ?? [],
+    }))
+  );
+
+  const result = new Map<number, EngagementWithZone[]>();
+  for (const id of mapDataIds) {
+    const zonesAt =
+      contexts.get(id)?.zonesAt ?? EMPTY_ZONE_CONTEXT.zonesAt;
+    result.set(
+      id,
+      computeEngagementsFromEvents(
+        killsByMap.get(id) ?? [],
+        damageByMap.get(id) ?? [],
+        zonesAt
+      )
+    );
+  }
+  return result;
 }
 
 async function computeEngagementsForMapData(
@@ -241,50 +457,10 @@ async function computeEngagementsForMapData(
       },
     }),
   ]);
-  const events: EngagementEvent[] = [];
-  function push(
-    row: {
-      match_time: number;
-      attacker_name: string;
-      attacker_team: string;
-      victim_name: string;
-      victim_team: string;
-      attacker_x: number | null;
-      attacker_z: number | null;
-      victim_x: number | null;
-      victim_z: number | null;
-    },
-    kind: "kill" | "damage"
-  ): void {
-    const x = row.victim_x ?? row.attacker_x;
-    const z = row.victim_z ?? row.attacker_z;
-    if (x == null || z == null) return;
-    events.push({
-      match_time: row.match_time,
-      x,
-      z,
-      kind,
-      attackerTeam: row.attacker_team,
-      attackerName: row.attacker_name,
-      victimTeam: row.victim_team,
-      victimName: row.victim_name,
-    });
-  }
-  for (const k of kills) push(k, "kill");
-  for (const d of damage) push(d, "damage");
-
-  const engagements = clusterEngagements(events);
+  const events = buildEngagementEvents(kills, damage);
   const emptyZones: TaggableZone[] = [];
   const { zonesAt } = events.length
     ? await loadZoneContext(mapDataId)
     : { zonesAt: () => emptyZones };
-  return engagements.map((engagement) => ({
-    ...engagement,
-    zoneName:
-      tagZone(
-        engagement.centroid.x,
-        engagement.centroid.z,
-        zonesAt(engagement.start)
-      )?.name ?? null,
-  }));
+  return clusterAndTag(events, zonesAt);
 }
