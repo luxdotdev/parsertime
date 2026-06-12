@@ -111,6 +111,39 @@ describe("statesAt", () => {
     expect(r2.team1.isAttacker).toBe(0);
   });
 
+  test("a progress tick sharing the round-start timestamp belongs to the dying round", () => {
+    // Real logs emit round 1's final 100% tick at the same instant round 2
+    // starts; it must be swallowed by the reset, not leak into round 2.
+    const log = baseLog({
+      rounds: [
+        {
+          roundNumber: 1,
+          start: 0,
+          end: 320,
+          capturingTeam: "Alpha",
+          startScore1: 0,
+          startScore2: 0,
+          endScore1: 1,
+          endScore2: 0,
+        },
+        {
+          roundNumber: 2,
+          start: 320,
+          end: 600,
+          capturingTeam: "Bravo",
+          startScore1: 1,
+          startScore2: 0,
+          endScore1: 1,
+          endScore2: 1,
+        },
+      ],
+      progress: [{ time: 320, team: "Alpha", value: 100 }],
+    });
+    const [inRound2] = statesAt(log, [330]);
+    expect(inRound2.team1.objProgressOwn).toBe(0);
+    expect(inRound2.team2.objProgressEnemy).toBe(0);
+  });
+
   test("timeRemaining counts down from the setup baseline and clamps at 0", () => {
     const log = baseLog();
     const [early, late] = statesAt(log, [100, 290]);

@@ -165,6 +165,13 @@ export async function fetchEventLog(
 
   const team1 = matchStart.team_1_name;
   const team2 = matchStart.team_2_name;
+  const lastRound = roundEnds[roundEnds.length - 1];
+  // calculateWinner's Flashpoint branch force-picks team 2 on tied scores
+  // (incomplete logs) — a tie there is unlabelable, not a team-2 win.
+  const flashpointTie =
+    matchStart.map_type === "Flashpoint" &&
+    lastRound !== undefined &&
+    lastRound.team_1_score === lastRound.team_2_score;
   const canonicalWinner = calculateWinner({
     matchDetails: matchStart,
     finalRound: roundEnds[roundEnds.length - 1] ?? null,
@@ -185,7 +192,8 @@ export async function fetchEventLog(
     team1,
     team2,
     mapWinner:
-      canonicalWinner === team1 || canonicalWinner === team2
+      !flashpointTie &&
+      (canonicalWinner === team1 || canonicalWinner === team2)
         ? canonicalWinner
         : null,
     kills: kills.map((k) => ({

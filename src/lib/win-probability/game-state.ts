@@ -79,7 +79,14 @@ function mergedEvents(log: WPEventLog): SweepEvent[] {
       timeRemaining: s.timeRemaining,
     });
   }
-  return events.sort((a, b) => a.time - b.time);
+  // At equal timestamps, round_start sorts last: the dying round's final
+  // state ticks (e.g. its 100% progress event) must land before the reset,
+  // or they leak into the new round.
+  return events.sort(
+    (a, b) =>
+      a.time - b.time ||
+      Number(a.kind === "round_start") - Number(b.kind === "round_start")
+  );
 }
 
 function clampUnit(v: number): number {
