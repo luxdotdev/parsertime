@@ -40,11 +40,11 @@ import {
   roleHeroMapping,
   type RoleName,
 } from "@/types/heroes";
-import { mapNameToMapTypeMapping } from "@/types/map";
-import { heroImageUrl } from "@/lib/utils";
+import { RANKED_MAPS } from "@/lib/ranked/maps";
+import { cn, heroImageUrl, mapImageUrl, toKebabCase, useMapNames } from "@/lib/utils";
 import Fuse from "fuse.js";
 import { format } from "date-fns";
-import { CalendarIcon, ChevronsUpDown, Plus, Trash2, X } from "lucide-react";
+import { CalendarIcon, Check, ChevronsUpDown, Plus, Trash2, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useMemo, useState, useTransition } from "react";
 
@@ -58,15 +58,8 @@ const ALL_HEROES: { name: string; role: RoleName }[] = Object.entries(
 /** Hero names grouped by role */
 const HEROES_BY_ROLE: Record<RoleName, string[]> = roleHeroMapping;
 
-/** Unique map type labels derived from the mapping values */
-const MAP_TYPES: string[] = Array.from(
-  new Set(Object.values(mapNameToMapTypeMapping).map(String))
-).sort();
-
-/** Maps as { name, type } objects */
-const MAPS: { name: string; type: string }[] = Object.entries(
-  mapNameToMapTypeMapping
-).map(([name, type]) => ({ name, type: String(type) }));
+/** The definitive ranked map list (deduped, seasonal variants removed). */
+const MAPS = RANKED_MAPS;
 
 // ---------------------------------------------------------------------------
 
@@ -455,14 +448,11 @@ function MapPicker({
   onChange: (map: string) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const mapNames = useMapNames();
 
-  const mapsByType = MAP_TYPES.reduce(
-    (acc, type) => {
-      acc[type] = MAPS.filter((m) => m.type === type);
-      return acc;
-    },
-    {} as Record<string, typeof MAPS>
-  );
+  const selectedDisplay = value
+    ? (mapNames.get(toKebabCase(value)) ?? value)
+    : null;
 
   return (
     <div className="space-y-1.5">
@@ -476,7 +466,20 @@ function MapPicker({
             aria-expanded={open}
             className="w-full justify-between font-normal"
           >
-            {value || "Select map..."}
+            {selectedDisplay ? (
+              <span className="flex min-w-0 items-center gap-2">
+                <Image
+                  src={mapImageUrl(value)}
+                  alt={selectedDisplay}
+                  width={40}
+                  height={23}
+                  className="shrink-0 rounded-sm object-cover"
+                />
+                <span className="truncate">{selectedDisplay}</span>
+              </span>
+            ) : (
+              "Select map..."
+            )}
             <ChevronsUpDown className="ml-auto size-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -489,23 +492,38 @@ function MapPicker({
             <CommandInput placeholder="Search maps..." />
             <CommandList>
               <CommandEmpty>No maps found.</CommandEmpty>
-              {MAP_TYPES.map((type) => (
-                <CommandGroup key={type} heading={type}>
-                  {(mapsByType[type] ?? []).map((map) => (
+              <CommandGroup>
+                {MAPS.map((map) => {
+                  const displayName =
+                    mapNames.get(toKebabCase(map.name)) ?? map.name;
+                  return (
                     <CommandItem
                       key={map.name}
-                      value={map.name}
+                      value={displayName}
                       data-checked={value === map.name || undefined}
                       onSelect={() => {
                         onChange(map.name);
                         setOpen(false);
                       }}
                     >
-                      {map.name}
+                      <Check
+                        className={cn(
+                          "size-4 shrink-0",
+                          value === map.name ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      <Image
+                        src={mapImageUrl(map.name)}
+                        alt={displayName}
+                        width={40}
+                        height={23}
+                        className="shrink-0 rounded-sm object-cover"
+                      />
+                      <span className="truncate">{displayName}</span>
                     </CommandItem>
-                  ))}
-                </CommandGroup>
-              ))}
+                  );
+                })}
+              </CommandGroup>
             </CommandList>
           </Command>
         </PopoverContent>

@@ -1,11 +1,13 @@
+import { type RankedMap, RANKED_MAP_NAMES, RANKED_MAPS } from "@/lib/ranked/maps";
+import { toKebabCase } from "@/lib/utils";
 import type { RoleName as HeroRole } from "@/types/heroes";
-import { mapNameToMapTypeMapping, type MapName } from "@/types/map";
 
-const MAP_NAMES = Object.keys(mapNameToMapTypeMapping) as MapName[];
-type MapType = (typeof mapNameToMapTypeMapping)[MapName];
-const MAPS = (Object.entries(mapNameToMapTypeMapping) as [MapName, MapType][]).map(
-  ([name, type]) => ({ name, type })
-);
+// The canonical ranked map universe (deduped, seasonal variants removed). Used
+// for every "all maps" / never-played calculation so stored matches always
+// reconcile against the same list the intake form offers.
+const MAP_NAMES = RANKED_MAP_NAMES;
+type MapType = RankedMap["type"];
+const MAPS = RANKED_MAPS;
 const MAP_TYPES: MapType[] = [...new Set(MAPS.map((m) => m.type))];
 
 type MatchHeroData = {
@@ -1592,16 +1594,21 @@ function getMapFamiliarityData(matches: MatchData[]): MapFamiliarityResult {
     })
     .sort((a, b) => b.gamesPlayed - a.gamesPlayed);
 
-  const playedMapNames = new Set(mapStats.keys());
-  const avoidedMaps = MAPS.filter((m) => !playedMapNames.has(m.name)).map(
-    (m) => ({ name: m.name, mapType: m.type })
+  // Compare by kebab key so stored casing variants (e.g. "Circuit royal" vs
+  // "Circuit Royal") reconcile to the same canonical map instead of showing as
+  // never-played.
+  const playedKebabs = new Set(
+    Array.from(mapStats.keys()).map((name) => toKebabCase(name))
   );
+  const avoidedMaps = MAPS.filter(
+    (m) => !playedKebabs.has(toKebabCase(m.name))
+  ).map((m) => ({ name: m.name, mapType: m.type }));
 
   return {
     data,
     varietyScore,
     avoidedMaps,
-    totalMapsPlayed: playedMapNames.size,
+    totalMapsPlayed: MAPS.length - avoidedMaps.length,
     totalMapsAvailable: MAPS.length,
   };
 }

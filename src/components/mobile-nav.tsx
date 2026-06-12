@@ -16,13 +16,13 @@ import * as React from "react";
 
 const mainNav: { labelKey: string; href: Route }[] = [
   { labelKey: "dashboard", href: "/dashboard" },
-  { labelKey: "ranked", href: "/ranked" as Route },
   { labelKey: "stats", href: "/stats" },
   { labelKey: "heroStats", href: "/stats/hero" },
   { labelKey: "mapStats", href: "/stats/map" },
   { labelKey: "compareStats", href: "/stats/compare" },
   { labelKey: "yourTeams", href: "/team" },
   { labelKey: "matchmaker", href: "/matchmaker" },
+  { labelKey: "ranked", href: "/ranked" as Route },
   { labelKey: "settings", href: "/settings" },
   { labelKey: "contact", href: "/contact" },
   { labelKey: "docs", href: "https://docs.parsertime.app" },
