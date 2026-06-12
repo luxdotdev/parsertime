@@ -4,6 +4,7 @@ import {
   mapTypeToModeFamily,
   type WPEventLog,
 } from "@/lib/win-probability/types";
+import { statesAt } from "@/lib/win-probability/game-state";
 import type { ParserData } from "@/types/parser";
 import * as fs from "node:fs";
 import { describe, expect, test } from "vitest";
@@ -11,6 +12,14 @@ import { describe, expect, test } from "vitest";
 /** Tuple rows for one event type; positions per src/lib/parser/schema.ts. */
 function rowsOf(data: ParserData, key: keyof ParserData): unknown[][] {
   return (data[key] ?? []) as unknown[][];
+}
+
+/** hero_duplicated in workbook rows is a string ("", "0", "False" = not
+ * duplicated; anything else = Echo duplicate). Same semantics as isDuplicated
+ * in src/lib/win-probability/training/extract.ts. */
+function parseDuplicated(v: unknown): boolean {
+  const s = String(v ?? "").trim().toLowerCase();
+  return s !== "" && s !== "0" && s !== "false";
 }
 
 function workbookToEventLog(data: ParserData): WPEventLog | null {
@@ -48,9 +57,13 @@ function workbookToEventLog(data: ParserData): WPEventLog | null {
     team2,
     mapWinner: null, // score fallback suffices for the control fixture
     kills: rowsOf(data, "kill").map((r) => ({
+      // KillSchema positions: [0]=event_type [1]=time [2]=attacker_team
+      // [3]=attacker_name [4]=attacker_hero [5]=victim_team [6]=victim_name
+      // [7]=victim_hero
       time: Number(r[1]),
       victimTeam: String(r[5]),
       victimName: String(r[6]),
+      victimHero: String(r[7]),
       attackerTeam: String(r[2]),
       attackerName: String(r[3]),
     })),
@@ -60,9 +73,13 @@ function workbookToEventLog(data: ParserData): WPEventLog | null {
       player: String(r[6]),
     })),
     ultCharged: rowsOf(data, "ultimate_charged").map((r) => ({
+      // UltimateChargedSchema positions: [0]=event_type [1]=time [2]=player_team
+      // [3]=player_name [4]=player_hero [5]=hero_duplicated [6]=ultimate_id
       time: Number(r[1]),
       team: String(r[2]),
       player: String(r[3]),
+      hero: String(r[4]),
+      heroDuplicated: parseDuplicated(r[5]),
     })),
     ultStart: rowsOf(data, "ultimate_start").map((r) => ({
       time: Number(r[1]),
@@ -123,21 +140,21 @@ describe("WP reconstruction on a real parsed log", () => {
         tankAliveDiff,
         dpsAliveDiff,
         supportAliveDiff,
-        ,
-        ,
-        ,
+        tankUltDiff,
+        dpsUltDiff,
+        supportUltDiff,
         ,
         timeNorm,
         objOwn,
         objEnemy,
       ] = row.features;
-      // The fixture log omits hero data so all kills default to "Damage" role;
-      // role-split diffs can reach ±5 in that case. Sanity-check the sum.
-      const totalAliveDiff = tankAliveDiff + dpsAliveDiff + supportAliveDiff;
+      // Hero data is now threaded: each role slot carries real counts.
       expect(Math.abs(tankAliveDiff)).toBeLessThanOrEqual(5);
       expect(Math.abs(dpsAliveDiff)).toBeLessThanOrEqual(5);
       expect(Math.abs(supportAliveDiff)).toBeLessThanOrEqual(5);
-      expect(Math.abs(totalAliveDiff)).toBeLessThanOrEqual(5);
+      expect(Math.abs(tankAliveDiff + dpsAliveDiff + supportAliveDiff)).toBeLessThanOrEqual(5);
+      // Ult-bank role splits sum: |tank+dps+support| ≤ 7 (full bank slack bound).
+      expect(Math.abs(tankUltDiff + dpsUltDiff + supportUltDiff)).toBeLessThanOrEqual(7);
       expect(timeNorm).toBeGreaterThanOrEqual(0);
       expect(timeNorm).toBeLessThanOrEqual(1);
       expect(objOwn).toBeGreaterThanOrEqual(0);
@@ -147,10 +164,44 @@ describe("WP reconstruction on a real parsed log", () => {
       expect([0, 1]).toContain(row.label);
     }
 
-    // Mirrored pairs: labels complement, tankAliveDiff (pos 0) negates.
+    // Mirrored pairs: labels complement; all three role-split alive diffs negate.
     for (let i = 0; i < rows.length; i += 2) {
       expect(rows[i].label + rows[i + 1].label).toBe(1);
-      expect(rows[i].features[0]).toBe(-rows[i + 1].features[0]);
+      expect(rows[i].features[0]).toBe(-rows[i + 1].features[0]); // tankAliveDiff
+      expect(rows[i].features[1]).toBe(-rows[i + 1].features[1]); // dpsAliveDiff
+      expect(rows[i].features[2]).toBe(-rows[i + 1].features[2]); // supportAliveDiff
+    }
+  });
+
+  test("role-split sum invariants hold across all snapshot times in the fixture", async () => {
+    const file = fs.readFileSync(
+      "./test/samples/Log-2024-01-22-20-02-45.txt",
+      "utf8"
+    );
+    // @ts-expect-error - cannot pass File type in node (matches parser tests)
+    const data = await parseDataFromTXT(file);
+    const log = workbookToEventLog(data);
+    expect(log).not.toBeNull();
+
+    // Sample every 5 s across each round's span.
+    const times: number[] = [];
+    for (const round of log!.rounds) {
+      for (let t = round.start; t <= round.end; t += 5) {
+        times.push(t);
+      }
+    }
+
+    const snapshots = statesAt(log!, times);
+    for (const snap of snapshots) {
+      const s = snap.team1;
+      // aliveDiff equals the sum of the three role splits.
+      expect(
+        s.tankAliveDiff + s.dpsAliveDiff + s.supportAliveDiff
+      ).toBe(s.aliveDiff);
+      // ultBankDiff equals the sum of the three role ult splits.
+      expect(
+        s.tankUltDiff + s.dpsUltDiff + s.supportUltDiff
+      ).toBe(s.ultBankDiff);
     }
   });
 });

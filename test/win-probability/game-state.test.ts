@@ -599,4 +599,21 @@ describe("statesAt", () => {
     const [s] = statesAt(log, [120]);
     expect(s.team1.objectiveIndex).toBe(0);
   });
+
+  test("re-charging after a hero swap moves the banked ult to the new role", () => {
+    const log = baseLog({
+      ultCharged: [
+        { time: 50, team: "Alpha", player: "a1", hero: "Sigma" },
+        { time: 90, team: "Alpha", player: "a1", hero: "Tracer" },
+      ],
+      ultStart: [{ time: 70, team: "Alpha", player: "a1" }],
+    });
+    // t=60: banked as Sigma (Tank). t=75: spent. t=95: re-banked as Tracer (Damage).
+    const [asTank, spent, asDps] = statesAt(log, [60, 75, 95]);
+    expect(asTank.team1.tankUltDiff).toBe(1);
+    expect(asTank.team1.dpsUltDiff).toBe(0);
+    expect(spent.team1.ultBankDiff).toBe(0);
+    expect(asDps.team1.tankUltDiff).toBe(0);
+    expect(asDps.team1.dpsUltDiff).toBe(1);
+  });
 });
