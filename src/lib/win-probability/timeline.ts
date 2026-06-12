@@ -90,7 +90,16 @@ export function computeMatchStory(
   }
 
   const points = computeSeries(log, wpAt);
-  const fights = buildLedger(inputs, wpAt, wpOf, limited);
+  const engagements =
+    inputs.engagements.length > 0
+      ? inputs.engagements
+      : synthesizeEngagements(log);
+  const fights = buildLedger(
+    { ...inputs, engagements },
+    wpAt,
+    wpOf,
+    limited
+  );
   const wpa = attributeWpa(inputs, fights);
   const insights = generateInsights(log, fights, limited);
 
@@ -129,6 +138,47 @@ function computeSeries(
     });
   }
   return points;
+}
+
+const SYNTH_FIGHT_GAP_SECONDS = 15;
+
+/** Kills-only fallback for logs without positional data: spatial engagement
+ * clustering needs coordinates, but a time-gap cluster over the kill feed
+ * still yields a usable fight ledger (no zone labels). */
+function synthesizeEngagements(log: WPEventLog): EngagementLike[] {
+  const sorted = [...log.kills].sort((a, b) => a.time - b.time);
+  const fights: EngagementLike[] = [];
+  for (const kill of sorted) {
+    const last = fights[fights.length - 1];
+    if (last !== undefined && kill.time - last.end <= SYNTH_FIGHT_GAP_SECONDS) {
+      last.end = kill.time;
+    } else {
+      fights.push({
+        start: kill.time,
+        end: kill.time,
+        zoneName: null,
+        winner: null,
+        killsByTeam: {},
+        participants: [],
+      });
+    }
+    const fight = fights[fights.length - 1];
+    if (kill.attackerTeam !== undefined) {
+      fight.killsByTeam[kill.attackerTeam] =
+        (fight.killsByTeam[kill.attackerTeam] ?? 0) + 1;
+    }
+    for (const name of [kill.attackerName, kill.victimName]) {
+      if (name !== undefined && !fight.participants.includes(name)) {
+        fight.participants.push(name);
+      }
+    }
+  }
+  for (const fight of fights) {
+    const k1 = fight.killsByTeam[log.team1] ?? 0;
+    const k2 = fight.killsByTeam[log.team2] ?? 0;
+    fight.winner = k1 > k2 ? log.team1 : k2 > k1 ? log.team2 : null;
+  }
+  return fights;
 }
 
 function buildLedger(

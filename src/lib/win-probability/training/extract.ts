@@ -161,6 +161,24 @@ export async function fetchEventLog(
       },
     ];
   });
+  // Flashpoint loggers emit a single round_start (r1) but number the final
+  // round_end by points played (r6); when nothing pairs, span first → last.
+  if (rounds.length === 0 && roundStarts.length > 0 && roundEnds.length > 0) {
+    const rs = roundStarts[0];
+    const re = roundEnds[roundEnds.length - 1];
+    if (re.match_time > rs.match_time) {
+      rounds.push({
+        roundNumber: rs.round_number,
+        start: rs.match_time,
+        end: re.match_time,
+        capturingTeam: rs.capturing_team,
+        startScore1: rs.team_1_score,
+        startScore2: rs.team_2_score,
+        endScore1: re.team_1_score,
+        endScore2: re.team_2_score,
+      });
+    }
+  }
   if (rounds.length === 0) return null;
 
   const team1 = matchStart.team_1_name;

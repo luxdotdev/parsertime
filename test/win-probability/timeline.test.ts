@@ -249,6 +249,31 @@ describe("computeMatchStory — WPA", () => {
   });
 });
 
+describe("computeMatchStory — engagement fallback", () => {
+  test("synthesizes fights from kill clusters when no spatial engagements exist", () => {
+    const log = baseLog({
+      kills: [
+        { time: 100, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
+        { time: 104, victimTeam: "Alpha", victimName: "a2", attackerTeam: "Bravo", attackerName: "b2" },
+        // 15s+ gap → second fight
+        { time: 150, victimTeam: "Bravo", victimName: "b1", attackerTeam: "Alpha", attackerName: "a1" },
+      ],
+    });
+    const story = computeMatchStory({
+      log,
+      artifact: testArtifact({ aliveDiff: 1 }),
+      engagements: [], // no positional data
+      assists: [],
+    })!;
+    expect(story.fights).toHaveLength(2);
+    expect(story.fights[0].winner).toBe("Bravo");
+    expect(story.fights[0].killsTeam2).toBe(2);
+    expect(story.fights[0].zoneName).toBeNull();
+    expect(story.fights[1].winner).toBe("Alpha");
+    expect(story.wpa.length).toBeGreaterThan(0);
+  });
+});
+
 describe("computeMatchStory — insights", () => {
   test("emits a biggest-swing insight and a cascade insight above threshold", () => {
     const log = baseLog({
