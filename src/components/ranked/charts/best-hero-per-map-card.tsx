@@ -9,26 +9,96 @@ import {
 } from "@/components/ui/tooltip";
 import { HERO_MAP_MIN_GAMES } from "@/lib/ranked-stats";
 import type { HeroMapSynergyResult } from "@/lib/ranked-stats";
+import { heroImageUrl, mapImageUrl } from "@/lib/utils";
 import { Info } from "lucide-react";
+import Image from "next/image";
 
 type BestHeroPerMapCardProps = {
   result: HeroMapSynergyResult;
 };
 
-const ROLE_COLORS: Record<string, string> = {
-  Tank: "bg-primary/15 text-primary",
-  Damage: "bg-muted text-foreground",
-  Support: "bg-muted/50 text-muted-foreground",
-};
+type BestHeroEntry = HeroMapSynergyResult["bestHeroPerMap"][number];
 
-const MAP_TYPE_COLORS: Record<string, string> = {
-  Control: "bg-muted text-foreground",
-  Escort: "bg-muted text-foreground",
-  Hybrid: "bg-muted text-foreground",
-  Push: "bg-muted text-foreground",
-  Flashpoint: "bg-muted text-foreground",
-  Clash: "bg-muted text-foreground",
-};
+function MapBestHeroCard({ entry }: { entry: BestHeroEntry }) {
+  const ciWidth = entry.confidenceHigh - entry.confidenceLow;
+  const isNarrow = ciWidth <= 20;
+  const winrateColor =
+    entry.winrate >= 50 ? "text-primary" : "text-muted-foreground";
+
+  return (
+    <div className="border-border bg-card/40 overflow-hidden rounded-md border">
+      <div className="relative h-16">
+        <Image
+          src={mapImageUrl(entry.map)}
+          alt={entry.map}
+          fill
+          sizes="(min-width: 1280px) 18vw, (min-width: 640px) 33vw, 90vw"
+          className="object-cover"
+        />
+        <div className="from-background/95 via-background/40 absolute inset-0 bg-gradient-to-t to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-2">
+          <span className="truncate text-sm font-semibold tracking-tight">
+            {entry.map}
+          </span>
+          <span className="text-muted-foreground shrink-0 font-mono text-[10px] tracking-[0.12em] uppercase">
+            {entry.mapType}
+          </span>
+        </div>
+      </div>
+
+      <div className="space-y-2.5 p-2.5">
+        <div className="flex items-center gap-2">
+          <Image
+            src={heroImageUrl(entry.hero)}
+            alt={entry.hero}
+            width={28}
+            height={28}
+            className="size-7 shrink-0 rounded-sm object-cover"
+          />
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium">{entry.hero}</p>
+            <p className="text-muted-foreground font-mono text-[10px] tracking-[0.12em] uppercase">
+              {entry.role}
+            </p>
+          </div>
+          <p
+            className={`font-mono text-xl leading-none font-semibold tabular-nums ${winrateColor}`}
+          >
+            {entry.winrate}%
+          </p>
+        </div>
+
+        <div>
+          <div
+            className="bg-muted relative h-1.5 w-full overflow-hidden rounded-full"
+            role="img"
+            aria-label={`Winrate ${entry.winrate}%, 95% confidence interval ${entry.confidenceLow}% to ${entry.confidenceHigh}%`}
+          >
+            <div
+              className={`absolute h-full ${
+                isNarrow ? "bg-primary/40" : "bg-muted-foreground/30"
+              }`}
+              style={{
+                left: `${entry.confidenceLow}%`,
+                width: `${Math.max(ciWidth, 1)}%`,
+              }}
+            />
+            <div
+              className="bg-foreground absolute top-1/2 h-2.5 w-0.5 -translate-y-1/2"
+              style={{ left: `${entry.winrate}%` }}
+            />
+          </div>
+          <div className="text-muted-foreground mt-1 flex items-center justify-between font-mono text-[10px] tabular-nums">
+            <span className={isNarrow ? "" : "text-primary"}>
+              {entry.confidenceLow}%–{entry.confidenceHigh}% CI
+            </span>
+            <span>{entry.total} games</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function BestHeroPerMapCard({ result }: BestHeroPerMapCardProps) {
   const { bestHeroPerMap } = result;
@@ -48,7 +118,7 @@ export function BestHeroPerMapCard({ result }: BestHeroPerMapCardProps) {
     );
   }
 
-  const description = `Your highest-winrate hero on each map (min ${HERO_MAP_MIN_GAMES} games) with 95% confidence intervals`;
+  const description = `Your highest-winrate hero on each map (min ${HERO_MAP_MIN_GAMES} games). The bar shows the 95% confidence interval; the tick marks the winrate.`;
 
   return (
     <section className="space-y-4">
@@ -69,8 +139,8 @@ export function BestHeroPerMapCard({ result }: BestHeroPerMapCardProps) {
               </TooltipTrigger>
               <TooltipContent className="max-w-56">
                 <p className="text-xs">
-                  Wilson score intervals account for sample size. A wide range
-                  (e.g. 40%–90%) means the estimate is unreliable — play more
+                  Wilson score intervals account for sample size. A wide bar
+                  (highlighted) means the estimate is unreliable — play more
                   games to narrow it.
                 </p>
               </TooltipContent>
@@ -78,104 +148,11 @@ export function BestHeroPerMapCard({ result }: BestHeroPerMapCardProps) {
           </TooltipProvider>
         }
       />
-      <div className="overflow-x-auto">
-          <table className="w-full text-sm" aria-label="Best hero per map">
-            <thead>
-              <tr className="border-border border-b">
-                <th className="text-muted-foreground pb-2 text-left text-xs font-medium">
-                  Map
-                </th>
-                <th className="text-muted-foreground pb-2 text-left text-xs font-medium">
-                  Type
-                </th>
-                <th className="text-muted-foreground pb-2 text-left text-xs font-medium">
-                  Best Hero
-                </th>
-                <th className="text-muted-foreground pb-2 text-right text-xs font-medium">
-                  Winrate
-                </th>
-                <th className="text-muted-foreground pb-2 text-right text-xs font-medium">
-                  95% CI
-                </th>
-                <th className="text-muted-foreground pb-2 text-right text-xs font-medium">
-                  Games
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {bestHeroPerMap.map((entry) => {
-                const roleColor =
-                  ROLE_COLORS[entry.role] ??
-                  "bg-muted/50 text-muted-foreground";
-                const mapTypeColor =
-                  MAP_TYPE_COLORS[entry.mapType] ??
-                  "bg-muted/50 text-muted-foreground";
-                const ciWidth = entry.confidenceHigh - entry.confidenceLow;
-                const isNarrow = ciWidth <= 20;
-
-                return (
-                  <tr
-                    key={entry.map}
-                    className="border-border border-b last:border-0"
-                  >
-                    <td className="py-2 pr-3 font-medium">{entry.map}</td>
-                    <td className="py-2 pr-3">
-                      <span
-                        className={`rounded px-1.5 py-0.5 text-xs font-medium ${mapTypeColor}`}
-                      >
-                        {entry.mapType}
-                      </span>
-                    </td>
-                    <td className="py-2 pr-3">
-                      <div className="flex items-center gap-1.5">
-                        <span>{entry.hero}</span>
-                        <span
-                          className={`rounded px-1.5 py-0.5 text-xs ${roleColor}`}
-                        >
-                          {entry.role}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="py-2 pr-3 text-right font-mono font-medium tabular-nums">
-                      {entry.winrate}%
-                    </td>
-                    <td className="py-2 pr-3 text-right">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span
-                              className={`font-mono text-xs tabular-nums ${
-                                isNarrow
-                                  ? "text-muted-foreground"
-                                  : "text-primary"
-                              }`}
-                            >
-                              {entry.confidenceLow}%–{entry.confidenceHigh}%
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="text-xs">
-                              {isNarrow
-                                ? "Narrow interval — reliable estimate"
-                                : "Wide interval — more games needed for a reliable estimate"}
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </td>
-                    <td className="py-2 text-right font-mono tabular-nums text-xs text-muted-foreground">
-                      {entry.total}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      <p className="text-muted-foreground text-xs">
-        Highlighted intervals are wide — the true winrate could vary
-        significantly. Play more games to increase confidence.
-      </p>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {bestHeroPerMap.map((entry) => (
+          <MapBestHeroCard key={entry.map} entry={entry} />
+        ))}
+      </div>
     </section>
   );
 }
