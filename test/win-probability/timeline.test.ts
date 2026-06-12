@@ -102,3 +102,96 @@ describe("computeMatchStory — series", () => {
     ).toBeNull();
   });
 });
+
+describe("computeMatchStory — ledger and cascades", () => {
+  test("a lost fight produces a negative swing of believable size", () => {
+    const log = baseLog({
+      kills: [
+        { time: 100, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
+        { time: 102, victimTeam: "Alpha", victimName: "a2", attackerTeam: "Bravo", attackerName: "b1" },
+        { time: 104, victimTeam: "Alpha", victimName: "a3", attackerTeam: "Bravo", attackerName: "b2" },
+      ],
+    });
+    const story = computeMatchStory({
+      log,
+      artifact: testArtifact({ aliveDiff: 1 }),
+      engagements: [engagement(100, 104, "Bravo", { Bravo: 3 })],
+      assists: [],
+    })!;
+    const [fight] = story.fights;
+    expect(fight.wpBefore).toBeCloseTo(0.5, 1);
+    expect(fight.swing).toBeLessThan(-0.3);
+    expect(fight.killsTeam2).toBe(3);
+    expect(fight.winner).toBe("Bravo");
+    expect(fight.carryover).toBeNull(); // first fight inherits nothing
+  });
+
+  test("enemy ult advantage entering a fight shows as negative carryover", () => {
+    const log = baseLog({
+      ultCharged: [
+        { time: 50, team: "Alpha", player: "a1" },
+        { time: 52, team: "Bravo", player: "b1" },
+        { time: 54, team: "Bravo", player: "b2" },
+      ],
+      ultStart: [{ time: 100, team: "Alpha", player: "a1" }],
+      kills: [
+        { time: 101, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
+      ],
+    });
+    const story = computeMatchStory({
+      log,
+      artifact: testArtifact({ ultBankDiff: 1 }),
+      engagements: [
+        engagement(100, 101, "Bravo", { Bravo: 1 }),
+        engagement(120, 130, "Bravo", { Bravo: 1 }),
+      ],
+      assists: [],
+    })!;
+    const second = story.fights[1];
+    // Entering fight 2: Alpha bank 0, Bravo bank 2 → ultBankDiff −2.
+    // Counterfactual neutral economy → sigmoid(0). Carryover = wp(−2) − 0.5 < 0.
+    expect(second.carryover).not.toBeNull();
+    expect(second.carryover!.ultEconomy).toBeLessThan(-0.2);
+    expect(second.ultsSpentTeam1).toBe(0); // spend was in fight 1's window
+    expect(story.fights[0].ultsSpentTeam1).toBe(1);
+  });
+
+  test("fights separated by more than the cascade window inherit nothing", () => {
+    const log = baseLog({
+      ultCharged: [{ time: 10, team: "Alpha", player: "a1" }],
+      kills: [
+        { time: 50, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
+        { time: 150, victimTeam: "Bravo", victimName: "b1", attackerTeam: "Alpha", attackerName: "a1" },
+      ],
+    });
+    const story = computeMatchStory({
+      log,
+      artifact: testArtifact({ aliveDiff: 1 }),
+      engagements: [
+        engagement(50, 50, "Bravo", { Bravo: 1 }),
+        engagement(150, 150, "Alpha", { Alpha: 1 }),
+      ],
+      assists: [],
+    })!;
+    expect(story.fights[1].carryover).toBeNull();
+  });
+
+  test("limited logs (no ult events) suppress carryover entirely", () => {
+    const log = baseLog({
+      kills: [
+        { time: 100, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" },
+      ],
+    });
+    const story = computeMatchStory({
+      log,
+      artifact: testArtifact({ aliveDiff: 1 }),
+      engagements: [
+        engagement(100, 100, "Bravo", { Bravo: 1 }),
+        engagement(110, 115, "Bravo", { Bravo: 1 }),
+      ],
+      assists: [],
+    })!;
+    expect(story.limited).toBe(true);
+    expect(story.fights[1].carryover).toBeNull();
+  });
+});

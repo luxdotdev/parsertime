@@ -2,12 +2,13 @@ import { extractFeatures } from "./features";
 import { statesAt } from "./game-state";
 import { type ModelArtifact, predictWinProbability } from "./model";
 import { roundLabels } from "./training/extract";
-import type { WPEventLog } from "./types";
+import type { GameState, WPEventLog } from "./types";
 
 export const SERIES_INTERVAL_SECONDS = 5;
 export const CASCADE_WINDOW_SECONDS = 60;
 export const CASCADE_MIN_WP = 0.05;
 export const ULT_WINDOW_LEAD_SECONDS = 3;
+const EDGE_EPSILON = 0.5;
 
 export type WpPoint = { t: number; wp: number };
 
@@ -77,17 +78,19 @@ export function computeMatchStory(
   if (artifact.modeFamilies[log.modeFamily] === null) return null;
   const limited = log.ultCharged.length === 0;
 
-  function wpAt(t: number): number {
-    const state = statesAt(log, [t])[0].team1;
+  function wpOf(state: GameState): number {
     return predictWinProbability(
       artifact,
       log.modeFamily,
       extractFeatures(state)
     )!;
   }
+  function wpAt(t: number): number {
+    return wpOf(statesAt(log, [t])[0].team1);
+  }
 
   const points = computeSeries(log, wpAt);
-  const fights = buildLedger();
+  const fights = buildLedger(inputs, wpAt, wpOf, limited);
   const wpa = attributeWpa();
   const insights = generateInsights();
 
@@ -128,10 +131,67 @@ function computeSeries(
   return points;
 }
 
-// Tasks 2–4 replace these stubs with the ledger, WPA, and insights.
-function buildLedger(): FightEntry[] {
-  return [];
+function buildLedger(
+  inputs: MatchStoryInputs,
+  wpAt: (t: number) => number,
+  wpOf: (state: GameState) => number,
+  limited: boolean
+): FightEntry[] {
+  const { log, engagements } = inputs;
+  const sorted = [...engagements].sort((a, b) => a.start - b.start);
+  const entries: FightEntry[] = [];
+
+  for (let i = 0; i < sorted.length; i++) {
+    const fight = sorted[i];
+    const wpBefore = wpAt(fight.start - EDGE_EPSILON);
+    const wpAfter = wpAt(fight.end + EDGE_EPSILON);
+
+    function inWindow(t: number): boolean {
+      return t >= fight.start - ULT_WINDOW_LEAD_SECONDS && t <= fight.end;
+    }
+    const ultsSpentTeam1 = log.ultStart.filter(
+      (u) => u.team === log.team1 && inWindow(u.time)
+    ).length;
+    const ultsSpentTeam2 = log.ultStart.filter(
+      (u) => u.team === log.team2 && inWindow(u.time)
+    ).length;
+
+    const previous = sorted[i - 1];
+    let carryover: FightEntry["carryover"] = null;
+    if (
+      !limited &&
+      previous !== undefined &&
+      fight.start - previous.end <= CASCADE_WINDOW_SECONDS
+    ) {
+      const entry = statesAt(log, [fight.start - EDGE_EPSILON])[0].team1;
+      const actual = wpOf(entry);
+      carryover = {
+        ultEconomy: actual - wpOf({ ...entry, ultBankDiff: 0 }),
+        stagger: actual - wpOf({ ...entry, aliveDiff: 0 }),
+      };
+    }
+
+    entries.push({
+      index: i,
+      start: fight.start,
+      end: fight.end,
+      zoneName: fight.zoneName,
+      winner: fight.winner,
+      killsTeam1: fight.killsByTeam[log.team1] ?? 0,
+      killsTeam2: fight.killsByTeam[log.team2] ?? 0,
+      ultsSpentTeam1,
+      ultsSpentTeam2,
+      wpBefore,
+      wpAfter,
+      swing: wpAfter - wpBefore,
+      carryover,
+      unattributedSwing: 0, // set by attributeWpa
+    });
+  }
+  return entries;
 }
+
+// Tasks 3–4 replace these stubs with WPA and insights.
 function attributeWpa(): PlayerWpa[] {
   return [];
 }
