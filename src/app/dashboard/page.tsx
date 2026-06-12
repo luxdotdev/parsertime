@@ -8,7 +8,7 @@ import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { getPendingFeedbackCount } from "@/lib/team-ops/scrim-feedback";
 import type { PagePropsWithLocale } from "@/types/next";
-import { $Enums } from "@/generated/prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 

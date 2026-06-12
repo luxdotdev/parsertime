@@ -1,7 +1,7 @@
 import type { HeroName } from "@/types/heroes";
 import { roleHeroMapping } from "@/types/heroes";
 import { mapNameToMapTypeMapping } from "@/types/map";
-import { $Enums } from "@/generated/prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import {
   Cache,
   Context,

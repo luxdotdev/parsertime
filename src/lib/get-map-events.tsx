@@ -2,7 +2,8 @@ import { FightUltQualityService } from "@/data/map/fight-ult-quality-service";
 import { AppRuntime } from "@/data/runtime";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
-import { groupKillsIntoFights, removeDuplicateRows } from "@/lib/utils";
+import { removeDuplicateRows } from "@/lib/utils";
+import { groupKillsIntoFights } from "@/lib/server-utils";
 import type { Kill } from "@/generated/prisma/client";
 import { Effect } from "effect";
 

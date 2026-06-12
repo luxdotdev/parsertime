@@ -6,7 +6,7 @@ import { CandidateRow } from "@/components/matchmaker/candidate-row";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { Route } from "next";
-import { UserRole } from "@/generated/prisma/client";
+import { UserRole } from "@/generated/prisma/browser";
 import { getTranslations } from "next-intl/server";
 
 type PageProps = { params: Promise<{ teamId: string }> };

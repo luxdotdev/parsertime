@@ -1,6 +1,6 @@
 import { Logger } from "@/lib/logger";
 import type { User as PrismaUser } from "@/generated/prisma/client";
-import { $Enums } from "@/generated/prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import type { User } from "next-auth";
 
 /**

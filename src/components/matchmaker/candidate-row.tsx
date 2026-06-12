@@ -4,7 +4,7 @@ import { AvailabilityOverlapBar } from "./availability-overlap-bar";
 import type { MatchmakerCandidate } from "@/lib/matchmaker/candidates";
 import type { Route } from "next";
 import { cn } from "@/lib/utils";
-import { FaceitTier } from "@/generated/prisma/client";
+import { FaceitTier } from "@/generated/prisma/browser";
 import { useFormatter, useTranslations } from "next-intl";
 
 type Props = {

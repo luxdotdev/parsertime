@@ -11,7 +11,6 @@ describe("poolOptionsFromUrl", () => {
     expect(opts.idleTimeoutMillis).toBe(300_000);
     const parsed = new URL(opts.connectionString!);
     expect(parsed.searchParams.get("sslmode")).toBe("verify-full");
-    expect(parsed.searchParams.get("sslrootcert")).toBe("system");
   });
 
   test("explicit URL params win and are stripped from the connection string", () => {
@@ -33,6 +32,22 @@ describe("poolOptionsFromUrl", () => {
     expect(opts.connectionString).toBe(
       "postgresql://user:pass@db.example.com:5432/app?sslmode=require"
     );
+  });
+
+  test("strips sslrootcert=system (libpq idiom) but keeps file paths", () => {
+    const system = poolOptionsFromUrl(
+      "postgresql://u:p@h:5432/db?sslmode=verify-full&sslrootcert=system"
+    );
+    const parsedSystem = new URL(system.connectionString!);
+    expect(parsedSystem.searchParams.get("sslrootcert")).toBeNull();
+    expect(parsedSystem.searchParams.get("sslmode")).toBe("verify-full");
+
+    const file = poolOptionsFromUrl(
+      "postgresql://u:p@h:5432/db?sslrootcert=/etc/ssl/ca.pem"
+    );
+    expect(
+      new URL(file.connectionString!).searchParams.get("sslrootcert")
+    ).toBe("/etc/ssl/ca.pem");
   });
 
   test("falls back gracefully on missing or malformed URLs", () => {

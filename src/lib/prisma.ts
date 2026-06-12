@@ -26,6 +26,12 @@ export function poolOptionsFromUrl(raw: string | undefined): {
     const poolTimeout = url.searchParams.get("pool_timeout");
     url.searchParams.delete("connection_limit");
     url.searchParams.delete("pool_timeout");
+    // libpq's "use the OS trust store" sentinel; pg would readFileSync a
+    // file literally named "system". Node's default CA verification is the
+    // equivalent, so just drop the param (real file paths stay).
+    if (url.searchParams.get("sslrootcert") === "system") {
+      url.searchParams.delete("sslrootcert");
+    }
     return {
       connectionString: url.toString(),
       max: connectionLimit ? Number(connectionLimit) : defaults.max,

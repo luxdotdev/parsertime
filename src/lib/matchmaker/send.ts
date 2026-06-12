@@ -9,7 +9,7 @@ import { getPlayerTsrByBattletag } from "@/lib/tsr/lookup";
 import { notifications } from "@/lib/notifications";
 import { Logger } from "@/lib/logger";
 import { auditLog } from "@/lib/audit-logs";
-import { UserRole } from "@/generated/prisma/client";
+import { UserRole } from "@/generated/prisma/browser";
 import { areTeamsBlocked } from "@/lib/team-ops/blacklist";
 
 const COOLDOWN_HOURS = 24;

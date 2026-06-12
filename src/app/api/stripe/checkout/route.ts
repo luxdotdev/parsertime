@@ -3,7 +3,7 @@ import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { createCheckout, getCustomerPortalUrl } from "@/lib/stripe";
-import { $Enums } from "@/generated/prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 

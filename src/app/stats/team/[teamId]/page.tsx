@@ -79,7 +79,7 @@ import { computeTeamTsr, matchesAnyName } from "@/lib/tsr/team";
 import { getTeamSubstituteNames } from "@/data/team/substitutes";
 import { getMapNames } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
-import { $Enums } from "@/generated/prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import { addMonths, addWeeks, addYears } from "date-fns";
 import { Effect } from "effect";
 import Image from "next/image";

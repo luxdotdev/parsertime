@@ -14,7 +14,7 @@ import {
   type PlayerStat,
   type PointProgress,
   type RoundEnd,
-} from "@/generated/prisma/client";
+} from "@/generated/prisma/browser";
 
 type Side = "our_team" | "opponent";
 

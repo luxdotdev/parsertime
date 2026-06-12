@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Title, type User } from "@/generated/prisma/client";
+import { Title, type User } from "@/generated/prisma/browser";
 import {
   Bug,
   Calendar,

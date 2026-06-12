@@ -14,7 +14,7 @@ import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { UsageEventName } from "@/lib/usage/names";
 import { usage } from "@/lib/usage/server";
-import { TournamentFormat } from "@/generated/prisma/client";
+import { TournamentFormat } from "@/generated/prisma/browser";
 import { Ratelimit } from "@upstash/ratelimit";
 import { ipAddress } from "@vercel/functions";
 import { kv } from "@vercel/kv";

@@ -1,6 +1,6 @@
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
-import { groupKillsIntoFightsByMapDataId } from "@/lib/utils";
+import { groupKillsIntoFightsByMapDataId } from "@/lib/server-utils";
 import { loadLatestArtifact } from "@/lib/win-probability/artifact-store";
 import {
   computeMatchStory,

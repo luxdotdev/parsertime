@@ -1,5 +1,5 @@
 import { useAppSettings } from "@/components/settings/app-settings-provider";
-import { $Enums } from "@/generated/prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 
 export function useColorblindMode() {
   const { appSettings } = useAppSettings();

@@ -1,6 +1,6 @@
 import { TierLadder } from "@/components/charts/tsr/tier-ladder";
 import { getTierBucket } from "@/lib/tsr/tier-bucket";
-import { FaceitTier } from "@/generated/prisma/client";
+import { FaceitTier } from "@/generated/prisma/browser";
 import { useFormatter, useTranslations } from "next-intl";
 
 type Props = {

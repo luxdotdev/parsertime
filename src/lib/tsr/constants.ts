@@ -1,4 +1,4 @@
-import type { FaceitTier } from "@/generated/prisma/client";
+import { FaceitTier } from "@/generated/prisma/browser";
 
 export const TIER_PRIORS: Record<FaceitTier, number> = {
   UNCLASSIFIED: 2500,
@@ -62,3 +62,15 @@ export function recencyWeight(ageDays: number): number {
 export function clampRating(x: number): number {
   return Math.max(TSR_HARD_FLOOR, Math.min(TSR_HARD_CEILING, x));
 }
+
+export const TIER_FLOOR_MARKERS: {
+  tier: FaceitTier;
+  floor: number;
+  label: string;
+}[] = [
+  { tier: FaceitTier.OPEN, floor: TIER_PRIORS.OPEN, label: "Open" },
+  { tier: FaceitTier.ADVANCED, floor: TIER_PRIORS.ADVANCED, label: "Advanced" },
+  { tier: FaceitTier.EXPERT, floor: TIER_PRIORS.EXPERT, label: "Expert" },
+  { tier: FaceitTier.MASTERS, floor: TIER_PRIORS.MASTERS, label: "Masters" },
+  { tier: FaceitTier.OWCS, floor: TIER_PRIORS.OWCS, label: "OWCS" },
+];

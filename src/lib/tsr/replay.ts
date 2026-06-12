@@ -15,7 +15,7 @@ import {
   FaceitTier,
   TsrRegion,
   TsrRosterOverrideAction,
-} from "@/generated/prisma/client";
+} from "@/generated/prisma/browser";
 
 type ReplayMatch = {
   matchId: string;

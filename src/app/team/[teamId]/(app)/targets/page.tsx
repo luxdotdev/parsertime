@@ -13,7 +13,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import type { RoleName } from "@/lib/target-stats";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
-import { $Enums } from "@/generated/prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 

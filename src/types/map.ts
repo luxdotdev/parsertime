@@ -1,4 +1,4 @@
-import { $Enums } from "@/generated/prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 
 export type MapName = keyof typeof mapNameToMapTypeMapping;
 

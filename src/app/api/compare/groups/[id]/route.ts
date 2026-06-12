@@ -4,7 +4,7 @@ import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { $Enums } from "@/generated/prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 

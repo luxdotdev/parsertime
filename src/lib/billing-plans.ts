@@ -11,7 +11,7 @@ import {
   userUnsubscribedWebhookConstructor,
 } from "@/lib/webhooks";
 import type { BillingPlans } from "@/types/billing-plans";
-import { $Enums } from "@/generated/prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import { render } from "@react-email/render";
 import { get } from "@vercel/edge-config";
 import type Stripe from "stripe";

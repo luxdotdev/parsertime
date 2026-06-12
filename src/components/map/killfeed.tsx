@@ -11,11 +11,8 @@ import {
 import { coachingCanvas, positionalData } from "@/lib/flags";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
-import {
-  groupKillsIntoFights,
-  removeDuplicateRows,
-  toTimestamp,
-} from "@/lib/utils";
+import { removeDuplicateRows, toTimestamp } from "@/lib/utils";
+import { groupKillsIntoFights } from "@/lib/server-utils";
 import { getTranslations } from "next-intl/server";
 
 export async function Killfeed({

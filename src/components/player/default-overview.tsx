@@ -6,12 +6,8 @@ import { AppRuntime } from "@/data/runtime";
 import { Effect } from "effect";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
-import {
-  groupKillsIntoFights,
-  removeDuplicateRows,
-  round,
-  toTimestamp,
-} from "@/lib/utils";
+import { removeDuplicateRows, round, toTimestamp } from "@/lib/utils";
+import { groupKillsIntoFights } from "@/lib/server-utils";
 import { getTranslations } from "next-intl/server";
 
 export async function DefaultOverview({

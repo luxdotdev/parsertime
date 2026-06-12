@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import { getCompositeSRLeaderboard } from "@/lib/hero-rating";
 import prisma from "@/lib/prisma";
 import type { HeroName } from "@/types/heroes";
-import { $Enums } from "@/generated/prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import { unauthorized } from "next/navigation";
 import { NextResponse, type NextRequest } from "next/server";
 import z from "zod";

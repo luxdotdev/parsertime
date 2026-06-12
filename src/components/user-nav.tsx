@@ -16,7 +16,7 @@ import { Link } from "@/components/ui/link";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
-import { $Enums } from "@/generated/prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import { ExternalLinkIcon } from "@radix-ui/react-icons";
 import { Effect } from "effect";
 import type { Route } from "next";

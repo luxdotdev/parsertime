@@ -2,12 +2,11 @@ import { AppRuntime } from "@/data/runtime";
 import { ScrimService } from "@/data/scrim";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
+import { removeDuplicateRows, round } from "@/lib/utils";
 import {
   groupKillsIntoFights,
   groupKillsIntoFightsByMapDataId,
-  removeDuplicateRows,
-  round,
-} from "@/lib/utils";
+} from "@/lib/server-utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import type {
   RoundEnd,

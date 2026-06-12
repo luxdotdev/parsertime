@@ -12,11 +12,8 @@ import {
 } from "@/lib/mvp-score";
 import { getSpatialStatsForMapData } from "@/lib/spatial-stats";
 import { getUltQualityStatsForMapData } from "@/lib/ult-quality-db";
-import {
-  groupKillsIntoFightsByMapDataId,
-  removeDuplicateRows,
-  round,
-} from "@/lib/utils";
+import { removeDuplicateRows, round } from "@/lib/utils";
+import { groupKillsIntoFightsByMapDataId } from "@/lib/server-utils";
 import { heroPriority, type HeroName, heroRoleMapping } from "@/types/heroes";
 import type { PlayerStat } from "@/generated/prisma/client";
 import prisma from "./prisma";

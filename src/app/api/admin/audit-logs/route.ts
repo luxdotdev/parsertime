@@ -7,7 +7,7 @@ import {
   $Enums,
   type AuditLogAction,
   type Prisma,
-} from "@/generated/prisma/client";
+} from "@/generated/prisma/browser";
 import { forbidden, unauthorized } from "next/navigation";
 import { type NextRequest, NextResponse } from "next/server";
 

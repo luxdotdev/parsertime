@@ -1,4 +1,4 @@
-import { FaceitTier } from "@/generated/prisma/client";
+import { FaceitTier } from "@/generated/prisma/browser";
 
 export type Bucket = {
   bracketTier: FaceitTier;

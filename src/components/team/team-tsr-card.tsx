@@ -15,7 +15,7 @@ import { getTierBucket } from "@/lib/tsr/tier-bucket";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import type { Route } from "next";
-import { FaceitTier } from "@/generated/prisma/client";
+import { FaceitTier } from "@/generated/prisma/browser";
 import { useFormatter, useTranslations } from "next-intl";
 
 function ratingToneClass(rating: number, source: TeamTsrSource): string {

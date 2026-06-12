@@ -10,7 +10,7 @@ import type { HeroName } from "@/types/heroes";
 import {
   CalculatedStatType,
   type CalculatedStat,
-} from "@/generated/prisma/client";
+} from "@/generated/prisma/browser";
 
 type PlayerMapTrendStat = {
   player: string;

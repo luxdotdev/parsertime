@@ -3,7 +3,7 @@ import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auditLog } from "@/lib/audit-logs";
 import { auth, getImpersonateUrl } from "@/lib/auth";
-import { $Enums } from "@/generated/prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import { unauthorized } from "next/navigation";
 import { after, type NextRequest } from "next/server";
 import { z } from "zod";

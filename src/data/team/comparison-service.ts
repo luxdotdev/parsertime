@@ -10,7 +10,7 @@ import type {
   MapType,
   PlayerStat,
 } from "@/generated/prisma/client";
-import { CalculatedStatType } from "@/generated/prisma/client";
+import { CalculatedStatType } from "@/generated/prisma/browser";
 import {
   Cache,
   Context,

@@ -1,7 +1,6 @@
 import prisma from "@/lib/prisma";
 import {
   RECENCY_HALF_LIFE_DAYS,
-  TIER_PRIORS,
   TIER_RANK,
   movMultiplier,
   recencyWeight,
@@ -10,7 +9,7 @@ import {
   FaceitTier,
   TsrRosterOverrideAction,
   type TsrRegion,
-} from "@/generated/prisma/client";
+} from "@/generated/prisma/browser";
 
 export type TsrBreakdownFactor = {
   key:
@@ -336,17 +335,5 @@ function avgTierLabel(rank: number): string {
   if (rank > 0) return "Open";
   return "—";
 }
-
-export const TIER_FLOOR_MARKERS: {
-  tier: FaceitTier;
-  floor: number;
-  label: string;
-}[] = [
-  { tier: FaceitTier.OPEN, floor: TIER_PRIORS.OPEN, label: "Open" },
-  { tier: FaceitTier.ADVANCED, floor: TIER_PRIORS.ADVANCED, label: "Advanced" },
-  { tier: FaceitTier.EXPERT, floor: TIER_PRIORS.EXPERT, label: "Expert" },
-  { tier: FaceitTier.MASTERS, floor: TIER_PRIORS.MASTERS, label: "Masters" },
-  { tier: FaceitTier.OWCS, floor: TIER_PRIORS.OWCS, label: "OWCS" },
-];
 
 export const RECENCY_HALF_LIFE_LABEL = `${RECENCY_HALF_LIFE_DAYS}-day half-life`;

@@ -36,7 +36,7 @@ import {
   getPageHeat,
   getScorecard,
 } from "@/lib/usage/queries";
-import { $Enums } from "@/generated/prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import type { UsageEnv } from "@/generated/prisma/client";
 import { Effect } from "effect";
 import { getTranslations } from "next-intl/server";

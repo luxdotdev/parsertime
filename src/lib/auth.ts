@@ -21,7 +21,7 @@ import {
   sendDiscordWebhook,
 } from "@/lib/webhooks";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { $Enums, type User } from "@/generated/prisma/client";
+import { $Enums, type User } from "@/generated/prisma/browser";
 import { render } from "@react-email/render";
 import { Ratelimit } from "@upstash/ratelimit";
 import { track } from "@vercel/analytics/server";

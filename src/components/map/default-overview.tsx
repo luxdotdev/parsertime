@@ -24,13 +24,13 @@ import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import {
   groupEventsIntoFights,
-  groupKillsIntoFights,
   range,
   removeDuplicateRows,
   round,
   toTimestamp,
   ultimateStartToKillEvent,
 } from "@/lib/utils";
+import { groupKillsIntoFights } from "@/lib/server-utils";
 import { calculatePayloadMapScore, calculateWinner } from "@/lib/winrate";
 import {
   getHeroRole,
@@ -42,7 +42,7 @@ import {
   type RoleName,
   type SubroleName,
 } from "@/types/heroes";
-import { $Enums, type Kill } from "@/generated/prisma/client";
+import { $Enums, type Kill } from "@/generated/prisma/browser";
 import { getTranslations } from "next-intl/server";
 
 export async function DefaultOverview({

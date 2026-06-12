@@ -15,13 +15,11 @@ import { auth } from "@/lib/auth";
 import { calculateMVPScoresForMap } from "@/lib/mvp-score";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
+import { removeDuplicateRows, toHero, toTimestamp } from "@/lib/utils";
 import {
   getColorblindMode,
   groupPlayerKillsIntoFights,
-  removeDuplicateRows,
-  toHero,
-  toTimestamp,
-} from "@/lib/utils";
+} from "@/lib/server-utils";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 

@@ -42,7 +42,8 @@ import {
 } from "@/lib/flags";
 import { resolveScrimMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
-import { getColorblindMode, translateMapName } from "@/lib/utils";
+import { translateMapName } from "@/lib/utils";
+import { getColorblindMode } from "@/lib/server-utils";
 import type { PagePropsWithLocale, SearchParams } from "@/types/next";
 import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
