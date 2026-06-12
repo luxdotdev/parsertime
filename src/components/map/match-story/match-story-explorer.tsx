@@ -65,6 +65,7 @@ export function MatchStoryExplorer({
         <SectionHeader id="fight-ledger" title={t("ledger.title")} />
         <FightLedgerTable
           fights={data.fights}
+          objectiveMarkers={data.objectiveMarkers}
           teams={data.teams}
           team1Color={team1Color}
           team2Color={team2Color}

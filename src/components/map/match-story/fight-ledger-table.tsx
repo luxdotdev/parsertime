@@ -8,10 +8,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { FightEntry } from "@/lib/win-probability/timeline";
+import type {
+  FightEntry,
+  ObjectiveMarker,
+} from "@/lib/win-probability/timeline";
 import { CASCADE_MIN_WP } from "@/lib/win-probability/types";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
+
+/** A capture this long after a fight's last kill still belongs to it — the
+ * fight win is what enabled the capture. */
+const CAPTURE_ATTACH_SECONDS = 12;
 
 function formatClock(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -50,6 +57,7 @@ function SwingBar({
 
 export function FightLedgerTable({
   fights,
+  objectiveMarkers,
   teams,
   team1Color,
   team2Color,
@@ -57,6 +65,7 @@ export function FightLedgerTable({
   onFocusFight,
 }: {
   fights: FightEntry[];
+  objectiveMarkers: ObjectiveMarker[];
   teams: { team1: string; team2: string };
   team1Color: string;
   team2Color: string;
@@ -64,6 +73,24 @@ export function FightLedgerTable({
   onFocusFight: (index: number | null) => void;
 }) {
   const t = useTranslations("mapPage.matchStory.ledger");
+  const tChart = useTranslations("mapPage.matchStory.chart");
+
+  // Each capture belongs to the first fight whose window contains it.
+  const capturesByFight = useMemo(() => {
+    const ordered = [...fights].sort((a, b) => a.start - b.start);
+    const map = new Map<number, ObjectiveMarker[]>();
+    for (const marker of objectiveMarkers) {
+      const fight = ordered.find(
+        (f) =>
+          marker.t >= f.start && marker.t <= f.end + CAPTURE_ATTACH_SECONDS
+      );
+      if (fight === undefined) continue;
+      const list = map.get(fight.index) ?? [];
+      list.push(marker);
+      map.set(fight.index, list);
+    }
+    return map;
+  }, [fights, objectiveMarkers]);
   const [sortBySwing, setSortBySwing] = useState(true);
   const sorted = useMemo(
     () =>
@@ -103,7 +130,7 @@ export function FightLedgerTable({
             </button>
           </TableHead>
           <TableHead className="w-20 text-right">{t("ults")}</TableHead>
-          <TableHead>{t("carryover")}</TableHead>
+          <TableHead>{t("context")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody onMouseLeave={() => onFocusFight(null)}>
@@ -177,24 +204,47 @@ export function FightLedgerTable({
                 {f.ultsSpentTeam1}–{f.ultsSpentTeam2}
               </TableCell>
               <TableCell className="text-xs">
-                {carryParts.length > 0 ? (
-                  <span className="flex flex-col">
-                    {carryParts.map((part) => (
-                      <span
-                        key={part.text}
-                        className={
-                          part.strong
-                            ? "text-foreground"
-                            : "text-muted-foreground"
-                        }
-                      >
-                        {part.text}
-                      </span>
-                    ))}
-                  </span>
-                ) : (
-                  <span className="text-muted-foreground">—</span>
-                )}
+                {(() => {
+                  const captures = capturesByFight.get(f.index) ?? [];
+                  if (captures.length === 0 && carryParts.length === 0) {
+                    return <span className="text-muted-foreground">—</span>;
+                  }
+                  return (
+                    <span className="flex flex-col gap-0.5">
+                      {captures.map((c) => (
+                        <span
+                          key={`${c.t}-${c.team}`}
+                          className="flex items-center gap-1.5"
+                          title={tChart("capture", { team: c.team })}
+                        >
+                          <span
+                            aria-hidden
+                            className="size-1.5 shrink-0 rotate-45"
+                            style={{
+                              backgroundColor:
+                                c.team === teams.team1
+                                  ? team1Color
+                                  : team2Color,
+                            }}
+                          />
+                          {tChart("capture", { team: c.team })}
+                        </span>
+                      ))}
+                      {carryParts.map((part) => (
+                        <span
+                          key={part.text}
+                          className={
+                            part.strong
+                              ? "text-foreground"
+                              : "text-muted-foreground"
+                          }
+                        >
+                          {part.text}
+                        </span>
+                      ))}
+                    </span>
+                  );
+                })()}
               </TableCell>
             </TableRow>
           );

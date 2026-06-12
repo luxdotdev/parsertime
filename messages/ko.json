@@ -3119,7 +3119,8 @@
         "lost": "패배",
         "even": "무승부",
         "ultEconomy": "궁극기 경제",
-        "stagger": "스태거"
+        "stagger": "스태거",
+        "context": "맥락"
       },
       "wpa": {
         "title": "승리 확률 기여도",

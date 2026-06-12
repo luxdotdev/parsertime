@@ -3119,7 +3119,8 @@
         "lost": "负",
         "even": "平",
         "ultEconomy": "大招经济",
-        "stagger": "梯次阵亡"
+        "stagger": "梯次阵亡",
+        "context": "背景"
       },
       "wpa": {
         "title": "胜率贡献值",

@@ -3119,7 +3119,8 @@
         "lost": "Lost",
         "even": "Even",
         "ultEconomy": "ult economy",
-        "stagger": "stagger"
+        "stagger": "stagger",
+        "context": "Context"
       },
       "wpa": {
         "title": "Win probability added",
