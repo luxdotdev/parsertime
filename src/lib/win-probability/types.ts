@@ -29,8 +29,14 @@ export type GameState = {
   modeFamily: ModeFamily;
   matchTime: number;
   roundNumber: number;
-  aliveDiff: number; // −5..+5
-  ultBankDiff: number; // banked (charged, unspent) ults
+  aliveDiff: number; // −5..+5; always equals tank+dps+support splits
+  tankAliveDiff: number; // −1..+1
+  dpsAliveDiff: number; // −2..+2
+  supportAliveDiff: number; // −2..+2
+  ultBankDiff: number; // banked (charged, unspent) ults; equals role splits' sum
+  tankUltDiff: number;
+  dpsUltDiff: number;
+  supportUltDiff: number;
   scoreDiff: number;
   objProgressOwn: number; // 0..1, latest contest progress attributed to own team
   objProgressEnemy: number; // 0..1
@@ -39,6 +45,8 @@ export type GameState = {
   holdsObjective: -1 | 0 | 1; // own team holds the point (+1) / enemy (−1)
   timeRemaining: number; // seconds; 0 when unknown
   isAttacker: 0 | 1; // current round's capturing team is own team
+  isOvertime: 0 | 1; // escort/hybrid only: clock expired but the round persists
+  objectiveIndex: number | null; // contested point/checkpoint; null when unknown
 };
 
 /** Normalized event log for one map — decoupled from Prisma rows and the
@@ -54,11 +62,18 @@ export type WPEventLog = {
     time: number;
     victimTeam: string;
     victimName: string;
+    victimHero?: string;
     attackerTeam?: string;
     attackerName?: string;
   }[];
   rezzes: { time: number; team: string; player: string }[];
-  ultCharged: { time: number; team: string; player: string }[];
+  ultCharged: {
+    time: number;
+    team: string;
+    player: string;
+    hero?: string;
+    heroDuplicated?: boolean;
+  }[];
   ultStart: { time: number; team: string; player: string }[];
   rounds: {
     roundNumber: number;
@@ -69,6 +84,7 @@ export type WPEventLog = {
     startScore2: number;
     endScore1: number;
     endScore2: number;
+    objectiveIndex?: number;
   }[];
   /** Point + payload progress merged; value is the raw 0..100 figure.
    * roundNumber marks stale spillover from a previous round. */
@@ -77,6 +93,7 @@ export type WPEventLog = {
     team: string;
     value: number;
     roundNumber: number;
+    objectiveIndex?: number;
   }[];
   /** Control-mode capture flips: per-team win % at each capture. */
   objectiveCaptured: {

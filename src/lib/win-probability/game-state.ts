@@ -242,7 +242,13 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
         matchTime: t,
         roundNumber,
         aliveDiff: sign * (dead2 - dead1),
+        tankAliveDiff: 0,
+        dpsAliveDiff: 0,
+        supportAliveDiff: 0,
         ultBankDiff: sign * (banked.t1.size - banked.t2.size),
+        tankUltDiff: 0,
+        dpsUltDiff: 0,
+        supportUltDiff: 0,
         scoreDiff: sign * (score1 - score2),
         objProgressOwn: clampUnit(
           (own === "t1" ? progress.t1 : progress.t2) / 100
@@ -260,6 +266,8 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
         timeRemaining,
         isAttacker:
           capturing === (own === "t1" ? log.team1 : log.team2) ? 1 : 0,
+        isOvertime: 0,
+        objectiveIndex: null,
       };
     }
 

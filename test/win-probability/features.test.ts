@@ -11,7 +11,13 @@ const state: GameState = {
   matchTime: 120,
   roundNumber: 1,
   aliveDiff: 2,
+  tankAliveDiff: 1,
+  dpsAliveDiff: 1,
+  supportAliveDiff: 0,
   ultBankDiff: -1,
+  tankUltDiff: 0,
+  dpsUltDiff: -1,
+  supportUltDiff: 0,
   scoreDiff: 0,
   objProgressOwn: 0.5,
   objProgressEnemy: 0.9,
@@ -20,6 +26,8 @@ const state: GameState = {
   holdsObjective: -1,
   timeRemaining: 300,
   isAttacker: 0,
+  isOvertime: 0,
+  objectiveIndex: null,
 };
 
 describe("extractFeatures", () => {
