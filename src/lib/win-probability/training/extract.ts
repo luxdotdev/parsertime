@@ -13,7 +13,7 @@ export const FIGHT_GAP_SECONDS = 15;
 
 /** hero_duplicated is a string column; loggers write ""/"0"/"False" when the
  * ult is not an Echo duplicate. Anything else marks a duplicated ult. */
-function isDuplicated(v: string): boolean {
+export function isDuplicated(v: string): boolean {
   const s = v.trim().toLowerCase();
   return s !== "" && s !== "0" && s !== "false";
 }

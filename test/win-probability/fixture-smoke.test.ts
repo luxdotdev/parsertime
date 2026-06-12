@@ -1,5 +1,8 @@
 import { parseDataFromTXT } from "@/lib/parser";
-import { buildRows } from "@/lib/win-probability/training/extract";
+import {
+  buildRows,
+  isDuplicated,
+} from "@/lib/win-probability/training/extract";
 import {
   mapTypeToModeFamily,
   type WPEventLog,
@@ -12,14 +15,6 @@ import { describe, expect, test } from "vitest";
 /** Tuple rows for one event type; positions per src/lib/parser/schema.ts. */
 function rowsOf(data: ParserData, key: keyof ParserData): unknown[][] {
   return (data[key] ?? []) as unknown[][];
-}
-
-/** hero_duplicated in workbook rows is a string ("", "0", "False" = not
- * duplicated; anything else = Echo duplicate). Same semantics as isDuplicated
- * in src/lib/win-probability/training/extract.ts. */
-function parseDuplicated(v: unknown): boolean {
-  const s = String(v ?? "").trim().toLowerCase();
-  return s !== "" && s !== "0" && s !== "false";
 }
 
 function workbookToEventLog(data: ParserData): WPEventLog | null {
@@ -79,7 +74,7 @@ function workbookToEventLog(data: ParserData): WPEventLog | null {
       team: String(r[2]),
       player: String(r[3]),
       hero: String(r[4]),
-      heroDuplicated: parseDuplicated(r[5]),
+      heroDuplicated: isDuplicated(String(r[5] ?? "")),
     })),
     ultStart: rowsOf(data, "ultimate_start").map((r) => ({
       time: Number(r[1]),

@@ -30,9 +30,9 @@ export type GameState = {
   matchTime: number;
   roundNumber: number;
   aliveDiff: number; // −5..+5; always equals tank+dps+support splits
-  tankAliveDiff: number; // −1..+1
-  dpsAliveDiff: number; // −2..+2
-  supportAliveDiff: number; // −2..+2
+  tankAliveDiff: number; // typically −1..+1 (role queue)
+  dpsAliveDiff: number; // typically −2..+2 (role queue)
+  supportAliveDiff: number; // typically −2..+2 (role queue)
   ultBankDiff: number; // banked (charged, unspent) ults; equals role splits' sum
   tankUltDiff: number;
   dpsUltDiff: number;

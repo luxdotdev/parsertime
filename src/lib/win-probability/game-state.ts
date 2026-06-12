@@ -286,7 +286,9 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
     // Overtime: the clock ran out but round_end hasn't come — the round only
     // persists because the attacker is touching. Escort/hybrid only: control
     // has no clock, and flashpoint's single-round_start log shape makes
-    // timeRemaining unreliable mid-map.
+    // timeRemaining unreliable mid-map. Checkpoint time-banks aren't logged,
+    // so this fires once the round outlives its initial clock allocation — a
+    // consistent proxy, not true overtime.
     const isOvertime: 0 | 1 =
       log.modeFamily === "escort_hybrid" &&
       setupBaseline?.roundNumber === roundNumber &&
