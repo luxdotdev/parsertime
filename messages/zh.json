@@ -3134,7 +3134,15 @@
         "title": "关键时刻",
         "biggestSwing": "第 {fight} 场团战使胜率向 {team} 方向移动了 {swing}%。",
         "ultCarryover": "第 {prevFight} 场团战的大招经济使 {team} 进入第 {fight} 场团战时损失约 {cost}% 胜率。",
-        "staggerCarryover": "第 {fight} 场团战前的梯次阵亡使 {team} 损失约 {cost}% 胜率。"
+        "staggerCarryover": "第 {fight} 场团战前的梯次阵亡使 {team} 损失约 {cost}% 胜率。",
+        "earlyControl": "{team} 掌控开局，赢下前 {of} 场团战中的 {wins} 场。",
+        "longStretch": "{team} 保持优势达 {duration}，胜率最高达 {pct}%。",
+        "winStreak": "{team} 从 {from} 到 {to} 取得 {count} 场团战连胜。",
+        "closing": "{team} 拿下最后 {of} 场团战中的 {wins} 场，终结了比赛。",
+        "topWpa": "{player}（{team}）带来全场最大的胜率变化：{wpa}%。"
+      },
+      "story": {
+        "title": "比赛走势"
       }
     }
   },

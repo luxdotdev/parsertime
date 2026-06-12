@@ -322,13 +322,62 @@ describe("computeMatchStory — insights", () => {
     const keys = story.insights.map((i) => i.key);
     expect(keys).toContain("insights.biggestSwing");
     expect(keys).toContain("insights.ultCarryover");
-    expect(story.insights.length).toBeLessThanOrEqual(4);
-    // Sorted by priority, descending.
-    const priorities = story.insights.map((i) => i.priority);
-    expect([...priorities].sort((a, b) => b - a)).toEqual(priorities);
+    expect(story.insights.length).toBeLessThanOrEqual(6);
+    // The story reads chronologically.
+    const ts = story.insights.map((i) => i.t);
+    expect([...ts].sort((a, b) => a - b)).toEqual(ts);
     const swing = story.insights.find((i) => i.key === "insights.biggestSwing")!;
     expect(swing.values.fight).toBe(1); // 1-based for display
+    expect(swing.fightIndex).toBe(0);
     expect(typeof swing.values.swing).toBe("number");
+  });
+
+  test("narrates the arc: streak, closing, and standout player", () => {
+    // Bravo wins 4 straight fights and the round; b1 racks up the WPA.
+    const kills = [0, 1, 2, 3].map((i) => ({
+      time: 40 + i * 30,
+      victimTeam: "Alpha",
+      victimName: `a${i + 1}`,
+      attackerTeam: "Bravo",
+      attackerName: "b1",
+    }));
+    const log = baseLog({
+      mapWinner: null,
+      rounds: [
+        {
+          roundNumber: 1,
+          start: 0,
+          end: 200,
+          capturingTeam: "Alpha",
+          startScore1: 0,
+          startScore2: 0,
+          endScore1: 0,
+          endScore2: 1, // Bravo takes the round
+        },
+      ],
+      kills,
+    });
+    const story = computeMatchStory({
+      log,
+      artifact: testArtifact({ aliveDiff: 1 }),
+      engagements: kills.map((k) =>
+        engagement(k.time, k.time + 5, "Bravo", { Bravo: 1 })
+      ),
+      assists: [],
+    })!;
+    const keys = story.insights.map((i) => i.key);
+    expect(keys).toContain("insights.winStreak");
+    expect(keys).toContain("insights.closing");
+    expect(keys).toContain("insights.topWpa");
+    const streak = story.insights.find((i) => i.key === "insights.winStreak")!;
+    expect(streak.values.team).toBe("Bravo");
+    expect(streak.values.count).toBe(4);
+    const closing = story.insights.find((i) => i.key === "insights.closing")!;
+    expect(closing.values.team).toBe("Bravo");
+    const top = story.insights.find((i) => i.key === "insights.topWpa")!;
+    expect(top.values.player).toBe("b1");
+    // earlyControl is suppressed when the streak already opens the story.
+    expect(keys).not.toContain("insights.earlyControl");
   });
 
   test("limited logs (no ult events) emit no cascade insights", () => {

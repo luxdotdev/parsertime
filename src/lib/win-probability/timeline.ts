@@ -70,6 +70,10 @@ export type MatchStoryInsight = {
   key: string;
   values: Record<string, string | number>;
   priority: number;
+  /** Chronological anchor: beats are ordered by map time, not priority. */
+  t: number;
+  /** Fight to focus when the beat is clicked, when one applies. */
+  fightIndex?: number;
 };
 
 export type MatchStoryData = {
@@ -114,7 +118,7 @@ export function computeMatchStory(
     limited
   );
   const wpa = attributeWpa(inputs, fights);
-  const insights = generateInsights(log, fights, limited);
+  const insights = generateStory(log, fights, points, wpa, limited);
 
   // Captures and point flips — the score/objective changes that drive the
   // biggest WP moves, surfaced so the curve's shifts have visible causes.
@@ -362,18 +366,137 @@ function attributeWpa(
 
   return [...totals.values()].sort((a, b) => b.wpa - a.wpa);
 }
-const MAX_INSIGHTS = 4;
+const MAX_STORY_BEATS = 6;
+const STRETCH_MIN_SECONDS = 120;
+const STRETCH_WP_EDGE = 0.6;
+const STREAK_MIN_FIGHTS = 3;
+const TOP_WPA_FLOOR = 0.04;
 
-function generateInsights(
+function clock(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+/** The arc of the map as chronological beats: who took early control, the
+ * defining stretch, the turning point, momentum runs, cascades, how it
+ * closed, and the standout player. */
+function generateStory(
   log: WPEventLog,
   fights: FightEntry[],
+  points: WpPoint[],
+  wpa: PlayerWpa[],
   limited: boolean
 ): MatchStoryInsight[] {
-  const insights: MatchStoryInsight[] = [];
+  const beats: MatchStoryInsight[] = [];
   function pct(v: number): number {
     return Math.round(Math.abs(v) * 100);
   }
 
+  // Longest run of consecutive fight wins by one team.
+  let streak: { team: string; from: FightEntry; to: FightEntry; count: number } | null =
+    null;
+  {
+    let run: { team: string; from: FightEntry; to: FightEntry; count: number } | null =
+      null;
+    for (const fight of fights) {
+      if (fight.winner === null) continue;
+      if (run === null || run.team !== fight.winner) {
+        run = { team: fight.winner, from: fight, to: fight, count: 1 };
+      } else {
+        run.to = fight;
+        run.count++;
+      }
+      if (
+        run.count >= STREAK_MIN_FIGHTS &&
+        (streak === null || run.count > streak.count)
+      ) {
+        streak = { ...run };
+      }
+    }
+  }
+  if (streak !== null) {
+    beats.push({
+      key: "insights.winStreak",
+      values: {
+        team: streak.team,
+        count: streak.count,
+        from: clock(streak.from.start),
+        to: clock(streak.to.start),
+      },
+      priority: 80,
+      t: streak.from.start,
+      fightIndex: streak.from.index,
+    });
+  }
+
+  // Early control — unless the streak already starts the story there.
+  const opening = fights.slice(0, 4);
+  if (opening.length >= 3 && (streak === null || streak.from.index > 1)) {
+    const wins: Record<string, number> = {};
+    for (const fight of opening) {
+      if (fight.winner !== null) wins[fight.winner] = (wins[fight.winner] ?? 0) + 1;
+    }
+    for (const team of [log.team1, log.team2]) {
+      if ((wins[team] ?? 0) >= opening.length - 1) {
+        beats.push({
+          key: "insights.earlyControl",
+          values: { team, wins: wins[team], of: opening.length },
+          priority: 70,
+          t: opening[0].start,
+          fightIndex: opening[0].index,
+        });
+      }
+    }
+  }
+
+  // The defining stretch: longest span one team held a clear WP edge.
+  {
+    let best: { team: string; start: number; end: number; peak: number } | null =
+      null;
+    let run: { team: string; start: number; end: number; peak: number } | null =
+      null;
+    for (const point of points) {
+      if (point.snap) continue;
+      const team =
+        point.wp >= STRETCH_WP_EDGE
+          ? log.team1
+          : point.wp <= 1 - STRETCH_WP_EDGE
+            ? log.team2
+            : null;
+      if (team === null) {
+        run = null;
+        continue;
+      }
+      const edge = team === log.team1 ? point.wp : 1 - point.wp;
+      if (run === null || run.team !== team) {
+        run = { team, start: point.t, end: point.t, peak: edge };
+      } else {
+        run.end = point.t;
+        run.peak = Math.max(run.peak, edge);
+      }
+      if (
+        run.end - run.start >= STRETCH_MIN_SECONDS &&
+        (best === null || run.end - run.start > best.end - best.start)
+      ) {
+        best = { ...run };
+      }
+    }
+    if (best !== null) {
+      beats.push({
+        key: "insights.longStretch",
+        values: {
+          team: best.team,
+          duration: clock(best.end - best.start),
+          pct: pct(best.peak),
+        },
+        priority: 75,
+        t: best.start,
+      });
+    }
+  }
+
+  // The turning point: biggest single swing.
   let biggest: FightEntry | null = null;
   for (const fight of fights) {
     if (biggest === null || Math.abs(fight.swing) > Math.abs(biggest.swing)) {
@@ -381,7 +504,7 @@ function generateInsights(
     }
   }
   if (biggest !== null && Math.abs(biggest.swing) >= CASCADE_MIN_WP) {
-    insights.push({
+    beats.push({
       key: "insights.biggestSwing",
       values: {
         fight: biggest.index + 1,
@@ -389,14 +512,17 @@ function generateInsights(
         team: biggest.swing > 0 ? log.team1 : log.team2,
       },
       priority: 90,
+      t: biggest.start,
+      fightIndex: biggest.index,
     });
   }
 
+  // Cascades worth narrating.
   if (!limited) {
     for (const fight of fights) {
       if (fight.carryover === null) continue;
       if (Math.abs(fight.carryover.ultEconomy) >= CASCADE_MIN_WP) {
-        insights.push({
+        beats.push({
           key: "insights.ultCarryover",
           values: {
             fight: fight.index + 1,
@@ -405,10 +531,12 @@ function generateInsights(
             team: fight.carryover.ultEconomy < 0 ? log.team1 : log.team2,
           },
           priority: 80,
+          t: fight.start,
+          fightIndex: fight.index,
         });
       }
       if (Math.abs(fight.carryover.stagger) >= CASCADE_MIN_WP) {
-        insights.push({
+        beats.push({
           key: "insights.staggerCarryover",
           values: {
             fight: fight.index + 1,
@@ -416,12 +544,42 @@ function generateInsights(
             team: fight.carryover.stagger < 0 ? log.team1 : log.team2,
           },
           priority: 75,
+          t: fight.start,
+          fightIndex: fight.index,
         });
       }
     }
   }
 
-  return insights
+  // The close: map outcome plus the late-fight record.
+  const finalSnap = [...points].reverse().find((p) => p.snap);
+  if (finalSnap !== undefined && fights.length >= 2) {
+    const winner = finalSnap.wp === 1 ? log.team1 : log.team2;
+    const closing = fights.slice(-4);
+    const wins = closing.filter((f) => f.winner === winner).length;
+    beats.push({
+      key: "insights.closing",
+      values: { team: winner, wins, of: closing.length },
+      priority: 85,
+      t: finalSnap.t,
+    });
+  }
+
+  // The standout player, as a coda.
+  const top = wpa[0];
+  const lastT = points[points.length - 1]?.t ?? 0;
+  if (top !== undefined && Math.abs(top.wpa) >= TOP_WPA_FLOOR) {
+    beats.push({
+      key: "insights.topWpa",
+      values: { player: top.player, team: top.team, wpa: pct(top.wpa) },
+      priority: 65,
+      t: lastT + 1,
+    });
+  }
+
+  // Chronological narrative; drop the least important beats when over cap.
+  const kept = [...beats]
     .sort((a, b) => b.priority - a.priority)
-    .slice(0, MAX_INSIGHTS);
+    .slice(0, MAX_STORY_BEATS);
+  return kept.sort((a, b) => a.t - b.t);
 }

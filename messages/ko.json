@@ -3134,7 +3134,15 @@
         "title": "주요 순간",
         "biggestSwing": "{fight}번째 한타로 승리 확률이 {team} 쪽으로 {swing}% 이동했습니다.",
         "ultCarryover": "{prevFight}번째 한타의 궁극기 경제로 인해 {team}은(는) {fight}번째 한타에 약 {cost}%의 승리 확률 손해를 안고 진입했습니다.",
-        "staggerCarryover": "{fight}번째 한타 전 스태거 데스로 {team}이(가) 약 {cost}%의 승리 확률을 잃었습니다."
+        "staggerCarryover": "{fight}번째 한타 전 스태거 데스로 {team}이(가) 약 {cost}%의 승리 확률을 잃었습니다.",
+        "earlyControl": "{team}이(가) 초반 주도권을 잡아 첫 {of}번의 한타 중 {wins}번을 승리했습니다.",
+        "longStretch": "{team}이(가) {duration} 동안 우위를 유지했으며 승리 확률은 최고 {pct}%였습니다.",
+        "winStreak": "{team}이(가) {from}부터 {to}까지 한타 {count}연승을 거뒀습니다.",
+        "closing": "{team}이(가) 마지막 {of}번의 한타 중 {wins}번을 승리하며 맵을 마무리했습니다.",
+        "topWpa": "{player}({team})이(가) 맵 전체에서 가장 큰 승리 확률 변화를 만들었습니다: {wpa}%."
+      },
+      "story": {
+        "title": "맵 전개 과정"
       }
     }
   },

@@ -26,13 +26,48 @@ function insightText(t: Translate, insight: MatchStoryInsight): string | null {
         cost: insight.values.cost as number,
         team: insight.values.team as string,
       });
+    case "insights.earlyControl":
+      return t("insights.earlyControl", {
+        team: insight.values.team as string,
+        wins: insight.values.wins as number,
+        of: insight.values.of as number,
+      });
+    case "insights.longStretch":
+      return t("insights.longStretch", {
+        team: insight.values.team as string,
+        duration: insight.values.duration as string,
+        pct: insight.values.pct as number,
+      });
+    case "insights.winStreak":
+      return t("insights.winStreak", {
+        team: insight.values.team as string,
+        count: insight.values.count as number,
+        from: insight.values.from as string,
+        to: insight.values.to as string,
+      });
+    case "insights.closing":
+      return t("insights.closing", {
+        team: insight.values.team as string,
+        wins: insight.values.wins as number,
+        of: insight.values.of as number,
+      });
+    case "insights.topWpa":
+      return t("insights.topWpa", {
+        player: insight.values.player as string,
+        team: insight.values.team as string,
+        wpa: insight.values.wpa as number,
+      });
     default:
       return null;
   }
 }
 
 function insightFigure(insight: MatchStoryInsight): number | null {
-  const v = insight.values.swing ?? insight.values.cost;
+  const v =
+    insight.values.swing ??
+    insight.values.cost ??
+    insight.values.pct ??
+    insight.values.wpa;
   return typeof v === "number" ? v : null;
 }
 
@@ -50,15 +85,14 @@ export function InsightsStrip({
   return (
     <div className="border-border border">
       <p className="text-muted-foreground border-border border-b px-3 py-1.5 font-mono text-[10px] tracking-[0.08em] uppercase">
-        {t("insights.title")}
+        {t("story.title")}
       </p>
       <ul className="divide-border divide-y">
         {insights.map((insight) => {
           const text = insightText(t, insight);
           if (text === null) return null;
           const figure = insightFigure(insight);
-          const fight = insight.values.fight;
-          const fightIndex = typeof fight === "number" ? fight - 1 : null;
+          const fightIndex = insight.fightIndex ?? null;
           const isFocus = fightIndex !== null && focusFight === fightIndex;
           return (
             <li key={`${insight.key}-${JSON.stringify(insight.values)}`}>

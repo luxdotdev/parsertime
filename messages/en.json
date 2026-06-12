@@ -3134,7 +3134,15 @@
         "title": "Key moments",
         "biggestSwing": "Fight {fight} swung the map by {swing}% toward {team}.",
         "ultCarryover": "Ult economy from fight {prevFight} carried an estimated {cost}% win-probability penalty for {team} into fight {fight}.",
-        "staggerCarryover": "Staggered deaths before fight {fight} cost {team} an estimated {cost}% win probability."
+        "staggerCarryover": "Staggered deaths before fight {fight} cost {team} an estimated {cost}% win probability.",
+        "earlyControl": "{team} took early control, winning {wins} of the first {of} fights.",
+        "longStretch": "{team} held the upper hand for {duration}, peaking at {pct}% win probability.",
+        "winStreak": "{team} ran off {count} straight fight wins from {from} to {to}.",
+        "closing": "{team} closed out the map, taking {wins} of the final {of} fights.",
+        "topWpa": "{player} ({team}) swung the most win probability of anyone: {wpa}% across the map."
+      },
+      "story": {
+        "title": "How the map unfolded"
       }
     }
   },
