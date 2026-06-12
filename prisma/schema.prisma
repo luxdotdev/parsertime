@@ -62,6 +62,7 @@ model User {
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @default(now()) @updatedAt
   battletag              String?
+  rankedStatsPublic      Boolean                 @default(false)
   appliedTitles          AppliedTitle[]
   seenOnboarding         Boolean                 @default(false)
   comparisonGroups       ComparisonGroup[]
@@ -78,6 +79,7 @@ model User {
   teamSubstitutes        TeamSubstitute[]
   teamBlacklists         TeamBlacklist[]
   scrimFeedback          ScrimFeedback[]
+  rankedMatches          RankedMatch[]
 
   @@index([id, email])
 }
@@ -2101,4 +2103,44 @@ model UserActiveDay {
   userId      String
 
   @@id([environment, day, userId])
+}
+
+model RankedMatch {
+  id        String            @id @default(cuid())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  map       String
+  mapType   String
+  result    String // win | loss | draw
+  groupSize Int
+  playedAt  DateTime
+  sourceId  String? // original winrate-tracker Match.id, for idempotent import
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  heroes    RankedMatchHero[]
+
+  @@unique([userId, sourceId])
+  @@index([userId])
+}
+
+model RankedMatchHero {
+  id         String      @id @default(cuid())
+  matchId    String
+  match      RankedMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  hero       String
+  role       String
+  percentage Int
+
+  @@index([matchId])
+}
+
+model RankedImportClaim {
+  id        String    @id @default(cuid())
+  email     String
+  oauthKey  String? // "provider:providerAccountId" fallback identity
+  payload   Json // RankedExportBundle
+  claimedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([email])
 }
