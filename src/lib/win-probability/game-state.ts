@@ -277,8 +277,7 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
     // timeRemaining unreliable mid-map.
     const isOvertime: 0 | 1 =
       log.modeFamily === "escort_hybrid" &&
-      setupBaseline !== null &&
-      setupBaseline.roundNumber === roundNumber &&
+      setupBaseline?.roundNumber === roundNumber &&
       timeRemaining === 0 &&
       round !== undefined &&
       t < round.end
