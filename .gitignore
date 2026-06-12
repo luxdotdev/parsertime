@@ -55,3 +55,6 @@ my-auth.json
 *.auth.json
 
 docs/superpowers/
+
+# git worktrees
+.worktrees/
