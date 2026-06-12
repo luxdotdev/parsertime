@@ -1,13 +1,22 @@
-import { MatchForm } from "@/components/ranked/match-form";
 import { DashboardContent } from "@/components/ranked/dashboard-content";
 import { ImportCard } from "@/components/ranked/import-card";
+import { MatchForm } from "@/components/ranked/match-form";
 import { Button } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { RankedService } from "@/data/ranked";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import type { PagePropsWithLocale } from "@/types/next";
 import { Effect } from "effect";
+import { Crosshair, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
@@ -36,14 +45,31 @@ export default async function RankedPage() {
 
   return (
     <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
-      <div className="mb-3 flex items-end justify-between gap-4">
-        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
-        <MatchForm trigger={<Button>{t("addMatch")}</Button>} />
-      </div>
+      <h1 className="mb-6 text-2xl font-bold tracking-tight">{t("title")}</h1>
       {matches.length === 0 ? (
-        <div className="space-y-4">
-          <p className="text-muted-foreground">{t("emptyDescription")}</p>
-          <ImportCard />
+        <div className="space-y-6">
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Crosshair />
+              </EmptyMedia>
+              <EmptyTitle>{t("emptyTitle")}</EmptyTitle>
+              <EmptyDescription>{t("emptyDescription")}</EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <MatchForm
+                trigger={
+                  <Button className="active:scale-[0.97]">
+                    <Plus className="mr-1.5 size-4" />
+                    {t("trackFirst")}
+                  </Button>
+                }
+              />
+            </EmptyContent>
+          </Empty>
+          <div className="mx-auto w-full max-w-md">
+            <ImportCard />
+          </div>
         </div>
       ) : (
         <DashboardContent matches={matches} />
