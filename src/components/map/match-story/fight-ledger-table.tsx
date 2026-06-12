@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -8,6 +9,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  ChevronDownIcon,
+  ChevronUpDownIcon,
+  ChevronUpIcon,
+} from "@heroicons/react/20/solid";
 import type {
   FightEntry,
   ObjectiveMarker,
@@ -35,6 +41,8 @@ function maxCarry(f: FightEntry): number {
     : Math.max(Math.abs(f.carryover.ultEconomy), Math.abs(f.carryover.stagger));
 }
 
+/** Header treatment mirroring the Overview tab's sortable table: a ghost
+ * button with a persistent up/down chevron affordance. */
 function SortHeader({
   sortKey,
   label,
@@ -54,14 +62,20 @@ function SortHeader({
       className={className}
       aria-sort={active ? (sort.desc ? "descending" : "ascending") : undefined}
     >
-      <button
-        type="button"
+      <Button
+        variant="ghost"
         onClick={() => onToggle(sortKey)}
-        className={active ? "text-foreground" : "hover:text-foreground"}
+        className="h-9 w-full px-2"
       >
         {label}
-        {active ? (sort.desc ? " ↓" : " ↑") : ""}
-      </button>
+        {!active && <ChevronUpDownIcon className="w-4 min-w-4" />}
+        {active &&
+          (sort.desc ? (
+            <ChevronDownIcon className="w-4 min-w-4" />
+          ) : (
+            <ChevronUpIcon className="w-4 min-w-4" />
+          ))}
+      </Button>
     </TableHead>
   );
 }
@@ -188,14 +202,14 @@ export function FightLedgerTable({
           <SortHeader
             sortKey="fight"
             label={t("fight")}
-            className="w-12"
+            className="w-20"
             sort={sort}
             onToggle={toggleSort}
           />
           <SortHeader
             sortKey="time"
             label={t("time")}
-            className="w-20"
+            className="w-24"
             sort={sort}
             onToggle={toggleSort}
           />
@@ -222,7 +236,7 @@ export function FightLedgerTable({
           <SortHeader
             sortKey="ults"
             label={t("ults")}
-            className="w-20 text-right"
+            className="w-24"
             sort={sort}
             onToggle={toggleSort}
           />
