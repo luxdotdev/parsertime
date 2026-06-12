@@ -7356,7 +7356,8 @@
   "settings": {
     "ranked": {
       "toggleLabel": "Show ranked stats on my profile",
-      "toggleDescription": "Let others see a summary of your ranked performance on your public profile."
+      "toggleDescription": "Let others see a summary of your ranked performance on your public profile.",
+      "toggleError": "Couldn't update your privacy setting"
     }
   }
 }

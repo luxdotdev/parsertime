@@ -19,7 +19,7 @@ export function RankedPrivacyToggle({ initial }: RankedPrivacyToggleProps) {
     const result = await setRankedStatsPublic(next);
     if (!result.success) {
       setChecked(!next);
-      toast.error(t("toggleLabel"));
+      toast.error(t("toggleError"));
     }
   }
 

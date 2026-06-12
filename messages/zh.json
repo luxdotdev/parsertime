@@ -7357,7 +7357,8 @@
   "settings": {
     "ranked": {
       "toggleLabel": "在我的主页显示排位统计",
-      "toggleDescription": "让他人在您的公开主页上查看您的排位表现摘要。"
+      "toggleDescription": "让他人在您的公开主页上查看您的排位表现摘要。",
+      "toggleError": "无法更新您的隐私设置"
     }
   }
 }

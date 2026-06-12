@@ -200,17 +200,21 @@ async function main(): Promise<void> {
             };
           }),
         },
-        matches: userMatches.map((m) => ({
-          sourceId: m.id,
-          map: m.map,
-          mapType: m.mapType,
-          result: m.result as "win" | "loss" | "draw",
-          groupSize: m.groupSize,
-          playedAt: m.playedAt instanceof Date
-            ? m.playedAt.toISOString()
-            : new Date(m.playedAt).toISOString(),
-          heroes: heroesByMatchId.get(m.id) ?? [],
-        })),
+        matches: userMatches
+          .filter((m) =>
+            (["win", "loss", "draw"] as string[]).includes(m.result)
+          )
+          .map((m) => ({
+            sourceId: m.id,
+            map: m.map,
+            mapType: m.mapType,
+            result: m.result as "win" | "loss" | "draw",
+            groupSize: m.groupSize,
+            playedAt: m.playedAt instanceof Date
+              ? m.playedAt.toISOString()
+              : new Date(m.playedAt).toISOString(),
+            heroes: heroesByMatchId.get(m.id) ?? [],
+          })),
       };
 
       const ptUserId = pickParsertimeMatch(identity, ptByEmail, ptByOauthKey);

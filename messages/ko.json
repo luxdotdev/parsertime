@@ -7357,7 +7357,8 @@
   "settings": {
     "ranked": {
       "toggleLabel": "내 프로필에 랭크 통계 표시",
-      "toggleDescription": "다른 사람들이 내 공개 프로필에서 랭크 성적 요약을 볼 수 있도록 합니다."
+      "toggleDescription": "다른 사람들이 내 공개 프로필에서 랭크 성적 요약을 볼 수 있도록 합니다.",
+      "toggleError": "개인정보 설정을 업데이트할 수 없습니다"
     }
   }
 }

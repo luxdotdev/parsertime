@@ -1,4 +1,4 @@
-import { buildMatchCreatePayloads } from "@/lib/ranked/importer";
+import { buildMatchCreatePayloads, isValidImportMatch } from "@/lib/ranked/importer";
 import type { RankedExportBundle } from "@/lib/ranked/export-schema";
 import { expect, test } from "vitest";
 
@@ -30,4 +30,63 @@ test("buildMatchCreatePayloads maps bundle matches to prisma create inputs", () 
 test("buildMatchCreatePayloads skips already-imported sourceIds", () => {
   const payloads = buildMatchCreatePayloads("user-1", bundle, new Set(["old-1"]));
   expect(payloads).toHaveLength(0);
+});
+
+// isValidImportMatch tests
+
+const validMatch: RankedExportBundle["matches"][number] = {
+  sourceId: "m-1",
+  map: "Ilios",
+  mapType: "Control",
+  result: "win",
+  groupSize: 1,
+  playedAt: "2026-01-01T00:00:00.000Z",
+  heroes: [{ hero: "Ana", role: "Support", percentage: 100 }],
+};
+
+test("isValidImportMatch returns true for a valid match", () => {
+  expect(isValidImportMatch(validMatch)).toBe(true);
+});
+
+test("isValidImportMatch returns false for unknown map", () => {
+  expect(isValidImportMatch({ ...validMatch, map: "NotARealMap" })).toBe(false);
+});
+
+test("isValidImportMatch returns false for unknown hero", () => {
+  expect(
+    isValidImportMatch({
+      ...validMatch,
+      heroes: [{ hero: "NotAHero", role: "Support", percentage: 100 }],
+    })
+  ).toBe(false);
+});
+
+test("isValidImportMatch returns false when hero percentages do not sum to 100", () => {
+  expect(
+    isValidImportMatch({
+      ...validMatch,
+      heroes: [
+        { hero: "Ana", role: "Support", percentage: 60 },
+        { hero: "Mercy", role: "Support", percentage: 30 },
+      ],
+    })
+  ).toBe(false);
+});
+
+test("isValidImportMatch returns false for non-integer percentage", () => {
+  expect(
+    isValidImportMatch({
+      ...validMatch,
+      heroes: [{ hero: "Ana", role: "Support", percentage: 99.5 }],
+    })
+  ).toBe(false);
+});
+
+test("isValidImportMatch returns false for invalid result value", () => {
+  expect(
+    isValidImportMatch({
+      ...validMatch,
+      result: "forfeit" as "win" | "loss" | "draw",
+    })
+  ).toBe(false);
 });
