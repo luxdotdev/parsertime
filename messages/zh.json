@@ -3213,7 +3213,9 @@
       "confidenceHigh": "高可信度",
       "confidenceMedium": "中等可信度",
       "confidenceLow": "低可信度",
-      "captureMarker": "{team} 占领点位 {point}"
+      "roundStarted": "第 {round} 回合开始",
+      "roundEnded": "第 {round} 回合结束",
+      "toggleRounds": "回合"
     }
   },
   "scoutingPage": {

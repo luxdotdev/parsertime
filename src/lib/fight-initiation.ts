@@ -349,10 +349,10 @@ export type MapInitiationSummary = {
   byTeam: Record<string, TeamInitiationSummary>;
 };
 
-export type ObjectiveCaptureMarker = {
+/** A round boundary, used to overlay start/end markers on the initiation timeline. */
+export type RoundBoundaryMarker = {
+  kind: "start" | "end";
   match_time: number;
-  capturing_team: string;
-  objective_index: number;
   round_number: number;
 };
 
@@ -361,7 +361,7 @@ export type MapInitiationResult = {
   available: boolean;
   labels: FightInitiationLabel[];
   summary: MapInitiationSummary | null;
-  captures: ObjectiveCaptureMarker[];
+  rounds: RoundBoundaryMarker[];
 };
 
 export type AssembleInput = {
@@ -372,7 +372,7 @@ export type AssembleInput = {
   ability2: AbilityEvent[];
   ults: UltEvent[];
   healing: HealEvent[];
-  captures: ObjectiveCaptureMarker[];
+  rounds: RoundBoundaryMarker[];
 };
 
 /** The two teams present in a map's kill events, or null if fewer than two are found. */
@@ -416,11 +416,11 @@ export function summarizeMapInitiation(
 
 export function assembleMapInitiation(input: AssembleInput): MapInitiationResult {
   if (input.damage.length === 0) {
-    return { available: false, labels: [], summary: null, captures: [] };
+    return { available: false, labels: [], summary: null, rounds: [] };
   }
   const teams = deriveTeams(input.kills);
   if (!teams) {
-    return { available: false, labels: [], summary: null, captures: [] };
+    return { available: false, labels: [], summary: null, rounds: [] };
   }
 
   const fightEvents = [
@@ -451,7 +451,7 @@ export function assembleMapInitiation(input: AssembleInput): MapInitiationResult
     available: true,
     labels,
     summary: summarizeMapInitiation(labels, teams),
-    captures: [...input.captures].sort((a, b) => a.match_time - b.match_time),
+    rounds: [...input.rounds].sort((a, b) => a.match_time - b.match_time),
   };
 }
 
@@ -465,10 +465,10 @@ export async function getFightInitiationForMapData(
   // Most cheaply gate on damage presence — one count avoids five large reads on legacy maps.
   const damageCount = await prisma.damage.count({ where: { MapDataId: mapDataId } });
   if (damageCount === 0) {
-    return { available: false, labels: [], summary: null, captures: [] };
+    return { available: false, labels: [], summary: null, rounds: [] };
   }
 
-  const [kills, rezzes, damage, ability1, ability2, ults, healing, captures] =
+  const [kills, rezzes, damage, ability1, ability2, ults, healing, roundStarts, roundEnds] =
     await Promise.all([
       prisma.kill.findMany({ where: { MapDataId: mapDataId } }),
       prisma.mercyRez.findMany({ where: { MapDataId: mapDataId } }),
@@ -503,16 +503,24 @@ export async function getFightInitiationForMapData(
           event_healing: true,
         },
       }),
-      prisma.objectiveCaptured.findMany({
+      prisma.roundStart.findMany({
         where: { MapDataId: mapDataId },
-        select: {
-          match_time: true,
-          capturing_team: true,
-          objective_index: true,
-          round_number: true,
-        },
+        select: { match_time: true, round_number: true },
+      }),
+      prisma.roundEnd.findMany({
+        where: { MapDataId: mapDataId },
+        select: { match_time: true, round_number: true },
       }),
     ]);
+
+  const rounds: RoundBoundaryMarker[] = [
+    ...roundStarts.map(
+      (r): RoundBoundaryMarker => ({ kind: "start", match_time: r.match_time, round_number: r.round_number })
+    ),
+    ...roundEnds.map(
+      (r): RoundBoundaryMarker => ({ kind: "end", match_time: r.match_time, round_number: r.round_number })
+    ),
+  ];
 
   return assembleMapInitiation({
     kills,
@@ -522,6 +530,6 @@ export async function getFightInitiationForMapData(
     ability2,
     ults,
     healing,
-    captures,
+    rounds,
   });
 }

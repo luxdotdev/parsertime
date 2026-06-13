@@ -3213,7 +3213,9 @@
       "confidenceHigh": "High confidence",
       "confidenceMedium": "Medium confidence",
       "confidenceLow": "Low confidence",
-      "captureMarker": "{team} captured point {point}"
+      "roundStarted": "Round {round} started",
+      "roundEnded": "Round {round} ended",
+      "toggleRounds": "Rounds"
     }
   },
   "scoutingPage": {

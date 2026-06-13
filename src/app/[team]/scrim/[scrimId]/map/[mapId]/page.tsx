@@ -182,7 +182,7 @@ export default async function MapDashboardPage(
       available: false,
       labels: [],
       summary: null,
-      captures: [],
+      rounds: [],
     }) satisfies MapInitiationResult),
   ]);
 

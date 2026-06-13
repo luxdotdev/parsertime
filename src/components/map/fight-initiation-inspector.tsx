@@ -1,15 +1,17 @@
 // src/components/map/fight-initiation-inspector.tsx
 "use client";
 
+import { useState } from "react";
 import { SectionHeader } from "@/components/stats/team/section-header";
 import { StatRibbon } from "@/components/stats/team/stat-ribbon";
 import { ConfidenceDot } from "@/components/scouting/confidence-indicator";
+import { Switch } from "@/components/ui/switch";
 import { cn, toTimestamp } from "@/lib/utils";
 import type {
   FightInitiationLabel,
   InitiationConfidence,
   MapInitiationResult,
-  ObjectiveCaptureMarker,
+  RoundBoundaryMarker,
 } from "@/lib/fight-initiation";
 import { useTranslations } from "next-intl";
 
@@ -19,12 +21,17 @@ const CONFIDENCE_LABEL_KEY: Record<InitiationConfidence, string> = {
   low: "confidenceLow",
 };
 
+type TimelineItem =
+  | { kind: "fight"; time: number; label: FightInitiationLabel }
+  | { kind: "round"; time: number; marker: RoundBoundaryMarker };
+
 export function FightInitiationInspector({
   result,
 }: {
   result: MapInitiationResult;
 }) {
   const t = useTranslations("mapPage.fightInitiation");
+  const [showRounds, setShowRounds] = useState(true);
 
   if (!result.available || !result.summary) {
     return (
@@ -35,7 +42,7 @@ export function FightInitiationInspector({
     );
   }
 
-  const { summary, labels, captures } = result;
+  const { summary, labels, rounds } = result;
   const [teamA, teamB] = summary.teams;
 
   const cells = [teamA, teamB].map((team) => ({
@@ -45,22 +52,22 @@ export function FightInitiationInspector({
     emphasis: true,
   }));
 
-  type TimelineItem =
-    | { kind: "fight"; time: number; label: FightInitiationLabel }
-    | { kind: "capture"; time: number; marker: ObjectiveCaptureMarker };
-
   const timeline: TimelineItem[] = [
     ...labels.map(
       (label): TimelineItem => ({ kind: "fight", time: label.start, label })
     ),
-    ...captures.map(
-      (marker): TimelineItem => ({
-        kind: "capture",
-        time: marker.match_time,
-        marker,
-      })
-    ),
+    ...(showRounds
+      ? rounds.map(
+          (marker): TimelineItem => ({
+            kind: "round",
+            time: marker.match_time,
+            marker,
+          })
+        )
+      : []),
   ].sort((a, b) => a.time - b.time);
+
+  const toggleId = "fight-initiation-rounds-toggle";
 
   return (
     <section className="space-y-4">
@@ -72,6 +79,19 @@ export function FightInitiationInspector({
           total: summary.totalFights,
           contested: summary.contestedFights,
         })}
+        rightSlot={
+          <label
+            htmlFor={toggleId}
+            className="flex cursor-pointer items-center gap-2 text-xs text-muted-foreground select-none"
+          >
+            {t("toggleRounds")}
+            <Switch
+              id={toggleId}
+              checked={showRounds}
+              onCheckedChange={setShowRounds}
+            />
+          </label>
+        }
       />
       <StatRibbon cells={cells} columns={4} />
       <ul className="divide-y divide-[var(--border)] border-y">
@@ -80,17 +100,17 @@ export function FightInitiationInspector({
             <FightRow key={`f-${item.label.fightIndex}`} label={item.label} />
           ) : (
             <li
-              key={`c-${item.marker.match_time}-${item.marker.objective_index}`}
+              key={`r-${item.marker.kind}-${item.marker.round_number}-${item.marker.match_time}`}
               className="flex items-center gap-2 px-1 py-2 text-xs"
             >
-              <span className="text-primary" aria-hidden="true">
-                ◆
+              <span className="text-muted-foreground/60" aria-hidden="true">
+                —
               </span>
               <span className="text-muted-foreground">
-                {t("captureMarker", {
-                  team: item.marker.capturing_team,
-                  point: item.marker.objective_index + 1,
-                })}
+                {t(
+                  item.marker.kind === "start" ? "roundStarted" : "roundEnded",
+                  { round: item.marker.round_number }
+                )}
               </span>
               <span className="text-muted-foreground/70 ml-auto font-mono tabular-nums">
                 {toTimestamp(item.marker.match_time)}

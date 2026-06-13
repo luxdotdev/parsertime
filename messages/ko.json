@@ -3213,7 +3213,9 @@
       "confidenceHigh": "높은 신뢰도",
       "confidenceMedium": "보통 신뢰도",
       "confidenceLow": "낮은 신뢰도",
-      "captureMarker": "{team} 거점 {point} 점령"
+      "roundStarted": "{round}라운드 시작",
+      "roundEnded": "{round}라운드 종료",
+      "toggleRounds": "라운드"
     }
   },
   "scoutingPage": {
