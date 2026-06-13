@@ -216,6 +216,28 @@ export type TeamFightStats = {
   totalUltsUsed: number;
 };
 
+// ---------- initiation-service types ----------
+
+export type TeamInitiationStats = {
+  totalFights: number;
+  decidedFights: number;
+  contestedFights: number;
+  wentFirst: number;
+  wentFirstWins: number;
+  wentSecond: number;
+  wentSecondWins: number;
+  /** Win rate of fights we initiated, 0-100 (headline). */
+  initiationWinrate: number;
+  /** Share of decided fights we initiated, 0-100. */
+  initiationFrequency: number;
+  /** Win rate of fights the enemy initiated, 0-100. */
+  goingSecondWinrate: number;
+  /** Modern-format maps that contributed initiation data. */
+  mapsCovered: number;
+  /** All core-roster maps in range (for coverage disclosure). */
+  mapsTotal: number;
+};
+
 // ---------- role-stats-service types ----------
 
 export type RoleStats = {
