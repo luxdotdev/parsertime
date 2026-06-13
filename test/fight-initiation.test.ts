@@ -73,7 +73,9 @@ describe("determineFightWinner", () => {
     ];
     expect(determineFightWinner(kills, "Team 1", "Team 2")).toBeNull();
   });
+});
 
+describe("constants", () => {
   test("MIN_COMMIT_PLAYERS default is 2", () => {
     expect(MIN_COMMIT_PLAYERS).toBe(2);
   });
@@ -219,7 +221,7 @@ describe("detectFightInitiation", () => {
     expect(label.contested).toBe(false);
     expect(label.winner).toBe("Team 1");
     expect(label.initiatorWon).toBe(true);
-    expect(label.confidence).toBe("medium"); // clean 4s gap + 2-player burst is medium
+    expect(label.confidence).toBe("medium"); // 4s gap → clean separation, but 2-player burst with no ult/3rd attacker/heal corroboration is not corroborated → medium
   });
 
   test("simultaneous commits within tolerance are contested", () => {

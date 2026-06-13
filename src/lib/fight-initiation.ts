@@ -1,4 +1,5 @@
 import type { Kill, MercyRez } from "@/generated/prisma/client";
+import prisma from "@/lib/prisma";
 import { groupEventsIntoFights, mercyRezToKillEvent, round } from "@/lib/utils";
 import type { Fight } from "@/lib/utils";
 
@@ -133,6 +134,9 @@ export function findTeamCommit(
     .filter((t) => inWindow(t, windowStart, windowEnd))
     .sort((x, y) => x - y);
 
+  // [t, t + COMMIT_SUBWINDOW_SEC] may extend a couple seconds past the first kill by design —
+  // a commitment materializes over a window that straddles the fight boundary, so early-fight
+  // damage from a pre-kill candidate moment legitimately counts toward that team's commit.
   for (const t of candidates) {
     const subEnd = t + COMMIT_SUBWINDOW_SEC;
     const dmgInSub = teamDamage.filter((d) => inWindow(d.match_time, t, subEnd));
@@ -241,6 +245,7 @@ export function detectFightInitiation(
 ): FightInitiationLabel {
   const [teamA, teamB] = ctx.teams;
   const windowStart = Math.max(prevFightEnd, fight.start - INITIATION_LOOKBACK_SEC);
+  // Inclusive of fight.start: the opening burst that produces first blood is part of the commitment.
   const windowEnd = fight.start;
 
   const commitA = findTeamCommit(teamA, windowStart, windowEnd, ctx);
@@ -435,8 +440,6 @@ export function assembleMapInitiation(input: AssembleInput): MapInitiationResult
 
   return { available: true, labels, summary: summarizeMapInitiation(labels, teams) };
 }
-
-import prisma from "@/lib/prisma";
 
 /**
  * Load a map's events and label fight initiation. Returns { available: false } when the
