@@ -137,13 +137,17 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> = Effect.ge
         return null;
       }
 
-      // In combined mode, restrict to matches where the scouted team's core
-      // players actually played. Teams sharing a name/id can field entirely
-      // different lineups; without this, combining pulls in off-roster matches
-      // that don't represent the squad being scouted. Uses the same ≥N-shared
-      // bar that made the teams "related".
+      // In combined mode, keep ALL of the scouted team's own matches, but pull
+      // in a related team's matches only when the scouted team's core players
+      // actually played in them. A related team id can be reused across
+      // entirely different lineups; without this, combining drags in off-roster
+      // matches. Uses the same ≥N-shared bar that made the teams "related".
       const coreFilter = combined
-        ? { players: yield* fetchCorePlayers(teamId), minShared: RELATED_MIN_SHARED }
+        ? {
+            scoutedTeamId: teamId,
+            players: yield* fetchCorePlayers(teamId),
+            minShared: RELATED_MIN_SHARED,
+          }
         : null;
 
       const { matchRows, mapRows, roster } = yield* fetchTeamData(
@@ -212,18 +216,19 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> = Effect.ge
 
   function fetchTeamData(
     teamIds: string[],
-    coreFilter: { players: string[]; minShared: number } | null
+    coreFilter: { scoutedTeamId: string; players: string[]; minShared: number } | null
   ) {
     const ids = teamIds.length > 0 ? teamIds : [""];
-    // Optional clause keeping only matches whose chosen-side roster contains at
-    // least `minShared` of the scouted team's core players.
+    // Optional clause: always keep the scouted team's own rows; keep a related
+    // team's row only when its chosen-side roster contains at least `minShared`
+    // of the scouted team's core players.
     const coreClause =
       coreFilter && coreFilter.players.length > 0
-        ? Prisma.sql`AND (
+        ? Prisma.sql`AND (mt."faceitTeamId" = ${coreFilter.scoutedTeamId} OR (
             SELECT COUNT(*) FROM "FaceitMatchRoster" rf
             WHERE rf."matchId" = mt."matchId" AND rf."teamSide" = mt."teamSide"
               AND rf."faceitPlayerId" IN (${Prisma.join(coreFilter.players)})
-          ) >= ${coreFilter.minShared}`
+          ) >= ${coreFilter.minShared})`
         : Prisma.empty;
     return Effect.tryPromise({
       try: async () => {
