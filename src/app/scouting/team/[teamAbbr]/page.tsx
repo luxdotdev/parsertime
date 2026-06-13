@@ -1,32 +1,59 @@
-import { BanStrategy } from "@/components/scouting/ban-strategy";
-import { HeroBanChart } from "@/components/scouting/hero-ban-chart";
-import { MapVetoAdvisor } from "@/components/scouting/map-veto-advisor";
-import { MatchHistoryTable } from "@/components/scouting/match-history-table";
-import { MethodologyCard } from "@/components/scouting/methodology-card";
-import { PlayerMatchups } from "@/components/scouting/player-matchups";
 import { ScoutForTeamPicker } from "@/components/scouting/scout-for-team-picker";
+import { ScoutingFaceitLink } from "@/components/scouting/scouting-faceit-link";
+import { ScoutingHeroBans } from "@/components/scouting/scouting-hero-bans";
+import { ScoutingMapPerformance } from "@/components/scouting/scouting-map-performance";
+import { ScoutingPlayerMatchups } from "@/components/scouting/scouting-player-matchups";
 import { ScoutingReport } from "@/components/scouting/scouting-report";
-import { TeamOverviewEnhanced } from "@/components/scouting/team-overview-enhanced";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScoutingTeamHeader } from "@/components/scouting/scouting-team-header";
+import { ScoutingTeamOverview } from "@/components/scouting/scouting-team-overview";
 import {
   HeroBanIntelligenceService,
   MapIntelligenceService,
 } from "@/data/intelligence";
 import { IntelligenceService } from "@/data/player";
 import { AppRuntime } from "@/data/runtime";
-import { OpponentStrengthService, ScoutingService } from "@/data/scouting";
+import {
+  OpponentStrengthService,
+  ScoutingFaceitLinkService,
+  ScoutingService,
+} from "@/data/scouting";
+import type { FaceitTeamLink } from "@/data/scouting/types";
 import { Effect } from "effect";
 import { auth } from "@/lib/auth";
 import { resolveDataAvailability } from "@/lib/data-availability";
-import { scoutingTool } from "@/lib/flags";
+import { faceitScouting, scoutingTool } from "@/lib/flags";
 import { generateInsights } from "@/lib/insights";
 import prisma from "@/lib/prisma";
 import { ArrowLeft } from "lucide-react";
-import { getFormatter, getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 type UserTeamOption = { id: number; name: string };
+
+export async function generateMetadata(props: {
+  params: Promise<{ teamAbbr: string }>;
+}): Promise<Metadata> {
+  const { teamAbbr } = await props.params;
+  const t = await getTranslations("scoutingPage.team.metadata");
+  const profile = await AppRuntime.runPromise(
+    ScoutingService.pipe(
+      Effect.flatMap((svc) =>
+        svc.getScoutingTeamProfile(decodeURIComponent(teamAbbr))
+      )
+    )
+  );
+  const team = profile?.team.fullName ?? decodeURIComponent(teamAbbr);
+  return {
+    title: t("title", { team }),
+    description: t("description", { team }),
+    openGraph: {
+      title: t("ogTitle", { team }),
+      description: t("ogDescription", { team }),
+    },
+  };
+}
 
 async function getUserTeams(): Promise<{
   teams: UserTeamOption[];
@@ -85,7 +112,6 @@ export default async function ScoutingTeamPage(
   ]);
   const teamAbbr = decodeURIComponent(params.teamAbbr);
   const t = await getTranslations("scoutingPage.team");
-  const formatter = await getFormatter();
 
   const profile = await AppRuntime.runPromise(
     ScoutingService.pipe(
@@ -101,15 +127,13 @@ export default async function ScoutingTeamPage(
   const hasUserTeamLink = userTeamId !== null;
 
   const [
-    { strengthRating, strengthPercentile, teamStrengthRatings },
+    { strengthRating, strengthPercentile },
     dataAvailability,
+    faceitEnabled,
   ] = await Promise.all([
     AppRuntime.runPromise(
       Effect.all(
         {
-          teamStrengthRatings: OpponentStrengthService.pipe(
-            Effect.flatMap((svc) => svc.getTeamStrengthRatings())
-          ),
           strengthRating: OpponentStrengthService.pipe(
             Effect.flatMap((svc) => svc.getTeamStrengthRating(teamAbbr))
           ),
@@ -121,9 +145,10 @@ export default async function ScoutingTeamPage(
       )
     ),
     resolveDataAvailability(teamAbbr, userTeamId),
+    faceitScouting(),
   ]);
 
-  const [mapIntelligence, banIntelligence, playerIntelligence] =
+  const [mapIntelligence, banIntelligence, playerIntelligence, faceitLink] =
     await AppRuntime.runPromise(
       Effect.all(
         {
@@ -148,12 +173,25 @@ export default async function ScoutingTeamPage(
                 )
               )
             : Effect.succeed(null),
+          faceitLink:
+            faceitEnabled && profile.team.fullName
+              ? ScoutingFaceitLinkService.pipe(
+                  Effect.flatMap((svc) =>
+                    svc.getFaceitTeamLink(profile.team.fullName)
+                  )
+                )
+              : Effect.succeed<FaceitTeamLink | null>(null),
         },
         { concurrency: "unbounded" }
       )
     ).then(
       (r) =>
-        [r.mapIntelligence, r.banIntelligence, r.playerIntelligence] as const
+        [
+          r.mapIntelligence,
+          r.banIntelligence,
+          r.playerIntelligence,
+          r.faceitLink,
+        ] as const
     );
 
   const insightReport = generateInsights({
@@ -167,8 +205,8 @@ export default async function ScoutingTeamPage(
   });
 
   return (
-    <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
-      <div className="space-y-4">
+    <div className="flex flex-1 flex-col px-4 pt-8 pb-16 sm:px-8">
+      <div className="mx-auto w-full max-w-5xl space-y-12">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <Link
             href="/scouting"
@@ -177,143 +215,44 @@ export default async function ScoutingTeamPage(
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             {t("backToSearch")}
           </Link>
-          <ScoutForTeamPicker
-            userTeams={userTeams}
-            currentTeamId={userTeamId}
-          />
+          <ScoutForTeamPicker userTeams={userTeams} currentTeamId={userTeamId} />
         </div>
 
-        <header className="space-y-1">
-          <div className="flex items-baseline gap-3">
-            <h1 className="text-3xl font-bold tracking-tight">
-              {profile.team.abbreviation}
-            </h1>
-            <span className="text-muted-foreground text-lg">
-              {profile.team.fullName}
-            </span>
-          </div>
-          <div className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-1 text-sm tabular-nums">
-            <span>
-              {overview.wins}
-              {t("overview.win")} &ndash; {overview.losses}
-              {t("overview.loss")}
-            </span>
-            <span className="font-medium">
-              {formatter.number(overview.winRate / 100, {
-                style: "percent",
-                minimumFractionDigits: 1,
-                maximumFractionDigits: 1,
-              })}{" "}
-              {t("overview.winRate")}
-            </span>
-            <span>
-              {formatter.number(overview.weightedWinRate / 100, {
-                style: "percent",
-                minimumFractionDigits: 1,
-                maximumFractionDigits: 1,
-              })}{" "}
-              {t("overview.weightedWinRate")}
-            </span>
-            <FormStreak
-              form={overview.recentForm}
-              winLabel={t("overview.win")}
-              lossLabel={t("overview.loss")}
-            />
-          </div>
-        </header>
+        <ScoutingTeamHeader
+          name={profile.team.fullName || profile.team.abbreviation}
+          abbreviation={profile.team.abbreviation}
+          overview={overview}
+          strength={strengthRating}
+          strengthPercentile={strengthPercentile}
+        />
+
+        <ScoutingReport report={insightReport} hasUserTeamLink={hasUserTeamLink} />
+
+        {faceitLink ? <ScoutingFaceitLink link={faceitLink} /> : null}
+
+        <ScoutingTeamOverview
+          overview={overview}
+          matchHistory={profile.matchHistory}
+        />
+
+        <ScoutingMapPerformance
+          mapAnalysis={profile.mapAnalysis}
+          mapIntelligence={mapIntelligence}
+          hasUserTeamLink={hasUserTeamLink}
+        />
+
+        <ScoutingHeroBans
+          heroBans={profile.heroBans}
+          banIntelligence={banIntelligence}
+          hasUserTeamLink={hasUserTeamLink}
+        />
+
+        <ScoutingPlayerMatchups
+          playerIntelligence={playerIntelligence}
+          hasUserTeamLink={hasUserTeamLink}
+          opponentName={profile.team.fullName || profile.team.abbreviation}
+        />
       </div>
-
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="overview">{t("tabs.overview")}</TabsTrigger>
-          <TabsTrigger value="maps">{t("tabs.maps")}</TabsTrigger>
-          <TabsTrigger value="heroBans">{t("tabs.heroBans")}</TabsTrigger>
-          <TabsTrigger value="players">{t("tabs.players")}</TabsTrigger>
-          <TabsTrigger value="report">{t("tabs.report")}</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-4">
-          <TeamOverviewEnhanced
-            overview={overview}
-            strengthRating={strengthRating}
-            strengthPercentile={strengthPercentile}
-            teamStrengthRatings={teamStrengthRatings}
-            matchHistory={profile.matchHistory}
-          />
-          <MatchHistoryTable matches={profile.matchHistory} />
-          <MethodologyCard translationKey="scoutingPage.team.overview.methodology" />
-        </TabsContent>
-
-        <TabsContent value="maps" className="space-y-4">
-          <MapVetoAdvisor
-            mapIntelligence={mapIntelligence}
-            hasUserTeamLink={hasUserTeamLink}
-          />
-          <MethodologyCard translationKey="scoutingPage.team.maps.methodology" />
-        </TabsContent>
-
-        <TabsContent value="heroBans" className="space-y-4">
-          <HeroBanChart heroBans={profile.heroBans} />
-          <BanStrategy
-            banIntelligence={banIntelligence}
-            hasUserTeamLink={hasUserTeamLink}
-          />
-          <MethodologyCard translationKey="scoutingPage.team.heroBans.methodology" />
-        </TabsContent>
-
-        <TabsContent value="players" className="space-y-4">
-          <PlayerMatchups
-            playerIntelligence={playerIntelligence}
-            hasUserTeamLink={hasUserTeamLink}
-            opponentName={profile.team.fullName ?? profile.team.abbreviation}
-          />
-          <MethodologyCard translationKey="scoutingPage.team.players.methodology" />
-        </TabsContent>
-
-        <TabsContent value="report" className="space-y-4">
-          <ScoutingReport
-            report={insightReport}
-            opponentAbbr={teamAbbr}
-            hasUserTeamLink={hasUserTeamLink}
-            dataAvailability={dataAvailability}
-          />
-          <MethodologyCard translationKey="scoutingPage.team.report.methodology" />
-        </TabsContent>
-      </Tabs>
     </div>
-  );
-}
-
-function FormStreak({
-  form,
-  winLabel,
-  lossLabel,
-}: {
-  form: ("win" | "loss")[];
-  winLabel: string;
-  lossLabel: string;
-}) {
-  if (form.length === 0) return null;
-
-  let streak = 1;
-  const currentResult = form[0];
-  for (let i = 1; i < form.length; i++) {
-    if (form[i] === currentResult) streak++;
-    else break;
-  }
-
-  const label = currentResult === "win" ? winLabel : lossLabel;
-
-  return (
-    <span
-      className={
-        currentResult === "win"
-          ? "font-semibold text-emerald-600 dark:text-emerald-400"
-          : "font-semibold text-red-600 dark:text-red-400"
-      }
-    >
-      {label}
-      {streak}
-    </span>
   );
 }

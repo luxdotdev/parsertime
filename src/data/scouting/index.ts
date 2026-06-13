@@ -12,6 +12,12 @@ export {
 } from "./opponent-strength-service";
 export type { OpponentStrengthServiceInterface } from "./opponent-strength-service";
 
+export {
+  ScoutingFaceitLinkService,
+  ScoutingFaceitLinkServiceLive,
+} from "./faceit-link-service";
+export type { ScoutingFaceitLinkServiceInterface } from "./faceit-link-service";
+
 export { ScoutingQueryError, ScoutingTeamNotFoundError } from "./errors";
 
 export type {
@@ -27,4 +33,6 @@ export type {
   ScoutingRecommendations,
   ScoutingTeamProfile,
   TeamStrengthRating,
+  FaceitLinkPlayer,
+  FaceitTeamLink,
 } from "./types";

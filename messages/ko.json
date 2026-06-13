@@ -3248,7 +3248,9 @@
         "description": "프로 Overwatch 선수를 검색하고 경쟁 이력, 영웅 풀, 토너먼트 성과를 확인하세요.",
         "ogTitle": "선수 스카우트 | Parsertime",
         "ogDescription": "프로 Overwatch 선수를 검색하고 경쟁 이력, 영웅 풀, 토너먼트 성과를 확인하세요.",
-        "ogImage": "선수 스카우트"
+        "ogImage": "선수 스카우트",
+        "profileTitle": "{player} 스카우팅 | Parsertime",
+        "profileDescription": "{player} 스카우팅 — 영웅 풀, 대회 기록, 스크림 성과."
       },
       "search": {
         "label": "선수 검색",
@@ -3290,7 +3292,12 @@
         "result": "결과",
         "heroes": "영웅",
         "win": "승",
-        "loss": "패"
+        "loss": "패",
+        "eyebrow": "OWCS 선수",
+        "tournamentsLabel": "토너먼트",
+        "date": "날짜",
+        "historyEyebrow": "토너먼트 기록",
+        "recordValue": "{wins}–{losses}"
       },
       "analytics": {
         "scrimOverview": {
@@ -3316,7 +3323,9 @@
             "killsPerUltimate": "사용한 궁극기당 평균 처치 수입니다. 값이 높을수록 궁극기 활용 효율이 좋다는 뜻입니다.",
             "consistencyScore": "맵별 10분당 지표가 얼마나 안정적인지 0-100으로 점수화합니다. 처치, 사망, 피해, 치유의 평균 변동계수 역수로 계산하며 75 이상은 매우 일관적입니다.",
             "mapsPlayed": "Parsertime에 기록된 이 선수의 스크림 맵 총수입니다. 모든 스크림 기반 지표의 표본 크기입니다."
-          }
+          },
+          "eyebrow": "스크림 프로필",
+          "sectionTitle": "스크림 성과"
         },
         "performanceRadar": {
           "title": "성과 프로필",
@@ -3347,7 +3356,13 @@
           "won": "승리",
           "noData": "경쟁 맵 데이터가 없습니다.",
           "methodologyMapType": "맵 유형별 승률은 이 선수의 팀이 참가한 모든 대회 경기 결과에서 계산됩니다. 비율은 각 게임 모드(Control, Escort, Hybrid, Push, Flashpoint)에서 승리 ÷ 총 플레이 맵입니다.",
-          "methodologyByMap": "개별 맵 승률은 대회 경기 결과에서 계산됩니다. 테두리는 색으로 구분됩니다: 승률 60% 이상은 초록, 40% 이하는 빨강, 그 외는 중립입니다."
+          "methodologyByMap": "개별 맵 승률은 대회 경기 결과에서 계산됩니다. 테두리는 색으로 구분됩니다: 승률 60% 이상은 초록, 40% 이하는 빨강, 그 외는 중립입니다.",
+          "empty": "대회 맵 데이터가 없습니다.",
+          "eyebrow": "맵",
+          "lowSample": "표본 부족",
+          "map": "맵",
+          "mode": "모드",
+          "winRate": "승률"
         },
         "killAnalysis": {
           "title": "전투 패턴",
@@ -3368,7 +3383,9 @@
           "weaknesses": "약점",
           "noStrengths": "강점을 식별하기에 데이터가 부족합니다.",
           "noWeaknesses": "뚜렷한 약점이 식별되지 않았습니다.",
-          "methodology": "인사이트는 z-점수(글로벌 평균 대비 영웅 성과), 대회 맵 승률, 첫 픽/첫 사망 비율, 일관성 점수, 영웅 풀 깊이를 분석해 자동 생성됩니다. 강점은 긍정 임계값을 넘을 때, 약점은 부정 임계값에 도달할 때 표시됩니다. 모든 데이터 소스를 결합해 종합적인 관점을 제공합니다."
+          "methodology": "인사이트는 z-점수(글로벌 평균 대비 영웅 성과), 대회 맵 승률, 첫 픽/첫 사망 비율, 일관성 점수, 영웅 풀 깊이를 분석해 자동 생성됩니다. 강점은 긍정 임계값을 넘을 때, 약점은 부정 임계값에 도달할 때 표시됩니다. 모든 데이터 소스를 결합해 종합적인 관점을 제공합니다.",
+          "eyebrow": "스카우팅 분석",
+          "readTitle": "핵심 정리"
         },
         "noScrimData": "이 선수는 아직 Parsertime 스크림 데이터가 없습니다. 대회 분석과 토너먼트 이력은 계속 사용할 수 있습니다.",
         "statLabels": {
@@ -3378,7 +3395,8 @@
           "healing_dealt": "치유",
           "damage_blocked": "방어한 피해"
         }
-      }
+      },
+      "searchEyebrow": "OWCS 선수"
     },
     "team": {
       "metadata": {
@@ -3443,7 +3461,9 @@
             "4": "Record Quality는 1500점 이상 팀을 상대로 얻은 승리 수를 집계해 좋은 전적이 강한 경쟁에서 나온 것인지 보여줍니다.",
             "5": "경기 데이터는 Liquipedia에서 가져오며 최근 1년 OWCS 토너먼트를 다룹니다. 팀 선택기를 사용하면 업로드한 스크림 데이터도 반영됩니다."
           }
-        }
+        },
+        "eyebrow": "개요",
+        "title": "폼 & 전적"
       },
       "heroBans": {
         "bansAgainstTeam": "상대가 이 팀에게 한 밴",
@@ -3485,7 +3505,10 @@
             "4": "Their Ban Targets는 상대의 밴 이력과 우리 팀이 많이 플레이한 영웅을 교차 참조합니다. Critical은 상대가 맵의 30% 이상에서 밴하고 우리 팀이 10% 이상 플레이한 경우입니다.",
             "5": "Protected Heroes는 이 팀이 맵의 5% 미만에서만 밴하는 영웅입니다. 이들은 조합의 핵심이라 열어두고 싶어 하는 영웅일 수 있습니다."
           }
-        }
+        },
+        "eyebrow": "영웅 밴",
+        "title": "밴 환경",
+        "delta": "변화"
       },
       "maps": {
         "byMapType": "맵 유형별 승률",
@@ -3527,7 +3550,12 @@
             "4": "신뢰도 점은 표본 크기를 나타냅니다. 초록 채움은 20맵 이상, 주황은 10-19맵, 흐림은 5-9맵입니다.",
             "5": "팀 선택기를 사용하면 우리 팀의 스크림 맵 데이터가 상대의 OWCS 데이터와 결합됩니다. 둘 다 같은 방식으로 감쇠 가중됩니다."
           }
-        }
+        },
+        "eyebrow": "맵",
+        "title": "맵 성적",
+        "matchupTitle": "맵 매치업",
+        "netAdvantageHeader": "순이점",
+        "lowSample": "표본 부족"
       },
       "recommendations": {
         "title": "전략 추천",
@@ -3602,10 +3630,15 @@
             "4": "Vulnerability Index = 영웅 깊이 차이 × 상대 밴율입니다. 0.5 초과는 치명, 0.25-0.5는 높음, 0.1-0.25는 보통, 0.1 미만은 낮음입니다.",
             "5": "포함되려면 영웅은 최소 3맵과 2분 이상의 플레이 시간이 필요합니다. 의미 있는 신뢰도에는 선수당 최소 5맵이 필요합니다."
           }
-        }
+        },
+        "eyebrow": "로스터 준비",
+        "title": "로스터 대비 상태",
+        "bestPlayer": "핵심 활약 선수",
+        "mapsPlayed": "{count, plural, other {#개 맵 플레이}}",
+        "standoutBanTarget": "이 상대의 표적 — 주 영웅이 상대 맵의 {banRate}에서 밴됨"
       },
       "report": {
-        "title": "경기 전 브리프: vs. {opponent}",
+        "title": "데이터가 말하는 것",
         "scrimOnly": "스크림 데이터만 있음 — 경쟁전 이력이 없습니다",
         "selectTeamTitle": "전체 리포트를 보려면 팀을 선택하세요",
         "selectTeamDescription": "맵 매치업과 선수 취약성 같은 교차 참조 인사이트는 위의 “스카우팅 기준” 선택기에서 팀을 선택해야 표시됩니다. 아래에는 상대 전용 인사이트만 표시됩니다.",
@@ -3628,10 +3661,64 @@
             "5": "신뢰도 단계 — 높음: 20맵 이상. 중간: 10-19. 낮음: 5-9. 부족: 5 미만. 스크림 전용 데이터는 더 엄격한 기준을 사용합니다.",
             "6": "각 인사이트에는 데이터 출처가 표시됩니다. 'Competitive'는 OWCS 경기만, 'Scrim'은 업로드한 스크림 데이터만, 'Competitive + Scrim'은 둘 다 사용한 것입니다."
           }
+        },
+        "eyebrow": "스카우팅 리포트",
+        "subtitle": "우선순위가 높은 항목부터 — 우리의 강점과 상대의 위협.",
+        "confidenceLabel": "{level} 신뢰도",
+        "confidence": {
+          "high": "높음",
+          "medium": "보통",
+          "low": "낮음",
+          "insufficient": "부족"
+        },
+        "emptyLinked": "이 매치업에 대해 신뢰할 만한 분석을 내놓기에는 아직 데이터가 부족합니다.",
+        "emptyUnlinked": "위에서 우리 팀을 선택하면 매치업·밴·선수 노출을 교차 분석합니다.",
+        "showFewer": "간략히 보기",
+        "showMore": "{count}개 더 보기",
+        "sampleMaps": "{count, plural, other {#개 맵}}",
+        "source": {
+          "owcs": "OWCS",
+          "scrim": "스크림",
+          "owcs+scrim": "OWCS + 스크림"
         }
       },
-      "empty": "이 팀에 사용할 수 있는 스카우팅 데이터가 없습니다."
-    }
+      "empty": "이 팀에 사용할 수 있는 스카우팅 데이터가 없습니다.",
+      "header": {
+        "eyebrow": "OWCS 스카우팅"
+      },
+      "strengthExplainer": {
+        "trigger": "전력 등급이란?",
+        "title": "전력 등급 계산 방식",
+        "intro": "1500을 기준으로 한 Elo 방식의 경기 성과 등급입니다.",
+        "elo": {
+          "label": "Elo 기반.",
+          "body": "강한 팀을 이기면 약한 팀을 이길 때보다 등급이 더 오릅니다."
+        },
+        "quality": {
+          "label": "전적의 질.",
+          "body": "1500 이상 팀을 상대로 한 승리가 약체 상대 승리보다 가치가 큽니다."
+        },
+        "weighted": {
+          "label": "최신 가중치.",
+          "body": "최근 경기가 오래된 경기보다 더 큰 비중을 가집니다 (반감기 90일)."
+        },
+        "provisional": {
+          "label": "5경기 미만은 잠정치.",
+          "body": "표본이 적은 등급은 표시되며 과대 해석하지 않는 것이 좋습니다."
+        }
+      },
+      "faceitLink": {
+        "eyebrow": "FACEIT 신호",
+        "title": "FACEIT에서는 {name}(으)로 활동",
+        "subtitle": "이 로스터는 FACEIT 팀과 일치합니다 — OWCS 전적만으로는 알 수 없는 개인 기량 지표를 더해 줍니다.",
+        "aggregateFsr": "로스터 FSR",
+        "coverage": "일치 선수 {shared}명 중 {covered}명 평가됨",
+        "viewProfile": "FACEIT 프로필 보기",
+        "matchedPlayers": "일치한 선수",
+        "disclaimer": "닉네임 일치와 공유된 FACEIT 경기로 추론된 결과이며, 확인된 동일인은 아닙니다."
+      }
+    },
+    "searchEyebrow": "OWCS 스카우팅"
   },
   "faceitScoutingPage": {
     "title": "FACEIT 팀 스카우팅",

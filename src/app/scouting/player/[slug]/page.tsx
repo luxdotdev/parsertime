@@ -1,20 +1,38 @@
-import { PlayerHeroPool } from "@/components/scouting/player-hero-pool";
-import { PlayerHeroZScores } from "@/components/scouting/player-hero-zscores";
-import { PlayerKillAnalysis } from "@/components/scouting/player-kill-analysis";
-import { PlayerMapWinrates } from "@/components/scouting/player-map-winrates";
-import { PlayerPerformanceRadar } from "@/components/scouting/player-performance-radar";
-import { PlayerProfileHeader } from "@/components/scouting/player-profile-header";
-import { PlayerScrimOverview } from "@/components/scouting/player-scrim-overview";
-import { PlayerStrengthsWeaknesses } from "@/components/scouting/player-strengths-weaknesses";
-import { PlayerTournamentHistory } from "@/components/scouting/player-tournament-history";
+import { ScoutingPlayerHeader } from "@/components/scouting/scouting-player-header";
+import { ScoutingPlayerMapWinrates } from "@/components/scouting/scouting-player-map-winrates";
+import { ScoutingPlayerRead } from "@/components/scouting/scouting-player-read";
+import { ScoutingPlayerScrimProfile } from "@/components/scouting/scouting-player-scrim-profile";
+import { ScoutingPlayerTournaments } from "@/components/scouting/scouting-player-tournaments";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { ScoutingService, ScoutingAnalyticsService } from "@/data/player";
 import { scoutingTool } from "@/lib/flags";
 import { ArrowLeft } from "lucide-react";
+import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await props.params;
+  const t = await getTranslations("scoutingPage.player.metadata");
+  const profile = await AppRuntime.runPromise(
+    ScoutingService.pipe(
+      Effect.flatMap((svc) => svc.getPlayerProfile(decodeURIComponent(slug)))
+    )
+  );
+  const player = profile?.name ?? decodeURIComponent(slug);
+  return {
+    title: t("profileTitle", { player }),
+    description: t("profileDescription", { player }),
+    openGraph: {
+      title: t("profileTitle", { player }),
+      description: t("profileDescription", { player }),
+    },
+  };
+}
 
 export default async function ScoutingPlayerPage(
   props: PageProps<"/scouting/player/[slug]">
@@ -33,57 +51,43 @@ export default async function ScoutingPlayerPage(
 
   const analytics = await AppRuntime.runPromise(
     ScoutingAnalyticsService.pipe(
-      Effect.flatMap((svc) =>
-        svc.getPublicPlayerScoutingAnalytics(profile.name)
-      )
+      Effect.flatMap((svc) => svc.getPublicPlayerScoutingAnalytics(profile.name))
     )
   );
 
   return (
-    <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
-      <div className="space-y-4">
-        <Link
-          href="/scouting/player"
-          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-          {t("backToSearch")}
-        </Link>
+    <div className="flex flex-1 flex-col px-4 pt-8 pb-16 sm:px-8">
+      <div className="mx-auto w-full max-w-5xl space-y-12">
+        <div>
+          <Link
+            href="/scouting/player"
+            className="text-muted-foreground hover:text-foreground mb-6 inline-flex items-center gap-1.5 text-sm transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+            {t("backToSearch")}
+          </Link>
+          <ScoutingPlayerHeader profile={profile} />
+        </div>
 
-        <PlayerProfileHeader profile={profile} />
-      </div>
-
-      <PlayerHeroPool
-        signatureHeroes={profile.signatureHeroes}
-        heroFrequencies={profile.heroFrequencies}
-      />
-
-      <PlayerScrimOverview scrimData={analytics.scrimData} />
-
-      {analytics.scrimData && (
-        <>
-          <PlayerPerformanceRadar heroes={analytics.scrimData.heroes} />
-          <PlayerHeroZScores heroes={analytics.scrimData.heroes} />
-        </>
-      )}
-
-      <PlayerMapWinrates
-        competitiveMapWinrates={analytics.competitiveMapWinrates}
-      />
-
-      {analytics.scrimData && (
-        <PlayerKillAnalysis
-          killPatterns={analytics.scrimData.killPatterns}
-          roleDistribution={analytics.scrimData.roleDistribution}
+        <ScoutingPlayerRead
+          strengths={analytics.strengths}
+          weaknesses={analytics.weaknesses}
+          signatureHeroes={profile.signatureHeroes}
+          heroFrequencies={profile.heroFrequencies}
         />
-      )}
 
-      <PlayerStrengthsWeaknesses
-        strengths={analytics.strengths}
-        weaknesses={analytics.weaknesses}
-      />
+        {analytics.scrimData ? (
+          <ScoutingPlayerScrimProfile scrimData={analytics.scrimData} />
+        ) : null}
 
-      <PlayerTournamentHistory tournamentRecords={profile.tournamentRecords} />
+        <ScoutingPlayerMapWinrates
+          competitiveMapWinrates={analytics.competitiveMapWinrates}
+        />
+
+        <ScoutingPlayerTournaments
+          tournamentRecords={profile.tournamentRecords}
+        />
+      </div>
     </div>
   );
 }

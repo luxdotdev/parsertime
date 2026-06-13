@@ -3248,7 +3248,9 @@
         "description": "搜索职业《守望先锋》选手，查看他们的赛事历史、英雄池和锦标赛表现。",
         "ogTitle": "球探选手 | Parsertime",
         "ogDescription": "搜索职业《守望先锋》选手，查看他们的赛事历史、英雄池和锦标赛表现。",
-        "ogImage": "球探选手"
+        "ogImage": "球探选手",
+        "profileTitle": "{player} 球探 | Parsertime",
+        "profileDescription": "球探 {player}——英雄池、赛事历史与训练赛表现。"
       },
       "search": {
         "label": "搜索选手",
@@ -3290,7 +3292,12 @@
         "result": "结果",
         "heroes": "英雄",
         "win": "胜",
-        "loss": "负"
+        "loss": "负",
+        "eyebrow": "OWCS 选手",
+        "tournamentsLabel": "锦标赛",
+        "date": "日期",
+        "historyEyebrow": "锦标赛历史",
+        "recordValue": "{wins}–{losses}"
       },
       "analytics": {
         "scrimOverview": {
@@ -3316,7 +3323,9 @@
             "killsPerUltimate": "每次使用终极技能取得的平均消灭数。数值越高说明终极技能使用效率越好。",
             "consistencyScore": "根据各地图每 10 分钟数据的稳定程度给出 0-100 分。由消灭、死亡、伤害和治疗的平均变异系数倒数计算；75 以上表示非常稳定。",
             "mapsPlayed": "Parsertime 中记录的该选手训练赛地图总数，是所有训练赛指标的样本量。"
-          }
+          },
+          "eyebrow": "训练赛档案",
+          "sectionTitle": "训练赛表现"
         },
         "performanceRadar": {
           "title": "表现画像",
@@ -3347,7 +3356,13 @@
           "won": "获胜",
           "noData": "暂无竞技地图数据。",
           "methodologyMapType": "地图类型胜率根据该选手所在队伍参与的所有正式比赛结果计算。百分比为每种模式（Control、Escort、Hybrid、Push、Flashpoint）的胜场数 ÷ 总地图数。",
-          "methodologyByMap": "单张地图胜率根据正式比赛结果计算。边框按颜色区分：胜率 ≥60% 为绿色，≤40% 为红色，其余为中性。"
+          "methodologyByMap": "单张地图胜率根据正式比赛结果计算。边框按颜色区分：胜率 ≥60% 为绿色，≤40% 为红色，其余为中性。",
+          "empty": "暂无赛事地图数据。",
+          "eyebrow": "地图",
+          "lowSample": "样本不足",
+          "map": "地图",
+          "mode": "模式",
+          "winRate": "胜率"
         },
         "killAnalysis": {
           "title": "战斗模式",
@@ -3368,7 +3383,9 @@
           "weaknesses": "弱点",
           "noStrengths": "数据不足，无法识别优势。",
           "noWeaknesses": "未发现明显弱点。",
-          "methodology": "洞察通过分析 z 分数（相对全局平均的英雄表现）、正式比赛地图胜率、首杀/首死率、稳定性分数和英雄池深度自动生成。指标超过正向阈值时触发优势，达到负向阈值时触发弱点。系统会结合所有数据来源提供整体视角。"
+          "methodology": "洞察通过分析 z 分数（相对全局平均的英雄表现）、正式比赛地图胜率、首杀/首死率、稳定性分数和英雄池深度自动生成。指标超过正向阈值时触发优势，达到负向阈值时触发弱点。系统会结合所有数据来源提供整体视角。",
+          "eyebrow": "球探解读",
+          "readTitle": "关键信息"
         },
         "noScrimData": "该选手尚无 Parsertime 训练赛数据。正式比赛分析和锦标赛历史仍可查看。",
         "statLabels": {
@@ -3378,7 +3395,8 @@
           "healing_dealt": "治疗",
           "damage_blocked": "承受伤害"
         }
-      }
+      },
+      "searchEyebrow": "OWCS 选手"
     },
     "team": {
       "metadata": {
@@ -3443,7 +3461,9 @@
             "4": "Record Quality 统计有多少胜利来自击败 1500 分以上队伍，用于判断好战绩是否来自强竞争。",
             "5": "比赛数据来自 Liquipedia，覆盖过去一年 OWCS 锦标赛。使用队伍选择器选择你的队伍后，也会纳入你的训练赛数据。"
           }
-        }
+        },
+        "eyebrow": "概览",
+        "title": "状态与战绩"
       },
       "heroBans": {
         "bansAgainstTeam": "针对他们的禁用",
@@ -3485,7 +3505,10 @@
             "4": "Their Ban Targets 会把对手禁用历史与你队最常使用的英雄交叉比对。Critical 表示他们在 30% 以上地图禁用，且你的队伍使用率 10% 以上。",
             "5": "Protected Heroes 是该队伍在少于 5% 地图中禁用的英雄，可能是他们希望保留的阵容核心。"
           }
-        }
+        },
+        "eyebrow": "英雄禁用",
+        "title": "禁用环境",
+        "delta": "差值"
       },
       "maps": {
         "byMapType": "按地图类型统计胜率",
@@ -3527,7 +3550,12 @@
             "4": "置信度点表示样本量：绿色实心为 20+ 地图，琥珀色为 10-19，淡色为 5-9。",
             "5": "通过队伍选择器选择你的队伍后，你的训练赛地图数据会与对手 OWCS 数据合并，并使用相同的衰减加权。"
           }
-        }
+        },
+        "eyebrow": "地图",
+        "title": "地图表现",
+        "matchupTitle": "地图对阵",
+        "netAdvantageHeader": "净优势",
+        "lowSample": "样本不足"
       },
       "recommendations": {
         "title": "策略建议",
@@ -3602,10 +3630,15 @@
             "4": "Vulnerability Index = 英雄深度差值 × 对手禁用率。0.5 以上为关键，0.25-0.5 为高，0.1-0.25 为中等，0.1 以下为低。",
             "5": "英雄至少需要 3 张地图且使用时间超过 2 分钟才会纳入。选手至少需要 5 张总地图才有有意义的置信度。"
           }
-        }
+        },
+        "eyebrow": "阵容准备",
+        "title": "阵容备战",
+        "bestPlayer": "突出表现者",
+        "mapsPlayed": "{count, plural, other {出战 # 张地图}}",
+        "standoutBanTarget": "被该对手针对——其主力英雄在对方 {banRate} 的地图中被禁"
       },
       "report": {
-        "title": "赛前简报：对阵 {opponent}",
+        "title": "数据告诉我们的",
         "scrimOnly": "仅有训练赛数据 — 暂无正式比赛历史",
         "selectTeamTitle": "选择你的队伍以查看完整报告",
         "selectTeamDescription": "地图对局和选手弱点等交叉引用洞察，需要先在上方“球探对象”选择器中选择你的队伍。下方仅显示对手单方洞察。",
@@ -3628,10 +3661,64 @@
             "5": "置信度层级 — 高：20+ 地图；中：10-19；低：5-9；不足（隐藏）：少于 5。纯训练赛数据使用更严格阈值。",
             "6": "每条洞察都会显示数据来源：“Competitive”代表仅 OWCS 比赛，“Scrim”代表仅上传的训练赛数据，“Competitive + Scrim”代表两者结合。"
           }
+        },
+        "eyebrow": "球探报告",
+        "subtitle": "优先级最高的解读在前——你的优势与对手的威胁。",
+        "confidenceLabel": "{level} 置信度",
+        "confidence": {
+          "high": "高",
+          "medium": "中",
+          "low": "低",
+          "insufficient": "不足"
+        },
+        "emptyLinked": "目前数据不足，无法对该对阵给出可靠的解读。",
+        "emptyUnlinked": "在上方选择你的队伍，以交叉分析对阵、禁用与选手风险。",
+        "showFewer": "收起",
+        "showMore": "再显示 {count} 条",
+        "sampleMaps": "{count, plural, other {# 张地图}}",
+        "source": {
+          "owcs": "OWCS",
+          "scrim": "训练赛",
+          "owcs+scrim": "OWCS + 训练赛"
         }
       },
-      "empty": "该队伍暂无可用球探数据。"
-    }
+      "empty": "该队伍暂无可用球探数据。",
+      "header": {
+        "eyebrow": "OWCS 球探"
+      },
+      "strengthExplainer": {
+        "trigger": "什么是实力评分？",
+        "title": "实力评分的计算方式",
+        "intro": "以 1500 为基准的 Elo 式赛事成绩评分。",
+        "elo": {
+          "label": "基于 Elo。",
+          "body": "击败评分更高的队伍比击败较弱队伍提升更多。"
+        },
+        "quality": {
+          "label": "战绩质量。",
+          "body": "战胜 1500 以上的队伍比击败弱旅更有分量。"
+        },
+        "weighted": {
+          "label": "近期加权。",
+          "body": "近期比赛比早期比赛权重更高（半衰期 90 天）。"
+        },
+        "provisional": {
+          "label": "不足 5 场为临时评分。",
+          "body": "样本不足的评分会被标注，不应过度解读。"
+        }
+      },
+      "faceitLink": {
+        "eyebrow": "FACEIT 信号",
+        "title": "在 FACEIT 上以 {name} 参赛",
+        "subtitle": "该阵容与一支 FACEIT 队伍吻合——补充了 OWCS 战绩无法提供的个人水平读数。",
+        "aggregateFsr": "阵容 FSR",
+        "coverage": "{shared} 名吻合选手中 {covered} 名已评分",
+        "viewProfile": "查看 FACEIT 资料",
+        "matchedPlayers": "吻合的选手",
+        "disclaimer": "根据昵称重合与共同的 FACEIT 比赛推断得出，并非已核实的身份。"
+      }
+    },
+    "searchEyebrow": "OWCS 球探"
   },
   "faceitScoutingPage": {
     "title": "FACEIT 团队球探",

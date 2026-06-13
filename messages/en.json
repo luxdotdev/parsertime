@@ -3303,7 +3303,9 @@
             "4": "Record Quality counts how many wins came against teams rated above 1500 (the starting average), showing whether a strong record was earned against strong competition.",
             "5": "Match data is sourced from Liquipedia and covers the last year of OWCS tournaments. When you select your team with the picker, your scrim data is also factored in."
           }
-        }
+        },
+        "eyebrow": "Overview",
+        "title": "Form & record"
       },
       "heroBans": {
         "bansAgainstTeam": "Bans Against Them",
@@ -3345,7 +3347,10 @@
             "4": "Their Ban Targets cross-references the opponent's ban history with your most-played heroes. Critical: they ban it 30%+ of maps and your team plays it 10%+ of the time. Watch: ban rate 15%+ and play rate 5%+. Safe: low overlap.",
             "5": "Protected Heroes are heroes this team bans in fewer than 5% of their maps — these are composition staples they want available."
           }
-        }
+        },
+        "eyebrow": "Hero bans",
+        "title": "Ban environment",
+        "delta": "Delta"
       },
       "maps": {
         "byMapType": "Win Rate by Map Type",
@@ -3387,7 +3392,12 @@
             "4": "Confidence dots indicate sample size: filled green = 20+ maps (high), amber = 10–19 (medium), faded = 5–9 (low). Matchups where either side has fewer than 5 maps are hidden from the veto recommendation.",
             "5": "When you select your team via the picker, your scrim map data is combined with the opponent's OWCS data. Both are decay-weighted identically; scrim data uses stricter confidence thresholds (30/15/7 maps instead of 20/10/5)."
           }
-        }
+        },
+        "eyebrow": "Maps",
+        "title": "Map performance",
+        "matchupTitle": "Map matchups",
+        "netAdvantageHeader": "Net adv.",
+        "lowSample": "Low sample"
       },
       "recommendations": {
         "title": "Strategic Recommendations",
@@ -3462,10 +3472,15 @@
             "4": "Vulnerability Index = hero depth delta × opponent ban rate. Scale: above 0.5 = critical (large drop-off + frequently banned), 0.25–0.5 = high, 0.1–0.25 = moderate, below 0.1 = low.",
             "5": "Heroes need at least 3 maps with 2+ minutes of play time to be included. Players need at least 5 total maps for a meaningful confidence rating."
           }
-        }
+        },
+        "eyebrow": "Roster prep",
+        "title": "Roster readiness",
+        "bestPlayer": "Standout performer",
+        "mapsPlayed": "{count, plural, one {# map played} other {# maps played}}",
+        "standoutBanTarget": "Targeted by this opponent — primary hero banned in {banRate} of their maps"
       },
       "report": {
-        "title": "Pre-Match Brief: vs. {opponent}",
+        "title": "What the data says",
         "scrimOnly": "Scrim data only — no competitive history available",
         "selectTeamTitle": "Select your team for the full report",
         "selectTeamDescription": "Cross-referenced insights (map matchups, player vulnerabilities) require selecting your team with the “Scouting for” picker above. Opponent-only insights are shown below.",
@@ -3488,9 +3503,62 @@
             "5": "Confidence tiers — High: 20+ maps. Medium: 10–19. Low: 5–9. Insufficient (hidden): under 5. Scrim-only data uses stricter thresholds (30/15/7) since practice matches carry lower signal strength.",
             "6": "Data source is shown on each insight card: 'Competitive' = OWCS matches only, 'Scrim' = your uploaded scrim data only, 'Competitive + Scrim' = both sources combined."
           }
+        },
+        "eyebrow": "Scouting report",
+        "subtitle": "The highest-priority reads first — your edges and their threats.",
+        "confidenceLabel": "{level} confidence",
+        "confidence": {
+          "high": "High",
+          "medium": "Medium",
+          "low": "Low",
+          "insufficient": "Insufficient"
+        },
+        "emptyLinked": "Not enough data yet to surface confident reads for this matchup.",
+        "emptyUnlinked": "Select your team above to cross-reference matchups, bans, and player exposure.",
+        "showFewer": "Show fewer",
+        "showMore": "Show {count} more",
+        "sampleMaps": "{count, plural, one {# map} other {# maps}}",
+        "source": {
+          "owcs": "OWCS",
+          "scrim": "Scrim",
+          "owcs+scrim": "OWCS + Scrim"
         }
       },
-      "empty": "No scouting data available for this team."
+      "empty": "No scouting data available for this team.",
+      "header": {
+        "eyebrow": "OWCS scouting"
+      },
+      "strengthExplainer": {
+        "trigger": "What is strength rating?",
+        "title": "How strength rating works",
+        "intro": "An Elo-style rating of competitive results, centered at 1500.",
+        "elo": {
+          "label": "Elo-based.",
+          "body": "Beating higher-rated teams raises it more than beating weaker ones."
+        },
+        "quality": {
+          "label": "Record quality.",
+          "body": "Wins against teams above 1500 count for more than padding against weak fields."
+        },
+        "weighted": {
+          "label": "Recency-weighted.",
+          "body": "Recent matches carry more weight than older ones (90-day half-life)."
+        },
+        "provisional": {
+          "label": "Provisional below 5 matches.",
+          "body": "Ratings from a thin sample are flagged and shouldn't be over-read."
+        }
+      },
+      "faceitLink": {
+        "eyebrow": "FACEIT signal",
+        "title": "Also competes on FACEIT as {name}",
+        "subtitle": "This roster matches a FACEIT team — adding an individual skill read OWCS results can't provide.",
+        "aggregateFsr": "Roster FSR",
+        "coverage": "{covered} of {shared} matched players rated",
+        "viewProfile": "View FACEIT profile",
+        "matchedPlayers": "Matched players",
+        "disclaimer": "Inferred from handle overlap and shared FACEIT matches — not a verified identity."
+      }
     },
     "player": {
       "title": "Scout Player",
@@ -3500,7 +3568,9 @@
         "description": "Search for professional Overwatch players and view their competitive history, hero pool, and tournament performance.",
         "ogTitle": "Scout Player | Parsertime",
         "ogDescription": "Search for professional Overwatch players and view their competitive history, hero pool, and tournament performance.",
-        "ogImage": "Scout Player"
+        "ogImage": "Scout Player",
+        "profileTitle": "{player} Scouting | Parsertime",
+        "profileDescription": "Scout {player} — hero pool, competitive history, and scrim performance."
       },
       "search": {
         "label": "Search players",
@@ -3542,7 +3612,12 @@
         "result": "Result",
         "heroes": "Heroes",
         "win": "W",
-        "loss": "L"
+        "loss": "L",
+        "eyebrow": "OWCS player",
+        "tournamentsLabel": "Tournaments",
+        "date": "Date",
+        "historyEyebrow": "Tournament history",
+        "recordValue": "{wins}–{losses}"
       },
       "analytics": {
         "scrimOverview": {
@@ -3568,7 +3643,9 @@
             "killsPerUltimate": "Average number of eliminations achieved per ultimate ability used. Higher values suggest efficient ultimate usage.",
             "consistencyScore": "Scored 0–100 based on how stable per-10 stats are across maps. Calculated as the inverse of the average coefficient of variation for eliminations, deaths, damage, and healing. Above 75 is highly consistent.",
             "mapsPlayed": "Total number of scrim maps recorded in Parsertime for this player. Serves as the sample size for all scrim-based metrics."
-          }
+          },
+          "eyebrow": "Scrim profile",
+          "sectionTitle": "Scrim performance"
         },
         "performanceRadar": {
           "title": "Performance Profile",
@@ -3599,7 +3676,13 @@
           "won": "Won",
           "noData": "No competitive map data available.",
           "methodologyMapType": "Win rate by map type is calculated from all competitive match results where this player's team participated. Percentages are wins ÷ total maps played for each game mode (Control, Escort, Hybrid, Push, Flashpoint).",
-          "methodologyByMap": "Individual map win rates are calculated from competitive match results. Borders are color-coded: green for ≥60% win rate, red for ≤40%, and neutral otherwise."
+          "methodologyByMap": "Individual map win rates are calculated from competitive match results. Borders are color-coded: green for ≥60% win rate, red for ≤40%, and neutral otherwise.",
+          "empty": "No competitive map data.",
+          "eyebrow": "Maps",
+          "lowSample": "Low sample",
+          "map": "Map",
+          "mode": "Mode",
+          "winRate": "Win Rate"
         },
         "killAnalysis": {
           "title": "Combat Patterns",
@@ -3620,7 +3703,9 @@
           "weaknesses": "Weaknesses",
           "noStrengths": "Not enough data to identify strengths.",
           "noWeaknesses": "No significant weaknesses identified.",
-          "methodology": "Insights are auto-generated by analyzing z-scores (hero performance vs global averages), competitive map win rates, first pick/death rates, consistency scores, and hero pool depth. Strengths trigger when metrics exceed positive thresholds; weaknesses trigger on negative thresholds. All data sources are combined to provide a holistic view."
+          "methodology": "Insights are auto-generated by analyzing z-scores (hero performance vs global averages), competitive map win rates, first pick/death rates, consistency scores, and hero pool depth. Strengths trigger when metrics exceed positive thresholds; weaknesses trigger on negative thresholds. All data sources are combined to provide a holistic view.",
+          "eyebrow": "Scouting read",
+          "readTitle": "What to know"
         },
         "noScrimData": "This player doesn't have scrim data in Parsertime yet. Competitive analytics and tournament history are still available.",
         "statLabels": {
@@ -3630,8 +3715,10 @@
           "healing_dealt": "Healing",
           "damage_blocked": "Damage Blocked"
         }
-      }
-    }
+      },
+      "searchEyebrow": "OWCS player"
+    },
+    "searchEyebrow": "OWCS scouting"
   },
   "faceitScoutingPage": {
     "title": "FACEIT Team Scouting",
