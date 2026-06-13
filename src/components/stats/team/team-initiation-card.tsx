@@ -25,7 +25,7 @@ export function TeamInitiationCard({ initiationStats }: TeamInitiationCardProps)
     });
   }
 
-  if (initiationStats.decidedFights === 0) {
+  if (initiationStats.mapsCovered === 0) {
     return (
       <section className="space-y-4">
         <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
