@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
       if (!isValidTimeZone(s.timezone)) continue;
       if (!isWithinReminderWindow(now, s)) continue;
 
-      const weekStart = weekStartInTz(now, s.timezone);
+      const weekStart = weekStartInTz(now, s.timezone, s.reminderDayOfWeek);
       if (wasFiredThisWeek(s.lastReminderFiredAt, weekStart)) continue;
 
       const job = await buildReminderJob(s.teamId, baseUrl);

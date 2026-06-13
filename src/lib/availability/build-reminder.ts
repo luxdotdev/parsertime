@@ -40,7 +40,7 @@ export async function buildReminderJob(
   if (!channelId || !guildId) return null;
 
   const now = new Date();
-  const weekStart = weekStartInTz(now, settings.timezone);
+  const weekStart = weekStartInTz(now, settings.timezone, settings.reminderDayOfWeek);
   const weekEnd = weekEndInTz(weekStart, settings.timezone);
 
   const schedule = await prisma.availabilitySchedule.upsert({
