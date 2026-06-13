@@ -30,6 +30,12 @@ import type { FaceitTeamMapRow, MapWinrateEntry } from "./types";
 const CACHE_TTL = Duration.seconds(30);
 const CACHE_CAPACITY = 64;
 
+const DB_ROLE_TO_ENUM: Record<string, FaceitRole> = {
+  Tank: FaceitRole.TANK,
+  Damage: FaceitRole.DAMAGE,
+  Support: FaceitRole.SUPPORT,
+};
+
 // ---- raw row shapes ---------------------------------------------------------
 
 type PlayerListRow = {
@@ -365,11 +371,8 @@ export const make: Effect.Effect<FaceitPlayerScoutingServiceInterface> =
           });
           roleUsageResult = roleUsage(
             rawRoleRows
-              .filter((r) => Object.values(FaceitRole).includes(r.role as FaceitRole))
-              .map((r) => ({
-                role: r.role as FaceitRole,
-                mapCount: Number(r.map_count),
-              }))
+              .map((r) => ({ role: DB_ROLE_TO_ENUM[r.role], mapCount: Number(r.map_count) }))
+              .filter((r): r is { role: FaceitRole; mapCount: number } => r.role !== undefined)
           );
         }
 
