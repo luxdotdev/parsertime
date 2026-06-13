@@ -5,12 +5,15 @@ import {
   determineFightWinner,
   findTeamCommit,
   healingSignal,
+  detectFightInitiation,
   type DamageEvent,
   type AbilityEvent,
   type UltEvent,
   type HealEvent,
   type InitiationContext,
+  type FightInitiationLabel,
 } from "@/lib/fight-initiation";
+import type { Fight } from "@/lib/utils";
 
 function makeKill(overrides: Partial<Kill> = {}): Kill {
   return {
@@ -187,5 +190,93 @@ describe("healingSignal", () => {
       { match_time: 200, healee_team: "Team 2", event_healing: 500 },
     ];
     expect(healingSignal("Team 1", "Team 2", 100, healing)).toBe("neutral");
+  });
+});
+
+function fightFrom(kills: Kill[]): Fight {
+  const sorted = [...kills].sort((a, b) => a.match_time - b.match_time);
+  return {
+    kills: sorted,
+    start: sorted[0]!.match_time,
+    end: sorted[sorted.length - 1]!.match_time,
+  };
+}
+
+describe("detectFightInitiation", () => {
+  test("labels the team that commits first as the initiator, with the win read", () => {
+    // Fight first kill at t=110. Team 1 commits a dive at ~104; Team 2 responds at ~108.
+    const fight = fightFrom([
+      makeKill({ match_time: 110, attacker_team: "Team 1", victim_team: "Team 2" }),
+      makeKill({ match_time: 112, attacker_team: "Team 1", victim_team: "Team 2" }),
+    ]);
+    const damage: DamageEvent[] = [
+      dmg({ match_time: 104, attacker_name: "ball", attacker_team: "Team 1", event_damage: 150 }),
+      dmg({ match_time: 104.4, attacker_name: "tracer", attacker_team: "Team 1", event_damage: 150 }),
+      dmg({ match_time: 108, attacker_name: "e1", attacker_team: "Team 2", victim_team: "Team 1", event_damage: 150 }),
+      dmg({ match_time: 108.4, attacker_name: "e2", attacker_team: "Team 2", victim_team: "Team 1", event_damage: 150 }),
+    ];
+    const label = detectFightInitiation(fight, 0, -Infinity, emptyCtx({ damage }));
+    expect(label.initiator).toBe("Team 1");
+    expect(label.contested).toBe(false);
+    expect(label.winner).toBe("Team 1");
+    expect(label.initiatorWon).toBe(true);
+    expect(label.confidence).toBe("medium"); // clean 4s gap + 2-player burst is medium
+  });
+
+  test("simultaneous commits within tolerance are contested", () => {
+    const fight = fightFrom([
+      makeKill({ match_time: 110, attacker_team: "Team 1", victim_team: "Team 2" }),
+    ]);
+    const damage: DamageEvent[] = [
+      dmg({ match_time: 104, attacker_name: "ball", attacker_team: "Team 1", event_damage: 150 }),
+      dmg({ match_time: 104.1, attacker_name: "tracer", attacker_team: "Team 1", event_damage: 150 }),
+      dmg({ match_time: 104.2, attacker_name: "e1", attacker_team: "Team 2", victim_team: "Team 1", event_damage: 150 }),
+      dmg({ match_time: 104.3, attacker_name: "e2", attacker_team: "Team 2", victim_team: "Team 1", event_damage: 150 }),
+    ];
+    const label = detectFightInitiation(fight, 0, -Infinity, emptyCtx({ damage }));
+    expect(label.contested).toBe(true);
+    expect(label.initiator).toBeNull();
+    expect(label.confidence).toBe("low");
+  });
+
+  test("with no detectable commitment, falls back to first blood at low confidence", () => {
+    const fight = fightFrom([
+      makeKill({ match_time: 110, attacker_team: "Team 2", victim_team: "Team 1" }),
+    ]);
+    const label = detectFightInitiation(fight, 0, -Infinity, emptyCtx());
+    expect(label.initiator).toBe("Team 2");
+    expect(label.evidence.fallback).toBe(true);
+    expect(label.confidence).toBe("low");
+    expect(label.evidence.firstBloodTeam).toBe("Team 2");
+  });
+
+  test("records the 'went first, lost the opener' case", () => {
+    // Team 1 commits first but Team 2 gets first blood and wins.
+    const fight = fightFrom([
+      makeKill({ match_time: 110, attacker_team: "Team 2", victim_team: "Team 1" }),
+      makeKill({ match_time: 111, attacker_team: "Team 2", victim_team: "Team 1" }),
+    ]);
+    const damage: DamageEvent[] = [
+      dmg({ match_time: 104, attacker_name: "ball", attacker_team: "Team 1", event_damage: 150 }),
+      dmg({ match_time: 104.4, attacker_name: "tracer", attacker_team: "Team 1", event_damage: 150 }),
+    ];
+    const label = detectFightInitiation(fight, 0, -Infinity, emptyCtx({ damage }));
+    expect(label.initiator).toBe("Team 1");
+    expect(label.firstBloodTeam ?? label.evidence.firstBloodTeam).toBe("Team 2");
+    expect(label.winner).toBe("Team 2");
+    expect(label.initiatorWon).toBe(false);
+  });
+
+  test("the lookback never reaches into the previous fight", () => {
+    const fight = fightFrom([
+      makeKill({ match_time: 110, attacker_team: "Team 1", victim_team: "Team 2" }),
+    ]);
+    // A burst at t=100 would normally be inside the 12s lookback, but prevFightEnd=106.
+    const damage: DamageEvent[] = [
+      dmg({ match_time: 100, attacker_name: "ball", attacker_team: "Team 1", event_damage: 200 }),
+      dmg({ match_time: 100.3, attacker_name: "tracer", attacker_team: "Team 1", event_damage: 200 }),
+    ];
+    const label = detectFightInitiation(fight, 1, 106, emptyCtx({ damage }));
+    expect(label.evidence.fallback).toBe(true); // no commit found inside [106, 110]
   });
 });
