@@ -7728,6 +7728,18 @@
       "dryFightDetails": "无终极技能团战 {count, plural, =0 {无} other {# 场}}（胜率 {winrate}）",
       "avgUltsPerFight": "每场团战平均终极技能",
       "avgUltsDescription": "基于 {count, plural, =0 {无使用终极技能的团战} other {# 场使用终极技能的团战}}"
+    },
+    "initiationStats": {
+      "eyebrow": "团战 · 先手",
+      "title": "团战发起",
+      "description": "谁先出手，以及是否奏效。在 {total} 张拥有详细日志的地图中检测到 {covered} 张。",
+      "noData": "暂无发起数据。上传带详细日志的训练赛即可查看谁先手。",
+      "initiationWinrate": "先手胜率",
+      "initiationFrequency": "发起的团战",
+      "goingSecondWinrate": "后手胜率",
+      "firstRecord": "先手 {wins}胜 - {losses}负",
+      "frequencySub": "{decided} 场有效团战中的 {first} 场",
+      "secondRecord": "后手 {wins}胜 - {losses}负"
     }
   },
   "targets": {
