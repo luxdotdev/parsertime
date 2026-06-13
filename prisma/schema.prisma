@@ -1544,7 +1544,6 @@ model TeamAvailabilitySettings {
   hoursStart          Int                      @default(12)
   hoursEnd            Int                      @default(24)
   timezone            String                   @default("America/New_York")
-  weekStartsOn        Int                      @default(0)
   reminderEnabled     Boolean                  @default(true)
   reminderDayOfWeek   Int                      @default(0)
   reminderHour        Int                      @default(12)

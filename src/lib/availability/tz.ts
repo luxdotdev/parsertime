@@ -89,12 +89,17 @@ export function zonedDateToUtc(
   return new Date(utcGuess);
 }
 
-export function weekStartInTz(now: Date, timeZone: string): Date {
+export function weekStartInTz(
+  now: Date,
+  timeZone: string,
+  weekStartsOn: number
+): Date {
   const parts = getTzParts(now, timeZone);
+  const offset = (((parts.weekday - weekStartsOn) % 7) + 7) % 7; // days since week start
   return zonedDateToUtc(
     parts.year,
     parts.month,
-    parts.day - parts.weekday,
+    parts.day - offset,
     0,
     0,
     timeZone
