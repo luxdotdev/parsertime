@@ -148,7 +148,8 @@ async function recomputeAllFsrUnlocked(): Promise<FsrRecomputeResult> {
           computedAt,
         },
       })
-    )
+    ),
+    { timeout: 60_000 }
   );
 
   let cellsWritten = 0;
@@ -186,7 +187,8 @@ async function recomputeAllFsrUnlocked(): Promise<FsrRecomputeResult> {
             computedAt,
           },
         })
-      )
+      ),
+      { timeout: 60_000 }
     );
     cellsWritten += slice.length;
   }
@@ -222,7 +224,8 @@ async function recomputeAllFsrUnlocked(): Promise<FsrRecomputeResult> {
             computedAt,
           },
         });
-      })
+      }),
+      { timeout: 60_000 }
     );
     playersWritten += slice.length;
   }
