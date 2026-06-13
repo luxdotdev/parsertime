@@ -4,6 +4,7 @@ import {
   MIN_COMMIT_PLAYERS,
   determineFightWinner,
   findTeamCommit,
+  healingSignal,
   type DamageEvent,
   type AbilityEvent,
   type UltEvent,
@@ -152,5 +153,39 @@ describe("findTeamCommit", () => {
       dmg({ match_time: 90.3, attacker_name: "tracer", event_damage: 200 }),
     ];
     expect(findTeamCommit("Team 1", 95, 102, emptyCtx({ damage }))).toBeNull();
+  });
+});
+
+describe("healingSignal", () => {
+  test("corroborates when the engaged-on (non-initiator) team heals more", () => {
+    const healing: HealEvent[] = [
+      { match_time: 100.5, healee_team: "Team 2", event_healing: 200 },
+      { match_time: 101, healee_team: "Team 1", event_healing: 20 },
+    ];
+    // Team 1 initiated at t=100; Team 2 is the one being engaged on.
+    expect(healingSignal("Team 1", "Team 2", 100, healing)).toBe("corroborates");
+  });
+
+  test("contradicts when the initiator's own team heals much more", () => {
+    const healing: HealEvent[] = [
+      { match_time: 100.5, healee_team: "Team 1", event_healing: 300 },
+      { match_time: 101, healee_team: "Team 2", event_healing: 20 },
+    ];
+    expect(healingSignal("Team 1", "Team 2", 100, healing)).toBe("contradicts");
+  });
+
+  test("neutral when healing is comparable", () => {
+    const healing: HealEvent[] = [
+      { match_time: 100.5, healee_team: "Team 1", event_healing: 100 },
+      { match_time: 101, healee_team: "Team 2", event_healing: 100 },
+    ];
+    expect(healingSignal("Team 1", "Team 2", 100, healing)).toBe("neutral");
+  });
+
+  test("ignores healing outside the corroboration window", () => {
+    const healing: HealEvent[] = [
+      { match_time: 200, healee_team: "Team 2", event_healing: 500 },
+    ];
+    expect(healingSignal("Team 1", "Team 2", 100, healing)).toBe("neutral");
   });
 });
