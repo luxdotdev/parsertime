@@ -1,0 +1,220 @@
+import type {
+  AttackDefenseSplit,
+  FaceitMapAnalysis,
+  FaceitRecommendation,
+  FaceitRosterPlayer,
+  FaceitTeamMapRow,
+  FaceitTeamMatchRow,
+  FaceitTeamOverview,
+  HeroBanEnvironmentEntry,
+  MapWinrateEntry,
+  RelatedTeam,
+  RosterStrength,
+} from "@/data/faceit/types";
+
+export const MIN_SAMPLE = 4;
+export const STARTER_SHARE = 0.5;
+const HALF_LIFE_DAYS = 120;
+const DECAY = Math.LN2 / HALF_LIFE_DAYS;
+
+function pct(won: number, played: number): number {
+  return played === 0 ? 0 : (won / played) * 100;
+}
+
+export function weightedWinRate(items: { won: boolean; ageDays: number }[]): number {
+  let total = 0;
+  let winW = 0;
+  for (const it of items) {
+    const w = Math.exp(-DECAY * Math.max(0, it.ageDays));
+    total += w;
+    if (it.won) winW += w;
+  }
+  return total === 0 ? 0 : (winW / total) * 100;
+}
+
+function ageDays(d: Date, now: number): number {
+  return (now - d.getTime()) / (1000 * 60 * 60 * 24);
+}
+
+export function buildOverview(
+  matches: FaceitTeamMatchRow[],
+  now: number = Date.now()
+): FaceitTeamOverview {
+  const sorted = [...matches].sort(
+    (a, b) => b.finishedAt.getTime() - a.finishedAt.getTime()
+  );
+  const wins = sorted.filter((m) => m.won).length;
+  const totalMatches = sorted.length;
+  const tierCounts: Record<string, number> = {};
+  for (const m of sorted) tierCounts[m.tier] = (tierCounts[m.tier] ?? 0) + 1;
+  return {
+    totalMatches,
+    wins,
+    losses: totalMatches - wins,
+    winRate: pct(wins, totalMatches),
+    weightedWinRate: weightedWinRate(
+      sorted.map((m) => ({ won: m.won, ageDays: ageDays(m.finishedAt, now) }))
+    ),
+    recentForm: sorted.slice(0, 10).map((m) => (m.won ? "win" : "loss")),
+    tierCounts,
+  };
+}
+
+function winrateEntries(
+  rows: FaceitTeamMapRow[],
+  keyOf: (r: FaceitTeamMapRow) => string | null,
+  now: number
+): MapWinrateEntry[] {
+  const groups = new Map<string, FaceitTeamMapRow[]>();
+  for (const r of rows) {
+    const k = keyOf(r);
+    if (!k) continue;
+    const arr = groups.get(k) ?? [];
+    arr.push(r);
+    groups.set(k, arr);
+  }
+  const out: MapWinrateEntry[] = [];
+  for (const [key, members] of groups) {
+    const won = members.filter((m) => m.won).length;
+    out.push({
+      key,
+      played: members.length,
+      won,
+      winRate: pct(won, members.length),
+      weightedWinRate: weightedWinRate(
+        members.map((m) => ({ won: m.won, ageDays: ageDays(m.finishedAt, now) }))
+      ),
+      rated: members.length >= MIN_SAMPLE,
+    });
+  }
+  return out.sort((a, b) => b.played - a.played);
+}
+
+export function mapWinrates(
+  rows: FaceitTeamMapRow[],
+  now: number = Date.now()
+): { byMap: MapWinrateEntry[]; byType: MapWinrateEntry[] } {
+  return {
+    byMap: winrateEntries(rows, (r) => r.mapName, now),
+    byType: winrateEntries(rows, (r) => r.mapType, now),
+  };
+}
+
+export function attackDefenseSplit(rows: FaceitTeamMapRow[]): AttackDefenseSplit {
+  const atk = rows.filter((r) => r.attackedFirst === true);
+  const def = rows.filter((r) => r.attackedFirst === false);
+  const atkWon = atk.filter((r) => r.won).length;
+  const defWon = def.filter((r) => r.won).length;
+  return {
+    attackPlayed: atk.length,
+    attackWon: atkWon,
+    attackWinRate: pct(atkWon, atk.length),
+    defensePlayed: def.length,
+    defenseWon: defWon,
+    defenseWinRate: pct(defWon, def.length),
+  };
+}
+
+export function heroBanEnvironment(
+  rows: FaceitTeamMapRow[]
+): HeroBanEnvironmentEntry[] {
+  const heroes = new Set<string>();
+  for (const r of rows) for (const h of r.heroBans) heroes.add(h);
+  const out: HeroBanEnvironmentEntry[] = [];
+  for (const hero of heroes) {
+    const banned = rows.filter((r) => r.heroBans.includes(hero));
+    const notBanned = rows.filter((r) => !r.heroBans.includes(hero));
+    const bWon = banned.filter((r) => r.won).length;
+    const nWon = notBanned.filter((r) => r.won).length;
+    const bWr = pct(bWon, banned.length);
+    const nWr = pct(nWon, notBanned.length);
+    out.push({
+      hero,
+      bannedPlayed: banned.length,
+      bannedWon: bWon,
+      bannedWinRate: bWr,
+      notBannedPlayed: notBanned.length,
+      notBannedWon: nWon,
+      notBannedWinRate: nWr,
+      delta: nWr - bWr,
+      rated: banned.length >= MIN_SAMPLE && notBanned.length >= MIN_SAMPLE,
+    });
+  }
+  return out.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
+}
+
+function meanOrNull(xs: number[]): number | null {
+  return xs.length === 0 ? null : Math.round(xs.reduce((s, x) => s + x, 0) / xs.length);
+}
+
+export function rosterStrength(roster: FaceitRosterPlayer[]): RosterStrength {
+  const starters = roster.filter((p) => p.starter);
+  const fsrs = starters.map((p) => p.fsr).filter((v): v is number => v != null);
+  const tsrs = starters.map((p) => p.tsr).filter((v): v is number => v != null);
+  return {
+    fsr: meanOrNull(fsrs),
+    tsr: meanOrNull(tsrs),
+    fsrCovered: fsrs.length,
+    tsrCovered: tsrs.length,
+    rosterSize: roster.length,
+  };
+}
+
+export function rankRelatedTeams(related: RelatedTeam[]): RelatedTeam[] {
+  return [...related].sort(
+    (a, b) =>
+      b.sharedCorePlayers - a.sharedCorePlayers || b.matchCount - a.matchCount
+  );
+}
+
+export function buildRecommendations(input: {
+  byMap: MapWinrateEntry[];
+  heroBanEnvironment: HeroBanEnvironmentEntry[];
+}): FaceitRecommendation[] {
+  const recs: FaceitRecommendation[] = [];
+  const ratedMaps = input.byMap.filter((m) => m.rated);
+  const weakest = [...ratedMaps].sort((a, b) => a.weightedWinRate - b.weightedWinRate).slice(0, 3);
+  const strongest = [...ratedMaps].sort((a, b) => b.weightedWinRate - a.weightedWinRate).slice(0, 3);
+  for (const m of weakest) {
+    recs.push({
+      kind: "map_pick",
+      subject: m.key,
+      reason: `${m.winRate.toFixed(0)}% winrate over ${m.played} maps`,
+      metric: m.weightedWinRate,
+      sample: m.played,
+    });
+  }
+  for (const m of strongest) {
+    recs.push({
+      kind: "map_avoid",
+      subject: m.key,
+      reason: `${m.winRate.toFixed(0)}% winrate over ${m.played} maps`,
+      metric: m.weightedWinRate,
+      sample: m.played,
+    });
+  }
+  const ratedBans = input.heroBanEnvironment.filter((h) => h.rated);
+  const banThese = [...ratedBans].sort((a, b) => b.delta - a.delta).slice(0, 3).filter((h) => h.delta > 0);
+  const dontBan = [...ratedBans].sort((a, b) => a.delta - b.delta).slice(0, 3).filter((h) => h.delta < 0);
+  for (const h of banThese) {
+    recs.push({
+      kind: "ban_hero",
+      subject: h.hero,
+      reason: `${h.notBannedWinRate.toFixed(0)}% without ban vs ${h.bannedWinRate.toFixed(0)}% with ban (n=${h.bannedPlayed}/${h.notBannedPlayed})`,
+      metric: h.delta,
+      sample: Math.min(h.bannedPlayed, h.notBannedPlayed),
+    });
+  }
+  for (const h of dontBan) {
+    recs.push({
+      kind: "do_not_ban_hero",
+      subject: h.hero,
+      reason: `${h.bannedWinRate.toFixed(0)}% with ban vs ${h.notBannedWinRate.toFixed(0)}% without (n=${h.bannedPlayed}/${h.notBannedPlayed})`,
+      metric: h.delta,
+      sample: Math.min(h.bannedPlayed, h.notBannedPlayed),
+    });
+  }
+  return recs;
+}
+
+export type { FaceitMapAnalysis };
