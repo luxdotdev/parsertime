@@ -2410,7 +2410,8 @@
       "heatmap": "Heatmap",
       "replay": "Replay",
       "routes": "Routes",
-      "story": "Match Story"
+      "story": "Match Story",
+      "initiation": "Initiation"
     },
     "routes": {
       "calibrationWarning": "This map's calibration is invalid — most recorded positions land outside the map image, so routes can't be drawn meaningfully. Recalibrate this map in the calibration tool (use at least 4 anchors).",
@@ -3190,6 +3191,32 @@
         "ultDeficit": "You took {count} fights ({fights}) while down on ult economy, costing about {cost}%. Delay the re-engage until the banks even out.",
         "firstDeaths": "{player} died first in {count} of your {of} losing fights ({fights}). Review those openings — the first death sets the fight's trajectory."
       }
+    },
+    "fightInitiation": {
+      "eyebrow": "GOING FIRST",
+      "title": "Fight Initiation",
+      "unavailable": "This map predates the detailed log format, so fight initiation can't be detected.",
+      "summaryWinrate": "{team} win rate going first",
+      "summaryFrequency": "{team} fights initiated",
+      "coverage": "Based on {labeled} of {total} fights ({contested} contested).",
+      "fightLabel": "Fight {number}",
+      "initiatedBy": "{team} went first",
+      "contested": "Contested start",
+      "undetermined": "Undetermined",
+      "won": "Won",
+      "lost": "Lost",
+      "lostOpener": "Went first, lost the opener",
+      "evidencePlayers": "{count} players committed",
+      "evidenceUlt": "ult commit",
+      "evidenceAbility": "ability commit",
+      "responseGap": "{seconds}s before response",
+      "confidenceHigh": "High confidence",
+      "confidenceMedium": "Medium confidence",
+      "confidenceLow": "Low confidence",
+      "roundStarted": "Round {round} started",
+      "roundEnded": "Round {round} ended",
+      "roundChange": "Round {previous} → {round}",
+      "toggleRounds": "Rounds"
     }
   },
   "scoutingPage": {

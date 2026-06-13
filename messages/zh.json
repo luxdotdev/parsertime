@@ -2410,7 +2410,8 @@
       "heatmap": "热力图",
       "replay": "回放",
       "routes": "路线",
-      "story": "比赛故事"
+      "story": "比赛故事",
+      "initiation": "团战发起"
     },
     "routes": {
       "calibrationWarning": "该地图的坐标校准无效——大多数记录位置落在地图图像之外，无法正确绘制路线。请在校准工具中使用至少 4 个锚点重新校准。",
@@ -3190,6 +3191,32 @@
         "ultDeficit": "在大招经济落后的情况下接了 {count} 场团战（{fights}），损失约 {cost}%。等大招差距拉平后再接战。",
         "firstDeaths": "{player} 在 {of} 场失利团战中有 {count} 场（{fights}）率先阵亡。复盘这些开局——首死决定团战走向。"
       }
+    },
+    "fightInitiation": {
+      "eyebrow": "先手开团",
+      "title": "团战发起",
+      "unavailable": "该地图早于详细日志格式，无法检测团战发起。",
+      "summaryWinrate": "{team} 先手开团胜率",
+      "summaryFrequency": "{team} 发起的团战",
+      "coverage": "基于 {total} 场团战中的 {labeled} 场（{contested} 场存在争议）。",
+      "fightLabel": "第 {number} 团",
+      "initiatedBy": "{team} 先手",
+      "contested": "争议开团",
+      "undetermined": "无法判定",
+      "won": "胜",
+      "lost": "负",
+      "lostOpener": "先手开团但输掉开局",
+      "evidencePlayers": "{count} 名队员参与",
+      "evidenceUlt": "大招开团",
+      "evidenceAbility": "技能开团",
+      "responseGap": "{seconds} 秒后对方响应",
+      "confidenceHigh": "高可信度",
+      "confidenceMedium": "中等可信度",
+      "confidenceLow": "低可信度",
+      "roundStarted": "第 {round} 回合开始",
+      "roundEnded": "第 {round} 回合结束",
+      "roundChange": "第 {previous} → {round} 回合",
+      "toggleRounds": "回合"
     }
   },
   "scoutingPage": {
