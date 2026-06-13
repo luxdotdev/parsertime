@@ -19,7 +19,7 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
-import { aiChat, dataLabeling, scoutingTool } from "@/lib/flags";
+import { aiChat, dataLabeling, faceitScouting, scoutingTool } from "@/lib/flags";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { translateHeroName, translateMapName } from "@/lib/utils";
@@ -107,11 +107,13 @@ export default async function PlayerDashboardPage(
     },
   })) ?? { guestMode: false };
 
-  const [scoutingEnabled, aiChatEnabled, dataToolsEnabled] = await Promise.all([
-    scoutingTool(),
-    aiChat(),
-    dataLabeling(),
-  ]);
+  const [scoutingEnabled, faceitScoutingEnabled, aiChatEnabled, dataToolsEnabled] =
+    await Promise.all([
+      scoutingTool(),
+      faceitScouting(),
+      aiChat(),
+      dataLabeling(),
+    ]);
 
   return (
     <DirectionalTransition>
@@ -125,6 +127,7 @@ export default async function PlayerDashboardPage(
             <MainNav
               className="mx-6 hidden lg:block"
               scoutingEnabled={scoutingEnabled}
+              faceitScoutingEnabled={faceitScoutingEnabled}
               aiChatEnabled={aiChatEnabled}
               dataToolsEnabled={dataToolsEnabled}
             />

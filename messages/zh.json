@@ -815,6 +815,8 @@
       "scouting": "侦察",
       "scoutPlayer": "侦察玩家",
       "scoutTeam": "侦察队伍",
+      "scoutFaceitTeam": "侦察 FACEIT 队伍",
+      "scoutFaceitPlayer": "侦察 FACEIT 玩家",
       "dataLabeling": "数据标注",
       "dataTools": "数据工具",
       "mapCalibration": "地图校准",

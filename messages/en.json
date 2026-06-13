@@ -780,6 +780,8 @@
       "scouting": "Scouting",
       "scoutPlayer": "Scout a player",
       "scoutTeam": "Scout a team",
+      "scoutFaceitTeam": "Scout a FACEIT team",
+      "scoutFaceitPlayer": "Scout a FACEIT player",
       "dataLabeling": "Data Labeling",
       "dataTools": "Data Tools",
       "mapCalibration": "Map Calibration",

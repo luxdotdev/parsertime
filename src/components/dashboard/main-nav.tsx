@@ -28,6 +28,7 @@ function handleDropdownKeyDown(e: React.KeyboardEvent<HTMLLIElement>) {
 
 export function MainNav({
   scoutingEnabled,
+  faceitScoutingEnabled,
   aiChatEnabled,
   dataToolsEnabled,
   tournamentEnabled,
@@ -36,6 +37,7 @@ export function MainNav({
   className,
 }: React.HTMLAttributes<HTMLElement> & {
   scoutingEnabled: boolean;
+  faceitScoutingEnabled?: boolean;
   aiChatEnabled?: boolean;
   dataToolsEnabled?: boolean;
   tournamentEnabled?: boolean;
@@ -290,7 +292,7 @@ export function MainNav({
             </div>
           </li>
         )}
-        {scoutingEnabled && (
+        {(scoutingEnabled || faceitScoutingEnabled) && (
           <li className="group relative" onKeyDown={handleDropdownKeyDown}>
             <button
               type="button"
@@ -298,7 +300,9 @@ export function MainNav({
               className={cn(
                 navLinkStyles,
                 "gap-1",
-                pathname.startsWith("/scouting") && "text-primary"
+                (pathname.startsWith("/scouting") ||
+                  pathname.startsWith("/faceit")) &&
+                  "text-primary"
               )}
             >
               {t("scouting")}
@@ -312,28 +316,59 @@ export function MainNav({
                 className="bg-popover text-popover-foreground ring-foreground/10 w-[200px] rounded-md p-1 shadow-md ring-1"
                 role="menu"
               >
-                <Link
-                  href="/scouting"
-                  role="menuitem"
-                  className={cn(
-                    dropdownItemStyles,
-                    (SCOUTING_TEAM_ROUTE.test(pathname) ||
-                      pathname === "/scouting") &&
-                      "text-primary"
-                  )}
-                >
-                  {t("scoutTeam")}
-                </Link>
-                <Link
-                  href="/scouting/player"
-                  role="menuitem"
-                  className={cn(
-                    dropdownItemStyles,
-                    pathname.startsWith("/scouting/player") && "text-primary"
-                  )}
-                >
-                  {t("scoutPlayer")}
-                </Link>
+                {scoutingEnabled && (
+                  <>
+                    <Link
+                      href="/scouting"
+                      role="menuitem"
+                      className={cn(
+                        dropdownItemStyles,
+                        (SCOUTING_TEAM_ROUTE.test(pathname) ||
+                          pathname === "/scouting") &&
+                          "text-primary"
+                      )}
+                    >
+                      {t("scoutTeam")}
+                    </Link>
+                    <Link
+                      href="/scouting/player"
+                      role="menuitem"
+                      className={cn(
+                        dropdownItemStyles,
+                        pathname.startsWith("/scouting/player") &&
+                          "text-primary"
+                      )}
+                    >
+                      {t("scoutPlayer")}
+                    </Link>
+                  </>
+                )}
+                {faceitScoutingEnabled && (
+                  <>
+                    <Link
+                      href="/faceit"
+                      role="menuitem"
+                      className={cn(
+                        dropdownItemStyles,
+                        (pathname === "/faceit" ||
+                          pathname.startsWith("/faceit/team")) &&
+                          "text-primary"
+                      )}
+                    >
+                      {t("scoutFaceitTeam")}
+                    </Link>
+                    <Link
+                      href="/faceit/player"
+                      role="menuitem"
+                      className={cn(
+                        dropdownItemStyles,
+                        pathname.startsWith("/faceit/player") && "text-primary"
+                      )}
+                    >
+                      {t("scoutFaceitPlayer")}
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </li>

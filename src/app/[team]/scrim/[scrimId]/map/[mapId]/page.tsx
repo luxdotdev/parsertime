@@ -36,6 +36,7 @@ import {
   aiChat,
   coachingCanvas,
   dataLabeling,
+  faceitScouting,
   positionalData,
   scoutingTool,
   tempoChart,
@@ -130,6 +131,7 @@ export default async function MapDashboardPage(
     heroBans,
     noteContent,
     scoutingEnabled,
+    faceitScoutingEnabled,
     tempoChartEnabled,
     positionalDataEnabled,
     aiChatEnabled,
@@ -165,6 +167,7 @@ export default async function MapDashboardPage(
       select: { content: true },
     }),
     scoutingTool(),
+    faceitScouting(),
     tempoChart(),
     positionalData(),
     aiChat(),
@@ -203,6 +206,7 @@ export default async function MapDashboardPage(
             <MainNav
               className="mx-6 hidden lg:block"
               scoutingEnabled={scoutingEnabled}
+              faceitScoutingEnabled={faceitScoutingEnabled}
               aiChatEnabled={aiChatEnabled}
               dataToolsEnabled={dataToolsEnabled}
               tournamentEnabled={tournamentEnabled}

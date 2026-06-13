@@ -815,6 +815,8 @@
       "scouting": "스카우팅",
       "scoutPlayer": "플레이어 스카우트",
       "scoutTeam": "팀 스카우트",
+      "scoutFaceitTeam": "FACEIT 팀 스카우트",
+      "scoutFaceitPlayer": "FACEIT 플레이어 스카우트",
       "dataLabeling": "데이터 라벨링",
       "dataTools": "데이터 도구",
       "mapCalibration": "맵 보정",

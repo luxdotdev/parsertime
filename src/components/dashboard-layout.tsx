@@ -16,6 +16,7 @@ import {
   aiChat,
   coachingCanvas,
   dataLabeling,
+  faceitScouting,
   queryBuilder,
   scoutingTool,
   tournament,
@@ -32,6 +33,7 @@ export async function DashboardLayout({
   const [
     session,
     scoutingEnabled,
+    faceitScoutingEnabled,
     aiChatEnabled,
     dataToolsEnabled,
     tournamentEnabled,
@@ -40,6 +42,7 @@ export async function DashboardLayout({
   ] = await Promise.all([
     auth(),
     scoutingTool(),
+    faceitScouting(),
     aiChat(),
     dataLabeling(),
     tournament(),
@@ -64,6 +67,7 @@ export async function DashboardLayout({
             {session && <TeamSwitcher session={session} />}
             <MainNav
               scoutingEnabled={scoutingEnabled}
+              faceitScoutingEnabled={faceitScoutingEnabled}
               aiChatEnabled={aiChatEnabled}
               dataToolsEnabled={dataToolsEnabled}
               tournamentEnabled={tournamentEnabled}
