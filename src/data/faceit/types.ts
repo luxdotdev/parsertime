@@ -18,7 +18,7 @@ export type FaceitTeamMapRow = {
   mapName: string | null;
   mapType: string | null; // MapType enum value, kept loose for aggregation
   won: boolean; // winnerFaction === teamSide
-  attackedFirst: boolean | null; // attackingFirstFaction === String(teamSide); null if unknown
+  attackedFirst: boolean | null; // attackingFirstFaction === `faction${teamSide}`; null if unknown
   heroBans: string[]; // hero names in the ban pool for this map
 };
 
@@ -106,9 +106,16 @@ export type RelatedTeam = {
 export type FaceitRecommendation = {
   kind: "map_pick" | "map_avoid" | "ban_hero" | "do_not_ban_hero";
   subject: string; // map name or hero name
-  reason: string; // human-readable, e.g. "32% winrate over 14 maps"
   metric: number; // winrate or delta used for ranking
   sample: number;
+  // map_pick / map_avoid:
+  winRate?: number;
+  played?: number;
+  // ban_hero / do_not_ban_hero:
+  bannedWinRate?: number;
+  notBannedWinRate?: number;
+  bannedSample?: number;
+  notBannedSample?: number;
 };
 
 export type FaceitTeamProfile = {

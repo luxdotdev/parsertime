@@ -3695,7 +3695,9 @@
       "avoidMaps": "Avoid or ban these maps",
       "banHeroes": "Consider banning",
       "dontBan": "Don't ban",
-      "none": "Not enough data for recommendations yet."
+      "none": "Not enough data for recommendations yet.",
+      "mapReason": "{winRate}% win rate over {played} maps",
+      "heroReason": "{withoutBan}% without ban vs {withBan}% with ban (n={bannedSample}/{notBannedSample})"
     },
     "related": {
       "title": "Also competed as",

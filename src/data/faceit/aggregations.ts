@@ -179,18 +179,20 @@ export function buildRecommendations(input: {
     recs.push({
       kind: "map_pick",
       subject: m.key,
-      reason: `${m.winRate.toFixed(0)}% winrate over ${m.played} maps`,
       metric: m.weightedWinRate,
       sample: m.played,
+      winRate: m.winRate,
+      played: m.played,
     });
   }
   for (const m of strongest) {
     recs.push({
       kind: "map_avoid",
       subject: m.key,
-      reason: `${m.winRate.toFixed(0)}% winrate over ${m.played} maps`,
       metric: m.weightedWinRate,
       sample: m.played,
+      winRate: m.winRate,
+      played: m.played,
     });
   }
   const ratedBans = input.heroBanEnvironment.filter((h) => h.rated);
@@ -200,18 +202,24 @@ export function buildRecommendations(input: {
     recs.push({
       kind: "ban_hero",
       subject: h.hero,
-      reason: `${h.notBannedWinRate.toFixed(0)}% without ban vs ${h.bannedWinRate.toFixed(0)}% with ban (n=${h.bannedPlayed}/${h.notBannedPlayed})`,
       metric: h.delta,
       sample: Math.min(h.bannedPlayed, h.notBannedPlayed),
+      bannedWinRate: h.bannedWinRate,
+      notBannedWinRate: h.notBannedWinRate,
+      bannedSample: h.bannedPlayed,
+      notBannedSample: h.notBannedPlayed,
     });
   }
   for (const h of dontBan) {
     recs.push({
       kind: "do_not_ban_hero",
       subject: h.hero,
-      reason: `${h.bannedWinRate.toFixed(0)}% with ban vs ${h.notBannedWinRate.toFixed(0)}% without (n=${h.bannedPlayed}/${h.notBannedPlayed})`,
       metric: h.delta,
       sample: Math.min(h.bannedPlayed, h.notBannedPlayed),
+      bannedWinRate: h.bannedWinRate,
+      notBannedWinRate: h.notBannedWinRate,
+      bannedSample: h.bannedPlayed,
+      notBannedSample: h.notBannedPlayed,
     });
   }
   return recs;

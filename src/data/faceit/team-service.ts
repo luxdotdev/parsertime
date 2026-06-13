@@ -199,41 +199,55 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> = Effect.ge
   };
 
   function fetchTeamData(teamIds: string[]) {
+    const ids = teamIds.length > 0 ? teamIds : [""];
     return Effect.tryPromise({
       try: async () => {
         const matchRowsRaw = await prisma.$queryRaw<RawMatchRow[]>(
           Prisma.sql`
-          SELECT mt."matchId" AS match_id, m."finishedAt" AS finished_at, c.tier::text AS tier, mt.winner AS won
-          FROM "FaceitMatchTeam" mt
-          JOIN "FaceitMatch" m ON m."faceitMatchId" = mt."matchId"
-          JOIN "FaceitChampionship" c ON c."championshipId" = m."championshipId"
-          WHERE mt."faceitTeamId" IN (${Prisma.join(teamIds.length > 0 ? teamIds : [""])})`
+          WITH chosen AS (
+            SELECT DISTINCT ON (mt."matchId") mt."matchId", mt."teamSide", mt.winner
+            FROM "FaceitMatchTeam" mt
+            WHERE mt."faceitTeamId" IN (${Prisma.join(ids)})
+            ORDER BY mt."matchId", array_position(ARRAY[${Prisma.join(ids)}]::text[], mt."faceitTeamId")
+          )
+          SELECT ch."matchId" AS match_id, m."finishedAt" AS finished_at, c.tier::text AS tier, ch.winner AS won
+          FROM chosen ch
+          JOIN "FaceitMatch" m ON m."faceitMatchId" = ch."matchId"
+          JOIN "FaceitChampionship" c ON c."championshipId" = m."championshipId"`
         );
         const mapRowsRaw = await prisma.$queryRaw<RawMapRow[]>(
           Prisma.sql`
-          SELECT mt."matchId" AS match_id, m."finishedAt" AS finished_at, c.tier::text AS tier,
-                 mt."teamSide" AS team_side, mm."mapName" AS map_name, mm."mapType"::text AS map_type,
+          WITH chosen AS (
+            SELECT DISTINCT ON (mt."matchId") mt."matchId", mt."teamSide", mt.winner
+            FROM "FaceitMatchTeam" mt
+            WHERE mt."faceitTeamId" IN (${Prisma.join(ids)})
+            ORDER BY mt."matchId", array_position(ARRAY[${Prisma.join(ids)}]::text[], mt."faceitTeamId")
+          )
+          SELECT ch."matchId" AS match_id, m."finishedAt" AS finished_at, c.tier::text AS tier,
+                 ch."teamSide" AS team_side, mm."mapName" AS map_name, mm."mapType"::text AS map_type,
                  mm."winnerFaction" AS winner_faction, mm."attackingFirstFaction" AS attacking_first,
                  ARRAY(SELECT hb."heroName" FROM "FaceitHeroBan" hb WHERE hb."faceitMapId" = mm.id) AS hero_bans
-          FROM "FaceitMatchTeam" mt
-          JOIN "FaceitMatch" m ON m."faceitMatchId" = mt."matchId"
+          FROM chosen ch
+          JOIN "FaceitMatch" m ON m."faceitMatchId" = ch."matchId"
           JOIN "FaceitChampionship" c ON c."championshipId" = m."championshipId"
-          JOIN "FaceitMatchMap" mm ON mm."matchId" = mt."matchId"
-          WHERE mt."faceitTeamId" IN (${Prisma.join(teamIds.length > 0 ? teamIds : [""])}) AND mm."winnerFaction" IS NOT NULL`
+          JOIN "FaceitMatchMap" mm ON mm."matchId" = ch."matchId"
+          WHERE mm."winnerFaction" IS NOT NULL`
         );
         const rosterRaw = await prisma.$queryRaw<RawRosterRow[]>(
           Prisma.sql`
-          WITH team_matches AS (
-            SELECT mt."matchId", mt."teamSide" FROM "FaceitMatchTeam" mt
-            WHERE mt."faceitTeamId" IN (${Prisma.join(teamIds.length > 0 ? teamIds : [""])})
+          WITH chosen AS (
+            SELECT DISTINCT ON (mt."matchId") mt."matchId", mt."teamSide"
+            FROM "FaceitMatchTeam" mt
+            WHERE mt."faceitTeamId" IN (${Prisma.join(ids)})
+            ORDER BY mt."matchId", array_position(ARRAY[${Prisma.join(ids)}]::text[], mt."faceitTeamId")
           ),
           appear AS (
             SELECT r."faceitPlayerId", COUNT(*)::bigint AS appearances
-            FROM team_matches tm
-            JOIN "FaceitMatchRoster" r ON r."matchId" = tm."matchId" AND r."teamSide" = tm."teamSide"
+            FROM chosen ch
+            JOIN "FaceitMatchRoster" r ON r."matchId" = ch."matchId" AND r."teamSide" = ch."teamSide"
             GROUP BY r."faceitPlayerId"
           ),
-          tot AS (SELECT COUNT(*)::bigint AS total_matches FROM team_matches)
+          tot AS (SELECT COUNT(*)::bigint AS total_matches FROM chosen)
           SELECT a."faceitPlayerId" AS faceit_player_id, p."faceitNickname" AS nickname, p.battletag,
                  (SELECT pf.role::text FROM "PlayerFsr" pf WHERE pf."faceitPlayerId" = a."faceitPlayerId" ORDER BY pf."mapCount" DESC LIMIT 1) AS role,
                  a.appearances, (SELECT total_matches FROM tot) AS total_matches,

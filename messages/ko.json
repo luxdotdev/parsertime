@@ -3695,7 +3695,9 @@
       "avoidMaps": "피하거나 밴할 맵",
       "banHeroes": "밴 고려 영웅",
       "dontBan": "밴하지 말 것",
-      "none": "아직 추천을 생성하기에 데이터가 부족합니다."
+      "none": "아직 추천을 생성하기에 데이터가 부족합니다.",
+      "mapReason": "{played}개 맵에서 {winRate}% 승률",
+      "heroReason": "밴 없이 {withoutBan}% vs 밴 시 {withBan}% (n={bannedSample}/{notBannedSample})"
     },
     "related": {
       "title": "다른 이름으로 참가",

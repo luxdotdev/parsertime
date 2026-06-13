@@ -63,7 +63,19 @@ export function FaceitRecommendations({ recommendations }: FaceitRecommendations
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium">{rec.subject}</p>
-                    <p className="text-muted-foreground text-xs">{rec.reason}</p>
+                    <p className="text-muted-foreground text-xs">
+                      {rec.kind === "map_pick" || rec.kind === "map_avoid"
+                        ? t("recommendations.mapReason", {
+                            winRate: Math.round(rec.winRate ?? 0),
+                            played: rec.played ?? 0,
+                          })
+                        : t("recommendations.heroReason", {
+                            withoutBan: Math.round(rec.notBannedWinRate ?? 0),
+                            withBan: Math.round(rec.bannedWinRate ?? 0),
+                            bannedSample: rec.bannedSample ?? 0,
+                            notBannedSample: rec.notBannedSample ?? 0,
+                          })}
+                    </p>
                   </div>
                 </li>
               ))}

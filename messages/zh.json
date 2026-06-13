@@ -3695,7 +3695,9 @@
       "avoidMaps": "避免或禁用的地图",
       "banHeroes": "考虑禁用",
       "dontBan": "不要禁用",
-      "none": "暂无足够数据生成建议。"
+      "none": "暂无足够数据生成建议。",
+      "mapReason": "{played}张地图 {winRate}% 胜率",
+      "heroReason": "未禁用 {withoutBan}% vs 禁用 {withBan}%（n={bannedSample}/{notBannedSample}）"
     },
     "related": {
       "title": "也曾以此名参赛",
