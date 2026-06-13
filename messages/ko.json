@@ -3631,6 +3631,80 @@
       "empty": "이 팀에 사용할 수 있는 스카우팅 데이터가 없습니다."
     }
   },
+  "faceitScoutingPage": {
+    "title": "FACEIT 팀 스카우팅",
+    "subtitle": "팀을 검색하여 그들의 플레이 방식과 대응 전략을 확인하세요.",
+    "search": {
+      "placeholder": "팀 검색…",
+      "matches": "{count}경기",
+      "noResults": "팀을 찾을 수 없습니다"
+    },
+    "strengthFsr": "FSR",
+    "strengthTsr": "TSR",
+    "coverage": "{covered}/{size} 평가됨",
+    "tabs": {
+      "overview": "개요",
+      "maps": "맵",
+      "bans": "영웅 밴",
+      "roster": "로스터",
+      "recommendations": "추천"
+    },
+    "overview": {
+      "record": "전적",
+      "winRate": "승률",
+      "weightedWinRate": "가중 승률",
+      "form": "최근 폼",
+      "tierDistribution": "플레이한 티어",
+      "strength": "팀 전력"
+    },
+    "maps": {
+      "byMap": "맵별",
+      "byType": "모드별",
+      "map": "맵",
+      "mode": "모드",
+      "played": "플레이",
+      "won": "승리",
+      "winRate": "승률",
+      "weighted": "가중",
+      "lowSample": "표본 부족",
+      "attackDefense": "공격 vs 수비",
+      "attacking": "공격 선공",
+      "defending": "수비 선공"
+    },
+    "bans": {
+      "title": "영웅 밴 환경",
+      "caveat": "맵 단위 신호: 영웅이 밴 풀에 있을 때의 승률입니다. FACEIT은 밴을 특정 진영에 귀속하지 않습니다.",
+      "hero": "영웅",
+      "withBan": "밴 있음",
+      "withoutBan": "밴 없음",
+      "delta": "차이",
+      "sample": "표본",
+      "showUnrated": "표본 부족 영웅 표시"
+    },
+    "roster": {
+      "player": "선수",
+      "role": "역할",
+      "share": "출전",
+      "starter": "주전",
+      "sub": "후보",
+      "fsr": "FSR",
+      "tsr": "TSR"
+    },
+    "recommendations": {
+      "pickMaps": "선택할 맵",
+      "avoidMaps": "피하거나 밴할 맵",
+      "banHeroes": "밴 고려 영웅",
+      "dontBan": "밴하지 말 것",
+      "none": "아직 추천을 생성하기에 데이터가 부족합니다."
+    },
+    "related": {
+      "title": "다른 이름으로 참가",
+      "combine": "이력 합산",
+      "separate": "이력 분리",
+      "shared": "공유 선수 {n}명",
+      "matches": "{n}경기"
+    }
+  },
   "statsPage": {
     "layoutMetadata": {
       "title": "통계 | Parsertime",

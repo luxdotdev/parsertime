@@ -3631,6 +3631,80 @@
       "empty": "该队伍暂无可用球探数据。"
     }
   },
+  "faceitScoutingPage": {
+    "title": "FACEIT 团队球探",
+    "subtitle": "搜索团队，了解他们的打法及应对策略。",
+    "search": {
+      "placeholder": "搜索团队…",
+      "matches": "{count} 场比赛",
+      "noResults": "未找到团队"
+    },
+    "strengthFsr": "FSR",
+    "strengthTsr": "TSR",
+    "coverage": "{covered}/{size} 已评级",
+    "tabs": {
+      "overview": "概述",
+      "maps": "地图",
+      "bans": "英雄禁用",
+      "roster": "阵容",
+      "recommendations": "建议"
+    },
+    "overview": {
+      "record": "战绩",
+      "winRate": "胜率",
+      "weightedWinRate": "加权胜率",
+      "form": "近期表现",
+      "tierDistribution": "参与段位",
+      "strength": "团队实力"
+    },
+    "maps": {
+      "byMap": "按地图",
+      "byType": "按模式",
+      "map": "地图",
+      "mode": "模式",
+      "played": "场次",
+      "won": "胜利",
+      "winRate": "胜率",
+      "weighted": "加权",
+      "lowSample": "样本不足",
+      "attackDefense": "进攻 vs 防守",
+      "attacking": "先手进攻",
+      "defending": "先手防守"
+    },
+    "bans": {
+      "title": "英雄禁用环境",
+      "caveat": "地图级信号：英雄处于禁用池时的胜率。FACEIT 不将禁用归属于具体阵营。",
+      "hero": "英雄",
+      "withBan": "有禁用",
+      "withoutBan": "无禁用",
+      "delta": "差值",
+      "sample": "样本",
+      "showUnrated": "显示低样本英雄"
+    },
+    "roster": {
+      "player": "选手",
+      "role": "职责",
+      "share": "出场",
+      "starter": "首发",
+      "sub": "替补",
+      "fsr": "FSR",
+      "tsr": "TSR"
+    },
+    "recommendations": {
+      "pickMaps": "优先选择的地图",
+      "avoidMaps": "避免或禁用的地图",
+      "banHeroes": "考虑禁用",
+      "dontBan": "不要禁用",
+      "none": "暂无足够数据生成建议。"
+    },
+    "related": {
+      "title": "也曾以此名参赛",
+      "combine": "合并历史",
+      "separate": "分开历史",
+      "shared": "{n} 名共同选手",
+      "matches": "{n} 场比赛"
+    }
+  },
   "statsPage": {
     "layoutMetadata": {
       "title": "统计数据 | Parsertime",

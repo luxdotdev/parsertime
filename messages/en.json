@@ -3631,6 +3631,80 @@
       }
     }
   },
+  "faceitScoutingPage": {
+    "title": "FACEIT Team Scouting",
+    "subtitle": "Search a team to see how they play and what to play into them.",
+    "search": {
+      "placeholder": "Search teams…",
+      "matches": "{count} matches",
+      "noResults": "No teams found"
+    },
+    "strengthFsr": "FSR",
+    "strengthTsr": "TSR",
+    "coverage": "{covered}/{size} rated",
+    "tabs": {
+      "overview": "Overview",
+      "maps": "Maps",
+      "bans": "Hero Bans",
+      "roster": "Roster",
+      "recommendations": "Recommendations"
+    },
+    "overview": {
+      "record": "Record",
+      "winRate": "Win rate",
+      "weightedWinRate": "Weighted win rate",
+      "form": "Recent form",
+      "tierDistribution": "Tiers played",
+      "strength": "Team strength"
+    },
+    "maps": {
+      "byMap": "By map",
+      "byType": "By mode",
+      "map": "Map",
+      "mode": "Mode",
+      "played": "Played",
+      "won": "Won",
+      "winRate": "Win rate",
+      "weighted": "Weighted",
+      "lowSample": "Low sample",
+      "attackDefense": "Attack vs Defense",
+      "attacking": "Attacking first",
+      "defending": "Defending first"
+    },
+    "bans": {
+      "title": "Hero ban environment",
+      "caveat": "Map-level signal: win rate when a hero is in the ban pool. FACEIT does not attribute bans to a side.",
+      "hero": "Hero",
+      "withBan": "With ban",
+      "withoutBan": "Without ban",
+      "delta": "Delta",
+      "sample": "Sample",
+      "showUnrated": "Show low-sample heroes"
+    },
+    "roster": {
+      "player": "Player",
+      "role": "Role",
+      "share": "Played",
+      "starter": "Starter",
+      "sub": "Sub",
+      "fsr": "FSR",
+      "tsr": "TSR"
+    },
+    "recommendations": {
+      "pickMaps": "Pick these maps",
+      "avoidMaps": "Avoid or ban these maps",
+      "banHeroes": "Consider banning",
+      "dontBan": "Don't ban",
+      "none": "Not enough data for recommendations yet."
+    },
+    "related": {
+      "title": "Also competed as",
+      "combine": "Combine history",
+      "separate": "Separate history",
+      "shared": "{n} shared players",
+      "matches": "{n} matches"
+    }
+  },
   "coaching": {
     "title": "Coaching Canvas",
     "subtitle": "Annotate maps with hero placements, drawings, and strategy notes.",
