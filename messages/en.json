@@ -3717,12 +3717,16 @@
       "unrated": "Unrated"
     },
     "header": {
+      "eyebrow": "Player",
+      "yes": "Yes",
+      "no": "No",
       "region": "Region",
       "level": "FACEIT level",
       "verified": "Verified",
       "team": "Current team"
     },
     "fsr": {
+      "eyebrow": "FSR",
       "title": "FSR",
       "headline": "Headline FSR",
       "byTier": "By tier",
@@ -3743,12 +3747,14 @@
       "none": "No standout stats"
     },
     "roles": {
+      "eyebrow": "Roles",
       "title": "Role usage",
       "role": "Role",
       "maps": "Maps",
       "share": "Share"
     },
     "maps": {
+      "eyebrow": "Maps",
       "title": "Map winrates",
       "byMap": "By map",
       "byType": "By mode",
@@ -3760,6 +3766,7 @@
       "lowSample": "Low sample"
     },
     "history": {
+      "eyebrow": "History",
       "title": "Match history",
       "date": "Date",
       "team": "Team",
@@ -3773,6 +3780,7 @@
       "empty": "No matches found"
     },
     "teams": {
+      "eyebrow": "Teams",
       "title": "Teams played for",
       "appearances": "{count} matches"
     },

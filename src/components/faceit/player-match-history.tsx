@@ -38,7 +38,7 @@ export function PlayerMatchHistory({ entries }: Props) {
   if (entries.length === 0) {
     return (
       <div className="space-y-4">
-        <SectionHeader eyebrow="History" title={t("history.title")} />
+        <SectionHeader eyebrow={t("history.eyebrow")} title={t("history.title")} />
         <p className="text-muted-foreground text-sm">{t("history.empty")}</p>
       </div>
     );

@@ -19,7 +19,7 @@ export function PlayerTeams({ teams }: Props) {
 
   return (
     <div className="space-y-4">
-      <SectionHeader eyebrow="Teams" title={t("teams.title")} />
+      <SectionHeader eyebrow={t("teams.eyebrow")} title={t("teams.title")} />
       <ul className="space-y-2">
         {teams.map((team) => {
           const href = `/faceit/team/${encodeURIComponent(team.faceitTeamId)}` as Route;

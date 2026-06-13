@@ -21,7 +21,7 @@ export function PlayerRoleUsage({ usage }: Props) {
 
   return (
     <div className="space-y-4">
-      <SectionHeader eyebrow="Roles" title={t("roles.title")} />
+      <SectionHeader eyebrow={t("roles.eyebrow")} title={t("roles.title")} />
       <Table>
         <TableHeader>
           <TableRow>

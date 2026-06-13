@@ -3717,12 +3717,16 @@
       "unrated": "未评级"
     },
     "header": {
+      "eyebrow": "选手",
+      "yes": "是",
+      "no": "否",
       "region": "地区",
       "level": "FACEIT 等级",
       "verified": "已认证",
       "team": "当前团队"
     },
     "fsr": {
+      "eyebrow": "FSR",
       "title": "FSR",
       "headline": "代表 FSR",
       "byTier": "按段位",
@@ -3743,12 +3747,14 @@
       "none": "暂无突出数据"
     },
     "roles": {
+      "eyebrow": "职责",
       "title": "职责使用情况",
       "role": "职责",
       "maps": "地图",
       "share": "占比"
     },
     "maps": {
+      "eyebrow": "地图",
       "title": "地图胜率",
       "byMap": "按地图",
       "byType": "按模式",
@@ -3760,6 +3766,7 @@
       "lowSample": "样本不足"
     },
     "history": {
+      "eyebrow": "历史",
       "title": "比赛记录",
       "date": "日期",
       "team": "团队",
@@ -3773,6 +3780,7 @@
       "empty": "未找到比赛记录"
     },
     "teams": {
+      "eyebrow": "团队",
       "title": "效力过的团队",
       "appearances": "{count} 场比赛"
     },

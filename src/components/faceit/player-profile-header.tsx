@@ -20,14 +20,14 @@ export function PlayerProfileHeader({ player }: Props) {
     },
     {
       label: t("header.verified"),
-      value: player.verified ? "Yes" : "No",
+      value: player.verified ? t("header.yes") : t("header.no"),
     },
   ];
 
   return (
     <div className="space-y-4">
       <SectionHeader
-        eyebrow="Player"
+        eyebrow={t("header.eyebrow")}
         title={player.nickname}
         description={player.battletag ?? undefined}
       />

@@ -75,7 +75,7 @@ export function PlayerMapWinrates({ byMap, byType }: Props) {
 
   return (
     <div className="space-y-6">
-      <SectionHeader eyebrow="Maps" title={t("maps.title")} />
+      <SectionHeader eyebrow={t("maps.eyebrow")} title={t("maps.title")} />
       <div className="space-y-2">
         <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
           {t("maps.byMap")}

@@ -3717,12 +3717,16 @@
       "unrated": "미평가"
     },
     "header": {
+      "eyebrow": "선수",
+      "yes": "예",
+      "no": "아니오",
       "region": "지역",
       "level": "FACEIT 레벨",
       "verified": "인증됨",
       "team": "현재 팀"
     },
     "fsr": {
+      "eyebrow": "FSR",
       "title": "FSR",
       "headline": "대표 FSR",
       "byTier": "티어별",
@@ -3743,12 +3747,14 @@
       "none": "두드러진 스탯 없음"
     },
     "roles": {
+      "eyebrow": "역할",
       "title": "역할 사용 현황",
       "role": "역할",
       "maps": "맵",
       "share": "비율"
     },
     "maps": {
+      "eyebrow": "맵",
       "title": "맵 승률",
       "byMap": "맵별",
       "byType": "모드별",
@@ -3760,6 +3766,7 @@
       "lowSample": "표본 부족"
     },
     "history": {
+      "eyebrow": "이력",
       "title": "매치 이력",
       "date": "날짜",
       "team": "팀",
@@ -3773,6 +3780,7 @@
       "empty": "매치를 찾을 수 없습니다"
     },
     "teams": {
+      "eyebrow": "팀",
       "title": "소속 팀",
       "appearances": "{count}경기"
     },
