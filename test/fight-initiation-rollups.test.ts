@@ -6,6 +6,7 @@ import {
   mergeTallies,
   tallyMapForTeam,
 } from "@/lib/fight-initiation-rollups";
+import { round } from "@/lib/utils";
 
 function label(over: Partial<FightInitiationLabel>): FightInitiationLabel {
   return {
@@ -84,5 +85,3 @@ describe("mergeTallies + initiationRates", () => {
   });
 });
 
-// import round for the expected-value computation
-import { round } from "@/lib/utils";

@@ -40,19 +40,19 @@ export function tallyMapForTeam(
 ): InitiationTally {
   const tally = emptyTally();
   tally.mapsCovered = 1;
-  for (const l of labels) {
+  for (const label of labels) {
     tally.totalFights++;
-    if (l.initiator === null) {
+    if (label.initiator === null) {
       tally.contestedFights++;
       continue;
     }
     tally.decidedFights++;
-    if (l.initiator === ourTeam) {
+    if (label.initiator === ourTeam) {
       tally.wentFirst++;
-      if (l.winner === ourTeam) tally.wentFirstWins++;
+      if (label.winner === ourTeam) tally.wentFirstWins++;
     } else {
       tally.wentSecond++;
-      if (l.winner === ourTeam) tally.wentSecondWins++;
+      if (label.winner === ourTeam) tally.wentSecondWins++;
     }
   }
   return tally;
