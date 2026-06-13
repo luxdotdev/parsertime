@@ -3,6 +3,12 @@ import type { Kill } from "@/generated/prisma/client";
 import {
   MIN_COMMIT_PLAYERS,
   determineFightWinner,
+  findTeamCommit,
+  type DamageEvent,
+  type AbilityEvent,
+  type UltEvent,
+  type HealEvent,
+  type InitiationContext,
 } from "@/lib/fight-initiation";
 
 function makeKill(overrides: Partial<Kill> = {}): Kill {
@@ -67,5 +73,84 @@ describe("determineFightWinner", () => {
 
   test("MIN_COMMIT_PLAYERS default is 2", () => {
     expect(MIN_COMMIT_PLAYERS).toBe(2);
+  });
+});
+
+function dmg(overrides: Partial<DamageEvent> = {}): DamageEvent {
+  return {
+    match_time: 100,
+    attacker_name: "a",
+    attacker_team: "Team 1",
+    victim_name: "x",
+    victim_team: "Team 2",
+    event_damage: 50,
+    ...overrides,
+  };
+}
+
+function emptyCtx(over: Partial<InitiationContext> = {}): InitiationContext {
+  return {
+    teams: ["Team 1", "Team 2"],
+    damage: [],
+    ability1: [],
+    ability2: [],
+    ults: [],
+    healing: [],
+    ...over,
+  };
+}
+
+describe("findTeamCommit", () => {
+  test("two players landing heavy damage = a commit (dive engage)", () => {
+    const damage: DamageEvent[] = [
+      dmg({ match_time: 100, attacker_name: "ball", event_damage: 150 }),
+      dmg({ match_time: 100.5, attacker_name: "tracer", event_damage: 150 }),
+    ];
+    const commit = findTeamCommit("Team 1", 95, 102, emptyCtx({ damage }));
+    expect(commit).not.toBeNull();
+    expect(commit!.players.sort()).toEqual(["ball", "tracer"]);
+    expect(commit!.time).toBe(100);
+  });
+
+  test("a lone heavy spike (one Widow headshot) is NOT a commit", () => {
+    const damage: DamageEvent[] = [
+      dmg({ match_time: 100, attacker_name: "widow", event_damage: 300 }),
+    ];
+    expect(findTeamCommit("Team 1", 95, 102, emptyCtx({ damage }))).toBeNull();
+  });
+
+  test("two players merely poking (low volume) is NOT a commit", () => {
+    const damage: DamageEvent[] = [
+      dmg({ match_time: 100, attacker_name: "ashe", event_damage: 40 }),
+      dmg({ match_time: 100.4, attacker_name: "widow", event_damage: 40 }),
+    ];
+    expect(findTeamCommit("Team 1", 95, 102, emptyCtx({ damage }))).toBeNull();
+  });
+
+  test("an offensive ult alone is a hard commit", () => {
+    const ults: UltEvent[] = [
+      { match_time: 100, player_name: "rein", player_team: "Team 1" },
+    ];
+    const commit = findTeamCommit("Team 1", 95, 102, emptyCtx({ ults }));
+    expect(commit).not.toBeNull();
+    expect(commit!.usedUlt).toBe(true);
+  });
+
+  test("self-damage and enemy damage do not count toward a team's commit", () => {
+    const damage: DamageEvent[] = [
+      // self-damage (same team both sides)
+      dmg({ match_time: 100, attacker_name: "zarya", attacker_team: "Team 1", victim_team: "Team 1", event_damage: 200 }),
+      // the enemy team dealing damage
+      dmg({ match_time: 100.2, attacker_name: "enemy", attacker_team: "Team 2", victim_team: "Team 1", event_damage: 200 }),
+    ];
+    expect(findTeamCommit("Team 1", 95, 102, emptyCtx({ damage }))).toBeNull();
+  });
+
+  test("only events inside the window are considered", () => {
+    const damage: DamageEvent[] = [
+      dmg({ match_time: 90, attacker_name: "ball", event_damage: 200 }),
+      dmg({ match_time: 90.3, attacker_name: "tracer", event_damage: 200 }),
+    ];
+    expect(findTeamCommit("Team 1", 95, 102, emptyCtx({ damage }))).toBeNull();
   });
 });
