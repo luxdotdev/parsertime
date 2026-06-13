@@ -42,3 +42,29 @@ export const faceitCacheMissTotal = Metric.counter("faceit.cache.miss", {
   description: "FACEIT scouting cache misses",
   incremental: true,
 });
+
+export const faceitPlayersQuerySuccessTotal = Metric.counter(
+  "faceit.players.query.success",
+  { description: "Successful FACEIT players queries", incremental: true }
+);
+export const faceitPlayersQueryErrorTotal = Metric.counter(
+  "faceit.players.query.error",
+  { description: "Failed FACEIT players queries", incremental: true }
+);
+export const faceitPlayersQueryDuration = dur(
+  "faceit.players.query.duration_ms",
+  "FACEIT players query duration (ms)"
+);
+
+export const faceitPlayerProfileQuerySuccessTotal = Metric.counter(
+  "faceit.player_profile.query.success",
+  { description: "Successful FACEIT player profile queries", incremental: true }
+);
+export const faceitPlayerProfileQueryErrorTotal = Metric.counter(
+  "faceit.player_profile.query.error",
+  { description: "Failed FACEIT player profile queries", incremental: true }
+);
+export const faceitPlayerProfileQueryDuration = dur(
+  "faceit.player_profile.query.duration_ms",
+  "FACEIT player profile query duration (ms)"
+);
