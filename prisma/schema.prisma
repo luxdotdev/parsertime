@@ -1672,6 +1672,12 @@ enum FaceitMatchStatus {
   ABORTED
 }
 
+enum FaceitRole {
+  TANK
+  DAMAGE
+  SUPPORT
+}
+
 enum TsrRosterOverrideAction {
   INCLUDE
   EXCLUDE
@@ -1692,6 +1698,8 @@ model FaceitPlayer {
   aliases         BattletagAlias[]
   mapStats        FaceitMapPlayerStats[]
   tsr             PlayerTsr?
+  fsr             PlayerFsr[]
+  fsrTiers        PlayerFsrTier[]
 
   @@index([battletag])
   @@index([region])
@@ -1939,6 +1947,51 @@ model PlayerTsr {
 
   @@index([region, rating(sort: Desc)])
   @@index([recentMatchCount365d])
+}
+
+model PlayerFsr {
+  faceitPlayerId     String
+  role               FaceitRole
+  fsr                Int
+  compositeZ         Float
+  effectiveAnchor    Int
+  mapCount           Int
+  recentMapCount365d Int
+  tiersPlayed        FaceitTier[]
+  computedAt         DateTime
+
+  player FaceitPlayer @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@id([faceitPlayerId, role])
+  @@index([role, fsr])
+}
+
+model PlayerFsrTier {
+  faceitPlayerId String
+  role           FaceitRole
+  tier           FaceitTier
+  fsr            Int
+  compositeZ     Float
+  mapCount       Int
+  minutesPlayed  Float
+  peerCount      Int
+  statZ          Json
+  computedAt     DateTime
+
+  player FaceitPlayer @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@id([faceitPlayerId, role, tier])
+  @@index([tier, role, fsr])
+}
+
+model FsrBaseline {
+  tier       FaceitTier
+  role       FaceitRole
+  sampleN    Int
+  stats      Json
+  computedAt DateTime
+
+  @@id([tier, role])
 }
 
 model TeamTsrSnapshot {
