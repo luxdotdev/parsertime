@@ -5,7 +5,6 @@ import {
   ingestPlayerHistory,
 } from "@/lib/tsr/ingest";
 import { recomputeAllTsrs } from "@/lib/tsr/replay";
-import { recomputeAllFsr } from "@/lib/fsr/compute";
 import prisma from "@/lib/prisma";
 import { timingSafeEqual } from "node:crypto";
 
@@ -116,17 +115,6 @@ export async function GET(req: Request): Promise<Response> {
     const snapshotResult = await recomputeAllTeamTsrSnapshots();
     wideEvent.team_snapshots = snapshotResult;
 
-    const fsr = await recomputeAllFsr();
-    wideEvent.fsr = {
-      groups_loaded: fsr.groupsLoaded,
-      cells_written: fsr.cellsWritten,
-      players_written: fsr.playersWritten,
-      baselines_written: fsr.baselinesWritten,
-      stale_rows_dropped: fsr.staleRowsDropped,
-      duration_ms: fsr.durationMs,
-      skipped: fsr.skipped ?? false,
-    };
-
     wideEvent.status_code = 200;
     wideEvent.outcome = "success";
 
@@ -136,7 +124,6 @@ export async function GET(req: Request): Promise<Response> {
       reingest: wideEvent.reingest,
       replay: wideEvent.replay,
       team_snapshots: wideEvent.team_snapshots,
-      fsr: wideEvent.fsr,
     });
   } catch (error) {
     wideEvent.status_code = 500;
