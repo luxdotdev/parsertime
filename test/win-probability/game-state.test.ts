@@ -353,6 +353,52 @@ describe("statesAt", () => {
     expect(duringSecond.team1.controlProgressOwn).toBe(0);
     expect(duringSecond.team1.controlProgressEnemy).toBeCloseTo(0.3);
     expect(duringSecond.team1.holdsObjective).toBe(-1);
+    expect(duringSecond.team1.objectiveIndex).toBe(1); // capture of point 1 moved the index
+  });
+
+  test("role-split alive diffs bucket deaths by the victim's hero role", () => {
+    const log = baseLog({
+      kills: [
+        { time: 100, victimTeam: "Bravo", victimName: "b1", victimHero: "Reinhardt" },
+        { time: 101, victimTeam: "Bravo", victimName: "b2", victimHero: "Ana" },
+        { time: 102, victimTeam: "Alpha", victimName: "a1", victimHero: "Tracer" },
+      ],
+    });
+    const [s] = statesAt(log, [105]);
+    expect(s.team1.tankAliveDiff).toBe(1); // Rein down on Bravo
+    expect(s.team1.supportAliveDiff).toBe(1); // Ana down on Bravo
+    expect(s.team1.dpsAliveDiff).toBe(-1); // Tracer down on Alpha
+    expect(s.team1.aliveDiff).toBe(1); // sum invariant: 1 + 1 − 1
+    expect(s.team2.tankAliveDiff).toBe(-1); // mirror
+  });
+
+  test("role splits recover on respawn and rez, restoring the right slot", () => {
+    const log = baseLog({
+      kills: [
+        { time: 100, victimTeam: "Bravo", victimName: "b1", victimHero: "Winston" },
+        { time: 105, victimTeam: "Bravo", victimName: "b2", victimHero: "Lúcio" },
+      ],
+      rezzes: [{ time: 107, team: "Bravo", player: "b2" }],
+    });
+    // t=108: Winston still dead (respawns 110), Lúcio rezzed
+    const [s, after] = statesAt(log, [108, 111]);
+    expect(s.team1.tankAliveDiff).toBe(1);
+    expect(s.team1.supportAliveDiff).toBe(0);
+    expect(after.team1.tankAliveDiff).toBe(0); // respawned
+    expect(after.team1.supportAliveDiff).toBe(0);
+    expect(after.team1.dpsAliveDiff).toBe(0);
+  });
+
+  test("a kill with no hero falls into the Damage bucket, keeping the sum invariant", () => {
+    const log = baseLog({
+      kills: [{ time: 100, victimTeam: "Bravo", victimName: "b1" }],
+    });
+    const [s] = statesAt(log, [102]);
+    expect(s.team1.dpsAliveDiff).toBe(1);
+    expect(s.team1.aliveDiff).toBe(1);
+    expect(
+      s.team1.tankAliveDiff + s.team1.dpsAliveDiff + s.team1.supportAliveDiff
+    ).toBe(s.team1.aliveDiff);
   });
 
   test("snapshots are mirror images", () => {
@@ -364,5 +410,210 @@ describe("statesAt", () => {
     expect(s.team1.aliveDiff).toBe(-s.team2.aliveDiff);
     expect(s.team1.ultBankDiff).toBe(-s.team2.ultBankDiff);
     expect(s.team1.objProgressOwn).toBe(s.team2.objProgressEnemy);
+    expect(s.team1.tankAliveDiff).toBe(-s.team2.tankAliveDiff);
+    expect(s.team1.dpsAliveDiff).toBe(-s.team2.dpsAliveDiff);
+    expect(s.team1.supportAliveDiff).toBe(-s.team2.supportAliveDiff);
+    expect(s.team1.tankUltDiff).toBe(-s.team2.tankUltDiff);
+    expect(s.team1.dpsUltDiff).toBe(-s.team2.dpsUltDiff);
+    expect(s.team1.supportUltDiff).toBe(-s.team2.supportUltDiff);
+  });
+
+  test("role-split ult bank buckets by hero role and survives death", () => {
+    const log = baseLog({
+      ultCharged: [
+        { time: 50, team: "Alpha", player: "a1", hero: "Sigma" },
+        { time: 60, team: "Alpha", player: "a2", hero: "Kiriko" },
+        { time: 70, team: "Bravo", player: "b1", hero: "Sojourn" },
+      ],
+      ultStart: [{ time: 80, team: "Alpha", player: "a1" }],
+      kills: [{ time: 75, victimTeam: "Alpha", victimName: "a2", victimHero: "Kiriko" }],
+    });
+    const [t78, t85] = statesAt(log, [78, 85]);
+    expect(t78.team1.tankUltDiff).toBe(1); // Sigma banked
+    expect(t78.team1.supportUltDiff).toBe(1); // Kiriko banked (dead, keeps charge)
+    expect(t78.team1.dpsUltDiff).toBe(-1); // Sojourn banked on Bravo
+    expect(t78.team1.ultBankDiff).toBe(1); // sum invariant
+    expect(t85.team1.tankUltDiff).toBe(0); // Sigma spent
+    expect(t85.team1.ultBankDiff).toBe(0);
+  });
+
+  test("an Echo-duplicated ult counts as Damage, not the copied hero's role", () => {
+    const log = baseLog({
+      ultCharged: [
+        { time: 50, team: "Alpha", player: "a1", hero: "Ana", heroDuplicated: true },
+      ],
+    });
+    const [s] = statesAt(log, [60]);
+    expect(s.team1.dpsUltDiff).toBe(1);
+    expect(s.team1.supportUltDiff).toBe(0);
+  });
+
+  test("an ult charge with no hero falls into the Damage bucket", () => {
+    const log = baseLog({
+      ultCharged: [{ time: 50, team: "Alpha", player: "a1" }],
+    });
+    const [s] = statesAt(log, [60]);
+    expect(s.team1.dpsUltDiff).toBe(1);
+    expect(s.team1.ultBankDiff).toBe(1);
+  });
+
+  test("escort/hybrid: overtime flips on when the clock expires but the round persists", () => {
+    const log = baseLog({
+      modeFamily: "escort_hybrid",
+      rounds: [
+        {
+          roundNumber: 1,
+          start: 0,
+          end: 400, // round outlives the 240s clock → 240..400 is overtime
+          capturingTeam: "Alpha",
+          startScore1: 0,
+          startScore2: 0,
+          endScore1: 1,
+          endScore2: 0,
+        },
+      ],
+    });
+    const [regulation, overtime, ended] = statesAt(log, [200, 300, 400]);
+    expect(regulation.team1.isOvertime).toBe(0);
+    expect(overtime.team1.isOvertime).toBe(1);
+    expect(overtime.team2.isOvertime).toBe(1); // both perspectives agree
+    expect(ended.team1.isOvertime).toBe(0); // round over
+  });
+
+  test("overtime requires the current round's setup baseline", () => {
+    // Round 2 has no setup_complete yet at t=330 — the stale round-1 baseline
+    // (expired long ago) must not flag a fresh round as overtime.
+    const log = baseLog({
+      modeFamily: "escort_hybrid",
+      rounds: [
+        {
+          roundNumber: 1,
+          start: 0,
+          end: 300,
+          capturingTeam: "Alpha",
+          startScore1: 0,
+          startScore2: 0,
+          endScore1: 0,
+          endScore2: 3,
+        },
+        {
+          roundNumber: 2,
+          start: 320,
+          end: 600,
+          capturingTeam: "Bravo",
+          startScore1: 0,
+          startScore2: 3,
+          endScore1: 1,
+          endScore2: 3,
+        },
+      ],
+      setupCompletes: [{ time: 0, roundNumber: 1, timeRemaining: 240 }],
+    });
+    const [s] = statesAt(log, [330]);
+    expect(s.team1.isOvertime).toBe(0);
+  });
+
+  test("control never reports overtime", () => {
+    const log = baseLog(); // control, clock baseline expires at t=240
+    const [s] = statesAt(log, [290]);
+    expect(s.team1.timeRemaining).toBe(0);
+    expect(s.team1.isOvertime).toBe(0);
+  });
+
+  test("objective index follows round_start, progress ticks, and captures", () => {
+    const log = baseLog({
+      modeFamily: "escort_hybrid",
+      rounds: [
+        {
+          roundNumber: 1,
+          start: 0,
+          end: 400,
+          capturingTeam: "Alpha",
+          startScore1: 0,
+          startScore2: 0,
+          endScore1: 2,
+          endScore2: 0,
+          objectiveIndex: 0,
+        },
+      ],
+      progress: [
+        { time: 100, team: "Alpha", value: 50, roundNumber: 1, objectiveIndex: 0 },
+        { time: 200, team: "Alpha", value: 10, roundNumber: 1, objectiveIndex: 1 },
+      ],
+    });
+    const [atStart, firstPoint, secondPoint] = statesAt(log, [10, 150, 250]);
+    expect(atStart.team1.objectiveIndex).toBe(0);
+    expect(firstPoint.team1.objectiveIndex).toBe(0);
+    expect(secondPoint.team1.objectiveIndex).toBe(1);
+  });
+
+  test("objective index is null when logs carry none, and stale ticks don't move it", () => {
+    const log = baseLog({
+      modeFamily: "escort_hybrid",
+      rounds: [
+        {
+          roundNumber: 1,
+          start: 0,
+          end: 320,
+          capturingTeam: "Alpha",
+          startScore1: 0,
+          startScore2: 0,
+          endScore1: 0,
+          endScore2: 3,
+        },
+        {
+          roundNumber: 2,
+          start: 320,
+          end: 600,
+          capturingTeam: "Bravo",
+          startScore1: 0,
+          startScore2: 3,
+          endScore1: 1,
+          endScore2: 3,
+          objectiveIndex: 0,
+        },
+      ],
+      progress: [
+        // Mis-stamped defender spill (Alpha defends r2): must not move the index.
+        { time: 325, team: "Alpha", value: 100, roundNumber: 2, objectiveIndex: 2 },
+      ],
+    });
+    const [r1, r2] = statesAt(log, [100, 330]);
+    expect(r1.team1.objectiveIndex).toBe(null); // round 1 had no index in the log
+    expect(r2.team1.objectiveIndex).toBe(0); // spill swallowed, round_start value holds
+  });
+
+  test("control: captures keep the objective index current", () => {
+    const log = baseLog({
+      objectiveCaptured: [
+        {
+          time: 100,
+          team: "Alpha",
+          roundNumber: 1,
+          objectiveIndex: 0,
+          progress1: 10,
+          progress2: 0,
+        },
+      ],
+    });
+    const [s] = statesAt(log, [120]);
+    expect(s.team1.objectiveIndex).toBe(0);
+  });
+
+  test("re-charging after a hero swap moves the banked ult to the new role", () => {
+    const log = baseLog({
+      ultCharged: [
+        { time: 50, team: "Alpha", player: "a1", hero: "Sigma" },
+        { time: 90, team: "Alpha", player: "a1", hero: "Tracer" },
+      ],
+      ultStart: [{ time: 70, team: "Alpha", player: "a1" }],
+    });
+    // t=60: banked as Sigma (Tank). t=75: spent. t=95: re-banked as Tracer (Damage).
+    const [asTank, spent, asDps] = statesAt(log, [60, 75, 95]);
+    expect(asTank.team1.tankUltDiff).toBe(1);
+    expect(asTank.team1.dpsUltDiff).toBe(0);
+    expect(spent.team1.ultBankDiff).toBe(0);
+    expect(asDps.team1.tankUltDiff).toBe(0);
+    expect(asDps.team1.dpsUltDiff).toBe(1);
   });
 });

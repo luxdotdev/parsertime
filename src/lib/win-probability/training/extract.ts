@@ -11,6 +11,13 @@ import {
 
 export const FIGHT_GAP_SECONDS = 15;
 
+/** hero_duplicated is a string column; loggers write ""/"0"/"False" when the
+ * ult is not an Echo duplicate. Anything else marks a duplicated ult. */
+export function isDuplicated(v: string): boolean {
+  const s = v.trim().toLowerCase();
+  return s !== "" && s !== "0" && s !== "false";
+}
+
 export function fightBoundaries(
   kills: { time: number }[],
   gapSeconds: number
@@ -160,6 +167,7 @@ export async function fetchEventLog(
         startScore2: rs.team_2_score,
         endScore1: re.team_1_score,
         endScore2: re.team_2_score,
+        objectiveIndex: rs.objective_index,
       },
     ];
   });
@@ -178,6 +186,7 @@ export async function fetchEventLog(
         startScore2: rs.team_2_score,
         endScore1: re.team_1_score,
         endScore2: re.team_2_score,
+        objectiveIndex: rs.objective_index,
       });
     }
   }
@@ -219,6 +228,7 @@ export async function fetchEventLog(
       time: k.match_time,
       victimTeam: k.victim_team,
       victimName: k.victim_name,
+      victimHero: k.victim_hero,
       attackerTeam: k.attacker_team,
       attackerName: k.attacker_name,
     })),
@@ -231,6 +241,8 @@ export async function fetchEventLog(
       time: u.match_time,
       team: u.player_team,
       player: u.player_name,
+      hero: u.player_hero,
+      heroDuplicated: isDuplicated(u.hero_duplicated),
     })),
     ultStart: ultStart.map((u) => ({
       time: u.match_time,
@@ -244,12 +256,14 @@ export async function fetchEventLog(
         team: p.capturing_team,
         value: p.point_capture_progress,
         roundNumber: p.round_number,
+        objectiveIndex: p.objective_index,
       })),
       ...payloadProgress.map((p) => ({
         time: p.match_time,
         team: p.capturing_team,
         value: p.payload_capture_progress,
         roundNumber: p.round_number,
+        objectiveIndex: p.objective_index,
       })),
     ],
     objectiveCaptured: objectiveCaptured.map((o) => ({

@@ -1,3 +1,4 @@
+import { getHeroRole, type RoleName } from "@/types/heroes";
 import {
   type GameState,
   RESPAWN_SECONDS,
@@ -6,9 +7,16 @@ import {
 } from "./types";
 
 type SweepEvent =
-  | { time: number; kind: "kill"; team: string; player: string }
+  | { time: number; kind: "kill"; team: string; player: string; hero?: string }
   | { time: number; kind: "rez"; team: string; player: string }
-  | { time: number; kind: "ult_charged"; team: string; player: string }
+  | {
+      time: number;
+      kind: "ult_charged";
+      team: string;
+      player: string;
+      hero?: string;
+      heroDuplicated?: boolean;
+    }
   | { time: number; kind: "ult_start"; team: string; player: string }
   | { time: number; kind: "round_start"; roundIndex: number }
   | {
@@ -17,6 +25,7 @@ type SweepEvent =
       team: string;
       value: number;
       roundNumber: number;
+      objectiveIndex?: number;
     }
   | {
       time: number;
@@ -27,7 +36,7 @@ type SweepEvent =
       progress1: number;
       progress2: number;
     }
-  | { time: number; kind: "setup"; timeRemaining: number };
+  | { time: number; kind: "setup"; timeRemaining: number; roundNumber: number };
 
 function mergedEvents(log: WPEventLog): SweepEvent[] {
   const events: SweepEvent[] = [];
@@ -37,6 +46,7 @@ function mergedEvents(log: WPEventLog): SweepEvent[] {
       kind: "kill",
       team: k.victimTeam,
       player: k.victimName,
+      hero: k.victimHero,
     });
   }
   for (const r of log.rezzes) {
@@ -48,6 +58,8 @@ function mergedEvents(log: WPEventLog): SweepEvent[] {
       kind: "ult_charged",
       team: u.team,
       player: u.player,
+      hero: u.hero,
+      heroDuplicated: u.heroDuplicated,
     });
   }
   for (const u of log.ultStart) {
@@ -68,6 +80,7 @@ function mergedEvents(log: WPEventLog): SweepEvent[] {
       team: p.team,
       value: p.value,
       roundNumber: p.roundNumber,
+      objectiveIndex: p.objectiveIndex,
     });
   }
   for (const o of log.objectiveCaptured) {
@@ -86,6 +99,7 @@ function mergedEvents(log: WPEventLog): SweepEvent[] {
       time: s.time,
       kind: "setup",
       timeRemaining: s.timeRemaining,
+      roundNumber: s.roundNumber,
     });
   }
   // At equal timestamps, round_start sorts last: the dying round's final
@@ -102,14 +116,23 @@ function clampUnit(v: number): number {
   return Math.min(1, Math.max(0, v));
 }
 
+/** A duplicated ult belongs to Echo (Damage), not the copied hero's role. */
+function ultRole(hero: string | undefined, duplicated: boolean | undefined): RoleName {
+  if (duplicated === true) return "Damage";
+  return getHeroRole(hero ?? "");
+}
+
 /**
  * Single chronological sweep. `times` must be ascending. Returns one
  * Snapshot per requested time with both team perspectives.
  */
 export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
   const events = mergedEvents(log);
-  const deadUntil = new Map<string, number>(); // "team player" → respawn time
-  const banked = { t1: new Set<string>(), t2: new Set<string>() };
+  const deadUntil = new Map<string, { until: number; role: RoleName }>(); // "team player" → {until, role}
+  const banked = {
+    t1: new Map<string, RoleName>(),
+    t2: new Map<string, RoleName>(),
+  };
   const progress = { t1: 0, t2: 0 }; // raw 0..100
   const control = { t1: 0, t2: 0 }; // raw 0..100, control-mode win %
   let holder: "t1" | "t2" | null = null;
@@ -117,13 +140,21 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
   // Flashpoint emits a single round_start, so its running score is derived:
   // each objective-index transition credits the team holding the dying point.
   const derivedScore = { t1: 0, t2: 0 };
+  // Which point/checkpoint is contested right now (for the model feature).
+  // Distinct from `objectiveIndex` above, which exists to detect flashpoint
+  // flips and must only move on objective_captured events.
+  let contestedIndex: number | null = null;
   let roundIndex = 0;
-  let setupBaseline: { time: number; remaining: number } | null = null;
+  let setupBaseline: {
+    time: number;
+    remaining: number;
+    roundNumber: number;
+  } | null = null;
 
   function isTeam1(team: string): boolean {
     return team === log.team1;
   }
-  function bankOf(team: string): Set<string> {
+  function bankOf(team: string): Map<string, RoleName> {
     return isTeam1(team) ? banked.t1 : banked.t2;
   }
 
@@ -135,13 +166,16 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
       const e = events[cursor];
       switch (e.kind) {
         case "kill":
-          deadUntil.set(`${e.team} ${e.player}`, e.time + RESPAWN_SECONDS);
+          deadUntil.set(`${e.team} ${e.player}`, {
+            until: e.time + RESPAWN_SECONDS,
+            role: getHeroRole(e.hero ?? ""),
+          });
           break;
         case "rez":
           deadUntil.delete(`${e.team} ${e.player}`);
           break;
         case "ult_charged":
-          bankOf(e.team).add(e.player);
+          bankOf(e.team).set(e.player, ultRole(e.hero, e.heroDuplicated));
           break;
         case "ult_start":
           bankOf(e.team).delete(e.player);
@@ -154,6 +188,7 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
           control.t2 = 0;
           holder = null;
           objectiveIndex = null;
+          contestedIndex = log.rounds[e.roundIndex]?.objectiveIndex ?? null;
           break;
         case "progress":
           // Stale spill: a previous round's tick arriving after the next
@@ -173,6 +208,10 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
           }
           if (isTeam1(e.team)) progress.t1 = e.value;
           else progress.t2 = e.value;
+          // Control maps: only objective_captured moves the index; progress
+          // ticks on control don't carry objectiveIndex in the current
+          // extraction.
+          if (e.objectiveIndex !== undefined) contestedIndex = e.objectiveIndex;
           break;
         case "objective_captured": {
           if (e.roundNumber < (log.rounds[roundIndex]?.roundNumber ?? 0)) {
@@ -191,22 +230,31 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
           // "All Teams" (neutral unlock) and unknown names clear the holder.
           holder =
             e.team === log.team1 ? "t1" : e.team === log.team2 ? "t2" : null;
+          contestedIndex = e.objectiveIndex;
           break;
         }
         case "setup":
-          setupBaseline = { time: e.time, remaining: e.timeRemaining };
+          setupBaseline = {
+            time: e.time,
+            remaining: e.timeRemaining,
+            roundNumber: e.roundNumber,
+          };
           break;
       }
       cursor++;
     }
 
-    let dead1 = 0;
-    let dead2 = 0;
-    for (const [key, until] of deadUntil) {
-      if (until <= t) continue;
-      if (isTeam1(key.split(" ")[0])) dead1++;
-      else dead2++;
+    const dead = {
+      t1: { Tank: 0, Damage: 0, Support: 0 },
+      t2: { Tank: 0, Damage: 0, Support: 0 },
+    };
+    for (const [key, info] of deadUntil) {
+      if (info.until <= t) continue;
+      const side = isTeam1(key.split(" ")[0]) ? "t1" : "t2";
+      dead[side][info.role]++;
     }
+    const dead1 = dead.t1.Tank + dead.t1.Damage + dead.t1.Support;
+    const dead2 = dead.t2.Tank + dead.t2.Damage + dead.t2.Support;
 
     const round = log.rounds[roundIndex];
     const ended = round !== undefined && t >= round.end;
@@ -235,6 +283,28 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
         ? 0
         : Math.max(0, setupBaseline.remaining - (t - setupBaseline.time));
 
+    // Overtime: the clock ran out but round_end hasn't come — the round only
+    // persists because the attacker is touching. Escort/hybrid only: control
+    // has no clock, and flashpoint's single-round_start log shape makes
+    // timeRemaining unreliable mid-map. Checkpoint time-banks aren't logged,
+    // so this fires once the round outlives its initial clock allocation — a
+    // consistent proxy, not true overtime.
+    const isOvertime: 0 | 1 =
+      log.modeFamily === "escort_hybrid" &&
+      setupBaseline?.roundNumber === roundNumber &&
+      timeRemaining === 0 &&
+      round !== undefined &&
+      t < round.end
+        ? 1
+        : 0;
+
+    const bank = {
+      t1: { Tank: 0, Damage: 0, Support: 0 },
+      t2: { Tank: 0, Damage: 0, Support: 0 },
+    };
+    for (const role of banked.t1.values()) bank.t1[role]++;
+    for (const role of banked.t2.values()) bank.t2[role]++;
+
     function perspective(own: "t1" | "t2"): GameState {
       const sign = own === "t1" ? 1 : -1;
       return {
@@ -242,7 +312,13 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
         matchTime: t,
         roundNumber,
         aliveDiff: sign * (dead2 - dead1),
+        tankAliveDiff: sign * (dead.t2.Tank - dead.t1.Tank),
+        dpsAliveDiff: sign * (dead.t2.Damage - dead.t1.Damage),
+        supportAliveDiff: sign * (dead.t2.Support - dead.t1.Support),
         ultBankDiff: sign * (banked.t1.size - banked.t2.size),
+        tankUltDiff: sign * (bank.t1.Tank - bank.t2.Tank),
+        dpsUltDiff: sign * (bank.t1.Damage - bank.t2.Damage),
+        supportUltDiff: sign * (bank.t1.Support - bank.t2.Support),
         scoreDiff: sign * (score1 - score2),
         objProgressOwn: clampUnit(
           (own === "t1" ? progress.t1 : progress.t2) / 100
@@ -260,6 +336,8 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
         timeRemaining,
         isAttacker:
           capturing === (own === "t1" ? log.team1 : log.team2) ? 1 : 0,
+        isOvertime,
+        objectiveIndex: contestedIndex,
       };
     }
 

@@ -95,7 +95,7 @@ describe("buildRows", () => {
     const [a, b] = rows;
     expect(a.matchId).toBe(77);
     expect(a.label + b.label).toBe(1);
-    expect(a.features[0]).toBe(-b.features[0]); // aliveDiff mirrors
+    expect(a.features[0]).toBe(-b.features[0]); // tankAliveDiff negates in mirror pair
   });
 
   test("rounds with null labels produce no rows", () => {
