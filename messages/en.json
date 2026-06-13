@@ -2411,7 +2411,7 @@
       "replay": "Replay",
       "routes": "Routes",
       "story": "Match Story",
-      "goingFirst": "Going First"
+      "initiation": "Initiation"
     },
     "routes": {
       "calibrationWarning": "This map's calibration is invalid — most recorded positions land outside the map image, so routes can't be drawn meaningfully. Recalibrate this map in the calibration tool (use at least 4 anchors).",

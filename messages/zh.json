@@ -2411,7 +2411,7 @@
       "replay": "回放",
       "routes": "路线",
       "story": "比赛故事",
-      "goingFirst": "先手开团"
+      "initiation": "团战发起"
     },
     "routes": {
       "calibrationWarning": "该地图的坐标校准无效——大多数记录位置落在地图图像之外，无法正确绘制路线。请在校准工具中使用至少 4 个锚点重新校准。",
