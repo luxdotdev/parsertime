@@ -371,7 +371,10 @@ function deriveTeams(kills: Kill[]): [string, string] | null {
     }
     if (seen.length >= 2) break;
   }
-  return seen.length >= 2 ? [seen[0]!, seen[1]!] : null;
+  const first = seen[0];
+  const second = seen[1];
+  if (!first || !second) return null;
+  return [first, second];
 }
 
 export function summarizeMapInitiation(
@@ -425,7 +428,7 @@ export function assembleMapInitiation(input: AssembleInput): MapInitiationResult
     detectFightInitiation(
       fight,
       i,
-      i > 0 ? fights[i - 1]!.end : -Infinity,
+      i > 0 ? fights[i - 1].end : -Infinity,
       ctx
     )
   );
