@@ -11,6 +11,7 @@ import {
   type UltEvent,
   type HealEvent,
   type InitiationContext,
+  type ObjectiveCaptureMarker,
 } from "@/lib/fight-initiation";
 import type { Fight } from "@/lib/utils";
 
@@ -295,10 +296,12 @@ describe("assembleMapInitiation", () => {
       ability2: [],
       ults: [],
       healing: [],
+      captures: [],
     });
     expect(result.available).toBe(false);
     expect(result.labels).toEqual([]);
     expect(result.summary).toBeNull();
+    expect(result.captures).toEqual([]);
   });
 
   test("labels fights and summarizes per-team go-first winrate", () => {
@@ -323,11 +326,62 @@ describe("assembleMapInitiation", () => {
       ability2: [],
       ults: [],
       healing: [],
+      captures: [],
     });
     expect(result.available).toBe(true);
     expect(result.labels).toHaveLength(2);
     expect(result.summary!.byTeam["Team 1"]!.initiations).toBe(2);
     expect(result.summary!.byTeam["Team 1"]!.initiationWins).toBe(1);
     expect(result.summary!.byTeam["Team 1"]!.initiationWinrate).toBe(50);
+  });
+
+  test("captures are included and sorted by match_time in an available result", () => {
+    const kills = [
+      makeKill({ match_time: 110, attacker_team: "Team 1", victim_team: "Team 2" }),
+      makeKill({ match_time: 111, attacker_team: "Team 1", victim_team: "Team 2" }),
+    ];
+    const damage: DamageEvent[] = [
+      dmg({ match_time: 105, attacker_name: "ball", attacker_team: "Team 1", event_damage: 150 }),
+      dmg({ match_time: 105.4, attacker_name: "tracer", attacker_team: "Team 1", event_damage: 150 }),
+    ];
+    const unsortedCaptures: ObjectiveCaptureMarker[] = [
+      { match_time: 130, capturing_team: "Team 2", objective_index: 0, round_number: 1 },
+      { match_time: 90, capturing_team: "Team 1", objective_index: 0, round_number: 1 },
+      { match_time: 115, capturing_team: "Team 1", objective_index: 1, round_number: 1 },
+    ];
+    const result = assembleMapInitiation({
+      kills,
+      rezzes: [],
+      damage,
+      ability1: [],
+      ability2: [],
+      ults: [],
+      healing: [],
+      captures: unsortedCaptures,
+    });
+    expect(result.available).toBe(true);
+    expect(result.captures).toHaveLength(3);
+    expect(result.captures.map((c) => c.match_time)).toEqual([90, 115, 130]);
+  });
+
+  test("unavailable result (empty damage) always returns captures: []", () => {
+    const kills = [
+      makeKill({ match_time: 110, attacker_team: "Team 1", victim_team: "Team 2" }),
+    ];
+    const captures: ObjectiveCaptureMarker[] = [
+      { match_time: 115, capturing_team: "Team 1", objective_index: 0, round_number: 1 },
+    ];
+    const result = assembleMapInitiation({
+      kills,
+      rezzes: [],
+      damage: [],
+      ability1: [],
+      ability2: [],
+      ults: [],
+      healing: [],
+      captures,
+    });
+    expect(result.available).toBe(false);
+    expect(result.captures).toEqual([]);
   });
 });

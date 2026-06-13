@@ -3212,7 +3212,8 @@
       "responseGap": "{seconds}s before response",
       "confidenceHigh": "High confidence",
       "confidenceMedium": "Medium confidence",
-      "confidenceLow": "Low confidence"
+      "confidenceLow": "Low confidence",
+      "captureMarker": "{team} captured point {point}"
     }
   },
   "scoutingPage": {

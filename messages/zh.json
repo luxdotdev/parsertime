@@ -3212,7 +3212,8 @@
       "responseGap": "{seconds} 秒后对方响应",
       "confidenceHigh": "高可信度",
       "confidenceMedium": "中等可信度",
-      "confidenceLow": "低可信度"
+      "confidenceLow": "低可信度",
+      "captureMarker": "{team} 占领点位 {point}"
     }
   },
   "scoutingPage": {

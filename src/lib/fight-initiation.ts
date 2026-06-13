@@ -349,11 +349,19 @@ export type MapInitiationSummary = {
   byTeam: Record<string, TeamInitiationSummary>;
 };
 
+export type ObjectiveCaptureMarker = {
+  match_time: number;
+  capturing_team: string;
+  objective_index: number;
+  round_number: number;
+};
+
 export type MapInitiationResult = {
   /** False when the map lacks the granular events this stat requires. */
   available: boolean;
   labels: FightInitiationLabel[];
   summary: MapInitiationSummary | null;
+  captures: ObjectiveCaptureMarker[];
 };
 
 export type AssembleInput = {
@@ -364,6 +372,7 @@ export type AssembleInput = {
   ability2: AbilityEvent[];
   ults: UltEvent[];
   healing: HealEvent[];
+  captures: ObjectiveCaptureMarker[];
 };
 
 /** The two teams present in a map's kill events, or null if fewer than two are found. */
@@ -407,11 +416,11 @@ export function summarizeMapInitiation(
 
 export function assembleMapInitiation(input: AssembleInput): MapInitiationResult {
   if (input.damage.length === 0) {
-    return { available: false, labels: [], summary: null };
+    return { available: false, labels: [], summary: null, captures: [] };
   }
   const teams = deriveTeams(input.kills);
   if (!teams) {
-    return { available: false, labels: [], summary: null };
+    return { available: false, labels: [], summary: null, captures: [] };
   }
 
   const fightEvents = [
@@ -438,7 +447,12 @@ export function assembleMapInitiation(input: AssembleInput): MapInitiationResult
     )
   );
 
-  return { available: true, labels, summary: summarizeMapInitiation(labels, teams) };
+  return {
+    available: true,
+    labels,
+    summary: summarizeMapInitiation(labels, teams),
+    captures: [...input.captures].sort((a, b) => a.match_time - b.match_time),
+  };
 }
 
 /**
@@ -451,10 +465,10 @@ export async function getFightInitiationForMapData(
   // Most cheaply gate on damage presence — one count avoids five large reads on legacy maps.
   const damageCount = await prisma.damage.count({ where: { MapDataId: mapDataId } });
   if (damageCount === 0) {
-    return { available: false, labels: [], summary: null };
+    return { available: false, labels: [], summary: null, captures: [] };
   }
 
-  const [kills, rezzes, damage, ability1, ability2, ults, healing] =
+  const [kills, rezzes, damage, ability1, ability2, ults, healing, captures] =
     await Promise.all([
       prisma.kill.findMany({ where: { MapDataId: mapDataId } }),
       prisma.mercyRez.findMany({ where: { MapDataId: mapDataId } }),
@@ -489,6 +503,15 @@ export async function getFightInitiationForMapData(
           event_healing: true,
         },
       }),
+      prisma.objectiveCaptured.findMany({
+        where: { MapDataId: mapDataId },
+        select: {
+          match_time: true,
+          capturing_team: true,
+          objective_index: true,
+          round_number: true,
+        },
+      }),
     ]);
 
   return assembleMapInitiation({
@@ -499,5 +522,6 @@ export async function getFightInitiationForMapData(
     ability2,
     ults,
     healing,
+    captures,
   });
 }

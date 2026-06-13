@@ -9,6 +9,7 @@ import type {
   FightInitiationLabel,
   InitiationConfidence,
   MapInitiationResult,
+  ObjectiveCaptureMarker,
 } from "@/lib/fight-initiation";
 import { useTranslations } from "next-intl";
 
@@ -34,7 +35,7 @@ export function FightInitiationInspector({
     );
   }
 
-  const { summary, labels } = result;
+  const { summary, labels, captures } = result;
   const [teamA, teamB] = summary.teams;
 
   const cells = [teamA, teamB].map((team) => ({
@@ -43,6 +44,23 @@ export function FightInitiationInspector({
     sub: `${t("summaryFrequency", { team })}: ${summary.byTeam[team].initiations}`,
     emphasis: true,
   }));
+
+  type TimelineItem =
+    | { kind: "fight"; time: number; label: FightInitiationLabel }
+    | { kind: "capture"; time: number; marker: ObjectiveCaptureMarker };
+
+  const timeline: TimelineItem[] = [
+    ...labels.map(
+      (label): TimelineItem => ({ kind: "fight", time: label.start, label })
+    ),
+    ...captures.map(
+      (marker): TimelineItem => ({
+        kind: "capture",
+        time: marker.match_time,
+        marker,
+      })
+    ),
+  ].sort((a, b) => a.time - b.time);
 
   return (
     <section className="space-y-4">
@@ -57,9 +75,29 @@ export function FightInitiationInspector({
       />
       <StatRibbon cells={cells} columns={4} />
       <ul className="divide-y divide-[var(--border)] border-y">
-        {labels.map((label) => (
-          <FightRow key={label.fightIndex} label={label} />
-        ))}
+        {timeline.map((item) =>
+          item.kind === "fight" ? (
+            <FightRow key={`f-${item.label.fightIndex}`} label={item.label} />
+          ) : (
+            <li
+              key={`c-${item.marker.match_time}-${item.marker.objective_index}`}
+              className="flex items-center gap-2 px-1 py-2 text-xs"
+            >
+              <span className="text-primary" aria-hidden="true">
+                ◆
+              </span>
+              <span className="text-muted-foreground">
+                {t("captureMarker", {
+                  team: item.marker.capturing_team,
+                  point: item.marker.objective_index + 1,
+                })}
+              </span>
+              <span className="text-muted-foreground/70 ml-auto font-mono tabular-nums">
+                {toTimestamp(item.marker.match_time)}
+              </span>
+            </li>
+          )
+        )}
       </ul>
     </section>
   );
