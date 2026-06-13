@@ -6,6 +6,7 @@ import { GuestNav } from "@/components/guest-nav";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ComparePlayers } from "@/components/map/compare-players";
 import { DefaultOverview } from "@/components/map/default-overview";
+import { FightInitiationInspector } from "@/components/map/fight-initiation-inspector";
 import { HeatmapTab } from "@/components/map/heatmap/heatmap-tab";
 import { ReplayTab } from "@/components/map/replay/replay-tab";
 import { RoutesTab } from "@/components/map/routes/routes-tab";
@@ -40,6 +41,7 @@ import {
   tempoChart,
   tournament,
 } from "@/lib/flags";
+import { getFightInitiationForMapData } from "@/lib/fight-initiation";
 import { resolveScrimMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { translateMapName } from "@/lib/utils";
@@ -135,6 +137,7 @@ export default async function MapDashboardPage(
     tournamentEnabled,
     coachingCanvasEnabled,
     matchStory,
+    fightInitiation,
   ] = await Promise.all([
     AppRuntime.runPromise(
       PlayerService.pipe(Effect.flatMap((svc) => svc.getMostPlayedHeroes(id)))
@@ -175,6 +178,7 @@ export default async function MapDashboardPage(
         Effect.catchAll(() => Effect.succeed(null))
       )
     ),
+    getFightInitiationForMapData(mapDataId),
   ]);
 
   const translatedMapName = await translateMapName(
@@ -376,6 +380,11 @@ export default async function MapDashboardPage(
                     value: "vods",
                     label: t("tabs.vod"),
                     content: <VodOverview vod={map?.vod ?? ""} mapId={id} />,
+                  },
+                  {
+                    value: "going-first",
+                    label: t("tabs.goingFirst"),
+                    content: <FightInitiationInspector result={fightInitiation} />,
                   },
                 ]}
               />
