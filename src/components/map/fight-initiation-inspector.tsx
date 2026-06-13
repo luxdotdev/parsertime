@@ -105,8 +105,16 @@ function FightRow({ label }: { label: FightInitiationLabel }) {
         </span>
       )}
       <span className="ml-auto flex items-center gap-2">
+        {label.responseGap != null && (
+          <span className="text-muted-foreground text-xs">
+            {t("responseGap", { seconds: label.responseGap.toFixed(1) })}
+          </span>
+        )}
         {label.evidence.usedUlt && (
           <span className="text-muted-foreground text-xs">{t("evidenceUlt")}</span>
+        )}
+        {label.evidence.abilityCommit && (
+          <span className="text-muted-foreground text-xs">{t("evidenceAbility")}</span>
         )}
         {!label.evidence.fallback && label.evidence.players.length > 0 && (
           <span className="text-muted-foreground text-xs">
