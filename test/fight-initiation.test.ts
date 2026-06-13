@@ -7,11 +7,12 @@ import {
   healingSignal,
   detectFightInitiation,
   assembleMapInitiation,
+  buildRoundBoundaryMarkers,
   type DamageEvent,
   type UltEvent,
   type HealEvent,
   type InitiationContext,
-  type RoundBoundaryMarker,
+  type RoundEventInput,
 } from "@/lib/fight-initiation";
 import type { Fight } from "@/lib/utils";
 
@@ -296,7 +297,8 @@ describe("assembleMapInitiation", () => {
       ability2: [],
       ults: [],
       healing: [],
-      rounds: [],
+      roundStarts: [],
+      roundEnds: [],
     });
     expect(result.available).toBe(false);
     expect(result.labels).toEqual([]);
@@ -326,7 +328,8 @@ describe("assembleMapInitiation", () => {
       ability2: [],
       ults: [],
       healing: [],
-      rounds: [],
+      roundStarts: [],
+      roundEnds: [],
     });
     expect(result.available).toBe(true);
     expect(result.labels).toHaveLength(2);
@@ -335,7 +338,7 @@ describe("assembleMapInitiation", () => {
     expect(result.summary!.byTeam["Team 1"]!.initiationWinrate).toBe(50);
   });
 
-  test("rounds are included and sorted ascending by match_time in an available result", () => {
+  test("rounds are collapsed and sorted ascending by match_time in an available result", () => {
     const kills = [
       makeKill({ match_time: 110, attacker_team: "Team 1", victim_team: "Team 2" }),
       makeKill({ match_time: 111, attacker_team: "Team 1", victim_team: "Team 2" }),
@@ -344,11 +347,7 @@ describe("assembleMapInitiation", () => {
       dmg({ match_time: 105, attacker_name: "ball", attacker_team: "Team 1", event_damage: 150 }),
       dmg({ match_time: 105.4, attacker_name: "tracer", attacker_team: "Team 1", event_damage: 150 }),
     ];
-    const unsortedRounds: RoundBoundaryMarker[] = [
-      { kind: "end", match_time: 130, round_number: 1 },
-      { kind: "start", match_time: 90, round_number: 1 },
-      { kind: "start", match_time: 115, round_number: 2 },
-    ];
+    // R1 start at t=90, R2 start at t=115, R1 end at t=130 (only end row)
     const result = assembleMapInitiation({
       kills,
       rezzes: [],
@@ -357,19 +356,25 @@ describe("assembleMapInitiation", () => {
       ability2: [],
       ults: [],
       healing: [],
-      rounds: unsortedRounds,
+      roundStarts: [
+        { match_time: 90, round_number: 1 },
+        { match_time: 115, round_number: 2 },
+      ],
+      roundEnds: [{ match_time: 130, round_number: 1 }],
     });
     expect(result.available).toBe(true);
+    // first(R1 t=90), change(R2←R1 t=115), last(R1 t=130)
     expect(result.rounds).toHaveLength(3);
     expect(result.rounds.map((r) => r.match_time)).toEqual([90, 115, 130]);
+    expect(result.rounds[0]!.kind).toBe("first");
+    expect(result.rounds[1]!.kind).toBe("change");
+    expect(result.rounds[1]!.previous_round).toBe(1);
+    expect(result.rounds[2]!.kind).toBe("last");
   });
 
   test("unavailable result (empty damage) always returns rounds: []", () => {
     const kills = [
       makeKill({ match_time: 110, attacker_team: "Team 1", victim_team: "Team 2" }),
-    ];
-    const rounds: RoundBoundaryMarker[] = [
-      { kind: "start", match_time: 115, round_number: 1 },
     ];
     const result = assembleMapInitiation({
       kills,
@@ -379,13 +384,14 @@ describe("assembleMapInitiation", () => {
       ability2: [],
       ults: [],
       healing: [],
-      rounds,
+      roundStarts: [{ match_time: 115, round_number: 1 }],
+      roundEnds: [],
     });
     expect(result.available).toBe(false);
     expect(result.rounds).toEqual([]);
   });
 
-  test("sort does not mutate the caller's rounds array", () => {
+  test("sort does not mutate the caller's roundStarts/roundEnds arrays", () => {
     const kills = [
       makeKill({ match_time: 110, attacker_team: "Team 1", victim_team: "Team 2" }),
       makeKill({ match_time: 111, attacker_team: "Team 1", victim_team: "Team 2" }),
@@ -394,12 +400,16 @@ describe("assembleMapInitiation", () => {
       dmg({ match_time: 105, attacker_name: "ball", attacker_team: "Team 1", event_damage: 150 }),
       dmg({ match_time: 105.4, attacker_name: "tracer", attacker_team: "Team 1", event_damage: 150 }),
     ];
-    const inputRounds: RoundBoundaryMarker[] = [
-      { kind: "end", match_time: 200, round_number: 2 },
-      { kind: "start", match_time: 50, round_number: 1 },
-      { kind: "end", match_time: 150, round_number: 1 },
+    const inputStarts: RoundEventInput[] = [
+      { match_time: 150, round_number: 2 },
+      { match_time: 50, round_number: 1 },
     ];
-    const originalOrder = inputRounds.map((r) => r.match_time);
+    const inputEnds: RoundEventInput[] = [
+      { match_time: 200, round_number: 2 },
+      { match_time: 140, round_number: 1 },
+    ];
+    const originalStartOrder = inputStarts.map((r) => r.match_time);
+    const originalEndOrder = inputEnds.map((r) => r.match_time);
     assembleMapInitiation({
       kills,
       rezzes: [],
@@ -408,9 +418,113 @@ describe("assembleMapInitiation", () => {
       ability2: [],
       ults: [],
       healing: [],
-      rounds: inputRounds,
+      roundStarts: inputStarts,
+      roundEnds: inputEnds,
     });
-    // The original array must be unchanged
-    expect(inputRounds.map((r) => r.match_time)).toEqual(originalOrder);
+    // The original arrays must be unchanged
+    expect(inputStarts.map((r) => r.match_time)).toEqual(originalStartOrder);
+    expect(inputEnds.map((r) => r.match_time)).toEqual(originalEndOrder);
+  });
+});
+
+describe("buildRoundBoundaryMarkers", () => {
+  test("three rounds produce first, two changes, and last with correct round_number/previous_round", () => {
+    const starts: RoundEventInput[] = [
+      { match_time: 10, round_number: 1 },
+      { match_time: 50, round_number: 2 },
+      { match_time: 90, round_number: 3 },
+    ];
+    const ends: RoundEventInput[] = [
+      { match_time: 48, round_number: 1 },
+      { match_time: 88, round_number: 2 },
+      { match_time: 130, round_number: 3 },
+    ];
+    const markers = buildRoundBoundaryMarkers(starts, ends);
+    // first(R1), change(R2←R1), change(R3←R2), last(R3)
+    expect(markers).toHaveLength(4);
+    expect(markers[0]!.kind).toBe("first");
+    expect(markers[0]!.round_number).toBe(1);
+    expect(markers[0]!.previous_round).toBeNull();
+    expect(markers[1]!.kind).toBe("change");
+    expect(markers[1]!.round_number).toBe(2);
+    expect(markers[1]!.previous_round).toBe(1);
+    expect(markers[2]!.kind).toBe("change");
+    expect(markers[2]!.round_number).toBe(3);
+    expect(markers[2]!.previous_round).toBe(2);
+    expect(markers[3]!.kind).toBe("last");
+    expect(markers[3]!.round_number).toBe(3);
+    expect(markers[3]!.previous_round).toBeNull();
+    // Intermediate ends (R1 end at t=48, R2 end at t=88) are dropped
+    expect(markers.every((m) => m.match_time !== 48)).toBe(true);
+    expect(markers.every((m) => m.match_time !== 88)).toBe(true);
+  });
+
+  test("a single round produces first and last only (no change)", () => {
+    const starts: RoundEventInput[] = [{ match_time: 10, round_number: 1 }];
+    const ends: RoundEventInput[] = [{ match_time: 60, round_number: 1 }];
+    const markers = buildRoundBoundaryMarkers(starts, ends);
+    expect(markers).toHaveLength(2);
+    expect(markers[0]!.kind).toBe("first");
+    expect(markers[1]!.kind).toBe("last");
+    expect(markers.some((m) => m.kind === "change")).toBe(false);
+  });
+
+  test("empty inputs produce an empty array", () => {
+    expect(buildRoundBoundaryMarkers([], [])).toEqual([]);
+  });
+
+  test("only starts with no ends produces only first/change markers (no last)", () => {
+    const starts: RoundEventInput[] = [
+      { match_time: 10, round_number: 1 },
+      { match_time: 50, round_number: 2 },
+    ];
+    const markers = buildRoundBoundaryMarkers(starts, []);
+    expect(markers).toHaveLength(2);
+    expect(markers[0]!.kind).toBe("first");
+    expect(markers[1]!.kind).toBe("change");
+    expect(markers.some((m) => m.kind === "last")).toBe(false);
+  });
+
+  test("duplicate RoundStart rows for the same round_number collapse to one", () => {
+    const starts: RoundEventInput[] = [
+      { match_time: 15, round_number: 1 },
+      { match_time: 10, round_number: 1 }, // earlier — should win
+      { match_time: 50, round_number: 2 },
+    ];
+    const ends: RoundEventInput[] = [{ match_time: 80, round_number: 2 }];
+    const markers = buildRoundBoundaryMarkers(starts, ends);
+    // first(R1 t=10), change(R2←R1 t=50), last(R2 t=80)
+    expect(markers).toHaveLength(3);
+    expect(markers[0]!.kind).toBe("first");
+    expect(markers[0]!.match_time).toBe(10);
+    expect(markers[1]!.kind).toBe("change");
+    expect(markers[2]!.kind).toBe("last");
+  });
+
+  test("markers are sorted ascending by match_time", () => {
+    const starts: RoundEventInput[] = [
+      { match_time: 50, round_number: 2 },
+      { match_time: 10, round_number: 1 },
+    ];
+    const ends: RoundEventInput[] = [{ match_time: 80, round_number: 2 }];
+    const markers = buildRoundBoundaryMarkers(starts, ends);
+    const times = markers.map((m) => m.match_time);
+    expect(times).toEqual([...times].sort((a, b) => a - b));
+  });
+
+  test("inputs are not mutated", () => {
+    const starts: RoundEventInput[] = [
+      { match_time: 50, round_number: 2 },
+      { match_time: 10, round_number: 1 },
+    ];
+    const ends: RoundEventInput[] = [
+      { match_time: 80, round_number: 2 },
+      { match_time: 45, round_number: 1 },
+    ];
+    const startsCopy = starts.map((s) => ({ ...s }));
+    const endsCopy = ends.map((e) => ({ ...e }));
+    buildRoundBoundaryMarkers(starts, ends);
+    expect(starts).toEqual(startsCopy);
+    expect(ends).toEqual(endsCopy);
   });
 });

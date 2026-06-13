@@ -100,17 +100,21 @@ export function FightInitiationInspector({
             <FightRow key={`f-${item.label.fightIndex}`} label={item.label} />
           ) : (
             <li
-              key={`r-${item.marker.kind}-${item.marker.round_number}-${item.marker.match_time}`}
+              key={`r-${item.marker.kind}-${item.marker.match_time}`}
               className="flex items-center gap-2 px-1 py-2 text-xs"
             >
               <span className="text-muted-foreground/60" aria-hidden="true">
                 —
               </span>
               <span className="text-muted-foreground">
-                {t(
-                  item.marker.kind === "start" ? "roundStarted" : "roundEnded",
-                  { round: item.marker.round_number }
-                )}
+                {item.marker.kind === "first"
+                  ? t("roundStarted", { round: item.marker.round_number })
+                  : item.marker.kind === "last"
+                    ? t("roundEnded", { round: item.marker.round_number })
+                    : t("roundChange", {
+                        previous: item.marker.previous_round ?? item.marker.round_number,
+                        round: item.marker.round_number,
+                      })}
               </span>
               <span className="text-muted-foreground/70 ml-auto font-mono tabular-nums">
                 {toTimestamp(item.marker.match_time)}

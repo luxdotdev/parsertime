@@ -3215,6 +3215,7 @@
       "confidenceLow": "Low confidence",
       "roundStarted": "Round {round} started",
       "roundEnded": "Round {round} ended",
+      "roundChange": "Round {previous} → {round}",
       "toggleRounds": "Rounds"
     }
   },

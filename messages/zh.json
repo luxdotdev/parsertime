@@ -3215,6 +3215,7 @@
       "confidenceLow": "低可信度",
       "roundStarted": "第 {round} 回合开始",
       "roundEnded": "第 {round} 回合结束",
+      "roundChange": "第 {previous} → {round} 回合",
       "toggleRounds": "回合"
     }
   },

@@ -3215,6 +3215,7 @@
       "confidenceLow": "낮은 신뢰도",
       "roundStarted": "{round}라운드 시작",
       "roundEnded": "{round}라운드 종료",
+      "roundChange": "{previous} → {round}라운드",
       "toggleRounds": "라운드"
     }
   },

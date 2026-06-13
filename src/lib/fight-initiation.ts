@@ -349,12 +349,51 @@ export type MapInitiationSummary = {
   byTeam: Record<string, TeamInitiationSummary>;
 };
 
-/** A round boundary, used to overlay start/end markers on the initiation timeline. */
+export type RoundEventInput = { match_time: number; round_number: number };
+
+/** A collapsed round-boundary marker for the initiation timeline. */
 export type RoundBoundaryMarker = {
-  kind: "start" | "end";
+  kind: "first" | "change" | "last";
   match_time: number;
+  /** "first": the opening round; "change": the round being entered; "last": the closing round. */
   round_number: number;
+  /** For "change", the round that just ended; null otherwise. */
+  previous_round: number | null;
 };
+
+export function buildRoundBoundaryMarkers(
+  roundStarts: RoundEventInput[],
+  roundEnds: RoundEventInput[]
+): RoundBoundaryMarker[] {
+  // De-duplicate starts: earliest match_time per round_number, ordered by round_number.
+  const startByRound = new Map<number, number>();
+  for (const s of roundStarts) {
+    const existing = startByRound.get(s.round_number);
+    if (existing === undefined || s.match_time < existing) {
+      startByRound.set(s.round_number, s.match_time);
+    }
+  }
+  const uniqueStarts = Array.from(startByRound, ([round_number, match_time]) => ({
+    round_number,
+    match_time,
+  })).sort((a, b) => a.round_number - b.round_number);
+
+  const markers: RoundBoundaryMarker[] = [];
+  uniqueStarts.forEach((s, i) => {
+    if (i === 0) {
+      markers.push({ kind: "first", match_time: s.match_time, round_number: s.round_number, previous_round: null });
+    } else {
+      markers.push({ kind: "change", match_time: s.match_time, round_number: s.round_number, previous_round: uniqueStarts[i - 1].round_number });
+    }
+  });
+
+  if (roundEnds.length > 0) {
+    const last = roundEnds.reduce((a, b) => (b.match_time > a.match_time ? b : a));
+    markers.push({ kind: "last", match_time: last.match_time, round_number: last.round_number, previous_round: null });
+  }
+
+  return markers.sort((a, b) => a.match_time - b.match_time);
+}
 
 export type MapInitiationResult = {
   /** False when the map lacks the granular events this stat requires. */
@@ -372,7 +411,8 @@ export type AssembleInput = {
   ability2: AbilityEvent[];
   ults: UltEvent[];
   healing: HealEvent[];
-  rounds: RoundBoundaryMarker[];
+  roundStarts: RoundEventInput[];
+  roundEnds: RoundEventInput[];
 };
 
 /** The two teams present in a map's kill events, or null if fewer than two are found. */
@@ -451,7 +491,7 @@ export function assembleMapInitiation(input: AssembleInput): MapInitiationResult
     available: true,
     labels,
     summary: summarizeMapInitiation(labels, teams),
-    rounds: [...input.rounds].sort((a, b) => a.match_time - b.match_time),
+    rounds: buildRoundBoundaryMarkers(input.roundStarts, input.roundEnds),
   };
 }
 
@@ -513,15 +553,6 @@ export async function getFightInitiationForMapData(
       }),
     ]);
 
-  const rounds: RoundBoundaryMarker[] = [
-    ...roundStarts.map(
-      (r): RoundBoundaryMarker => ({ kind: "start", match_time: r.match_time, round_number: r.round_number })
-    ),
-    ...roundEnds.map(
-      (r): RoundBoundaryMarker => ({ kind: "end", match_time: r.match_time, round_number: r.round_number })
-    ),
-  ];
-
   return assembleMapInitiation({
     kills,
     rezzes,
@@ -530,6 +561,7 @@ export async function getFightInitiationForMapData(
     ability2,
     ults,
     healing,
-    rounds,
+    roundStarts,
+    roundEnds,
   });
 }
