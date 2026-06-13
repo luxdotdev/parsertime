@@ -3657,7 +3657,14 @@
       "weightedWinRate": "加权胜率",
       "form": "近期表现",
       "tierDistribution": "参与段位",
-      "strength": "团队实力"
+      "strength": "团队实力",
+      "eyebrow": "概述",
+      "title": "他们的打法",
+      "matchesPlayed": "{count} 场比赛",
+      "weightedSub": "加权 {winRate}%",
+      "win": "胜",
+      "loss": "负",
+      "noForm": "暂无比赛记录。"
     },
     "maps": {
       "byMap": "按地图",
@@ -3671,7 +3678,11 @@
       "lowSample": "样本不足",
       "attackDefense": "进攻 vs 防守",
       "attacking": "先手进攻",
-      "defending": "先手防守"
+      "defending": "先手防守",
+      "eyebrow": "地图",
+      "title": "地图表现",
+      "empty": "暂无地图数据。",
+      "mapsWon": "{won}/{played} 张地图"
     },
     "bans": {
       "title": "英雄禁用环境",
@@ -3681,7 +3692,11 @@
       "withoutBan": "无禁用",
       "delta": "差值",
       "sample": "样本",
-      "showUnrated": "显示低样本英雄"
+      "showUnrated": "显示低样本英雄",
+      "eyebrow": "英雄禁用",
+      "empty": "暂无禁用数据。",
+      "banTarget": "禁用目标",
+      "hideUnrated": "隐藏低样本英雄"
     },
     "roster": {
       "player": "选手",
@@ -3690,7 +3705,9 @@
       "starter": "首发",
       "sub": "替补",
       "fsr": "FSR",
-      "tsr": "TSR"
+      "tsr": "TSR",
+      "eyebrow": "阵容",
+      "title": "阵容"
     },
     "recommendations": {
       "pickMaps": "优先选择的地图",
@@ -3707,6 +3724,25 @@
       "separate": "分开历史",
       "shared": "{n} 名共同选手",
       "matches": "{n} 场比赛"
+    },
+    "header": {
+      "eyebrow": "FACEIT 团队球探"
+    },
+    "gamePlan": {
+      "eyebrow": "战术方案",
+      "title": "应对策略",
+      "subtitle": "综合其地图与禁用倾向得出，含样本数量。",
+      "forceMaps": "尽量打这些地图",
+      "banHeroes": "禁用这些英雄",
+      "avoidMaps": "避免或禁用的地图",
+      "dontBan": "不要浪费禁用",
+      "none": "暂无足够数据制定战术方案。"
+    },
+    "searchEyebrow": "FACEIT 球探",
+    "metadata": {
+      "profileTitle": "{team} · FACEIT 球探 | Parsertime",
+      "profileDescription": "{team} 球探报告：FSR、地图胜率、英雄禁用倾向、阵容，以及应对战术方案。",
+      "searchTitle": "FACEIT 团队球探 | Parsertime"
     }
   },
   "faceitPlayerPage": {
@@ -3737,11 +3773,14 @@
       "maps": "地图",
       "percentile": "百分位",
       "primary": "主要",
-      "unrated": "评级地图不足，暂无 FSR。"
+      "unrated": "评级地图不足，暂无 FSR。",
+      "recent": "近 365 天",
+      "ratingScale": "区间"
     },
     "radar": {
       "title": "数据档案",
-      "tierLabel": "段位"
+      "tierLabel": "段位",
+      "vsPeers": "对比同段位的各项数据 z 分数"
     },
     "insights": {
       "strengths": "优势",
@@ -3765,7 +3804,8 @@
       "played": "场次",
       "won": "胜利",
       "winRate": "胜率",
-      "lowSample": "样本不足"
+      "lowSample": "样本不足",
+      "empty": "暂无地图数据。"
     },
     "history": {
       "eyebrow": "历史",
@@ -3779,7 +3819,8 @@
       "role": "职责",
       "win": "胜",
       "loss": "负",
-      "empty": "未找到比赛记录"
+      "empty": "未找到比赛记录",
+      "count": "已统计 {count} 场"
     },
     "teams": {
       "eyebrow": "团队",
@@ -3796,6 +3837,31 @@
       "soloKills": "单杀",
       "assists": "助攻",
       "objectiveTime": "目标占领时间"
+    },
+    "threat": {
+      "eyebrow": "球探简报",
+      "title": "威胁评估",
+      "headlineRating": "{role} 评级",
+      "percentile": "强于 {pct}% 的 {tier} {role} 选手",
+      "threatensWith": "主要威胁",
+      "exploit": "可利用弱点",
+      "strongestMap": "最强地图",
+      "weakestMap": "最弱地图",
+      "trackedRecord": "统计战绩",
+      "matchesTracked": "已统计 {count} 场",
+      "zAbove": "对比同级 +{z}",
+      "zBelow": "对比同级 {z}",
+      "mapDetail": "{played} 张地图 {winRate}%",
+      "unratedEyebrow": "评级",
+      "unratedTitle": "未评级",
+      "unratedBody": "评级地图不足，暂无 FSR。下方地图与比赛记录仍可参考。",
+      "noInsights": "数据不足，暂无法总结。"
+    },
+    "searchEyebrow": "FACEIT 球探",
+    "metadata": {
+      "profileTitle": "{player} · FACEIT 球探 | Parsertime",
+      "profileDescription": "{player} 球探报告：按职责与段位的 FSR、数据档案、地图胜率与比赛记录。",
+      "searchTitle": "FACEIT 选手球探 | Parsertime"
     }
   },
   "statsPage": {
@@ -8294,6 +8360,31 @@
     "metadata": {
       "title": "调试 | Parsertime",
       "description": "内部调试工具。"
+    }
+  },
+  "fsrExplainer": {
+    "trigger": "FSR 如何计算",
+    "title": "FSR 如何计算",
+    "intro": "FSR 依据局内数据（而非胜负）以 1–5000 的区间衡量个人实力。",
+    "statBased": {
+      "label": "基于数据。",
+      "body": "由各职责的产出（击杀、伤害、治疗、死亡等）构成，并按各职责的重要程度加权。"
+    },
+    "peers": {
+      "label": "对比同级选手。",
+      "body": "每项数据都会换算为与同段位、同职责选手对比的 z 分数。"
+    },
+    "recency": {
+      "label": "近期与段位加权。",
+      "body": "近期地图权重更高，越高的段位（专家至 OWCS）权重越大。"
+    },
+    "sample": {
+      "label": "样本敏感。",
+      "body": "样本不足时会向段位平均值收敛，直到数据充足。"
+    },
+    "scale": {
+      "label": "1–5000 区间。",
+      "body": "以所在段位为锚点；百分位显示在该段位与职责中的排名。"
     }
   }
 }

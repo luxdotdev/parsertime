@@ -1,140 +1,54 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import type { FaceitMapAnalysis } from "@/data/faceit/types";
-import { cn } from "@/lib/utils";
+import { SectionHeader } from "@/components/stats/team/section-header";
+import { WinrateTable } from "@/components/faceit/winrate-table";
+import type { FaceitMapAnalysis, MapWinrateEntry } from "@/data/faceit/types";
 import { useTranslations } from "next-intl";
 
-type FaceitMapPerformanceProps = {
+type Props = {
   analysis: FaceitMapAnalysis;
 };
 
-export function FaceitMapPerformance({ analysis }: FaceitMapPerformanceProps) {
+function sortForScouting(rows: MapWinrateEntry[]): MapWinrateEntry[] {
+  return [...rows].sort((a, b) => {
+    if (a.rated !== b.rated) return a.rated ? -1 : 1;
+    if (a.rated) return b.winRate - a.winRate;
+    return b.played - a.played;
+  });
+}
+
+export function FaceitMapPerformance({ analysis }: Props) {
   const t = useTranslations("faceitScoutingPage");
 
+  const labels = {
+    played: t("maps.played"),
+    won: t("maps.won"),
+    winRate: t("maps.winRate"),
+    lowSample: t("maps.lowSample"),
+    empty: t("maps.empty"),
+  };
+
   return (
-    <div className="space-y-4 pt-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("maps.byMap")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("maps.map")}</TableHead>
-                <TableHead className="text-right">{t("maps.played")}</TableHead>
-                <TableHead className="text-right">{t("maps.won")}</TableHead>
-                <TableHead className="text-right">{t("maps.winRate")}</TableHead>
-                <TableHead className="text-right">{t("maps.weighted")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {analysis.byMap.map((entry) => (
-                <TableRow
-                  key={entry.key}
-                  className={cn(!entry.rated && "text-muted-foreground")}
-                >
-                  <TableCell className="font-medium">
-                    {entry.key}
-                    {!entry.rated && (
-                      <Badge variant="outline" className="ml-2 text-xs">
-                        {t("maps.lowSample")}
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">{entry.played}</TableCell>
-                  <TableCell className="text-right tabular-nums">{entry.won}</TableCell>
-                  <TableCell className="text-right tabular-nums">{entry.winRate.toFixed(0)}%</TableCell>
-                  <TableCell className="text-right tabular-nums">{entry.weightedWinRate.toFixed(0)}%</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("maps.byType")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("maps.mode")}</TableHead>
-                <TableHead className="text-right">{t("maps.played")}</TableHead>
-                <TableHead className="text-right">{t("maps.won")}</TableHead>
-                <TableHead className="text-right">{t("maps.winRate")}</TableHead>
-                <TableHead className="text-right">{t("maps.weighted")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {analysis.byType.map((entry) => (
-                <TableRow
-                  key={entry.key}
-                  className={cn(!entry.rated && "text-muted-foreground")}
-                >
-                  <TableCell className="font-medium">
-                    {entry.key}
-                    {!entry.rated && (
-                      <Badge variant="outline" className="ml-2 text-xs">
-                        {t("maps.lowSample")}
-                      </Badge>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">{entry.played}</TableCell>
-                  <TableCell className="text-right tabular-nums">{entry.won}</TableCell>
-                  <TableCell className="text-right tabular-nums">{entry.winRate.toFixed(0)}%</TableCell>
-                  <TableCell className="text-right tabular-nums">{entry.weightedWinRate.toFixed(0)}%</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("maps.attackDefense")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1">
-              <p className="text-sm font-medium">{t("maps.attacking")}</p>
-              <p className="text-2xl font-bold tabular-nums">
-                {analysis.attackDefense.attackWinRate.toFixed(0)}%
-              </p>
-              <p className="text-muted-foreground text-sm tabular-nums">
-                {analysis.attackDefense.attackWon}/{analysis.attackDefense.attackPlayed} maps
-              </p>
-            </div>
-            <div className="space-y-1">
-              <p className="text-sm font-medium">{t("maps.defending")}</p>
-              <p className="text-2xl font-bold tabular-nums">
-                {analysis.attackDefense.defenseWinRate.toFixed(0)}%
-              </p>
-              <p className="text-muted-foreground text-sm tabular-nums">
-                {analysis.attackDefense.defenseWon}/{analysis.attackDefense.defensePlayed} maps
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <section className="space-y-6">
+      <SectionHeader eyebrow={t("maps.eyebrow")} title={t("maps.title")} />
+      <div className="space-y-2">
+        <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+          {t("maps.byMap")}
+        </p>
+        <WinrateTable
+          rows={sortForScouting(analysis.byMap)}
+          labels={{ ...labels, key: t("maps.map") }}
+        />
+      </div>
+      <div className="space-y-2">
+        <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+          {t("maps.byType")}
+        </p>
+        <WinrateTable
+          rows={sortForScouting(analysis.byType)}
+          labels={{ ...labels, key: t("maps.mode") }}
+        />
+      </div>
+    </section>
   );
 }

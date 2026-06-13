@@ -1,17 +1,8 @@
 "use client";
 
 import { SectionHeader } from "@/components/stats/team/section-header";
-import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { WinrateTable } from "@/components/faceit/winrate-table";
 import type { MapWinrateEntry } from "@/data/faceit/types";
-import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
 type Props = {
@@ -19,71 +10,36 @@ type Props = {
   byType: MapWinrateEntry[];
 };
 
-function WinrateTable({
-  rows,
-  keyHeader,
-  lowSampleLabel,
-}: {
-  rows: MapWinrateEntry[];
-  keyHeader: string;
-  lowSampleLabel: string;
-}) {
-  const t = useTranslations("faceitPlayerPage");
-
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>{keyHeader}</TableHead>
-          <TableHead className="text-right">{t("maps.played")}</TableHead>
-          <TableHead className="text-right">{t("maps.won")}</TableHead>
-          <TableHead className="text-right">{t("maps.winRate")}</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {rows.map((row) => (
-          <TableRow
-            key={row.key}
-            className={cn(!row.rated && "text-muted-foreground")}
-          >
-            <TableCell className="text-sm">
-              <span className="mr-2">{row.key}</span>
-              {!row.rated ? (
-                <Badge variant="outline" className="text-xs">
-                  {lowSampleLabel}
-                </Badge>
-              ) : null}
-            </TableCell>
-            <TableCell className="text-right tabular-nums text-sm">
-              {row.played}
-            </TableCell>
-            <TableCell className="text-right tabular-nums text-sm">
-              {row.won}
-            </TableCell>
-            <TableCell className="text-right tabular-nums text-sm">
-              {(row.winRate * 100).toFixed(0)}%
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
+/** Rated rows first, sorted by win rate desc; unrated rows after, by sample. */
+function sortForScouting(rows: MapWinrateEntry[]): MapWinrateEntry[] {
+  return [...rows].sort((a, b) => {
+    if (a.rated !== b.rated) return a.rated ? -1 : 1;
+    if (a.rated) return b.winRate - a.winRate;
+    return b.played - a.played;
+  });
 }
 
 export function PlayerMapWinrates({ byMap, byType }: Props) {
   const t = useTranslations("faceitPlayerPage");
 
+  const labels = {
+    played: t("maps.played"),
+    won: t("maps.won"),
+    winRate: t("maps.winRate"),
+    lowSample: t("maps.lowSample"),
+    empty: t("maps.empty"),
+  };
+
   return (
-    <div className="space-y-6">
+    <section className="space-y-6">
       <SectionHeader eyebrow={t("maps.eyebrow")} title={t("maps.title")} />
       <div className="space-y-2">
         <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
           {t("maps.byMap")}
         </p>
         <WinrateTable
-          rows={byMap}
-          keyHeader={t("maps.map")}
-          lowSampleLabel={t("maps.lowSample")}
+          rows={sortForScouting(byMap)}
+          labels={{ ...labels, key: t("maps.map") }}
         />
       </div>
       <div className="space-y-2">
@@ -91,11 +47,10 @@ export function PlayerMapWinrates({ byMap, byType }: Props) {
           {t("maps.byType")}
         </p>
         <WinrateTable
-          rows={byType}
-          keyHeader={t("maps.mode")}
-          lowSampleLabel={t("maps.lowSample")}
+          rows={sortForScouting(byType)}
+          labels={{ ...labels, key: t("maps.mode") }}
         />
       </div>
-    </div>
+    </section>
   );
 }

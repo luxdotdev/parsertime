@@ -2,14 +2,8 @@
 
 import { SectionHeader } from "@/components/stats/team/section-header";
 import { StatRibbon } from "@/components/stats/team/stat-ribbon";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { FsrExplainer } from "@/components/faceit/fsr-explainer";
+import { MeterBar } from "@/components/faceit/viz";
 import { Badge } from "@/components/ui/badge";
 import type { PlayerFsrRole } from "@/data/faceit/player-types";
 import { useTranslations } from "next-intl";
@@ -18,22 +12,29 @@ type Props = {
   roles: PlayerFsrRole[];
 };
 
+const FSR_CEILING = 5000;
+
 export function PlayerFsrCard({ roles }: Props) {
   const t = useTranslations("faceitPlayerPage");
 
   return (
-    <div className="space-y-6">
-      <SectionHeader eyebrow={t("fsr.title")} title={t("fsr.byTier")} />
+    <section className="space-y-6">
+      <SectionHeader
+        eyebrow={t("fsr.title")}
+        title={t("fsr.byTier")}
+        rightSlot={<FsrExplainer />}
+      />
       {roles.map((role) => {
         const cells = [
           {
             label: t("fsr.headline"),
-            value: role.fsr.toFixed(1),
+            value: String(role.fsr),
             emphasis: true,
           },
+          { label: t("fsr.maps"), value: String(role.mapCount) },
           {
-            label: t("fsr.maps"),
-            value: String(role.mapCount),
+            label: t("fsr.recent"),
+            value: String(role.recentMapCount365d),
           },
         ];
 
@@ -49,36 +50,55 @@ export function PlayerFsrCard({ roles }: Props) {
             </div>
             <StatRibbon cells={cells} columns={3} />
             {role.tiers.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{t("fsr.tier")}</TableHead>
-                    <TableHead className="text-right">{t("fsr.rating")}</TableHead>
-                    <TableHead className="text-right">{t("fsr.maps")}</TableHead>
-                    <TableHead className="text-right">{t("fsr.percentile")}</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {role.tiers.map((tier) => (
-                    <TableRow key={tier.tier}>
-                      <TableCell className="font-mono text-sm">{tier.tier}</TableCell>
-                      <TableCell className="text-right tabular-nums text-sm">
-                        {tier.fsr.toFixed(1)}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums text-sm">
-                        {tier.mapCount}
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums text-sm">
-                        {Math.round(tier.percentile)}%
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <div className="border-border overflow-x-auto rounded-md border">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/30">
+                    <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
+                      <th className="px-4 py-2 text-left font-medium">
+                        {t("fsr.tier")}
+                      </th>
+                      <th className="px-4 py-2 text-right font-medium">
+                        {t("fsr.rating")}
+                      </th>
+                      <th className="hidden w-40 px-4 py-2 text-left font-medium sm:table-cell">
+                        {t("fsr.ratingScale")}
+                      </th>
+                      <th className="px-4 py-2 text-right font-medium">
+                        {t("fsr.maps")}
+                      </th>
+                      <th className="px-4 py-2 text-right font-medium">
+                        {t("fsr.percentile")}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[var(--border)]">
+                    {role.tiers.map((tier) => (
+                      <tr
+                        key={tier.tier}
+                        className="hover:bg-muted/30 transition-colors"
+                      >
+                        <td className="px-4 py-3 font-mono">{tier.tier}</td>
+                        <td className="text-foreground px-4 py-3 text-right font-mono font-semibold tabular-nums">
+                          {tier.fsr}
+                        </td>
+                        <td className="hidden px-4 py-3 sm:table-cell">
+                          <MeterBar value={tier.fsr} max={FSR_CEILING} />
+                        </td>
+                        <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
+                          {tier.mapCount}
+                        </td>
+                        <td className="px-4 py-3 text-right font-mono tabular-nums">
+                          {Math.round(tier.percentile)}%
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             ) : null}
           </div>
         );
       })}
-    </div>
+    </section>
   );
 }

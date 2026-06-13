@@ -3657,7 +3657,14 @@
       "weightedWinRate": "Weighted win rate",
       "form": "Recent form",
       "tierDistribution": "Tiers played",
-      "strength": "Team strength"
+      "strength": "Team strength",
+      "eyebrow": "Overview",
+      "title": "How they play",
+      "matchesPlayed": "{count} matches",
+      "weightedSub": "{winRate}% weighted",
+      "win": "W",
+      "loss": "L",
+      "noForm": "No matches recorded."
     },
     "maps": {
       "byMap": "By map",
@@ -3671,7 +3678,11 @@
       "lowSample": "Low sample",
       "attackDefense": "Attack vs Defense",
       "attacking": "Attacking first",
-      "defending": "Defending first"
+      "defending": "Defending first",
+      "eyebrow": "Maps",
+      "title": "Map performance",
+      "empty": "No map data.",
+      "mapsWon": "{won}/{played} maps"
     },
     "bans": {
       "title": "Hero ban environment",
@@ -3681,7 +3692,11 @@
       "withoutBan": "Without ban",
       "delta": "Delta",
       "sample": "Sample",
-      "showUnrated": "Show low-sample heroes"
+      "showUnrated": "Show low-sample heroes",
+      "eyebrow": "Hero bans",
+      "empty": "No ban data.",
+      "banTarget": "Ban target",
+      "hideUnrated": "Hide low-sample heroes"
     },
     "roster": {
       "player": "Player",
@@ -3690,7 +3705,9 @@
       "starter": "Starter",
       "sub": "Sub",
       "fsr": "FSR",
-      "tsr": "TSR"
+      "tsr": "TSR",
+      "eyebrow": "Roster",
+      "title": "Roster"
     },
     "recommendations": {
       "pickMaps": "Pick these maps",
@@ -3707,6 +3724,25 @@
       "separate": "Separate history",
       "shared": "{n} shared players",
       "matches": "{n} matches"
+    },
+    "header": {
+      "eyebrow": "FACEIT team scout"
+    },
+    "gamePlan": {
+      "eyebrow": "Game plan",
+      "title": "What to play into them",
+      "subtitle": "Synthesized from their map and ban tendencies. Sample sizes shown.",
+      "forceMaps": "Force these maps",
+      "banHeroes": "Ban these heroes",
+      "avoidMaps": "Avoid or ban these maps",
+      "dontBan": "Don't waste a ban",
+      "none": "Not enough data for a game plan yet."
+    },
+    "searchEyebrow": "FACEIT scouting",
+    "metadata": {
+      "profileTitle": "{team} · FACEIT scouting | Parsertime",
+      "profileDescription": "Scouting report for {team}: FSR, map win rates, hero ban tendencies, roster, and a game plan for what to play into them.",
+      "searchTitle": "FACEIT Team Scouting | Parsertime"
     }
   },
   "faceitPlayerPage": {
@@ -3737,11 +3773,14 @@
       "maps": "Maps",
       "percentile": "Percentile",
       "primary": "Primary",
-      "unrated": "Not enough rated maps for an FSR yet."
+      "unrated": "Not enough rated maps for an FSR yet.",
+      "recent": "Last 365d",
+      "ratingScale": "Scale"
     },
     "radar": {
       "title": "Stat profile",
-      "tierLabel": "Tier"
+      "tierLabel": "Tier",
+      "vsPeers": "Per-stat z-score vs tier peers"
     },
     "insights": {
       "strengths": "Strengths",
@@ -3765,7 +3804,8 @@
       "played": "Played",
       "won": "Won",
       "winRate": "Win rate",
-      "lowSample": "Low sample"
+      "lowSample": "Low sample",
+      "empty": "No map data."
     },
     "history": {
       "eyebrow": "History",
@@ -3779,7 +3819,8 @@
       "role": "Role",
       "win": "W",
       "loss": "L",
-      "empty": "No matches found"
+      "empty": "No matches found",
+      "count": "{count} matches tracked"
     },
     "teams": {
       "eyebrow": "Teams",
@@ -3796,6 +3837,31 @@
       "soloKills": "Solo kills",
       "assists": "Assists",
       "objectiveTime": "Objective time"
+    },
+    "threat": {
+      "eyebrow": "Scouting brief",
+      "title": "Threat assessment",
+      "headlineRating": "{role} rating",
+      "percentile": "Better than {pct}% of {tier} {role} players",
+      "threatensWith": "Threatens with",
+      "exploit": "Exploit",
+      "strongestMap": "Strongest map",
+      "weakestMap": "Weakest map",
+      "trackedRecord": "Tracked record",
+      "matchesTracked": "{count} matches tracked",
+      "zAbove": "+{z} vs peers",
+      "zBelow": "{z} vs peers",
+      "mapDetail": "{winRate}% over {played} maps",
+      "unratedEyebrow": "Rating",
+      "unratedTitle": "Unrated",
+      "unratedBody": "Not enough rated maps for an FSR yet. Map and match history below still apply.",
+      "noInsights": "Not enough data to summarize yet."
+    },
+    "searchEyebrow": "FACEIT scouting",
+    "metadata": {
+      "profileTitle": "{player} · FACEIT scouting | Parsertime",
+      "profileDescription": "Scouting report for {player}: FSR by role and tier, stat profile, map win rates, and match history.",
+      "searchTitle": "FACEIT Player Scouting | Parsertime"
     }
   },
   "coaching": {
@@ -8293,6 +8359,31 @@
     "metadata": {
       "title": "Debug | Parsertime",
       "description": "Internal debugging tools."
+    }
+  },
+  "fsrExplainer": {
+    "trigger": "How FSR works",
+    "title": "How FSR is calculated",
+    "intro": "FSR rates individual skill from in-game stats — not wins and losses — on a 1–5000 scale.",
+    "statBased": {
+      "label": "Stat-based.",
+      "body": "Built from per-role output (eliminations, damage, healing, deaths and more), weighted by what matters for each role."
+    },
+    "peers": {
+      "label": "Measured against peers.",
+      "body": "Each stat becomes a z-score versus players in the same tier and role."
+    },
+    "recency": {
+      "label": "Recency- and tier-weighted.",
+      "body": "Recent maps count more, and higher tiers (Expert through OWCS) carry more weight."
+    },
+    "sample": {
+      "label": "Sample-aware.",
+      "body": "Small sample sizes are pulled toward the tier average until there is enough data."
+    },
+    "scale": {
+      "label": "1–5000 scale.",
+      "body": "Anchored to the tier played in; percentile shows rank within that tier and role."
     }
   }
 }

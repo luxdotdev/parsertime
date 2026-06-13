@@ -1,122 +1,201 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import type { FaceitTeamOverview, RosterStrength } from "@/data/faceit/types";
+import { SectionHeader } from "@/components/stats/team/section-header";
+import { MeterBar, SegmentStrip } from "@/components/faceit/viz";
+import type {
+  AttackDefenseSplit,
+  FaceitTeamOverview as Overview,
+} from "@/data/faceit/types";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 
-type FaceitTeamOverviewProps = {
-  overview: FaceitTeamOverview;
-  strength: RosterStrength;
+type Props = {
+  overview: Overview;
+  attackDefense: AttackDefenseSplit;
 };
 
-export function FaceitTeamOverview({ overview, strength }: FaceitTeamOverviewProps) {
+const TIER_TONE: Record<string, "primary" | "destructive" | "muted"> = {
+  OWCS: "primary",
+  MASTERS: "primary",
+  EXPERT: "muted",
+  ADVANCED: "muted",
+  OPEN: "destructive",
+};
+
+/** Canonical low-to-high ordering so the distribution strip reads as a ramp. */
+const TIER_RANK: Record<string, number> = {
+  OPEN: 0,
+  ADVANCED: 1,
+  EXPERT: 2,
+  MASTERS: 3,
+  OWCS: 4,
+};
+
+export function FaceitTeamOverview({ overview, attackDefense }: Props) {
   const t = useTranslations("faceitScoutingPage");
 
+  const form = stableFormKeys(overview.recentForm);
+  const tierSegments = Object.entries(overview.tierCounts)
+    .filter(([, count]) => count > 0)
+    .sort(
+      ([a], [b]) => (TIER_RANK[a] ?? 99) - (TIER_RANK[b] ?? 99) || a.localeCompare(b)
+    )
+    .map(([tier, count]) => ({
+      key: tier,
+      value: count,
+      title: `${tier}: ${count}`,
+      tone: TIER_TONE[tier] ?? "muted",
+    }));
+
+  const ad = attackDefense;
+  const hasAd = ad.attackPlayed > 0 || ad.defensePlayed > 0;
+
   return (
-    <div className="space-y-4 pt-4">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card size="sm">
-          <CardHeader>
-            <CardTitle>{t("overview.record")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold tabular-nums">
-              {overview.wins}–{overview.losses}
-            </p>
-            <p className="text-muted-foreground text-sm tabular-nums">
-              {overview.totalMatches} matches
-            </p>
-          </CardContent>
-        </Card>
+    <section className="space-y-5">
+      <SectionHeader eyebrow={t("overview.eyebrow")} title={t("overview.title")} />
+      <div className="grid gap-x-10 gap-y-8 lg:grid-cols-12">
+        <div className="space-y-3 lg:col-span-7">
+          <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+            {t("overview.form")}
+          </p>
+          {form.length > 0 ? (
+            <>
+              <div
+                className="flex flex-wrap gap-1.5"
+                role="list"
+                aria-label={t("overview.form")}
+              >
+                {form.map(({ key, result }) => (
+                  <span
+                    key={key}
+                    role="listitem"
+                    className={cn(
+                      "flex size-7 items-center justify-center rounded-sm font-mono text-xs font-semibold",
+                      result === "win"
+                        ? "bg-primary/15 text-primary"
+                        : "bg-destructive/15 text-destructive"
+                    )}
+                  >
+                    {result === "win" ? t("overview.win") : t("overview.loss")}
+                  </span>
+                ))}
+              </div>
+              <div className="border-border flex items-center gap-1 rounded-md border px-3 py-2.5">
+                {form.map(({ key, result }) => (
+                  <span
+                    key={`bar-${key}`}
+                    className={cn(
+                      "h-2 flex-1 rounded-sm",
+                      result === "win" ? "bg-primary/70" : "bg-destructive/70"
+                    )}
+                  />
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="text-muted-foreground text-sm">{t("overview.noForm")}</p>
+          )}
+        </div>
 
-        <Card size="sm">
-          <CardHeader>
-            <CardTitle>{t("overview.winRate")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold tabular-nums">
-              {overview.winRate.toFixed(0)}%
-            </p>
-            <p className="text-muted-foreground text-sm tabular-nums">
-              {t("overview.weightedWinRate")} {overview.weightedWinRate.toFixed(0)}%
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card size="sm">
-          <CardHeader>
-            <CardTitle>{t("overview.strength")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-1">
-              <p className="text-sm tabular-nums">
-                <span className="font-medium">{t("strengthFsr")}</span>{" "}
-                {strength.fsr ?? "—"}
-                <span className="text-muted-foreground ml-1 text-xs">
-                  ({t("coverage", { covered: strength.fsrCovered, size: strength.rosterSize })})
-                </span>
-              </p>
-              <p className="text-sm tabular-nums">
-                <span className="font-medium">{t("strengthTsr")}</span>{" "}
-                {strength.tsr ?? "—"}
-                <span className="text-muted-foreground ml-1 text-xs">
-                  ({t("coverage", { covered: strength.tsrCovered, size: strength.rosterSize })})
-                </span>
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card size="sm">
-          <CardHeader>
-            <CardTitle>{t("overview.tierDistribution")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-1">
-              {Object.entries(overview.tierCounts).map(([tier, count]) => (
-                <div key={tier} className="text-xs tabular-nums">
-                  <span className="text-muted-foreground">{tier}:</span>{" "}
-                  <span className="font-medium">{count}</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("overview.form")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {overview.recentForm.length > 0 ? (
-            <div className="flex flex-wrap gap-1.5" role="list" aria-label={t("overview.form")}>
-              {stableFormKeys(overview.recentForm).map(({ key, result }) => (
-                <span
-                  key={key}
-                  role="listitem"
-                  className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-md text-xs font-bold",
-                    result === "win"
-                      ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                      : "bg-red-500/15 text-red-600 dark:text-red-400"
-                  )}
-                >
-                  {result === "win" ? "W" : "L"}
-                </span>
-              ))}
+        <div className="space-y-4 lg:col-span-5">
+          <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+            {t("maps.attackDefense")}
+          </p>
+          {hasAd ? (
+            <div className="space-y-3.5">
+              <AdRow
+                label={t("maps.attacking")}
+                winRate={ad.attackWinRate}
+                won={ad.attackWon}
+                played={ad.attackPlayed}
+                ofLabel={t("maps.mapsWon", {
+                  won: ad.attackWon,
+                  played: ad.attackPlayed,
+                })}
+              />
+              <AdRow
+                label={t("maps.defending")}
+                winRate={ad.defenseWinRate}
+                won={ad.defenseWon}
+                played={ad.defensePlayed}
+                ofLabel={t("maps.mapsWon", {
+                  won: ad.defenseWon,
+                  played: ad.defensePlayed,
+                })}
+              />
             </div>
           ) : (
-            <p className="text-muted-foreground text-sm">No matches recorded.</p>
+            <p className="text-muted-foreground text-sm">{t("maps.empty")}</p>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
+
+      {tierSegments.length > 0 ? (
+        <div className="space-y-2.5">
+          <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+            {t("overview.tierDistribution")}
+          </p>
+          <SegmentStrip segments={tierSegments} />
+          <div className="flex flex-wrap gap-x-4 gap-y-1">
+            {tierSegments.map((seg) => (
+              <span
+                key={seg.key}
+                className="text-muted-foreground flex items-center gap-1.5 font-mono text-[10px] tracking-[0.14em] uppercase tabular-nums"
+              >
+                <span
+                  className={cn(
+                    "size-2 rounded-full",
+                    seg.tone === "primary"
+                      ? "bg-primary"
+                      : seg.tone === "destructive"
+                        ? "bg-destructive"
+                        : "bg-muted-foreground/50"
+                  )}
+                />
+                {seg.key} {seg.value}
+              </span>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function AdRow({
+  label,
+  winRate,
+  ofLabel,
+}: {
+  label: string;
+  winRate: number;
+  won: number;
+  played: number;
+  ofLabel: string;
+}) {
+  const above = Math.round(winRate) >= 50;
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-baseline justify-between text-sm">
+        <span className="text-foreground">{label}</span>
+        <span
+          className={cn(
+            "font-mono font-semibold tabular-nums",
+            above ? "text-primary" : "text-destructive"
+          )}
+        >
+          {Math.round(winRate)}%
+        </span>
+      </div>
+      <MeterBar
+        value={winRate}
+        max={100}
+        referenceAt={0.5}
+        tone={above ? "primary" : "destructive"}
+      />
+      <p className="text-muted-foreground font-mono text-[11px] tabular-nums">
+        {ofLabel}
+      </p>
     </div>
   );
 }

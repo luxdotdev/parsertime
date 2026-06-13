@@ -3657,7 +3657,14 @@
       "weightedWinRate": "가중 승률",
       "form": "최근 폼",
       "tierDistribution": "플레이한 티어",
-      "strength": "팀 전력"
+      "strength": "팀 전력",
+      "eyebrow": "개요",
+      "title": "플레이 방식",
+      "matchesPlayed": "{count}경기",
+      "weightedSub": "가중 {winRate}%",
+      "win": "승",
+      "loss": "패",
+      "noForm": "기록된 경기가 없습니다."
     },
     "maps": {
       "byMap": "맵별",
@@ -3671,7 +3678,11 @@
       "lowSample": "표본 부족",
       "attackDefense": "공격 vs 수비",
       "attacking": "공격 선공",
-      "defending": "수비 선공"
+      "defending": "수비 선공",
+      "eyebrow": "맵",
+      "title": "맵 성과",
+      "empty": "맵 데이터가 없습니다.",
+      "mapsWon": "{won}/{played}맵"
     },
     "bans": {
       "title": "영웅 밴 환경",
@@ -3681,7 +3692,11 @@
       "withoutBan": "밴 없음",
       "delta": "차이",
       "sample": "표본",
-      "showUnrated": "표본 부족 영웅 표시"
+      "showUnrated": "표본 부족 영웅 표시",
+      "eyebrow": "영웅 밴",
+      "empty": "밴 데이터가 없습니다.",
+      "banTarget": "밴 추천",
+      "hideUnrated": "표본 부족 영웅 숨기기"
     },
     "roster": {
       "player": "선수",
@@ -3690,7 +3705,9 @@
       "starter": "주전",
       "sub": "후보",
       "fsr": "FSR",
-      "tsr": "TSR"
+      "tsr": "TSR",
+      "eyebrow": "로스터",
+      "title": "로스터"
     },
     "recommendations": {
       "pickMaps": "선택할 맵",
@@ -3707,6 +3724,25 @@
       "separate": "이력 분리",
       "shared": "공유 선수 {n}명",
       "matches": "{n}경기"
+    },
+    "header": {
+      "eyebrow": "FACEIT 팀 스카우트"
+    },
+    "gamePlan": {
+      "eyebrow": "게임 플랜",
+      "title": "대응 전략",
+      "subtitle": "상대의 맵·밴 경향을 종합했습니다. 표본 크기 포함.",
+      "forceMaps": "유도할 맵",
+      "banHeroes": "밴할 영웅",
+      "avoidMaps": "피하거나 밴할 맵",
+      "dontBan": "밴 낭비 금지",
+      "none": "아직 게임 플랜을 세우기에 데이터가 부족합니다."
+    },
+    "searchEyebrow": "FACEIT 스카우팅",
+    "metadata": {
+      "profileTitle": "{team} · FACEIT 스카우팅 | Parsertime",
+      "profileDescription": "{team} 스카우팅 리포트: FSR, 맵 승률, 영웅 밴 경향, 로스터, 그리고 대응 전략.",
+      "searchTitle": "FACEIT 팀 스카우팅 | Parsertime"
     }
   },
   "faceitPlayerPage": {
@@ -3737,11 +3773,14 @@
       "maps": "맵",
       "percentile": "백분위",
       "primary": "주요",
-      "unrated": "FSR을 산출하기에 평가된 맵이 부족합니다."
+      "unrated": "FSR을 산출하기에 평가된 맵이 부족합니다.",
+      "recent": "최근 365일",
+      "ratingScale": "척도"
     },
     "radar": {
       "title": "스탯 프로필",
-      "tierLabel": "티어"
+      "tierLabel": "티어",
+      "vsPeers": "티어 동급 대비 스탯별 z-점수"
     },
     "insights": {
       "strengths": "강점",
@@ -3765,7 +3804,8 @@
       "played": "플레이",
       "won": "승리",
       "winRate": "승률",
-      "lowSample": "표본 부족"
+      "lowSample": "표본 부족",
+      "empty": "맵 데이터가 없습니다."
     },
     "history": {
       "eyebrow": "이력",
@@ -3779,7 +3819,8 @@
       "role": "역할",
       "win": "승",
       "loss": "패",
-      "empty": "매치를 찾을 수 없습니다"
+      "empty": "매치를 찾을 수 없습니다",
+      "count": "{count}경기 집계"
     },
     "teams": {
       "eyebrow": "팀",
@@ -3796,6 +3837,31 @@
       "soloKills": "단독 처치",
       "assists": "도움",
       "objectiveTime": "목표 점령 시간"
+    },
+    "threat": {
+      "eyebrow": "스카우팅 요약",
+      "title": "위협 평가",
+      "headlineRating": "{role} 레이팅",
+      "percentile": "{tier} {role} 선수 중 {pct}%보다 우수",
+      "threatensWith": "주요 위협",
+      "exploit": "공략 포인트",
+      "strongestMap": "강한 맵",
+      "weakestMap": "약한 맵",
+      "trackedRecord": "집계 전적",
+      "matchesTracked": "{count}경기 집계",
+      "zAbove": "동급 대비 +{z}",
+      "zBelow": "동급 대비 {z}",
+      "mapDetail": "{played}개 맵에서 {winRate}%",
+      "unratedEyebrow": "레이팅",
+      "unratedTitle": "미평가",
+      "unratedBody": "FSR을 산출하기에 평가된 맵이 부족합니다. 아래 맵·매치 이력은 참고할 수 있습니다.",
+      "noInsights": "아직 요약하기에 데이터가 부족합니다."
+    },
+    "searchEyebrow": "FACEIT 스카우팅",
+    "metadata": {
+      "profileTitle": "{player} · FACEIT 스카우팅 | Parsertime",
+      "profileDescription": "{player} 스카우팅 리포트: 역할·티어별 FSR, 스탯 프로필, 맵 승률, 매치 이력.",
+      "searchTitle": "FACEIT 선수 스카우팅 | Parsertime"
     }
   },
   "statsPage": {
@@ -8294,6 +8360,31 @@
     "metadata": {
       "title": "디버그 | Parsertime",
       "description": "내부 디버깅 도구입니다."
+    }
+  },
+  "fsrExplainer": {
+    "trigger": "FSR 산출 방식",
+    "title": "FSR 산출 방법",
+    "intro": "FSR은 승패가 아니라 인게임 스탯으로 개인 기량을 1–5000 척도로 평가합니다.",
+    "statBased": {
+      "label": "스탯 기반.",
+      "body": "역할별 성과(처치, 피해량, 치유량, 사망 등)를 각 역할에 중요한 정도로 가중해 산출합니다."
+    },
+    "peers": {
+      "label": "동급 선수와 비교.",
+      "body": "각 스탯을 같은 티어·역할 선수들과 비교한 z-점수로 변환합니다."
+    },
+    "recency": {
+      "label": "최근성·티어 가중.",
+      "body": "최근 맵일수록 비중이 크고, 높은 티어(엑스퍼트~OWCS)일수록 가중치가 큽니다."
+    },
+    "sample": {
+      "label": "표본 보정.",
+      "body": "데이터가 충분해질 때까지 표본이 적으면 티어 평균 쪽으로 보정됩니다."
+    },
+    "scale": {
+      "label": "1–5000 척도.",
+      "body": "플레이한 티어를 기준으로 고정되며, 백분위는 해당 티어·역할 내 순위를 나타냅니다."
     }
   }
 }
