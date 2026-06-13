@@ -1319,7 +1319,8 @@
         "ultimates": "Ultimates",
         "ultAdvantage": "Ultimate Advantage",
         "swaps": "Hero Swaps",
-        "positional": "Positioning"
+        "positional": "Positioning",
+        "initiation": "Fight Initiations"
       }
     },
     "overviewSections": {
@@ -1692,6 +1693,13 @@
       "title": "Win probability added",
       "description": "Per-player WPA summed across this scrim's maps.",
       "maps": "{count, plural, one {# map} other {# maps}}"
+    },
+    "initiationSection": {
+      "coverage": "Detected on {covered} of {total} maps with detailed logs.",
+      "noData": "No initiation data — these maps predate detailed logs.",
+      "wentFirst": "{team} — win rate going first",
+      "frequency": "{first} fights initiated",
+      "record": "{wins}W - {losses}L"
     }
   },
   "mapGroupsPage": {

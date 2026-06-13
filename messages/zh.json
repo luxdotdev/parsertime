@@ -1319,7 +1319,8 @@
         "ultimates": "终极技能",
         "ultAdvantage": "终极技能优势",
         "swaps": "英雄更换",
-        "positional": "站位"
+        "positional": "站位",
+        "initiation": "团战发起"
       }
     },
     "overviewSections": {
@@ -1692,6 +1693,13 @@
       "title": "胜率贡献值",
       "description": "按选手汇总本次训练赛全部地图的 WPA。",
       "maps": "{count} 张地图"
+    },
+    "initiationSection": {
+      "coverage": "在 {total} 张拥有详细日志的地图中检测到 {covered} 张。",
+      "noData": "暂无发起数据 — 这些地图早于详细日志。",
+      "wentFirst": "{team} — 先手胜率",
+      "frequency": "发起 {first} 次团战",
+      "record": "{wins}胜 - {losses}负"
     }
   },
   "mapGroupsPage": {
