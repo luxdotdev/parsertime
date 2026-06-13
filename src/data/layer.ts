@@ -38,6 +38,7 @@ import { TeamAbilityImpactServiceLive } from "./team/ability-impact-service";
 import { TeamBanImpactServiceLive } from "./team/ban-impact-service";
 import { TeamComparisonServiceLive } from "./team/comparison-service";
 import { TeamFightStatsServiceLive } from "./team/fight-stats-service";
+import { TeamInitiationServiceLive } from "./team/initiation-service";
 import { TeamHeroPoolServiceLive } from "./team/hero-pool-service";
 import { TeamHeroSwapServiceLive } from "./team/hero-swap-service";
 import { TeamMapModeServiceLive } from "./team/map-mode-service";
@@ -110,6 +111,7 @@ export const DataLayerLive = Layer.mergeAll(
   TeamStatsServiceLive,
   TeamTrendsServiceLive,
   TeamFightStatsServiceLive,
+  TeamInitiationServiceLive,
   TeamRoleStatsServiceLive,
   TeamHeroPoolServiceLive,
   TeamHeroSwapServiceLive,
