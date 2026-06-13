@@ -301,6 +301,29 @@ export type ScrimOverviewData = {
 
 export type Winrate = { map: string; wins: number; date: Date }[];
 
+// ---------- initiation-service types ----------
+
+export type ScrimTeamInitiation = {
+  teamName: string;
+  wentFirst: number;
+  wentFirstWins: number;
+  wentSecond: number;
+  wentSecondWins: number;
+  decidedFights: number;
+  initiationWinrate: number;
+  initiationFrequency: number;
+  goingSecondWinrate: number;
+};
+
+export type ScrimInitiationData = {
+  /** Both teams, ordered by descending fights-initiated. Empty when unavailable. */
+  teams: ScrimTeamInitiation[];
+  totalFights: number;
+  contestedFights: number;
+  mapsCovered: number;
+  mapsTotal: number;
+};
+
 export type { PlayerUltSummary } from "./ult-helpers";
 export type { SwapTimingOutcome, SwapWinrateBucket, TrendsAnalysis };
 

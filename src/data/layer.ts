@@ -29,6 +29,7 @@ import { OpponentStrengthServiceLive } from "./scouting/opponent-strength-servic
 import { ScoutingFaceitLinkServiceLive } from "./scouting/faceit-link-service";
 import { ScoutingServiceLive } from "./scouting/scouting-service";
 import { ScrimAbilityTimingServiceLive } from "./scrim/ability-timing-service";
+import { ScrimInitiationServiceLive } from "./scrim/initiation-service";
 import { ScrimOpponentServiceLive } from "./scrim/opponent-service";
 import { ScrimOverviewServiceLive } from "./scrim/overview-service";
 import { ScrimPositionalArtifactsServiceLive } from "./scrim/positional-artifacts-service";
@@ -82,6 +83,7 @@ export const DataLayerLive = Layer.mergeAll(
   ScrimOverviewServiceLive,
   ScrimOpponentServiceLive,
   ScrimAbilityTimingServiceLive,
+  ScrimInitiationServiceLive,
   ScrimPositionalStatsServiceLive,
   ScrimPositionalArtifactsServiceLive,
 
