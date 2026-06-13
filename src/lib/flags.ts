@@ -95,6 +95,18 @@ export const scoutingTool = flag<boolean, Entities>({
   identify,
 });
 
+export const faceitScouting = flag<boolean, Entities>({
+  key: "faceit-scouting",
+  adapter: vercelAdapter(),
+  options: [
+    { value: true, label: "Enabled" },
+    { value: false, label: "Disabled" },
+  ],
+  defaultValue: false,
+  description: "Enable or disable the FACEIT team scouting tool",
+  identify,
+});
+
 export const dataLabeling = flag<boolean, Entities>({
   key: "data-labeling",
   adapter: vercelAdapter(),

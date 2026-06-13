@@ -5,6 +5,7 @@ import { createContext, use, useMemo } from "react";
 
 const defaultFlags: FeatureFlags = {
   scoutingEnabled: false,
+  faceitScoutingEnabled: false,
   mapComparisonEnabled: false,
   overviewCardEnabled: false,
   dataLabelingEnabled: false,

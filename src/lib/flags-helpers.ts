@@ -2,6 +2,7 @@ import {
   aiChat,
   coachingCanvas,
   dataLabeling,
+  faceitScouting,
   mapComparison,
   newLandingPage,
   overviewCard,
@@ -16,6 +17,7 @@ import {
 
 export type FeatureFlags = {
   scoutingEnabled: boolean;
+  faceitScoutingEnabled: boolean;
   mapComparisonEnabled: boolean;
   overviewCardEnabled: boolean;
   dataLabelingEnabled: boolean;
@@ -33,6 +35,7 @@ export type FeatureFlags = {
 export async function resolveAllFlags(): Promise<FeatureFlags> {
   const [
     scoutingEnabled,
+    faceitScoutingEnabled,
     mapComparisonEnabled,
     overviewCardEnabled,
     dataLabelingEnabled,
@@ -47,6 +50,7 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     queryBuilderEnabled,
   ] = await Promise.all([
     scoutingTool(),
+    faceitScouting(),
     mapComparison(),
     overviewCard(),
     dataLabeling(),
@@ -63,6 +67,7 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
 
   return {
     scoutingEnabled,
+    faceitScoutingEnabled,
     mapComparisonEnabled,
     overviewCardEnabled,
     dataLabelingEnabled,
@@ -81,6 +86,7 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
 export function toFlagValues(flags: FeatureFlags): Record<string, boolean> {
   return {
     "scouting-tool": flags.scoutingEnabled,
+    "faceit-scouting": flags.faceitScoutingEnabled,
     "map-comparison": flags.mapComparisonEnabled,
     "overview-card": flags.overviewCardEnabled,
     "data-labeling": flags.dataLabelingEnabled,
