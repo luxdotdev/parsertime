@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import type { ScrimPositionalArtifacts } from "@/data/scrim/positional-artifacts-service";
 import type { ScrimPositionalStats } from "@/data/scrim/positional-stats-service";
-import type { ScrimInsight, ScrimOverviewData } from "@/data/scrim/types";
+import type { ScrimInitiationData, ScrimInsight, ScrimOverviewData } from "@/data/scrim/types";
 import { format } from "@/lib/utils";
 import {
   ArrowDownIcon,
@@ -121,10 +121,12 @@ export function ScrimOverviewSection({
   data,
   positionalStats = null,
   positionalArtifacts = null,
+  initiation = null,
 }: {
   data: ScrimOverviewData;
   positionalStats?: ScrimPositionalStats | null;
   positionalArtifacts?: ScrimPositionalArtifacts | null;
+  initiation?: ScrimInitiationData | null;
 }) {
   const t = useTranslations("scrimPage.overviewSummary");
 
@@ -194,6 +196,7 @@ export function ScrimOverviewSection({
         data={data}
         positionalStats={positionalStats}
         positionalArtifacts={positionalArtifacts}
+        initiation={initiation}
       />
     </section>
   );

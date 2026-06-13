@@ -27,6 +27,7 @@ import {
   ScrimPositionalStatsService,
   ScrimService,
 } from "@/data/scrim";
+import { ScrimInitiationService } from "@/data/scrim/initiation-service";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
@@ -229,6 +230,15 @@ export default async function ScrimDashboardPage(
         )
       : null;
 
+  const scrimInitiation =
+    overviewCardEnabled && maps.length > 0 && teamId && !isNewTeam
+      ? await AppRuntime.runPromise(
+          ScrimInitiationService.pipe(
+            Effect.flatMap((svc) => svc.getScrimInitiation(id))
+          )
+        )
+      : null;
+
   return (
     <DirectionalTransition>
       <DashboardLayout guestMode={visibility.guestMode}>
@@ -345,6 +355,7 @@ export default async function ScrimDashboardPage(
                 data={overviewData}
                 positionalStats={positionalStats}
                 positionalArtifacts={positionalArtifacts}
+                initiation={scrimInitiation}
               />
             </div>
           ) : showOverviewUnavailable ? (
