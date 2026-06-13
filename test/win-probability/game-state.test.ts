@@ -600,6 +600,39 @@ describe("statesAt", () => {
     expect(s.team1.objectiveIndex).toBe(0);
   });
 
+  test("team names containing spaces bucket deaths to the correct side", () => {
+    // "Team 1".split(" ")[0] === "Team", which !== "Team 1", so without the fix
+    // a Team 1 death would mis-bucket to Team 2's dead pool, corrupting aliveDiff.
+    const log = baseLog({
+      team1: "Team 1",
+      team2: "Team 2",
+      rounds: [
+        {
+          roundNumber: 1,
+          start: 0,
+          end: 300,
+          capturingTeam: "Team 1",
+          startScore1: 0,
+          startScore2: 0,
+          endScore1: 1,
+          endScore2: 0,
+        },
+      ],
+      kills: [
+        // Kill a Team 1 player: this is what exposes the space-split bug.
+        // Pre-fix: "Team 1\ta1".split(" ")[0] = "Team 1\ta1" (no space found
+        // when using tab), but with the old space key "Team 1 a1".split(" ")[0]
+        // = "Team" which !== "Team 1", so the death mis-buckets to t2.
+        { time: 100, victimTeam: "Team 1", victimName: "a1", victimHero: "Ana" },
+      ],
+    });
+    const [s] = statesAt(log, [102]);
+    // Team 1 player died → Team 1 has a disadvantage, Team 2 has the advantage.
+    expect(s.team1.aliveDiff).toBe(-1);
+    expect(s.team1.supportAliveDiff).toBe(-1); // Ana is Support
+    expect(s.team2.aliveDiff).toBe(1);
+  });
+
   test("re-charging after a hero swap moves the banked ult to the new role", () => {
     const log = baseLog({
       ultCharged: [

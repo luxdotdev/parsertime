@@ -128,7 +128,7 @@ function ultRole(hero: string | undefined, duplicated: boolean | undefined): Rol
  */
 export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
   const events = mergedEvents(log);
-  const deadUntil = new Map<string, { until: number; role: RoleName }>(); // "team player" → {until, role}
+  const deadUntil = new Map<string, { until: number; role: RoleName }>(); // "team\tplayer" → {until, role}
   const banked = {
     t1: new Map<string, RoleName>(),
     t2: new Map<string, RoleName>(),
@@ -166,13 +166,16 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
       const e = events[cursor];
       switch (e.kind) {
         case "kill":
-          deadUntil.set(`${e.team} ${e.player}`, {
+          // Tab delimiter: team names contain spaces, and we split the key to
+          // recover the team when bucketing dead players. Tabs never appear in
+          // Overwatch team or player names.
+          deadUntil.set(`${e.team}\t${e.player}`, {
             until: e.time + RESPAWN_SECONDS,
             role: getHeroRole(e.hero ?? ""),
           });
           break;
         case "rez":
-          deadUntil.delete(`${e.team} ${e.player}`);
+          deadUntil.delete(`${e.team}\t${e.player}`);
           break;
         case "ult_charged":
           bankOf(e.team).set(e.player, ultRole(e.hero, e.heroDuplicated));
@@ -250,7 +253,7 @@ export function statesAt(log: WPEventLog, times: number[]): Snapshot[] {
     };
     for (const [key, info] of deadUntil) {
       if (info.until <= t) continue;
-      const side = isTeam1(key.split(" ")[0]) ? "t1" : "t2";
+      const side = isTeam1(key.split("\t")[0]) ? "t1" : "t2";
       dead[side][info.role]++;
     }
     const dead1 = dead.t1.Tank + dead.t1.Damage + dead.t1.Support;
