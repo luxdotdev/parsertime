@@ -6,12 +6,15 @@ import {
   findTeamCommit,
   healingSignal,
   detectFightInitiation,
+  assembleMapInitiation,
+  summarizeMapInitiation,
   type DamageEvent,
   type AbilityEvent,
   type UltEvent,
   type HealEvent,
   type InitiationContext,
   type FightInitiationLabel,
+  type MapInitiationResult,
 } from "@/lib/fight-initiation";
 import type { Fight } from "@/lib/utils";
 
@@ -278,5 +281,55 @@ describe("detectFightInitiation", () => {
     ];
     const label = detectFightInitiation(fight, 1, 106, emptyCtx({ damage }));
     expect(label.evidence.fallback).toBe(true); // no commit found inside [106, 110]
+  });
+});
+
+describe("assembleMapInitiation", () => {
+  test("returns unavailable when there is no granular damage data", () => {
+    const kills = [
+      makeKill({ match_time: 110, attacker_team: "Team 1", victim_team: "Team 2" }),
+    ];
+    const result = assembleMapInitiation({
+      kills,
+      rezzes: [],
+      damage: [],
+      ability1: [],
+      ability2: [],
+      ults: [],
+      healing: [],
+    });
+    expect(result.available).toBe(false);
+    expect(result.labels).toEqual([]);
+    expect(result.summary).toBeNull();
+  });
+
+  test("labels fights and summarizes per-team go-first winrate", () => {
+    // Two separate fights (>15s apart). Team 1 dives first in both; wins one, loses one.
+    const kills = [
+      makeKill({ match_time: 110, attacker_team: "Team 1", victim_team: "Team 2" }),
+      makeKill({ match_time: 111, attacker_team: "Team 1", victim_team: "Team 2" }),
+      makeKill({ match_time: 200, attacker_team: "Team 2", victim_team: "Team 1" }),
+      makeKill({ match_time: 201, attacker_team: "Team 2", victim_team: "Team 1" }),
+    ];
+    const damage: DamageEvent[] = [
+      dmg({ match_time: 105, attacker_name: "ball", attacker_team: "Team 1", event_damage: 150 }),
+      dmg({ match_time: 105.4, attacker_name: "tracer", attacker_team: "Team 1", event_damage: 150 }),
+      dmg({ match_time: 195, attacker_name: "ball", attacker_team: "Team 1", event_damage: 150 }),
+      dmg({ match_time: 195.4, attacker_name: "tracer", attacker_team: "Team 1", event_damage: 150 }),
+    ];
+    const result = assembleMapInitiation({
+      kills,
+      rezzes: [],
+      damage,
+      ability1: [],
+      ability2: [],
+      ults: [],
+      healing: [],
+    });
+    expect(result.available).toBe(true);
+    expect(result.labels).toHaveLength(2);
+    expect(result.summary!.byTeam["Team 1"]!.initiations).toBe(2);
+    expect(result.summary!.byTeam["Team 1"]!.initiationWins).toBe(1);
+    expect(result.summary!.byTeam["Team 1"]!.initiationWinrate).toBe(50);
   });
 });
