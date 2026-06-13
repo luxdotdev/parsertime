@@ -41,6 +41,28 @@ describe("trainFamily", () => {
   test("returns null below MIN_FAMILY_ROWS", () => {
     expect(trainFamily(syntheticRows(100)).model).toBeNull();
   });
+
+  test("returns null when row count passes but distinct map count is too low", () => {
+    // 6000 rows spread over only 10 distinct matchIds — passes MIN_FAMILY_ROWS
+    // but must be blocked by the new MIN_FAMILY_MAPS gate.
+    const rows: DatasetRow[] = [];
+    for (let i = 0; i < 6000; i++) {
+      const adv = (i % 5) - 2;
+      const features = new Array<number>(FEATURE_NAMES.length).fill(0);
+      features[0] = adv;
+      rows.push({
+        matchId: Math.floor(i / 600) + 1, // 10 distinct matchIds
+        roundId: `${Math.floor(i / 600) + 1}-1`,
+        label: adv > 0 ? 1 : 0,
+        features,
+      });
+    }
+    const result = trainFamily(rows);
+    expect(result.model).toBeNull();
+    expect(result.report.some((line) => line.includes("MIN_FAMILY_MAPS"))).toBe(
+      true
+    );
+  });
 });
 
 describe("buildArtifact", () => {

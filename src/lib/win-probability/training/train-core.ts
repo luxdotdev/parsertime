@@ -7,6 +7,9 @@ import { fitLogisticRegression, standardize } from "./lr";
 import { calibrationBins, checkGates, logLoss } from "./metrics";
 
 export const MIN_FAMILY_ROWS = 5000;
+/** Grouped CV needs enough distinct maps to be meaningful; row count alone is
+ * not enough (push has thousands of rows but ~17 maps and is data-blocked). */
+export const MIN_FAMILY_MAPS = 100;
 export const FIT = { learningRate: 0.5, epochs: 300, l2: 1e-4 };
 
 export type FamilyTrainResult = {
@@ -19,6 +22,14 @@ export function trainFamily(rows: DatasetRow[]): FamilyTrainResult {
   const report: string[] = [`rows: ${rows.length}`];
   if (rows.length < MIN_FAMILY_ROWS) {
     report.push(`below MIN_FAMILY_ROWS (${MIN_FAMILY_ROWS}) — family disabled`);
+    return { model: null, report };
+  }
+
+  const mapCount = new Set(rows.map((r) => r.matchId)).size;
+  if (mapCount < MIN_FAMILY_MAPS) {
+    report.push(
+      `below MIN_FAMILY_MAPS (${mapCount} < ${MIN_FAMILY_MAPS}) — family disabled`
+    );
     return { model: null, report };
   }
 
