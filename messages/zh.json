@@ -3190,6 +3190,28 @@
         "ultDeficit": "在大招经济落后的情况下接了 {count} 场团战（{fights}），损失约 {cost}%。等大招差距拉平后再接战。",
         "firstDeaths": "{player} 在 {of} 场失利团战中有 {count} 场（{fights}）率先阵亡。复盘这些开局——首死决定团战走向。"
       }
+    },
+    "fightInitiation": {
+      "eyebrow": "先手开团",
+      "title": "团战发起",
+      "description": "每场团战由哪支队伍先发起，以及是否奏效。需要新版日志格式。",
+      "unavailable": "该地图早于详细日志格式，无法检测团战发起。",
+      "summaryWinrate": "{team} 先手开团胜率",
+      "summaryFrequency": "{team} 发起的团战",
+      "coverage": "基于 {total} 场团战中的 {labeled} 场（{contested} 场存在争议）。",
+      "fightLabel": "第 {number} 团",
+      "initiatedBy": "{team} 先手",
+      "contested": "争议开团",
+      "won": "胜",
+      "lost": "负",
+      "lostOpener": "先手开团但输掉开局",
+      "evidencePlayers": "{count} 名队员参与",
+      "evidenceUlt": "大招开团",
+      "evidenceAbility": "技能开团",
+      "responseGap": "{seconds} 秒后对方响应",
+      "confidenceHigh": "高可信度",
+      "confidenceMedium": "中等可信度",
+      "confidenceLow": "低可信度"
     }
   },
   "scoutingPage": {

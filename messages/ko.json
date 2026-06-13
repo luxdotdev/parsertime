@@ -3190,6 +3190,28 @@
         "ultDeficit": "궁극기 경제 열세 상태로 한타 {count}번({fights})을 받아 약 {cost}%를 잃었습니다. 궁극기 격차가 줄어들 때까지 재교전을 늦추세요.",
         "firstDeaths": "{player}이(가) 패배한 한타 {of}번 중 {count}번({fights})에서 가장 먼저 전사했습니다. 그 시작 장면을 복기하세요 — 첫 데스가 한타의 흐름을 결정합니다."
       }
+    },
+    "fightInitiation": {
+      "eyebrow": "선공",
+      "title": "한타 개시",
+      "description": "각 한타를 어느 팀이 먼저 시작했는지와 그 성과를 보여줍니다. 최신 로그 형식이 필요합니다.",
+      "unavailable": "이 맵은 상세 로그 형식 이전이라 한타 개시를 감지할 수 없습니다.",
+      "summaryWinrate": "{team} 선공 시 승률",
+      "summaryFrequency": "{team} 개시한 한타",
+      "coverage": "전체 {total} 한타 중 {labeled} 한타 기준 ({contested} 한타 판정 불가).",
+      "fightLabel": "한타 {number}",
+      "initiatedBy": "{team} 선공",
+      "contested": "동시 개시",
+      "won": "승리",
+      "lost": "패배",
+      "lostOpener": "선공했으나 초반 손해",
+      "evidencePlayers": "{count}명 합류",
+      "evidenceUlt": "궁극기 개시",
+      "evidenceAbility": "스킬 개시",
+      "responseGap": "{seconds}초 후 대응",
+      "confidenceHigh": "높은 신뢰도",
+      "confidenceMedium": "보통 신뢰도",
+      "confidenceLow": "낮은 신뢰도"
     }
   },
   "scoutingPage": {
