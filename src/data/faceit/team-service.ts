@@ -137,7 +137,19 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> = Effect.ge
         return null;
       }
 
-      const { matchRows, mapRows, roster } = yield* fetchTeamData(includedTeamIds);
+      // In combined mode, restrict to matches where the scouted team's core
+      // players actually played. Teams sharing a name/id can field entirely
+      // different lineups; without this, combining pulls in off-roster matches
+      // that don't represent the squad being scouted. Uses the same ≥N-shared
+      // bar that made the teams "related".
+      const coreFilter = combined
+        ? { players: yield* fetchCorePlayers(teamId), minShared: RELATED_MIN_SHARED }
+        : null;
+
+      const { matchRows, mapRows, roster } = yield* fetchTeamData(
+        includedTeamIds,
+        coreFilter
+      );
 
       const overview = buildOverview(matchRows);
       const { byMap, byType } = mapWinrates(mapRows);
@@ -198,8 +210,21 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> = Effect.ge
     role: string | null; appearances: bigint; total_matches: bigint; fsr: number | null; tsr: number | null;
   };
 
-  function fetchTeamData(teamIds: string[]) {
+  function fetchTeamData(
+    teamIds: string[],
+    coreFilter: { players: string[]; minShared: number } | null
+  ) {
     const ids = teamIds.length > 0 ? teamIds : [""];
+    // Optional clause keeping only matches whose chosen-side roster contains at
+    // least `minShared` of the scouted team's core players.
+    const coreClause =
+      coreFilter && coreFilter.players.length > 0
+        ? Prisma.sql`AND (
+            SELECT COUNT(*) FROM "FaceitMatchRoster" rf
+            WHERE rf."matchId" = mt."matchId" AND rf."teamSide" = mt."teamSide"
+              AND rf."faceitPlayerId" IN (${Prisma.join(coreFilter.players)})
+          ) >= ${coreFilter.minShared}`
+        : Prisma.empty;
     return Effect.tryPromise({
       try: async () => {
         const matchRowsRaw = await prisma.$queryRaw<RawMatchRow[]>(
@@ -208,6 +233,7 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> = Effect.ge
             SELECT DISTINCT ON (mt."matchId") mt."matchId", mt."teamSide", mt.winner
             FROM "FaceitMatchTeam" mt
             WHERE mt."faceitTeamId" IN (${Prisma.join(ids)})
+            ${coreClause}
             ORDER BY mt."matchId", array_position(ARRAY[${Prisma.join(ids)}]::text[], mt."faceitTeamId")
           )
           SELECT ch."matchId" AS match_id, m."finishedAt" AS finished_at, c.tier::text AS tier, ch.winner AS won
@@ -221,6 +247,7 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> = Effect.ge
             SELECT DISTINCT ON (mt."matchId") mt."matchId", mt."teamSide", mt.winner
             FROM "FaceitMatchTeam" mt
             WHERE mt."faceitTeamId" IN (${Prisma.join(ids)})
+            ${coreClause}
             ORDER BY mt."matchId", array_position(ARRAY[${Prisma.join(ids)}]::text[], mt."faceitTeamId")
           )
           SELECT ch."matchId" AS match_id, m."finishedAt" AS finished_at, c.tier::text AS tier,
@@ -239,6 +266,7 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> = Effect.ge
             SELECT DISTINCT ON (mt."matchId") mt."matchId", mt."teamSide"
             FROM "FaceitMatchTeam" mt
             WHERE mt."faceitTeamId" IN (${Prisma.join(ids)})
+            ${coreClause}
             ORDER BY mt."matchId", array_position(ARRAY[${Prisma.join(ids)}]::text[], mt."faceitTeamId")
           ),
           appear AS (
@@ -287,6 +315,20 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> = Effect.ge
         return { matchRows, mapRows, roster };
       })
     );
+  }
+
+  // Top-N players by appearances for a single team id — the squad's "core".
+  function fetchCorePlayers(teamId: string): Effect.Effect<string[], FaceitScoutingQueryError> {
+    return Effect.tryPromise({
+      try: () => prisma.$queryRaw<{ pid: string }[]>`
+        SELECT r."faceitPlayerId" AS pid, COUNT(*) AS n
+        FROM "FaceitMatchTeam" mt
+        JOIN "FaceitMatchRoster" r ON r."matchId" = mt."matchId" AND r."teamSide" = mt."teamSide"
+        WHERE mt."faceitTeamId" = ${teamId}
+        GROUP BY r."faceitPlayerId" ORDER BY n DESC LIMIT ${CORE_SIZE}
+      `,
+      catch: (error) => new FaceitScoutingQueryError({ operation: "fetch core players", cause: error }),
+    }).pipe(Effect.map((rows) => rows.map((r) => r.pid)));
   }
 
   function fetchRelatedTeams(teamId: string): Effect.Effect<RelatedTeam[], FaceitScoutingQueryError> {
