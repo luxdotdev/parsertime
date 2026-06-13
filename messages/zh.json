@@ -981,6 +981,36 @@
       "linkedRequestLabel": "关联的配对请求",
       "linkedRequestNone": "非配对请求产生的训练赛",
       "linkedRequestDescription": "如果此训练赛来自配对请求，请关联以启用赛后反馈功能。"
+    },
+    "activity": {
+      "regionLabel": "近期活动概览",
+      "winRate": "胜率",
+      "mapsLogged": "已记录地图",
+      "teamTsr": "团队 TSR",
+      "bestMap": "最佳地图",
+      "scrimsLogged": "已记录比赛",
+      "activeTeams": "活跃战队",
+      "latestScrim": "最近比赛",
+      "record": "{wins}–{losses}",
+      "tsrRated": "{rated}/{total} 已评级 · {confidence}",
+      "tsrNoData": "阵容数据不足",
+      "bestMapSub": "胜率 {winrate}",
+      "bestMapNone": "暂无地图",
+      "never": "暂无比赛",
+      "trendEyebrowTeam": "胜率 · 每周",
+      "trendEyebrowAll": "已记录比赛 · 每周",
+      "avgWinrate": "平均 {winrate}",
+      "totalScrims": "{weeks} 周内 {count} 场",
+      "noHistory": "暂无足够历史数据绘制图表",
+      "winsLosses": "{wins} 胜 · {losses} 负",
+      "scrimsCount": "{count, plural, other {# 场比赛}}",
+      "confidence": {
+        "high": "高置信度",
+        "medium": "中置信度",
+        "low": "低置信度"
+      },
+      "expand": "展开活动概览",
+      "collapse": "收起活动概览"
     }
   },
   "updateModal": {

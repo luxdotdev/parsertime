@@ -981,6 +981,36 @@
       "linkedRequestLabel": "연결된 매치메이커 요청",
       "linkedRequestNone": "매치메이커 요청에서 온 스크림이 아닙니다",
       "linkedRequestDescription": "이 스크림이 매치메이커 요청에서 온 경우, 연결하면 스크림 후 피드백을 사용할 수 있습니다."
+    },
+    "activity": {
+      "regionLabel": "최근 활동 개요",
+      "winRate": "승률",
+      "mapsLogged": "기록된 맵",
+      "teamTsr": "팀 TSR",
+      "bestMap": "최고 맵",
+      "scrimsLogged": "기록된 스크림",
+      "activeTeams": "활동 팀",
+      "latestScrim": "최근 스크림",
+      "record": "{wins}–{losses}",
+      "tsrRated": "{rated}/{total} 평가됨 · {confidence}",
+      "tsrNoData": "로스터 데이터 부족",
+      "bestMapSub": "승률 {winrate}",
+      "bestMapNone": "아직 맵 없음",
+      "never": "아직 스크림 없음",
+      "trendEyebrowTeam": "승률 · 주별",
+      "trendEyebrowAll": "기록된 스크림 · 주별",
+      "avgWinrate": "평균 {winrate}",
+      "totalScrims": "{weeks}주간 {count}개",
+      "noHistory": "차트를 그릴 기록이 부족합니다",
+      "winsLosses": "{wins}승 · {losses}패",
+      "scrimsCount": "{count, plural, other {스크림 #개}}",
+      "confidence": {
+        "high": "높은 신뢰도",
+        "medium": "중간 신뢰도",
+        "low": "낮은 신뢰도"
+      },
+      "expand": "활동 개요 펼치기",
+      "collapse": "활동 개요 접기"
     }
   },
   "updateModal": {

@@ -1,6 +1,7 @@
 "use client";
 
 import { CreateScrimButton } from "@/components/dashboard/create-scrim";
+import { DashboardOverview } from "@/components/dashboard/dashboard-overview";
 import { EmptyScrimList } from "@/components/dashboard/empty-scrim-list";
 import { ScrimCard } from "@/components/dashboard/scrim-card";
 import { ScrimCardSkeleton } from "@/components/dashboard/scrim-card-skeleton";
@@ -257,6 +258,7 @@ export function ScrimPagination({
 
   return (
     <div>
+      <DashboardOverview isAdmin={isAdmin} />
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <span className="inline-flex gap-2">
           <Select value={sort || undefined} onValueChange={handleFilterChange}>

@@ -981,6 +981,36 @@
       "linkedRequestLabel": "Linked matchmaker request",
       "linkedRequestNone": "Not from a matchmaker request",
       "linkedRequestDescription": "If this scrim came from a matchmaker request, link it to enable post-scrim feedback."
+    },
+    "activity": {
+      "regionLabel": "Recent activity overview",
+      "winRate": "Win rate",
+      "mapsLogged": "Maps logged",
+      "teamTsr": "Team TSR",
+      "bestMap": "Best map",
+      "scrimsLogged": "Scrims logged",
+      "activeTeams": "Active teams",
+      "latestScrim": "Latest scrim",
+      "record": "{wins}–{losses}",
+      "tsrRated": "{rated}/{total} rated · {confidence}",
+      "tsrNoData": "Not enough roster data",
+      "bestMapSub": "{winrate} win rate",
+      "bestMapNone": "No maps yet",
+      "never": "No scrims yet",
+      "trendEyebrowTeam": "Win rate · weekly",
+      "trendEyebrowAll": "Scrims logged · weekly",
+      "avgWinrate": "{winrate} avg",
+      "totalScrims": "{count} over {weeks}w",
+      "noHistory": "Not enough history to chart yet",
+      "winsLosses": "{wins} W · {losses} L",
+      "scrimsCount": "{count, plural, one {# scrim} other {# scrims}}",
+      "confidence": {
+        "high": "high confidence",
+        "medium": "medium confidence",
+        "low": "low confidence"
+      },
+      "expand": "Expand activity overview",
+      "collapse": "Collapse activity overview"
     }
   },
   "updateModal": {
