@@ -3707,6 +3707,87 @@
       "matches": "{n} matches"
     }
   },
+  "faceitPlayerPage": {
+    "title": "FACEIT Player Scouting",
+    "subtitle": "Search a player to see their FSR, stat profile, and history.",
+    "search": {
+      "placeholder": "Search players…",
+      "matches": "{count} matches",
+      "noResults": "No players found",
+      "unrated": "Unrated"
+    },
+    "header": {
+      "region": "Region",
+      "level": "FACEIT level",
+      "verified": "Verified",
+      "team": "Current team"
+    },
+    "fsr": {
+      "title": "FSR",
+      "headline": "Headline FSR",
+      "byTier": "By tier",
+      "tier": "Tier",
+      "rating": "FSR",
+      "maps": "Maps",
+      "percentile": "Percentile",
+      "primary": "Primary",
+      "unrated": "Not enough rated maps for an FSR yet."
+    },
+    "radar": {
+      "title": "Stat profile",
+      "tierLabel": "Tier"
+    },
+    "insights": {
+      "strengths": "Strengths",
+      "weaknesses": "Weaknesses",
+      "none": "No standout stats"
+    },
+    "roles": {
+      "title": "Role usage",
+      "role": "Role",
+      "maps": "Maps",
+      "share": "Share"
+    },
+    "maps": {
+      "title": "Map winrates",
+      "byMap": "By map",
+      "byType": "By mode",
+      "map": "Map",
+      "mode": "Mode",
+      "played": "Played",
+      "won": "Won",
+      "winRate": "Win rate",
+      "lowSample": "Low sample"
+    },
+    "history": {
+      "title": "Match history",
+      "date": "Date",
+      "team": "Team",
+      "opponent": "Opponent",
+      "tier": "Tier",
+      "score": "Score",
+      "result": "Result",
+      "role": "Role",
+      "win": "W",
+      "loss": "L",
+      "empty": "No matches found"
+    },
+    "teams": {
+      "title": "Teams played for",
+      "appearances": "{count} matches"
+    },
+    "stat": {
+      "eliminations": "Eliminations",
+      "finalBlows": "Final blows",
+      "deaths": "Deaths (inv.)",
+      "damageDealt": "Damage",
+      "healingDone": "Healing",
+      "damageMitigated": "Mitigated",
+      "soloKills": "Solo kills",
+      "assists": "Assists",
+      "objectiveTime": "Objective time"
+    }
+  },
   "coaching": {
     "title": "Coaching Canvas",
     "subtitle": "Annotate maps with hero placements, drawings, and strategy notes.",

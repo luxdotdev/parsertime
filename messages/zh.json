@@ -3707,6 +3707,87 @@
       "matches": "{n} 场比赛"
     }
   },
+  "faceitPlayerPage": {
+    "title": "FACEIT 选手球探",
+    "subtitle": "搜索选手，查看其 FSR、数据档案及历史战绩。",
+    "search": {
+      "placeholder": "搜索选手…",
+      "matches": "{count} 名选手",
+      "noResults": "未找到选手",
+      "unrated": "未评级"
+    },
+    "header": {
+      "region": "地区",
+      "level": "FACEIT 等级",
+      "verified": "已认证",
+      "team": "当前团队"
+    },
+    "fsr": {
+      "title": "FSR",
+      "headline": "代表 FSR",
+      "byTier": "按段位",
+      "tier": "段位",
+      "rating": "FSR",
+      "maps": "地图",
+      "percentile": "百分位",
+      "primary": "主要",
+      "unrated": "评级地图不足，暂无 FSR。"
+    },
+    "radar": {
+      "title": "数据档案",
+      "tierLabel": "段位"
+    },
+    "insights": {
+      "strengths": "优势",
+      "weaknesses": "劣势",
+      "none": "暂无突出数据"
+    },
+    "roles": {
+      "title": "职责使用情况",
+      "role": "职责",
+      "maps": "地图",
+      "share": "占比"
+    },
+    "maps": {
+      "title": "地图胜率",
+      "byMap": "按地图",
+      "byType": "按模式",
+      "map": "地图",
+      "mode": "模式",
+      "played": "场次",
+      "won": "胜利",
+      "winRate": "胜率",
+      "lowSample": "样本不足"
+    },
+    "history": {
+      "title": "比赛记录",
+      "date": "日期",
+      "team": "团队",
+      "opponent": "对手",
+      "tier": "段位",
+      "score": "比分",
+      "result": "结果",
+      "role": "职责",
+      "win": "胜",
+      "loss": "负",
+      "empty": "未找到比赛记录"
+    },
+    "teams": {
+      "title": "效力过的团队",
+      "appearances": "{count} 场比赛"
+    },
+    "stat": {
+      "eliminations": "击杀",
+      "finalBlows": "终结一击",
+      "deaths": "死亡（反向）",
+      "damageDealt": "造成伤害",
+      "healingDone": "治疗量",
+      "damageMitigated": "减免伤害",
+      "soloKills": "单杀",
+      "assists": "助攻",
+      "objectiveTime": "目标占领时间"
+    }
+  },
   "statsPage": {
     "layoutMetadata": {
       "title": "统计数据 | Parsertime",
