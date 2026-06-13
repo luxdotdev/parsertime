@@ -1,6 +1,6 @@
 # Model card — Parsertime win probability (Match Story)
 
-**Model:** `wp-models/model-v1.json` · feature hash `6d32187c9a3f` · trained 2026-06-12
+**Model:** `wp-models/model-v2.json` · feature hash `27b4a8ec1f49` · trained 2026-06-13
 **Architecture:** per-mode logistic regression + isotonic recalibration (all TypeScript)
 **Serving:** Cloudflare R2 artifact, hourly-TTL cached loader, retrained weekly by `/api/cron/wp-retrain`
 
@@ -20,80 +20,105 @@ the map," which dilutes single-fight effects relative to Control.
 ## Training data
 
 All teams' parsed scrims, globally pooled and team-anonymous — the model
-learns _what game states win_, not anything about specific teams. From ~4,300
-usable maps the export produces ~2.07M labeled snapshots (one every 5 seconds
+learns _what game states win_, not anything about specific teams. From ~7,200
+usable maps the export produces ~2.7M labeled snapshots (one every 5 seconds
 plus every fight boundary, two mirrored rows per snapshot so the model is
 exactly antisymmetric between teams).
 
 Labels: Control rounds by per-round score delta; other modes by the canonical
 `calculateWinner` (captures → farthest distance → score). Score-tied
 flashpoint logs are excluded rather than force-labeled. Clash is excluded
-(retired mode). **Push is excluded entirely**: the logs carry no robot
-distance signal, so Push winners are underivable today.
+(retired mode). **Push is excluded**: the logs carry no robot distance signal,
+so Push winners are underivable, and it has only ~17 distinct maps — far below
+the map-count gate (see below).
 
-## Features (15)
+## Features (21)
 
 Game state is reconstructed from log events in one pass
 (`src/lib/win-probability/game-state.ts`); the same code feeds training and
 inference, and the artifact embeds a feature-list hash so a mismatched model
 refuses to load.
 
-| Group     | Features                                                                                                                                      |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| Kills     | `aliveDiff` (respawn-adjusted, 10s constant), `aliveDiff × objMax`, `aliveDiff × controlMax`                                                  |
-| Ults      | `ultBankDiff` (charged-unspent; survives death), `ultBankDiff × timeRemaining`                                                                |
-| Objective | `scoreDiff`, `objProgressOwn/Enemy` (contest %), `controlProgressOwn/Enemy` (control win %), `holdsObjective` (±1), `scoreDiff × roundNumber` |
-| Context   | `timeRemainingNorm`, `isAttacker`, `roundNumberNorm`                                                                                          |
+| Group     | Features                                                                                                                                       |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Kills     | `tankAliveDiff`, `dpsAliveDiff`, `supportAliveDiff` (respawn-adjusted, 10s constant, split by the victim's hero role), `aliveDiff × objMax`, `aliveDiff × controlMax` |
+| Ults      | `tankUltDiff`, `dpsUltDiff`, `supportUltDiff` (charged-unspent banks, by role; Echo duplicates count as Damage), `ultBankDiff × timeRemaining` |
+| Objective | `scoreDiff`, `objProgressOwn/Enemy` (contest %), `controlProgressOwn/Enemy` (control win %), `holdsObjective` (±1), `objectiveIndexNorm`, `scoreDiff × roundNumber` |
+| Context   | `timeRemainingNorm`, `isAttacker`, `roundNumberNorm`, `isOvertime`                                                                            |
 
-Hand-built interactions stand in for what a gradient-boosted model would
-discover (a man advantage at 99% control is round-deciding; at 20% it is
-tempo). Data-quality rules that mattered: progress events from a previous
-round are dropped by round number, and in Escort/Hybrid only the attacking
-team can generate progress (loggers mis-stamp the dying round's final tick in
-three different ways; the domain rule subsumes them all).
+The alive/ult diffs are **role-split** (tank/dps/support) rather than single
+aggregates: the role identity of who is down or who is holding an ult carries
+more signal than a raw count (the interactions still use the aggregate sums to
+avoid collinearity). Hand-built interactions stand in for what a
+gradient-boosted model would discover (a man advantage at 99% control is
+round-deciding; at 20% it is tempo).
+
+Data-quality rules that mattered: progress events from a previous round are
+dropped by round number; in Escort/Hybrid only the attacking team can generate
+progress (loggers mis-stamp the dying round's final tick in three different
+ways; the domain rule subsumes them all); and the per-player team key uses a
+tab delimiter (team names contain spaces — see the correctness note below).
+
+## Correctness fix in this revision
+
+A latent bug parsed the per-player `"<team> <player>"` sweep key with
+`split(" ")[0]`, which returns only the first token for any team name
+containing a space — **~92% of maps**, including the default "Team 1"/"Team 2".
+Every death (and every banked ult) then bucketed to one side, so `aliveDiff`
+and the role splits were noise on almost all data. Fixing the delimiter is the
+dominant improvement in this revision (it, not the feature additions, is what
+moved the numbers): control log loss **0.6441 → 0.6180** (−4.1%), escort
+**0.6705 → 0.6635** (−1.0%), flashpoint **0.5995 → 0.5891** (−1.7%). The
+role-alive coefficients went from near-zero to substantial as a direct result.
 
 ## Per-family results (5-fold CV, grouped by map; calibrated outputs)
 
-| Family        | Snapshots | Log loss (base 0.693) | Brier  | Status               |
-| ------------- | --------- | --------------------- | ------ | -------------------- |
-| Control       | 815,020   | 0.6440                | 0.2266 | shipped              |
-| Escort/Hybrid | 1,237,514 | 0.6705                | 0.2391 | shipped              |
-| Flashpoint    | 16,476    | 0.6232                | 0.2258 | shipped              |
-| Push          | 4,924     | —                     | —      | disabled (no labels) |
+| Family        | Snapshots | Maps  | Log loss (base 0.693) | Brier  | Status               |
+| ------------- | --------- | ----- | --------------------- | ------ | -------------------- |
+| Control       | 826,444   | 2,298 | 0.6180                | 0.2148 | shipped              |
+| Escort/Hybrid | 1,250,576 | 3,302 | 0.6635                | 0.2356 | shipped              |
+| Flashpoint    | 631,132   | 1,558 | 0.5891                | 0.2034 | shipped              |
+| Push          | 5,948     | 17    | —                     | —      | disabled (no labels) |
 
 Cross-validation folds are **grouped by map** — snapshots from the same round
 are heavily autocorrelated, and a random split would leak and flatter every
-number above.
+number above. A `MIN_FAMILY_MAPS = 100` gate disables any family with too few
+distinct maps for grouped CV to be meaningful (this is what keeps Push out:
+thousands of rows, but only 17 maps).
 
 **Calibration is the headline property, not accuracy.** Every shipped bin
 (predicted vs. observed win rate, 10 bins) is within a few points of the
 diagonal; the deploy gate fails any retrain whose calibrated bins drift more
 than 10 points (n ≥ 200) or that loses to the base rate. That is what makes
 "this fight cost you 30%" an honest sentence. Skill over the base rate is
-deliberately modest (Brier skill ≈ 4–10%): most 5-second snapshots are
-genuinely near coin-flips; the model earns its keep at decisive moments.
+deliberately modest: most 5-second snapshots are genuinely near coin-flips;
+the model earns its keep at decisive moments.
 
 An isotonic recalibration layer (PAVA over held-out CV predictions, stored as
-knots in the artifact) corrects the linear model's overconfident extremes —
-it is what brought Flashpoint inside the gates.
+knots in the artifact) corrects the linear model's overconfident extremes.
 
 ## Key coefficients (standardized; sign = effect on the perspective team)
 
-**Control** (`n=815K`): `holdsObjective` **+0.62**, `controlProgressOwn/Enemy`
-**±0.42**, `scoreDiff × roundNumber` +0.24, `aliveDiff` +0.18, `ultBankDiff`
-+0.13. Reads like Overwatch sense: holding the point dominates, then control
-percentages, then bodies and banks.
+**Control** (`n=826K`): `holdsObjective` **+0.58**, `controlProgressOwn/Enemy`
+**±0.44**, `scoreDiff × roundNumber` +0.22, `dpsAliveDiff` +0.21,
+`supportAliveDiff` +0.19, `tankAliveDiff` +0.18, `aliveDiff × objMax` +0.13.
+Reads like Overwatch sense: holding the point dominates, then control
+percentages, then bodies (now split by role) and banks.
 
-**Escort/Hybrid** (`n=1.24M`): `holdsObjective` +0.25, `objProgress` ±0.23,
-`scoreDiff` +0.17, `scoreDiff × roundNumber` +0.17, `aliveDiff` +0.10,
-`ultBankDiff` **+0.02**. Note the tiny ult weight: at map-win granularity an
-ult advantage decays within a fight or two, so escort cascade insights are
-honest but small.
+**Escort/Hybrid** (`n=1.25M`): `holdsObjective` +0.25, `objProgress` ±0.22,
+`dpsAliveDiff`/`supportAliveDiff` +0.16, `scoreDiff` +0.15, `scoreDiff ×
+roundNumber` +0.15, `isAttacker` −0.13, `tankAliveDiff` +0.13. Ult banks are
+small (≤0.05): at map-win granularity an ult advantage decays within a fight
+or two, so escort cascade insights are honest but small.
 
-**Flashpoint** (`n=16.5K`): coefficients are **not individually
-interpretable** — `aliveDiff` is −0.94 offset by `aliveDiff × objMax` +0.52,
-a collinearity artifact of the small sample. Group-level driver sums (used by
-Match Story) remain well-behaved; per-feature readings do not.
+**Flashpoint** (`n=631K`): `scoreDiff` **+0.75** dominates (points already won
+strongly predict the map), `scoreDiff × roundNumber` +0.29, `holdsObjective`
++0.19, alive splits ~+0.12. Far better behaved than the prior 16.5K-row
+flashpoint model — the round-pairing export fix plus the team-key fix gave it
+a real sample.
+
+`isOvertime` and `objectiveIndexNorm` train to ≈0 weight in every mode — they
+are carried for completeness but add no signal under this model.
 
 ## Driver decomposition (the "why" in Match Story)
 
@@ -108,17 +133,18 @@ the model, not a heuristic — but it inherits the model's blind spots (below).
 - **Conservative by construction.** A logistic model with hand-built
   interactions under-sharpens decisive moments relative to a GBM. Swings
   read slightly smaller than reality; that is the safe direction for a
-  coaching tool. Escort tops out near ~0.73 before the outcome snap because
-  no regulation-round state guarantees a multi-round map.
+  coaching tool.
 - **Respawns are a 10-second constant**; real respawn timing varies
   (overtime, assemble phases). Stagger carryovers are approximate.
-- **No hero identity, no positions.** A banked Zenyatta ult and a banked
-  Sound Barrier weigh the same; coordinate data is an untapped upgrade path.
-- **Flashpoint rests on 16.5K rows** — highest per-map variance of the
-  shipped families, and the collinear coefficients above.
-- **Round-2+ escort states** were the hardest to calibrate (a team "down
-  0–3" with its attack pending is not losing); the round-number interaction
-  carries this, and residual tail error was the last gate failure fixed.
+- **Hero identity does not help this model.** A team hero-composition
+  multi-hot (own+enemy, 102 columns) was tested and **rejected**: under
+  logistic regression it made every mode *worse* (control +0.1%, escort
+  +0.5%, flashpoint +1.3% log loss) — added variance with no signal LR can
+  exploit. Hero identity is expected to pay off only with a model that can
+  represent interactions (gradient-boosted trees); that is the next upgrade
+  path, not more columns.
+- **No positions.** Coordinate data is unused; spatial features remain an
+  untapped upgrade path.
 - **WPA is attribution by convention**, not causality: final blows, assists,
   deaths (first weighted heaviest), and ult usage split a fight's swing.
   The UI exposes the per-fight breakdown precisely so it can be audited.
@@ -142,4 +168,5 @@ npm run wp:train         # CV, gates, fit → artifacts/wp/model-v1.json
 npm run wp:train -- --upload   # …and publish to R2
 ```
 
-Spec and plans: `docs/superpowers/specs/2026-06-12-win-probability-match-story-design.md`.
+Spec and plans: `docs/superpowers/specs/2026-06-12-win-probability-match-story-design.md`,
+`docs/superpowers/specs/2026-06-12-wp-feature-expansion-spec.md`.
