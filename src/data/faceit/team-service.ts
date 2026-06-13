@@ -256,7 +256,7 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> = Effect.ge
           matchId: r.match_id, finishedAt: r.finished_at, tier: r.tier as FaceitTeamMapRow["tier"],
           teamSide: r.team_side, mapName: r.map_name, mapType: r.map_type,
           won: r.winner_faction === r.team_side,
-          attackedFirst: r.attacking_first == null ? null : r.attacking_first === String(r.team_side),
+          attackedFirst: r.attacking_first == null ? null : r.attacking_first === `faction${r.team_side}`,
           heroBans: r.hero_bans ?? [],
         }));
         const totalMatches = matchRows.length;
