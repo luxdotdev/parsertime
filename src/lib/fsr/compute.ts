@@ -128,114 +128,80 @@ async function recomputeAllFsrUnlocked(): Promise<FsrRecomputeResult> {
   }
 
   const computedAt = now;
-  const CHUNK = 500;
 
   const baselineList = [...baselines.values()];
-  await prisma.$transaction(
-    baselineList.map((b) =>
-      prisma.fsrBaseline.upsert({
-        where: { tier_role: { tier: b.tier, role: b.role } },
-        create: {
-          tier: b.tier,
-          role: b.role,
-          sampleN: b.sampleN,
-          stats: b.baseline as unknown as Prisma.InputJsonValue,
-          computedAt,
-        },
-        update: {
-          sampleN: b.sampleN,
-          stats: b.baseline as unknown as Prisma.InputJsonValue,
-          computedAt,
-        },
-      })
-    ),
-    { timeout: 60_000 }
-  );
 
-  let cellsWritten = 0;
-  for (let i = 0; i < cells.length; i += CHUNK) {
-    const slice = cells.slice(i, i + CHUNK);
-    await prisma.$transaction(
-      slice.map((c) =>
-        prisma.playerFsrTier.upsert({
-          where: {
-            faceitPlayerId_role_tier: {
-              faceitPlayerId: c.faceitPlayerId,
-              role: c.role,
-              tier: c.tier,
-            },
-          },
-          create: {
-            faceitPlayerId: c.faceitPlayerId,
-            role: c.role,
-            tier: c.tier,
-            fsr: c.fsr,
-            compositeZ: c.compositeZ,
-            mapCount: c.mapCount,
-            minutesPlayed: c.minutesPlayed,
-            peerCount: c.peerCount,
-            statZ: c.statZ as unknown as Prisma.InputJsonValue,
-            computedAt,
-          },
-          update: {
-            fsr: c.fsr,
-            compositeZ: c.compositeZ,
-            mapCount: c.mapCount,
-            minutesPlayed: c.minutesPlayed,
-            peerCount: c.peerCount,
-            statZ: c.statZ as unknown as Prisma.InputJsonValue,
-            computedAt,
-          },
-        })
-      ),
-      { timeout: 60_000 }
-    );
-    cellsWritten += slice.length;
-  }
+  const baselineData = baselineList.map((b) => ({
+    tier: b.tier,
+    role: b.role,
+    sampleN: b.sampleN,
+    stats: b.baseline as unknown as Prisma.InputJsonValue,
+    computedAt,
+  }));
+
+  const cellData = cells.map((c) => ({
+    faceitPlayerId: c.faceitPlayerId,
+    role: c.role,
+    tier: c.tier,
+    fsr: c.fsr,
+    compositeZ: c.compositeZ,
+    mapCount: c.mapCount,
+    minutesPlayed: c.minutesPlayed,
+    peerCount: c.peerCount,
+    statZ: c.statZ as unknown as Prisma.InputJsonValue,
+    computedAt,
+  }));
 
   const headlineEntries = [...byPlayerRole.entries()];
-  let playersWritten = 0;
-  for (let i = 0; i < headlineEntries.length; i += CHUNK) {
-    const slice = headlineEntries.slice(i, i + CHUNK);
-    await prisma.$transaction(
-      slice.map(([key, acc]) => {
-        const [faceitPlayerId, role] = key.split(":") as [string, Cell["role"]];
-        const blend = blendHeadline(acc.cells);
-        return prisma.playerFsr.upsert({
-          where: { faceitPlayerId_role: { faceitPlayerId, role } },
-          create: {
-            faceitPlayerId,
-            role,
-            fsr: blend.fsr,
-            compositeZ: blend.zBlend,
-            effectiveAnchor: blend.anchor,
-            mapCount: acc.mapCount,
-            recentMapCount365d: acc.recentMapCount,
-            tiersPlayed: [...acc.tiers],
-            computedAt,
-          },
-          update: {
-            fsr: blend.fsr,
-            compositeZ: blend.zBlend,
-            effectiveAnchor: blend.anchor,
-            mapCount: acc.mapCount,
-            recentMapCount365d: acc.recentMapCount,
-            tiersPlayed: [...acc.tiers],
-            computedAt,
-          },
-        });
-      }),
-      { timeout: 60_000 }
-    );
-    playersWritten += slice.length;
+  const playerData = headlineEntries.map(([key, acc]) => {
+    const [faceitPlayerId, role] = key.split(":") as [string, Cell["role"]];
+    const blend = blendHeadline(acc.cells);
+    return {
+      faceitPlayerId,
+      role,
+      fsr: blend.fsr,
+      compositeZ: blend.zBlend,
+      effectiveAnchor: blend.anchor,
+      mapCount: acc.mapCount,
+      recentMapCount365d: acc.recentMapCount,
+      tiersPlayed: [...acc.tiers],
+      computedAt,
+    };
+  });
+
+  // Chunk so each createMany stays under Postgres' 65,535-parameter limit
+  // (rows × columns). Largest table has 10 columns, so 2,000 rows ≈ 20k params.
+  const WRITE_CHUNK = 2000;
+  function chunkRows<T>(rows: T[], size: number): T[][] {
+    const out: T[][] = [];
+    for (let i = 0; i < rows.length; i += size) out.push(rows.slice(i, i + size));
+    return out;
   }
 
-  const [staleTiers, stalePlayers, staleBaselines] = await Promise.all([
-    prisma.playerFsrTier.deleteMany({ where: { computedAt: { lt: computedAt } } }),
-    prisma.playerFsr.deleteMany({ where: { computedAt: { lt: computedAt } } }),
-    prisma.fsrBaseline.deleteMany({ where: { computedAt: { lt: computedAt } } }),
-  ]);
-  const staleRowsDropped = staleTiers.count + stalePlayers.count + staleBaselines.count;
+  // Full-replace inside one interactive transaction: a failure rolls back and
+  // leaves the previous (stale-but-valid) rows intact, so readers never see an
+  // empty table. createMany issues one bulk INSERT per chunk (few round-trips).
+  await prisma.$transaction(
+    async (tx) => {
+      await tx.fsrBaseline.deleteMany({});
+      if (baselineData.length > 0) {
+        await tx.fsrBaseline.createMany({ data: baselineData });
+      }
+      await tx.playerFsrTier.deleteMany({});
+      for (const slice of chunkRows(cellData, WRITE_CHUNK)) {
+        await tx.playerFsrTier.createMany({ data: slice });
+      }
+      await tx.playerFsr.deleteMany({});
+      for (const slice of chunkRows(playerData, WRITE_CHUNK)) {
+        await tx.playerFsr.createMany({ data: slice });
+      }
+    },
+    { timeout: 120_000 }
+  );
+
+  const cellsWritten = cellData.length;
+  const playersWritten = playerData.length;
+  const staleRowsDropped = 0; // full-replace in-transaction; no separate stale sweep
 
   const durationMs = Date.now() - start;
   Logger.info({
