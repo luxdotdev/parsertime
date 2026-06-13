@@ -3194,7 +3194,6 @@
     "fightInitiation": {
       "eyebrow": "GOING FIRST",
       "title": "Fight Initiation",
-      "description": "Which team committed to each fight first, and whether it paid off. Requires the updated log format.",
       "unavailable": "This map predates the detailed log format, so fight initiation can't be detected.",
       "summaryWinrate": "{team} win rate going first",
       "summaryFrequency": "{team} fights initiated",
@@ -3202,6 +3201,7 @@
       "fightLabel": "Fight {number}",
       "initiatedBy": "{team} went first",
       "contested": "Contested start",
+      "undetermined": "Undetermined",
       "won": "Won",
       "lost": "Lost",
       "lostOpener": "Went first, lost the opener",

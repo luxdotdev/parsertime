@@ -3194,7 +3194,6 @@
     "fightInitiation": {
       "eyebrow": "先手开团",
       "title": "团战发起",
-      "description": "每场团战由哪支队伍先发起，以及是否奏效。需要新版日志格式。",
       "unavailable": "该地图早于详细日志格式，无法检测团战发起。",
       "summaryWinrate": "{team} 先手开团胜率",
       "summaryFrequency": "{team} 发起的团战",
@@ -3202,6 +3201,7 @@
       "fightLabel": "第 {number} 团",
       "initiatedBy": "{team} 先手",
       "contested": "争议开团",
+      "undetermined": "无法判定",
       "won": "胜",
       "lost": "负",
       "lostOpener": "先手开团但输掉开局",

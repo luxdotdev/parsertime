@@ -3194,7 +3194,6 @@
     "fightInitiation": {
       "eyebrow": "선공",
       "title": "한타 개시",
-      "description": "각 한타를 어느 팀이 먼저 시작했는지와 그 성과를 보여줍니다. 최신 로그 형식이 필요합니다.",
       "unavailable": "이 맵은 상세 로그 형식 이전이라 한타 개시를 감지할 수 없습니다.",
       "summaryWinrate": "{team} 선공 시 승률",
       "summaryFrequency": "{team} 개시한 한타",
@@ -3202,6 +3201,7 @@
       "fightLabel": "한타 {number}",
       "initiatedBy": "{team} 선공",
       "contested": "동시 개시",
+      "undetermined": "판정 불가",
       "won": "승리",
       "lost": "패배",
       "lostOpener": "선공했으나 초반 손해",

@@ -72,7 +72,7 @@ function FightRow({ label }: { label: FightInitiationLabel }) {
     ? t("contested")
     : label.initiator
       ? t("initiatedBy", { team: label.initiator })
-      : t("contested");
+      : t("undetermined");
 
   const lostOpener =
     !label.contested &&
