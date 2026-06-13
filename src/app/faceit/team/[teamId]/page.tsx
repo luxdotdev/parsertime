@@ -9,6 +9,7 @@ import { notFound } from "next/navigation";
 import { FaceitTeamHeader } from "@/components/faceit/faceit-team-header";
 import { FaceitGamePlan } from "@/components/faceit/faceit-game-plan";
 import { FaceitTeamOverview } from "@/components/faceit/faceit-team-overview";
+import { FaceitPatchTimeline } from "@/components/faceit/faceit-patch-timeline";
 import { FaceitMapPerformance } from "@/components/faceit/faceit-map-performance";
 import { FaceitHeroBanEnvironment } from "@/components/faceit/faceit-hero-ban-environment";
 import { FaceitRoster } from "@/components/faceit/faceit-roster";
@@ -68,6 +69,7 @@ export default async function FaceitTeamPage({
           overview={profile.overview}
           attackDefense={profile.mapAnalysis.attackDefense}
         />
+        <FaceitPatchTimeline eras={profile.patchTimeline} />
         <FaceitMapPerformance analysis={profile.mapAnalysis} />
         <FaceitHeroBanEnvironment entries={profile.heroBanEnvironment} />
         <FaceitRoster roster={profile.roster} />

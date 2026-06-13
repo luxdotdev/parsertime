@@ -118,6 +118,28 @@ export type FaceitRecommendation = {
   notBannedSample?: number;
 };
 
+/** Minimal patch record fed to the timeline aggregation. */
+export type OverwatchPatchLite = {
+  id: string;
+  date: Date;
+  type: "SEASON" | "MID_SEASON" | "HOTFIX";
+  name: string;
+};
+
+/** A team's record + ban environment within one patch window. */
+export type PatchEra = {
+  key: string; // patch id, or "pre" for the pre-tracking bucket
+  patchType: "SEASON" | "MID_SEASON" | null; // null for the pre-tracking bucket
+  name: string; // raw patch name (used for SEASON labels); "" for pre
+  startDate: Date | null; // patch date; null for pre
+  endDate: Date | null; // next patch date (exclusive); null if current/open
+  matches: number;
+  wins: number;
+  winRate: number; // percent
+  rated: boolean; // matches >= MIN_SAMPLE
+  topBans: { hero: string; count: number }[]; // most-banned heroes that era
+};
+
 export type FaceitTeamProfile = {
   team: { faceitTeamId: string; name: string };
   combined: boolean;
@@ -129,4 +151,5 @@ export type FaceitTeamProfile = {
   roster: FaceitRosterPlayer[];
   relatedTeams: RelatedTeam[];
   recommendations: FaceitRecommendation[];
+  patchTimeline: PatchEra[];
 };

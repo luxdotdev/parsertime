@@ -8,6 +8,8 @@ import type {
   FaceitTeamOverview,
   HeroBanEnvironmentEntry,
   MapWinrateEntry,
+  OverwatchPatchLite,
+  PatchEra,
   RelatedTeam,
   RosterStrength,
 } from "@/data/faceit/types";
@@ -223,6 +225,88 @@ export function buildRecommendations(input: {
     });
   }
   return recs;
+}
+
+const TIMELINE_TOP_BANS = 3;
+
+/**
+ * Bucket a team's matches into patch windows and report record + most-banned
+ * heroes per window. Patch dates are the window boundaries; matches before the
+ * earliest tracked patch fall into a single "pre" bucket. Returns eras
+ * chronologically (pre first, then patches ascending) for those with matches.
+ * Winrate is per-match; ban tallies are per-map.
+ */
+export function buildPatchTimeline(
+  matchRows: FaceitTeamMatchRow[],
+  mapRows: FaceitTeamMapRow[],
+  patches: OverwatchPatchLite[]
+): PatchEra[] {
+  const sorted = [...patches].sort(
+    (a, b) => a.date.getTime() - b.date.getTime()
+  );
+
+  // Index of the latest patch active at date d, or -1 (pre-tracking).
+  function eraIndexFor(d: Date): number {
+    const t = d.getTime();
+    let idx = -1;
+    for (let i = 0; i < sorted.length; i++) {
+      if (sorted[i].date.getTime() <= t) idx = i;
+      else break;
+    }
+    return idx;
+  }
+
+  type Acc = { matches: number; wins: number; bans: Map<string, number> };
+  const byEra = new Map<number, Acc>();
+  function acc(i: number): Acc {
+    let a = byEra.get(i);
+    if (!a) {
+      a = { matches: 0, wins: 0, bans: new Map() };
+      byEra.set(i, a);
+    }
+    return a;
+  }
+
+  for (const m of matchRows) {
+    const a = acc(eraIndexFor(m.finishedAt));
+    a.matches += 1;
+    if (m.won) a.wins += 1;
+  }
+  for (const mr of mapRows) {
+    const a = acc(eraIndexFor(mr.finishedAt));
+    for (const hero of mr.heroBans) {
+      a.bans.set(hero, (a.bans.get(hero) ?? 0) + 1);
+    }
+  }
+
+  return [...byEra.keys()]
+    .sort((a, b) => a - b)
+    .map((i) => {
+      const a = byEra.get(i);
+      if (!a || a.matches === 0) return null;
+      const patch = i >= 0 ? sorted[i] : null;
+      const next = i >= 0 && i + 1 < sorted.length ? sorted[i + 1] : null;
+      const topBans = [...a.bans.entries()]
+        .sort((x, y) => y[1] - x[1])
+        .slice(0, TIMELINE_TOP_BANS)
+        .map(([hero, count]) => ({ hero, count }));
+      return {
+        key: patch ? patch.id : "pre",
+        patchType:
+          patch?.type === "SEASON" || patch?.type === "MID_SEASON"
+            ? patch.type
+            : null,
+        name: patch?.name ?? "",
+        startDate: patch ? patch.date : null,
+        endDate: next ? next.date : null,
+        matches: a.matches,
+        wins: a.wins,
+        winRate: pct(a.wins, a.matches),
+        rated: a.matches >= MIN_SAMPLE,
+        topBans,
+      } satisfies PatchEra;
+    })
+    .filter((e): e is PatchEra => e !== null);
 }
 
 export type { FaceitMapAnalysis };

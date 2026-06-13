@@ -3743,6 +3743,21 @@
       "profileTitle": "{team} · FACEIT 스카우팅 | Parsertime",
       "profileDescription": "{team} 스카우팅 리포트: FSR, 맵 승률, 영웅 밴 경향, 로스터, 그리고 대응 전략.",
       "searchTitle": "FACEIT 팀 스카우팅 | Parsertime"
+    },
+    "patches": {
+      "eyebrow": "패치 타임라인",
+      "title": "패치별 폼",
+      "description": "밸런스 패치에 따라 성적이 어떻게 변하는지 보여줍니다. 메타가 빠르게 바뀌므로 최근 패치일수록 더 중요합니다.",
+      "patch": "패치",
+      "winRate": "승률",
+      "matches": "경기",
+      "mostBanned": "최다 밴",
+      "preTracking": "패치 추적 이전",
+      "through2025": "2025년까지",
+      "midSeason": "시즌 중 · {date}",
+      "now": "현재",
+      "lowSample": "부족",
+      "noRecent": "패치 추적이 시작된 이후(2026년 1월) 경기가 없습니다."
     }
   },
   "faceitPlayerPage": {

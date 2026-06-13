@@ -3743,6 +3743,21 @@
       "profileTitle": "{team} · FACEIT scouting | Parsertime",
       "profileDescription": "Scouting report for {team}: FSR, map win rates, hero ban tendencies, roster, and a game plan for what to play into them.",
       "searchTitle": "FACEIT Team Scouting | Parsertime"
+    },
+    "patches": {
+      "eyebrow": "Patch timeline",
+      "title": "Form by patch",
+      "description": "How results move across balance patches. Recent eras weigh most — the meta shifts fast, so older form matters less.",
+      "patch": "Patch",
+      "winRate": "Win rate",
+      "matches": "Matches",
+      "mostBanned": "Most banned",
+      "preTracking": "Before patch tracking",
+      "through2025": "Through 2025",
+      "midSeason": "Mid-season · {date}",
+      "now": "now",
+      "lowSample": "low",
+      "noRecent": "No matches since patch tracking began (Jan 2026)."
     }
   },
   "faceitPlayerPage": {

@@ -3743,6 +3743,21 @@
       "profileTitle": "{team} · FACEIT 球探 | Parsertime",
       "profileDescription": "{team} 球探报告：FSR、地图胜率、英雄禁用倾向、阵容，以及应对战术方案。",
       "searchTitle": "FACEIT 团队球探 | Parsertime"
+    },
+    "patches": {
+      "eyebrow": "补丁时间线",
+      "title": "各补丁表现",
+      "description": "展示成绩如何随平衡补丁变化。版本元变化很快，因此近期补丁权重更高，较早的表现意义较小。",
+      "patch": "补丁",
+      "winRate": "胜率",
+      "matches": "场次",
+      "mostBanned": "最常禁用",
+      "preTracking": "补丁追踪之前",
+      "through2025": "截至 2025 年",
+      "midSeason": "赛季中 · {date}",
+      "now": "至今",
+      "lowSample": "不足",
+      "noRecent": "自补丁追踪开始（2026 年 1 月）以来暂无比赛。"
     }
   },
   "faceitPlayerPage": {

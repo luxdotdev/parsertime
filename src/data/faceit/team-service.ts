@@ -15,6 +15,7 @@ import {
 } from "./metrics";
 import {
   buildOverview,
+  buildPatchTimeline,
   buildRecommendations,
   heroBanEnvironment,
   mapWinrates,
@@ -30,6 +31,7 @@ import type {
   FaceitTeamMapRow,
   FaceitTeamMatchRow,
   FaceitTeamProfile,
+  OverwatchPatchLite,
   RelatedTeam,
 } from "./types";
 
@@ -154,6 +156,7 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> = Effect.ge
         includedTeamIds,
         coreFilter
       );
+      const patches = yield* fetchBalancePatches();
 
       const overview = buildOverview(matchRows);
       const { byMap, byType } = mapWinrates(mapRows);
@@ -161,6 +164,7 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> = Effect.ge
       const banEnv = heroBanEnvironment(mapRows);
       const strength = rosterStrength(roster);
       const recommendations = buildRecommendations({ byMap, heroBanEnvironment: banEnv });
+      const patchTimeline = buildPatchTimeline(matchRows, mapRows, patches);
 
       wideEvent.match_count = matchRows.length;
       wideEvent.outcome = "success";
@@ -176,6 +180,7 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> = Effect.ge
         roster,
         relatedTeams: rankRelatedTeams(related),
         recommendations,
+        patchTimeline,
       } satisfies FaceitTeamProfile;
     }).pipe(
       Effect.tapError((error) =>
@@ -319,6 +324,29 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> = Effect.ge
         });
         return { matchRows, mapRows, roster };
       })
+    );
+  }
+
+  // Balance patches (season + mid-season) as patch-timeline window boundaries.
+  // Hotfixes are excluded — too frequent/small to be meaningful eras.
+  function fetchBalancePatches(): Effect.Effect<OverwatchPatchLite[], FaceitScoutingQueryError> {
+    return Effect.tryPromise({
+      try: () =>
+        prisma.overwatchPatch.findMany({
+          where: { type: { in: ["SEASON", "MID_SEASON"] } },
+          orderBy: { date: "asc" },
+          select: { id: true, date: true, type: true, name: true },
+        }),
+      catch: (error) => new FaceitScoutingQueryError({ operation: "fetch patches", cause: error }),
+    }).pipe(
+      Effect.map((rows) =>
+        rows.map((r) => ({
+          id: r.id,
+          date: r.date,
+          type: r.type as OverwatchPatchLite["type"],
+          name: r.name,
+        }))
+      )
     );
   }
 
