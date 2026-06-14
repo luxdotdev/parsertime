@@ -11,6 +11,7 @@ import {
   type ModeFamily,
 } from "@/lib/win-probability/types";
 import { put } from "@vercel/blob";
+import { waitUntil } from "@vercel/functions";
 import { randomUUID, timingSafeEqual } from "node:crypto";
 
 export const runtime = "nodejs";
@@ -118,14 +119,22 @@ export async function GET(req: Request): Promise<Response> {
     const runId = randomUUID();
     const token = process.env.BLOB_READ_WRITE_TOKEN;
     const exportedModes: ModeFamily[] = [];
+    // Capture each put() result's URL so the trainer fetches the exact blob —
+    // the default random suffix makes paths unguessable from runId alone.
+    const urls: Partial<Record<ModeFamily, string>> = {};
     for (const family of MODE_FAMILIES) {
       const rows = rowsByFamily[family];
       if (rows.length === 0) continue;
-      await put(`wp-train/${runId}/dataset-${family}.csv`, datasetToCsv(rows), {
-        access: "public",
-        contentType: "text/csv",
-        token,
-      });
+      const blob = await put(
+        `wp-train/${runId}/dataset-${family}.csv`,
+        datasetToCsv(rows),
+        {
+          access: "public",
+          contentType: "text/csv",
+          token,
+        }
+      );
+      urls[family] = blob.url;
       exportedModes.push(family);
     }
     wideEvent.run_id = runId;
@@ -139,22 +148,27 @@ export async function GET(req: Request): Promise<Response> {
     }
 
     // Fire-and-trigger: kick the Python trainer but don't await its training.
-    // It POSTs the finished artifact back to /api/cron/wp-publish.
+    // waitUntil keeps the function alive to deliver the trigger while this
+    // route returns immediately (its maxDuration is 300 and must not block on
+    // training). The trainer fetches the passed blob URLs, then POSTs the
+    // finished artifact back to /api/cron/wp-publish.
     const origin = new URL(req.url).origin;
-    await fetch(`${origin}/api/wp-train`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.CRON_SECRET}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ runId }),
-    }).catch((error: unknown) => {
-      Logger.warn({
-        event: "wp.cron.retrain.trigger_failed",
-        run_id: runId,
-        error_message: error instanceof Error ? error.message : "unknown",
-      });
-    });
+    waitUntil(
+      fetch(`${origin}/api/wp-train`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.CRON_SECRET}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ runId, urls }),
+      }).catch((error: unknown) => {
+        Logger.warn({
+          event: "wp.cron.retrain.trigger_failed",
+          run_id: runId,
+          error_message: error instanceof Error ? error.message : "unknown",
+        });
+      })
+    );
 
     wideEvent.outcome = "success";
     wideEvent.status_code = 200;
