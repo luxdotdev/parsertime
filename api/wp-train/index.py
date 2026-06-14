@@ -17,6 +17,12 @@ This function NEVER writes R2 directly — the publish callback owns that.
 Modes: control, escort_hybrid, flashpoint are trained; push is data-blocked and
 always null (matches the shipped per-mode model).
 """
+# Required Vercel env vars:
+#   CRON_SECRET         - bearer token; must match the cron/publish routes
+#   WP_FEATURE_HASH     - must equal the TS featureHash() (currently 27b4a8ec1f49)
+#   PUBLISH_URL         - <deployment origin>/api/cron/wp-publish
+#   WP_LATEST_MODEL_URL - (optional) public URL of the live model JSON for champion/challenger;
+#                         omit for the no-incumbent fallback (ships GBM where gated)
 import hmac
 import json
 import os
@@ -155,7 +161,7 @@ def _run(payload):
         "schemaVersion": 1,
         "modelVersion": 0,  # the publish route reassigns the real version
         "createdAt": "",  # the publish route stamps this
-        "featureHash": os.environ.get("WP_FEATURE_HASH", ""),
+        "featureHash": os.environ["WP_FEATURE_HASH"],
         "modeFamilies": mode_families,
     }
 

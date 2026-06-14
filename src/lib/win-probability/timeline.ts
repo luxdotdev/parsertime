@@ -55,8 +55,9 @@ export type FightEntry = {
   wpBefore: number;
   wpAfter: number;
   swing: number; // team1 perspective
-  /** The swing split by what changed across the fight (linear model ⇒ the
-   * decomposition is exact in logit space, scaled onto the swing). */
+  /** The swing split by what changed across the fight (ablation: each group's
+   * contribution is the WP lost when that group's state is reset to its
+   * before-fight values, normalized so the parts sum to the swing). */
   drivers: { objective: number; kills: number; ults: number };
   carryover: { ultEconomy: number; stagger: number } | null;
   unattributedSwing: number;
@@ -750,7 +751,7 @@ function generateStory(
   }
   if (biggest !== null && Math.abs(biggest.swing) >= CASCADE_MIN_WP) {
     // Name the dominant driver so the "why" is in the sentence — the
-    // decomposition is exact for the linear model, not a guess.
+    // ablation decomposition is model-agnostic, not model-specific.
     const drivers = biggest.drivers;
     const dominant = (["objective", "kills", "ults"] as const).reduce((a, b) =>
       Math.abs(drivers[a]) >= Math.abs(drivers[b]) ? a : b

@@ -137,6 +137,17 @@ context features (time, attacker role) are unattributed by design.
   (`/api/cron/wp-publish`) — so R2 publish logic stays single-sourced in
   TypeScript and Python never holds R2 credentials.
 
+## Deployment
+
+Required Vercel env vars for the weekly retrain (`api/wp-train/`):
+
+| Var | Required | Description |
+| --- | -------- | ----------- |
+| `CRON_SECRET` | yes | Bearer token; must match the `/api/cron/wp-retrain` and `/api/cron/wp-publish` routes |
+| `WP_FEATURE_HASH` | yes | Must equal the TS `featureHash()` (currently `27b4a8ec1f49`); the publish route 400-rejects an artifact whose hash mismatches |
+| `PUBLISH_URL` | yes | Full URL of the publish callback, e.g. `https://<deployment>/api/cron/wp-publish` |
+| `WP_LATEST_MODEL_URL` | no | Public URL of the live artifact JSON; enables champion/challenger. Omit to use the no-incumbent fallback (re-ships GBM wherever it passes the gate) |
+
 ## Limitations — read before trusting an edge case
 
 - **Respawns are a 10-second constant**; real respawn timing varies (overtime,
