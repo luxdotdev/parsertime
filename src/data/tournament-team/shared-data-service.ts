@@ -420,6 +420,11 @@ export const make: Effect.Effect<TournamentTeamSharedDataServiceInterface> =
                   healing_dealt: true,
                   ultimates_earned: true,
                   ultimates_used: true,
+                  healing_received: true,
+                  self_healing: true,
+                  damage_blocked: true,
+                  solo_kills: true,
+                  environmental_kills: true,
                 },
               }),
               prisma.matchStart.findMany({

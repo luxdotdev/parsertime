@@ -26,6 +26,11 @@ function playerStat(name: string, team: string) {
     healing_dealt: 0,
     ultimates_earned: 0,
     ultimates_used: 0,
+    healing_received: 0,
+    self_healing: 0,
+    damage_blocked: 0,
+    solo_kills: 0,
+    environmental_kills: 0,
   };
 }
 
