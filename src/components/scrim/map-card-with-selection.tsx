@@ -165,7 +165,37 @@ function MapCardWithSelectionComponent({
           />
         </CardContent>
       </Link>
-      <CardFooter className="flex items-center justify-end pt-12">
+      <CardFooter className="absolute inset-x-0 bottom-0 z-10 flex items-center justify-between gap-2 p-3">
+        <div className="z-10 flex items-center gap-1.5">
+          <span
+            className={cn(
+              "inline-flex items-center rounded-sm px-1.5 py-0.5 font-mono text-[0.625rem] font-semibold tracking-[0.08em] uppercase tabular-nums",
+              resultLabel === "won" && "bg-emerald-500/85 text-white",
+              resultLabel === "lost" && "bg-red-500/85 text-white",
+              resultLabel === "unknown" && "bg-black/55 text-white/80"
+            )}
+          >
+            {resultText}
+          </span>
+          {map.winnerSource === "auto_coords" && (
+            <span
+              className="inline-flex items-center rounded-sm bg-black/55 px-1.5 py-0.5 font-mono text-[0.625rem] tracking-[0.08em] text-white/70 uppercase"
+              title={t("autoTooltip")}
+            >
+              {t("auto")}
+            </span>
+          )}
+          {canEditWinner && (
+            <button
+              type="button"
+              onClick={handleOpenWinnerDialog}
+              aria-label={t("editWinner", { map: displayName })}
+              className="inline-flex size-5 items-center justify-center rounded-sm bg-black/55 text-white/80 transition-colors hover:bg-black/75 hover:text-white"
+            >
+              <Pencil1Icon className="size-3" aria-hidden="true" />
+            </button>
+          )}
+        </div>
         <div className="z-10 font-semibold tracking-tight text-white">
           {map.replayCode && <ReplayCode replayCode={map.replayCode} />}
         </div>
@@ -176,37 +206,6 @@ function MapCardWithSelectionComponent({
           {t("selected")}
         </Badge>
       )}
-
-      <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5">
-        <span
-          className={cn(
-            "inline-flex items-center rounded-sm px-1.5 py-0.5 font-mono text-[0.625rem] font-semibold tracking-[0.08em] uppercase tabular-nums",
-            resultLabel === "won" && "bg-emerald-500/85 text-white",
-            resultLabel === "lost" && "bg-red-500/85 text-white",
-            resultLabel === "unknown" && "bg-black/55 text-white/80"
-          )}
-        >
-          {resultText}
-        </span>
-        {map.winnerSource === "auto_coords" && (
-          <span
-            className="inline-flex items-center rounded-sm bg-black/55 px-1.5 py-0.5 font-mono text-[0.625rem] tracking-[0.08em] text-white/70 uppercase"
-            title={t("autoTooltip")}
-          >
-            {t("auto")}
-          </span>
-        )}
-        {canEditWinner && (
-          <button
-            type="button"
-            onClick={handleOpenWinnerDialog}
-            aria-label={t("editWinner", { map: displayName })}
-            className="inline-flex size-5 items-center justify-center rounded-sm bg-black/55 text-white/80 transition-colors hover:bg-black/75 hover:text-white"
-          >
-            <Pencil1Icon className="size-3" aria-hidden="true" />
-          </button>
-        )}
-      </div>
     </Card>
   );
 
