@@ -13,6 +13,7 @@ import {
   ScrimUltimatesSection,
 } from "@/components/scrim/scrim-overview-sections";
 import { ScrimAbilityTimingSection } from "@/components/scrim/scrim-ability-timing-section";
+import { ScrimInitiationSection } from "@/components/scrim/scrim-initiation-section";
 import { PositionalStatsSection } from "@/components/scrim/positional-stats-section";
 import { UltEconomyCard } from "@/components/stats/team/ult-economy-card";
 import {
@@ -24,7 +25,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { ScrimPositionalArtifacts } from "@/data/scrim/positional-artifacts-service";
 import type { ScrimPositionalStats } from "@/data/scrim/positional-stats-service";
-import type { ScrimOverviewData } from "@/data/scrim/types";
+import type { ScrimInitiationData, ScrimOverviewData } from "@/data/scrim/types";
 import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import {
   Activity,
@@ -44,16 +45,19 @@ export function ScrimOverviewTabs({
   data,
   positionalStats = null,
   positionalArtifacts = null,
+  initiation = null,
 }: {
   data: ScrimOverviewData;
   positionalStats?: ScrimPositionalStats | null;
   positionalArtifacts?: ScrimPositionalArtifacts | null;
+  initiation?: ScrimInitiationData | null;
 }) {
   const t = useTranslations("scrimPage.overviewTabs");
   const hasAbilityData = data.abilityTimingAnalysis.rows.length > 0;
   const hasUltEconomy = data.ultEconomy.totalFights > 0;
   const hasPositional =
     positionalStats !== null && positionalStats.players.length > 0;
+  const hasInitiation = initiation !== null && initiation.teams.length > 0;
   const allSections = [
     "players",
     "fights",
@@ -62,6 +66,7 @@ export function ScrimOverviewTabs({
     ...(hasUltEconomy ? ["ult-advantage"] : []),
     "swaps",
     ...(hasPositional ? ["positional"] : []),
+    ...(hasInitiation ? ["initiation"] : []),
   ];
 
   const [activeTab, setActiveTab] = useState("visualizations");
@@ -244,6 +249,23 @@ export function ScrimOverviewTabs({
                   data={positionalStats}
                   artifacts={positionalArtifacts}
                 />
+              </AccordionContent>
+            </AccordionItem>
+          )}
+
+          {hasInitiation && initiation && (
+            <AccordionItem value="initiation">
+              <AccordionTrigger>
+                <span className="flex items-center gap-2">
+                  <Swords
+                    className="text-muted-foreground size-4"
+                    aria-hidden="true"
+                  />
+                  {t("sections.initiation")}
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="h-auto">
+                <ScrimInitiationSection initiation={initiation} />
               </AccordionContent>
             </AccordionItem>
           )}

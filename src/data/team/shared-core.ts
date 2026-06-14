@@ -100,6 +100,61 @@ export function findTeamNameForMapInMemory(
   return teamName;
 }
 
+/**
+ * Identifies maps where a marked substitute played for the team.
+ *
+ * A stand-in taints every team-level read of that map — the lineup isn't a
+ * core-roster lineup, and any win/loss or per-player aggregate would mix the
+ * substitute in. Rather than surgically removing the substitute's rows (which
+ * would leave broken 4-player lineups and uneven samples across cards), callers
+ * drop the whole map. Every team-stats aggregate then computes over the same
+ * core-roster game set.
+ *
+ * `getTeamRoster` stays an identity roster (substitutes included) so team
+ * identity per map still resolves correctly; the exclusion is applied here, at
+ * the aggregate-assembly step.
+ */
+export function findSubstituteMapIds(
+  mapDataIds: number[],
+  allPlayerStats: {
+    player_name: string;
+    player_team: string;
+    MapDataId: number | null;
+  }[],
+  teamRosterSet: Set<string>,
+  substituteNames: Set<string>
+): Set<number> {
+  const excluded = new Set<number>();
+  if (substituteNames.size === 0) return excluded;
+
+  const statsByMap = new Map<number, typeof allPlayerStats>();
+  for (const stat of allPlayerStats) {
+    if (stat.MapDataId === null) continue;
+    const list = statsByMap.get(stat.MapDataId);
+    if (list) list.push(stat);
+    else statsByMap.set(stat.MapDataId, [stat]);
+  }
+
+  for (const mapDataId of mapDataIds) {
+    const statsForMap = statsByMap.get(mapDataId);
+    if (!statsForMap) continue;
+    // Pass the per-map slice so team-name resolution stays O(map), not O(all).
+    const teamName = findTeamNameForMapInMemory(
+      mapDataId,
+      statsForMap,
+      teamRosterSet
+    );
+    if (!teamName) continue;
+    const substitutePlayed = statsForMap.some(
+      (stat) =>
+        stat.player_team === teamName && substituteNames.has(stat.player_name)
+    );
+    if (substitutePlayed) excluded.add(mapDataId);
+  }
+
+  return excluded;
+}
+
 export function buildFinalRoundMap(
   finalRounds: RoundEnd[]
 ): Map<number, RoundEnd> {

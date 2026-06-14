@@ -1319,7 +1319,8 @@
         "ultimates": "Ultimates",
         "ultAdvantage": "Ultimate Advantage",
         "swaps": "Hero Swaps",
-        "positional": "Positioning"
+        "positional": "Positioning",
+        "initiation": "Fight Initiations"
       }
     },
     "overviewSections": {
@@ -1692,6 +1693,13 @@
       "title": "Win probability added",
       "description": "Per-player WPA summed across this scrim's maps.",
       "maps": "{count, plural, one {# map} other {# maps}}"
+    },
+    "initiationSection": {
+      "coverage": "Detected on {covered} of {total} maps with detailed logs.",
+      "noData": "No initiation data — these maps predate detailed logs.",
+      "wentFirst": "{team} — win rate going first",
+      "frequency": "{first} fights initiated",
+      "record": "{wins}W - {losses}L"
     }
   },
   "mapGroupsPage": {
@@ -6654,6 +6662,18 @@
       "dryFightDetails": "{count, plural, =0 {no dry fights} =1 {1 dry fight} other {# dry fights}} ({winrate} winrate)",
       "avgUltsPerFight": "Avg Ults Per Fight",
       "avgUltsDescription": "In {count, plural, =0 {no non-dry fights} =1 {1 non-dry fight} other {# non-dry fights}}"
+    },
+    "initiationStats": {
+      "eyebrow": "Teamfights · Going first",
+      "title": "Fight Initiation",
+      "description": "Who throws the first punch, and whether it pays off. Detected on {covered} of {total} maps with detailed logs.",
+      "noData": "No initiation data yet. Upload scrims with detailed logs to see who goes first.",
+      "initiationWinrate": "Win rate going first",
+      "initiationFrequency": "Fights initiated",
+      "goingSecondWinrate": "Win rate going second",
+      "firstRecord": "{wins}W - {losses}L when initiating",
+      "frequencySub": "{first} of {decided} decided fights",
+      "secondRecord": "{wins}W - {losses}L on the back foot"
     }
   },
   "teamStatsPage": {

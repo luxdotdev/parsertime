@@ -29,6 +29,7 @@ import { OpponentStrengthServiceLive } from "./scouting/opponent-strength-servic
 import { ScoutingFaceitLinkServiceLive } from "./scouting/faceit-link-service";
 import { ScoutingServiceLive } from "./scouting/scouting-service";
 import { ScrimAbilityTimingServiceLive } from "./scrim/ability-timing-service";
+import { ScrimInitiationServiceLive } from "./scrim/initiation-service";
 import { ScrimOpponentServiceLive } from "./scrim/opponent-service";
 import { ScrimOverviewServiceLive } from "./scrim/overview-service";
 import { ScrimPositionalArtifactsServiceLive } from "./scrim/positional-artifacts-service";
@@ -40,6 +41,7 @@ import { TeamComparisonServiceLive } from "./team/comparison-service";
 import { TeamFightStatsServiceLive } from "./team/fight-stats-service";
 import { TeamHeroPoolServiceLive } from "./team/hero-pool-service";
 import { TeamHeroSwapServiceLive } from "./team/hero-swap-service";
+import { TeamInitiationServiceLive } from "./team/initiation-service";
 import { TeamMapModeServiceLive } from "./team/map-mode-service";
 import { TeamAnalyticsServiceLive } from "./team/analytics-service";
 import { TeamMatchupServiceLive } from "./team/matchup-service";
@@ -81,6 +83,7 @@ export const DataLayerLive = Layer.mergeAll(
   ScrimOverviewServiceLive,
   ScrimOpponentServiceLive,
   ScrimAbilityTimingServiceLive,
+  ScrimInitiationServiceLive,
   ScrimPositionalStatsServiceLive,
   ScrimPositionalArtifactsServiceLive,
 
@@ -113,6 +116,7 @@ export const DataLayerLive = Layer.mergeAll(
   TeamRoleStatsServiceLive,
   TeamHeroPoolServiceLive,
   TeamHeroSwapServiceLive,
+  TeamInitiationServiceLive,
   TeamMapModeServiceLive,
   TeamQuickWinsServiceLive,
   TeamUltServiceLive,

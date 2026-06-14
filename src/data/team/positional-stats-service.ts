@@ -21,6 +21,7 @@ import {
   TeamSharedDataService,
   TeamSharedDataServiceLive,
 } from "./shared-data-service";
+import { getSubstituteScrimIds } from "./substitutes";
 
 export type TeamPositionalStats = {
   players: { playerName: string; stats: Record<string, number> }[];
@@ -127,7 +128,20 @@ export const make: Effect.Effect<
       // stat rows by membership rather than altering the roster itself.
       const roster = yield* shared.getTeamRoster(teamId);
       const rosterSet = new Set(roster);
-      const rosterRows = rows.filter((row) => rosterSet.has(row.playerName));
+      // Drop scrims a substitute played in entirely (scrim-grained analog of
+      // the map-level substitute exclusion used across the team page).
+      const substituteScrimIds = yield* Effect.tryPromise({
+        try: () => getSubstituteScrimIds(teamId, scrimIds),
+        catch: (error) =>
+          new TeamQueryError({
+            operation: "getTeamPositionalStats.fetchSubstituteScrims",
+            cause: error,
+          }),
+      });
+      const rosterRows = rows.filter(
+        (row) =>
+          rosterSet.has(row.playerName) && !substituteScrimIds.has(row.scrimId)
+      );
 
       if (rosterRows.length === 0) {
         wideEvent.scrim_count = scrims.length;

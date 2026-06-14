@@ -25,6 +25,7 @@ import { SwapTimingCard } from "@/components/stats/team/swap-timing-card";
 import { StatRibbon } from "@/components/stats/team/stat-ribbon";
 import { SwapWinrateImpactCard } from "@/components/stats/team/swap-winrate-impact-card";
 import { TeamFightStatsCard } from "@/components/stats/team/team-fight-stats-card";
+import { TeamInitiationCard } from "@/components/stats/team/team-initiation-card";
 import { TeamRangePicker } from "@/components/stats/team/team-range-picker";
 import { TeamRosterGrid } from "@/components/stats/team/team-roster-grid";
 import { TeamTsrStat } from "@/components/stats/team/team-tsr-stat";
@@ -43,6 +44,7 @@ import { FightMapContent } from "@/components/team/fight-map-content";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppRuntime } from "@/data/runtime";
 import { FightFieldService } from "@/data/team/fight-field-service";
+import { TeamInitiationService } from "@/data/team/initiation-service";
 import {
   TeamAbilityImpactService,
   TeamAnalyticsService,
@@ -264,6 +266,7 @@ export default async function TeamStatsPage(
       bestMapByWinrate,
       blindSpotMap,
       fightStats,
+      initiation,
       roleStats,
       roleBalance,
       bestTrios,
@@ -319,6 +322,9 @@ export default async function TeamStatsPage(
           ),
           fightStats: TeamFightStatsService.pipe(
             Effect.flatMap((svc) => svc.getTeamFightStats(teamId, dateRange))
+          ),
+          initiation: TeamInitiationService.pipe(
+            Effect.flatMap((svc) => svc.getTeamInitiation(teamId, dateRange))
           ),
           roleStats: TeamRoleStatsService.pipe(
             Effect.flatMap((svc) =>
@@ -876,6 +882,7 @@ export default async function TeamStatsPage(
             columns={4}
           />
           <TeamFightStatsCard fightStats={fightStats} />
+          <TeamInitiationCard initiationStats={initiation} />
           <WinProbabilityInsights fightStats={fightStats} />
           <AbilityImpactAnalysisCard analysis={abilityImpactAnalysis} />
         </TabsContent>

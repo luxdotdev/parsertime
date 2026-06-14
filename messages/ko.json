@@ -1319,7 +1319,8 @@
         "ultimates": "궁극기",
         "ultAdvantage": "궁극기 우위",
         "swaps": "영웅 교체",
-        "positional": "포지셔닝"
+        "positional": "포지셔닝",
+        "initiation": "한타 개시"
       }
     },
     "overviewSections": {
@@ -1692,6 +1693,13 @@
       "title": "승리 확률 기여도",
       "description": "이 스크림의 전체 맵에 대해 합산한 플레이어별 WPA입니다.",
       "maps": "{count}개 맵"
+    },
+    "initiationSection": {
+      "coverage": "상세 로그가 있는 {total}개 맵 중 {covered}개에서 감지됨.",
+      "noData": "개시 데이터 없음 — 상세 로그 이전의 맵입니다.",
+      "wentFirst": "{team} — 선공 승률",
+      "frequency": "{first}회 개시",
+      "record": "{wins}승 - {losses}패"
     }
   },
   "mapGroupsPage": {
@@ -7728,6 +7736,18 @@
       "dryFightDetails": "노궁 교전 {count, plural, =0 {없음} other {#회}} (승률 {winrate})",
       "avgUltsPerFight": "교전당 평균 궁극기",
       "avgUltsDescription": "궁극기 사용 교전 {count, plural, =0 {없음} other {#회}} 기준"
+    },
+    "initiationStats": {
+      "eyebrow": "한타 · 선공",
+      "title": "한타 개시",
+      "description": "누가 먼저 들어가고 그 성과는 어떤지. 상세 로그가 있는 {total}개 맵 중 {covered}개에서 감지됨.",
+      "noData": "개시 데이터가 아직 없습니다. 상세 로그가 있는 스크림을 업로드하세요.",
+      "initiationWinrate": "선공 시 승률",
+      "initiationFrequency": "개시한 한타",
+      "goingSecondWinrate": "후공 시 승률",
+      "firstRecord": "선공 {wins}승 - {losses}패",
+      "frequencySub": "유효 한타 {decided}개 중 {first}개",
+      "secondRecord": "후공 {wins}승 - {losses}패"
     }
   },
   "targets": {
