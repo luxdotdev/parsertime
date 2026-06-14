@@ -112,6 +112,34 @@ export default async function ScrimDashboardPage(
     orderBy: [{ order: "asc" }, { id: "asc" }],
   });
 
+  // Per-map team names (from the round's MatchStart) power the winner-override
+  // dialog. The set-winner endpoint validates the submitted winner against the
+  // map's own MatchStart names, so the dialog must offer them verbatim. Keyed
+  // by Map.id via MapData.
+  const mapTeamNames = new Map<number, { team1: string; team2: string }>();
+  if (maps.length > 0) {
+    const mapDataRows = await prisma.mapData.findMany({
+      where: { scrimId: id },
+      select: {
+        Map: { select: { id: true } },
+        match_start: {
+          select: { team_1_name: true, team_2_name: true },
+          take: 1,
+        },
+      },
+    });
+    for (const row of mapDataRows) {
+      const mapId = row.Map?.id;
+      const ms = row.match_start[0];
+      if (mapId != null && ms && !mapTeamNames.has(mapId)) {
+        mapTeamNames.set(mapId, {
+          team1: ms.team_1_name,
+          team2: ms.team_2_name,
+        });
+      }
+    }
+  }
+
   const user = await AppRuntime.runPromise(
     UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
   );
@@ -238,6 +266,40 @@ export default async function ScrimDashboardPage(
           )
         )
       : null;
+
+  // Build per-map winner metadata for the map cards' W/L badge + override
+  // dialog. The resolved winner prefers the stored Map.winner (manual override
+  // or auto-detected); otherwise it falls back to the overview's resolved
+  // result mapped back to a team name. ourTeamName is consistent across a
+  // scrim's maps, so the overview's global value drives the Won/Lost badge.
+  const ourTeamName = overviewData?.ourTeamName ?? null;
+  const opponentTeamName = overviewData?.opponentTeamName ?? null;
+  const mapResultById = new Map(
+    (overviewData?.mapResults ?? []).map((r) => [r.mapId, r.winner])
+  );
+  const mapMetaById = new Map<
+    number,
+    {
+      team1Name: string | null;
+      team2Name: string | null;
+      resolvedWinner: string | null;
+    }
+  >();
+  for (const m of maps) {
+    const names = mapTeamNames.get(m.id) ?? null;
+    let resolvedWinner: string | null = m.winner ?? null;
+    if (!resolvedWinner) {
+      const result = mapResultById.get(m.id);
+      if (result === "our_team") resolvedWinner = ourTeamName;
+      else if (result === "opponent") resolvedWinner = opponentTeamName;
+      else if (result === "draw") resolvedWinner = "N/A";
+    }
+    mapMetaById.set(m.id, {
+      team1Name: names?.team1 ?? null,
+      team2Name: names?.team2 ?? null,
+      resolvedWinner,
+    });
+  }
 
   return (
     <DirectionalTransition>
@@ -395,16 +457,24 @@ export default async function ScrimDashboardPage(
 
             {maps.length > 0 ? (
               <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {maps.map((map) => (
-                  <MapCardWithSelection
-                    key={map.id}
-                    map={map}
-                    scrimId={scrim.id}
-                    teamId={teamId ?? params.team}
-                    locale={params.locale}
-                    mapComparisonEnabled={mapComparisonEnabled}
-                  />
-                ))}
+                {maps.map((map) => {
+                  const meta = mapMetaById.get(map.id);
+                  return (
+                    <MapCardWithSelection
+                      key={map.id}
+                      map={map}
+                      scrimId={scrim.id}
+                      teamId={teamId ?? params.team}
+                      locale={params.locale}
+                      mapComparisonEnabled={mapComparisonEnabled}
+                      team1Name={meta?.team1Name}
+                      team2Name={meta?.team2Name}
+                      ourTeamName={ourTeamName}
+                      resolvedWinner={meta?.resolvedWinner}
+                      canManage={hasPerms}
+                    />
+                  );
+                })}
               </div>
             ) : (
               <Alert variant="destructive" className="mt-4 max-w-xl">
