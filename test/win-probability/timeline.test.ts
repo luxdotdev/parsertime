@@ -1,7 +1,8 @@
-import { FEATURE_NAMES, featureHash } from "@/lib/win-probability/features";
+import { extractFeatures, FEATURE_NAMES, featureHash } from "@/lib/win-probability/features";
 import type { ModelArtifact } from "@/lib/win-probability/model";
-import { computeMatchStory } from "@/lib/win-probability/timeline";
-import type { WPEventLog } from "@/lib/win-probability/types";
+import { predictWinProbability } from "@/lib/win-probability/model";
+import { computeMatchStory, decomposeSwing } from "@/lib/win-probability/timeline";
+import type { GameState, WPEventLog } from "@/lib/win-probability/types";
 import { describe, expect, test } from "vitest";
 
 /** Identity-scaled artifact: wp = sigmoid(Σ weight·feature). */
@@ -73,6 +74,90 @@ function engagement(
     participants: [] as string[],
   };
 }
+
+// tankAliveDiff is index 0 in FEATURE_NAMES.
+const TANK_ALIVE_IDX = FEATURE_NAMES.indexOf("tankAliveDiff");
+
+/** Minimal GBM stump on tankAliveDiff: feature <= 0 → leaf -2, else leaf +2.
+ * This makes WP rise when tankAliveDiff goes from ≤0 (before) to >0 (after). */
+const TANK_STUMP = {
+  kind: "gbm" as const,
+  baseScore: 0,
+  sampleCount: 1000,
+  trees: [[
+    { feature: TANK_ALIVE_IDX, threshold: 0, left: 1, right: 2, defaultLeft: true },
+    { leaf: -2 },
+    { leaf: 2 },
+  ]],
+};
+
+function gbmArtifact(family: Partial<ModelArtifact["modeFamilies"]>): ModelArtifact {
+  return {
+    schemaVersion: 1,
+    modelVersion: 99,
+    createdAt: "2026-06-14T00:00:00.000Z",
+    featureHash: featureHash(),
+    modeFamilies: { control: null, escort_hybrid: null, push: null, flashpoint: null, ...family },
+  };
+}
+
+/** A minimal GameState with all fields at neutral values. */
+function baseState(overrides: Partial<GameState> = {}): GameState {
+  return {
+    modeFamily: "control",
+    matchTime: 100,
+    roundNumber: 1,
+    aliveDiff: 0,
+    tankAliveDiff: 0,
+    dpsAliveDiff: 0,
+    supportAliveDiff: 0,
+    ultBankDiff: 0,
+    tankUltDiff: 0,
+    dpsUltDiff: 0,
+    supportUltDiff: 0,
+    scoreDiff: 0,
+    objProgressOwn: 0,
+    objProgressEnemy: 0,
+    controlProgressOwn: 0,
+    controlProgressEnemy: 0,
+    holdsObjective: 0,
+    timeRemaining: 120,
+    isAttacker: 0,
+    isOvertime: 0,
+    objectiveIndex: null,
+    ...overrides,
+  };
+}
+
+describe("decomposeSwing — GBM ablation", () => {
+  test("GBM family produces non-zero decomposition that sums to swing and attributes a kills-only change to kills", () => {
+    const art = gbmArtifact({ control: TANK_STUMP });
+
+    // before: tankAliveDiff = -1 (disadvantage) → stump leaf -2 → low WP
+    // after:  tankAliveDiff = +1 (advantage)    → stump leaf +2 → high WP
+    // Only alive fields change; objective and ult fields stay neutral.
+    const before = baseState({ tankAliveDiff: -1, aliveDiff: -1 });
+    const after  = baseState({ tankAliveDiff:  1, aliveDiff:  1 });
+
+    function wpOf(state: GameState): number {
+      return predictWinProbability(art, "control", extractFeatures(state))!;
+    }
+
+    const swing = wpOf(after) - wpOf(before);
+    expect(swing).toBeGreaterThan(0); // sanity: alive advantage raises WP
+
+    const d = decomposeSwing(wpOf, before, after, swing);
+
+    // Parts must sum to the swing exactly (within float precision).
+    expect(Math.abs(d.objective + d.kills + d.ults - swing)).toBeLessThan(1e-9);
+
+    // Kills should be the dominant driver; objective should be ~0 (no change).
+    expect(Math.abs(d.kills)).toBeGreaterThan(Math.abs(d.objective));
+    expect(Math.abs(d.kills)).toBeGreaterThan(0);
+    // Objective contribution should be near zero (nothing changed there).
+    expect(Math.abs(d.objective)).toBeLessThan(1e-9);
+  });
+});
 
 describe("computeMatchStory — series", () => {
   test("neutral states sit at 0.5 and the curve snaps to the round outcome", () => {

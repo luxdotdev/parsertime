@@ -1,4 +1,4 @@
-import { extractFeatures, FEATURE_NAMES } from "./features";
+import { extractFeatures } from "./features";
 import { statesAt } from "./game-state";
 import { type ModelArtifact, predictWinProbability } from "./model";
 import { roundLabels } from "./training/extract";
@@ -356,66 +356,40 @@ function computeSeries(
 
 const SYNTH_FIGHT_GAP_SECONDS = 15;
 
-type DriverGroup = "objective" | "kills" | "ults" | "other";
-
-/** Which narrative driver each model feature belongs to. */
-const FEATURE_DRIVER: Record<(typeof FEATURE_NAMES)[number], DriverGroup> = {
-  tankAliveDiff: "kills",
-  dpsAliveDiff: "kills",
-  supportAliveDiff: "kills",
-  tankUltDiff: "ults",
-  dpsUltDiff: "ults",
-  supportUltDiff: "ults",
-  scoreDiff: "objective",
-  timeRemainingNorm: "other",
-  objProgressOwn: "objective",
-  objProgressEnemy: "objective",
-  isAttacker: "other",
-  controlProgressOwn: "objective",
-  controlProgressEnemy: "objective",
-  holdsObjective: "objective",
-  roundNumberNorm: "other",
-  isOvertime: "other",
-  objectiveIndexNorm: "objective",
-  aliveDiff_x_objMax: "kills",
-  aliveDiff_x_controlMax: "kills",
-  ultBankDiff_x_timeRemaining: "ults",
-  scoreDiff_x_roundNumber: "objective",
+const DRIVER_FIELDS: Record<"objective" | "kills" | "ults", (keyof GameState)[]> = {
+  kills: ["aliveDiff", "tankAliveDiff", "dpsAliveDiff", "supportAliveDiff"],
+  ults: ["ultBankDiff", "tankUltDiff", "dpsUltDiff", "supportUltDiff"],
+  objective: [
+    "scoreDiff", "objProgressOwn", "objProgressEnemy",
+    "controlProgressOwn", "controlProgressEnemy", "holdsObjective", "objectiveIndex",
+  ],
 };
 
-/** Splits a fight's WP swing by what changed across it. With a logistic
- * model, z_after − z_before = Σ wᵢ·Δxᵢ/σᵢ exactly; each group's logit share
- * is scaled onto the (calibrated) swing. GBM families return zero decomposition
- * (tree leaf paths are not linearly decomposable by feature). */
-function decomposeSwing(
-  artifact: ModelArtifact,
-  log: WPEventLog,
+/** Attribute a fight's WP swing to driver groups by ablation: per group, reset
+ * that group's GameState fields in `after` to their `before` values and
+ * re-score; the WP it loses is that group's contribution, normalized onto the
+ * actual swing so the parts sum to it. Model-agnostic (LR and GBM). */
+export function decomposeSwing(
+  wpOf: (state: GameState) => number,
   before: GameState,
   after: GameState,
   swing: number
 ): FightEntry["drivers"] {
-  const model = artifact.modeFamilies[log.modeFamily];
-  if (model === null || model.kind === "gbm") return { objective: 0, kills: 0, ults: 0 };
-  const fBefore = extractFeatures(before);
-  const fAfter = extractFeatures(after);
-  const deltas: Record<DriverGroup, number> = {
-    objective: 0,
-    kills: 0,
-    ults: 0,
-    other: 0,
-  };
-  let total = 0;
-  for (let i = 0; i < FEATURE_NAMES.length; i++) {
-    const std = model.stds[i] === 0 ? 1 : model.stds[i];
-    const dz = (model.weights[i] * (fAfter[i] - fBefore[i])) / std;
-    deltas[FEATURE_DRIVER[FEATURE_NAMES[i]]] += dz;
-    total += dz;
+  const wpAfter = wpOf(after);
+  const contrib = { objective: 0, kills: 0, ults: 0 };
+  for (const group of ["objective", "kills", "ults"] as const) {
+    const hybrid: GameState = { ...after };
+    for (const field of DRIVER_FIELDS[group]) {
+      (hybrid[field] as number) = before[field] as number;
+    }
+    contrib[group] = wpAfter - wpOf(hybrid);
   }
+  const total = contrib.objective + contrib.kills + contrib.ults;
   if (Math.abs(total) < 1e-9) return { objective: 0, kills: 0, ults: 0 };
   return {
-    objective: (swing * deltas.objective) / total,
-    kills: (swing * deltas.kills) / total,
-    ults: (swing * deltas.ults) / total,
+    objective: (swing * contrib.objective) / total,
+    kills: (swing * contrib.kills) / total,
+    ults: (swing * contrib.ults) / total,
   };
 }
 
@@ -474,13 +448,7 @@ function buildLedger(
     const stateAfter = statesAt(log, [fight.end + EDGE_EPSILON])[0].team1;
     const wpBefore = wpOf(stateBefore);
     const wpAfter = wpOf(stateAfter);
-    const drivers = decomposeSwing(
-      inputs.artifact,
-      log,
-      stateBefore,
-      stateAfter,
-      wpAfter - wpBefore
-    );
+    const drivers = decomposeSwing(wpOf, stateBefore, stateAfter, wpAfter - wpBefore);
 
     function inWindow(t: number): boolean {
       return t >= fight.start - ULT_WINDOW_LEAD_SECONDS && t <= fight.end;
