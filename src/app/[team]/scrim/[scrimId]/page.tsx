@@ -28,6 +28,7 @@ import {
   ScrimService,
 } from "@/data/scrim";
 import { ScrimInitiationService } from "@/data/scrim/initiation-service";
+import { resolveScrimMapWinners } from "@/data/scrim/map-winner-names";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
@@ -277,6 +278,13 @@ export default async function ScrimDashboardPage(
   const mapResultById = new Map(
     (overviewData?.mapResults ?? []).map((r) => [r.mapId, r.winner])
   );
+  // When the overview is gated off (new team, individual scrim, or flag off)
+  // there is no ourTeamName to classify Won/Lost and no mapResults to fall back
+  // on. Resolve the literal winning team name per map instead so the card can
+  // still surface the result (as a neutral winner badge).
+  const ungatedWinners = overviewData
+    ? null
+    : await resolveScrimMapWinners(id);
   const mapMetaById = new Map<
     number,
     {
@@ -289,10 +297,14 @@ export default async function ScrimDashboardPage(
     const names = mapTeamNames.get(m.id) ?? null;
     let resolvedWinner: string | null = m.winner ?? null;
     if (!resolvedWinner) {
-      const result = mapResultById.get(m.id);
-      if (result === "our_team") resolvedWinner = ourTeamName;
-      else if (result === "opponent") resolvedWinner = opponentTeamName;
-      else if (result === "draw") resolvedWinner = "N/A";
+      if (overviewData) {
+        const result = mapResultById.get(m.id);
+        if (result === "our_team") resolvedWinner = ourTeamName;
+        else if (result === "opponent") resolvedWinner = opponentTeamName;
+        else if (result === "draw") resolvedWinner = "N/A";
+      } else {
+        resolvedWinner = ungatedWinners?.get(m.id) ?? null;
+      }
     }
     mapMetaById.set(m.id, {
       team1Name: names?.team1 ?? null,

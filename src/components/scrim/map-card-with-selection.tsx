@@ -47,14 +47,16 @@ type MapCardWithSelectionProps = {
   canManage?: boolean;
 };
 
-type MapResultLabel = "won" | "lost" | "unknown";
+type MapResultLabel = "won" | "lost" | "winner" | "unknown";
 
 function deriveResultLabel(
   resolvedWinner: string | null | undefined,
   ourTeamName: string | null | undefined
 ): MapResultLabel {
   if (!resolvedWinner || resolvedWinner === "N/A") return "unknown";
-  if (!ourTeamName) return "unknown";
+  // No viewing-team context (new team, individual scrim, overview off): we
+  // can't say Won/Lost, but we still know who won — show that team neutrally.
+  if (!ourTeamName) return "winner";
   return resolvedWinner === ourTeamName ? "won" : "lost";
 }
 
@@ -123,7 +125,9 @@ function MapCardWithSelectionComponent({
       ? t("won")
       : resultLabel === "lost"
         ? t("lost")
-        : "—";
+        : resultLabel === "winner"
+          ? (resolvedWinner ?? "—")
+          : "—";
   const canEditWinner = canManage && !!team1Name && !!team2Name;
 
   const card = (
@@ -172,6 +176,7 @@ function MapCardWithSelectionComponent({
               "inline-flex items-center rounded-sm px-1.5 py-0.5 font-mono text-[0.625rem] font-semibold tracking-[0.08em] uppercase tabular-nums",
               resultLabel === "won" && "bg-emerald-500/85 text-white",
               resultLabel === "lost" && "bg-red-500/85 text-white",
+              resultLabel === "winner" && "bg-black/70 text-white",
               resultLabel === "unknown" && "bg-black/55 text-white/80"
             )}
           >
