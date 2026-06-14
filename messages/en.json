@@ -7771,6 +7771,39 @@
       "killsColumn": "Kills",
       "deathsColumn": "Deaths",
       "ultsColumn": "Ults"
+    },
+    "charts": {
+      "eyebrow": "Correlation",
+      "title": "Player charts",
+      "description": "Each dot is a player, scored per 10 minutes. Use the hero filter to scope every chart.",
+      "regressionToggle": "Trend line + r",
+      "correlation": "r = {value}",
+      "noData": "No players match the current filter.",
+      "customEyebrow": "Build your own",
+      "customTitle": "Custom chart",
+      "customDescription": "Pick any two stats to compare across the roster.",
+      "customChartTitle": "{x} vs {y}",
+      "xAxis": "X axis",
+      "yAxis": "Y axis",
+      "presetDamageDeaths": "Hero damage /10 vs Deaths /10",
+      "presetFinalBlowsDeaths": "Final blows /10 vs Deaths /10",
+      "presetDamageHealingReceived": "Damage received /10 vs Healing received /10",
+      "presetBlockedTaken": "Damage blocked /10 vs Damage taken /10",
+      "stats": {
+        "eliminations": "Eliminations",
+        "finalBlows": "Final blows",
+        "deaths": "Deaths",
+        "heroDamage": "Hero damage",
+        "healingDealt": "Healing dealt",
+        "healingReceived": "Healing received",
+        "selfHealing": "Self healing",
+        "damageTaken": "Damage taken",
+        "damageBlocked": "Damage blocked",
+        "ultimatesEarned": "Ultimates earned",
+        "ultimatesUsed": "Ultimates used",
+        "soloKills": "Solo kills",
+        "environmentalKills": "Environmental kills"
+      }
     }
   },
   "targets": {

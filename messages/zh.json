@@ -7740,6 +7740,39 @@
       "allHeroesTotalTitle": "所有英雄总计：{playtime}",
       "hoverText": "<player>{playerName}</player> 使用 <hero>{heroName}</hero>：{playtime}",
       "hoverTextDescription": "将鼠标悬停在单元格上，查看该玩家对此英雄的选用率。"
+    },
+    "charts": {
+      "eyebrow": "相关性",
+      "title": "选手图表",
+      "description": "每个点代表一名选手，按每 10 分钟换算。使用英雄筛选器调整所有图表的范围。",
+      "regressionToggle": "趋势线 + r",
+      "correlation": "r = {value}",
+      "noData": "没有符合当前筛选条件的选手。",
+      "customEyebrow": "自定义",
+      "customTitle": "自定义图表",
+      "customDescription": "选择任意两项数据在阵容中进行比较。",
+      "customChartTitle": "{x} 对比 {y}",
+      "xAxis": "X 轴",
+      "yAxis": "Y 轴",
+      "presetDamageDeaths": "每 10 分钟英雄伤害 vs 每 10 分钟死亡",
+      "presetFinalBlowsDeaths": "每 10 分钟最后一击 vs 每 10 分钟死亡",
+      "presetDamageHealingReceived": "每 10 分钟承受伤害 vs 每 10 分钟受到治疗",
+      "presetBlockedTaken": "每 10 分钟格挡伤害 vs 每 10 分钟承受伤害",
+      "stats": {
+        "eliminations": "击杀参与",
+        "finalBlows": "最后一击",
+        "deaths": "死亡",
+        "heroDamage": "英雄伤害",
+        "healingDealt": "治疗量",
+        "healingReceived": "受到治疗",
+        "selfHealing": "自我治疗",
+        "damageTaken": "承受伤害",
+        "damageBlocked": "格挡伤害",
+        "ultimatesEarned": "获得的终极技能",
+        "ultimatesUsed": "使用的终极技能",
+        "soloKills": "单独击杀",
+        "environmentalKills": "环境击杀"
+      }
     }
   },
   "teamStats": {
