@@ -5,7 +5,7 @@ import prisma from "@/lib/prisma";
 import { AppRuntime } from "@/data/runtime";
 import { findTeamNameForMapInMemory } from "@/data/team/shared-core";
 import { TeamSharedDataService } from "@/data/team/shared-data-service";
-import { calculateWinner } from "@/lib/winrate";
+import { resolveMapWinner } from "@/lib/winrate";
 import type {
   MatchStart,
   MatchEnd,
@@ -56,6 +56,15 @@ export async function computeMapResults(
   });
   const matchEndByMap = byMap<MatchEnd>(matchEnds);
 
+  const mapsWithWinners = await prisma.map.findMany({
+    where: { mapData: { some: { id: { in: data.mapDataIds } } } },
+    select: { winner: true, mapData: { select: { id: true } } },
+  });
+  const storedWinnerByMapDataId = new Map<number, string | null>();
+  for (const m of mapsWithWinners) {
+    for (const md of m.mapData) storedWinnerByMapDataId.set(md.id, m.winner);
+  }
+
   const rows: ComputedRow[] = [];
   for (const mapDataId of data.mapDataIds) {
     const matchStart = matchStartByMap.get(mapDataId)?.[0] ?? null;
@@ -82,7 +91,7 @@ export async function computeMapResults(
     const t1 = matchStart.team_1_name;
     const t2 = matchStart.team_2_name;
 
-    const winner = calculateWinner({
+    const winner = resolveMapWinner(storedWinnerByMapDataId.get(mapDataId), {
       matchDetails: matchStart,
       finalRound,
       team1Captures: captures.filter((c) => c.capturing_team === t1),
