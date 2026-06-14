@@ -383,6 +383,8 @@ model Map {
   vod            String?
   scrimId        Int?
   replayCode     String?
+  winner         String?
+  winnerSource   WinnerSource?
   tournamentMaps TournamentMap[]
 
   @@index([scrimId, order])
@@ -529,6 +531,12 @@ enum MapType {
   Flashpoint
   Hybrid
   Push
+}
+
+enum WinnerSource {
+  auto_score
+  auto_coords
+  manual
 }
 
 enum TournamentFormat {
