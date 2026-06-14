@@ -1,9 +1,10 @@
+import { auditLog } from "@/lib/audit-logs";
 import { auth, canEditScrim, getCurrentUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { resolveSetWinnerOutcome } from "@/lib/scrim/set-winner-validation";
 import { unauthorized, unstable_rethrow } from "next/navigation";
-import type { NextRequest } from "next/server";
+import { after, type NextRequest } from "next/server";
 import { z } from "zod";
 
 const bodySchema = z.object({ winner: z.string().min(1).max(100) });
@@ -67,6 +68,15 @@ export async function POST(
     await prisma.map.update({
       where: { id: mapId },
       data: { winner: parsed.data.winner, winnerSource: "manual" },
+    });
+
+    after(async () => {
+      await auditLog.createAuditLog({
+        userEmail: session.user.email,
+        action: "MAP_UPDATED",
+        target: `Scrim ID: ${map.scrimId}`,
+        details: `Winner set for map ${mapId}: ${parsed.data.winner}`,
+      });
     });
 
     event.outcome = "success";
