@@ -145,7 +145,11 @@ function MapWinnerControl({
           value={map.winner ?? ""}
           disabled={disabled}
           onValueChange={(v) =>
-            upload.patchMap(map.id, { winner: v, winnerSource: "manual" })
+            upload.patchMap(map.id, {
+              winner: v,
+              winnerSource:
+                v === map.suggestedWinner ? "auto_coords" : "manual",
+            })
           }
         >
           {teams.map((team) => (
@@ -153,19 +157,24 @@ function MapWinnerControl({
               <RadioGroupItem value={team} id={`${groupId}-${team}`} />
               <Label
                 htmlFor={`${groupId}-${team}`}
-                className="cursor-pointer text-sm font-normal"
+                className="flex cursor-pointer items-center gap-1.5 text-sm font-normal"
               >
                 {team}
+                {team === map.suggestedWinner && (
+                  <span className="inline-flex items-center rounded-sm bg-emerald-500/15 px-1.5 py-0.5 font-mono text-[0.625rem] font-semibold tracking-[0.04em] text-emerald-600 uppercase dark:text-emerald-400">
+                    {t("winnerDetectedBadge")}
+                  </span>
+                )}
               </Label>
             </div>
           ))}
         </RadioGroup>
-        {map.winnerSource === "auto_coords" && map.winner && (
-          <span className="text-muted-foreground/70 text-xs">
-            {t("winnerSuggested")}
-          </span>
-        )}
       </div>
+      {map.suggestedWinner && (
+        <p className="text-muted-foreground/80 mt-2 text-xs">
+          {t("winnerDetectedHint")}
+        </p>
+      )}
     </div>
   );
 }

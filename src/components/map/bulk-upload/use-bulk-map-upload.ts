@@ -107,12 +107,14 @@ export function useBulkMapUpload(maxMaps: number = MAX_MAPS_PER_UPLOAD) {
             const mapName = parsed.match_start?.[0]?.[2];
             let winner: string | undefined;
             let winnerSource: "auto_coords" | undefined;
+            let suggestedWinner: string | undefined;
             if (isPushMap(mapName)) {
               const input = pushInputFromParserData(parsed);
               const suggestion = input ? computePushWinner(input) : null;
               if (suggestion) {
                 winner = suggestion.winner;
                 winnerSource = "auto_coords";
+                suggestedWinner = suggestion.winner;
               }
             }
 
@@ -130,6 +132,7 @@ export function useBulkMapUpload(maxMaps: number = MAX_MAPS_PER_UPLOAD) {
                       hasCorruption: corruption.isCorrupted,
                       winner,
                       winnerSource,
+                      suggestedWinner,
                     }
                   : m
               )

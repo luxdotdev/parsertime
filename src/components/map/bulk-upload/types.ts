@@ -46,6 +46,12 @@ export type PendingMap = {
   winner?: string;
   /** Provenance of `winner`: "auto_coords" suggestion or "manual" override. */
   winnerSource?: UploadWinnerSource;
+  /**
+   * The coordinate algorithm's detected winner for a Push map, kept separate
+   * from the (possibly overridden) `winner` so the "detected" marker always
+   * points at the same team — even after the user overrides and switches back.
+   */
+  suggestedWinner?: string;
   /** Live upload progress for this map, 0..1, driven by streamed row counts. */
   progress: number;
   /** Populated when status is "failed". */
