@@ -139,7 +139,9 @@ export function findTeamCommit(
   // damage from a pre-kill candidate moment legitimately counts toward that team's commit.
   for (const t of candidates) {
     const subEnd = t + COMMIT_SUBWINDOW_SEC;
-    const dmgInSub = teamDamage.filter((d) => inWindow(d.match_time, t, subEnd));
+    const dmgInSub = teamDamage.filter((d) =>
+      inWindow(d.match_time, t, subEnd)
+    );
     const players = Array.from(new Set(dmgInSub.map((d) => d.attacker_name)));
     const damage = dmgInSub.reduce((acc, d) => acc + d.event_damage, 0);
     const usedUlt = teamUlts.some((u) => inWindow(u.match_time, t, subEnd));
@@ -229,7 +231,8 @@ function gradeConfidence(
   healing: HealingVerdict
 ): InitiationConfidence {
   if (healing === "contradicts") return "low";
-  const separationOk = responseGap === null || responseGap >= CLEAN_SEPARATION_SEC;
+  const separationOk =
+    responseGap === null || responseGap >= CLEAN_SEPARATION_SEC;
   const corroborated =
     signal.usedUlt || signal.players.length >= 3 || healing === "corroborates";
   if (separationOk && corroborated) return "high";
@@ -244,7 +247,10 @@ export function detectFightInitiation(
   ctx: InitiationContext
 ): FightInitiationLabel {
   const [teamA, teamB] = ctx.teams;
-  const windowStart = Math.max(prevFightEnd, fight.start - INITIATION_LOOKBACK_SEC);
+  const windowStart = Math.max(
+    prevFightEnd,
+    fight.start - INITIATION_LOOKBACK_SEC
+  );
   // Inclusive of fight.start: the opening burst that produces first blood is part of the commitment.
   const windowEnd = fight.start;
 
@@ -314,7 +320,12 @@ export function detectFightInitiation(
   const initiator = earlier.team;
   const nonInitiator = initiator === teamA ? teamB : teamA;
   const responseGap = other ? other.time - earlier.time : null;
-  const healing = healingSignal(initiator, nonInitiator, earlier.time, ctx.healing);
+  const healing = healingSignal(
+    initiator,
+    nonInitiator,
+    earlier.time,
+    ctx.healing
+  );
 
   return {
     ...base,
@@ -373,23 +384,43 @@ export function buildRoundBoundaryMarkers(
       startByRound.set(s.round_number, s.match_time);
     }
   }
-  const uniqueStarts = Array.from(startByRound, ([round_number, match_time]) => ({
-    round_number,
-    match_time,
-  })).sort((a, b) => a.round_number - b.round_number);
+  const uniqueStarts = Array.from(
+    startByRound,
+    ([round_number, match_time]) => ({
+      round_number,
+      match_time,
+    })
+  ).sort((a, b) => a.round_number - b.round_number);
 
   const markers: RoundBoundaryMarker[] = [];
   uniqueStarts.forEach((s, i) => {
     if (i === 0) {
-      markers.push({ kind: "first", match_time: s.match_time, round_number: s.round_number, previous_round: null });
+      markers.push({
+        kind: "first",
+        match_time: s.match_time,
+        round_number: s.round_number,
+        previous_round: null,
+      });
     } else {
-      markers.push({ kind: "change", match_time: s.match_time, round_number: s.round_number, previous_round: uniqueStarts[i - 1].round_number });
+      markers.push({
+        kind: "change",
+        match_time: s.match_time,
+        round_number: s.round_number,
+        previous_round: uniqueStarts[i - 1].round_number,
+      });
     }
   });
 
   if (roundEnds.length > 0) {
-    const last = roundEnds.reduce((a, b) => (b.match_time > a.match_time ? b : a));
-    markers.push({ kind: "last", match_time: last.match_time, round_number: last.round_number, previous_round: null });
+    const last = roundEnds.reduce((a, b) =>
+      b.match_time > a.match_time ? b : a
+    );
+    markers.push({
+      kind: "last",
+      match_time: last.match_time,
+      round_number: last.round_number,
+      previous_round: null,
+    });
   }
 
   return markers.sort((a, b) => a.match_time - b.match_time);
@@ -442,7 +473,8 @@ export function summarizeMapInitiation(
     byTeam[team] = {
       initiations: mine.length,
       initiationWins: wins,
-      initiationWinrate: mine.length > 0 ? round((wins / mine.length) * 100) : 0,
+      initiationWinrate:
+        mine.length > 0 ? round((wins / mine.length) * 100) : 0,
     };
   }
   return {
@@ -454,7 +486,9 @@ export function summarizeMapInitiation(
   };
 }
 
-export function assembleMapInitiation(input: AssembleInput): MapInitiationResult {
+export function assembleMapInitiation(
+  input: AssembleInput
+): MapInitiationResult {
   if (input.damage.length === 0) {
     return { available: false, labels: [], summary: null, rounds: [] };
   }
@@ -479,12 +513,7 @@ export function assembleMapInitiation(input: AssembleInput): MapInitiationResult
   };
 
   const labels = fights.map((fight, i) =>
-    detectFightInitiation(
-      fight,
-      i,
-      i > 0 ? fights[i - 1].end : -Infinity,
-      ctx
-    )
+    detectFightInitiation(fight, i, i > 0 ? fights[i - 1].end : -Infinity, ctx)
   );
 
   return {
@@ -503,55 +532,66 @@ export async function getFightInitiationForMapData(
   mapDataId: number
 ): Promise<MapInitiationResult> {
   // Most cheaply gate on damage presence — one count avoids five large reads on legacy maps.
-  const damageCount = await prisma.damage.count({ where: { MapDataId: mapDataId } });
+  const damageCount = await prisma.damage.count({
+    where: { MapDataId: mapDataId },
+  });
   if (damageCount === 0) {
     return { available: false, labels: [], summary: null, rounds: [] };
   }
 
-  const [kills, rezzes, damage, ability1, ability2, ults, healing, roundStarts, roundEnds] =
-    await Promise.all([
-      prisma.kill.findMany({ where: { MapDataId: mapDataId } }),
-      prisma.mercyRez.findMany({ where: { MapDataId: mapDataId } }),
-      prisma.damage.findMany({
-        where: { MapDataId: mapDataId },
-        select: {
-          match_time: true,
-          attacker_name: true,
-          attacker_team: true,
-          victim_name: true,
-          victim_team: true,
-          event_damage: true,
-        },
-      }),
-      prisma.ability1Used.findMany({
-        where: { MapDataId: mapDataId },
-        select: { match_time: true, player_name: true, player_team: true },
-      }),
-      prisma.ability2Used.findMany({
-        where: { MapDataId: mapDataId },
-        select: { match_time: true, player_name: true, player_team: true },
-      }),
-      prisma.ultimateStart.findMany({
-        where: { MapDataId: mapDataId },
-        select: { match_time: true, player_name: true, player_team: true },
-      }),
-      prisma.healing.findMany({
-        where: { MapDataId: mapDataId },
-        select: {
-          match_time: true,
-          healee_team: true,
-          event_healing: true,
-        },
-      }),
-      prisma.roundStart.findMany({
-        where: { MapDataId: mapDataId },
-        select: { match_time: true, round_number: true },
-      }),
-      prisma.roundEnd.findMany({
-        where: { MapDataId: mapDataId },
-        select: { match_time: true, round_number: true },
-      }),
-    ]);
+  const [
+    kills,
+    rezzes,
+    damage,
+    ability1,
+    ability2,
+    ults,
+    healing,
+    roundStarts,
+    roundEnds,
+  ] = await Promise.all([
+    prisma.kill.findMany({ where: { MapDataId: mapDataId } }),
+    prisma.mercyRez.findMany({ where: { MapDataId: mapDataId } }),
+    prisma.damage.findMany({
+      where: { MapDataId: mapDataId },
+      select: {
+        match_time: true,
+        attacker_name: true,
+        attacker_team: true,
+        victim_name: true,
+        victim_team: true,
+        event_damage: true,
+      },
+    }),
+    prisma.ability1Used.findMany({
+      where: { MapDataId: mapDataId },
+      select: { match_time: true, player_name: true, player_team: true },
+    }),
+    prisma.ability2Used.findMany({
+      where: { MapDataId: mapDataId },
+      select: { match_time: true, player_name: true, player_team: true },
+    }),
+    prisma.ultimateStart.findMany({
+      where: { MapDataId: mapDataId },
+      select: { match_time: true, player_name: true, player_team: true },
+    }),
+    prisma.healing.findMany({
+      where: { MapDataId: mapDataId },
+      select: {
+        match_time: true,
+        healee_team: true,
+        event_healing: true,
+      },
+    }),
+    prisma.roundStart.findMany({
+      where: { MapDataId: mapDataId },
+      select: { match_time: true, round_number: true },
+    }),
+    prisma.roundEnd.findMany({
+      where: { MapDataId: mapDataId },
+      select: { match_time: true, round_number: true },
+    }),
+  ]);
 
   return assembleMapInitiation({
     kills,

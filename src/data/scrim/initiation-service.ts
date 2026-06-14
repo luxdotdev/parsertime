@@ -21,7 +21,10 @@ export type { ScrimInitiationData } from "./types";
 
 const scrimInitiationSuccessTotal = Metric.counter(
   "scrim.initiation.query.success",
-  { description: "Total successful scrim initiation queries", incremental: true }
+  {
+    description: "Total successful scrim initiation queries",
+    incremental: true,
+  }
 );
 const scrimInitiationErrorTotal = Metric.counter(
   "scrim.initiation.query.error",
@@ -34,7 +37,13 @@ const scrimInitiationDuration = Metric.histogram(
 );
 
 function emptyScrimInitiation(): ScrimInitiationData {
-  return { teams: [], totalFights: 0, contestedFights: 0, mapsCovered: 0, mapsTotal: 0 };
+  return {
+    teams: [],
+    totalFights: 0,
+    contestedFights: 0,
+    mapsCovered: 0,
+    mapsTotal: 0,
+  };
 }
 
 export type ScrimInitiationServiceInterface = {
@@ -64,9 +73,14 @@ export const make = Effect.gen(function* () {
             select: { mapData: { select: { id: true } } },
           }),
         catch: (error) =>
-          new ScrimQueryError({ operation: "fetch scrim maps for initiation", cause: error }),
+          new ScrimQueryError({
+            operation: "fetch scrim maps for initiation",
+            cause: error,
+          }),
       });
-      const mapDataIds = mapRecords.flatMap((m) => m.mapData.map((md) => md.id));
+      const mapDataIds = mapRecords.flatMap((m) =>
+        m.mapData.map((md) => md.id)
+      );
 
       if (mapDataIds.length === 0) {
         wideEvent.outcome = "success";
@@ -100,16 +114,29 @@ export const make = Effect.gen(function* () {
                 }),
                 prisma.ability1Used.findMany({
                   where: { MapDataId: mapDataId },
-                  select: { match_time: true, player_name: true, player_team: true },
+                  select: {
+                    match_time: true,
+                    player_name: true,
+                    player_team: true,
+                  },
                 }),
                 prisma.ability2Used.findMany({
                   where: { MapDataId: mapDataId },
-                  select: { match_time: true, player_name: true, player_team: true },
+                  select: {
+                    match_time: true,
+                    player_name: true,
+                    player_team: true,
+                  },
                 }),
-                prisma.ultimateStart.findMany({ where: { MapDataId: mapDataId } }),
+                prisma.ultimateStart.findMany({
+                  where: { MapDataId: mapDataId },
+                }),
               ]),
             catch: (error) =>
-              new ScrimQueryError({ operation: "fetch scrim map initiation events", cause: error }),
+              new ScrimQueryError({
+                operation: "fetch scrim map initiation events",
+                cause: error,
+              }),
           });
 
         const result = assembleMapInitiation({
@@ -136,19 +163,22 @@ export const make = Effect.gen(function* () {
         }
       }
 
-      const teams: ScrimTeamInitiation[] = Array.from(byTeam, ([teamName, tallies]) => {
-        const merged = mergeTallies(tallies);
-        const rates = initiationRates(merged);
-        return {
-          teamName,
-          wentFirst: merged.wentFirst,
-          wentFirstWins: merged.wentFirstWins,
-          wentSecond: merged.wentSecond,
-          wentSecondWins: merged.wentSecondWins,
-          decidedFights: merged.decidedFights,
-          ...rates,
-        };
-      }).sort((a, b) => b.wentFirst - a.wentFirst);
+      const teams: ScrimTeamInitiation[] = Array.from(
+        byTeam,
+        ([teamName, tallies]) => {
+          const merged = mergeTallies(tallies);
+          const rates = initiationRates(merged);
+          return {
+            teamName,
+            wentFirst: merged.wentFirst,
+            wentFirstWins: merged.wentFirstWins,
+            wentSecond: merged.wentSecond,
+            wentSecondWins: merged.wentSecondWins,
+            decidedFights: merged.decidedFights,
+            ...rates,
+          };
+        }
+      ).sort((a, b) => b.wentFirst - a.wentFirst);
 
       const data: ScrimInitiationData = {
         teams,
@@ -202,4 +232,7 @@ export const make = Effect.gen(function* () {
   } satisfies ScrimInitiationServiceInterface;
 });
 
-export const ScrimInitiationServiceLive = Layer.effect(ScrimInitiationService, make);
+export const ScrimInitiationServiceLive = Layer.effect(
+  ScrimInitiationService,
+  make
+);

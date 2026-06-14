@@ -156,7 +156,10 @@ function InsightGroup({
       {items.length > 0 ? (
         <ul className="border-border divide-border divide-y border-y">
           {items.map((item) => (
-            <li key={`${item.category}-${item.label}`} className="flex gap-3 py-3">
+            <li
+              key={`${item.category}-${item.label}`}
+              className="flex gap-3 py-3"
+            >
               <span
                 className={`mt-1.5 size-1.5 shrink-0 rounded-full ${dot}`}
                 aria-hidden="true"

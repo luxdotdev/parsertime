@@ -25,7 +25,10 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { ScrimPositionalArtifacts } from "@/data/scrim/positional-artifacts-service";
 import type { ScrimPositionalStats } from "@/data/scrim/positional-stats-service";
-import type { ScrimInitiationData, ScrimOverviewData } from "@/data/scrim/types";
+import type {
+  ScrimInitiationData,
+  ScrimOverviewData,
+} from "@/data/scrim/types";
 import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import {
   Activity,

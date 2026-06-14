@@ -55,7 +55,9 @@ export function FaceitPatchTimeline({ eras }: Props) {
           <table className="w-full text-sm">
             <thead className="bg-muted/30">
               <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-                <th className="px-4 py-2 text-left font-medium">{t("patch")}</th>
+                <th className="px-4 py-2 text-left font-medium">
+                  {t("patch")}
+                </th>
                 <th
                   className="hidden w-40 px-4 py-2 text-left font-medium sm:table-cell"
                   aria-hidden="true"
@@ -75,7 +77,12 @@ export function FaceitPatchTimeline({ eras }: Props) {
               {eras.map((era) => {
                 const isPre = era.patchType === null;
                 const above = Math.round(era.winRate) >= 50;
-                const tone = isPre || !era.rated ? "muted" : above ? "primary" : "destructive";
+                const tone =
+                  isPre || !era.rated
+                    ? "muted"
+                    : above
+                      ? "primary"
+                      : "destructive";
                 return (
                   <tr
                     key={era.key}

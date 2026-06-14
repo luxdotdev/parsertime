@@ -15,7 +15,13 @@ const ScriptRuntime = ManagedRuntime.make(ScoutingFaceitLinkServiceLive);
 
 const TEAMS = process.argv[2]
   ? [process.argv[2]]
-  : ["Dallas Fuel", "Twisted Minds", "Amplify", "Team Liquid", "Nonexistent FC"];
+  : [
+      "Dallas Fuel",
+      "Twisted Minds",
+      "Amplify",
+      "Team Liquid",
+      "Nonexistent FC",
+    ];
 
 async function main() {
   for (const team of TEAMS) {
@@ -35,7 +41,9 @@ async function main() {
       `  roster ${link.rosterSize}, aggregate FSR ${link.aggregateFsr ?? "—"} (${link.fsrCovered} rated)`
     );
     for (const p of link.sharedPlayers) {
-      console.log(`    ${p.owcsName} = ${p.faceitNickname}  FSR ${p.fsr ?? "—"}`);
+      console.log(
+        `    ${p.owcsName} = ${p.faceitNickname}  FSR ${p.fsr ?? "—"}`
+      );
     }
   }
 }

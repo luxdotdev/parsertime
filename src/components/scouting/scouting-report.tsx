@@ -126,7 +126,7 @@ function InsightRow({
         aria-hidden="true"
       />
       <div className="min-w-0 flex-1 space-y-1.5">
-        <p className="text-foreground font-medium leading-snug text-pretty">
+        <p className="text-foreground leading-snug font-medium text-pretty">
           {insight.headline}
         </p>
         <p className="text-muted-foreground text-sm leading-relaxed text-pretty">

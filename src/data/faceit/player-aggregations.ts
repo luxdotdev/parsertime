@@ -1,11 +1,22 @@
-import type { FsrInsight, FsrRadarAxis, PlayerRoleUsage } from "@/data/faceit/player-types";
+import type {
+  FsrInsight,
+  FsrRadarAxis,
+  PlayerRoleUsage,
+} from "@/data/faceit/player-types";
 import type { FaceitRole } from "@/generated/prisma/client";
 
 export const STRENGTH_Z_THRESHOLD = 0.75;
 
 const RADAR_ORDER = [
-  "eliminations", "finalBlows", "deaths", "damageDealt", "healingDone",
-  "damageMitigated", "soloKills", "assists", "objectiveTime",
+  "eliminations",
+  "finalBlows",
+  "deaths",
+  "damageDealt",
+  "healingDone",
+  "damageMitigated",
+  "soloKills",
+  "assists",
+  "objectiveTime",
 ] as const;
 
 type StatZ = Record<string, number>;
@@ -26,8 +37,10 @@ export function strengthsWeaknesses(statZ: StatZ): {
   const weaknesses: FsrInsight[] = [];
   for (const stat of RADAR_ORDER) {
     const z = statZ[stat] ?? 0;
-    if (z >= STRENGTH_Z_THRESHOLD) strengths.push({ stat, z, kind: "strength" });
-    else if (z <= -STRENGTH_Z_THRESHOLD) weaknesses.push({ stat, z, kind: "weakness" });
+    if (z >= STRENGTH_Z_THRESHOLD)
+      strengths.push({ stat, z, kind: "strength" });
+    else if (z <= -STRENGTH_Z_THRESHOLD)
+      weaknesses.push({ stat, z, kind: "weakness" });
   }
   strengths.sort((a, b) => b.z - a.z);
   weaknesses.sort((a, b) => a.z - b.z);
@@ -39,6 +52,10 @@ export function roleUsage(
 ): PlayerRoleUsage[] {
   const total = rows.reduce((s, r) => s + r.mapCount, 0);
   return rows
-    .map((r) => ({ role: r.role, mapCount: r.mapCount, share: total === 0 ? 0 : r.mapCount / total }))
+    .map((r) => ({
+      role: r.role,
+      mapCount: r.mapCount,
+      share: total === 0 ? 0 : r.mapCount / total,
+    }))
     .sort((a, b) => b.mapCount - a.mapCount);
 }

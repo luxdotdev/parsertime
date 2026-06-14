@@ -40,7 +40,10 @@ describe("FSR baselines", () => {
   it("excludes groups below the min-maps threshold from the baseline", () => {
     const small = group("d", 999);
     small.mapCount = 3;
-    const baselines = computeBaselines([group("a", 10), group("b", 20), small], 8);
+    const baselines = computeBaselines(
+      [group("a", 10), group("b", 20), small],
+      8
+    );
     const cell = baselines.get(baselineKey(FaceitTier.OPEN, FaceitRole.DAMAGE));
     expect(cell?.sampleN).toBe(2);
     expect(cell?.baseline.eliminations?.mean).toBeCloseTo(15, 6);

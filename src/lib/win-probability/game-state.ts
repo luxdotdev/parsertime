@@ -117,7 +117,10 @@ function clampUnit(v: number): number {
 }
 
 /** A duplicated ult belongs to Echo (Damage), not the copied hero's role. */
-function ultRole(hero: string | undefined, duplicated: boolean | undefined): RoleName {
+function ultRole(
+  hero: string | undefined,
+  duplicated: boolean | undefined
+): RoleName {
   if (duplicated === true) return "Damage";
   return getHeroRole(hero ?? "");
 }

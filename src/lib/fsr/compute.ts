@@ -36,7 +36,11 @@ export async function recomputeAllFsr(): Promise<FsrRecomputeResult> {
   `;
   if (!lock?.locked) {
     const durationMs = Date.now() - lockStart;
-    Logger.info({ event: "fsr.recompute", outcome: "skipped_locked", duration_ms: durationMs });
+    Logger.info({
+      event: "fsr.recompute",
+      outcome: "skipped_locked",
+      duration_ms: durationMs,
+    });
     return {
       groupsLoaded: 0,
       cellsWritten: 0,
@@ -57,7 +61,9 @@ export async function recomputeAllFsr(): Promise<FsrRecomputeResult> {
 async function recomputeAllFsrUnlocked(): Promise<FsrRecomputeResult> {
   const start = Date.now();
   const now = new Date();
-  const recentCutoff = new Date(now.getTime() - FSR_RECENT_WINDOW_DAYS * 86400 * 1000);
+  const recentCutoff = new Date(
+    now.getTime() - FSR_RECENT_WINDOW_DAYS * 86400 * 1000
+  );
 
   const groups = await loadFsrGroups(now, recentCutoff);
   const baselines = computeBaselines(groups, FSR_MIN_MAPS_PER_CELL);
@@ -88,11 +94,18 @@ async function recomputeAllFsrUnlocked(): Promise<FsrRecomputeResult> {
     for (const col of ALL_FSR_STAT_COLUMNS) {
       const base = cell.baseline[col];
       const cfg = configs.find((c) => c.column === col);
-      const z = base ? zScore(per10[col], base.mean, base.stddev, cfg?.invert ?? false) : 0;
+      const z = base
+        ? zScore(per10[col], base.mean, base.stddev, cfg?.invert ?? false)
+        : 0;
       zByStat[col] = z;
       statZ[col] = Math.round(z * 1000) / 1000;
     }
-    const composite = compositeZScore(zByStat, configs, g.mapCount, FSR_SHRINKAGE_K);
+    const composite = compositeZScore(
+      zByStat,
+      configs,
+      g.mapCount,
+      FSR_SHRINKAGE_K
+    );
     cells.push({
       faceitPlayerId: g.faceitPlayerId,
       role: g.role,
@@ -117,10 +130,17 @@ async function recomputeAllFsrUnlocked(): Promise<FsrRecomputeResult> {
   const byPlayerRole = new Map<string, HeadlineAcc>();
   for (const c of cells) {
     const key = `${c.faceitPlayerId}:${c.role}`;
-    const acc =
-      byPlayerRole.get(key) ??
-      { cells: [], mapCount: 0, recentMapCount: 0, tiers: new Set() };
-    acc.cells.push({ tier: c.tier, compositeZ: c.compositeZ, sumRecency: c.sumRecency });
+    const acc = byPlayerRole.get(key) ?? {
+      cells: [],
+      mapCount: 0,
+      recentMapCount: 0,
+      tiers: new Set(),
+    };
+    acc.cells.push({
+      tier: c.tier,
+      compositeZ: c.compositeZ,
+      sumRecency: c.sumRecency,
+    });
     acc.mapCount += c.mapCount;
     acc.recentMapCount += c.recentMapCount;
     acc.tiers.add(c.tier);
@@ -174,7 +194,8 @@ async function recomputeAllFsrUnlocked(): Promise<FsrRecomputeResult> {
   const WRITE_CHUNK = 2000;
   function chunkRows<T>(rows: T[], size: number): T[][] {
     const out: T[][] = [];
-    for (let i = 0; i < rows.length; i += size) out.push(rows.slice(i, i + size));
+    for (let i = 0; i < rows.length; i += size)
+      out.push(rows.slice(i, i + size));
     return out;
   }
 

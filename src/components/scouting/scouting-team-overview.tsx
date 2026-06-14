@@ -35,7 +35,11 @@ export function ScoutingTeamOverview({ overview, matchHistory }: Props) {
           {t("recentForm")}
         </p>
         {form.length > 0 ? (
-          <div className="flex flex-wrap gap-1.5" role="list" aria-label={t("recentForm")}>
+          <div
+            className="flex flex-wrap gap-1.5"
+            role="list"
+            aria-label={t("recentForm")}
+          >
             {form.map(({ key, result }) => (
               <span
                 key={key}
@@ -74,7 +78,9 @@ export function ScoutingTeamOverview({ overview, matchHistory }: Props) {
               <table className="w-full text-sm">
                 <thead className="bg-muted/30">
                   <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-                    <th className="px-4 py-2 text-left font-medium">{t("date")}</th>
+                    <th className="px-4 py-2 text-left font-medium">
+                      {t("date")}
+                    </th>
                     <th className="px-4 py-2 text-left font-medium">
                       {t("opponent")}
                     </th>
@@ -126,13 +132,23 @@ export function ScoutingTeamOverview({ overview, matchHistory }: Props) {
                           {m.teamScore != null && m.opponentScore != null ? (
                             <span>
                               <span
-                                className={won ? "text-foreground" : "text-muted-foreground"}
+                                className={
+                                  won
+                                    ? "text-foreground"
+                                    : "text-muted-foreground"
+                                }
                               >
                                 {m.teamScore}
                               </span>
-                              <span className="text-muted-foreground/60">–</span>
+                              <span className="text-muted-foreground/60">
+                                –
+                              </span>
                               <span
-                                className={!won ? "text-foreground" : "text-muted-foreground"}
+                                className={
+                                  !won
+                                    ? "text-foreground"
+                                    : "text-muted-foreground"
+                                }
                               >
                                 {m.opponentScore}
                               </span>
@@ -166,7 +182,9 @@ export function ScoutingTeamOverview({ overview, matchHistory }: Props) {
                 </span>
                 <button
                   type="button"
-                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                  onClick={() =>
+                    setPage((p) => Math.min(totalPages - 1, p + 1))
+                  }
                   disabled={page >= totalPages - 1}
                   className="text-muted-foreground enabled:hover:text-foreground font-mono text-[11px] tracking-[0.16em] uppercase transition-colors disabled:opacity-40"
                 >

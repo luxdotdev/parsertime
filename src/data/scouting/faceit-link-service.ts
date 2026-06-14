@@ -178,7 +178,9 @@ export const make: Effect.Effect<ScoutingFaceitLinkServiceInterface> =
 
         if (!bestTeamId || bestMembers.size < CORROBORATION_MIN) return null;
 
-        const memberPlayerIds = [...bestMembers.values()].map((m) => m.playerId);
+        const memberPlayerIds = [...bestMembers.values()].map(
+          (m) => m.playerId
+        );
 
         const [fsrRows, team] = yield* Effect.tryPromise({
           try: () =>
@@ -202,7 +204,9 @@ export const make: Effect.Effect<ScoutingFaceitLinkServiceInterface> =
             }),
         });
 
-        const fsrByPlayer = new Map(fsrRows.map((r) => [r.faceitPlayerId, r.fsr]));
+        const fsrByPlayer = new Map(
+          fsrRows.map((r) => [r.faceitPlayerId, r.fsr])
+        );
 
         const sharedPlayers: FaceitLinkPlayer[] = [...bestMembers.entries()]
           .map(([owcsName, m]) => ({
@@ -238,8 +242,7 @@ export const make: Effect.Effect<ScoutingFaceitLinkServiceInterface> =
     });
 
     return {
-      getFaceitTeamLink: (teamFullName: string) =>
-        linkCache.get(teamFullName),
+      getFaceitTeamLink: (teamFullName: string) => linkCache.get(teamFullName),
     } satisfies ScoutingFaceitLinkServiceInterface;
   });
 

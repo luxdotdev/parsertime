@@ -138,7 +138,7 @@ export function ScoutingPlayerMatchups({
               {t("atRiskPlayersDescription")}
             </p>
           </div>
-          <ul className="divide-y divide-[var(--border)] border-border overflow-hidden rounded-md border">
+          <ul className="border-border divide-y divide-[var(--border)] overflow-hidden rounded-md border">
             {atRisk.map((v) => (
               <li
                 key={v.playerName}
@@ -199,7 +199,7 @@ export function ScoutingPlayerMatchups({
                 {t("roleDescription", { role: localizedRole })}
               </p>
             </div>
-            <ul className="divide-y divide-[var(--border)] border-border overflow-hidden rounded-md border">
+            <ul className="border-border divide-y divide-[var(--border)] overflow-hidden rounded-md border">
               {players.map((player) => (
                 <li
                   key={player.playerName}
@@ -322,9 +322,7 @@ function riskTone(riskLevel: RiskLevel): "destructive" | "muted" {
     : "muted";
 }
 
-function groupByRole(
-  players: PlayerHeroDepth[]
-): Map<Role, PlayerHeroDepth[]> {
+function groupByRole(players: PlayerHeroDepth[]): Map<Role, PlayerHeroDepth[]> {
   const groups = new Map<Role, PlayerHeroDepth[]>();
   for (const player of players) {
     const existing = groups.get(player.role) ?? [];

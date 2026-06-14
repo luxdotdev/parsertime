@@ -17,10 +17,16 @@ export async function GET() {
   }
 
   const teams = await AppRuntime.runPromise(
-    FaceitTeamScoutingService.pipe(Effect.flatMap((svc) => svc.getFaceitTeams()))
+    FaceitTeamScoutingService.pipe(
+      Effect.flatMap((svc) => svc.getFaceitTeams())
+    )
   );
 
   return NextResponse.json<GetFaceitTeamsResponse>({
-    teams: teams.map((t) => ({ faceitTeamId: t.faceitTeamId, name: t.name, matchCount: t.matchCount })),
+    teams: teams.map((t) => ({
+      faceitTeamId: t.faceitTeamId,
+      name: t.name,
+      matchCount: t.matchCount,
+    })),
   });
 }

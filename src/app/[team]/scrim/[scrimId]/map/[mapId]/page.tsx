@@ -42,7 +42,10 @@ import {
   tempoChart,
   tournament,
 } from "@/lib/flags";
-import { getFightInitiationForMapData, type MapInitiationResult } from "@/lib/fight-initiation";
+import {
+  getFightInitiationForMapData,
+  type MapInitiationResult,
+} from "@/lib/fight-initiation";
 import { resolveScrimMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { translateMapName } from "@/lib/utils";
@@ -181,12 +184,15 @@ export default async function MapDashboardPage(
         Effect.catchAll(() => Effect.succeed(null))
       )
     ),
-    getFightInitiationForMapData(mapDataId).catch(() => ({
-      available: false,
-      labels: [],
-      summary: null,
-      rounds: [],
-    }) satisfies MapInitiationResult),
+    getFightInitiationForMapData(mapDataId).catch(
+      () =>
+        ({
+          available: false,
+          labels: [],
+          summary: null,
+          rounds: [],
+        }) satisfies MapInitiationResult
+    ),
   ]);
 
   const translatedMapName = await translateMapName(
@@ -393,7 +399,9 @@ export default async function MapDashboardPage(
                   {
                     value: "initiation",
                     label: t("tabs.initiation"),
-                    content: <FightInitiationInspector result={fightInitiation} />,
+                    content: (
+                      <FightInitiationInspector result={fightInitiation} />
+                    ),
                   },
                 ]}
               />

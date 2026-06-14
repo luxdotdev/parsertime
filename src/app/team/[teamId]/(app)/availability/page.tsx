@@ -45,7 +45,11 @@ export default async function AvailabilityIndexPage({ params }: PageProps) {
 
   const tz = settings?.timezone ?? "America/New_York";
   const now = new Date();
-  const currentWeekStart = weekStartInTz(now, tz, settings?.reminderDayOfWeek ?? 0);
+  const currentWeekStart = weekStartInTz(
+    now,
+    tz,
+    settings?.reminderDayOfWeek ?? 0
+  );
   const currentWeekEnd = weekEndInTz(currentWeekStart, tz);
 
   const currentSchedule = schedules.find(
@@ -178,7 +182,11 @@ async function startCurrentWeek(teamId: number) {
     update: {},
   });
   const now = new Date();
-  const weekStart = weekStartInTz(now, settings.timezone, settings.reminderDayOfWeek);
+  const weekStart = weekStartInTz(
+    now,
+    settings.timezone,
+    settings.reminderDayOfWeek
+  );
   const weekEnd = weekEndInTz(weekStart, settings.timezone);
   await prisma.availabilitySchedule.upsert({
     where: { teamId_weekStart: { teamId, weekStart } },

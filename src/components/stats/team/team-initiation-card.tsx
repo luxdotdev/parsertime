@@ -14,7 +14,9 @@ type InitiationCell = {
   emphasis?: boolean;
 };
 
-export function TeamInitiationCard({ initiationStats }: TeamInitiationCardProps) {
+export function TeamInitiationCard({
+  initiationStats,
+}: TeamInitiationCardProps) {
   const t = useTranslations("teamStats.initiationStats");
   const format = useFormatter();
 

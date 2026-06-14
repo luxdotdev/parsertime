@@ -43,7 +43,9 @@ export function WinrateTable({
             <th className="px-4 py-2 text-right font-medium">
               {labels.winRate}
             </th>
-            <th className="px-4 py-2 text-right font-medium">{labels.played}</th>
+            <th className="px-4 py-2 text-right font-medium">
+              {labels.played}
+            </th>
             <th className="px-4 py-2 text-right font-medium">{labels.won}</th>
           </tr>
         </thead>
@@ -73,7 +75,9 @@ export function WinrateTable({
                     value={row.winRate}
                     max={100}
                     referenceAt={0.5}
-                    tone={row.rated ? (above ? "primary" : "destructive") : "muted"}
+                    tone={
+                      row.rated ? (above ? "primary" : "destructive") : "muted"
+                    }
                   />
                 </td>
                 <td

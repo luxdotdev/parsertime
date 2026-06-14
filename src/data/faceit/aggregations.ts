@@ -23,7 +23,9 @@ function pct(won: number, played: number): number {
   return played === 0 ? 0 : (won / played) * 100;
 }
 
-export function weightedWinRate(items: { won: boolean; ageDays: number }[]): number {
+export function weightedWinRate(
+  items: { won: boolean; ageDays: number }[]
+): number {
   let total = 0;
   let winW = 0;
   for (const it of items) {
@@ -84,7 +86,10 @@ function winrateEntries(
       won,
       winRate: pct(won, members.length),
       weightedWinRate: weightedWinRate(
-        members.map((m) => ({ won: m.won, ageDays: ageDays(m.finishedAt, now) }))
+        members.map((m) => ({
+          won: m.won,
+          ageDays: ageDays(m.finishedAt, now),
+        }))
       ),
       rated: members.length >= MIN_SAMPLE,
     });
@@ -102,7 +107,9 @@ export function mapWinrates(
   };
 }
 
-export function attackDefenseSplit(rows: FaceitTeamMapRow[]): AttackDefenseSplit {
+export function attackDefenseSplit(
+  rows: FaceitTeamMapRow[]
+): AttackDefenseSplit {
   const atk = rows.filter((r) => r.attackedFirst === true);
   const def = rows.filter((r) => r.attackedFirst === false);
   const atkWon = atk.filter((r) => r.won).length;
@@ -146,7 +153,9 @@ export function heroBanEnvironment(
 }
 
 function meanOrNull(xs: number[]): number | null {
-  return xs.length === 0 ? null : Math.round(xs.reduce((s, x) => s + x, 0) / xs.length);
+  return xs.length === 0
+    ? null
+    : Math.round(xs.reduce((s, x) => s + x, 0) / xs.length);
 }
 
 export function rosterStrength(roster: FaceitRosterPlayer[]): RosterStrength {
@@ -175,8 +184,12 @@ export function buildRecommendations(input: {
 }): FaceitRecommendation[] {
   const recs: FaceitRecommendation[] = [];
   const ratedMaps = input.byMap.filter((m) => m.rated);
-  const weakest = [...ratedMaps].sort((a, b) => a.weightedWinRate - b.weightedWinRate).slice(0, 3);
-  const strongest = [...ratedMaps].sort((a, b) => b.weightedWinRate - a.weightedWinRate).slice(0, 3);
+  const weakest = [...ratedMaps]
+    .sort((a, b) => a.weightedWinRate - b.weightedWinRate)
+    .slice(0, 3);
+  const strongest = [...ratedMaps]
+    .sort((a, b) => b.weightedWinRate - a.weightedWinRate)
+    .slice(0, 3);
   for (const m of weakest) {
     recs.push({
       kind: "map_pick",
@@ -198,8 +211,14 @@ export function buildRecommendations(input: {
     });
   }
   const ratedBans = input.heroBanEnvironment.filter((h) => h.rated);
-  const banThese = [...ratedBans].sort((a, b) => b.delta - a.delta).slice(0, 3).filter((h) => h.delta > 0);
-  const dontBan = [...ratedBans].sort((a, b) => a.delta - b.delta).slice(0, 3).filter((h) => h.delta < 0);
+  const banThese = [...ratedBans]
+    .sort((a, b) => b.delta - a.delta)
+    .slice(0, 3)
+    .filter((h) => h.delta > 0);
+  const dontBan = [...ratedBans]
+    .sort((a, b) => a.delta - b.delta)
+    .slice(0, 3)
+    .filter((h) => h.delta < 0);
   for (const h of banThese) {
     recs.push({
       kind: "ban_hero",

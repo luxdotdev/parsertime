@@ -359,9 +359,19 @@ describe("statesAt", () => {
   test("role-split alive diffs bucket deaths by the victim's hero role", () => {
     const log = baseLog({
       kills: [
-        { time: 100, victimTeam: "Bravo", victimName: "b1", victimHero: "Reinhardt" },
+        {
+          time: 100,
+          victimTeam: "Bravo",
+          victimName: "b1",
+          victimHero: "Reinhardt",
+        },
         { time: 101, victimTeam: "Bravo", victimName: "b2", victimHero: "Ana" },
-        { time: 102, victimTeam: "Alpha", victimName: "a1", victimHero: "Tracer" },
+        {
+          time: 102,
+          victimTeam: "Alpha",
+          victimName: "a1",
+          victimHero: "Tracer",
+        },
       ],
     });
     const [s] = statesAt(log, [105]);
@@ -375,8 +385,18 @@ describe("statesAt", () => {
   test("role splits recover on respawn and rez, restoring the right slot", () => {
     const log = baseLog({
       kills: [
-        { time: 100, victimTeam: "Bravo", victimName: "b1", victimHero: "Winston" },
-        { time: 105, victimTeam: "Bravo", victimName: "b2", victimHero: "Lúcio" },
+        {
+          time: 100,
+          victimTeam: "Bravo",
+          victimName: "b1",
+          victimHero: "Winston",
+        },
+        {
+          time: 105,
+          victimTeam: "Bravo",
+          victimName: "b2",
+          victimHero: "Lúcio",
+        },
       ],
       rezzes: [{ time: 107, team: "Bravo", player: "b2" }],
     });
@@ -426,7 +446,14 @@ describe("statesAt", () => {
         { time: 70, team: "Bravo", player: "b1", hero: "Sojourn" },
       ],
       ultStart: [{ time: 80, team: "Alpha", player: "a1" }],
-      kills: [{ time: 75, victimTeam: "Alpha", victimName: "a2", victimHero: "Kiriko" }],
+      kills: [
+        {
+          time: 75,
+          victimTeam: "Alpha",
+          victimName: "a2",
+          victimHero: "Kiriko",
+        },
+      ],
     });
     const [t78, t85] = statesAt(log, [78, 85]);
     expect(t78.team1.tankUltDiff).toBe(1); // Sigma banked
@@ -440,7 +467,13 @@ describe("statesAt", () => {
   test("an Echo-duplicated ult counts as Damage, not the copied hero's role", () => {
     const log = baseLog({
       ultCharged: [
-        { time: 50, team: "Alpha", player: "a1", hero: "Ana", heroDuplicated: true },
+        {
+          time: 50,
+          team: "Alpha",
+          player: "a1",
+          hero: "Ana",
+          heroDuplicated: true,
+        },
       ],
     });
     const [s] = statesAt(log, [60]);
@@ -537,8 +570,20 @@ describe("statesAt", () => {
         },
       ],
       progress: [
-        { time: 100, team: "Alpha", value: 50, roundNumber: 1, objectiveIndex: 0 },
-        { time: 200, team: "Alpha", value: 10, roundNumber: 1, objectiveIndex: 1 },
+        {
+          time: 100,
+          team: "Alpha",
+          value: 50,
+          roundNumber: 1,
+          objectiveIndex: 0,
+        },
+        {
+          time: 200,
+          team: "Alpha",
+          value: 10,
+          roundNumber: 1,
+          objectiveIndex: 1,
+        },
       ],
     });
     const [atStart, firstPoint, secondPoint] = statesAt(log, [10, 150, 250]);
@@ -575,7 +620,13 @@ describe("statesAt", () => {
       ],
       progress: [
         // Mis-stamped defender spill (Alpha defends r2): must not move the index.
-        { time: 325, team: "Alpha", value: 100, roundNumber: 2, objectiveIndex: 2 },
+        {
+          time: 325,
+          team: "Alpha",
+          value: 100,
+          roundNumber: 2,
+          objectiveIndex: 2,
+        },
       ],
     });
     const [r1, r2] = statesAt(log, [100, 330]);
@@ -623,7 +674,12 @@ describe("statesAt", () => {
         // Pre-fix: "Team 1\ta1".split(" ")[0] = "Team 1\ta1" (no space found
         // when using tab), but with the old space key "Team 1 a1".split(" ")[0]
         // = "Team" which !== "Team 1", so the death mis-buckets to t2.
-        { time: 100, victimTeam: "Team 1", victimName: "a1", victimHero: "Ana" },
+        {
+          time: 100,
+          victimTeam: "Team 1",
+          victimName: "a1",
+          victimHero: "Ana",
+        },
       ],
     });
     const [s] = statesAt(log, [102]);

@@ -80,7 +80,9 @@ export function WpaTable({
     const dir = sort.desc ? -1 : 1;
     return [...wpa].sort((a, b) => {
       const cmp =
-        sort.key === "player" ? a.player.localeCompare(b.player) : a.wpa - b.wpa;
+        sort.key === "player"
+          ? a.player.localeCompare(b.player)
+          : a.wpa - b.wpa;
       return cmp === 0 ? a.player.localeCompare(b.player) : dir * cmp;
     });
   }, [wpa, sort]);

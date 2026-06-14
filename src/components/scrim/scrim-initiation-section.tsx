@@ -1,6 +1,9 @@
 "use client";
 
-import { StatRibbon, type RibbonCell } from "@/components/stats/team/stat-ribbon";
+import {
+  StatRibbon,
+  type RibbonCell,
+} from "@/components/stats/team/stat-ribbon";
 import type { ScrimInitiationData } from "@/data/scrim/types";
 import { useFormatter, useTranslations } from "next-intl";
 
@@ -13,7 +16,10 @@ export function ScrimInitiationSection({
   const format = useFormatter();
 
   function pct(value: number): string {
-    return format.number(value / 100, { style: "percent", maximumFractionDigits: 0 });
+    return format.number(value / 100, {
+      style: "percent",
+      maximumFractionDigits: 0,
+    });
   }
 
   if (initiation.teams.length === 0) {
@@ -33,7 +39,10 @@ export function ScrimInitiationSection({
   return (
     <section className="space-y-4">
       <p className="text-muted-foreground text-sm">
-        {t("coverage", { covered: initiation.mapsCovered, total: initiation.mapsTotal })}
+        {t("coverage", {
+          covered: initiation.mapsCovered,
+          total: initiation.mapsTotal,
+        })}
       </p>
       <StatRibbon cells={cells} columns={4} />
     </section>

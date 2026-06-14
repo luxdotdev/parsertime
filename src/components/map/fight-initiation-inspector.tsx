@@ -82,7 +82,7 @@ export function FightInitiationInspector({
         rightSlot={
           <label
             htmlFor={toggleId}
-            className="flex cursor-pointer items-center gap-2 text-xs text-muted-foreground select-none"
+            className="text-muted-foreground flex cursor-pointer items-center gap-2 text-xs select-none"
           >
             {t("toggleRounds")}
             <Switch
@@ -112,7 +112,9 @@ export function FightInitiationInspector({
                   : item.marker.kind === "last"
                     ? t("roundEnded", { round: item.marker.round_number })
                     : t("roundChange", {
-                        previous: item.marker.previous_round ?? item.marker.round_number,
+                        previous:
+                          item.marker.previous_round ??
+                          item.marker.round_number,
                         round: item.marker.round_number,
                       })}
               </span>
@@ -173,10 +175,14 @@ function FightRow({ label }: { label: FightInitiationLabel }) {
           </span>
         )}
         {label.evidence.usedUlt && (
-          <span className="text-muted-foreground text-xs">{t("evidenceUlt")}</span>
+          <span className="text-muted-foreground text-xs">
+            {t("evidenceUlt")}
+          </span>
         )}
         {label.evidence.abilityCommit && (
-          <span className="text-muted-foreground text-xs">{t("evidenceAbility")}</span>
+          <span className="text-muted-foreground text-xs">
+            {t("evidenceAbility")}
+          </span>
         )}
         {!label.evidence.fallback && label.evidence.players.length > 0 && (
           <span className="text-muted-foreground text-xs">

@@ -14,7 +14,8 @@ function localParts(d: Date, tz: string) {
     hour12: false,
   });
   const by: Record<string, string> = {};
-  for (const p of fmt.formatToParts(d)) if (p.type !== "literal") by[p.type] = p.value;
+  for (const p of fmt.formatToParts(d))
+    if (p.type !== "literal") by[p.type] = p.value;
   return by;
 }
 

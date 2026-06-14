@@ -215,7 +215,10 @@ export default async function ScoutingTeamPage(
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             {t("backToSearch")}
           </Link>
-          <ScoutForTeamPicker userTeams={userTeams} currentTeamId={userTeamId} />
+          <ScoutForTeamPicker
+            userTeams={userTeams}
+            currentTeamId={userTeamId}
+          />
         </div>
 
         <ScoutingTeamHeader
@@ -226,7 +229,10 @@ export default async function ScoutingTeamPage(
           strengthPercentile={strengthPercentile}
         />
 
-        <ScoutingReport report={insightReport} hasUserTeamLink={hasUserTeamLink} />
+        <ScoutingReport
+          report={insightReport}
+          hasUserTeamLink={hasUserTeamLink}
+        />
 
         {faceitLink ? <ScoutingFaceitLink link={faceitLink} /> : null}
 

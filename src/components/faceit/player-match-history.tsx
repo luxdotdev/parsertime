@@ -152,7 +152,9 @@ export function PlayerMatchHistory({ entries }: Props) {
                   setPage((p) => Math.max(0, p - 1));
                 }}
                 aria-disabled={safePage === 0}
-                className={cn(safePage === 0 && "pointer-events-none opacity-50")}
+                className={cn(
+                  safePage === 0 && "pointer-events-none opacity-50"
+                )}
               />
             </PaginationItem>
             {Array.from({ length: totalPages }, (_, i) => (
@@ -178,7 +180,8 @@ export function PlayerMatchHistory({ entries }: Props) {
                 }}
                 aria-disabled={safePage === totalPages - 1}
                 className={cn(
-                  safePage === totalPages - 1 && "pointer-events-none opacity-50"
+                  safePage === totalPages - 1 &&
+                    "pointer-events-none opacity-50"
                 )}
               />
             </PaginationItem>

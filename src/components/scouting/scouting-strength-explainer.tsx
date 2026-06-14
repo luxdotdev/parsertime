@@ -40,7 +40,9 @@ export function ScoutingStrengthExplainer() {
               />
               <span className="text-sm leading-snug">
                 <span className="font-medium">{t(`${key}.label`)}</span>{" "}
-                <span className="text-muted-foreground">{t(`${key}.body`)}</span>
+                <span className="text-muted-foreground">
+                  {t(`${key}.body`)}
+                </span>
               </span>
             </li>
           ))}

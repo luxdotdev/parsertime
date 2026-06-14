@@ -89,7 +89,9 @@ export async function getTeamOverview(teamId: number): Promise<TeamOverview> {
   const [winrates, weekly, mapsLogged, bestMap, teamRecord] = await Promise.all(
     [
       AppRuntime.runPromise(
-        TeamStatsService.pipe(Effect.flatMap((svc) => svc.getTeamWinrates(teamId)))
+        TeamStatsService.pipe(
+          Effect.flatMap((svc) => svc.getTeamWinrates(teamId))
+        )
       ),
       AppRuntime.runPromise(
         TeamTrendsService.pipe(

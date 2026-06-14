@@ -85,7 +85,9 @@ export function FaceitTeamHeader({
           {related.map((r, i) => (
             <span key={r.faceitTeamId}>
               <Link
-                href={`/faceit/team/${encodeURIComponent(r.faceitTeamId)}` as Route}
+                href={
+                  `/faceit/team/${encodeURIComponent(r.faceitTeamId)}` as Route
+                }
                 className="text-foreground hover:text-primary font-medium underline-offset-2 hover:underline"
               >
                 {r.name}

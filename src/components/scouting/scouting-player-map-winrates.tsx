@@ -81,7 +81,10 @@ export function ScoutingPlayerMapWinrates({ competitiveMapWinrates }: Props) {
         <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
           {t("byMap")}
         </p>
-        <WinrateTable rows={byMap} labels={{ ...sharedLabels, key: t("map") }} />
+        <WinrateTable
+          rows={byMap}
+          labels={{ ...sharedLabels, key: t("map") }}
+        />
       </div>
     </section>
   );

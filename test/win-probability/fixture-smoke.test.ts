@@ -147,9 +147,13 @@ describe("WP reconstruction on a real parsed log", () => {
       expect(Math.abs(tankAliveDiff)).toBeLessThanOrEqual(5);
       expect(Math.abs(dpsAliveDiff)).toBeLessThanOrEqual(5);
       expect(Math.abs(supportAliveDiff)).toBeLessThanOrEqual(5);
-      expect(Math.abs(tankAliveDiff + dpsAliveDiff + supportAliveDiff)).toBeLessThanOrEqual(5);
+      expect(
+        Math.abs(tankAliveDiff + dpsAliveDiff + supportAliveDiff)
+      ).toBeLessThanOrEqual(5);
       // Ult-bank role splits sum: |tank+dps+support| ≤ 7 (full bank slack bound).
-      expect(Math.abs(tankUltDiff + dpsUltDiff + supportUltDiff)).toBeLessThanOrEqual(7);
+      expect(
+        Math.abs(tankUltDiff + dpsUltDiff + supportUltDiff)
+      ).toBeLessThanOrEqual(7);
       expect(timeNorm).toBeGreaterThanOrEqual(0);
       expect(timeNorm).toBeLessThanOrEqual(1);
       expect(objOwn).toBeGreaterThanOrEqual(0);
@@ -190,13 +194,13 @@ describe("WP reconstruction on a real parsed log", () => {
     for (const snap of snapshots) {
       const s = snap.team1;
       // aliveDiff equals the sum of the three role splits.
-      expect(
-        s.tankAliveDiff + s.dpsAliveDiff + s.supportAliveDiff
-      ).toBe(s.aliveDiff);
+      expect(s.tankAliveDiff + s.dpsAliveDiff + s.supportAliveDiff).toBe(
+        s.aliveDiff
+      );
       // ultBankDiff equals the sum of the three role ult splits.
-      expect(
-        s.tankUltDiff + s.dpsUltDiff + s.supportUltDiff
-      ).toBe(s.ultBankDiff);
+      expect(s.tankUltDiff + s.dpsUltDiff + s.supportUltDiff).toBe(
+        s.ultBankDiff
+      );
     }
   });
 });

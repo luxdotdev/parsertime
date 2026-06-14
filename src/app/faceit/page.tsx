@@ -18,7 +18,9 @@ export default async function FaceitPage() {
 
   const t = await getTranslations("faceitScoutingPage");
   const teams = await AppRuntime.runPromise(
-    FaceitTeamScoutingService.pipe(Effect.flatMap((svc) => svc.getFaceitTeams()))
+    FaceitTeamScoutingService.pipe(
+      Effect.flatMap((svc) => svc.getFaceitTeams())
+    )
   );
 
   return (

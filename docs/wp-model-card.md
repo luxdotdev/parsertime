@@ -39,12 +39,12 @@ Game state is reconstructed from log events in one pass
 inference, and the artifact embeds a feature-list hash so a mismatched model
 refuses to load.
 
-| Group     | Features                                                                                                                                       |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Group     | Features                                                                                                                                                              |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Kills     | `tankAliveDiff`, `dpsAliveDiff`, `supportAliveDiff` (respawn-adjusted, 10s constant, split by the victim's hero role), `aliveDiff × objMax`, `aliveDiff × controlMax` |
-| Ults      | `tankUltDiff`, `dpsUltDiff`, `supportUltDiff` (charged-unspent banks, by role; Echo duplicates count as Damage), `ultBankDiff × timeRemaining` |
-| Objective | `scoreDiff`, `objProgressOwn/Enemy` (contest %), `controlProgressOwn/Enemy` (control win %), `holdsObjective` (±1), `objectiveIndexNorm`, `scoreDiff × roundNumber` |
-| Context   | `timeRemainingNorm`, `isAttacker`, `roundNumberNorm`, `isOvertime`                                                                            |
+| Ults      | `tankUltDiff`, `dpsUltDiff`, `supportUltDiff` (charged-unspent banks, by role; Echo duplicates count as Damage), `ultBankDiff × timeRemaining`                        |
+| Objective | `scoreDiff`, `objProgressOwn/Enemy` (contest %), `controlProgressOwn/Enemy` (control win %), `holdsObjective` (±1), `objectiveIndexNorm`, `scoreDiff × roundNumber`   |
+| Context   | `timeRemainingNorm`, `isAttacker`, `roundNumberNorm`, `isOvertime`                                                                                                    |
 
 The alive/ult diffs are **role-split** (tank/dps/support) rather than single
 aggregates: the role identity of who is down or who is holding an ult carries
@@ -138,7 +138,7 @@ the model, not a heuristic — but it inherits the model's blind spots (below).
   (overtime, assemble phases). Stagger carryovers are approximate.
 - **Hero identity does not help this model.** A team hero-composition
   multi-hot (own+enemy, 102 columns) was tested and **rejected**: under
-  logistic regression it made every mode *worse* (control +0.1%, escort
+  logistic regression it made every mode _worse_ (control +0.1%, escort
   +0.5%, flashpoint +1.3% log loss) — added variance with no signal LR can
   exploit. Hero identity is expected to pay off only with a model that can
   represent interactions (gradient-boosted trees); that is the next upgrade

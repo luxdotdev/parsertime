@@ -56,11 +56,17 @@ describe("tallyMapForTeam", () => {
 describe("mergeTallies + initiationRates", () => {
   test("merges per-map tallies and derives rates", () => {
     const a = tallyMapForTeam(
-      [label({ initiator: "Us", winner: "Us" }), label({ initiator: "Us", winner: "Them" })],
+      [
+        label({ initiator: "Us", winner: "Us" }),
+        label({ initiator: "Us", winner: "Them" }),
+      ],
       "Us"
     );
     const b = tallyMapForTeam(
-      [label({ initiator: "Them", winner: "Us" }), label({ initiator: "Us", winner: "Us" })],
+      [
+        label({ initiator: "Them", winner: "Us" }),
+        label({ initiator: "Us", winner: "Us" }),
+      ],
       "Us"
     );
     const merged = mergeTallies([a, b]);
@@ -84,4 +90,3 @@ describe("mergeTallies + initiationRates", () => {
     expect(rates.goingSecondWinrate).toBe(0);
   });
 });
-

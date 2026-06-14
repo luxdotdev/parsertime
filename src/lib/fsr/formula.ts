@@ -3,13 +3,20 @@ import {
   scaleAdjustedCsrPeerDelta,
   tierWeight,
 } from "@/lib/fsr/constants";
-import type { AnchoredTier, FsrStatColumn, FsrStatConfig } from "@/lib/fsr/types";
+import type {
+  AnchoredTier,
+  FsrStatColumn,
+  FsrStatConfig,
+} from "@/lib/fsr/types";
 
 const FSR_FLOOR = 1;
 const FSR_CEILING = 5000;
 
 /** Recency-weighted per-10-minute rate. weightedTimeSeconds is the recency-weighted sum of timePlayed. */
-export function statPer10(weightedSum: number, weightedTimeSeconds: number): number {
+export function statPer10(
+  weightedSum: number,
+  weightedTimeSeconds: number
+): number {
   if (weightedTimeSeconds <= 0) return 0;
   return (weightedSum / weightedTimeSeconds) * 600;
 }

@@ -4,7 +4,10 @@ import { DivergingBar } from "@/components/faceit/viz";
 import { WinrateTable } from "@/components/faceit/winrate-table";
 import { SectionHeader } from "@/components/stats/team/section-header";
 import type { MapWinrateEntry } from "@/data/faceit/types";
-import type { MapIntelligence, MapMatchupEntry } from "@/data/intelligence/types";
+import type {
+  MapIntelligence,
+  MapMatchupEntry,
+} from "@/data/intelligence/types";
 import type { ScoutingMapAnalysis } from "@/data/scouting/types";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
@@ -62,7 +65,10 @@ export function ScoutingMapPerformance({
   }));
 
   const matchups = mapIntelligence.matchupMatrix
-    .filter((m): m is MapMatchupEntry & { netAdvantage: number } => m.netAdvantage != null)
+    .filter(
+      (m): m is MapMatchupEntry & { netAdvantage: number } =>
+        m.netAdvantage != null
+    )
     .sort((a, b) => b.netAdvantage - a.netAdvantage);
 
   const picks = matchups.filter((m) => m.netAdvantage > 0).slice(0, VETO_COUNT);
@@ -87,7 +93,9 @@ export function ScoutingMapPerformance({
               <table className="w-full text-sm">
                 <thead className="bg-muted/30">
                   <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
-                    <th className="px-4 py-2 text-left font-medium">{t("map")}</th>
+                    <th className="px-4 py-2 text-left font-medium">
+                      {t("map")}
+                    </th>
                     <th
                       className="hidden w-40 px-4 py-2 text-left font-medium sm:table-cell"
                       aria-hidden="true"

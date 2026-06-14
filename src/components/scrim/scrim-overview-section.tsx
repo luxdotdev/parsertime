@@ -3,7 +3,11 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import type { ScrimPositionalArtifacts } from "@/data/scrim/positional-artifacts-service";
 import type { ScrimPositionalStats } from "@/data/scrim/positional-stats-service";
-import type { ScrimInitiationData, ScrimInsight, ScrimOverviewData } from "@/data/scrim/types";
+import type {
+  ScrimInitiationData,
+  ScrimInsight,
+  ScrimOverviewData,
+} from "@/data/scrim/types";
 import { format } from "@/lib/utils";
 import {
   ArrowDownIcon,

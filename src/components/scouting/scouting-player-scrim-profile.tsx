@@ -2,7 +2,10 @@
 
 import { DivergingBar, SegmentStrip } from "@/components/faceit/viz";
 import { SectionHeader } from "@/components/stats/team/section-header";
-import { StatRibbon, type RibbonCell } from "@/components/stats/team/stat-ribbon";
+import {
+  StatRibbon,
+  type RibbonCell,
+} from "@/components/stats/team/stat-ribbon";
 import type { ScrimData } from "@/data/player/types";
 import { cn } from "@/lib/utils";
 import { useFormatter, useTranslations } from "next-intl";
@@ -23,12 +26,8 @@ const ROLE_TONE: Record<string, Tone> = {
 
 export function ScoutingPlayerScrimProfile({ scrimData }: Props) {
   const t = useTranslations("scoutingPage.player.analytics.scrimOverview");
-  const tHero = useTranslations(
-    "scoutingPage.player.analytics.heroZScores"
-  );
-  const tKill = useTranslations(
-    "scoutingPage.player.analytics.killAnalysis"
-  );
+  const tHero = useTranslations("scoutingPage.player.analytics.heroZScores");
+  const tKill = useTranslations("scoutingPage.player.analytics.killAnalysis");
   const format = useFormatter();
 
   const m = scrimData.advancedMetrics;

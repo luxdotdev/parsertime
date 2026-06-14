@@ -418,7 +418,8 @@ function TrendTooltip({
   const format = useFormatter();
   if (!active || !payload?.length) return null;
 
-  const point = payload[0].payload as OverviewWinratePoint & OverviewScrimsPoint;
+  const point = payload[0].payload as OverviewWinratePoint &
+    OverviewScrimsPoint;
 
   return (
     <div className="bg-popover text-popover-foreground border-border z-50 overflow-hidden rounded-md border px-3 py-2 shadow-xl">

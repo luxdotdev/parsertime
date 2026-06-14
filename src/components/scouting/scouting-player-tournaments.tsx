@@ -146,7 +146,10 @@ export function ScoutingPlayerTournaments({ tournamentRecords }: Props) {
                       <tbody className="divide-y divide-[var(--border)]">
                         {matches.map((m) => {
                           const won = m.result === "win";
-                          const heroes = m.heroesPlayed.slice(0, MAX_HERO_CHIPS);
+                          const heroes = m.heroesPlayed.slice(
+                            0,
+                            MAX_HERO_CHIPS
+                          );
                           const overflow =
                             m.heroesPlayed.length - heroes.length;
 

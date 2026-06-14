@@ -6,7 +6,13 @@ import { unauthorized } from "next/navigation";
 import { NextResponse } from "next/server";
 
 export type GetFaceitPlayersResponse = {
-  players: { faceitPlayerId: string; nickname: string; battletag: string | null; matchCount: number; topFsr: number | null }[];
+  players: {
+    faceitPlayerId: string;
+    nickname: string;
+    battletag: string | null;
+    matchCount: number;
+    topFsr: number | null;
+  }[];
 };
 
 export async function GET() {
@@ -17,10 +23,18 @@ export async function GET() {
   }
 
   const players = await AppRuntime.runPromise(
-    FaceitPlayerScoutingService.pipe(Effect.flatMap((svc) => svc.getFaceitPlayers()))
+    FaceitPlayerScoutingService.pipe(
+      Effect.flatMap((svc) => svc.getFaceitPlayers())
+    )
   );
 
   return NextResponse.json<GetFaceitPlayersResponse>({
-    players: players.map((p) => ({ faceitPlayerId: p.faceitPlayerId, nickname: p.nickname, battletag: p.battletag, matchCount: p.matchCount, topFsr: p.topFsr })),
+    players: players.map((p) => ({
+      faceitPlayerId: p.faceitPlayerId,
+      nickname: p.nickname,
+      battletag: p.battletag,
+      matchCount: p.matchCount,
+      topFsr: p.topFsr,
+    })),
   });
 }

@@ -57,7 +57,7 @@ function SortHeader({
       <button
         type="button"
         onClick={() => onToggle(sortKey)}
-        className="hover:text-foreground inline-flex items-center gap-1 uppercase tracking-[0.16em] transition-colors"
+        className="hover:text-foreground inline-flex items-center gap-1 tracking-[0.16em] uppercase transition-colors"
       >
         {label}
         {active ? (

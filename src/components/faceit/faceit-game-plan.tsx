@@ -48,7 +48,10 @@ export function FaceitGamePlan({ recommendations }: Props) {
   if (populated.length === 0) {
     return (
       <section className="space-y-4">
-        <SectionHeader eyebrow={t("gamePlan.eyebrow")} title={t("gamePlan.title")} />
+        <SectionHeader
+          eyebrow={t("gamePlan.eyebrow")}
+          title={t("gamePlan.title")}
+        />
         <p className="text-muted-foreground text-sm">{t("gamePlan.none")}</p>
       </section>
     );

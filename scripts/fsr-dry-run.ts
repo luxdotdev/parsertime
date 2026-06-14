@@ -8,13 +8,24 @@
  * Usage: bun scripts/fsr-dry-run.ts [headlineLimit]
  */
 import { loadFsrGroups } from "../src/lib/fsr/aggregate";
-import { baselineKey, computeBaselines, groupPer10 } from "../src/lib/fsr/baselines";
+import {
+  baselineKey,
+  computeBaselines,
+  groupPer10,
+} from "../src/lib/fsr/baselines";
 import { ALL_FSR_STAT_COLUMNS, getFsrStatConfigs } from "../src/lib/fsr/config";
-import { FSR_MIN_MAPS_PER_CELL, FSR_SHRINKAGE_K } from "../src/lib/fsr/constants";
+import {
+  FSR_MIN_MAPS_PER_CELL,
+  FSR_SHRINKAGE_K,
+} from "../src/lib/fsr/constants";
 import { blendHeadline, compositeZScore, zScore } from "../src/lib/fsr/formula";
 import type { AnchoredTier, FsrStatColumn } from "../src/lib/fsr/types";
 
-type HeadlineCell = { tier: AnchoredTier; compositeZ: number; sumRecency: number };
+type HeadlineCell = {
+  tier: AnchoredTier;
+  compositeZ: number;
+  sumRecency: number;
+};
 
 async function main() {
   const limit = Number(process.argv[2] ?? 25);
@@ -28,7 +39,10 @@ async function main() {
   console.log("Baseline cells (tier x role -> sampleN):");
   for (const [key, cell] of baselines) console.log(`  ${key}: ${cell.sampleN}`);
 
-  const headlineByKey = new Map<string, { cells: HeadlineCell[]; maps: number }>();
+  const headlineByKey = new Map<
+    string,
+    { cells: HeadlineCell[]; maps: number }
+  >();
   for (const g of groups) {
     if (g.mapCount < FSR_MIN_MAPS_PER_CELL) continue;
     const cell = baselines.get(baselineKey(g.tier, g.role));
@@ -39,12 +53,23 @@ async function main() {
     for (const col of ALL_FSR_STAT_COLUMNS) {
       const base = cell.baseline[col];
       const cfg = configs.find((c) => c.column === col);
-      zByStat[col] = base ? zScore(per10[col], base.mean, base.stddev, cfg?.invert ?? false) : 0;
+      zByStat[col] = base
+        ? zScore(per10[col], base.mean, base.stddev, cfg?.invert ?? false)
+        : 0;
     }
-    const composite = compositeZScore(zByStat, configs, g.mapCount, FSR_SHRINKAGE_K);
+    const composite = compositeZScore(
+      zByStat,
+      configs,
+      g.mapCount,
+      FSR_SHRINKAGE_K
+    );
     const key = `${g.faceitPlayerId}:${g.role}`;
     const acc = headlineByKey.get(key) ?? { cells: [], maps: 0 };
-    acc.cells.push({ tier: g.tier, compositeZ: composite, sumRecency: g.sumRecency });
+    acc.cells.push({
+      tier: g.tier,
+      compositeZ: composite,
+      sumRecency: g.sumRecency,
+    });
     acc.maps += g.mapCount;
     headlineByKey.set(key, acc);
   }

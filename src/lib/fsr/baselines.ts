@@ -1,10 +1,6 @@
 import { ALL_FSR_STAT_COLUMNS } from "@/lib/fsr/config";
 import { statPer10 } from "@/lib/fsr/formula";
-import type {
-  CellBaseline,
-  FsrGroupRow,
-  FsrStatColumn,
-} from "@/lib/fsr/types";
+import type { CellBaseline, FsrGroupRow, FsrStatColumn } from "@/lib/fsr/types";
 import type { FaceitRole, FaceitTier } from "@/generated/prisma/client";
 
 export function baselineKey(tier: FaceitTier, role: FaceitRole): string {

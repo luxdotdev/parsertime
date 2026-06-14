@@ -46,17 +46,37 @@ function makeKill(overrides: Partial<Kill> = {}): Kill {
 describe("determineFightWinner", () => {
   test("the team with more kills wins", () => {
     const kills = [
-      makeKill({ match_time: 100, attacker_team: "Team 1", victim_team: "Team 2" }),
-      makeKill({ match_time: 101, attacker_team: "Team 1", victim_team: "Team 2" }),
-      makeKill({ match_time: 102, attacker_team: "Team 2", victim_team: "Team 1" }),
+      makeKill({
+        match_time: 100,
+        attacker_team: "Team 1",
+        victim_team: "Team 2",
+      }),
+      makeKill({
+        match_time: 101,
+        attacker_team: "Team 1",
+        victim_team: "Team 2",
+      }),
+      makeKill({
+        match_time: 102,
+        attacker_team: "Team 2",
+        victim_team: "Team 1",
+      }),
     ];
     expect(determineFightWinner(kills, "Team 1", "Team 2")).toBe("Team 1");
   });
 
   test("a mercy rez cancels the opposing kill", () => {
     const kills = [
-      makeKill({ match_time: 100, attacker_team: "Team 1", victim_team: "Team 2" }),
-      makeKill({ match_time: 101, attacker_team: "Team 2", victim_team: "Team 1" }),
+      makeKill({
+        match_time: 100,
+        attacker_team: "Team 1",
+        victim_team: "Team 2",
+      }),
+      makeKill({
+        match_time: 101,
+        attacker_team: "Team 2",
+        victim_team: "Team 1",
+      }),
       // Team 1 rezzes their dead player → undoes Team 2's kill
       makeKill({
         match_time: 102,
@@ -70,8 +90,16 @@ describe("determineFightWinner", () => {
 
   test("equal kills is a draw", () => {
     const kills = [
-      makeKill({ match_time: 100, attacker_team: "Team 1", victim_team: "Team 2" }),
-      makeKill({ match_time: 101, attacker_team: "Team 2", victim_team: "Team 1" }),
+      makeKill({
+        match_time: 100,
+        attacker_team: "Team 1",
+        victim_team: "Team 2",
+      }),
+      makeKill({
+        match_time: 101,
+        attacker_team: "Team 2",
+        victim_team: "Team 1",
+      }),
     ];
     expect(determineFightWinner(kills, "Team 1", "Team 2")).toBeNull();
   });
@@ -146,9 +174,21 @@ describe("findTeamCommit", () => {
   test("self-damage and enemy damage do not count toward a team's commit", () => {
     const damage: DamageEvent[] = [
       // self-damage (same team both sides)
-      dmg({ match_time: 100, attacker_name: "zarya", attacker_team: "Team 1", victim_team: "Team 1", event_damage: 200 }),
+      dmg({
+        match_time: 100,
+        attacker_name: "zarya",
+        attacker_team: "Team 1",
+        victim_team: "Team 1",
+        event_damage: 200,
+      }),
       // the enemy team dealing damage
-      dmg({ match_time: 100.2, attacker_name: "enemy", attacker_team: "Team 2", victim_team: "Team 1", event_damage: 200 }),
+      dmg({
+        match_time: 100.2,
+        attacker_name: "enemy",
+        attacker_team: "Team 2",
+        victim_team: "Team 1",
+        event_damage: 200,
+      }),
     ];
     expect(findTeamCommit("Team 1", 95, 102, emptyCtx({ damage }))).toBeNull();
   });
@@ -169,7 +209,9 @@ describe("healingSignal", () => {
       { match_time: 101, healee_team: "Team 1", event_healing: 20 },
     ];
     // Team 1 initiated at t=100; Team 2 is the one being engaged on.
-    expect(healingSignal("Team 1", "Team 2", 100, healing)).toBe("corroborates");
+    expect(healingSignal("Team 1", "Team 2", 100, healing)).toBe(
+      "corroborates"
+    );
   });
 
   test("contradicts when the initiator's own team heals much more", () => {
@@ -209,16 +251,51 @@ describe("detectFightInitiation", () => {
   test("labels the team that commits first as the initiator, with the win read", () => {
     // Fight first kill at t=110. Team 1 commits a dive at ~104; Team 2 responds at ~108.
     const fight = fightFrom([
-      makeKill({ match_time: 110, attacker_team: "Team 1", victim_team: "Team 2" }),
-      makeKill({ match_time: 112, attacker_team: "Team 1", victim_team: "Team 2" }),
+      makeKill({
+        match_time: 110,
+        attacker_team: "Team 1",
+        victim_team: "Team 2",
+      }),
+      makeKill({
+        match_time: 112,
+        attacker_team: "Team 1",
+        victim_team: "Team 2",
+      }),
     ]);
     const damage: DamageEvent[] = [
-      dmg({ match_time: 104, attacker_name: "ball", attacker_team: "Team 1", event_damage: 150 }),
-      dmg({ match_time: 104.4, attacker_name: "tracer", attacker_team: "Team 1", event_damage: 150 }),
-      dmg({ match_time: 108, attacker_name: "e1", attacker_team: "Team 2", victim_team: "Team 1", event_damage: 150 }),
-      dmg({ match_time: 108.4, attacker_name: "e2", attacker_team: "Team 2", victim_team: "Team 1", event_damage: 150 }),
+      dmg({
+        match_time: 104,
+        attacker_name: "ball",
+        attacker_team: "Team 1",
+        event_damage: 150,
+      }),
+      dmg({
+        match_time: 104.4,
+        attacker_name: "tracer",
+        attacker_team: "Team 1",
+        event_damage: 150,
+      }),
+      dmg({
+        match_time: 108,
+        attacker_name: "e1",
+        attacker_team: "Team 2",
+        victim_team: "Team 1",
+        event_damage: 150,
+      }),
+      dmg({
+        match_time: 108.4,
+        attacker_name: "e2",
+        attacker_team: "Team 2",
+        victim_team: "Team 1",
+        event_damage: 150,
+      }),
     ];
-    const label = detectFightInitiation(fight, 0, -Infinity, emptyCtx({ damage }));
+    const label = detectFightInitiation(
+      fight,
+      0,
+      -Infinity,
+      emptyCtx({ damage })
+    );
     expect(label.initiator).toBe("Team 1");
     expect(label.contested).toBe(false);
     expect(label.winner).toBe("Team 1");
@@ -228,15 +305,46 @@ describe("detectFightInitiation", () => {
 
   test("simultaneous commits within tolerance are contested", () => {
     const fight = fightFrom([
-      makeKill({ match_time: 110, attacker_team: "Team 1", victim_team: "Team 2" }),
+      makeKill({
+        match_time: 110,
+        attacker_team: "Team 1",
+        victim_team: "Team 2",
+      }),
     ]);
     const damage: DamageEvent[] = [
-      dmg({ match_time: 104, attacker_name: "ball", attacker_team: "Team 1", event_damage: 150 }),
-      dmg({ match_time: 104.1, attacker_name: "tracer", attacker_team: "Team 1", event_damage: 150 }),
-      dmg({ match_time: 104.2, attacker_name: "e1", attacker_team: "Team 2", victim_team: "Team 1", event_damage: 150 }),
-      dmg({ match_time: 104.3, attacker_name: "e2", attacker_team: "Team 2", victim_team: "Team 1", event_damage: 150 }),
+      dmg({
+        match_time: 104,
+        attacker_name: "ball",
+        attacker_team: "Team 1",
+        event_damage: 150,
+      }),
+      dmg({
+        match_time: 104.1,
+        attacker_name: "tracer",
+        attacker_team: "Team 1",
+        event_damage: 150,
+      }),
+      dmg({
+        match_time: 104.2,
+        attacker_name: "e1",
+        attacker_team: "Team 2",
+        victim_team: "Team 1",
+        event_damage: 150,
+      }),
+      dmg({
+        match_time: 104.3,
+        attacker_name: "e2",
+        attacker_team: "Team 2",
+        victim_team: "Team 1",
+        event_damage: 150,
+      }),
     ];
-    const label = detectFightInitiation(fight, 0, -Infinity, emptyCtx({ damage }));
+    const label = detectFightInitiation(
+      fight,
+      0,
+      -Infinity,
+      emptyCtx({ damage })
+    );
     expect(label.contested).toBe(true);
     expect(label.initiator).toBeNull();
     expect(label.confidence).toBe("low");
@@ -244,7 +352,11 @@ describe("detectFightInitiation", () => {
 
   test("with no detectable commitment, falls back to first blood at low confidence", () => {
     const fight = fightFrom([
-      makeKill({ match_time: 110, attacker_team: "Team 2", victim_team: "Team 1" }),
+      makeKill({
+        match_time: 110,
+        attacker_team: "Team 2",
+        victim_team: "Team 1",
+      }),
     ]);
     const label = detectFightInitiation(fight, 0, -Infinity, emptyCtx());
     expect(label.initiator).toBe("Team 2");
@@ -256,28 +368,67 @@ describe("detectFightInitiation", () => {
   test("records the 'went first, lost the opener' case", () => {
     // Team 1 commits first but Team 2 gets first blood and wins.
     const fight = fightFrom([
-      makeKill({ match_time: 110, attacker_team: "Team 2", victim_team: "Team 1" }),
-      makeKill({ match_time: 111, attacker_team: "Team 2", victim_team: "Team 1" }),
+      makeKill({
+        match_time: 110,
+        attacker_team: "Team 2",
+        victim_team: "Team 1",
+      }),
+      makeKill({
+        match_time: 111,
+        attacker_team: "Team 2",
+        victim_team: "Team 1",
+      }),
     ]);
     const damage: DamageEvent[] = [
-      dmg({ match_time: 104, attacker_name: "ball", attacker_team: "Team 1", event_damage: 150 }),
-      dmg({ match_time: 104.4, attacker_name: "tracer", attacker_team: "Team 1", event_damage: 150 }),
+      dmg({
+        match_time: 104,
+        attacker_name: "ball",
+        attacker_team: "Team 1",
+        event_damage: 150,
+      }),
+      dmg({
+        match_time: 104.4,
+        attacker_name: "tracer",
+        attacker_team: "Team 1",
+        event_damage: 150,
+      }),
     ];
-    const label = detectFightInitiation(fight, 0, -Infinity, emptyCtx({ damage }));
+    const label = detectFightInitiation(
+      fight,
+      0,
+      -Infinity,
+      emptyCtx({ damage })
+    );
     expect(label.initiator).toBe("Team 1");
-    expect(label.firstBloodTeam ?? label.evidence.firstBloodTeam).toBe("Team 2");
+    expect(label.firstBloodTeam ?? label.evidence.firstBloodTeam).toBe(
+      "Team 2"
+    );
     expect(label.winner).toBe("Team 2");
     expect(label.initiatorWon).toBe(false);
   });
 
   test("the lookback never reaches into the previous fight", () => {
     const fight = fightFrom([
-      makeKill({ match_time: 110, attacker_team: "Team 1", victim_team: "Team 2" }),
+      makeKill({
+        match_time: 110,
+        attacker_team: "Team 1",
+        victim_team: "Team 2",
+      }),
     ]);
     // A burst at t=100 would normally be inside the 12s lookback, but prevFightEnd=106.
     const damage: DamageEvent[] = [
-      dmg({ match_time: 100, attacker_name: "ball", attacker_team: "Team 1", event_damage: 200 }),
-      dmg({ match_time: 100.3, attacker_name: "tracer", attacker_team: "Team 1", event_damage: 200 }),
+      dmg({
+        match_time: 100,
+        attacker_name: "ball",
+        attacker_team: "Team 1",
+        event_damage: 200,
+      }),
+      dmg({
+        match_time: 100.3,
+        attacker_name: "tracer",
+        attacker_team: "Team 1",
+        event_damage: 200,
+      }),
     ];
     const label = detectFightInitiation(fight, 1, 106, emptyCtx({ damage }));
     expect(label.evidence.fallback).toBe(true); // no commit found inside [106, 110]
@@ -287,7 +438,11 @@ describe("detectFightInitiation", () => {
 describe("assembleMapInitiation", () => {
   test("returns unavailable when there is no granular damage data", () => {
     const kills = [
-      makeKill({ match_time: 110, attacker_team: "Team 1", victim_team: "Team 2" }),
+      makeKill({
+        match_time: 110,
+        attacker_team: "Team 1",
+        victim_team: "Team 2",
+      }),
     ];
     const result = assembleMapInitiation({
       kills,
@@ -309,16 +464,52 @@ describe("assembleMapInitiation", () => {
   test("labels fights and summarizes per-team go-first winrate", () => {
     // Two separate fights (>15s apart). Team 1 dives first in both; wins one, loses one.
     const kills = [
-      makeKill({ match_time: 110, attacker_team: "Team 1", victim_team: "Team 2" }),
-      makeKill({ match_time: 111, attacker_team: "Team 1", victim_team: "Team 2" }),
-      makeKill({ match_time: 200, attacker_team: "Team 2", victim_team: "Team 1" }),
-      makeKill({ match_time: 201, attacker_team: "Team 2", victim_team: "Team 1" }),
+      makeKill({
+        match_time: 110,
+        attacker_team: "Team 1",
+        victim_team: "Team 2",
+      }),
+      makeKill({
+        match_time: 111,
+        attacker_team: "Team 1",
+        victim_team: "Team 2",
+      }),
+      makeKill({
+        match_time: 200,
+        attacker_team: "Team 2",
+        victim_team: "Team 1",
+      }),
+      makeKill({
+        match_time: 201,
+        attacker_team: "Team 2",
+        victim_team: "Team 1",
+      }),
     ];
     const damage: DamageEvent[] = [
-      dmg({ match_time: 105, attacker_name: "ball", attacker_team: "Team 1", event_damage: 150 }),
-      dmg({ match_time: 105.4, attacker_name: "tracer", attacker_team: "Team 1", event_damage: 150 }),
-      dmg({ match_time: 195, attacker_name: "ball", attacker_team: "Team 1", event_damage: 150 }),
-      dmg({ match_time: 195.4, attacker_name: "tracer", attacker_team: "Team 1", event_damage: 150 }),
+      dmg({
+        match_time: 105,
+        attacker_name: "ball",
+        attacker_team: "Team 1",
+        event_damage: 150,
+      }),
+      dmg({
+        match_time: 105.4,
+        attacker_name: "tracer",
+        attacker_team: "Team 1",
+        event_damage: 150,
+      }),
+      dmg({
+        match_time: 195,
+        attacker_name: "ball",
+        attacker_team: "Team 1",
+        event_damage: 150,
+      }),
+      dmg({
+        match_time: 195.4,
+        attacker_name: "tracer",
+        attacker_team: "Team 1",
+        event_damage: 150,
+      }),
     ];
     const result = assembleMapInitiation({
       kills,
@@ -340,12 +531,30 @@ describe("assembleMapInitiation", () => {
 
   test("rounds are collapsed and sorted ascending by match_time in an available result", () => {
     const kills = [
-      makeKill({ match_time: 110, attacker_team: "Team 1", victim_team: "Team 2" }),
-      makeKill({ match_time: 111, attacker_team: "Team 1", victim_team: "Team 2" }),
+      makeKill({
+        match_time: 110,
+        attacker_team: "Team 1",
+        victim_team: "Team 2",
+      }),
+      makeKill({
+        match_time: 111,
+        attacker_team: "Team 1",
+        victim_team: "Team 2",
+      }),
     ];
     const damage: DamageEvent[] = [
-      dmg({ match_time: 105, attacker_name: "ball", attacker_team: "Team 1", event_damage: 150 }),
-      dmg({ match_time: 105.4, attacker_name: "tracer", attacker_team: "Team 1", event_damage: 150 }),
+      dmg({
+        match_time: 105,
+        attacker_name: "ball",
+        attacker_team: "Team 1",
+        event_damage: 150,
+      }),
+      dmg({
+        match_time: 105.4,
+        attacker_name: "tracer",
+        attacker_team: "Team 1",
+        event_damage: 150,
+      }),
     ];
     // R1 start at t=90, R2 start at t=115, R1 end at t=130 (only end row)
     const result = assembleMapInitiation({
@@ -374,7 +583,11 @@ describe("assembleMapInitiation", () => {
 
   test("unavailable result (empty damage) always returns rounds: []", () => {
     const kills = [
-      makeKill({ match_time: 110, attacker_team: "Team 1", victim_team: "Team 2" }),
+      makeKill({
+        match_time: 110,
+        attacker_team: "Team 1",
+        victim_team: "Team 2",
+      }),
     ];
     const result = assembleMapInitiation({
       kills,
@@ -393,12 +606,30 @@ describe("assembleMapInitiation", () => {
 
   test("sort does not mutate the caller's roundStarts/roundEnds arrays", () => {
     const kills = [
-      makeKill({ match_time: 110, attacker_team: "Team 1", victim_team: "Team 2" }),
-      makeKill({ match_time: 111, attacker_team: "Team 1", victim_team: "Team 2" }),
+      makeKill({
+        match_time: 110,
+        attacker_team: "Team 1",
+        victim_team: "Team 2",
+      }),
+      makeKill({
+        match_time: 111,
+        attacker_team: "Team 1",
+        victim_team: "Team 2",
+      }),
     ];
     const damage: DamageEvent[] = [
-      dmg({ match_time: 105, attacker_name: "ball", attacker_team: "Team 1", event_damage: 150 }),
-      dmg({ match_time: 105.4, attacker_name: "tracer", attacker_team: "Team 1", event_damage: 150 }),
+      dmg({
+        match_time: 105,
+        attacker_name: "ball",
+        attacker_team: "Team 1",
+        event_damage: 150,
+      }),
+      dmg({
+        match_time: 105.4,
+        attacker_name: "tracer",
+        attacker_team: "Team 1",
+        event_damage: 150,
+      }),
     ];
     const inputStarts: RoundEventInput[] = [
       { match_time: 150, round_number: 2 },

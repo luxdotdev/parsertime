@@ -17,7 +17,9 @@ export default async function FaceitPlayerSearchPage() {
   if (!enabled) notFound();
   const t = await getTranslations("faceitPlayerPage");
   const players = await AppRuntime.runPromise(
-    FaceitPlayerScoutingService.pipe(Effect.flatMap((svc) => svc.getFaceitPlayers()))
+    FaceitPlayerScoutingService.pipe(
+      Effect.flatMap((svc) => svc.getFaceitPlayers())
+    )
   );
   return (
     <div className="flex flex-1 flex-col items-center px-4 pt-16 pb-8 sm:px-8 md:pt-24">

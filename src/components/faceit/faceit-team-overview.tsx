@@ -38,7 +38,8 @@ export function FaceitTeamOverview({ overview, attackDefense }: Props) {
   const tierSegments = Object.entries(overview.tierCounts)
     .filter(([, count]) => count > 0)
     .sort(
-      ([a], [b]) => (TIER_RANK[a] ?? 99) - (TIER_RANK[b] ?? 99) || a.localeCompare(b)
+      ([a], [b]) =>
+        (TIER_RANK[a] ?? 99) - (TIER_RANK[b] ?? 99) || a.localeCompare(b)
     )
     .map(([tier, count]) => ({
       key: tier,
@@ -52,7 +53,10 @@ export function FaceitTeamOverview({ overview, attackDefense }: Props) {
 
   return (
     <section className="space-y-5">
-      <SectionHeader eyebrow={t("overview.eyebrow")} title={t("overview.title")} />
+      <SectionHeader
+        eyebrow={t("overview.eyebrow")}
+        title={t("overview.title")}
+      />
       <div className="grid gap-x-10 gap-y-8 lg:grid-cols-12">
         <div className="space-y-3 lg:col-span-7">
           <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
@@ -93,7 +97,9 @@ export function FaceitTeamOverview({ overview, attackDefense }: Props) {
               </div>
             </>
           ) : (
-            <p className="text-muted-foreground text-sm">{t("overview.noForm")}</p>
+            <p className="text-muted-foreground text-sm">
+              {t("overview.noForm")}
+            </p>
           )}
         </div>
 

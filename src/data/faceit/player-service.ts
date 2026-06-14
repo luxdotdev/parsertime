@@ -15,7 +15,11 @@ import {
   faceitPlayersQuerySuccessTotal,
 } from "./metrics";
 import { mapWinrates } from "./aggregations";
-import { roleUsage, statZToRadar, strengthsWeaknesses } from "./player-aggregations";
+import {
+  roleUsage,
+  statZToRadar,
+  strengthsWeaknesses,
+} from "./player-aggregations";
 import type {
   FaceitPlayerListEntry,
   FaceitPlayerProfile,
@@ -175,7 +179,9 @@ export const make: Effect.Effect<FaceitPlayerScoutingServiceInterface> =
           Effect.sync(() => {
             wideEvent.outcome = "error";
             wideEvent.error_tag = error._tag;
-          }).pipe(Effect.andThen(Metric.increment(faceitPlayersQueryErrorTotal)))
+          }).pipe(
+            Effect.andThen(Metric.increment(faceitPlayersQueryErrorTotal))
+          )
         ),
         Effect.ensuring(
           Effect.suspend(() => {
@@ -188,7 +194,9 @@ export const make: Effect.Effect<FaceitPlayerScoutingServiceInterface> =
                 : Effect.logInfo("faceit.getFaceitPlayers");
             return log.pipe(
               Effect.annotateLogs(wideEvent),
-              Effect.andThen(faceitPlayersQueryDuration(Effect.succeed(durationMs)))
+              Effect.andThen(
+                faceitPlayersQueryDuration(Effect.succeed(durationMs))
+              )
             );
           })
         ),
@@ -338,8 +346,10 @@ export const make: Effect.Effect<FaceitPlayerScoutingServiceInterface> =
               : r.attacking_first === `faction${r.team_side}`,
           heroBans: [],
         }));
-        const mapWinratesResult: { byMap: MapWinrateEntry[]; byType: MapWinrateEntry[] } =
-          mapWinrates(teamMapRows);
+        const mapWinratesResult: {
+          byMap: MapWinrateEntry[];
+          byType: MapWinrateEntry[];
+        } = mapWinrates(teamMapRows);
 
         // Step 5: role usage
         let roleUsageResult: PlayerRoleUsage[];
@@ -371,8 +381,14 @@ export const make: Effect.Effect<FaceitPlayerScoutingServiceInterface> =
           });
           roleUsageResult = roleUsage(
             rawRoleRows
-              .map((r) => ({ role: DB_ROLE_TO_ENUM[r.role], mapCount: Number(r.map_count) }))
-              .filter((r): r is { role: FaceitRole; mapCount: number } => r.role !== undefined)
+              .map((r) => ({
+                role: DB_ROLE_TO_ENUM[r.role],
+                mapCount: Number(r.map_count),
+              }))
+              .filter(
+                (r): r is { role: FaceitRole; mapCount: number } =>
+                  r.role !== undefined
+              )
           );
         }
 
@@ -416,17 +432,19 @@ export const make: Effect.Effect<FaceitPlayerScoutingServiceInterface> =
             }),
         });
 
-        const matchHistory: PlayerMatchHistoryEntry[] = historyRows.map((r) => ({
-          matchId: r.match_id,
-          finishedAt: r.finished_at,
-          tier: r.tier as FaceitTier,
-          teamId: r.team_id,
-          teamName: r.team_name,
-          opponentName: r.opponent_name,
-          score: `${r.team_score} - ${r.opp_score ?? 0}`,
-          won: r.won,
-          role: r.role,
-        }));
+        const matchHistory: PlayerMatchHistoryEntry[] = historyRows.map(
+          (r) => ({
+            matchId: r.match_id,
+            finishedAt: r.finished_at,
+            tier: r.tier as FaceitTier,
+            teamId: r.team_id,
+            teamName: r.team_name,
+            opponentName: r.opponent_name,
+            score: `${r.team_score} - ${r.opp_score ?? 0}`,
+            won: r.won,
+            role: r.role,
+          })
+        );
 
         // Step 7: teams
         const teamRows = yield* Effect.tryPromise({
@@ -477,7 +495,10 @@ export const make: Effect.Effect<FaceitPlayerScoutingServiceInterface> =
             // Headline tier = cell with most mapCount
             let headlineTierRow: PlayerFsrTierRow | null = null;
             for (const t of roleTiers) {
-              if (headlineTierRow === null || t.map_count > headlineTierRow.map_count) {
+              if (
+                headlineTierRow === null ||
+                t.map_count > headlineTierRow.map_count
+              ) {
                 headlineTierRow = t;
               }
             }
@@ -497,7 +518,8 @@ export const make: Effect.Effect<FaceitPlayerScoutingServiceInterface> =
             }));
 
             const radar = statZToRadar(headlineStatZ);
-            const { strengths, weaknesses } = strengthsWeaknesses(headlineStatZ);
+            const { strengths, weaknesses } =
+              strengthsWeaknesses(headlineStatZ);
 
             return {
               role: fsrRow.role as FaceitRole,

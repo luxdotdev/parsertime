@@ -30,7 +30,10 @@ import {
   teamCacheMissTotal,
   teamCacheRequestTotal,
 } from "./metrics";
-import { findSubstituteMapIds, findTeamNameForMapInMemory } from "./shared-core";
+import {
+  findSubstituteMapIds,
+  findTeamNameForMapInMemory,
+} from "./shared-core";
 import {
   TeamSharedDataService,
   TeamSharedDataServiceLive,

@@ -34,10 +34,10 @@ export const faceitTeamProfileQueryDuration = dur(
   "FACEIT team profile query duration (ms)"
 );
 
-export const faceitCacheRequestTotal = Metric.counter(
-  "faceit.cache.request",
-  { description: "FACEIT scouting cache requests", incremental: true }
-);
+export const faceitCacheRequestTotal = Metric.counter("faceit.cache.request", {
+  description: "FACEIT scouting cache requests",
+  incremental: true,
+});
 export const faceitCacheMissTotal = Metric.counter("faceit.cache.miss", {
   description: "FACEIT scouting cache misses",
   incremental: true,

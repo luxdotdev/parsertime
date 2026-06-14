@@ -2,7 +2,10 @@
 
 import { DivergingBar, MeterBar } from "@/components/faceit/viz";
 import { SectionHeader } from "@/components/stats/team/section-header";
-import type { HeroBanIntelligence, HeroExposure } from "@/data/intelligence/types";
+import type {
+  HeroBanIntelligence,
+  HeroExposure,
+} from "@/data/intelligence/types";
 import type { HeroBanEntry, ScoutingHeroBans } from "@/data/scouting/types";
 import { cn } from "@/lib/utils";
 import { useFormatter, useTranslations } from "next-intl";
@@ -125,9 +128,7 @@ export function ScoutingHeroBans({
                         <td
                           className={cn(
                             "px-4 py-3 text-right font-mono font-semibold tabular-nums",
-                            positive
-                              ? "text-primary"
-                              : "text-muted-foreground"
+                            positive ? "text-primary" : "text-muted-foreground"
                           )}
                         >
                           {t("percentagePoints", {
@@ -207,7 +208,7 @@ export function ScoutingHeroBans({
               {t("noBanTargetOverlap")}
             </p>
           ) : (
-            <ul className="divide-y divide-[var(--border)] border-border overflow-hidden rounded-md border">
+            <ul className="border-border divide-y divide-[var(--border)] overflow-hidden rounded-md border">
               {exposure.map((entry) => {
                 const risk = riskMeta(entry.exposureRisk);
                 return (
@@ -310,7 +311,7 @@ function BanList({
         <p className="text-muted-foreground text-sm">{emptyLabel}</p>
       ) : (
         <ul
-          className="divide-y divide-[var(--border)] border-border overflow-hidden rounded-md border"
+          className="border-border divide-y divide-[var(--border)] overflow-hidden rounded-md border"
           aria-label={label}
         >
           {visible.map((entry) => (
