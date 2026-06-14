@@ -147,6 +147,22 @@ export async function DefaultOverview({
     team2Captures,
   });
 
+  const mapRow = await prisma.map.findFirst({
+    where: { mapData: { some: { id: mapDataId } } },
+    select: { winner: true },
+  });
+
+  const winner = resolveMapWinner(mapRow?.winner, {
+    matchDetails,
+    finalRound,
+    team1Captures,
+    team2Captures,
+    team1PayloadProgress,
+    team2PayloadProgress,
+    team1PointProgress,
+    team2PointProgress,
+  });
+
   const team1Damage = finalRoundStats
     .filter((player) => player.player_team === matchDetails?.team_1_name)
     .reduce((acc, player) => acc + player.hero_damage_dealt, 0);
@@ -174,27 +190,13 @@ export async function DefaultOverview({
       case $Enums.MapType.Hybrid:
         return `${payloadMapScore.team1} - ${payloadMapScore.team2}`;
       case $Enums.MapType.Push:
+        if (winner === matchDetails?.team_1_name) return "1 - 0";
+        if (winner === matchDetails?.team_2_name) return "0 - 1";
         return t("notAvailable");
       default:
         return t("notAvailable");
     }
   }
-
-  const mapRow = await prisma.map.findFirst({
-    where: { mapData: { some: { id: mapDataId } } },
-    select: { winner: true },
-  });
-
-  const winner = resolveMapWinner(mapRow?.winner, {
-    matchDetails,
-    finalRound,
-    team1Captures,
-    team2Captures,
-    team1PayloadProgress,
-    team2PayloadProgress,
-    team1PointProgress,
-    team2PointProgress,
-  });
 
   const numberOfRounds =
     // prettier-ignore
