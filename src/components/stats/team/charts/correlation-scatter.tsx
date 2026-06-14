@@ -134,7 +134,7 @@ export function CorrelationScatter({
           {t("noData")}
         </p>
       ) : (
-        <ResponsiveContainer width="100%" height={280}>
+        <ResponsiveContainer width="100%" aspect={1}>
           <ScatterChart margin={{ top: 16, right: 24, left: 8, bottom: 24 }}>
             <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />
             <XAxis
