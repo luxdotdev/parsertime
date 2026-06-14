@@ -128,9 +128,9 @@ export function registerNode() {
   );
 
   process.on("SIGTERM", async () => {
-    await Effect.runPromise(Fiber.interrupt(effectMetricsFiber)).catch(
-      () => {}
-    );
+    await Effect.runPromise(Fiber.interrupt(effectMetricsFiber)).catch(() => {
+      // Ignore interruption errors during shutdown.
+    });
     await Promise.allSettled([
       provider.forceFlush(),
       meterProvider.forceFlush(),

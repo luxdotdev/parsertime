@@ -20,7 +20,9 @@ class StubPool extends EventEmitter {
   waitingCount = 0;
 }
 
-const asPool = (stub: StubPool) => stub as unknown as Pool;
+function asPool(stub: StubPool) {
+  return stub as unknown as Pool;
+}
 
 describe("samplePool", () => {
   test("records pool stats into the gauges", async () => {

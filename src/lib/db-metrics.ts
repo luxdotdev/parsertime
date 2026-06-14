@@ -48,17 +48,20 @@ export function makePoolMetricsLive(pool: Pool): Layer.Layer<never> {
       const runtime = yield* Effect.runtime<never>();
       const runSync = Runtime.runSync(runtime);
 
-      const onConnect = () =>
+      function onConnect() {
         runSync(Metric.increment(dbPoolConnectionsOpened));
-      const onRemove = () =>
+      }
+      function onRemove() {
         runSync(Metric.increment(dbPoolConnectionsRemoved));
-      const onError = (error: Error) =>
+      }
+      function onError(error: Error) {
         runSync(
           Effect.zipRight(
             Metric.increment(dbPoolErrors),
             Effect.logError("pg pool error", { error: error.message })
           )
         );
+      }
 
       yield* Effect.acquireRelease(
         Effect.sync(() => {
