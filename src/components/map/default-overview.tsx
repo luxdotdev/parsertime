@@ -31,7 +31,7 @@ import {
   ultimateStartToKillEvent,
 } from "@/lib/utils";
 import { groupKillsIntoFights } from "@/lib/server-utils";
-import { calculatePayloadMapScore, calculateWinner } from "@/lib/winrate";
+import { calculatePayloadMapScore, resolveMapWinner } from "@/lib/winrate";
 import {
   getHeroRole,
   heroPriority,
@@ -180,7 +180,12 @@ export async function DefaultOverview({
     }
   }
 
-  const winner = calculateWinner({
+  const mapRow = await prisma.map.findFirst({
+    where: { mapData: { some: { id: mapDataId } } },
+    select: { winner: true },
+  });
+
+  const winner = resolveMapWinner(mapRow?.winner, {
     matchDetails,
     finalRound,
     team1Captures,
@@ -783,7 +788,7 @@ export async function DefaultOverview({
           label={t("score")}
           value={calculateScore()}
           sub={
-            mapType !== $Enums.MapType.Push ? (
+            winner !== "N/A" ? (
               <>
                 {t("winner")}{" "}
                 <span
@@ -794,9 +799,9 @@ export async function DefaultOverview({
                   {winner}
                 </span>
               </>
-            ) : (
+            ) : mapType === $Enums.MapType.Push ? (
               t("pushLimitations")
-            )
+            ) : null
           }
         />
         <MapStatCell
