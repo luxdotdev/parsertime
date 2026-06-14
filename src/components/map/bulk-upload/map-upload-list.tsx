@@ -128,8 +128,8 @@ function MapWinnerControl({
 }) {
   const t = useTranslations("bulkUpload");
   const groupId = useId();
-  const team1 = map.parsedData?.match_start?.[0]?.[4];
-  const team2 = map.parsedData?.match_start?.[0]?.[5];
+  const team1 = map.team1;
+  const team2 = map.team2;
   if (!team1 || !team2) return null;
 
   const teams = [team1, team2];

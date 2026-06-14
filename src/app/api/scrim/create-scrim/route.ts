@@ -23,6 +23,7 @@ import {
   sendDiscordWebhook,
 } from "@/lib/webhooks";
 import type { ParserData } from "@/types/parser";
+import type { UploadWinnerSource } from "@/lib/winner-source";
 import type { User } from "@/generated/prisma/client";
 import { Ratelimit } from "@upstash/ratelimit";
 import { ipAddress } from "@vercel/functions";
@@ -47,7 +48,7 @@ export type CreateScrimRequestData = {
     banPosition: number;
   }[];
   winner?: string | null;
-  winnerSource?: "auto_coords" | "manual" | null;
+  winnerSource?: UploadWinnerSource | null;
   scrimRequestId?: string | null;
   opponentTeamId?: number | null;
 };

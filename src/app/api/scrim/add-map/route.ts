@@ -8,6 +8,7 @@ import { normalizeMapForScrim } from "@/lib/team-normalization";
 import { UsageEventName } from "@/lib/usage/names";
 import { usage } from "@/lib/usage/server";
 import type { ParserData } from "@/types/parser";
+import type { UploadWinnerSource } from "@/lib/winner-source";
 import { track } from "@vercel/analytics/server";
 import { after, type NextRequest } from "next/server";
 
@@ -20,7 +21,7 @@ export type AddMapRequestData = {
     banPosition: number;
   }[];
   winner?: string | null;
-  winnerSource?: "auto_coords" | "manual" | null;
+  winnerSource?: UploadWinnerSource | null;
 };
 
 export async function POST(req: NextRequest) {

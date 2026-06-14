@@ -36,6 +36,7 @@ import {
 import prisma from "@/lib/prisma";
 import { toTitleCase } from "@/lib/utils";
 import type { ParserData } from "@/types/parser";
+import type { UploadWinnerSource } from "@/lib/winner-source";
 import type { Role } from "@/generated/prisma/client";
 import type { Session } from "next-auth";
 
@@ -317,7 +318,7 @@ type CreateNewMapArgs = {
     banPosition: number;
   }[];
   winner?: string | null;
-  winnerSource?: "auto_coords" | "manual" | null;
+  winnerSource?: UploadWinnerSource | null;
 };
 
 export async function createNewMap(

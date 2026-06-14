@@ -1,5 +1,6 @@
 import type { HeroBan } from "@/components/dashboard/scrim-creator/types";
 import type { ParserData } from "@/types/parser";
+import type { UploadWinnerSource } from "@/lib/winner-source";
 import { mapNameToMapTypeMapping } from "@/types/map";
 import { $Enums } from "@/generated/prisma/browser";
 
@@ -44,7 +45,7 @@ export type PendingMap = {
   /** Confirmed winning team name for Push maps (chosen at upload). */
   winner?: string;
   /** Provenance of `winner`: "auto_coords" suggestion or "manual" override. */
-  winnerSource?: "auto_coords" | "manual";
+  winnerSource?: UploadWinnerSource;
   /** Live upload progress for this map, 0..1, driven by streamed row counts. */
   progress: number;
   /** Populated when status is "failed". */
