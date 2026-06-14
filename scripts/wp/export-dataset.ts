@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 import prisma from "@/lib/prisma";
-import { FEATURE_NAMES } from "@/lib/win-probability/features";
+import { datasetToCsv } from "@/lib/win-probability/training/csv";
 import {
   buildRows,
   fetchEventLog,
@@ -15,7 +15,9 @@ const BATCH_SIZE = 50;
 
 async function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
-  const header = `matchId,roundId,label,${FEATURE_NAMES.join(",")}\n`;
+  // Header-only serialization gives the canonical first line; row bodies are
+  // appended below via the same helper so output stays byte-identical.
+  const header = datasetToCsv([]);
   const streams = new Map(
     MODE_FAMILIES.map((family) => {
       const stream = fs.createWriteStream(
@@ -53,11 +55,8 @@ async function main() {
       }
       const stream = streams.get(log.modeFamily);
       if (stream === undefined) continue;
-      for (const row of rows) {
-        stream.write(
-          `${row.matchId},${row.roundId},${row.label},${row.features.join(",")}\n`
-        );
-      }
+      // Drop the helper's header line; only the row body is appended here.
+      stream.write(datasetToCsv(rows).slice(header.length));
       written++;
     }
     console.log(`  ${Math.min(i + BATCH_SIZE, maps.length)}/${maps.length}`);

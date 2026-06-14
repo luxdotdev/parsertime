@@ -37,7 +37,7 @@ async function main() {
     console.log(`\n=== ${family} ===`);
     for (const line of reports[family]) console.log(`  ${line}`);
     const model = artifact.modeFamilies[family];
-    if (model !== null) {
+    if (model !== null && model.kind !== "gbm") {
       console.log("  weights:");
       FEATURE_NAMES.forEach((name, i) => {
         console.log(`    ${name}: ${model.weights[i].toFixed(4)}`);

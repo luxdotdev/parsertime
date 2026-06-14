@@ -45,5 +45,10 @@
       "schedule": "0 7 * * 1"
     }
   ],
+  "functions": {
+    "api/wp-train/index.py": {
+      "maxDuration": 800
+    }
+  },
   "regions": ["iad1"]
 }
