@@ -33,6 +33,61 @@ const PRESETS: { titleKey: string; x: ScatterStatKey; y: ScatterStatKey }[] = [
   { titleKey: "presetBlockedTaken", x: "damage_blocked", y: "damage_taken" },
 ];
 
+/**
+ * X/Y axis pickers for the custom chart. Rendered both inline and inside the
+ * expanded inspector, so `idPrefix` keeps the label/control ids unique.
+ */
+function AxisSelectors({
+  idPrefix,
+  xAxisLabel,
+  yAxisLabel,
+  xValue,
+  yValue,
+  onX,
+  onY,
+  statLabel,
+}: {
+  idPrefix: string;
+  xAxisLabel: string;
+  yAxisLabel: string;
+  xValue: ScatterStatKey;
+  yValue: ScatterStatKey;
+  onX: (value: ScatterStatKey) => void;
+  onY: (value: ScatterStatKey) => void;
+  statLabel: (key: ScatterStatKey) => string;
+}) {
+  const axes = [
+    { id: `${idPrefix}-x-axis`, label: xAxisLabel, value: xValue, onChange: onX },
+    { id: `${idPrefix}-y-axis`, label: yAxisLabel, value: yValue, onChange: onY },
+  ];
+  return (
+    <div className="flex flex-wrap items-end gap-4">
+      {axes.map((axis) => (
+        <div key={axis.id} className="space-y-1.5">
+          <Label htmlFor={axis.id} className="text-xs">
+            {axis.label}
+          </Label>
+          <Select
+            value={axis.value}
+            onValueChange={(v) => axis.onChange(v as ScatterStatKey)}
+          >
+            <SelectTrigger id={axis.id} className="w-[220px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {SCATTER_STAT_KEYS.map((key) => (
+                <SelectItem key={key} value={key}>
+                  {statLabel(key)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function TeamChartsTab({ scatterData }: Props) {
   const t = useTranslations("teamStatsPage.charts");
   const [selectedHeroes, setSelectedHeroes] = useState<HeroName[]>([]);
@@ -95,44 +150,16 @@ export function TeamChartsTab({ scatterData }: Props) {
           description={t("customDescription")}
         />
 
-        <div className="flex flex-wrap items-end gap-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="custom-x-axis" className="text-xs">{t("xAxis")}</Label>
-            <Select
-              value={customX}
-              onValueChange={(v) => setCustomX(v as ScatterStatKey)}
-            >
-              <SelectTrigger id="custom-x-axis" className="w-[220px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {SCATTER_STAT_KEYS.map((key) => (
-                  <SelectItem key={key} value={key}>
-                    {statLabel(key)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="custom-y-axis" className="text-xs">{t("yAxis")}</Label>
-            <Select
-              value={customY}
-              onValueChange={(v) => setCustomY(v as ScatterStatKey)}
-            >
-              <SelectTrigger id="custom-y-axis" className="w-[220px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {SCATTER_STAT_KEYS.map((key) => (
-                  <SelectItem key={key} value={key}>
-                    {statLabel(key)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+        <AxisSelectors
+          idPrefix="custom"
+          xAxisLabel={t("xAxis")}
+          yAxisLabel={t("yAxis")}
+          xValue={customX}
+          yValue={customY}
+          onX={setCustomX}
+          onY={setCustomY}
+          statLabel={statLabel}
+        />
 
         <CorrelationScatter
           data={scatterData}
@@ -146,6 +173,18 @@ export function TeamChartsTab({ scatterData }: Props) {
             x: statLabel(customX),
             y: statLabel(customY),
           })}
+          axisControls={
+            <AxisSelectors
+              idPrefix="custom-expanded"
+              xAxisLabel={t("xAxis")}
+              yAxisLabel={t("yAxis")}
+              xValue={customX}
+              yValue={customY}
+              onX={setCustomX}
+              onY={setCustomY}
+              statLabel={statLabel}
+            />
+          }
         />
       </section>
     </div>

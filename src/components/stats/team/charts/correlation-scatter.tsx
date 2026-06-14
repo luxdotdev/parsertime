@@ -21,7 +21,13 @@ import { format, round } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
 import { Expand } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   CartesianGrid,
   LabelList,
@@ -48,6 +54,8 @@ type Props = {
   selectedHeroes: HeroName[];
   showRegression: boolean;
   title: string;
+  /** Optional axis pickers, surfaced inside the expanded inspector (custom chart only). */
+  axisControls?: ReactNode;
 };
 
 type Range = [number, number];
@@ -272,6 +280,7 @@ export function CorrelationScatter({
   selectedHeroes,
   showRegression,
   title,
+  axisControls,
 }: Props) {
   const t = useTranslations("teamStatsPage.charts");
 
@@ -390,6 +399,8 @@ export function CorrelationScatter({
                 <DialogTitle>{title}</DialogTitle>
                 <DialogDescription>{t("description")}</DialogDescription>
               </DialogHeader>
+
+              {axisControls}
 
               <ChartCanvas
                 points={zoomedPoints}
