@@ -6,6 +6,7 @@ import { createNewMap } from "@/lib/parser";
 import prisma from "@/lib/prisma";
 import { createNdjsonStream } from "@/lib/progress-stream";
 import { normalizeMapForScrim } from "@/lib/team-normalization";
+import { resolveSetWinnerOutcome } from "@/lib/scrim/set-winner-validation";
 import { UsageEventName } from "@/lib/usage/names";
 import { usage } from "@/lib/usage/server";
 import { track } from "@vercel/analytics/server";
@@ -39,6 +40,14 @@ export async function POST(req: NextRequest) {
   }
   event.scrim_id = scrimId;
 
+  if (
+    data.winnerSource != null &&
+    data.winnerSource !== "auto_coords" &&
+    data.winnerSource !== "manual"
+  ) {
+    return new Response("Invalid winner source", { status: 400 });
+  }
+
   const user = await getCurrentUser();
   if (!(await canEditScrim(scrimId, user))) {
     return new Response("Forbidden", { status: 403 });
@@ -54,14 +63,30 @@ export async function POST(req: NextRequest) {
     },
   });
 
+  // Validate the chosen winner against the RAW uploaded team names before any
+  // normalization renames them.
+  if (data.winner) {
+    const winnerOutcome = resolveSetWinnerOutcome(data.winner, {
+      team1: String(data.map.match_start[0][4]),
+      team2: String(data.map.match_start[0][5]),
+    });
+    if (!winnerOutcome.ok) {
+      return new Response(winnerOutcome.error, { status: 400 });
+    }
+  }
+
   let mapData = data.map;
+  let mapWinner = data.winner ?? null;
   if (scrim?.autoAssignTeamNames && scrim.teamId && scrim.team1Name) {
-    mapData = await normalizeMapForScrim(
+    const result = await normalizeMapForScrim(
       mapData,
       scrim.teamId,
       scrim.team1Name,
-      scrim.team2Name
+      scrim.team2Name,
+      data.winner ?? null
     );
+    mapData = result.map;
+    mapWinner = result.winner;
   }
 
   return createNdjsonStream(async (emit) => {
@@ -73,7 +98,7 @@ export async function POST(req: NextRequest) {
           scrimId,
           order: data.order,
           heroBans: data.heroBans,
-          winner: data.winner ?? null,
+          winner: mapWinner,
           winnerSource: data.winnerSource ?? null,
         },
         session,

@@ -2,6 +2,7 @@ import "server-only";
 
 export {
   normalizeTeamData,
+  normalizeWinnerName,
   parseCoordinate,
   parseData,
   parseDataFromTXT,

@@ -2,7 +2,7 @@ import "server-only";
 
 import { AppRuntime } from "@/data/runtime";
 import { TeamSharedDataService } from "@/data/team";
-import { normalizeTeamData } from "@/lib/parser";
+import { normalizeTeamData, normalizeWinnerName } from "@/lib/parser";
 import type { ParserData } from "@/types/parser";
 import { Effect } from "effect";
 
@@ -39,8 +39,21 @@ export async function normalizeMapForScrim(
   parsedMap: ParserData,
   teamId: number,
   team1Name: string,
-  team2Name: string | null
-): Promise<ParserData> {
+  team2Name: string | null,
+  winner?: string | null
+): Promise<{ map: ParserData; winner: string | null }> {
+  const origTeam1 = String(parsedMap.match_start[0][4]);
+  const origTeam2 = String(parsedMap.match_start[0][5]);
   const userIsTeam2 = await detectUserTeamSide(teamId, parsedMap);
-  return normalizeTeamData(parsedMap, team1Name, team2Name, userIsTeam2);
+  return {
+    map: normalizeTeamData(parsedMap, team1Name, team2Name, userIsTeam2),
+    winner: normalizeWinnerName(
+      winner ?? null,
+      origTeam1,
+      origTeam2,
+      team1Name,
+      team2Name,
+      userIsTeam2
+    ),
+  };
 }

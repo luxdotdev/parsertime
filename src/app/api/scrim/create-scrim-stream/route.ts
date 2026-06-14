@@ -15,6 +15,7 @@ import { createNewScrimFromParsedData } from "@/lib/parser";
 import { Permission } from "@/lib/permissions";
 import { createNdjsonStream } from "@/lib/progress-stream";
 import { normalizeMapForScrim } from "@/lib/team-normalization";
+import { resolveSetWinnerOutcome } from "@/lib/scrim/set-winner-validation";
 import { resolveScrimLink } from "@/lib/team-ops/scrim-feedback";
 import prisma from "@/lib/prisma";
 import { Ratelimit } from "@upstash/ratelimit";
@@ -84,13 +85,28 @@ export async function POST(request: NextRequest) {
     return new Response("Forbidden", { status: 403 });
   }
 
+  // Validate the chosen winner against the RAW uploaded team names before any
+  // normalization renames them.
+  if (data.winner) {
+    const winnerOutcome = resolveSetWinnerOutcome(data.winner, {
+      team1: String(data.map.match_start[0][4]),
+      team2: String(data.map.match_start[0][5]),
+    });
+    if (!winnerOutcome.ok) {
+      return Response.json({ error: winnerOutcome.error }, { status: 400 });
+    }
+  }
+
   if (data.autoAssignTeamNames && teamId && data.team1Name) {
-    data.map = await normalizeMapForScrim(
+    const result = await normalizeMapForScrim(
       data.map,
       teamId,
       data.team1Name,
-      data.team2Name ?? null
+      data.team2Name ?? null,
+      data.winner ?? null
     );
+    data.map = result.map;
+    data.winner = result.winner;
   }
 
   return createNdjsonStream(async (emit) => {

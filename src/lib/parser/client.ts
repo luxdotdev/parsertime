@@ -90,6 +90,28 @@ export function normalizeTeamData(
 
   return result;
 }
+
+/**
+ * Map a winning team name through the same rename normalizeTeamData applies,
+ * so a stored Map.winner stays consistent with the normalized MatchStart
+ * team names. Mirrors the value-replacement in normalizeTeamData.
+ */
+export function normalizeWinnerName(
+  winner: string | null,
+  origTeam1: string,
+  origTeam2: string,
+  newTeam1Name: string,
+  newTeam2Name: string | null,
+  userIsOriginalTeam2: boolean
+): string | null {
+  if (winner == null) return null;
+  const nameToReplace1 = userIsOriginalTeam2 ? origTeam2 : origTeam1;
+  const nameToReplace2 = userIsOriginalTeam2 ? origTeam1 : origTeam2;
+  if (winner === nameToReplace1) return newTeam1Name;
+  if (newTeam2Name !== null && winner === nameToReplace2) return newTeam2Name;
+  return winner;
+}
+
 export async function parseData(file: File) {
   switch (file.type) {
     case TXT_FILE:
