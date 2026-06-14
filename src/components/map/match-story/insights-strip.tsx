@@ -120,8 +120,8 @@ export function InsightsStrip({
   const t = useTranslations("mapPage.matchStory");
   if (insights.length === 0) return null;
   return (
-    <div className="border-border border">
-      <p className="text-muted-foreground border-border border-b px-3 py-1.5 font-mono text-[10px] tracking-[0.08em] uppercase">
+    <div className="border-border overflow-hidden rounded-md border">
+      <p className="text-muted-foreground bg-muted/30 border-border border-b px-4 py-2 font-mono text-[10px] tracking-[0.16em] uppercase">
         {title}
       </p>
       <ul className="divide-border divide-y">
@@ -141,8 +141,8 @@ export function InsightsStrip({
                 onMouseEnter={() =>
                   fightIndex !== null && onFocusFight(fightIndex)
                 }
-                className={`flex w-full items-baseline gap-3 px-3 py-2 text-left text-sm transition-colors duration-150 motion-reduce:transition-none ${
-                  isFocus ? "bg-muted" : "hover:bg-muted/60"
+                className={`flex w-full items-baseline gap-3 px-4 py-3 text-left text-sm transition-colors duration-150 motion-reduce:transition-none ${
+                  isFocus ? "bg-muted/50" : "hover:bg-muted/30"
                 }`}
               >
                 {figure !== null ? (

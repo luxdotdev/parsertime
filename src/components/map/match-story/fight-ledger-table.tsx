@@ -1,14 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   ChevronDownIcon,
   ChevronUpDownIcon,
@@ -19,6 +10,7 @@ import type {
   ObjectiveMarker,
 } from "@/lib/win-probability/timeline";
 import { CASCADE_MIN_WP } from "@/lib/win-probability/types";
+import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
@@ -41,8 +33,8 @@ function maxCarry(f: FightEntry): number {
     : Math.max(Math.abs(f.carryover.ultEconomy), Math.abs(f.carryover.stagger));
 }
 
-/** Header treatment mirroring the Overview tab's sortable table: a ghost
- * button with a persistent up/down chevron affordance. */
+/** Sortable header styled to match the FACEIT scouting tables: a tiny
+ * uppercase mono label with a subtle chevron affordance, clickable to sort. */
 function SortHeader({
   sortKey,
   label,
@@ -58,25 +50,27 @@ function SortHeader({
 }) {
   const active = sort.key === sortKey;
   return (
-    <TableHead
-      className={className}
+    <th
+      className={cn("px-4 py-2 text-left font-medium", className)}
       aria-sort={active ? (sort.desc ? "descending" : "ascending") : undefined}
     >
-      <Button
-        variant="ghost"
+      <button
+        type="button"
         onClick={() => onToggle(sortKey)}
-        className="h-9 w-full px-2"
+        className="hover:text-foreground inline-flex items-center gap-1 uppercase tracking-[0.16em] transition-colors"
       >
         {label}
-        {!active && <ChevronUpDownIcon className="w-4 min-w-4" />}
-        {active &&
-          (sort.desc ? (
-            <ChevronDownIcon className="w-4 min-w-4" />
+        {active ? (
+          sort.desc ? (
+            <ChevronDownIcon className="size-3 shrink-0" />
           ) : (
-            <ChevronUpIcon className="w-4 min-w-4" />
-          ))}
-      </Button>
-    </TableHead>
+            <ChevronUpIcon className="size-3 shrink-0" />
+          )
+        ) : (
+          <ChevronUpDownIcon className="size-3 shrink-0 opacity-40" />
+        )}
+      </button>
+    </th>
   );
 }
 
@@ -195,178 +189,189 @@ export function FightLedgerTable({
   const maxSwing = Math.max(0.01, ...fights.map((f) => Math.abs(f.swing)));
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <SortHeader
-            sortKey="fight"
-            label={t("fight")}
-            className="w-20"
-            sort={sort}
-            onToggle={toggleSort}
-          />
-          <SortHeader
-            sortKey="time"
-            label={t("time")}
-            className="w-24"
-            sort={sort}
-            onToggle={toggleSort}
-          />
-          {hasZones ? (
+    <div className="border-border overflow-x-auto rounded-md border">
+      <table className="w-full text-sm">
+        <thead className="bg-muted/30">
+          <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
             <SortHeader
-              sortKey="zone"
-              label={t("zone")}
+              sortKey="fight"
+              label={t("fight")}
+              className="w-20"
               sort={sort}
               onToggle={toggleSort}
             />
-          ) : null}
-          <SortHeader
-            sortKey="result"
-            label={t("result")}
-            sort={sort}
-            onToggle={toggleSort}
-          />
-          <SortHeader
-            sortKey="swing"
-            label={t("swing")}
-            sort={sort}
-            onToggle={toggleSort}
-          />
-          <SortHeader
-            sortKey="ults"
-            label={t("ults")}
-            className="w-24"
-            sort={sort}
-            onToggle={toggleSort}
-          />
-          <SortHeader
-            sortKey="context"
-            label={t("context")}
-            sort={sort}
-            onToggle={toggleSort}
-          />
-        </TableRow>
-      </TableHeader>
-      <TableBody onMouseLeave={() => onFocusFight(null)}>
-        {sorted.map((f) => {
-          const winnerColor =
-            f.winner === teams.team1
-              ? team1Color
-              : f.winner === teams.team2
-                ? team2Color
-                : null;
-          // Show any carryover ≥1 point (dim); ≥ the insight threshold reads
-          // emphasized. Hiding sub-threshold values entirely erased real
-          // information on modes where ult economy moves map WP only a little.
-          const carryParts: { text: string; strong: boolean }[] = [];
-          if (f.carryover !== null) {
-            for (const [label, value] of [
-              [t("ultEconomy"), f.carryover.ultEconomy],
-              [t("stagger"), f.carryover.stagger],
-            ] as const) {
-              if (Math.abs(value) >= 0.005) {
-                carryParts.push({
-                  text: `${label} ${value > 0 ? "+" : "−"}${Math.abs(value * 100).toFixed(0)}%`,
-                  strong: Math.abs(value) >= CASCADE_MIN_WP,
-                });
+            <SortHeader
+              sortKey="time"
+              label={t("time")}
+              className="w-24"
+              sort={sort}
+              onToggle={toggleSort}
+            />
+            {hasZones ? (
+              <SortHeader
+                sortKey="zone"
+                label={t("zone")}
+                sort={sort}
+                onToggle={toggleSort}
+              />
+            ) : null}
+            <SortHeader
+              sortKey="result"
+              label={t("result")}
+              sort={sort}
+              onToggle={toggleSort}
+            />
+            <SortHeader
+              sortKey="swing"
+              label={t("swing")}
+              sort={sort}
+              onToggle={toggleSort}
+            />
+            <SortHeader
+              sortKey="ults"
+              label={t("ults")}
+              className="w-24 text-right"
+              sort={sort}
+              onToggle={toggleSort}
+            />
+            <SortHeader
+              sortKey="context"
+              label={t("context")}
+              sort={sort}
+              onToggle={toggleSort}
+            />
+          </tr>
+        </thead>
+        <tbody
+          className="divide-y divide-[var(--border)]"
+          onMouseLeave={() => onFocusFight(null)}
+        >
+          {sorted.map((f) => {
+            const winnerColor =
+              f.winner === teams.team1
+                ? team1Color
+                : f.winner === teams.team2
+                  ? team2Color
+                  : null;
+            // Show any carryover ≥1 point (dim); ≥ the insight threshold reads
+            // emphasized. Hiding sub-threshold values entirely erased real
+            // information on modes where ult economy moves map WP only a little.
+            const carryParts: { text: string; strong: boolean }[] = [];
+            if (f.carryover !== null) {
+              for (const [label, value] of [
+                [t("ultEconomy"), f.carryover.ultEconomy],
+                [t("stagger"), f.carryover.stagger],
+              ] as const) {
+                if (Math.abs(value) >= 0.005) {
+                  carryParts.push({
+                    text: `${label} ${value > 0 ? "+" : "−"}${Math.abs(value * 100).toFixed(0)}%`,
+                    strong: Math.abs(value) >= CASCADE_MIN_WP,
+                  });
+                }
               }
             }
-          }
-          return (
-            <TableRow
-              key={f.index}
-              data-state={focusFight === f.index ? "selected" : undefined}
-              onMouseEnter={() => onFocusFight(f.index)}
-              className="cursor-default"
-            >
-              <TableCell className="font-mono tabular-nums">
-                {f.index + 1}
-              </TableCell>
-              <TableCell className="font-mono tabular-nums">
-                {formatClock(f.start)}
-              </TableCell>
-              {hasZones ? <TableCell>{f.zoneName ?? "—"}</TableCell> : null}
-              <TableCell>
-                {winnerColor !== null ? (
-                  <span className="flex items-center gap-2">
-                    <span
-                      aria-hidden
-                      className="size-2 shrink-0 rounded-full"
-                      style={{ backgroundColor: winnerColor }}
-                    />
-                    {f.winner}
-                  </span>
-                ) : (
-                  <span className="text-muted-foreground">{t("even")}</span>
+            return (
+              <tr
+                key={f.index}
+                onMouseEnter={() => onFocusFight(f.index)}
+                className={cn(
+                  "transition-colors",
+                  focusFight === f.index ? "bg-muted/50" : "hover:bg-muted/30"
                 )}
-              </TableCell>
-              <TableCell>
-                <span
-                  className="flex items-center gap-3"
-                  title={`${t("driverObjective")} ${(f.drivers.objective * 100).toFixed(0)}% · ${t("driverKills")} ${(f.drivers.kills * 100).toFixed(0)}% · ${t("driverUlts")} ${(f.drivers.ults * 100).toFixed(0)}%`}
-                >
-                  <SwingBar
-                    swing={f.swing}
-                    maxSwing={maxSwing}
-                    team1Color={team1Color}
-                    team2Color={team2Color}
-                  />
-                  <span className="w-12 text-right font-mono tabular-nums">
-                    {f.swing >= 0 ? "+" : "−"}
-                    {Math.abs(f.swing * 100).toFixed(0)}%
-                  </span>
-                </span>
-              </TableCell>
-              <TableCell className="text-right font-mono tabular-nums">
-                {f.ultsSpentTeam1}–{f.ultsSpentTeam2}
-              </TableCell>
-              <TableCell className="text-xs">
-                {(() => {
-                  const captures = capturesByFight.get(f.index) ?? [];
-                  if (captures.length === 0 && carryParts.length === 0) {
-                    return <span className="text-muted-foreground">—</span>;
-                  }
-                  return (
-                    <span className="flex flex-col gap-0.5">
-                      {captures.map((c) => (
-                        <span
-                          key={`${c.t}-${c.team}`}
-                          className="flex items-center gap-1.5"
-                          title={tChart("capture", { team: c.team })}
-                        >
-                          <span
-                            aria-hidden
-                            className="size-1.5 shrink-0 rotate-45"
-                            style={{
-                              backgroundColor:
-                                c.team === teams.team1
-                                  ? team1Color
-                                  : team2Color,
-                            }}
-                          />
-                          {tChart("capture", { team: c.team })}
-                        </span>
-                      ))}
-                      {carryParts.map((part) => (
-                        <span
-                          key={part.text}
-                          className={
-                            part.strong
-                              ? "text-foreground"
-                              : "text-muted-foreground"
-                          }
-                        >
-                          {part.text}
-                        </span>
-                      ))}
+              >
+                <td className="px-4 py-3 align-middle font-mono tabular-nums">
+                  {f.index + 1}
+                </td>
+                <td className="px-4 py-3 align-middle font-mono tabular-nums">
+                  {formatClock(f.start)}
+                </td>
+                {hasZones ? (
+                  <td className="px-4 py-3 align-middle">
+                    {f.zoneName ?? "—"}
+                  </td>
+                ) : null}
+                <td className="px-4 py-3 align-middle">
+                  {winnerColor !== null ? (
+                    <span className="flex items-center gap-2">
+                      <span
+                        aria-hidden
+                        className="size-2 shrink-0 rounded-full"
+                        style={{ backgroundColor: winnerColor }}
+                      />
+                      {f.winner}
                     </span>
-                  );
-                })()}
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+                  ) : (
+                    <span className="text-muted-foreground">{t("even")}</span>
+                  )}
+                </td>
+                <td className="px-4 py-3 align-middle">
+                  <span
+                    className="flex items-center gap-3"
+                    title={`${t("driverObjective")} ${(f.drivers.objective * 100).toFixed(0)}% · ${t("driverKills")} ${(f.drivers.kills * 100).toFixed(0)}% · ${t("driverUlts")} ${(f.drivers.ults * 100).toFixed(0)}%`}
+                  >
+                    <SwingBar
+                      swing={f.swing}
+                      maxSwing={maxSwing}
+                      team1Color={team1Color}
+                      team2Color={team2Color}
+                    />
+                    <span className="w-12 text-right font-mono tabular-nums">
+                      {f.swing >= 0 ? "+" : "−"}
+                      {Math.abs(f.swing * 100).toFixed(0)}%
+                    </span>
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-right align-middle font-mono tabular-nums">
+                  {f.ultsSpentTeam1}–{f.ultsSpentTeam2}
+                </td>
+                <td className="px-4 py-3 align-middle text-xs">
+                  {(() => {
+                    const captures = capturesByFight.get(f.index) ?? [];
+                    if (captures.length === 0 && carryParts.length === 0) {
+                      return <span className="text-muted-foreground">—</span>;
+                    }
+                    return (
+                      <span className="flex flex-col gap-0.5">
+                        {captures.map((c) => (
+                          <span
+                            key={`${c.t}-${c.team}`}
+                            className="flex items-center gap-1.5"
+                            title={tChart("capture", { team: c.team })}
+                          >
+                            <span
+                              aria-hidden
+                              className="size-1.5 shrink-0 rotate-45"
+                              style={{
+                                backgroundColor:
+                                  c.team === teams.team1
+                                    ? team1Color
+                                    : team2Color,
+                              }}
+                            />
+                            {tChart("capture", { team: c.team })}
+                          </span>
+                        ))}
+                        {carryParts.map((part) => (
+                          <span
+                            key={part.text}
+                            className={
+                              part.strong
+                                ? "text-foreground"
+                                : "text-muted-foreground"
+                            }
+                          >
+                            {part.text}
+                          </span>
+                        ))}
+                      </span>
+                    );
+                  })()}
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 }
