@@ -20,8 +20,8 @@ describe("resolveSetWinnerOutcome", () => {
   });
 
   it("rejects when team names are not yet known", () => {
-    expect(resolveSetWinnerOutcome("Spitfire", { team1: "", team2: "" })).toEqual(
-      { ok: false, error: "Map teams are not available yet" }
-    );
+    expect(
+      resolveSetWinnerOutcome("Spitfire", { team1: "", team2: "" })
+    ).toEqual({ ok: false, error: "Map teams are not available yet" });
   });
 });

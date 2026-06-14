@@ -11,8 +11,38 @@ describe("pushInputFromParserData", () => {
     const data = {
       match_start: [["match_start", 0, "Colosseo", "Push", "T1", "T2"]],
       kill: [
-        ["kill", 5, "T1", "a", "Tracer", "T2", "v", "Ana", "Pulse", 50, "0", "0", "(10.0, 1.0, 20.0)", "(11.0, 1.0, 21.0)"],
-        ["kill", 6, "T2", "b", "Ana", "T1", "w", "Tracer", "Sleep", 0, "0", "0", "(90.0, 1.0, 20.0)", "(12.0, 1.0, 21.0)"],
+        [
+          "kill",
+          5,
+          "T1",
+          "a",
+          "Tracer",
+          "T2",
+          "v",
+          "Ana",
+          "Pulse",
+          50,
+          "0",
+          "0",
+          "(10.0, 1.0, 20.0)",
+          "(11.0, 1.0, 21.0)",
+        ],
+        [
+          "kill",
+          6,
+          "T2",
+          "b",
+          "Ana",
+          "T1",
+          "w",
+          "Tracer",
+          "Sleep",
+          0,
+          "0",
+          "0",
+          "(90.0, 1.0, 20.0)",
+          "(12.0, 1.0, 21.0)",
+        ],
       ],
     } as unknown as ParserData;
 
@@ -29,7 +59,22 @@ describe("pushInputFromParserData", () => {
   it("returns null when no kill has coordinates", () => {
     const data = {
       match_start: [["match_start", 0, "Colosseo", "Push", "T1", "T2"]],
-      kill: [["kill", 5, "T1", "a", "Tracer", "T2", "v", "Ana", "Pulse", 50, "0", "0"]],
+      kill: [
+        [
+          "kill",
+          5,
+          "T1",
+          "a",
+          "Tracer",
+          "T2",
+          "v",
+          "Ana",
+          "Pulse",
+          50,
+          "0",
+          "0",
+        ],
+      ],
     } as unknown as ParserData;
     expect(pushInputFromParserData(data)).toBeNull();
   });
@@ -38,10 +83,35 @@ describe("pushInputFromParserData", () => {
 describe("pushInputFromBundle", () => {
   it("maps bundle kills to push kills using attacker coords", () => {
     const bundle = {
-      matchStart: { team_1_name: "T1", team_2_name: "T2", map_name: "Colosseo", map_type: "Push" },
+      matchStart: {
+        team_1_name: "T1",
+        team_2_name: "T2",
+        map_name: "Colosseo",
+        map_type: "Push",
+      },
       kills: [
-        { match_time: 5, attacker_name: "a", attacker_team: "T1", victim_name: "v", victim_team: "T2", attacker_x: 10, attacker_z: 20, victim_x: 11, victim_z: 21 },
-        { match_time: 6, attacker_name: "b", attacker_team: "T2", victim_name: "w", victim_team: "T1", attacker_x: null, attacker_z: null, victim_x: 12, victim_z: 21 },
+        {
+          match_time: 5,
+          attacker_name: "a",
+          attacker_team: "T1",
+          victim_name: "v",
+          victim_team: "T2",
+          attacker_x: 10,
+          attacker_z: 20,
+          victim_x: 11,
+          victim_z: 21,
+        },
+        {
+          match_time: 6,
+          attacker_name: "b",
+          attacker_team: "T2",
+          victim_name: "w",
+          victim_team: "T1",
+          attacker_x: null,
+          attacker_z: null,
+          victim_x: 12,
+          victim_z: 21,
+        },
       ],
     } as unknown as PositionalEventBundle;
 
@@ -51,7 +121,10 @@ describe("pushInputFromBundle", () => {
   });
 
   it("returns null without a matchStart", () => {
-    const bundle = { matchStart: null, kills: [] } as unknown as PositionalEventBundle;
+    const bundle = {
+      matchStart: null,
+      kills: [],
+    } as unknown as PositionalEventBundle;
     expect(pushInputFromBundle(bundle)).toBeNull();
   });
 });

@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  computePushWinner,
-  type PushWinnerInput,
-} from "@/lib/push-winner";
+import { computePushWinner, type PushWinnerInput } from "@/lib/push-winner";
 
 // Axis along x: team1 base near x=0, team2 base near x=100, center at x=50.
 function makeInput(

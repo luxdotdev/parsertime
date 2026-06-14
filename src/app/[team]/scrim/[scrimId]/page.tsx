@@ -282,9 +282,7 @@ export default async function ScrimDashboardPage(
   // there is no ourTeamName to classify Won/Lost and no mapResults to fall back
   // on. Resolve the literal winning team name per map instead so the card can
   // still surface the result (as a neutral winner badge).
-  const ungatedWinners = overviewData
-    ? null
-    : await resolveScrimMapWinners(id);
+  const ungatedWinners = overviewData ? null : await resolveScrimMapWinners(id);
   const mapMetaById = new Map<
     number,
     {

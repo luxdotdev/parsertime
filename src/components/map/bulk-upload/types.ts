@@ -8,9 +8,8 @@ import { $Enums } from "@/generated/prisma/browser";
 export function isPushMap(mapName: string | undefined): boolean {
   if (!mapName) return false;
   return (
-    mapNameToMapTypeMapping[
-      mapName as keyof typeof mapNameToMapTypeMapping
-    ] === $Enums.MapType.Push
+    mapNameToMapTypeMapping[mapName as keyof typeof mapNameToMapTypeMapping] ===
+    $Enums.MapType.Push
   );
 }
 

@@ -18,8 +18,9 @@ async function main() {
 
   const pushMaps = maps.filter(
     (m) =>
-      mapNameToMapTypeMapping[m.name as keyof typeof mapNameToMapTypeMapping] ===
-      $Enums.MapType.Push
+      mapNameToMapTypeMapping[
+        m.name as keyof typeof mapNameToMapTypeMapping
+      ] === $Enums.MapType.Push
   );
   console.log(`Found ${pushMaps.length} Push maps without a stored winner.`);
 
@@ -41,7 +42,9 @@ async function main() {
 
     if (!result) {
       noData++;
-      console.log(`map ${map.id} (${map.name}): no coordinate data — leave N/A`);
+      console.log(
+        `map ${map.id} (${map.name}): no coordinate data — leave N/A`
+      );
       continue;
     }
 
@@ -61,7 +64,9 @@ async function main() {
 
   console.log(
     `\n${decided} decided, ${noData} left as N/A. ` +
-      (commit ? "Changes committed." : "Dry run — re-run with --commit to write.")
+      (commit
+        ? "Changes committed."
+        : "Dry run — re-run with --commit to write.")
   );
 }
 
