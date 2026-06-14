@@ -36,6 +36,8 @@ function baseData(rows: Row[], roster: string[]): BaseTeamData {
   } as unknown as BaseTeamData;
 }
 
+const NO_SUBS = new Set<string>();
+
 describe("processPlayerScatterStats", () => {
   it("buckets stats per (player, hero) and excludes non-roster players", () => {
     const result = processPlayerScatterStats(
@@ -47,7 +49,8 @@ describe("processPlayerScatterStats", () => {
           row({ player_name: "Opp", player_hero: "Genji", final_blows: 99 }),
         ],
         ["A"]
-      )
+      ),
+      NO_SUBS
     );
 
     expect(result).toHaveLength(1);
@@ -62,7 +65,11 @@ describe("processPlayerScatterStats", () => {
 
   it("skips rows with a null MapDataId", () => {
     const result = processPlayerScatterStats(
-      baseData([row({ player_name: "A", MapDataId: null, final_blows: 7 })], ["A"])
+      baseData(
+        [row({ player_name: "A", MapDataId: null, final_blows: 7 })],
+        ["A"]
+      ),
+      NO_SUBS
     );
     expect(result).toHaveLength(0);
   });
@@ -72,10 +79,15 @@ describe("processPlayerScatterStats", () => {
       baseData(
         [
           row({ player_name: "A", player_hero: "Ana", hero_time_played: 100 }),
-          row({ player_name: "A", player_hero: "Reinhardt", hero_time_played: 900 }),
+          row({
+            player_name: "A",
+            player_hero: "Reinhardt",
+            hero_time_played: 900,
+          }),
         ],
         ["A"]
-      )
+      ),
+      NO_SUBS
     );
     expect(result[0].primaryRole).toBe("Tank");
   });
@@ -89,8 +101,24 @@ describe("processPlayerScatterStats", () => {
           row({ player_name: "Mia", player_hero: "Ana" }),
         ],
         ["Zed", "Abe", "Mia"]
-      )
+      ),
+      NO_SUBS
     );
     expect(result.map((p) => p.playerName)).toEqual(["Abe", "Mia", "Zed"]);
+  });
+
+  it("excludes substitute players even when they have surviving stats", () => {
+    const result = processPlayerScatterStats(
+      baseData(
+        [
+          row({ player_name: "Core", player_hero: "Ana", final_blows: 10 }),
+          row({ player_name: "Sub", player_hero: "Genji", final_blows: 20 }),
+        ],
+        ["Core", "Sub"]
+      ),
+      new Set(["Sub"])
+    );
+
+    expect(result.map((p) => p.playerName)).toEqual(["Core"]);
   });
 });

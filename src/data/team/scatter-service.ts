@@ -13,7 +13,7 @@ import {
   Metric,
   MetricBoundaries,
 } from "effect";
-import type { TeamQueryError } from "./errors";
+import { TeamQueryError } from "./errors";
 import { teamCacheMissTotal, teamCacheRequestTotal } from "./metrics";
 import type { BaseTeamData, TeamDateRange } from "./shared-core";
 import { parseDateRangeFromCacheKey } from "./shared-core";
@@ -21,6 +21,7 @@ import {
   TeamSharedDataService,
   TeamSharedDataServiceLive,
 } from "./shared-data-service";
+import { getTeamSubstituteNames } from "./substitutes";
 
 const scatterQuerySuccessTotal = Metric.counter("team.scatter.query.success", {
   description: "Total successful team scatter queries",
@@ -59,13 +60,17 @@ function emptyBucket(hero: HeroName): PlayerScatterBucket {
 }
 
 export function processPlayerScatterStats(
-  baseData: BaseTeamData
+  baseData: BaseTeamData,
+  substituteNames: Set<string>
 ): PlayerScatterStats[] {
   const { teamRosterSet, allPlayerStats } = baseData;
   const byPlayer = new Map<string, Map<string, PlayerScatterBucket>>();
 
   for (const s of allPlayerStats) {
     if (!teamRosterSet.has(s.player_name)) continue;
+    // Substitutes stay on the identity roster but are dropped from this
+    // per-player view, mirroring how they're excluded from other team stats.
+    if (substituteNames.has(s.player_name)) continue;
     if (!s.MapDataId) continue;
 
     let heroes = byPlayer.get(s.player_name);
@@ -137,7 +142,15 @@ export const make = Effect.gen(function* () {
     return Effect.gen(function* () {
       yield* Effect.annotateCurrentSpan("teamId", teamId);
       const data = yield* shared.getBaseTeamData(teamId, { dateRange });
-      const result = processPlayerScatterStats(data);
+      const substituteNames = yield* Effect.tryPromise({
+        try: () => getTeamSubstituteNames(teamId),
+        catch: (error) =>
+          new TeamQueryError({
+            operation: "fetch substitutes for scatter",
+            cause: error,
+          }),
+      });
+      const result = processPlayerScatterStats(data, substituteNames);
       wideEvent.outcome = "success";
       wideEvent.player_count = result.length;
       yield* Metric.increment(scatterQuerySuccessTotal);
