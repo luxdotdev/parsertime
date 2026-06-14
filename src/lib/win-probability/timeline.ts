@@ -385,7 +385,8 @@ const FEATURE_DRIVER: Record<(typeof FEATURE_NAMES)[number], DriverGroup> = {
 
 /** Splits a fight's WP swing by what changed across it. With a logistic
  * model, z_after − z_before = Σ wᵢ·Δxᵢ/σᵢ exactly; each group's logit share
- * is scaled onto the (calibrated) swing. */
+ * is scaled onto the (calibrated) swing. GBM families return zero decomposition
+ * (tree leaf paths are not linearly decomposable by feature). */
 function decomposeSwing(
   artifact: ModelArtifact,
   log: WPEventLog,
@@ -394,7 +395,7 @@ function decomposeSwing(
   swing: number
 ): FightEntry["drivers"] {
   const model = artifact.modeFamilies[log.modeFamily];
-  if (model === null) return { objective: 0, kills: 0, ults: 0 };
+  if (model === null || model.kind === "gbm") return { objective: 0, kills: 0, ults: 0 };
   const fBefore = extractFeatures(before);
   const fAfter = extractFeatures(after);
   const deltas: Record<DriverGroup, number> = {

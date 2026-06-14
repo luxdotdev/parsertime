@@ -30,7 +30,9 @@ describe("trainFamily", () => {
     () => {
       const result = trainFamily(syntheticRows(8000));
       expect(result.model).not.toBeNull();
-      expect(result.model!.weights[0]).toBeGreaterThan(0);
+      const m = result.model!;
+      if (m.kind === "gbm") throw new Error("expected LR model");
+      expect(m.weights[0]).toBeGreaterThan(0);
       expect(result.model!.sampleCount).toBe(8000);
       expect(result.model!.calibration).toBeDefined();
       expect(result.model!.metrics).toBeDefined();
