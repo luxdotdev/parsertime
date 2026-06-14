@@ -7,8 +7,8 @@ vi.mock("@/lib/win-probability/training/extract", () => ({
   fetchEventLog: vi.fn(),
   buildRows: vi.fn(),
 }));
-vi.mock("@/lib/win-probability/artifact-store", () => ({
-  publishArtifact: vi.fn(),
+vi.mock("@vercel/blob", () => ({
+  put: vi.fn().mockResolvedValue({ url: "https://blob.test/x" }),
 }));
 vi.mock("@/lib/logger", () => ({
   Logger: { warn: vi.fn(), info: vi.fn(), error: vi.fn() },
@@ -42,9 +42,15 @@ test("fails closed when CRON_SECRET is unset", async () => {
   expect(res.status).toBe(500);
 });
 
-test("authorized run with no maps reports published: false", async () => {
+test("authorized run with no maps exports nothing", async () => {
   const res = await GET(req("Bearer test-secret-value"));
   expect(res.status).toBe(200);
-  const body = (await res.json()) as { published: boolean };
-  expect(body.published).toBe(false);
+  const body = (await res.json()) as {
+    exported: boolean;
+    runId: string;
+    modes: string[];
+  };
+  expect(body.exported).toBe(true);
+  expect(body.modes).toEqual([]);
+  expect(typeof body.runId).toBe("string");
 });

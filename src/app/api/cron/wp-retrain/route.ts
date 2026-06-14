@@ -1,19 +1,22 @@
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { publishArtifact } from "@/lib/win-probability/artifact-store";
+import { datasetToCsv } from "@/lib/win-probability/training/csv";
 import {
   buildRows,
   fetchEventLog,
 } from "@/lib/win-probability/training/extract";
-import { buildArtifact } from "@/lib/win-probability/training/train-core";
 import {
   type DatasetRow,
   MODE_FAMILIES,
   type ModeFamily,
 } from "@/lib/win-probability/types";
-import { timingSafeEqual } from "node:crypto";
+import { put } from "@vercel/blob";
+import { randomUUID, timingSafeEqual } from "node:crypto";
 
 export const runtime = "nodejs";
+// The export (map fetch + buildRows over every map) is the long pole; training
+// now runs in a separate Python function, so this route only extracts, writes
+// the matrices to Blob, and fires the trainer.
 export const maxDuration = 300;
 
 const BATCH_SIZE = 50;
@@ -109,43 +112,53 @@ export async function GET(req: Request): Promise<Response> {
       MODE_FAMILIES.map((f) => [f, rowsByFamily[f].length])
     );
 
-    const { artifact, reports, trainedFamilies } = buildArtifact(
-      rowsByFamily,
-      0 // placeholder — publishArtifact assigns the real version
-    );
-    wideEvent.trained_families = trainedFamilies;
+    // Export each non-empty mode's feature matrix to Blob, then trigger the
+    // Python trainer. Training (and the eventual R2 publish via the
+    // wp-publish callback) happens out-of-band — this route never trains.
+    const runId = randomUUID();
+    const token = process.env.BLOB_READ_WRITE_TOKEN;
+    const exportedModes: ModeFamily[] = [];
     for (const family of MODE_FAMILIES) {
-      const gateFailures = reports[family].filter((line) =>
-        line.startsWith("GATE FAIL")
-      );
-      if (gateFailures.length > 0) {
-        Logger.warn({
-          event: "wp.cron.retrain.gate_failed",
-          family,
-          failures: gateFailures,
-        });
-      }
+      const rows = rowsByFamily[family];
+      if (rows.length === 0) continue;
+      await put(`wp-train/${runId}/dataset-${family}.csv`, datasetToCsv(rows), {
+        access: "public",
+        contentType: "text/csv",
+        token,
+      });
+      exportedModes.push(family);
     }
+    wideEvent.run_id = runId;
+    wideEvent.exported_modes = exportedModes;
 
-    if (trainedFamilies.length === 0) {
-      // Gates held the line: a valid run that declined to deploy. The old
-      // pointer keeps serving; the warn logs above are the alert signal.
-      wideEvent.outcome = "no_family_passed";
+    if (exportedModes.length === 0) {
+      // Nothing to train on — skip the trigger and report the empty run.
+      wideEvent.outcome = "no_data_exported";
       wideEvent.status_code = 200;
-      return Response.json({ published: false, trainedFamilies: [] });
+      return Response.json({ exported: true, runId, modes: exportedModes });
     }
 
-    const published = await publishArtifact(artifact);
-    wideEvent.published_key = published.key;
-    wideEvent.model_version = published.modelVersion;
+    // Fire-and-trigger: kick the Python trainer but don't await its training.
+    // It POSTs the finished artifact back to /api/cron/wp-publish.
+    const origin = new URL(req.url).origin;
+    await fetch(`${origin}/api/wp-train`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.CRON_SECRET}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ runId }),
+    }).catch((error: unknown) => {
+      Logger.warn({
+        event: "wp.cron.retrain.trigger_failed",
+        run_id: runId,
+        error_message: error instanceof Error ? error.message : "unknown",
+      });
+    });
+
     wideEvent.outcome = "success";
     wideEvent.status_code = 200;
-    return Response.json({
-      published: true,
-      key: published.key,
-      modelVersion: published.modelVersion,
-      trainedFamilies,
-    });
+    return Response.json({ exported: true, runId, modes: exportedModes });
   } catch (error) {
     wideEvent.outcome = "error";
     wideEvent.status_code = 500;
