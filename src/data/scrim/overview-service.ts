@@ -33,7 +33,7 @@ import {
   ultimateStartToKillEvent,
   type Fight,
 } from "@/lib/utils";
-import { calculateWinner } from "@/lib/winrate";
+import { resolveMapWinner } from "@/lib/winrate";
 import type { HeroName, RoleName, SubroleName } from "@/types/heroes";
 import {
   getHeroRole,
@@ -1524,6 +1524,7 @@ export const make: Effect.Effect<
             select: {
               id: true,
               name: true,
+              winner: true,
               mapData: { select: { id: true } },
             },
           }),
@@ -1968,7 +1969,7 @@ export const make: Effect.Effect<
           ? (mapPointProgress?.get(matchStart.team_2_name) ?? [])
           : [];
 
-        const winnerName = calculateWinner({
+        const winnerName = resolveMapWinner(map.winner, {
           matchDetails: matchStart,
           finalRound,
           team1Captures: team1Caps,
