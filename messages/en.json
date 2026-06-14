@@ -1690,9 +1690,14 @@
       "description": "Edit details and settings for {scrimName}."
     },
     "wpa": {
-      "title": "Win probability added",
+      "title": "Win Probability Added",
       "description": "Per-player WPA summed across this scrim's maps.",
-      "maps": "{count, plural, one {# map} other {# maps}}"
+      "columns": {
+        "player": "Player",
+        "team": "Team",
+        "maps": "Maps",
+        "wpa": "WPA"
+      }
     },
     "initiationSection": {
       "coverage": "Detected on {covered} of {total} maps with detailed logs.",

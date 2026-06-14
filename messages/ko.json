@@ -1692,7 +1692,12 @@
     "wpa": {
       "title": "승리 확률 기여도",
       "description": "이 스크림의 전체 맵에 대해 합산한 플레이어별 WPA입니다.",
-      "maps": "{count}개 맵"
+      "columns": {
+        "player": "플레이어",
+        "team": "팀",
+        "maps": "맵",
+        "wpa": "WPA"
+      }
     },
     "initiationSection": {
       "coverage": "상세 로그가 있는 {total}개 맵 중 {covered}개에서 감지됨.",

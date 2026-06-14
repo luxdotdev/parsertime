@@ -13,6 +13,7 @@ import {
   StarFilledIcon,
 } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 
 export function WinLossBadge({
   wins,
@@ -122,11 +123,13 @@ export function ScrimOverviewSection({
   positionalStats = null,
   positionalArtifacts = null,
   initiation = null,
+  wpaSlot = null,
 }: {
   data: ScrimOverviewData;
   positionalStats?: ScrimPositionalStats | null;
   positionalArtifacts?: ScrimPositionalArtifacts | null;
   initiation?: ScrimInitiationData | null;
+  wpaSlot?: ReactNode;
 }) {
   const t = useTranslations("scrimPage.overviewSummary");
 
@@ -197,6 +200,7 @@ export function ScrimOverviewSection({
         positionalStats={positionalStats}
         positionalArtifacts={positionalArtifacts}
         initiation={initiation}
+        wpaSlot={wpaSlot}
       />
     </section>
   );

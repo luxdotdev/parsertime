@@ -356,6 +356,14 @@ export default async function ScrimDashboardPage(
                 positionalStats={positionalStats}
                 positionalArtifacts={positionalArtifacts}
                 initiation={scrimInitiation}
+                wpaSlot={
+                  // Streams in as the last accordion item without blocking the
+                  // page: aggregating WPA across a scrim's maps is the heaviest
+                  // read here. Returns null (no item) when there's no data.
+                  <Suspense fallback={null}>
+                    <ScrimWpaSection scrimId={id} />
+                  </Suspense>
+                }
               />
             </div>
           ) : showOverviewUnavailable ? (
@@ -419,12 +427,6 @@ export default async function ScrimDashboardPage(
               </Alert>
             )}
           </div>
-
-          {/* Streams in after the page: aggregating WPA across a scrim's maps
-              is the heaviest read on this page and must never block it. */}
-          <Suspense fallback={null}>
-            <ScrimWpaSection scrimId={id} />
-          </Suspense>
         </div>
 
         {mapComparisonEnabled && teamId && (

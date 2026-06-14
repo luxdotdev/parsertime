@@ -39,18 +39,24 @@ import {
   Zap,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { type ReactNode, useState } from "react";
 
 export function ScrimOverviewTabs({
   data,
   positionalStats = null,
   positionalArtifacts = null,
   initiation = null,
+  wpaSlot = null,
 }: {
   data: ScrimOverviewData;
   positionalStats?: ScrimPositionalStats | null;
   positionalArtifacts?: ScrimPositionalArtifacts | null;
   initiation?: ScrimInitiationData | null;
+  // Streamed in via Suspense from the server: aggregating WPA across a scrim's
+  // maps is the heaviest read on this page, so it must never block render. It
+  // renders its own <AccordionItem value="wpa"> (or null), and intentionally
+  // sits outside `allSections` — so expand/collapse-all skips it.
+  wpaSlot?: ReactNode;
 }) {
   const t = useTranslations("scrimPage.overviewTabs");
   const hasAbilityData = data.abilityTimingAnalysis.rows.length > 0;
@@ -269,6 +275,8 @@ export function ScrimOverviewTabs({
               </AccordionContent>
             </AccordionItem>
           )}
+
+          {wpaSlot}
         </Accordion>
       </TabsContent>
 

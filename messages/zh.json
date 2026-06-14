@@ -1692,7 +1692,12 @@
     "wpa": {
       "title": "胜率贡献值",
       "description": "按选手汇总本次训练赛全部地图的 WPA。",
-      "maps": "{count} 张地图"
+      "columns": {
+        "player": "选手",
+        "team": "队伍",
+        "maps": "地图",
+        "wpa": "WPA"
+      }
     },
     "initiationSection": {
       "coverage": "在 {total} 张拥有详细日志的地图中检测到 {covered} 张。",

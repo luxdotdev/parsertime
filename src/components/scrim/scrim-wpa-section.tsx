@@ -1,7 +1,13 @@
-import { SectionHeader } from "@/components/section-header";
+import { ScrimWpaTable } from "@/components/scrim/scrim-wpa-table";
+import {
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { MatchStoryService } from "@/data/map/match-story-service";
 import { AppRuntime } from "@/data/runtime";
 import { Effect } from "effect";
+import { LineChart } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 export async function ScrimWpaSection({ scrimId }: { scrimId: number }) {
@@ -15,32 +21,20 @@ export async function ScrimWpaSection({ scrimId }: { scrimId: number }) {
   if (wpa === null || wpa.length === 0) return null;
 
   return (
-    <section className="mt-10">
-      <SectionHeader
-        id="scrim-wpa"
-        title={t("title")}
-        description={t("description")}
-      />
-      <div className="border-border border">
-        {wpa.map((p) => (
-          <div
-            key={`${p.team}-${p.player}`}
-            className="border-border grid grid-cols-4 gap-2 border-b px-3 py-1.5 text-sm last:border-b-0"
-          >
-            <span>{p.player}</span>
-            <span className="text-muted-foreground">{p.team}</span>
-            <span className="text-muted-foreground text-xs">
-              {t("maps", { count: p.maps })}
-            </span>
-            <span
-              className={`text-right font-mono tabular-nums ${p.wpa >= 0 ? "text-primary" : "text-destructive"}`}
-            >
-              {p.wpa >= 0 ? "+" : ""}
-              {(p.wpa * 100).toFixed(1)}%
-            </span>
-          </div>
-        ))}
-      </div>
-    </section>
+    <AccordionItem value="wpa">
+      <AccordionTrigger>
+        <span className="flex items-center gap-2">
+          <LineChart
+            className="text-muted-foreground size-4"
+            aria-hidden="true"
+          />
+          {t("title")}
+        </span>
+      </AccordionTrigger>
+      <AccordionContent className="h-auto">
+        <p className="text-muted-foreground mb-3 text-sm">{t("description")}</p>
+        <ScrimWpaTable wpa={wpa} />
+      </AccordionContent>
+    </AccordionItem>
   );
 }
