@@ -12,8 +12,9 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 type MapWinnerDialogProps = {
@@ -35,9 +36,18 @@ export function MapWinnerDialog({
   team2Name,
   currentWinner,
 }: MapWinnerDialogProps) {
+  const t = useTranslations("scrimPage.mapWinnerDialog");
   const [selected, setSelected] = useState<string>(currentWinner ?? "");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  // Reset the selection to the current winner whenever the dialog closes, since
+  // the dialog stays mounted and useState would otherwise go stale.
+  useEffect(() => {
+    if (!open) {
+      setSelected(currentWinner ?? "");
+    }
+  }, [open, currentWinner]);
 
   async function handleConfirm() {
     if (!selected) return;
@@ -52,16 +62,14 @@ export function MapWinnerDialog({
 
       if (!res.ok) {
         const errBody = (await res.json()) as { error?: string };
-        throw new Error(errBody.error ?? "Failed to set winner");
+        throw new Error(errBody.error ?? t("error"));
       }
 
-      toast.success("Winner updated");
+      toast.success(t("success"));
       onOpenChange(false);
       router.refresh();
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to set winner"
-      );
+      toast.error(error instanceof Error ? error.message : t("error"));
     } finally {
       setLoading(false);
     }
@@ -71,10 +79,12 @@ export function MapWinnerDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Set Map Winner</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>
-            Choose the winning team for <strong>{mapName}</strong>. This
-            overrides any automatically detected result.
+            {t.rich("description", {
+              mapName,
+              strong: (chunks) => <strong>{chunks}</strong>,
+            })}
           </DialogDescription>
         </DialogHeader>
 
@@ -95,11 +105,11 @@ export function MapWinnerDialog({
             onClick={() => onOpenChange(false)}
             disabled={loading}
           >
-            Cancel
+            {t("cancel")}
           </Button>
           <Button onClick={handleConfirm} disabled={!selected || loading}>
             {loading && <ReloadIcon className="mr-2 size-4 animate-spin" />}
-            Save Winner
+            {t("save")}
           </Button>
         </DialogFooter>
       </DialogContent>

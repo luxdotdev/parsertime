@@ -1598,13 +1598,27 @@
       "altText": "The loading screen art for {map}.",
       "selected": "Selected",
       "copiedCode": "Copied replay code!",
+      "won": "Won",
+      "lost": "Lost",
+      "auto": "auto",
+      "autoTooltip": "Auto-detected from positions",
+      "editWinner": "Edit winner for {map}",
       "contextMenu": {
         "title": "Map Actions",
         "selectForComparison": "Select for comparison",
         "addToMapGroup": "Add to map group",
+        "setWinner": "Set winner",
         "viewDetails": "View Map Details",
         "copyCode": "Copy Replay Code"
       }
+    },
+    "mapWinnerDialog": {
+      "title": "Set Map Winner",
+      "description": "Choose the winning team for <strong>{mapName}</strong>. This overrides any automatically detected result.",
+      "cancel": "Cancel",
+      "save": "Save Winner",
+      "success": "Winner updated",
+      "error": "Failed to set winner"
     },
     "compareButton": {
       "selected": "{count, plural, =1 {1 map selected} other {# maps selected}}",

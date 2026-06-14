@@ -47,7 +47,7 @@ type MapCardWithSelectionProps = {
   canManage?: boolean;
 };
 
-type MapResultLabel = "won" | "lost" | "draw" | "unknown";
+type MapResultLabel = "won" | "lost" | "unknown";
 
 function deriveResultLabel(
   resolvedWinner: string | null | undefined,
@@ -120,12 +120,10 @@ function MapCardWithSelectionComponent({
   const resultLabel = deriveResultLabel(resolvedWinner, ourTeamName);
   const resultText =
     resultLabel === "won"
-      ? "Won"
+      ? t("won")
       : resultLabel === "lost"
-        ? "Lost"
-        : resultLabel === "draw"
-          ? "Draw"
-          : "—";
+        ? t("lost")
+        : "—";
   const canEditWinner = canManage && !!team1Name && !!team2Name;
 
   const card = (
@@ -185,7 +183,6 @@ function MapCardWithSelectionComponent({
             "inline-flex items-center rounded-sm px-1.5 py-0.5 font-mono text-[0.625rem] font-semibold tracking-[0.08em] uppercase tabular-nums",
             resultLabel === "won" && "bg-emerald-500/85 text-white",
             resultLabel === "lost" && "bg-red-500/85 text-white",
-            resultLabel === "draw" && "bg-zinc-500/85 text-white",
             resultLabel === "unknown" && "bg-black/55 text-white/80"
           )}
         >
@@ -194,16 +191,16 @@ function MapCardWithSelectionComponent({
         {map.winnerSource === "auto_coords" && (
           <span
             className="inline-flex items-center rounded-sm bg-black/55 px-1.5 py-0.5 font-mono text-[0.625rem] tracking-[0.08em] text-white/70 uppercase"
-            title="Auto-detected from positions"
+            title={t("autoTooltip")}
           >
-            auto
+            {t("auto")}
           </span>
         )}
         {canEditWinner && (
           <button
             type="button"
             onClick={handleOpenWinnerDialog}
-            aria-label={`Edit winner for ${displayName}`}
+            aria-label={t("editWinner", { map: displayName })}
             className="inline-flex size-5 items-center justify-center rounded-sm bg-black/55 text-white/80 transition-colors hover:bg-black/75 hover:text-white"
           >
             <Pencil1Icon className="size-3" aria-hidden="true" />
@@ -252,7 +249,7 @@ function MapCardWithSelectionComponent({
             </ContextMenuItem>
             {canEditWinner && (
               <ContextMenuItem onSelect={() => setIsWinnerDialogOpen(true)}>
-                Set winner
+                {t("contextMenu.setWinner")}
               </ContextMenuItem>
             )}
             <ContextMenuSeparator />

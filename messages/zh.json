@@ -1598,13 +1598,27 @@
       "altText": "{map} 的加载界面美术图。",
       "selected": "已选择",
       "copiedCode": "已复制回放代码！",
+      "won": "胜",
+      "lost": "负",
+      "auto": "自动",
+      "autoTooltip": "根据位置自动检测",
+      "editWinner": "编辑 {map} 的胜方",
       "contextMenu": {
         "title": "地图操作",
         "selectForComparison": "选择用于比较",
         "addToMapGroup": "添加到地图组",
+        "setWinner": "设置胜方",
         "viewDetails": "查看地图详情",
         "copyCode": "复制回放代码"
       }
+    },
+    "mapWinnerDialog": {
+      "title": "设置地图胜方",
+      "description": "为 <strong>{mapName}</strong> 选择获胜队伍。这将覆盖自动检测的结果。",
+      "cancel": "取消",
+      "save": "保存胜方",
+      "success": "胜方已更新",
+      "error": "设置胜方失败"
     },
     "compareButton": {
       "selected": "{count, plural, =1 {已选择 1 张地图} other {已选择 # 张地图}}",

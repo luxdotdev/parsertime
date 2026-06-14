@@ -1598,13 +1598,27 @@
       "altText": "{map} 로딩 화면 아트.",
       "selected": "선택됨",
       "copiedCode": "리플레이 코드를 복사했습니다!",
+      "won": "승리",
+      "lost": "패배",
+      "auto": "자동",
+      "autoTooltip": "위치 기반 자동 감지",
+      "editWinner": "{map} 승자 편집",
       "contextMenu": {
         "title": "맵 작업",
         "selectForComparison": "비교 대상으로 선택",
         "addToMapGroup": "맵 그룹에 추가",
+        "setWinner": "승자 설정",
         "viewDetails": "맵 상세 보기",
         "copyCode": "리플레이 코드 복사"
       }
+    },
+    "mapWinnerDialog": {
+      "title": "맵 승자 설정",
+      "description": "<strong>{mapName}</strong>의 승리 팀을 선택하세요. 자동으로 감지된 결과를 덮어씁니다.",
+      "cancel": "취소",
+      "save": "승자 저장",
+      "success": "승자가 업데이트되었습니다",
+      "error": "승자 설정에 실패했습니다"
     },
     "compareButton": {
       "selected": "{count, plural, =1 {맵 1개 선택됨} other {맵 #개 선택됨}}",
