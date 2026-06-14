@@ -7747,6 +7747,8 @@
       "description": "각 점은 10분당으로 환산된 선수입니다. 영웅 필터로 모든 차트의 범위를 조정하세요.",
       "regressionToggle": "추세선 + r",
       "correlation": "r = {value}",
+      "trendUnavailable": "추세를 보려면 선수가 2명 이상 필요합니다",
+      "chartAlt": "선수 {count}명의 {x} 대 {y} 산점도",
       "noData": "현재 필터에 해당하는 선수가 없습니다.",
       "customEyebrow": "직접 만들기",
       "customTitle": "사용자 지정 차트",

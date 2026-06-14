@@ -7778,6 +7778,8 @@
       "description": "Each dot is a player, scored per 10 minutes. Use the hero filter to scope every chart.",
       "regressionToggle": "Trend line + r",
       "correlation": "r = {value}",
+      "trendUnavailable": "Need 2+ players for a trend",
+      "chartAlt": "Scatter chart of {x} versus {y} across {count} players",
       "noData": "No players match the current filter.",
       "customEyebrow": "Build your own",
       "customTitle": "Custom chart",
