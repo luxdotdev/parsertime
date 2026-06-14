@@ -213,6 +213,8 @@ export async function createNewScrimFromParsedData(
         scrimId: scrim.id,
         replayCode: data.replayCode ?? "",
         order: 0,
+        winner: data.winner ?? null,
+        winnerSource: data.winnerSource ?? null,
         mapData: {
           connect: {
             id: mapData.id,
@@ -314,6 +316,8 @@ type CreateNewMapArgs = {
     team: string;
     banPosition: number;
   }[];
+  winner?: string | null;
+  winnerSource?: "auto_coords" | "manual" | null;
 };
 
 export async function createNewMap(
@@ -357,6 +361,8 @@ export async function createNewMap(
         name: toTitleCase(data.map.match_start[0][2]) ?? "New Map",
         scrimId: data.scrimId,
         order: data.order ?? 0,
+        winner: data.winner ?? null,
+        winnerSource: data.winnerSource ?? null,
         mapData: {
           connect: {
             id: mapData.id,

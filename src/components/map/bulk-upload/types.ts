@@ -1,5 +1,17 @@
 import type { HeroBan } from "@/components/dashboard/scrim-creator/types";
 import type { ParserData } from "@/types/parser";
+import { mapNameToMapTypeMapping } from "@/types/map";
+import { $Enums } from "@/generated/prisma/browser";
+
+/** True when a parsed map name resolves to a Push map. */
+export function isPushMap(mapName: string | undefined): boolean {
+  if (!mapName) return false;
+  return (
+    mapNameToMapTypeMapping[
+      mapName as keyof typeof mapNameToMapTypeMapping
+    ] === $Enums.MapType.Push
+  );
+}
 
 export type MapUploadStatus =
   | "parsing" // client-side parse in flight
@@ -29,6 +41,10 @@ export type PendingMap = {
   /** True when client parsing threw; the row is unusable and removable. */
   parseFailed: boolean;
   heroBans: HeroBan[];
+  /** Confirmed winning team name for Push maps (chosen at upload). */
+  winner?: string;
+  /** Provenance of `winner`: "auto_coords" suggestion or "manual" override. */
+  winnerSource?: "auto_coords" | "manual";
   /** Live upload progress for this map, 0..1, driven by streamed row counts. */
   progress: number;
   /** Populated when status is "failed". */

@@ -68,7 +68,14 @@ export async function POST(req: NextRequest) {
     try {
       const parseStart = performance.now();
       const result = await createNewMap(
-        { map: mapData, scrimId, order: data.order, heroBans: data.heroBans },
+        {
+          map: mapData,
+          scrimId,
+          order: data.order,
+          heroBans: data.heroBans,
+          winner: data.winner ?? null,
+          winnerSource: data.winnerSource ?? null,
+        },
         session,
         (completed, total) => emit({ type: "progress", completed, total })
       );

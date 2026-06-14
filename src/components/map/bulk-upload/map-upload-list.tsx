@@ -2,6 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { cn, toKebabCase } from "@/lib/utils";
 import {
   closestCenter,
@@ -32,7 +34,7 @@ import {
 } from "react";
 import { MapBansEditor } from "./map-bans-editor";
 import type { BulkMapUpload } from "./use-bulk-map-upload";
-import type { PendingMap } from "./types";
+import { isPushMap, type PendingMap } from "./types";
 
 function formatBytes(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
@@ -113,6 +115,59 @@ function StatusPill({ map }: { map: PendingMap }) {
     default:
       return null;
   }
+}
+
+function MapWinnerControl({
+  map,
+  upload,
+  disabled,
+}: {
+  map: PendingMap;
+  upload: BulkMapUpload;
+  disabled: boolean;
+}) {
+  const t = useTranslations("bulkUpload");
+  const groupId = useId();
+  const team1 = map.parsedData?.match_start?.[0]?.[4];
+  const team2 = map.parsedData?.match_start?.[0]?.[5];
+  if (!team1 || !team2) return null;
+
+  const teams = [team1, team2];
+
+  return (
+    <div className="border-border/60 border-t px-3 py-3">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+        <span className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.04em] uppercase">
+          {t("winnerLabel")}
+        </span>
+        <RadioGroup
+          className="flex w-auto flex-wrap gap-4"
+          value={map.winner ?? ""}
+          disabled={disabled}
+          onValueChange={(v) =>
+            upload.patchMap(map.id, { winner: v, winnerSource: "manual" })
+          }
+        >
+          {teams.map((team) => (
+            <div key={team} className="flex items-center gap-2">
+              <RadioGroupItem value={team} id={`${groupId}-${team}`} />
+              <Label
+                htmlFor={`${groupId}-${team}`}
+                className="cursor-pointer text-sm font-normal"
+              >
+                {team}
+              </Label>
+            </div>
+          ))}
+        </RadioGroup>
+        {map.winnerSource === "auto_coords" && map.winner && (
+          <span className="text-muted-foreground/70 text-xs">
+            {t("winnerSuggested")}
+          </span>
+        )}
+      </div>
+    </div>
+  );
 }
 
 function SortableMapRow({
@@ -234,6 +289,10 @@ function SortableMapRow({
         <p className="text-destructive border-border/60 border-t px-3 py-2 text-xs">
           {map.error}
         </p>
+      )}
+
+      {!failedParse && map.status !== "parsing" && isPushMap(map.mapName) && (
+        <MapWinnerControl map={map} upload={upload} disabled={disabled} />
       )}
 
       {!failedParse && (

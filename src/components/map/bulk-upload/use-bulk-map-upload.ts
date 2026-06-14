@@ -1,6 +1,8 @@
 "use client";
 
 import { parseData } from "@/lib/parser/client";
+import { computePushWinner } from "@/lib/push-winner";
+import { pushInputFromParserData } from "@/lib/push-winner-adapters";
 import { detectFileCorruption } from "@/lib/utils";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useTranslations } from "next-intl";
@@ -12,7 +14,12 @@ import {
   compareByFilenameTimestamp,
   parseLogFilenameTimestamp,
 } from "./filename-timestamp";
-import { MAX_FILE_SIZE, MAX_MAPS_PER_UPLOAD, type PendingMap } from "./types";
+import {
+  isPushMap,
+  MAX_FILE_SIZE,
+  MAX_MAPS_PER_UPLOAD,
+  type PendingMap,
+} from "./types";
 
 const TXT = "text/plain";
 
@@ -94,6 +101,21 @@ export function useBulkMapUpload(maxMaps: number = MAX_MAPS_PER_UPLOAD) {
               parseData(file),
               detectFileCorruption(file),
             ]);
+
+            // For Push maps, pre-fill the winner with the coordinate
+            // algorithm's suggestion so the user only confirms it.
+            const mapName = parsed.match_start?.[0]?.[2];
+            let winner: string | undefined;
+            let winnerSource: "auto_coords" | undefined;
+            if (isPushMap(mapName)) {
+              const input = pushInputFromParserData(parsed);
+              const suggestion = input ? computePushWinner(input) : null;
+              if (suggestion) {
+                winner = suggestion.winner;
+                winnerSource = "auto_coords";
+              }
+            }
+
             setPendingMaps((prev) =>
               prev.map((m) =>
                 m.file === file
@@ -102,10 +124,12 @@ export function useBulkMapUpload(maxMaps: number = MAX_MAPS_PER_UPLOAD) {
                       status: "ready",
                       parsedData: parsed,
                       rowCount: countParsedRows(parsed),
-                      mapName: parsed.match_start?.[0]?.[2],
+                      mapName,
                       team1: parsed.match_start?.[0]?.[4],
                       team2: parsed.match_start?.[0]?.[5],
                       hasCorruption: corruption.isCorrupted,
+                      winner,
+                      winnerSource,
                     }
                   : m
               )

@@ -19,6 +19,8 @@ export type AddMapRequestData = {
     team: string;
     banPosition: number;
   }[];
+  winner?: string | null;
+  winnerSource?: "auto_coords" | "manual" | null;
 };
 
 export async function POST(req: NextRequest) {
@@ -92,6 +94,8 @@ export async function POST(req: NextRequest) {
         scrimId,
         order: data.order,
         heroBans: data.heroBans,
+        winner: data.winner ?? null,
+        winnerSource: data.winnerSource ?? null,
       },
       session
     );

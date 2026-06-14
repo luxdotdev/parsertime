@@ -8,6 +8,7 @@ import {
   runSequentialUpload,
   uploadMapStream,
 } from "@/components/map/bulk-upload/sequential-upload";
+import { isPushMap } from "@/components/map/bulk-upload/types";
 import { useBulkMapUpload } from "@/components/map/bulk-upload/use-bulk-map-upload";
 import { scrimCreatorStore } from "@/stores/scrim-creator-store";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -143,6 +144,13 @@ export function ScrimCreationForm({
       return;
     }
 
+    if (usableMaps.some((m) => isPushMap(m.mapName) && !m.winner)) {
+      toast.error(tb("missingPushWinnerTitle"), {
+        description: tb("missingPushWinnerDescription"),
+      });
+      return;
+    }
+
     setBusy(true);
 
     const resolvedTeam1Name =
@@ -180,6 +188,8 @@ export function ScrimCreationForm({
               team1Name: resolvedTeam1Name,
               team2Name: resolvedTeam2Name,
               heroBans: map.heroBans,
+              winner: map.winner ?? null,
+              winnerSource: map.winnerSource ?? null,
               scrimRequestId: linked?.scrimRequestId ?? null,
               opponentTeamId: linked?.opponentTeamId ?? null,
             },
@@ -197,6 +207,8 @@ export function ScrimCreationForm({
             map: map.parsedData,
             order,
             heroBans: map.heroBans.length > 0 ? map.heroBans : undefined,
+            winner: map.winner ?? null,
+            winnerSource: map.winnerSource ?? null,
           },
           reportProgress
         );

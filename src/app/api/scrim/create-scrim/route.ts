@@ -46,6 +46,8 @@ export type CreateScrimRequestData = {
     team: string;
     banPosition: number;
   }[];
+  winner?: string | null;
+  winnerSource?: "auto_coords" | "manual" | null;
   scrimRequestId?: string | null;
   opponentTeamId?: number | null;
 };
@@ -87,6 +89,8 @@ export const createScrimSchema = z.object({
       })
     )
     .default([]),
+  winner: z.string().min(1).max(100).nullable().optional(),
+  winnerSource: z.enum(["auto_coords", "manual"]).nullable().optional(),
   scrimRequestId: z.string().min(1).nullable().optional(),
   opponentTeamId: z.number().int().positive().nullable().optional(),
 });
