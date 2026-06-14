@@ -51,6 +51,15 @@ export type {
   RoleBalanceAnalysis,
   RoleTrio,
   RoleWinrateByMap,
+} from "./types";
+
+export type {
+  PlayerScatterStats,
+  PlayerScatterBucket,
+  ScatterStatKey,
+} from "@/lib/team-scatter-stats";
+
+export type {
   // hero-pool types
   HeroPlaytime,
   HeroWinrate,
@@ -116,6 +125,12 @@ export {
   TeamRoleStatsServiceLive,
 } from "./role-stats-service";
 export type { TeamRoleStatsServiceInterface } from "./role-stats-service";
+
+export {
+  TeamScatterService,
+  TeamScatterServiceLive,
+} from "./scatter-service";
+export type { TeamScatterServiceInterface } from "./scatter-service";
 
 export {
   TeamHeroPoolService,

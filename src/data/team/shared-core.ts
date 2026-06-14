@@ -38,6 +38,11 @@ export type BaseTeamData = {
     healing_dealt: number;
     ultimates_earned: number;
     ultimates_used: number;
+    healing_received: number;
+    self_healing: number;
+    damage_blocked: number;
+    solo_kills: number;
+    environmental_kills: number;
   }[];
   matchStarts: MatchStart[];
   finalRounds: RoundEnd[];

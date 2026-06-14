@@ -52,8 +52,20 @@ export default function TeamStatsLoading() {
           <TabsTrigger value="maps" className={tabTriggerClass}>
             Maps
           </TabsTrigger>
+          <TabsTrigger value="swaps" className={tabTriggerClass}>
+            Swaps
+          </TabsTrigger>
           <TabsTrigger value="teamfights" className={tabTriggerClass}>
             Teamfights
+          </TabsTrigger>
+          <TabsTrigger value="ultimates" className={tabTriggerClass}>
+            Ultimates
+          </TabsTrigger>
+          <TabsTrigger value="winrates" className={tabTriggerClass}>
+            Winrates
+          </TabsTrigger>
+          <TabsTrigger value="charts" className={tabTriggerClass}>
+            Charts
           </TabsTrigger>
         </TabsList>
 
@@ -180,6 +192,26 @@ export default function TeamStatsLoading() {
           <SkeletonRibbon />
           <SkeletonSection bodyHeight={300} />
           <SkeletonTable rows={5} />
+        </TabsContent>
+
+        <TabsContent value="charts" className="space-y-12">
+          <section className="space-y-6">
+            <div className="space-y-2">
+              <Skeleton className="h-2.5 w-28" />
+              <Skeleton className="h-6 w-40" />
+            </div>
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="border-border space-y-3 rounded-md border p-4"
+                >
+                  <Skeleton className="h-4 w-48" />
+                  <Skeleton className="aspect-[3/2] w-full" />
+                </div>
+              ))}
+            </div>
+          </section>
         </TabsContent>
 
         <TabsContent value="simulator" className="space-y-12">

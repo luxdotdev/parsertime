@@ -39,6 +39,7 @@ import { UltUsageOverviewCard } from "@/components/stats/team/ult-usage-overview
 import { UltimateEconomyCard } from "@/components/stats/team/ultimate-economy-card";
 import { WinLossStreaksCard } from "@/components/stats/team/win-loss-streaks-card";
 import { WinProbabilityInsights } from "@/components/stats/team/win-probability-insights";
+import { TeamChartsTab } from "@/components/stats/team/charts/team-charts-tab";
 import { WinrateOverTimeChart } from "@/components/stats/team/winrate-over-time-chart";
 import { FightMapContent } from "@/components/team/fight-map-content";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -60,6 +61,7 @@ import {
   TeamPredictionService,
   TeamQuickWinsService,
   TeamRoleStatsService,
+  TeamScatterService,
   TeamSharedDataService,
   TeamStatsService,
   TeamTrendsService,
@@ -270,6 +272,7 @@ export default async function TeamStatsPage(
       roleStats,
       roleBalance,
       bestTrios,
+      scatterData,
       weeklyWinrate,
       monthlyWinrate,
       recentForm,
@@ -338,6 +341,9 @@ export default async function TeamStatsPage(
           ),
           bestTrios: TeamRoleStatsService.pipe(
             Effect.flatMap((svc) => svc.getBestRoleTrios(teamId, dateRange))
+          ),
+          scatterData: TeamScatterService.pipe(
+            Effect.flatMap((svc) => svc.getPlayerScatterStats(teamId, dateRange))
           ),
           weeklyWinrate: TeamTrendsService.pipe(
             Effect.flatMap((svc) =>
@@ -544,6 +550,9 @@ export default async function TeamStatsPage(
           </TabsTrigger>
           <TabsTrigger value="winrates" className={tabTriggerClass}>
             Winrates
+          </TabsTrigger>
+          <TabsTrigger value="charts" className={tabTriggerClass}>
+            Charts
           </TabsTrigger>
           {positionalDataEnabled && (
             <TabsTrigger value="positional" className={tabTriggerClass}>
@@ -930,6 +939,11 @@ export default async function TeamStatsPage(
         {/* Winrates Tab */}
         <TabsContent value="winrates" className="space-y-6">
           <MatchupWinrateTab data={matchupWinrateData} />
+        </TabsContent>
+
+        {/* Charts Tab */}
+        <TabsContent value="charts">
+          <TeamChartsTab scatterData={scatterData} />
         </TabsContent>
 
         {/* Positional Tab */}
