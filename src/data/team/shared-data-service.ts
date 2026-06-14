@@ -22,6 +22,8 @@ import type {
   ExtendedTeamData,
   TeamDateRange,
 } from "./shared-core";
+import { findSubstituteMapIds } from "./shared-core";
+import { getTeamSubstituteNames } from "./substitutes";
 
 export type BaseTeamDataOptions = {
   excludePush?: boolean;
@@ -293,6 +295,19 @@ export const make: Effect.Effect<TeamSharedDataServiceInterface> = Effect.gen(
         const teamRoster = yield* getTeamRoster(teamId);
         const teamRosterSet = new Set(teamRoster);
 
+        // Substitutes stay on the identity roster above, but games they played
+        // in are dropped from every aggregate built on this data (see
+        // findSubstituteMapIds). Fetched once here so the exclusion is uniform
+        // across all derived option-variants.
+        const substituteNames = yield* Effect.tryPromise({
+          try: () => getTeamSubstituteNames(teamId),
+          catch: (error) =>
+            new TeamQueryError({
+              operation: "fetch substitutes for base data",
+              cause: error,
+            }),
+        });
+
         const scrimWhereClause: Record<string, unknown> = {
           Team: { id: teamId },
         };
@@ -451,8 +466,39 @@ export const make: Effect.Effect<TeamSharedDataServiceInterface> = Effect.gen(
           })
         );
 
-        wideEvent.map_count = mapDataIds.length;
-        wideEvent.player_stat_count = allPlayerStats.length;
+        // Drop every map a substitute played in for this team, across all
+        // downstream tables. Each table keys on MapDataId, so the same excluded
+        // set filters them uniformly.
+        const excludedMapIds = findSubstituteMapIds(
+          mapDataIds,
+          allPlayerStats,
+          teamRosterSet,
+          substituteNames
+        );
+
+        function dropExcludedMaps<T extends { MapDataId: number | null }>(
+          rows: T[]
+        ): T[] {
+          if (excludedMapIds.size === 0) return rows;
+          return rows.filter(
+            (row) =>
+              row.MapDataId !== null && !excludedMapIds.has(row.MapDataId)
+          );
+        }
+
+        const keptMapDataRecords =
+          excludedMapIds.size === 0
+            ? mapDataRecords
+            : mapDataRecords.filter((record) => !excludedMapIds.has(record.id));
+        const keptMapDataIds =
+          excludedMapIds.size === 0
+            ? mapDataIds
+            : mapDataIds.filter((id) => !excludedMapIds.has(id));
+        const keptPlayerStats = dropExcludedMaps(allPlayerStats);
+
+        wideEvent.map_count = keptMapDataIds.length;
+        wideEvent.excluded_map_count = excludedMapIds.size;
+        wideEvent.player_stat_count = keptPlayerStats.length;
         wideEvent.outcome = "success";
         yield* Metric.increment(teamBaseDataQuerySuccessTotal);
 
@@ -460,14 +506,14 @@ export const make: Effect.Effect<TeamSharedDataServiceInterface> = Effect.gen(
           teamId,
           teamRoster,
           teamRosterSet,
-          mapDataRecords: mapDataRecords as BaseTeamData["mapDataRecords"],
-          mapDataIds,
-          allPlayerStats,
-          matchStarts,
-          finalRounds,
-          captures,
-          payloadProgresses,
-          pointProgresses,
+          mapDataRecords: keptMapDataRecords as BaseTeamData["mapDataRecords"],
+          mapDataIds: keptMapDataIds,
+          allPlayerStats: keptPlayerStats,
+          matchStarts: dropExcludedMaps(matchStarts),
+          finalRounds: dropExcludedMaps(finalRounds),
+          captures: dropExcludedMaps(captures),
+          payloadProgresses: dropExcludedMaps(payloadProgresses),
+          pointProgresses: dropExcludedMaps(pointProgresses),
         } satisfies BaseTeamData;
       }).pipe(
         Effect.tapError((error) =>

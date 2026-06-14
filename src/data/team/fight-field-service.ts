@@ -30,11 +30,12 @@ import {
   teamCacheMissTotal,
   teamCacheRequestTotal,
 } from "./metrics";
-import { findTeamNameForMapInMemory } from "./shared-core";
+import { findSubstituteMapIds, findTeamNameForMapInMemory } from "./shared-core";
 import {
   TeamSharedDataService,
   TeamSharedDataServiceLive,
 } from "./shared-data-service";
+import { getTeamSubstituteNames } from "./substitutes";
 
 export type NamedCallout = FieldCallout & { zoneName: string | null };
 
@@ -127,6 +128,14 @@ export const make: Effect.Effect<
 
       const teamRoster = yield* shared.getTeamRoster(teamId);
       const teamRosterSet = new Set(teamRoster);
+      const substituteNames = yield* Effect.tryPromise({
+        try: () => getTeamSubstituteNames(teamId),
+        catch: (error) =>
+          new TeamQueryError({
+            operation: "fetch substitutes for fight fields",
+            cause: error,
+          }),
+      });
 
       const [allPlayerStats, allRoundStarts] =
         allMapDataIds.length === 0
@@ -172,12 +181,22 @@ export const make: Effect.Effect<
 
       const views: FightMapView[] = [];
 
+      // Maps a substitute played in for our team are dropped wholesale, the
+      // same as every other team-stats read.
+      const excludedMapIds = findSubstituteMapIds(
+        allMapDataIds,
+        allPlayerStats,
+        teamRosterSet,
+        substituteNames
+      );
+
       // Prefetch engagements for every eligible map in one batched call:
       // cache hits resolve from the shared memo, misses load chunk-wise
       // with `IN` queries instead of a per-map battery.
       const eligibleIds: number[] = [];
       for (const [, mapDataIds] of mapDataIdsByMapName) {
         for (const mapDataId of mapDataIds) {
+          if (excludedMapIds.has(mapDataId)) continue;
           const side = findTeamNameForMapInMemory(
             mapDataId,
             allPlayerStats,
@@ -218,6 +237,7 @@ export const make: Effect.Effect<
         }
 
         for (const mapDataId of mapDataIds) {
+          if (excludedMapIds.has(mapDataId)) continue;
           const ourSide = findTeamNameForMapInMemory(
             mapDataId,
             allPlayerStats,

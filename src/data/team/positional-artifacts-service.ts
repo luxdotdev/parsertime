@@ -19,6 +19,7 @@ import {
   teamCacheMissTotal,
   teamCacheRequestTotal,
 } from "./metrics";
+import { getSubstituteScrimIds } from "./substitutes";
 
 export type TeamPositionalArtifacts = {
   /** Merged across all scrims in the window. */
@@ -89,12 +90,34 @@ export const make: Effect.Effect<
         })
       );
 
-      const scrimIds = scrims.map((s) => s.id);
+      const allScrimIds = scrims.map((s) => s.id);
 
-      if (scrimIds.length === 0) {
+      if (allScrimIds.length === 0) {
         wideEvent.scrim_count = 0;
         wideEvent.outcome = "success";
         wideEvent.early_return = "no_scrims";
+        yield* Metric.increment(positionalArtifactsQuerySuccessTotal);
+        return null;
+      }
+
+      // Drop scrims a substitute played in before fanning out, so no
+      // substitute game contributes to the merged engagement/zone/route
+      // artifacts (scrim-grained analog of the page-wide map exclusion).
+      const substituteScrimIds = yield* Effect.tryPromise({
+        try: () => getSubstituteScrimIds(teamId, allScrimIds),
+        catch: (error) =>
+          new TeamQueryError({
+            operation: "getTeamPositionalArtifacts.fetchSubstituteScrims",
+            cause: error,
+          }),
+      });
+      const scrimIds = allScrimIds.filter((id) => !substituteScrimIds.has(id));
+      wideEvent.substitute_scrim_count = substituteScrimIds.size;
+
+      if (scrimIds.length === 0) {
+        wideEvent.scrim_count = scrims.length;
+        wideEvent.outcome = "success";
+        wideEvent.early_return = "all_scrims_substituted";
         yield* Metric.increment(positionalArtifactsQuerySuccessTotal);
         return null;
       }
