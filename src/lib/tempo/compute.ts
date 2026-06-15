@@ -7,6 +7,7 @@ import {
   type TeamTempoSample,
   type TempoMetricKey,
 } from "@/lib/tempo/aggregate";
+import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { Effect } from "effect";
 
@@ -21,6 +22,7 @@ const METRIC_ENUM: Record<TempoMetricKey, TempoMetric> = {
 
 export type TempoRecomputeResult = {
   teamsConsidered: number;
+  teamsFailed: number;
   baselinesWritten: number;
   perMetricSampleN: Record<TempoMetricKey, number>;
 };
@@ -31,6 +33,10 @@ async function sampleTeam(teamId: number): Promise<TeamTempoSample> {
     select: { id: true },
   });
   const scrimIds = mapRows.map((r) => r.id);
+  // RAW scrim-map count: all MapData rows for the team's scrims. This can exceed
+  // the service-eligible map count (the quick-wins/ult services exclude some map
+  // types and substitute maps); used only as a coarse noise-floor gate, not in
+  // the statistics.
   const mapCount =
     scrimIds.length === 0
       ? 0
@@ -63,10 +69,24 @@ export async function recomputeTempoBaselines(): Promise<TempoRecomputeResult> {
   const teams = await prisma.team.findMany({ select: { id: true } });
 
   const samples: TeamTempoSample[] = [];
+  let teamsFailed = 0;
   for (let i = 0; i < teams.length; i += CONCURRENCY) {
     const chunk = teams.slice(i, i + CONCURRENCY);
-    const chunkSamples = await Promise.all(chunk.map((t) => sampleTeam(t.id)));
-    samples.push(...chunkSamples);
+    const chunkResults = await Promise.allSettled(
+      chunk.map((t) => sampleTeam(t.id))
+    );
+    for (let j = 0; j < chunkResults.length; j++) {
+      const result = chunkResults[j];
+      if (result.status === "fulfilled") {
+        samples.push(result.value);
+      } else {
+        teamsFailed++;
+        Logger.warn(
+          `Tempo baseline recompute: dropping team ${chunk[j].id} after sampleTeam failure`,
+          result.reason
+        );
+      }
+    }
   }
 
   const buckets = bucketTeamSamples(samples);
@@ -93,6 +113,7 @@ export async function recomputeTempoBaselines(): Promise<TempoRecomputeResult> {
 
   return {
     teamsConsidered: teams.length,
+    teamsFailed,
     baselinesWritten,
     perMetricSampleN,
   };
