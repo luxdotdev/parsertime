@@ -3224,6 +3224,24 @@
         "staggers": "Staggered deaths bled into {count} fights ({fights}), costing roughly {cost}% win probability. Reset together instead of trickling back in.",
         "ultDeficit": "You took {count} fights ({fights}) while down on ult economy, costing about {cost}%. Delay the re-engage until the banks even out.",
         "firstDeaths": "{player} died first in {count} of your {of} losing fights ({fights}). Review those openings — the first death sets the fight's trajectory."
+      },
+      "missed": {
+        "title": "Missed opportunities",
+        "bledWp": "Bled win probability",
+        "lostFight": "Lost the teamfight",
+        "empty": "None — clean execution from ahead",
+        "showing": "Showing {shown} of {total}",
+        "fight": "Fight {fight}",
+        "wp": "{before}% → {after}%",
+        "reason": {
+          "objective": "Lost on the objective",
+          "kills": "Lost the kill exchange",
+          "ults": "Ult disadvantage",
+          "earlyFirstDeath": "Early death: {player}",
+          "wastedUlt": "Ults spent: {count}",
+          "stagger": "Entered staggered (−{cost}%)",
+          "ultDeficit": "Ult deficit (−{cost}%)"
+        }
       }
     },
     "fightInitiation": {

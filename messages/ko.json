@@ -3224,6 +3224,24 @@
         "staggers": "스태거 데스가 한타 {count}번({fights})에 영향을 미쳐 약 {cost}%의 승리 확률을 잃었습니다. 한 명씩 복귀하지 말고 함께 재정비하세요.",
         "ultDeficit": "궁극기 경제 열세 상태로 한타 {count}번({fights})을 받아 약 {cost}%를 잃었습니다. 궁극기 격차가 줄어들 때까지 재교전을 늦추세요.",
         "firstDeaths": "{player}이(가) 패배한 한타 {of}번 중 {count}번({fights})에서 가장 먼저 전사했습니다. 그 시작 장면을 복기하세요 — 첫 데스가 한타의 흐름을 결정합니다."
+      },
+      "missed": {
+        "title": "놓친 기회",
+        "bledWp": "승률 손실",
+        "lostFight": "한타 패배",
+        "empty": "없음 — 유리한 상황을 깔끔하게 마무리",
+        "showing": "{total}개 중 {shown}개 표시",
+        "fight": "교전 {fight}",
+        "wp": "{before}% → {after}%",
+        "reason": {
+          "objective": "거점에서 손해",
+          "kills": "교전 손해",
+          "ults": "궁극기 열세",
+          "earlyFirstDeath": "이른 죽음: {player}",
+          "wastedUlt": "사용한 궁극기: {count}",
+          "stagger": "전열이 무너진 채 시작 (−{cost}%)",
+          "ultDeficit": "궁극기 열세로 시작 (−{cost}%)"
+        }
       }
     },
     "fightInitiation": {
