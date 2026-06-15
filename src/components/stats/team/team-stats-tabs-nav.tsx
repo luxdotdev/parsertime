@@ -49,7 +49,7 @@ export function TeamStatsTabsNav({
   ];
 
   return (
-    <nav className="border-border mt-6 flex h-auto w-full flex-wrap justify-start gap-6 border-b">
+    <nav className="border-border mt-6 flex h-auto w-full justify-start gap-6 border-b">
       {tabs.map((tab) => {
         const path = tab.segment ? `${base}/${tab.segment}` : base;
         const href = (qs ? `${path}?${qs}` : path) as Route;
@@ -59,7 +59,7 @@ export function TeamStatsTabsNav({
             key={tab.segment || "overview"}
             href={href}
             data-state={isActive ? "active" : "inactive"}
-            className={tabTriggerClass}
+            className={`${tabTriggerClass} inline-flex flex-1 items-center justify-center whitespace-nowrap`}
           >
             {tab.label}
           </HoverPrefetchLink>
