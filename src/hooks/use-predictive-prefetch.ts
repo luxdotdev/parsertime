@@ -63,11 +63,23 @@ export function usePredictivePrefetch(
 
       const velocity = estimateVelocity(samples);
       const anchors = Array.from(
-        container.querySelectorAll<HTMLAnchorElement>('a[href^="/"]')
+        container.querySelectorAll<HTMLAnchorElement>(
+          'a[href^="/"]:not([href^="//"])'
+        )
       );
       for (const anchor of anchors) {
         const href = anchor.getAttribute("href");
-        if (!href || href.includes("#") || prefetched.has(href)) continue;
+        // Same-origin paths only: reject protocol-relative ("//host") and the
+        // back-slash variant browsers normalize to it, plus in-page hashes.
+        if (
+          !href ||
+          !href.startsWith("/") ||
+          href.startsWith("//") ||
+          href.startsWith("/\\") ||
+          href.includes("#") ||
+          prefetched.has(href)
+        )
+          continue;
         if (
           isHeadingToward(
             cursor,
