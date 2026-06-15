@@ -60,3 +60,15 @@ export function isHeadingToward(
   const dot = (velocity.x * dx + velocity.y * dy) / (speed * distance);
   return dot >= Math.cos((opts.coneAngleDeg * Math.PI) / 180);
 }
+
+/**
+ * Whether the predictive-prefetch debug overlay should render. Opt-in via
+ * `NEXT_PUBLIC_PREFETCH_DEBUG=true`, and never enabled in production. The literal
+ * `process.env.NEXT_PUBLIC_*` reads let Next inline these values at build time.
+ */
+export function prefetchDebugEnabled(): boolean {
+  return (
+    process.env.NEXT_PUBLIC_PREFETCH_DEBUG === "true" &&
+    process.env.NEXT_PUBLIC_VERCEL_ENV !== "production"
+  );
+}

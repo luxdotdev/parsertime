@@ -1,10 +1,15 @@
 "use client";
 
+import { PredictivePrefetchOverlay } from "@/components/devtools/predictive-prefetch-overlay";
 import { HoverPrefetchLink } from "@/components/ui/hover-prefetch-link";
-import { usePredictivePrefetch } from "@/hooks/use-predictive-prefetch";
+import {
+  usePredictivePrefetch,
+  type PredictivePrefetchDebugFrame,
+} from "@/hooks/use-predictive-prefetch";
+import { prefetchDebugEnabled } from "@/lib/predictive-prefetch";
 import type { Route } from "next";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 // Moved verbatim from the original team stats page.
 const tabTriggerClass =
@@ -39,7 +44,10 @@ export function TeamStatsTabsNav({
   const base = `/stats/team/${teamId}`;
   const qs = searchParams.toString();
   const navRef = useRef<HTMLElement>(null);
-  usePredictivePrefetch(navRef);
+  const debug = prefetchDebugEnabled();
+  const [debugFrame, setDebugFrame] =
+    useState<PredictivePrefetchDebugFrame | null>(null);
+  usePredictivePrefetch(navRef, debug ? { onFrame: setDebugFrame } : undefined);
 
   const tabs: TabDef[] = [
     ...BASE_TABS,
@@ -74,6 +82,7 @@ export function TeamStatsTabsNav({
           </HoverPrefetchLink>
         );
       })}
+      {debug && <PredictivePrefetchOverlay frame={debugFrame} />}
     </nav>
   );
 }
