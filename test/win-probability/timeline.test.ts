@@ -242,8 +242,8 @@ describe("computeMatchStory — series", () => {
       ults: [],
     })!;
     expect(story.objectiveMarkers).toEqual([
-      { t: 50, team: "Alpha" },
-      { t: 120, team: "Bravo" },
+      { t: 50, team: "Alpha", progress1: 10, progress2: 0 },
+      { t: 120, team: "Bravo", progress1: 10, progress2: 5 },
     ]);
   });
 

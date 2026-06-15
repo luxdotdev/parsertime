@@ -3169,7 +3169,8 @@
         "time": "时间",
         "score": "比分",
         "objective": "目标",
-        "capture": "{team} 占领了目标"
+        "capture": "{team} 占领了目标",
+        "captureProgress": "{team} 占领点位。{t1}：{p1}%，{t2}：{p2}%"
       },
       "ledger": {
         "title": "团战记录",
@@ -3240,12 +3241,14 @@
           "ultDeficit": "终极技能劣势开战 (−{cost}%)"
         },
         "ult": {
-          "value": "{ult} —— {kills} 击杀",
-          "none": "{ult} —— 无效果",
-          "died": "{ult} —— 释放中阵亡",
-          "unknown": "{ult} —— 已使用",
-          "heroFallback": "{hero} 终极技能"
-        }
+          "value": "{kills, plural, other {# 击杀}}",
+          "none": "无效果",
+          "died": "释放中阵亡",
+          "unknown": "已使用",
+          "heroFallback": "{hero} 终极技能",
+          "summary": "{converted}/{total} 有效"
+        },
+        "wpLost": "胜率损失"
       }
     },
     "fightInitiation": {

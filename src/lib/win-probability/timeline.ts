@@ -23,7 +23,14 @@ export type WpPoint = {
 };
 
 /** An objective event worth annotating on the curve (capture / point flip). */
-export type ObjectiveMarker = { t: number; team: string };
+export type ObjectiveMarker = {
+  t: number;
+  team: string;
+  /** Both teams' control win % at the flip (raw 0..100), so the marker can
+   * show the point progress that grounds the WP move. */
+  progress1: number;
+  progress2: number;
+};
 
 export type EngagementLike = {
   start: number;
@@ -158,7 +165,12 @@ export function computeMatchStory(
   // biggest WP moves, surfaced so the curve's shifts have visible causes.
   const objectiveMarkers: ObjectiveMarker[] = log.objectiveCaptured
     .filter((o) => o.team === log.team1 || o.team === log.team2)
-    .map((o) => ({ t: o.time, team: o.team }));
+    .map((o) => ({
+      t: o.time,
+      team: o.team,
+      progress1: o.progress1,
+      progress2: o.progress2,
+    }));
 
   return {
     teams: { team1: log.team1, team2: log.team2 },

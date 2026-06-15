@@ -3169,7 +3169,8 @@
         "time": "시간",
         "score": "점수",
         "objective": "목표",
-        "capture": "{team}이(가) 목표를 차지했습니다"
+        "capture": "{team}이(가) 목표를 차지했습니다",
+        "captureProgress": "{team} 거점 점령. {t1}: {p1}%, {t2}: {p2}%"
       },
       "ledger": {
         "title": "한타 기록",
@@ -3240,12 +3241,14 @@
           "ultDeficit": "궁극기 열세로 시작 (−{cost}%)"
         },
         "ult": {
-          "value": "{ult} — {kills}킬",
-          "none": "{ult} — 효과 없음",
-          "died": "{ult} — 사용 중 사망",
-          "unknown": "{ult} — 사용",
-          "heroFallback": "{hero} 궁극기"
-        }
+          "value": "{kills, plural, other {#킬}}",
+          "none": "효과 없음",
+          "died": "사용 중 사망",
+          "unknown": "사용",
+          "heroFallback": "{hero} 궁극기",
+          "summary": "{converted}/{total} 효과"
+        },
+        "wpLost": "승률 손실"
       }
     },
     "fightInitiation": {

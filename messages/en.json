@@ -3169,7 +3169,8 @@
         "time": "Time",
         "score": "Score",
         "objective": "Obj",
-        "capture": "{team} took the objective"
+        "capture": "{team} took the objective",
+        "captureProgress": "{team} took the point. {t1}: {p1}%, {t2}: {p2}%"
       },
       "ledger": {
         "title": "Fight ledger",
@@ -3240,12 +3241,14 @@
           "ultDeficit": "Ult deficit (−{cost}%)"
         },
         "ult": {
-          "value": "{ult} — {kills} kills",
-          "none": "{ult} — no value",
-          "died": "{ult} — died mid-ult",
-          "unknown": "{ult} — used",
-          "heroFallback": "{hero} ult"
-        }
+          "value": "{kills, plural, one {# kill} other {# kills}}",
+          "none": "no value",
+          "died": "died mid-ult",
+          "unknown": "used",
+          "heroFallback": "{hero} ult",
+          "summary": "{converted}/{total} converted"
+        },
+        "wpLost": "WP lost"
       }
     },
     "fightInitiation": {

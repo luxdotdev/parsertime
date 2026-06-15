@@ -228,32 +228,84 @@ export function WpTimelineChart({
               isFront
             />
           ))}
-          {captureDots.map((c) => (
-            <ReferenceDot
-              key={`capture-${c.t}-${c.team}`}
-              x={c.t}
-              y={c.wp}
-              isFront
-              shape={(props: { cx?: number; cy?: number }) => {
-                const cx = props.cx ?? 0;
-                const cy = props.cy ?? 0;
-                return (
-                  <rect
-                    x={cx - 3.5}
-                    y={cy - 3.5}
-                    width={7}
-                    height={7}
-                    transform={`rotate(45 ${cx} ${cy})`}
-                    fill={c.team === teams.team1 ? team1Color : team2Color}
-                    stroke="var(--background)"
-                    strokeWidth={1}
-                  >
-                    <title>{t("capture", { team: c.team })}</title>
-                  </rect>
-                );
-              }}
-            />
-          ))}
+          {captureDots.map((c) => {
+            // Floor, never round: a flip happens below 100% (reaching 100
+            // ends the round), so rounding 99.x up to 100% would falsely read
+            // as a round win that didn't happen.
+            const p1 = Math.floor(c.progress1);
+            const p2 = Math.floor(c.progress2);
+            // Keep the two-line label toward the chart interior: below the
+            // diamond when it sits high on the curve, above it when low.
+            const below = c.wp > 0.5;
+            const y1 = below ? 14 : -23;
+            const y2 = below ? 25 : -12;
+            return (
+              <ReferenceDot
+                key={`capture-${c.t}-${c.team}`}
+                x={c.t}
+                y={c.wp}
+                isFront
+                shape={(props: { cx?: number; cy?: number }) => {
+                  const cx = props.cx ?? 0;
+                  const cy = props.cy ?? 0;
+                  return (
+                    <g>
+                      <rect
+                        x={cx - 3.5}
+                        y={cy - 3.5}
+                        width={7}
+                        height={7}
+                        transform={`rotate(45 ${cx} ${cy})`}
+                        fill={c.team === teams.team1 ? team1Color : team2Color}
+                        stroke="var(--background)"
+                        strokeWidth={1}
+                      >
+                        <title>
+                          {t("captureProgress", {
+                            team: c.team,
+                            t1: teams.team1,
+                            t2: teams.team2,
+                            p1,
+                            p2,
+                          })}
+                        </title>
+                      </rect>
+                      <text
+                        x={cx}
+                        y={cy + y1}
+                        textAnchor="middle"
+                        fontSize={10}
+                        fontWeight={600}
+                        fontFamily="var(--font-geist-mono, monospace)"
+                        fill={team1Color}
+                        stroke="var(--background)"
+                        strokeWidth={3}
+                        paintOrder="stroke"
+                        style={{ pointerEvents: "none" }}
+                      >
+                        {p1}%
+                      </text>
+                      <text
+                        x={cx}
+                        y={cy + y2}
+                        textAnchor="middle"
+                        fontSize={10}
+                        fontWeight={600}
+                        fontFamily="var(--font-geist-mono, monospace)"
+                        fill={team2Color}
+                        stroke="var(--background)"
+                        strokeWidth={3}
+                        paintOrder="stroke"
+                        style={{ pointerEvents: "none" }}
+                      >
+                        {p2}%
+                      </text>
+                    </g>
+                  );
+                }}
+              />
+            );
+          })}
           {fights.map((f) => {
             const numbered = numberedFights.has(f.index);
             const isFocus = focusFight === f.index;
