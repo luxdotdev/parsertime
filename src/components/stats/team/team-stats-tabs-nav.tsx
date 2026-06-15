@@ -1,8 +1,10 @@
 "use client";
 
 import { HoverPrefetchLink } from "@/components/ui/hover-prefetch-link";
+import { usePredictivePrefetch } from "@/hooks/use-predictive-prefetch";
 import type { Route } from "next";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useRef } from "react";
 
 // Moved verbatim from the original team stats page.
 const tabTriggerClass =
@@ -36,6 +38,8 @@ export function TeamStatsTabsNav({
   const searchParams = useSearchParams();
   const base = `/stats/team/${teamId}`;
   const qs = searchParams.toString();
+  const navRef = useRef<HTMLElement>(null);
+  usePredictivePrefetch(navRef);
 
   const tabs: TabDef[] = [
     ...BASE_TABS,
@@ -51,7 +55,10 @@ export function TeamStatsTabsNav({
   ];
 
   return (
-    <nav className="border-border mt-6 flex h-auto w-full justify-start gap-6 border-b">
+    <nav
+      ref={navRef}
+      className="border-border mt-6 flex h-auto w-full justify-start gap-6 border-b"
+    >
       {tabs.map((tab) => {
         const path = tab.segment ? `${base}/${tab.segment}` : base;
         const href = (qs ? `${path}?${qs}` : path) as Route;
