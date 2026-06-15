@@ -26,6 +26,7 @@ export const Anran = {
     tags: ["movement", "sustain", "burning", "areaOfEffect", "lifesteal"],
     impact: "low",
   },
+  ultimate: { name: "Vermillion Ascent" },
 } as const;
 
 export const Ana = {
@@ -47,6 +48,7 @@ export const Ana = {
     tags: ["antiHeal", "healing", "sustain", "areaOfEffect", "cleansable"],
     impact: "critical",
   },
+  ultimate: { name: "Nano Boost" },
 } as const;
 
 export const Ashe = {
@@ -68,6 +70,7 @@ export const Ashe = {
     tags: ["damage", "burning", "areaOfEffect", "cleansable"],
     impact: "medium",
   },
+  ultimate: { name: "B.O.B." },
 } as const;
 
 export const Baptiste = {
@@ -96,6 +99,7 @@ export const Baptiste = {
     ],
     impact: "critical",
   },
+  ultimate: { name: "Amplification Matrix" },
 } as const;
 
 export const Bastion = {
@@ -117,6 +121,7 @@ export const Bastion = {
     tags: ["sustain"],
     impact: "negligible",
   },
+  ultimate: { name: "Configuration: Artillery" },
 } as const;
 
 export const Brigitte = {
@@ -137,6 +142,7 @@ export const Brigitte = {
     tags: ["healing"],
     impact: "medium",
   },
+  ultimate: { name: "Rally" },
 } as const;
 
 export const Cassidy = {
@@ -158,6 +164,7 @@ export const Cassidy = {
     tags: ["areaOfEffect", "crowdControl", "hinder"],
     impact: "medium",
   },
+  ultimate: { name: "Deadeye" },
 } as const;
 
 export const Domina = {
@@ -177,6 +184,7 @@ export const Domina = {
     tags: ["damage"],
     impact: "low",
   },
+  ultimate: { name: "Panopticon" },
 } as const;
 
 export const Doomfist = {
@@ -198,6 +206,7 @@ export const Doomfist = {
     tags: ["sustain", "tempo"],
     impact: "low",
   },
+  ultimate: { name: "Meteor Strike" },
 } as const;
 
 export const Dva = {
@@ -219,6 +228,7 @@ export const Dva = {
     tags: ["damage", "areaOfEffect"],
     impact: "medium",
   },
+  ultimate: { name: "Self-Destruct" },
 } as const;
 
 export const Echo = {
@@ -239,6 +249,7 @@ export const Echo = {
     tags: ["damage"],
     impact: "low",
   },
+  ultimate: { name: "Duplicate" },
 } as const;
 
 export const Emre = {
@@ -259,6 +270,7 @@ export const Emre = {
     tags: ["damage", "areaOfEffect"],
     impact: "low",
   },
+  ultimate: { name: "Override Protocol" },
 } as const;
 
 export const Freja = {
@@ -278,6 +290,7 @@ export const Freja = {
     tags: ["movement"],
     impact: "negligible",
   },
+  ultimate: { name: "Bola Shot" },
 } as const;
 
 export const Genji = {
@@ -299,6 +312,7 @@ export const Genji = {
     tags: ["sustain"],
     impact: "negligible",
   },
+  ultimate: { name: "Dragonblade" },
 } as const;
 
 export const Hanzo = {
@@ -320,6 +334,7 @@ export const Hanzo = {
     tags: ["damage"],
     impact: "low",
   },
+  ultimate: { name: "Dragonstrike" },
 } as const;
 
 export const Hazard = {
@@ -341,6 +356,7 @@ export const Hazard = {
     tags: ["damage", "deployable"],
     impact: "low",
   },
+  ultimate: { name: "Downpour" },
 } as const;
 
 export const Illari = {
@@ -361,6 +377,7 @@ export const Illari = {
     tags: ["healing", "sustain", "deployable"],
     impact: "high",
   },
+  ultimate: { name: "Captive Sun" },
 } as const;
 
 export const JetpackCat = {
@@ -382,6 +399,7 @@ export const JetpackCat = {
     tags: ["damage", "areaOfEffect"],
     impact: "low",
   },
+  ultimate: { name: "Catnapper" },
 } as const;
 
 export const JunkerQueen = {
@@ -402,6 +420,7 @@ export const JunkerQueen = {
     tags: ["damage", "lifesteal"],
     impact: "low",
   },
+  ultimate: { name: "Rampage" },
 } as const;
 
 export const Junkrat = {
@@ -423,6 +442,7 @@ export const Junkrat = {
     tags: ["damage", "deployable", "hinder"],
     impact: "low",
   },
+  ultimate: { name: "RIP-Tire" },
 } as const;
 
 export const Juno = {
@@ -444,6 +464,7 @@ export const Juno = {
     tags: ["speedBoost", "initiation"],
     impact: "critical",
   },
+  ultimate: { name: "Orbital Ray" },
 } as const;
 
 export const Kiriko = {
@@ -464,6 +485,7 @@ export const Kiriko = {
     tags: ["healing", "cleanse", "immortality", "tempo", "reactive"],
     impact: "critical",
   },
+  ultimate: { name: "Kitsune Rush" },
 } as const;
 
 export const Lifeweaver = {
@@ -484,6 +506,7 @@ export const Lifeweaver = {
     tags: ["healing", "sustain", "cleanse", "reactive"],
     impact: "high",
   },
+  ultimate: { name: "Tree of Life" },
 } as const;
 
 export const Lucio = {
@@ -505,6 +528,7 @@ export const Lucio = {
     tags: ["speedBoost", "healing", "initiation", "tempo"],
     impact: "critical",
   },
+  ultimate: { name: "Sound Barrier" },
 } as const;
 
 export const Mauga = {
@@ -526,6 +550,7 @@ export const Mauga = {
     tags: ["areaOfEffect", "lifesteal", "sustain", "tempo"],
     impact: "critical",
   },
+  ultimate: { name: "Cage Fight" },
 } as const;
 
 export const Mei = {
@@ -546,6 +571,7 @@ export const Mei = {
     tags: ["crowdControl", "deployable"],
     impact: "high",
   },
+  ultimate: { name: "Blizzard" },
 } as const;
 
 export const Mercy = {
@@ -565,6 +591,7 @@ export const Mercy = {
     tags: ["healing", "resurrect"],
     impact: "critical",
   },
+  ultimate: { name: "Valkyrie" },
 } as const;
 
 export const Mizuki = {
@@ -585,6 +612,7 @@ export const Mizuki = {
     tags: ["crowdControl", "hinder"],
     impact: "high",
   },
+  ultimate: { name: "Kekkai Sanctuary" },
 } as const;
 
 export const Moira = {
@@ -605,6 +633,7 @@ export const Moira = {
     tags: ["healing", "sustain", "damage"],
     impact: "low",
   },
+  ultimate: { name: "Coalescence" },
 } as const;
 
 export const Orisa = {
@@ -626,6 +655,7 @@ export const Orisa = {
     tags: ["sustain"],
     impact: "low",
   },
+  ultimate: { name: "Terra Surge" },
 } as const;
 
 export const Pharah = {
@@ -647,6 +677,7 @@ export const Pharah = {
     tags: ["damage", "areaOfEffect"],
     impact: "low",
   },
+  ultimate: { name: "Barrage" },
 } as const;
 
 export const Ramattra = {
@@ -668,6 +699,7 @@ export const Ramattra = {
     tags: ["damage", "areaOfEffect", "sustain", "crowdControl"],
     impact: "low",
   },
+  ultimate: { name: "Annihilation" },
 } as const;
 
 export const Reaper = {
@@ -689,6 +721,7 @@ export const Reaper = {
     tags: ["movement"],
     impact: "negligible",
   },
+  ultimate: { name: "Death Blossom" },
 } as const;
 
 export const Reinhardt = {
@@ -710,6 +743,7 @@ export const Reinhardt = {
     tags: ["damage", "areaOfEffect"],
     impact: "low",
   },
+  ultimate: { name: "Earthshatter" },
 } as const;
 
 export const Roadhog = {
@@ -731,6 +765,7 @@ export const Roadhog = {
     tags: ["sustain"],
     impact: "negligible",
   },
+  ultimate: { name: "Whole Hog" },
 } as const;
 
 export const Sierra = {
@@ -750,6 +785,7 @@ export const Sierra = {
     tags: ["damage", "areaOfEffect"],
     impact: "low",
   },
+  ultimate: { name: "Trailblazer" },
 } as const;
 
 export const Sigma = {
@@ -771,6 +807,7 @@ export const Sigma = {
     tags: ["damage", "areaOfEffect", "hinder", "crowdControl"],
     impact: "medium",
   },
+  ultimate: { name: "Gravitic Flux" },
 } as const;
 
 export const Sojourn = {
@@ -791,6 +828,7 @@ export const Sojourn = {
     tags: ["damage", "areaOfEffect"],
     impact: "low",
   },
+  ultimate: { name: "Overclock" },
 } as const;
 
 export const Soldier76 = {
@@ -812,6 +850,7 @@ export const Soldier76 = {
     tags: ["healing", "sustain", "deployable"],
     impact: "negligible",
   },
+  ultimate: { name: "Tactical Visor" },
 } as const;
 
 export const Sombra = {
@@ -833,6 +872,7 @@ export const Sombra = {
     tags: ["movement"],
     impact: "negligible",
   },
+  ultimate: { name: "EMP" },
 } as const;
 
 export const Symmetra = {
@@ -854,6 +894,7 @@ export const Symmetra = {
     tags: ["movement", "tempo", "initiation"],
     impact: "critical",
   },
+  ultimate: { name: "Photon Barrier" },
 } as const;
 
 export const Torbjorn = {
@@ -875,6 +916,7 @@ export const Torbjorn = {
     tags: ["sustain", "areaOfEffect"],
     impact: "low",
   },
+  ultimate: { name: "Molten Core" },
 } as const;
 
 export const Tracer = {
@@ -896,6 +938,7 @@ export const Tracer = {
     tags: ["movement", "sustain"],
     impact: "medium",
   },
+  ultimate: { name: "Pulse Bomb" },
 } as const;
 
 export const Vendetta = {
@@ -916,6 +959,7 @@ export const Vendetta = {
     tags: ["damage", "movement", "initiation"],
     impact: "medium",
   },
+  ultimate: { name: "Sundering Blade" },
 } as const;
 
 export const Venture = {
@@ -936,6 +980,7 @@ export const Venture = {
     tags: ["damage", "movement"],
     impact: "low",
   },
+  ultimate: { name: "Tectonic Shock" },
 } as const;
 
 export const Widowmaker = {
@@ -957,6 +1002,7 @@ export const Widowmaker = {
     tags: ["damage", "areaOfEffect"],
     impact: "low",
   },
+  ultimate: { name: "Infra-Sight" },
 } as const;
 
 export const Winston = {
@@ -978,6 +1024,7 @@ export const Winston = {
     tags: ["damage", "sustain", "deployable", "tempo"],
     impact: "high",
   },
+  ultimate: { name: "Primal Rage" },
 } as const;
 
 export const WreckingBall = {
@@ -999,6 +1046,7 @@ export const WreckingBall = {
     tags: ["sustain"],
     impact: "medium",
   },
+  ultimate: { name: "Minefield" },
 } as const;
 
 export const Wuyang = {
@@ -1019,6 +1067,7 @@ export const Wuyang = {
     tags: ["damage", "sustain", "knockback"],
     impact: "low",
   },
+  ultimate: { name: "Tidal Blast" },
 } as const;
 
 export const Zarya = {
@@ -1040,6 +1089,7 @@ export const Zarya = {
     tags: ["sustain", "deployable", "tempo"],
     impact: "critical",
   },
+  ultimate: { name: "Graviton Surge" },
 } as const;
 
 export const Zenyatta = {
@@ -1061,6 +1111,7 @@ export const Zenyatta = {
     tags: ["damage"],
     impact: "low",
   },
+  ultimate: { name: "Transcendence" },
 } as const;
 
 export type Tank =
@@ -1419,3 +1470,17 @@ export const heroAbilityMapping: Record<
     { ability1Name: h.ability1.name, ability2Name: h.ability2.name },
   ])
 ) as Record<HeroName, { ability1Name: string; ability2Name: string }>;
+
+const heroUltimateByName = new Map<string, string>(
+  allHeroes
+    .filter(
+      (h): h is typeof h & { ultimate: { name: string } } => "ultimate" in h
+    )
+    .map((h) => [h.name, h.ultimate.name])
+);
+
+/** The English ultimate name for a hero, or null if unmapped (caller falls back
+ * to a generic "<hero> ult" label). Ult names are English data, not localized. */
+export function getHeroUltimate(hero: string): string | null {
+  return heroUltimateByName.get(hero) ?? null;
+}
