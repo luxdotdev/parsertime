@@ -37,6 +37,35 @@ The patch dataset is maintained inside Parsertime and updates when Blizzard
 ships a patch. Reference lines render as muted gridlines so they read as
 context, not as primary data; the pick rate line stays the focus.
 
+## Patch Markers
+
+The vertical reference lines on the pick-rate chart mark when Overwatch 2
+balance patches landed, so you can line up a change in hero usage with the
+patch that likely caused it. If a hero spikes or falls off right after a
+marker, that is your cue the meta moved with the patch.
+
+Markers are styled by patch type so you can tell a major shake-up from a
+small tweak at a glance:
+
+- **Season** patches are drawn as solid lines and labelled with the season
+  (for example, "Season 2: Summit"). These ship at the start of a season and
+  carry the biggest balance changes, so a usage shift here is usually a real
+  meta move.
+- **Mid-season** patches use a lighter dashed line. Seasons run on roughly a
+  two-month cycle, so most balance patches land *between* season launches, this
+  is the default for any patch that isn't a season opener or a hotfix.
+- **Hotfixes** use a fine dashed line. These are smaller, targeted fixes (often
+  a single hero or bug), so a change lining up with a hotfix marker is usually a
+  narrow correction rather than a meta-wide swing.
+
+Knowing the patch type helps you read the chart correctly: a pick-rate jump
+against a season line is a stronger signal that the meta moved than the same jump
+against a hotfix line, which is more likely a targeted nudge.
+
+Parsertime scrapes Blizzard's published patch notes daily and classifies each
+one by type, so the markers stay current as new patches ship, no manual upkeep.
+They appear on the per-hero pick-rate chart described above.
+
 ## Caching
 
 Hero trends are served from a cached service that refreshes on a schedule.

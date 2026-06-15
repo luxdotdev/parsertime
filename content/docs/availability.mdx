@@ -47,8 +47,25 @@ your team's channel. You can configure:
 - **Time**
 - An optional **channel** and **role mention**
 
-Discord reminders require the [Parsertime Discord bot](/discord-bot) to
+Discord reminders require the [Parsertime Discord bot](/docs/discord-bot) to
 be installed in your server.
+
+<Callout type="info">
+    The **Day of week** you pick here also sets where the availability
+    grid's week begins. If your reminder fires on Monday, the grid
+    displays the week starting on Monday.
+
+    This is deliberate: the reminder now lands on **day one** of the week it's
+    collecting for, giving players a full seven days to respond. Previously the
+    week was fixed to start on Sunday, so a team that reminded on, say, Saturday
+    got the prompt on the *last* day of the collection week, leaving only one day
+    to fill it in. Tying the week start to the reminder day fixes that.
+
+    Because the reminder day now controls both, the old separate "week starts on"
+    setting was removed, there's nothing extra to configure, and the two can no
+    longer drift out of sync. Past weeks you already collected stay viewable as
+    history exactly as they were; only new weeks use the reminder-aligned start.
+</Callout>
 
 ### Sharing the Link
 
@@ -72,7 +89,8 @@ you're available, your responses save automatically.
 The availability view shows:
 
 - A **weekly grid** with days across the columns and time slots down the
-  rows, in the granularity the team chose.
+  rows, in the granularity the team chose. The week begins on the team's
+  reminder day, so the first column matches the day the reminder fires.
 - **Density coloring** on each cell, the more respondents available at a
   time, the darker the cell, so overlapping windows jump out immediately.
 - **Response counts**, such as "3 responses so far", above the grid.
@@ -86,7 +104,7 @@ reminder in your channel at the configured day and time, with a direct
 link to the form.
 
 Admins can also trigger a reminder on demand with `/availability trigger`.
-See the [Discord bot](/discord-bot) page for full command details.
+See the [Discord bot](/docs/discord-bot) page for full command details.
 
 ## Timezone Handling
 

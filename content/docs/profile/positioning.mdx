@@ -1,0 +1,102 @@
+---
+title: "Positioning"
+---
+
+The Positioning card summarizes a player's spatial habits across their
+recent maps, distilling thousands of position samples into a handful of
+readable numbers. Where most profile stats answer "how much?", these
+answer "where?" and "how close?", which is often what separates a good
+fight from a lost one.
+
+You'll find the card in the **Overview** tab of a [player
+profile](/docs/profile/overview).
+
+<Callout type="info">
+    Positioning stats are computed only from maps that carry positional
+    data, which is available on paid plans (Basic and Premium). Older
+    scrims that were parsed before positional data support was added do
+    not contribute. If a metric doesn't have enough data, it shows a dash
+    (—) instead of a number, and the card shows an empty state until at
+    least one scrim with coordinate tracking is uploaded.
+</Callout>
+
+## Metrics
+
+Each metric is averaged across every qualifying map in the selected
+timeframe. A metric only appears once it has enough samples to be
+meaningful (at least five qualifying events on a map, and only when
+positional data covers at least half of the relevant events), so a dash
+means "not enough data yet", not "zero".
+
+### Avg Engagement Distance
+
+The average straight-line distance, in meters, between you and your
+target at the moment you secured a final blow. It's measured in 3D, so
+height differences count toward the distance.
+
+- **Higher** values mean you tend to fight from range, picking targets
+  before they close in.
+- **Lower** values mean you fight up close. For a flanker or brawler
+  that's expected, but for a hero meant to hold distance it can signal
+  over-extending into the enemy.
+
+### High Ground Kill %
+
+The share of your kills taken while you held a clear height advantage
+over the victim — specifically, kills where you were at least 5 meters
+higher than the player you eliminated. The 5-meter floor is deliberately
+conservative: it ignores small bumps, stairs, and gentle slopes so that
+only a genuine high-ground position counts.
+
+- **Higher** values mean you consistently win fights from high ground,
+  which is one of the strongest positional advantages in the game.
+- **Lower** values suggest you're fighting on even or low ground more
+  often than you could be. Compare against your [heatmap](/docs/maps/heatmap)
+  to see whether you're using the map's high-ground routes.
+
+### Isolation Death %
+
+The share of your deaths that happened with no teammate within 15 meters
+— roughly "close enough to peel for you." A death only counts here if at
+least one teammate's position could be located at the moment you died, so
+it reflects genuinely getting caught out rather than gaps in the data.
+
+- **Higher** values mean you're getting caught out alone, the classic
+  sign of pushing too far ahead or peeling away from your support at the
+  wrong time.
+- **Lower** values mean you tend to die in contested fights with your
+  team around you, which is far more recoverable.
+
+### Fight Start Spread
+
+Your average distance to your teammates at the moment each fight begins,
+averaged across fights, a measure of how grouped your team is when the
+action starts. A fight only counts toward this number when you and at
+least two teammates can be located at its start, so it reflects real
+team shape rather than a single straggler.
+
+- **Higher** values mean you're starting fights spread out, which can
+  leave you out of range to support each other.
+- **Lower** values mean you're entering fights as a unit. The "right"
+  number depends on your comp, but a consistently large spread is worth a
+  conversation with your team.
+
+## How to Use It
+
+Read these together rather than in isolation. A high Avg Engagement
+Distance paired with a low Isolation Death % suggests disciplined,
+patient play. A low engagement distance with a high isolation rate is the
+profile of a player who dives in and gets punished for it. Once a number
+stands out, jump to the [replay viewer](/docs/maps/replay) or
+[heatmap](/docs/maps/heatmap) for the maps in question to see the actual
+positioning behind it. For how these spatial figures trend over time,
+see the spatial entries on [stat fluctuation
+cards](/docs/profile/stat-fluctuation-cards).
+
+These positioning metrics are defined the same way at every level, so a
+single map, a player's season-long profile, and the team's
+[Positional](/docs/team-stats/positional) tab all measure them
+identically. That consistency is what makes the comparison meaningful:
+you can hold a player's number on one map against their own average over
+the timeframe, or against the team's average, and know you're comparing
+like with like rather than two metrics that happen to share a name.

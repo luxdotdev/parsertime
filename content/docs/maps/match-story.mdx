@@ -1,0 +1,226 @@
+---
+title: "Match Story"
+---
+
+The Match Story tab turns a map into a readable narrative: a
+chronological account of how the map was won or lost, fight by fight.
+It exists to answer the one question every coach asks after a scrim —
+**"why did we lose?"** (or "why did we win?") — without making you scan
+raw stats and reconstruct the flow yourself. Match Story walks you
+through what happened, when the map swung, and **why** each swing
+happened. It sits on the **Match Story** tab of a scrim's map page.
+
+At the heart of Match Story is a win-probability model. As the map
+progresses, the model estimates each team's chance of winning from the
+current game state. Match Story uses those estimates to find the
+moments that mattered and to assign credit and blame in plain terms.
+
+<Callout type="info">
+    Match Story appears whenever its data can be assembled. The model
+    learns from league-wide scrim data — pooled across all teams and
+    kept anonymous and aggregate, the same way the global hero
+    percentiles work — so a game mode needs both to be supported and to
+    have enough of that pooled data behind it before the model can score
+    it. When a mode is too new or too rarely played, you may see a note
+    like "Not enough league-wide data for this game mode yet," and for
+    unsupported modes (such as Clash) the tab will not show at all. This
+    is expected and is not an error with your scrim.
+</Callout>
+
+<Callout type="warning">
+    **Limited data.** If a map's logs are incomplete — for example, the
+    ultimate events did not record — Match Story still renders the
+    timeline and ledger, but with a **"limited data"** note and the
+    ult-dependent parts (such as ult economy and the carryover insights
+    below) held back rather than guessed at. Treat the WP curve as still
+    meaningful while knowing the ult side of the story is missing.
+</Callout>
+
+## Win Probability and WPA
+
+Two ideas show up throughout the tab, so it helps to define them up
+front in coaching terms.
+
+- **Win Probability (WP)** is the model's estimate, at a given moment, of
+  one team's chance of winning — the map on Escort, Hybrid, and Flashpoint,
+  or the current round on Control. It is read from your team's (Team 1's)
+  perspective, so 70% means your team is favored and 30% means you are
+  behind. WP moves as the state of the map changes: kills, the objective,
+  and ult banks all push it up or down.
+- **WPA (Win Probability Added)** is how much a player moved that
+  number over the course of the map. A positive WPA means their actions
+  helped their team's chances; a negative WPA means they hurt them. WPA
+  is a way of asking "who actually swung this map?" rather than just
+  "who had the most damage?"
+
+WPA is also rolled up at the scrim level. The scrim overview has a **Win
+Probability Added** section that sums each player's WPA across every map
+in the scrim, so you can see who carried the day across the whole block.
+See [Scrims](/docs/scrims) for where that lives.
+
+<Callout type="info">
+    **Why the percentages are trustworthy.** The win-probability model
+    is calibrated, which means its numbers are meant to be taken at face
+    value: across all the moments where it says a team has a 70% chance,
+    that team really does go on to win about 70% of the time. That is
+    what makes a claim like "this fight cost you 30%" honest and worth
+    acting on — a swing of 30% is a genuinely bigger deal than a swing of
+    10%, not just a bigger-looking number.
+</Callout>
+
+A note on what WPA is — and is not. WPA distributes each fight's swing
+across the players who took part in it, by convention: final blows and
+assists earn positive credit, deaths carry negative weight (the first
+death in a fight weighted heaviest, since it usually starts the
+collapse), and ults spent earn credit when the fight is won and carry a
+cost when it is lost. It is **an attribution, not a causal verdict** —
+it tells you who was involved when WP moved, not who is to blame in the
+film-room sense. Because of that, Match Story always exposes the
+per-fight breakdown behind a player's number, so you can audit where a
+WPA came from rather than taking the total on faith.
+
+## How the Map Unfolded
+
+The tab opens with a short narrative strip that calls out the beats of
+the map in order, followed by a **win probability timeline** chart. The
+chart plots WP across the whole map with markers on each fight, so you
+can see at a glance where the map was close, where one team pulled
+ahead, and which fights flipped the trajectory. Hovering a fight in the
+ledger below focuses it on the chart.
+
+## The Fight Ledger
+
+The fight ledger is the spine of Match Story: a fight-by-fight table
+where every engagement gets a row. Every column is sortable, so you can
+re-order the map by whatever you are studying. By default it sorts by
+the biggest swings first.
+
+The columns are:
+
+- **Fight**: the fight number, in order.
+- **Time**: when the fight happened, in map time.
+- **Zone**: the map location the fight took place in, when that is
+  known.
+- **Result**: whether Team 1 won, lost, or the fight was even.
+- **Swing**: how much win probability the fight moved, shown as a signed
+  percentage with a bar that extends toward the team that gained. This
+  is the single most useful column for finding the fights that decided
+  the map.
+- **Ults**: how many ultimates each team spent in the fight, shown as a
+  Team 1 to Team 2 count.
+- **Context**: objective captures from the fight plus carryover effects
+  such as ult economy and stagger that were paid into the fight before
+  it even started.
+
+Because the swing column is driver-aware, hovering a row breaks the
+swing down into how much of it came from the objective, from kills, and
+from ults. That breakdown is what powers the takeaways below.
+
+### Carryover Between Fights
+
+Fights are not independent. When you lose a fight by burning three ults
+for nothing, or you get staggered and a teammate is still respawning, you
+do not start the next fight from even — you start it already behind. Match
+Story estimates that inherited disadvantage as a **carryover** cost: the
+slice of a fight's starting win probability that was handed to you by the
+previous one, split into an **ult economy** part (you entered down on ult
+banks) and a **stagger** part (you entered down a body). It surfaces as a
+badge in the Context column only when the carried cost is large enough to
+matter, so you can see how a single thrown fight snowballed into the next
+one or two. The same mechanism flags the good version too — a clean win
+that lets you steamroll the follow-up.
+
+## Driver-Aware Coaching Takeaways
+
+Match Story does not just tell you a fight swung; it attributes the
+swing to its drivers. For each fight, the model isolates the
+contribution of three things — the **objective**, **kills**, and
+**ults** — and the percentages always add up to the fight's actual
+swing. That makes the difference between "we lost the fight" and "we
+lost the fight and it converted straight into a capture."
+
+The takeaways strip turns those drivers into recurring, fixable
+patterns across the whole map rather than one-off observations. Depending
+on what the map shows, it can surface things like:
+
+- **Where your losses came from** — for example, most of your lost win
+  probability across your losing fights came through the objective, the
+  kill exchange, or your ults.
+- **Ult discipline** — losing fights where you spent more ults than the
+  enemy, which fund their next push.
+- **Staggers** — fights you entered down a player because deaths bled
+  across the reset.
+- **Ult deficit** — fights you took while behind on ult economy.
+- **First deaths** — a player who repeatedly died first in your losing
+  fights.
+
+Each takeaway is tied to the fights it came from, so you can jump
+straight to the evidence instead of taking the summary on faith.
+
+## Missed Opportunities
+
+The Missed Opportunities section highlights the fights that should have
+gone your way and did not: moments where your team went into a fight as
+the favorite and then lost a large chunk of win probability. A fight
+qualifies when you entered it at least slightly ahead (favored to win)
+and then bled a meaningful amount of WP out of it — small wobbles from a
+lead do not count, only drops big enough to be worth a film review. The
+list is ranked by how much WP you lost, biggest first, and caps at the
+few most costly fights with the full count shown. These are the
+point-flip moments where the map turned against you despite a lead.
+
+Each entry shows:
+
+- **Why it slipped** — short tags for the primary driver of the loss
+  (objective, kills, or ults), an early first death if one happened, and
+  any stagger or ult-deficit you carried in.
+- **A per-fight ultimate breakdown** — which ults were spent at that
+  decisive turn and what each one returned, so you can see ults that got
+  value, ults that were wasted, and ults whose owner died mid-cast. A
+  summary line shows how many of the spent ults actually converted.
+- **The swing itself** — the WP you held going in, the WP you were left
+  with, and the size of the drop.
+
+This section only appears when the model actually finds these moments;
+if the map had none, it is left out.
+
+## How to Use It
+
+Start with the timeline and the ledger sorted by swing to find the two
+or three fights that decided the map. Open those rows to see what drove
+the swing, then read the takeaways to check whether the same driver shows
+up across multiple fights — that is the pattern worth a VOD review.
+Missed Opportunities is the fastest way to find leads you threw away, and
+the WPA table tells you who to talk to. From there, jump into the
+[Replay Viewer](/docs/maps/replay) or [Events](/docs/maps/events) to see exactly
+what happened in a decisive fight.
+
+## About the Win-Probability Model
+
+The model is retrained every week on league-wide scrim data and only ships
+when it stays calibrated and beats the previous week's version, so the
+numbers are guarded against a bad update. A few things are worth knowing so
+you read them well:
+
+- **What it scores.** On Control it estimates your chance of winning the
+  **current round**; on Escort, Hybrid, and Flashpoint it estimates your
+  chance of winning the **map**. Those four modes are supported. **Push and
+  Clash are not** — the logs carry no usable progress signal for Push, and
+  Clash is a retired mode — so neither gets a Match Story.
+- **It scores states, not decisions.** The model can see that the ult banks
+  changed and the fight was lost; it cannot know an ult was "wasted." When
+  Match Story flags a wasted ult or a missed opportunity, it is reading the
+  *outcome* — the judgment about whether the decision itself was wrong is
+  still yours in the film room.
+- **Some inputs are approximate.** Respawn timing is modeled as a fixed
+  delay, so stagger and carryover costs are estimates rather than exact
+  figures. The model also does not use player positions or hero identity
+  yet — both were tested and did not improve its accuracy; positional data
+  is the next avenue being explored.
+
+<Callout type="info">
+    None of this is in the artifact the model ships: it holds only the
+    learned parameters and calibration — no player names, no team
+    identifiers, no match data. The win-probability model learns what game
+    states win, not anything about specific teams.
+</Callout>

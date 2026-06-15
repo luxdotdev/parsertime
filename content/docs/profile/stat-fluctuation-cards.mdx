@@ -27,9 +27,32 @@ Visual cards displaying key statistics and their changes over time, with embedde
 - **Avg Time to Use Ult**: Average seconds holding ultimate before use
 - **Kills per Ultimate**: Average eliminations per ultimate used
 
+**Ultimate Quality**
+- **Ult Conversion Kills**: Average number of kills your team got within 8 seconds and 20 meters of where you started your ultimate, averaged across your ults. It captures the kills the ult actually produced near its impact, not eliminations across the map. Computed once you have at least three ultimates to average. Higher means each ult is generating more value.
+- **Ult Death %**: Percentage of your ultimates during which you died (between the ult starting and ending). A high value means your ults are getting you killed rather than carrying fights.
+- **Avg Ult Displacement**: Average distance, in meters, between where you started and ended an ultimate. High displacement can indicate mobile ults or chasing; low displacement indicates ults used from a held position. Only ults where both the start and end positions are known count toward it.
+- **Ults On Objective %**: Percentage of your ultimates started inside the objective zone rather than off in a lane. Higher generally means your ults are pressuring the point where it counts. This one also needs the map's objective zones to be published; without them it stays a dash even when other ult stats are present.
+
+**Positioning**
+- **Avg Engagement Distance**: Average 3D distance, in meters, to your target on final blows.
+- **High Ground Kill %**: Share of your kills taken while at least 5 meters above the victim.
+- **Isolation Death %**: Share of your deaths with no teammate within 15 meters.
+- **Fight Start Spread**: Average distance, in meters, to your teammates when fights begin.
+
+For a fuller explanation of what each positioning metric implies about your play, see [Positioning](/docs/profile/positioning).
+
 **Special Metrics**
 - **Drought Time**: Average time between eliminations
 - **Ajax Count**: Number of clutch multi-kills while critically wounded
+
+<Callout type="info">
+    The Ultimate Quality and Positioning metrics are computed only from
+    maps that carry positional data, which is available on paid plans
+    (Basic and Premium). On timeframes without enough positional data,
+    these cards show a dash (—) or are omitted. A few of them, such as
+    Ults On Objective %, also depend on the map having published objective
+    zones.
+</Callout>
 
 ## Card Features
 
@@ -74,8 +97,9 @@ Statistics display in a meaningful order:
 1. Overall performance (MVP metrics)
 2. Impact and engagement (Fleta, First Picks/Deaths)
 3. Fight control (Reversals)
-4. Ultimate efficiency
-5. Special achievements (Ajax)
+4. Ultimate efficiency and quality
+5. Positioning (spatial metrics)
+6. Special achievements (Ajax)
 
 ## Empty State
 

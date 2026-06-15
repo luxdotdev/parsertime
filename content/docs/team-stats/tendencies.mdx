@@ -1,0 +1,84 @@
+---
+title: "Tendencies"
+---
+
+The Tendencies tab shows, map by map, where your team tends to win and lose
+fights. It renders a fight-winrate map view mined from your players' movement
+data, so you can see at a glance which areas of each map favor your team and
+which ones repeatedly cost you. What used to be a standalone page now lives here
+as a team-stats tab.
+
+<Callout type="warning">
+    The Tendencies tab is gated. It requires positional data on your scrims and a
+    paid plan (Basic or Premium). It is built from coordinate data — every fight
+    needs a recorded location, and a calibrated map is what places that location
+    correctly on the image — so older scrims parsed before positional data
+    support, and maps that have not been calibrated, do not contribute. Map
+    calibration is handled by Parsertime admins for supported maps.
+</Callout>
+
+## The Fight Map
+
+For each map your team has enough fights on, the tab draws the map image overlaid
+with a field that colors areas by how your team fares when fights happen there.
+Greener areas are where you tend to win; redder areas are where you tend to lose.
+The view is built from the locations of **decisive** fights mined from your
+players' movement data — each fight has a location and a clear winner, and is
+scored as a win or loss for your side. Fights that ended even are left out, so
+the colors reflect fights that actually went one way or the other rather than
+trades.
+
+This map view is the question coaches actually ask — *where do we do best?* —
+answered directly. Individual movement paths fragment that signal across many
+small clusters, but a fight's outcome is fundamentally a question about
+*location*, so the fight map plots outcomes by where they happened and lets the
+strong and weak areas emerge.
+
+Because it pools fights over a recent window of scrims, the picture reflects your
+current tendencies rather than a single game. Color also fades out where fights
+are rare, so a lucky one-off in some corner of the map doesn't paint a confident
+green or red where there isn't enough evidence. A map only draws its field once it
+has accumulated enough fights to be meaningful; until then the tab notes that
+there aren't yet enough fights for that map — it deliberately offers no opinion
+without the data to back one.
+
+## Favorable and Unfavorable Zones
+
+Above each map's field, the tab calls out the areas where your team is notably
+strong or weak, each tagged with its win-loss record. These are the few biggest
+swings, spread out across the map rather than bunched in one spot, so you get the
+handful of places worth acting on instead of noise. When a callout falls inside a
+named area of the map, it's labeled with that name (for example, "Point A —
+8W/2L"); otherwise it's marked on the map by location.
+
+Where the map's areas have been named, a **zone scorecard** table lists each one
+with its record and winrate, color-coded so favorable and unfavorable zones stand
+out. This is what turns a colored field into specific, nameable advice: which
+callouts to fight on and which to avoid. The scorecard only appears once those
+named areas have actually recorded fights.
+
+## Summary Ribbon
+
+A ribbon at the top of the tab summarizes the whole view:
+
+- **Total decisive fights** counted across all maps.
+- **Number of maps** with fight data.
+- **Strongest map** by overall fight winrate.
+- **Weakest map** by overall fight winrate.
+
+This gives you a quick read on where to focus before you dive into any single
+map.
+
+## Per-Map Routes
+
+The Tendencies tab tells you *where* fights go your way. To see *how* your team
+moves into those areas, pair it with [routes](/docs/maps/routes) on a scrim's map
+page, which shows movement and engagement paths for an individual map.
+
+## How to Use It
+
+Use the summary ribbon to find your strongest and weakest maps, then open those
+maps' fight fields. Look for green zones you should be funneling fights toward and
+red zones you keep losing in, and check the zone scorecard for the exact records.
+Bring the favorable and unfavorable callouts into map review so your team has a
+concrete plan for where to take, and where to avoid, fights.

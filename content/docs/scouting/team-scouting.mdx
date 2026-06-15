@@ -1,0 +1,156 @@
+---
+title: "Team Scouting"
+---
+
+Team Scouting lives at `/faceit`. You search for a FACEIT team by name and
+open a profile that lays out how they play and what to play into them. It
+is the surface you use to build a map veto and a ban plan before a match.
+
+<Callout type="info">
+  FACEIT Scouting is a premium feature, gated behind a feature flag, and may
+  not be available on every account. If you cannot reach `/faceit`, that is
+  why.
+</Callout>
+
+## Finding a team
+
+The search page is a single search box. Start typing a team name and a
+list of matching teams appears, each row showing the team name and how
+many tracked matches it has. Pick one — by click, or with the arrow keys
+and Enter — to open its profile. Only teams that have tracked matches show
+up, so a team you cannot find may simply have no scouted history yet.
+
+## Reading the profile
+
+The profile is a single scrolling report, top to bottom, made of the
+sections below.
+
+### Header and team strength
+
+The top of the page carries the team name and a strip of headline numbers:
+
+- **Record** — wins–losses, with the total number of matches played.
+- **Win rate** — overall win rate, with a recency-weighted win rate
+  alongside it, so recent results count for more than old ones.
+- **Team FSR** — the roster's combined FACEIT Skill Rating, blended from
+  each starter's per-role [FSR](/docs/scouting/player-scouting), with a note
+  of how many players on the roster are rated (for example, 4/6 rated). It
+  reads "how good is this five at putting up output for their level" rather
+  than "how often do they win." Check the rated count before trusting it: a
+  team number built from only part of the roster is a partial read.
+- **Team TSR** — the roster's combined [TSR](/docs/tsr/overview), again
+  with rated coverage. Because TSR is built from match results and FSR from
+  in-game stats, the two can disagree — a team that wins more than its raw
+  output suggests will show a higher TSR than FSR, and vice versa.
+
+If the team shares core players with other scouted teams, a **related
+teams** line appears with links to those teams and how many core players
+they share. You can toggle a **combined** view that rolls those related
+teams together — useful when a roster has played under more than one team
+name and you want their full body of work in one place.
+
+### Game plan
+
+A condensed, actionable summary near the top, grouped into four buckets:
+
+- **Maps to force** — maps where they are weak, so you want to pick them.
+- **Heroes to ban** — heroes whose ban hurts their win rate the most.
+- **Maps to avoid** — maps where they are strong, so steer the veto away.
+- **Heroes not to ban** — heroes whose ban does not hurt them, so don't
+  waste a ban on them.
+
+Each entry carries the supporting numbers (win rate and sample size, or
+the win-rate swing with and without the ban). If there is not enough signal
+to make calls, this section says so rather than inventing recommendations.
+
+### Overview — how they play
+
+- **Recent form** — a row of recent results (W/L), so you can see whether
+  they are trending up or down.
+- **Attack vs Defense** — win rate when attacking first versus defending
+  first, each with the maps-won-of-played behind it. This tells you which
+  side they would rather start.
+- **Tiers played** — a distribution of which tiers (Open through OWCS)
+  their tracked matches came from, so you know what level of competition
+  their record was built against.
+
+### Patch timeline
+
+How the team has performed across Overwatch balance eras, so you can tell
+whether a strong record is current or was built on an older patch. Each row
+is a patch window:
+
+- **Patch** — a season patch (by name) or a mid-season patch (by date),
+  with the date range it covers. Matches from before patch tracking began
+  are grouped into a single pre-tracking bucket.
+- **Win rate** — their win rate during that era, shown with a bar and
+  colored for above or below 50%.
+- **Matches** — how many tracked matches fall in the window; thin windows
+  are marked low sample.
+- **Most banned** — the heroes most often banned in their matches that era,
+  with counts.
+
+If the team has no tracked matches since patch tracking began, the section
+says so instead. Read it alongside recent form: a team that fell off after a
+balance patch that hit their comp is a different opponent than their
+all-time record suggests.
+
+### Map performance
+
+Two tables: win rate **by map** and **by mode** (the game modes such as
+Control, Escort, and so on). Rated rows — the ones with enough games to
+trust — are sorted to the top by win rate; thin samples fall below and are
+marked low sample. This is the backbone of your veto.
+
+### Hero ban environment
+
+A map-level read on which hero bans actually move the needle. For each
+hero, the table shows their win rate **without** that hero in the ban pool
+versus **with** it, the delta between the two, and the sample sizes. The
+heroes whose ban hurts them most are tagged as ban targets.
+
+<Callout type="warning">
+  This is a map-level signal, not a per-side attribution. It reflects win
+  rate when a hero is in the ban pool — FACEIT does not attribute bans to a
+  specific side, so read it as "how do they do when this hero is gone,"
+  not "what they personally banned."
+</Callout>
+
+A toggle reveals low-sample heroes that are hidden by default, so you can
+see the full list when you want it.
+
+### Roster
+
+The roster table lists each player with:
+
+- **Player** — nickname, a starter or sub tag, and their Battle Tag if
+  known.
+- **Role** — Tank, Damage, or Support.
+- **Share** — how much of the team's recent maps they appeared in, so you
+  can tell the regular five from fill-ins.
+- **FSR** — their FACEIT Skill Rating, on the 1–5000 scale.
+- **TSR** — their [TSR](/docs/tsr/overview).
+
+Each player links to their full [player profile](/docs/scouting/player-scouting).
+An inline "How FSR works" explainer is available next to the section if you
+need a refresher.
+
+## How to use it
+
+- **Build the veto from map performance and the game plan.** Force their
+  weak maps, steer away from their strong ones, and check the
+  attack/defense split to decide what you want when the side picks land.
+- **Set bans from the hero ban environment.** Spend bans on the heroes
+  whose removal actually lowers their win rate, and skip the ones the data
+  says don't matter.
+- **Sanity-check the record with the tiers played, recent form, and patch
+  timeline.** A great-looking win rate built against Open lobbies, earned
+  mostly in older matches, or banked on a since-patched comp should be
+  weighted differently than one earned recently at Expert or above. The
+  recency-weighted win rate already leans toward current results for this
+  reason.
+- **Use related teams and the combined view** when a roster has played
+  under more than one name, so you are scouting their real body of work.
+- **Drill into the roster** to decide who to target and who to respect,
+  then continue on the [Player Scouting](/docs/scouting/player-scouting)
+  page.

@@ -48,12 +48,65 @@ const changelog = [
     href: '/docs/maps/telemetry',
     body: (
       <>
-        A new tab on the scrim map page, modeled on F1 telemetry: damage by
-        target, opponent matchup radar, focus fire by role, ult combos and
-        counter-ult response, ultimate advantage per fight.
+        A per-player tab modeled on F1 telemetry: damage by target, opponent
+        matchup radar, focus fire by role, ult combos and counter-ult response,
+        ultimate advantage per fight.
       </>
     ),
-    meta: 'per scrim',
+    meta: 'per player',
+  },
+  {
+    tag: 'new · personal',
+    title: 'Ranked tracker',
+    href: '/docs/ranked/overview',
+    body: (
+      <>
+        A personal dashboard for your own competitive ladder. Log or bulk-import
+        games and get win rate over time, best heroes and maps, results by role
+        and group size, and per-patch impact. Private by default, with an opt-in
+        public summary.
+      </>
+    ),
+    meta: 'per player',
+  },
+  {
+    tag: 'new · analysis',
+    title: 'Match Story',
+    href: '/docs/maps/match-story',
+    body: (
+      <>
+        A win-probability model reads each map as a narrative: a sortable fight
+        ledger with the swing of every fight, driver-aware takeaways that say
+        why it moved, and a missed-opportunities pass on the leads you let slip.
+      </>
+    ),
+    meta: 'per map',
+  },
+  {
+    tag: 'new · scouting',
+    title: 'FACEIT Scouting',
+    href: '/docs/scouting/overview',
+    body: (
+      <>
+        Scout FACEIT teams and players ahead of a match: map and ban tendencies,
+        attack/defense splits, rosters, and FSR &mdash; a tier- and role-aware
+        skill rating that grades a player against their peers.
+      </>
+    ),
+    meta: 'premium',
+  },
+  {
+    tag: 'new · spatial',
+    title: 'Positional analytics',
+    href: '/docs/maps/routes',
+    body: (
+      <>
+        Movement data turned into insight: route maps, fight-initiation grading,
+        zone control, and a positioning profile per player &mdash; on the map
+        page, the team stats page, and the scrim overview.
+      </>
+    ),
+    meta: 'positional',
   },
 ];
 
@@ -98,10 +151,10 @@ const quickstart = [
     title: 'Read the map page',
     body: (
       <>
-        Eight tabs cover the read: Overview, Killfeed, Charts, Events, Replay,
-        Heatmap, Tempo, and Telemetry. Tabular numerals throughout, dense
-        enough for a 27&Prime; monitor, sortable everywhere. Compare scrims
-        side by side from any map.
+        Over a dozen tabs cover the read &mdash; Overview, Killfeed, Charts,
+        Match Story, Heatmap, Replay, Routes, Events, and Initiation among them.
+        Tabular numerals throughout, dense enough for a 27&Prime; monitor,
+        sortable everywhere. Compare scrims side by side from any map.
       </>
     ),
     href: '/docs/maps/overview',
@@ -113,6 +166,7 @@ const indexGroups = [
     label: 'Setup',
     pages: [
       { title: 'Introduction', href: '/docs' },
+      { title: 'Dashboard', href: '/docs/dashboard' },
       { title: 'Teams', href: '/docs/teams' },
       { title: 'Scrims', href: '/docs/scrims' },
       { title: 'Discord bot', href: '/docs/discord-bot' },
@@ -125,6 +179,7 @@ const indexGroups = [
       { title: 'Stats', href: '/docs/stats' },
       { title: 'Team Stats', href: '/docs/team-stats' },
       { title: 'Profile', href: '/docs/profile' },
+      { title: 'Ranked', href: '/docs/ranked/overview' },
     ],
   },
   {
@@ -141,6 +196,7 @@ const indexGroups = [
     label: 'Tools',
     pages: [
       { title: 'Matchmaker', href: '/docs/matchmaker' },
+      { title: 'Scouting', href: '/docs/scouting/overview' },
       { title: 'AI Analyst', href: '/docs/ai-chat' },
       { title: 'Coaching Canvas', href: '/docs/coaching-canvas' },
       { title: 'Availability', href: '/docs/availability' },
@@ -216,8 +272,8 @@ export async function LandingHero() {
 
             <p className="mt-6 max-w-[42ch] text-[15px] leading-relaxed text-fd-muted-foreground">
               Every Parsertime surface, written in plain language. From your
-              first Workshop log upload to the TSR ladder, the Matchmaker, and
-              the AI Analyst. Updated alongside the product.
+              first Workshop log upload to the TSR ladder, the Matchmaker,
+              Match Story, and the Ranked tracker. Updated alongside the product.
             </p>
 
             <div className="mt-7 flex flex-wrap items-center gap-3">
@@ -253,11 +309,11 @@ export async function LandingHero() {
             </div>
             <div className="flex items-center gap-2">
               <span aria-hidden className="h-px w-6 bg-fd-border" />
-              <span className="tabular-nums">51 pages</span>
+              <span className="tabular-nums">65 pages</span>
             </div>
             <div className="flex items-center gap-2">
               <span aria-hidden className="h-px w-6 bg-fd-border" />
-              <span className="tabular-nums">v3.0 · 2026.05</span>
+              <span className="tabular-nums">v3.0 · 2026.06</span>
             </div>
           </div>
         </div>
@@ -323,8 +379,8 @@ export function LandingChangelog() {
           <SectionHeader
             eyebrow="02 · changelog"
             title="What landed in v3."
-            meta="2026.05"
-            description="Two new pages of the product, a billing model swap, and a new tab on every map. The rest of v3 is hundreds of smaller polish passes; these are the four worth reading the docs for."
+            meta="2026.06"
+            description="The TSR ladder and Matchmaker, a credit-based AI Analyst, win-probability Match Story, a personal Ranked tracker, FACEIT Scouting, and a full positional-analytics suite. The rest of v3 is hundreds of smaller polish passes; these are the eight worth reading the docs for."
           />
         </div>
 
@@ -432,7 +488,7 @@ export function LandingBrowse() {
           <SectionHeader
             eyebrow="04 · index"
             title="The full reference."
-            meta="51 pages"
+            meta="65 pages"
             description="Grouped by what you tend to be looking for. The sidebar inside /docs carries the same structure."
           />
         </div>

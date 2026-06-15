@@ -25,6 +25,62 @@ dragging and dropping the logs onto the "Add Map" card or by choosing a file.
 ![Scrim view](/scrim-view.png)
 *The scrim view with the first map added. You can see the "Add Map" card right next to it.*
 
+## Map Winner Badge
+
+Each map card on the scrim view shows who won that map at a glance. When you're
+viewing a scrim through one of your teams, the badge reads **Won** (green) or
+**Lost** (red) from your team's perspective. When there's no viewing-team
+context, for example an individual scrim or a brand-new team, the badge instead
+shows the **name of the winning team** neutrally.
+
+### Why Push maps used to show "N/A"
+
+Overwatch's logs don't record how far the robot travelled, so for Push there has
+never been a score or payload signal that Parsertime could read to decide a
+winner. That's why Push maps historically reported **N/A** and were quietly left
+out of your win-rate totals, the data to call them simply wasn't in the log.
+
+### How the Push winner is approximated
+
+Parsertime now estimates the Push winner from **where the fighting happened** in
+the match's positional data, the same coordinates used elsewhere in the app. The
+idea is territorial: it works out each team's spawn from their opening positions,
+draws the line between the two spawns, and measures how far each team's fights
+pushed toward the *enemy* spawn. The team that advanced deepest is taken as the
+winner, because the deepest fighting next to a base means that base's team got
+shoved back there, that is, they were the ones losing ground.
+
+This happens **at upload**, so a new Push map arrives with a suggested winner
+already filled in. Because it's an estimate rather than a read of the final
+score, it's marked with an **AUTO** badge.
+
+<Callout type="info">
+  This resolves the long-standing limitation where Push maps could not report a
+  winner (see [Known Issues](/docs/known-issues) and the
+  [Map Overview](/docs/maps/overview)). The score itself is still unavailable for
+  Push, the map now infers who won from positioning rather than reading it from a
+  final tally.
+</Callout>
+
+<Callout type="warning">
+  The approximation can be wrong, especially on close maps where both teams
+  pushed to similar depths and the margin between them is small. Treat a low-margin
+  AUTO result as a best guess and correct it if you remember the actual outcome,
+  which is exactly what the manager override below is for. Only Push maps that
+  include positional coordinates get an estimate; older Push logs without
+  coordinates still show **N/A**.
+</Callout>
+
+### Confirming or correcting a winner
+
+If you're a team manager, you can confirm or correct any map's winner, not just
+Push. Click the pencil icon on the map card (or use **Set winner** in the card's
+right-click menu) to open the winner dialog, pick the winning team, and save. A
+manual choice is binary (one team or the other, there is no draw or N/A option)
+and **takes precedence over the auto-computed result**. Overrides are
+**audit-logged**, so a change to a map's outcome is always traceable to who made
+it.
+
 ## Scrim Overview Card
 
 The scrim overview card is available to Basic and Premium subscribers. It
@@ -51,6 +107,44 @@ The card surfaces:
 The overview card is a quick scan before the rest of the review, pick
 out the headline numbers and the names you want to look closer at, then
 drop into the Analysis Accordion below for specifics.
+
+## Win Probability (WPA)
+
+The scrim overview includes a **Win Probability (WPA)** section that rolls each
+player's win-probability-added up across all of the scrim's maps. It shows, per
+player, how much their moments shifted the team's chance of winning fights over
+the course of the scrim, so you can see who carried the swing across the whole
+session rather than on a single map.
+
+For the concept behind WPA and how the moment-by-moment story is built, see
+[Match Story](/docs/maps/match-story) on the map pages.
+
+## Fight Initiations
+
+The scrim overview also surfaces a **Fight Initiations** section, a scrim-level
+summary of which team tended to go in first and how often initiating led to a
+win. It's the same idea as the team-wide
+[Team Fight Initiation](/docs/team-stats/teamfights) rollup, scoped to just this
+scrim's maps.
+
+For initiation on a single map, see the per-map
+[Fight Initiations](/docs/maps/initiation) breakdown.
+
+## Positional Summaries
+
+On maps that have positional data, the scrim overview adds **positional
+summaries** covering engagements, zone control, and routes, aggregated across
+the scrim. These give you a spatial read on where fights happened and which
+zones and routes worked, without leaving the scrim view.
+
+<Callout type="info">
+  Positional summaries only appear for scrims whose maps include positional
+  data. Older logs and maps without it simply won't show this section.
+</Callout>
+
+For the full positional breakdowns, see [Routes](/docs/maps/routes) and the related
+map pages, the scrim overview keeps these summaries brief and links out for the
+deep dives.
 
 ## Analysis Accordion
 

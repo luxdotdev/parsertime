@@ -16,7 +16,9 @@ The events that are currently tracked on the events page are:
 - Objective captures
 - Objective updates
 - Hero swaps
+- Ultimates used
 - Ultimate kills
+- Teamfights
 - Multikills
 - Ajaxes
 
@@ -42,6 +44,17 @@ For example, in the above Events timeline, we can see that Spingar killed two pl
 their ultimate at 2:34. This information can help you find where this event occurred in the
 replay viewer and analyze how it impacted the map.
 
+Ultimates and teamfights now live inline in this same timeline, so you no longer
+need to jump to a separate tab to see them. To focus on a single kind of event, use
+the filter controls at the top of the timeline:
+
+- **All** shows every event.
+- **Highlights** shows the standout moments (ultimates and ult kills).
+- **Ultimates** shows only ultimates used and the kills they earned.
+- **Fights** shows only teamfights.
+- **Swaps** shows only hero swaps.
+- **Objectives** shows only objective captures and updates.
+
 There are special events that are tracked on the Events timeline, such as Ajaxes. Ajaxes are
 a special event that occurs when a Lúcio player dies during the cast of their ultimate ability.
 
@@ -51,16 +64,33 @@ a special event that occurs when a Lúcio player dies during the cast of their u
 This information can help you find important blunders that occurred during the map and analyze
 how they can be avoided in the future.
 
-## Ultimate Timeline
+## Ultimates
 
-The Events page also shows an Ultimate timeline that shows when each player used their ultimate
-ability throughout the map. The Ultimate timeline is color-coded based on the team that the player
-is on. Team 1 players are shown in blue, and Team 2 players are shown in red.
+Ultimates appear inline in the Events timeline, color-coded by team the same way as
+every other event, so you can see when each player used their ultimate alongside the
+fights and objectives around it. Use the **Ultimates** filter to isolate them.
 
-![Ultimates Used](/maps/ultimates-used.png)
-*An example of the Ultimate timeline showing when each player used their ultimate ability throughout the map.*
+Seeing ultimates in context is useful for understanding when each player used their
+ultimate ability. It can help detect if a player is using their ultimate too early or
+too late and how that usage impacted the map, and whether a player is burning their
+ultimate too often or sitting on it for too long.
 
-This timeline is useful for understanding when each player used their ultimate ability. This can help
-detect if a player is using their ultimate ability too early or too late and can help you analyze how
-the ultimate ability usage impacted the map. This is also useful for finding if a player is using their
-ultimate ability too often or not enough.
+On maps with positional data, ultimate entries gain extra **quality** detail so you
+can judge not just when an ultimate was used but how well it landed:
+
+- **Conversion kills**: the number of kills the player's team got within 8 seconds
+  and 20 meters of where the ultimate started. This counts the eliminations the ult
+  actually produced near its impact, not kills happening elsewhere on the map at the
+  same time.
+- **Where it was used**: the zone on the map the player ulted in (for example, on
+  the point or in a choke). Zone labels need the map's zones to be published; without
+  them this is left blank even on a positional map.
+- **Died during ult**: a marker noting when the player died between the ultimate
+  starting and ending, so wasted ultimates are easy to spot.
+
+<Callout type="info">
+    Ultimate quality detail is only available when the scrim has positional data
+    (available on paid plans, Basic and Premium, and needs positional data on the
+    scrim). On maps without it, ultimates still appear in the timeline, just without
+    the conversion, zone, and died-during-ult details.
+</Callout>

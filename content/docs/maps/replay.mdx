@@ -50,6 +50,54 @@ someone opens that link, the viewer opens at the same time. This is
 useful for pointing a teammate or coach at a specific fight without
 having to explain where to look.
 
+## Ghost Overlays
+
+A **ghost** overlays another run's player movement on top of the
+current replay so you can compare two runs side by side in the same
+view. The ghost players render beneath the live markers with dashed
+borders and reduced opacity, so it is easy to tell which timeline is
+which. This is what makes it useful for the comparisons coaches usually
+do from memory: the push that worked versus the one that didn't, this
+week versus last week on the same map, or one player's positioning
+across different rounds.
+
+You pick what to overlay with the **Ghost source** selector. The
+ghost can come from:
+
+- **Another round of this same map** (from the replay you are already
+  watching), or
+- **Another scrim**, chosen from the list of other times your team
+  played this map.
+
+Because the two runs do not start at the same instant, the **Alignment**
+control decides how the ghost's clock is matched to the current
+replay. Which mode you want depends on what you're comparing:
+
+- **Round start** lines the ghost up by the start of the round. Use this
+  when you want to compare the *setups* — how each team left spawn and
+  positioned before anything happened.
+- **First contact** lines the ghost up by the first kill or damage of the
+  round, so the two fights begin together even if one team committed
+  earlier than the other. Use this when you want to compare the *executes*
+  themselves and the setup timing would otherwise pull them out of sync.
+
+You can fine-tune the match with a small time **offset** when neither
+mode lands it exactly — handy when the two runs are close but a beat
+apart. You can also narrow the overlay to a single **ghost player**
+instead of the whole team to focus on one role's positioning, or **clear
+the ghost** to go back to the plain replay. Only one ghost is shown at a
+time.
+
+<Callout type="info">
+    Like the replay viewer itself, ghost overlays need positional data.
+    The source you pick (the other round or scrim) must also have
+    positional data, or the ghost will show an empty state. The source
+    picker only offers the same base map you are watching, so the two
+    runs always share the same map; on Control maps, where the fight moves
+    between capture points, pick rounds on the same point so the two runs
+    are actually overlaying the same arena.
+</Callout>
+
 ## How to Use It
 
 The replay viewer is most useful after you have spotted something in
