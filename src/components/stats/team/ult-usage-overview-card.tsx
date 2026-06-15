@@ -1,5 +1,6 @@
 "use client";
 
+import { OpponentComparisonCard } from "@/components/stats/team/opponent-comparison-card";
 import { SectionHeader } from "@/components/stats/team/section-header";
 import type { ChartConfig } from "@/components/ui/chart";
 import {
@@ -7,9 +8,15 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { useTempoReadLabel } from "@/components/stats/team/use-tempo-read-label";
 import type { TeamUltStats } from "@/data/team/types";
 import type { TempoBaselineStat } from "@/lib/tempo/classify";
+import type { OpponentTempoComparison } from "@/lib/tempo/opponent-benchmark";
 import { toHero } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
@@ -83,13 +90,19 @@ export function UltUsageOverviewCard({
   }));
   const chartHeight = Math.max(200, heroChartData.length * 40);
 
-  const tempoRows: { label: string; value: string; sub: string }[] = [];
+  const tempoRows: {
+    label: string;
+    value: string;
+    sub: string;
+    opponent?: OpponentTempoComparison | null;
+  }[] = [];
 
   if (ultStats.avgChargeTime > 0) {
     tempoRows.push({
       label: t("avgChargeTime"),
       value: `${ultStats.avgChargeTime.toFixed(1)}s`,
       sub: tempoLabel(ultStats.avgChargeTime, chargeBaseline) ?? "—",
+      opponent: ultStats.chargeTimeVsOpponents,
     });
   }
 
@@ -98,6 +111,7 @@ export function UltUsageOverviewCard({
       label: t("avgHoldTime"),
       value: `${ultStats.avgHoldTime.toFixed(1)}s`,
       sub: tempoLabel(ultStats.avgHoldTime, holdBaseline) ?? "—",
+      opponent: ultStats.holdTimeVsOpponents,
     });
   }
 
@@ -135,20 +149,48 @@ export function UltUsageOverviewCard({
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border)]">
-              {tempoRows.map((row) => (
-                <tr
-                  key={row.label}
-                  className="hover:bg-muted/30 transition-colors"
-                >
-                  <td className="text-muted-foreground px-4 py-3">
-                    {row.label}
-                  </td>
-                  <td className="text-foreground px-4 py-3 text-right font-mono font-semibold tabular-nums">
-                    {row.value}
-                  </td>
-                  <td className="text-muted-foreground px-4 py-3">{row.sub}</td>
-                </tr>
-              ))}
+              {tempoRows.map((row) => {
+                const cells = (
+                  <>
+                    <td className="text-muted-foreground px-4 py-3">
+                      {row.label}
+                    </td>
+                    <td className="text-foreground px-4 py-3 text-right font-mono font-semibold tabular-nums">
+                      {row.value}
+                    </td>
+                    <td className="text-muted-foreground px-4 py-3">
+                      {row.sub}
+                    </td>
+                  </>
+                );
+
+                if (!row.opponent) {
+                  return (
+                    <tr
+                      key={row.label}
+                      className="hover:bg-muted/30 transition-colors"
+                    >
+                      {cells}
+                    </tr>
+                  );
+                }
+
+                return (
+                  <HoverCard key={row.label} openDelay={120} closeDelay={60}>
+                    <HoverCardTrigger asChild>
+                      <tr className="hover:bg-muted/30 cursor-help transition-colors">
+                        {cells}
+                      </tr>
+                    </HoverCardTrigger>
+                    <HoverCardContent align="start" className="w-96">
+                      <OpponentComparisonCard
+                        metricLabel={row.label}
+                        comparison={row.opponent}
+                      />
+                    </HoverCardContent>
+                  </HoverCard>
+                );
+              })}
             </tbody>
           </table>
         </div>
