@@ -310,7 +310,6 @@ model ComparisonGroup {
   team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
   creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
 
-  @@index([teamId])
   @@index([createdBy])
   @@index([teamId, playerName])
 }
@@ -363,11 +362,10 @@ model Scrim {
   tournamentMatch     TournamentMatch?
   opponentTeamId      Int?
   scrimRequestId      String?
-  opponentTeam   Team?          @relation("ScrimOpponent", fields: [opponentTeamId], references: [id], onDelete: SetNull)
-  scrimRequest   ScrimRequest?  @relation(fields: [scrimRequestId], references: [id], onDelete: SetNull)
-  feedback       ScrimFeedback?
+  opponentTeam        Team?            @relation("ScrimOpponent", fields: [opponentTeamId], references: [id], onDelete: SetNull)
+  scrimRequest        ScrimRequest?    @relation(fields: [scrimRequestId], references: [id], onDelete: SetNull)
+  feedback            ScrimFeedback?
 
-  @@index([teamId])
   @@index([opponentTeamId])
   @@index([teamId, opponentTeamId])
 }
@@ -430,7 +428,6 @@ model Note {
   MapDataId Int
 
   @@unique([scrimId, MapDataId])
-  @@index([scrimId, MapDataId])
 }
 
 model AppliedTitle {
@@ -442,7 +439,6 @@ model AppliedTitle {
   user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, title])
-  @@index([userId])
 }
 
 enum CalculatedStatType {
@@ -1266,7 +1262,6 @@ model ScoutingHeroAssignment {
   updatedAt   DateTime          @updatedAt
 
   @@unique([mapResultId, team, heroName])
-  @@index([mapResultId])
   @@index([playerName])
 }
 
@@ -1302,7 +1297,6 @@ model ScoutingRoster {
   updatedAt    DateTime               @updatedAt
 
   @@unique([tournamentId, teamName])
-  @@index([tournamentId])
   @@index([teamName])
 }
 
@@ -1477,7 +1471,6 @@ model TournamentTeam {
   matchesWon     TournamentMatch[] @relation("MatchWinner")
 
   @@unique([tournamentId, seed])
-  @@index([tournamentId])
   @@index([teamId])
 }
 
@@ -1492,7 +1485,6 @@ model TournamentRound {
   matches      TournamentMatch[]
 
   @@unique([tournamentId, bracket, roundNumber])
-  @@index([tournamentId])
 }
 
 model TournamentMatch {
@@ -1536,7 +1528,6 @@ model TournamentMap {
   map            Map?            @relation(fields: [mapId], references: [id])
 
   @@unique([matchId, gameNumber])
-  @@index([matchId])
   @@index([mapId])
 }
 
@@ -1577,7 +1568,6 @@ model AvailabilitySchedule {
   responses AvailabilityResponse[]
 
   @@unique([teamId, weekStart])
-  @@index([teamId])
 }
 
 model AvailabilityResponse {
@@ -1596,7 +1586,6 @@ model AvailabilityResponse {
   user     User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@unique([scheduleId, nameKey])
-  @@index([scheduleId])
   @@index([userId])
 }
 
@@ -1740,7 +1729,6 @@ model FaceitChampionship {
 
   matches FaceitMatch[]
 
-  @@index([organizerId])
   @@index([tier])
   @@index([organizerId, tier])
 }
@@ -1806,7 +1794,6 @@ model FaceitMatchRoster {
 
   @@unique([matchId, faceitPlayerId])
   @@index([faceitPlayerId])
-  @@index([matchId])
 }
 
 model FaceitMatchMap {
@@ -2058,7 +2045,6 @@ model TeamBlacklist {
 
   @@unique([ownerTeamId, blockedKey])
   @@index([blockedTeamId])
-  @@index([ownerTeamId])
   @@index([createdBy])
 }
 
@@ -2179,7 +2165,6 @@ model RankedMatch {
   heroes    RankedMatchHero[]
 
   @@unique([userId, sourceId])
-  @@index([userId])
 }
 
 model RankedMatchHero {
