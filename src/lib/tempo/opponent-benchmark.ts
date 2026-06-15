@@ -3,16 +3,17 @@ export const OPPONENT_EVEN_THRESHOLD = 1.0;
 
 export type OpponentDeltaBucket = "faster" | "slower" | "even";
 
-/** One opponent player's value for a metric on one map. */
+/**
+ * One opponent player's value for a metric on one map. `name` is null when the
+ * opponent's in-game team name is a generic default (collapsed into Unnamed).
+ */
 export type OpponentObservation = {
   value: number;
-  opponentTeamId: number | null;
   name: string | null;
   mapId: number;
 };
 
 export type OpponentGroup = {
-  opponentTeamId: number | null;
   name: string | null; // null => the Unnamed bucket
   mean: number;
   delta: number; // ourValue - group mean (lower value = we are faster)
@@ -31,6 +32,15 @@ function mean(values: number[]): number {
   return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
+/**
+ * True for generic default in-game team names ("Team 1", "Team 2", "Equipo 2",
+ * …) that are not a real opponent identity and should pool into the Unnamed
+ * bucket rather than appear as distinct opponents.
+ */
+export function isDefaultTeamName(name: string): boolean {
+  return /^(team|equipo)\s*\d+$/i.test(name.trim());
+}
+
 /** Bucket an us-minus-opponent delta. Lower (negative) = we are faster. */
 export function classifyOpponentDelta(delta: number): OpponentDeltaBucket {
   if (delta <= -OPPONENT_EVEN_THRESHOLD) return "faster";
@@ -40,9 +50,9 @@ export function classifyOpponentDelta(delta: number): OpponentDeltaBucket {
 
 /**
  * Build the pooled + per-opponent comparison of our value against the opponents
- * faced. Groups by opponentTeamId; null collapses into a single Unnamed bucket.
- * Named groups sort by maps faced (desc); the Unnamed bucket is always last.
- * Returns null when there are no observations.
+ * faced. Groups by opponent name; null names collapse into a single Unnamed
+ * bucket. Named groups sort by maps faced (desc); the Unnamed bucket is always
+ * last. Returns null when there are no observations.
  */
 export function buildOpponentComparison(
   ourValue: number,
@@ -53,18 +63,14 @@ export function buildOpponentComparison(
   const opponentMean = mean(observations.map((o) => o.value));
 
   type Acc = { name: string | null; values: number[]; maps: Set<number> };
-  const groups = new Map<number | "unnamed", Acc>();
+  const groups = new Map<string, Acc>();
   const allMaps = new Set<number>();
   for (const o of observations) {
     allMaps.add(o.mapId);
-    const key = o.opponentTeamId ?? "unnamed";
+    const key = o.name ?? "__unnamed__";
     let acc = groups.get(key);
     if (!acc) {
-      acc = {
-        name: o.opponentTeamId === null ? null : o.name,
-        values: [],
-        maps: new Set(),
-      };
+      acc = { name: o.name, values: [], maps: new Set() };
       groups.set(key, acc);
     }
     acc.values.push(o.value);
@@ -73,16 +79,15 @@ export function buildOpponentComparison(
 
   const named: OpponentGroup[] = [];
   let unnamed: OpponentGroup | null = null;
-  for (const [key, acc] of groups) {
+  for (const acc of groups.values()) {
     const groupMean = mean(acc.values);
     const group: OpponentGroup = {
-      opponentTeamId: key === "unnamed" ? null : key,
       name: acc.name,
       mean: groupMean,
       delta: ourValue - groupMean,
       maps: acc.maps.size,
     };
-    if (key === "unnamed") unnamed = group;
+    if (acc.name === null) unnamed = group;
     else named.push(group);
   }
   named.sort((a, b) => b.maps - a.maps);

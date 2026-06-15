@@ -50,7 +50,7 @@ export function OpponentComparisonCard({ metricLabel, comparison }: Props) {
         </thead>
         <tbody className="divide-y divide-[var(--border)]">
           {comparison.perOpponent.map((group) => (
-            <tr key={group.opponentTeamId ?? "unnamed"}>
+            <tr key={group.name ?? "unnamed"}>
               <td className="text-muted-foreground py-1 text-left">
                 {group.name ?? t("unnamed")}
               </td>

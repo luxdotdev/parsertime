@@ -30,6 +30,7 @@ import {
 import { teamCacheRequestTotal, teamCacheMissTotal } from "./metrics";
 import {
   buildOpponentComparison,
+  isDefaultTeamName,
   type OpponentObservation,
 } from "@/lib/tempo/opponent-benchmark";
 import {
@@ -388,11 +389,7 @@ export type CalculatedStatRow = {
 
 export function processTeamUltStats(
   sharedData: ExtendedTeamData,
-  calculatedStats: CalculatedStatRow[],
-  opponentInfoByScrimId = new Map<
-    number,
-    { opponentTeamId: number | null; name: string | null }
-  >()
+  calculatedStats: CalculatedStatRow[]
 ): TeamUltStats {
   const {
     teamRosterSet,
@@ -614,9 +611,10 @@ export function processTeamUltStats(
   const totalMaps = mapDataIds.length;
 
   // Opponent comparison: the opponent side is the player_team the roster is not
-  // on. CalculatedStat has no team field, so derive opponent player names per
-  // map from allPlayerStats, then pull their charge/hold values.
+  // on. CalculatedStat has no team field, so derive opponent player names (and
+  // the opponent's in-game team name) per map from allPlayerStats.
   const opponentNamesByMap = new Map<number, Set<string>>();
+  const opponentTeamNameByMap = new Map<number, string>();
   for (const ps of allPlayerStats) {
     if (!ps.MapDataId) continue;
     const ourTeam = teamNameByMapId.get(ps.MapDataId);
@@ -627,6 +625,9 @@ export function processTeamUltStats(
       opponentNamesByMap.set(ps.MapDataId, names);
     }
     names.add(ps.player_name);
+    if (!opponentTeamNameByMap.has(ps.MapDataId)) {
+      opponentTeamNameByMap.set(ps.MapDataId, ps.player_team);
+    }
   }
 
   const chargeObservations: OpponentObservation[] = [];
@@ -635,11 +636,12 @@ export function processTeamUltStats(
     if (cs.value <= 0) continue;
     const opponentNames = opponentNamesByMap.get(cs.MapDataId);
     if (!opponentNames || !opponentNames.has(cs.playerName)) continue;
-    const info = opponentInfoByScrimId.get(cs.scrimId);
+    const rawName = opponentTeamNameByMap.get(cs.MapDataId);
+    const name =
+      rawName && !isDefaultTeamName(rawName) ? rawName.trim() : null;
     const observation: OpponentObservation = {
       value: cs.value,
-      opponentTeamId: info?.opponentTeamId ?? null,
-      name: info?.name ?? null,
+      name,
       mapId: cs.MapDataId,
     };
     if (cs.stat === "AVERAGE_ULT_CHARGE_TIME")
@@ -790,40 +792,7 @@ export const make = Effect.gen(function* () {
           }),
       });
 
-      const scrimIds = Array.from(
-        new Set(calculatedStats.map((cs) => cs.scrimId))
-      );
-      const scrims = yield* Effect.tryPromise({
-        try: () =>
-          prisma.scrim.findMany({
-            where: { id: { in: scrimIds } },
-            select: {
-              id: true,
-              opponentTeamId: true,
-              opponentTeam: { select: { name: true } },
-            },
-          }),
-        catch: (error) =>
-          new TeamQueryError({
-            operation: "fetch opponent info for ult stats",
-            cause: error,
-          }),
-      });
-      const opponentInfoByScrimId = new Map(
-        scrims.map((s) => [
-          s.id,
-          {
-            opponentTeamId: s.opponentTeamId,
-            name: s.opponentTeam?.name ?? null,
-          },
-        ])
-      );
-
-      const result = processTeamUltStats(
-        data,
-        calculatedStats,
-        opponentInfoByScrimId
-      );
+      const result = processTeamUltStats(data, calculatedStats);
       wideEvent.outcome = "success";
       wideEvent.total_ults = result.totalUltsUsed;
       yield* Metric.increment(ultQuerySuccessTotal);
