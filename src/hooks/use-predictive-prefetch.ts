@@ -68,7 +68,14 @@ export function usePredictivePrefetch(
       for (const anchor of anchors) {
         const href = anchor.getAttribute("href");
         if (!href || href.includes("#") || prefetched.has(href)) continue;
-        if (isHeadingToward(cursor, velocity, anchor.getBoundingClientRect(), optsRef.current)) {
+        if (
+          isHeadingToward(
+            cursor,
+            velocity,
+            anchor.getBoundingClientRect(),
+            optsRef.current
+          )
+        ) {
           router.prefetch(href as Route);
           prefetched.add(href);
         }
