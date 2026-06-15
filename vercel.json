@@ -43,6 +43,10 @@
     {
       "path": "/api/cron/wp-retrain",
       "schedule": "0 7 * * 1"
+    },
+    {
+      "path": "/api/cron/tempo-baseline",
+      "schedule": "0 8 * * 1"
     }
   ],
   "functions": {
