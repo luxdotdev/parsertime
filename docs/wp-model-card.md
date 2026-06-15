@@ -132,10 +132,14 @@ context features (time, attacker role) are unattributed by design.
   the inference port.
 - **Training (weekly):** the Vercel cron route exports per-mode feature matrices
   (CSV) to Vercel Blob and fires a Vercel **Python** function (`api/wp-train/`)
-  that trains LightGBM, calibrates, gates, runs champion/challenger against the
-  live artifact, and POSTs the assembled artifact to a TS publish callback
-  (`/api/cron/wp-publish`) — so R2 publish logic stays single-sourced in
-  TypeScript and Python never holds R2 credentials.
+  that trains LightGBM, calibrates, and gates each mode, then gzip-POSTs the
+  candidate families + gate flags to a TS publish callback (`/api/cron/wp-publish`).
+  The publish route loads the live incumbent from R2, runs the per-mode
+  champion/challenger decision (`chooseFamily`), and publishes — so both the
+  incumbent load and the R2 publish stay single-sourced in TypeScript, the
+  incumbent never travels the wire, and Python never holds R2 credentials. (The
+  payload is gzipped because the raw artifact is ~4.4MB, near Vercel's 4.5MB body
+  limit.)
 
 ## Deployment
 
@@ -146,7 +150,6 @@ Required Vercel env vars for the weekly retrain (`api/wp-train/`):
 | `CRON_SECRET`         | yes      | Bearer token; must match the `/api/cron/wp-retrain` and `/api/cron/wp-publish` routes                                                               |
 | `WP_FEATURE_HASH`     | yes      | Must equal the TS `featureHash()` (currently `27b4a8ec1f49`); the publish route 400-rejects an artifact whose hash mismatches                       |
 | `PUBLISH_URL`         | yes      | Full URL of the publish callback, e.g. `https://<deployment>/api/cron/wp-publish`                                                                   |
-| `WP_LATEST_MODEL_URL` | no       | Public URL of the live artifact JSON; enables champion/challenger. Omit to use the no-incumbent fallback (re-ships GBM wherever it passes the gate) |
 
 ## Limitations — read before trusting an edge case
 

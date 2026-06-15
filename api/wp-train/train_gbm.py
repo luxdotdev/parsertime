@@ -42,8 +42,9 @@ def choose_family(gbm_family, gbm_gate_pass, incumbent):
     return incumbent
 
 
-def train_family(path, incumbent):
-    """Train one mode; return the chosen family dict (gbm or carried incumbent)."""
+def train_candidate(path):
+    """Train one mode's GBM + gate it. Returns (gbm_family_dict, gate_pass_bool).
+    No champion/challenger here — the TS publish route decides vs the incumbent."""
     match_ids, X, y, _ = load_matrix(path, None)
     X = X[:, :BASE_FEATURES]  # the 21 shipped features (handles 24- and 126-col CSVs)
     preds, labels = grouped_cv_predict(match_ids, X, y, _gbm_fit_predict)
@@ -53,10 +54,18 @@ def train_family(path, incumbent):
     booster = LGBMClassifier(**GBM_PARAMS).fit(X, y).booster_
     ser = serialize_booster(booster)
     cal = fit_calibration(preds.tolist(), labels.tolist())
-    gbm_family = {
+    family = {
         "kind": "gbm", "trees": ser["trees"], "baseScore": ser["baseScore"],
         "sampleCount": int(len(y)),
         "calibration": {"x": cal["x"], "y": cal["y"]},
         "metrics": {"logLoss": m["log_loss"], "brier": m["brier"], "baseRate": base_rate},
     }
-    return choose_family(gbm_family, gate, incumbent)
+    return family, gate
+
+
+def train_family(path, incumbent):
+    """Train one mode; return the chosen family dict (gbm or carried incumbent).
+    Local build path — champion/challenger still runs here against the passed
+    incumbent (the Vercel function uses train_candidate + the TS publish route)."""
+    family, gate = train_candidate(path)
+    return choose_family(family, gate, incumbent)
