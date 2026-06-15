@@ -10,6 +10,7 @@ import {
   decomposeSwing,
   generateMissedOpportunities,
 } from "@/lib/win-probability/timeline";
+import type { UltInstance } from "@/lib/ult-quality";
 import type { FightEntry } from "@/lib/win-probability/timeline";
 import type { GameState, WPEventLog } from "@/lib/win-probability/types";
 import { describe, expect, test } from "vitest";
@@ -800,8 +801,8 @@ function fe(over: Partial<FightEntry>): FightEntry {
     ...over,
   };
 }
-const log = { team1: "Alpha", team2: "Bravo", kills: [] } as any;
-const NO_ULTS: any[] = [];
+const log = { team1: "Alpha", team2: "Bravo", kills: [] } as unknown as WPEventLog;
+const NO_ULTS: UltInstance[] = [];
 
 describe("generateMissedOpportunities", () => {
   test("favored + big WP loss is a missed opportunity; small loss and not-favored are not", () => {
@@ -829,7 +830,7 @@ describe("generateMissedOpportunities", () => {
       drivers: { objective: -0.2, kills: 0, ults: 0 },
       carryover: { stagger: -0.05, ultEconomy: -0.04 } });
     const log2 = { team1: "Alpha", team2: "Bravo",
-      kills: [{ time: 2, victimTeam: "Alpha", victimName: "a1" }] } as any;
+      kills: [{ time: 2, victimTeam: "Alpha", victimName: "a1" }] } as unknown as WPEventLog;
     const keys = generateMissedOpportunities(log2, [f], NO_ULTS).items[0].reasons.map((r) => r.key);
     expect(keys).toContain("primaryDriver");
     expect(keys).toContain("earlyFirstDeath");
@@ -847,7 +848,7 @@ describe("generateMissedOpportunities", () => {
       { playerTeam: "Alpha", hero: "Ana", startTime: 107, conversionKills: null, diedDuringUlt: false },
       { playerTeam: "Bravo", hero: "Mei", startTime: 103, conversionKills: 3, diedDuringUlt: false },
       { playerTeam: "Alpha", hero: "Mauga", startTime: 200, conversionKills: 1, diedDuringUlt: false },
-    ] as any;
+    ] as unknown as UltInstance[];
     const m = generateMissedOpportunities(log, [f], ults).items[0];
     expect(m.ults).toEqual([
       { hero: "Sojourn", value: "value", kills: 2 },
