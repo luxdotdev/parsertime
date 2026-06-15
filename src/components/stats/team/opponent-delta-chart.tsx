@@ -88,7 +88,7 @@ export function OpponentDeltaChart({
     }))
     .sort((a, b) => a.delta - b.delta);
 
-  const maxAbs = Math.max(...rows.map((r) => Math.abs(r.delta)), 1) * 1.25;
+  const maxAbs = Math.max(...rows.map((r) => Math.abs(r.delta)), 1) * 1.35;
   const height = Math.max(160, rows.length * 30);
 
   return (
@@ -96,7 +96,7 @@ export function OpponentDeltaChart({
       <BarChart
         data={rows}
         layout="vertical"
-        margin={{ top: 0, right: 32, bottom: 0, left: 0 }}
+        margin={{ top: 0, right: 48, bottom: 0, left: 0 }}
       >
         <XAxis
           type="number"
