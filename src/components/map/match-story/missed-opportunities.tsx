@@ -26,7 +26,9 @@ function reasonText(t: Translate, r: ReasonTag): string {
 }
 
 function ultName(t: Translate, u: FightUlt): string {
-  return getHeroUltimate(u.hero) ?? t("missed.ult.heroFallback", { hero: u.hero });
+  return (
+    getHeroUltimate(u.hero) ?? t("missed.ult.heroFallback", { hero: u.hero })
+  );
 }
 
 /**
@@ -119,9 +121,7 @@ function Row({
             {t("missed.fight", { fight: m.fightIndex + 1 })}
           </span>
           {m.zoneName !== null && (
-            <span className="text-muted-foreground truncate">
-              {m.zoneName}
-            </span>
+            <span className="text-muted-foreground truncate">{m.zoneName}</span>
           )}
         </div>
 

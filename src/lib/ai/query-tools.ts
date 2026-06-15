@@ -48,7 +48,8 @@ export function buildQueryTools(opts: { allowedTeamIds: Set<number> }) {
         if (resolveOptionsFor && teamId === undefined) {
           return {
             catalog,
-            error: "resolveOptionsFor requires teamId to resolve team-scoped values.",
+            error:
+              "resolveOptionsFor requires teamId to resolve team-scoped values.",
           };
         }
         if (resolveOptionsFor && teamId !== undefined) {

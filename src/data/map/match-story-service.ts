@@ -120,7 +120,11 @@ async function assembleStory(
     prisma.kill.findMany({ where }),
   ]);
   // Zones aren't needed for the missed-opportunities ult breakdown → no-op zonesAt.
-  const ults = buildUltInstances(pairUltEvents(ultStarts, ultEnds), ultKills, () => []);
+  const ults = buildUltInstances(
+    pairUltEvents(ultStarts, ultEnds),
+    ultKills,
+    () => []
+  );
 
   const data = computeMatchStory({ log, artifact, engagements, assists, ults });
   const result: MatchStoryResult =

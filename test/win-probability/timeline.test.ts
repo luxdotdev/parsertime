@@ -256,7 +256,7 @@ describe("computeMatchStory — series", () => {
         artifact,
         engagements: [],
         assists: [],
-      ults: [],
+        ults: [],
       })
     ).toBeNull();
   });
@@ -801,7 +801,11 @@ function fe(over: Partial<FightEntry>): FightEntry {
     ...over,
   };
 }
-const log = { team1: "Alpha", team2: "Bravo", kills: [] } as unknown as WPEventLog;
+const log = {
+  team1: "Alpha",
+  team2: "Bravo",
+  kills: [],
+} as unknown as WPEventLog;
 const NO_ULTS: UltInstance[] = [];
 
 describe("generateMissedOpportunities", () => {
@@ -818,7 +822,8 @@ describe("generateMissedOpportunities", () => {
 
   test("ranked most-negative swing first, capped at 5 with total", () => {
     const fights = Array.from({ length: 8 }, (_, i) =>
-      fe({ index: i, wpBefore: 0.7, swing: -0.2 - i * 0.01 }));
+      fe({ index: i, wpBefore: 0.7, swing: -0.2 - i * 0.01 })
+    );
     const mo = generateMissedOpportunities(log, fights, NO_ULTS);
     expect(mo.items.length).toBe(5);
     expect(mo.total).toBe(8);
@@ -826,12 +831,24 @@ describe("generateMissedOpportunities", () => {
   });
 
   test("reason chips fire and wastedUlt is gone", () => {
-    const f = fe({ index: 5, wpBefore: 0.7, swing: -0.2, ultsSpentTeam1: 2,
+    const f = fe({
+      index: 5,
+      wpBefore: 0.7,
+      swing: -0.2,
+      ultsSpentTeam1: 2,
       drivers: { objective: -0.2, kills: 0, ults: 0 },
-      carryover: { stagger: -0.05, ultEconomy: -0.04 } });
-    const log2 = { team1: "Alpha", team2: "Bravo",
-      kills: [{ time: 2, victimTeam: "Alpha", victimName: "a1" }] } as unknown as WPEventLog;
-    const keys = generateMissedOpportunities(log2, [f], NO_ULTS).items[0].reasons.map((r) => r.key);
+      carryover: { stagger: -0.05, ultEconomy: -0.04 },
+    });
+    const log2 = {
+      team1: "Alpha",
+      team2: "Bravo",
+      kills: [{ time: 2, victimTeam: "Alpha", victimName: "a1" }],
+    } as unknown as WPEventLog;
+    const keys = generateMissedOpportunities(
+      log2,
+      [f],
+      NO_ULTS
+    ).items[0].reasons.map((r) => r.key);
     expect(keys).toContain("primaryDriver");
     expect(keys).toContain("earlyFirstDeath");
     expect(keys).toContain("stagger");
@@ -840,14 +857,56 @@ describe("generateMissedOpportunities", () => {
   });
 
   test("ult breakdown: team-1 ults in the fight window, bucketed by value", () => {
-    const f = fe({ index: 6, wpBefore: 0.7, swing: -0.2, start: 100, end: 110 });
+    const f = fe({
+      index: 6,
+      wpBefore: 0.7,
+      swing: -0.2,
+      start: 100,
+      end: 110,
+    });
     const ults = [
-      { playerTeam: "Alpha", hero: "Sojourn", startTime: 102, conversionKills: 2, diedDuringUlt: false },
-      { playerTeam: "Alpha", hero: "Kiriko", startTime: 105, conversionKills: 0, diedDuringUlt: false },
-      { playerTeam: "Alpha", hero: "Genji", startTime: 106, conversionKills: 0, diedDuringUlt: true },
-      { playerTeam: "Alpha", hero: "Ana", startTime: 107, conversionKills: null, diedDuringUlt: false },
-      { playerTeam: "Bravo", hero: "Mei", startTime: 103, conversionKills: 3, diedDuringUlt: false },
-      { playerTeam: "Alpha", hero: "Mauga", startTime: 200, conversionKills: 1, diedDuringUlt: false },
+      {
+        playerTeam: "Alpha",
+        hero: "Sojourn",
+        startTime: 102,
+        conversionKills: 2,
+        diedDuringUlt: false,
+      },
+      {
+        playerTeam: "Alpha",
+        hero: "Kiriko",
+        startTime: 105,
+        conversionKills: 0,
+        diedDuringUlt: false,
+      },
+      {
+        playerTeam: "Alpha",
+        hero: "Genji",
+        startTime: 106,
+        conversionKills: 0,
+        diedDuringUlt: true,
+      },
+      {
+        playerTeam: "Alpha",
+        hero: "Ana",
+        startTime: 107,
+        conversionKills: null,
+        diedDuringUlt: false,
+      },
+      {
+        playerTeam: "Bravo",
+        hero: "Mei",
+        startTime: 103,
+        conversionKills: 3,
+        diedDuringUlt: false,
+      },
+      {
+        playerTeam: "Alpha",
+        hero: "Mauga",
+        startTime: 200,
+        conversionKills: 1,
+        diedDuringUlt: false,
+      },
     ] as unknown as UltInstance[];
     const m = generateMissedOpportunities(log, [f], ults).items[0];
     expect(m.ults).toEqual([
@@ -860,6 +919,8 @@ describe("generateMissedOpportunities", () => {
 
   test("no ult data → empty per-fight ults", () => {
     const f = fe({ index: 7, wpBefore: 0.7, swing: -0.2 });
-    expect(generateMissedOpportunities(log, [f], NO_ULTS).items[0].ults).toEqual([]);
+    expect(
+      generateMissedOpportunities(log, [f], NO_ULTS).items[0].ults
+    ).toEqual([]);
   });
 });

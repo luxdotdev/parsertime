@@ -417,7 +417,11 @@ function bucketUlt(u: UltInstance): FightUlt {
   return { hero: u.hero, value, kills: u.conversionKills ?? 0 };
 }
 
-function fightUlts(log: WPEventLog, ults: UltInstance[], fight: FightEntry): FightUlt[] {
+function fightUlts(
+  log: WPEventLog,
+  ults: UltInstance[],
+  fight: FightEntry
+): FightUlt[] {
   return ults
     .filter(
       (u) =>
@@ -429,7 +433,11 @@ function fightUlts(log: WPEventLog, ults: UltInstance[], fight: FightEntry): Fig
     .map(bucketUlt);
 }
 
-function toMissed(log: WPEventLog, fight: FightEntry, ults: UltInstance[]): MissedOpportunity {
+function toMissed(
+  log: WPEventLog,
+  fight: FightEntry,
+  ults: UltInstance[]
+): MissedOpportunity {
   return {
     fightIndex: fight.index,
     start: fight.start,
