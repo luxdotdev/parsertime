@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
             INNER JOIN maxTime m ON ps."match_time" = m.max_time AND ps."MapDataId" = m."MapDataId"
         WHERE
             ps."MapDataId" IN (${Prisma.join(mapDataIds)})
-            AND ps."player_name" ILIKE ${playerName}
+            AND lower(ps."player_name") = lower(${playerName})
       `
     );
 

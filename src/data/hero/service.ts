@@ -120,7 +120,7 @@ export const make: Effect.Effect<HeroServiceInterface> = Effect.gen(
                 INNER JOIN maxTime m ON ps."match_time" = m.max_time AND ps."MapDataId" = m."MapDataId"
             WHERE
                 ps."MapDataId" IN (${Prisma.join(mapDataIdArray)})
-                AND ps."player_hero" ILIKE ${hero}`,
+                AND lower(ps."player_hero") = lower(${hero})`,
           catch: (error) =>
             new HeroQueryError({
               operation: `fetch all stats for hero: ${hero}`,

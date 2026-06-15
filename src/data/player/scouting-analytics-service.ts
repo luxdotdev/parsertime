@@ -893,7 +893,7 @@ export const make: Effect.Effect<ScoutingAnalyticsServiceInterface> =
                 FROM
                     "PlayerStat"
                 WHERE
-                    "player_name" ILIKE ${playerName}
+                    lower("player_name") = lower(${playerName})
                 GROUP BY
                     "MapDataId"
               )
@@ -903,7 +903,7 @@ export const make: Effect.Effect<ScoutingAnalyticsServiceInterface> =
                   "PlayerStat" ps
                   INNER JOIN maxTime m ON ps."match_time" = m.max_time AND ps."MapDataId" = m."MapDataId"
               WHERE
-                  ps."player_name" ILIKE ${playerName}`;
+                  lower(ps."player_name") = lower(${playerName})`;
             return removeDuplicateRows(raw);
           },
           catch: (error) =>

@@ -133,7 +133,7 @@ export default async function ProfilePage(
       FROM
         "PlayerStat"
       WHERE
-        player_name ILIKE ${name}
+        lower(player_name) = lower(${name})
         AND "scrimId" IN (${Prisma.join(viewableScrimIds)})
         AND hero_time_played > 0
       ORDER BY
