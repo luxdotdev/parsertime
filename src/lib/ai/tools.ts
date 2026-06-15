@@ -13,6 +13,7 @@ import {
   TeamTrendsService,
 } from "@/data/team";
 import { Effect } from "effect";
+import { buildQueryTools } from "@/lib/ai/query-tools";
 import prisma from "@/lib/prisma";
 import {
   aggregateStatsByPlayer,
@@ -137,8 +138,9 @@ export function buildTools(opts: {
   userId: string;
   allowedTeamIds: Set<number>;
   userTeams: { id: number; name: string; image: string | null }[];
+  enableQueryTools: boolean;
 }) {
-  const { userId, allowedTeamIds, userTeams } = opts;
+  const { userId, allowedTeamIds, userTeams, enableQueryTools } = opts;
 
   function assertTeamAccess(teamId: number) {
     if (!allowedTeamIds.has(teamId)) {
@@ -939,5 +941,7 @@ export function buildTools(opts: {
         };
       },
     }),
+
+    ...(enableQueryTools ? buildQueryTools({ allowedTeamIds }) : {}),
   };
 }

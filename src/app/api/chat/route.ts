@@ -106,7 +106,12 @@ export async function POST(req: Request) {
     flags: flagsToBaggage(toFlagValues(flags)),
   };
 
-  const tools = buildTools({ userId: userData.id, allowedTeamIds, userTeams });
+  const tools = buildTools({
+    userId: userData.id,
+    allowedTeamIds,
+    userTeams,
+    enableQueryTools: flags.queryBuilderEnabled,
+  });
   const modelMessages = await convertToModelMessages(messages);
 
   return withRequestContext(requestContext, () => {
