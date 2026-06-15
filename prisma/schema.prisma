@@ -1989,6 +1989,20 @@ model FsrBaseline {
   @@id([tier, role])
 }
 
+enum TempoMetric {
+  FIGHT_DURATION
+  ULT_CHARGE_TIME
+  ULT_HOLD_TIME
+}
+
+model TempoBaseline {
+  metric     TempoMetric @id
+  mean       Float
+  stdDev     Float
+  sampleN    Int
+  computedAt DateTime    @default(now())
+}
+
 model TeamTsrSnapshot {
   teamId              Int               @id
   rating              Int
