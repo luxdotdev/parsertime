@@ -11,6 +11,7 @@ import { UltimateEconomyCard } from "@/components/stats/team/ultimate-economy-ca
 import { AppRuntime } from "@/data/runtime";
 import { TeamFightStatsService, TeamUltService } from "@/data/team";
 import { ultimateImpactTool } from "@/lib/flags";
+import { getTempoBaselines } from "@/lib/tempo/read";
 import type { PagePropsWithLocale } from "@/types/next";
 import { Effect } from "effect";
 import { loadTeamStatsShell } from "../_lib/context";
@@ -60,6 +61,8 @@ export default async function Page(
     ultimateImpactTool(),
   ]);
 
+  const baselines = await getTempoBaselines();
+
   return (
     <div className="mt-8 space-y-12">
       <StatRibbon
@@ -88,7 +91,11 @@ export default async function Page(
         ]}
         columns={4}
       />
-      <UltUsageOverviewCard ultStats={ultStats} />
+      <UltUsageOverviewCard
+        ultStats={ultStats}
+        chargeBaseline={baselines.ULT_CHARGE_TIME ?? null}
+        holdBaseline={baselines.ULT_HOLD_TIME ?? null}
+      />
       {ultimateImpactToolEnabled && (
         <UltImpactAnalysisCard analysis={ultImpactAnalysis} />
       )}

@@ -8,25 +8,20 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import type { TeamUltStats } from "@/data/team/types";
+import {
+  classifyTempo,
+  formatDelta,
+  type TempoBaselineStat,
+} from "@/lib/tempo/classify";
 import { toHero } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 type UltUsageOverviewCardProps = {
   ultStats: TeamUltStats;
+  chargeBaseline?: TempoBaselineStat | null;
+  holdBaseline?: TempoBaselineStat | null;
 };
-
-function getChargeTimeRating(seconds: number): string {
-  if (seconds <= 90) return "chargeTimeFast";
-  if (seconds <= 120) return "chargeTimeAverage";
-  return "chargeTimeSlow";
-}
-
-function getHoldTimeRating(seconds: number): string {
-  if (seconds <= 20) return "holdTimeGood";
-  if (seconds <= 40) return "holdTimeAverage";
-  return "holdTimeSlow";
-}
 
 const HERO_IMAGE_SIZE = 24;
 const Y_AXIS_WIDTH = 140;
@@ -62,8 +57,13 @@ function renderHeroTick(props: {
   );
 }
 
-export function UltUsageOverviewCard({ ultStats }: UltUsageOverviewCardProps) {
+export function UltUsageOverviewCard({
+  ultStats,
+  chargeBaseline,
+  holdBaseline,
+}: UltUsageOverviewCardProps) {
   const t = useTranslations("teamStatsPage.ultimatesTab.overview");
+  const tr = useTranslations("teamStatsPage.tempoRead");
   const chartConfig: ChartConfig = {
     count: {
       label: t("fightOpenings"),
@@ -86,13 +86,24 @@ export function UltUsageOverviewCard({ ultStats }: UltUsageOverviewCardProps) {
   }));
   const chartHeight = Math.max(200, heroChartData.length * 40);
 
+  function tempoSub(
+    value: number,
+    baseline: TempoBaselineStat | null | undefined
+  ): string {
+    const read = classifyTempo(value, baseline);
+    if (read === null) return "—";
+    return `${tr(read.bucket)} ${tr("delta", {
+      delta: formatDelta(read.deltaVsAvg),
+    })}`;
+  }
+
   const tempoRows: { label: string; value: string; sub: string }[] = [];
 
   if (ultStats.avgChargeTime > 0) {
     tempoRows.push({
       label: t("avgChargeTime"),
       value: `${ultStats.avgChargeTime.toFixed(1)}s`,
-      sub: t(getChargeTimeRating(ultStats.avgChargeTime)),
+      sub: tempoSub(ultStats.avgChargeTime, chargeBaseline),
     });
   }
 
@@ -100,7 +111,7 @@ export function UltUsageOverviewCard({ ultStats }: UltUsageOverviewCardProps) {
     tempoRows.push({
       label: t("avgHoldTime"),
       value: `${ultStats.avgHoldTime.toFixed(1)}s`,
-      sub: t(getHoldTimeRating(ultStats.avgHoldTime)),
+      sub: tempoSub(ultStats.avgHoldTime, holdBaseline),
     });
   }
 
