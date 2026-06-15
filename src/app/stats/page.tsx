@@ -7,6 +7,7 @@ import {
 } from "@/components/stats/leaderboard-card";
 import { Searchbar } from "@/components/stats/searchbar";
 import { Link } from "@/components/ui/link";
+import { getApproximateCounts } from "@/lib/approximate-count";
 import prisma from "@/lib/prisma";
 import {
   format,
@@ -20,15 +21,17 @@ import { getTranslations } from "next-intl/server";
 export default async function StatsPage() {
   const t = await getTranslations("statsPage");
 
-  const [userNum, scrimNum, killNum, statNum, mapNum, calculatedStatNum] =
-    await Promise.all([
-      prisma.user.count(),
-      prisma.scrim.count(),
-      prisma.kill.count(),
-      prisma.playerStat.count(),
-      prisma.mapData.count(),
-      prisma.calculatedStat.count(),
-    ]);
+  // Large tables use approximate counts (pg_class.reltuples) to avoid scanning
+  // ~1M+ rows per request; User/Scrim are small enough for exact counts.
+  const [userNum, scrimNum, approxCounts] = await Promise.all([
+    prisma.user.count(),
+    prisma.scrim.count(),
+    getApproximateCounts(["Kill", "PlayerStat", "MapData", "CalculatedStat"]),
+  ]);
+  const killNum = approxCounts.Kill;
+  const statNum = approxCounts.PlayerStat;
+  const mapNum = approxCounts.MapData;
+  const calculatedStatNum = approxCounts.CalculatedStat;
 
   type MostPlayedHeroes = {
     player_hero: string;
