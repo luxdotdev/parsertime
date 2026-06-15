@@ -3227,8 +3227,6 @@
       },
       "missed": {
         "title": "错失的机会",
-        "bledWp": "流失的胜率",
-        "lostFight": "团战失利",
         "empty": "无 —— 领先时收得干净利落",
         "showing": "显示 {total} 个中的 {shown} 个",
         "fight": "团战 {fight}",
@@ -3238,9 +3236,15 @@
           "kills": "击杀交换失利",
           "ults": "终极技能劣势",
           "earlyFirstDeath": "过早阵亡：{player}",
-          "wastedUlt": "已使用终极技能：{count}",
           "stagger": "减员状态下开战 (−{cost}%)",
           "ultDeficit": "终极技能劣势开战 (−{cost}%)"
+        },
+        "ult": {
+          "value": "{ult} —— {kills} 击杀",
+          "none": "{ult} —— 无效果",
+          "died": "{ult} —— 释放中阵亡",
+          "unknown": "{ult} —— 已使用",
+          "heroFallback": "{hero} 终极技能"
         }
       }
     },

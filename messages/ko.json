@@ -3227,8 +3227,6 @@
       },
       "missed": {
         "title": "놓친 기회",
-        "bledWp": "승률 손실",
-        "lostFight": "한타 패배",
         "empty": "없음 — 유리한 상황을 깔끔하게 마무리",
         "showing": "{total}개 중 {shown}개 표시",
         "fight": "교전 {fight}",
@@ -3238,9 +3236,15 @@
           "kills": "교전 손해",
           "ults": "궁극기 열세",
           "earlyFirstDeath": "이른 죽음: {player}",
-          "wastedUlt": "사용한 궁극기: {count}",
           "stagger": "전열이 무너진 채 시작 (−{cost}%)",
           "ultDeficit": "궁극기 열세로 시작 (−{cost}%)"
+        },
+        "ult": {
+          "value": "{ult} — {kills}킬",
+          "none": "{ult} — 효과 없음",
+          "died": "{ult} — 사용 중 사망",
+          "unknown": "{ult} — 사용",
+          "heroFallback": "{hero} 궁극기"
         }
       }
     },

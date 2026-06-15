@@ -3227,8 +3227,6 @@
       },
       "missed": {
         "title": "Missed opportunities",
-        "bledWp": "Bled win probability",
-        "lostFight": "Lost the teamfight",
         "empty": "None — clean execution from ahead",
         "showing": "Showing {shown} of {total}",
         "fight": "Fight {fight}",
@@ -3238,9 +3236,15 @@
           "kills": "Lost the kill exchange",
           "ults": "Ult disadvantage",
           "earlyFirstDeath": "Early death: {player}",
-          "wastedUlt": "Ults spent: {count}",
           "stagger": "Entered staggered (−{cost}%)",
           "ultDeficit": "Ult deficit (−{cost}%)"
+        },
+        "ult": {
+          "value": "{ult} — {kills} kills",
+          "none": "{ult} — no value",
+          "died": "{ult} — died mid-ult",
+          "unknown": "{ult} — used",
+          "heroFallback": "{hero} ult"
         }
       }
     },
