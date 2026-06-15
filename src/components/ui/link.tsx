@@ -10,8 +10,6 @@ export function Link(props: LinkProps) {
   const { external, ...nextLinkProps } = props;
 
   return (
-    // Disable proximity prefetch for now
-    // <ProximityPrefetch>
     <NextLink {...nextLinkProps} target={external ? "_blank" : props.target}>
       <span className={cn(external && "underline", props.className)}>
         {props.children}
@@ -23,6 +21,5 @@ export function Link(props: LinkProps) {
         </>
       )}
     </NextLink>
-    // </ProximityPrefetch>
   );
 }
