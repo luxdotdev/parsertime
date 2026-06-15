@@ -6,13 +6,14 @@ TS retrain route exports each mode's feature matrix to Vercel Blob and POSTs
 
   1. Authenticates the Bearer CRON_SECRET (constant-time).
   2. Downloads each mode's CSV from its public blob URL to a temp file.
-  3. Trains a per-mode GBM via train_family(path, incumbent) — champion/
-     challenger against the live incumbent (loaded from WP_LATEST_MODEL_URL if
-     set, else None per mode).
-  4. Assembles the ModelArtifact and POSTs it to PUBLISH_URL
-     (/api/cron/wp-publish), which single-sources the R2 publish in TS.
+  3. Trains + gates a per-mode GBM via train_candidate(path) — NO champion/
+     challenger here; the candidate family and its gate flag are collected raw.
+  4. Assembles the gzipped candidate payload and POSTs it to PUBLISH_URL
+     (/api/cron/wp-publish), which loads the live R2 incumbent, runs the
+     per-mode champion/challenger decision, and single-sources the R2 publish.
 
-This function NEVER writes R2 directly — the publish callback owns that.
+This function NEVER writes R2 directly, and never sees the incumbent — the
+publish callback owns both the incumbent load and the publish.
 
 Modes: control, escort_hybrid, flashpoint are trained; push is data-blocked and
 always null (matches the shipped per-mode model).
@@ -21,8 +22,7 @@ always null (matches the shipped per-mode model).
 #   CRON_SECRET         - bearer token; must match the cron/publish routes
 #   WP_FEATURE_HASH     - must equal the TS featureHash() (currently 27b4a8ec1f49)
 #   PUBLISH_URL         - <deployment origin>/api/cron/wp-publish
-#   WP_LATEST_MODEL_URL - (optional) public URL of the live model JSON for champion/challenger;
-#                         omit for the no-incumbent fallback (ships GBM where gated)
+import gzip
 import hmac
 import json
 import os
@@ -31,10 +31,7 @@ import traceback
 import urllib.request
 from http.server import BaseHTTPRequestHandler
 
-from train_gbm import train_family
-
-# push is data-blocked upstream; it is always null in the artifact.
-TRAINABLE_MODES = ("control", "escort_hybrid", "flashpoint")
+from train_gbm import train_candidate
 
 
 def _bearer(headers):
@@ -67,34 +64,13 @@ def _download_csv(url):
     return path
 
 
-def _load_incumbents():
-    """Load the live artifact's per-mode families as incumbents, keyed by mode.
-
-    If WP_LATEST_MODEL_URL is set and publicly readable, champion/challenger
-    runs against the live model. If unset or unreadable, every mode gets a None
-    incumbent — a documented fallback: train_family then ships the GBM wherever
-    it passes the gate (model-v3 already shipped GBM, so a None-incumbent
-    retrain re-ships GBM where gated, which is correct).
-    """
-    url = os.environ.get("WP_LATEST_MODEL_URL")
-    if not url:
-        return {}
-    try:
-        with urllib.request.urlopen(url, timeout=60) as resp:  # noqa: S310
-            artifact = json.loads(resp.read().decode("utf-8"))
-        families = artifact.get("modeFamilies", {})
-        return {m: families.get(m) for m in TRAINABLE_MODES}
-    except Exception as exc:  # noqa: BLE001 — fall back to None incumbents
-        print(f"[wp-train] incumbent load failed ({exc!r}); using None incumbents")
-        return {}
-
-
-def _publish(artifact):
-    """POST the assembled artifact to the TS publish callback. Returns
-    (status_code, body_text)."""
+def _publish(candidate):
+    """gzip + POST the candidate payload to the TS publish callback. The
+    artifact is ~4.4MB raw (near Vercel's 4.5MB body limit), so it must be
+    compressed. Returns (status_code, body_text)."""
     publish_url = os.environ["PUBLISH_URL"]
     secret = os.environ["CRON_SECRET"]
-    body = json.dumps(artifact).encode("utf-8")
+    body = gzip.compress(json.dumps(candidate).encode("utf-8"))
     request = urllib.request.Request(
         publish_url,
         data=body,
@@ -102,6 +78,7 @@ def _publish(artifact):
         headers={
             "Authorization": f"Bearer {secret}",
             "Content-Type": "application/json",
+            "Content-Encoding": "gzip",
         },
     )
     with urllib.request.urlopen(request, timeout=120) as resp:  # noqa: S310
@@ -109,11 +86,11 @@ def _publish(artifact):
 
 
 def _run(payload):
-    """Train every supplied mode, assemble the artifact, publish it. Returns a
+    """Train + gate every supplied mode, assemble the candidate payload, publish
+    it. Champion/challenger runs in the TS publish route, not here. Returns a
     JSON-serializable result dict."""
     urls = payload.get("urls") or {}
     run_id = payload.get("runId")
-    incumbents = _load_incumbents()
 
     mode_families = {
         "control": None,
@@ -121,6 +98,7 @@ def _run(payload):
         "push": None,
         "flashpoint": None,
     }
+    gates = {}
     trained = []
     errors = {}
 
@@ -134,13 +112,14 @@ def _run(payload):
         try:
             path = _download_csv(url)
             try:
-                family = train_family(path, incumbents.get(mode))
+                family, gate = train_candidate(path)
             finally:
                 try:
                     os.remove(path)
                 except OSError:
                     pass
             mode_families[mode] = family
+            gates[mode] = gate
             trained.append(mode)
         except Exception as exc:  # noqa: BLE001 — isolate per-mode failures
             errors[mode] = repr(exc)
@@ -157,15 +136,14 @@ def _run(payload):
             "reason": "no_modes_trained",
         }
 
-    artifact = {
+    candidate = {
         "schemaVersion": 1,
-        "modelVersion": 0,  # the publish route reassigns the real version
-        "createdAt": "",  # the publish route stamps this
         "featureHash": os.environ["WP_FEATURE_HASH"],
         "modeFamilies": mode_families,
+        "gates": gates,
     }
 
-    status, text = _publish(artifact)
+    status, text = _publish(candidate)
     return {
         "published": status == 200,
         "publishStatus": status,
