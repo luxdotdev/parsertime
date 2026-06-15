@@ -9,6 +9,7 @@ import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { FightLedgerTable } from "./fight-ledger-table";
 import { InsightsStrip } from "./insights-strip";
+import { MissedOpportunities } from "./missed-opportunities";
 import { WpTimelineChart } from "./wp-timeline-chart";
 
 /** Fights that earn a numbered marker on the chart: anything an insight
@@ -65,6 +66,11 @@ export function MatchStoryExplorer({
       <InsightsStrip
         title={t("takeaways.title", { team: data.teams.team1 })}
         insights={data.takeaways}
+        focusFight={focusFight}
+        onFocusFight={setFocusFight}
+      />
+      <MissedOpportunities
+        data={data.missedOpportunities}
         focusFight={focusFight}
         onFocusFight={setFocusFight}
       />
