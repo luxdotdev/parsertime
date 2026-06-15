@@ -75,7 +75,10 @@ export async function AppHeader({
   );
 
   return (
-    <header className="shadow-xs" style={{ viewTransitionName: "site-header" }}>
+    <header
+      className="relative z-50 shadow-xs"
+      style={{ viewTransitionName: "site-header" }}
+    >
       <div className="hidden min-h-16 items-center px-4 py-2 md:flex">
         {switcher}
         <MainNav
