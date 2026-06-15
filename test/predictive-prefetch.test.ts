@@ -92,4 +92,10 @@ describe("isHeadingToward", () => {
       )
     ).toBe(true);
   });
+
+  it("rejects a resting cursor sitting on the link center", () => {
+    expect(
+      isHeadingToward({ x: 100, y: 0 }, { x: 0, y: 0 }, boxAt(100, 0), OPTS)
+    ).toBe(false);
+  });
 });

@@ -48,10 +48,13 @@ export function isHeadingToward(
   const dy = centerY - cursor.y;
   const distance = Math.sqrt(dx * dx + dy * dy);
   if (distance > opts.maxDistance) return false;
-  if (distance === 0) return true;
 
+  // Gate on speed first so a resting cursor never prefetches, even when it
+  // happens to sit exactly on a link's center.
   const speed = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
   if (speed < opts.minSpeed) return false;
+  // Cursor is on the link's center; no direction to test, treat as heading.
+  if (distance === 0) return true;
 
   // Dot product of the normalized heading and cursor->link directions.
   const dot = (velocity.x * dx + velocity.y * dy) / (speed * distance);
