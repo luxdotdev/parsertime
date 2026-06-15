@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { chunk, mapWithConcurrency } from "@/lib/concurrency";
 import { assembleMapInitiation } from "@/lib/fight-initiation";
 import {
   emptyTally,
@@ -43,6 +44,11 @@ const initiationQueryDuration = Metric.histogram(
   MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
   "Distribution of team initiation query duration in milliseconds"
 );
+
+/** Maps fetched per event-table query; matches BUNDLE_CHUNK_SIZE elsewhere. */
+const MAP_BATCH_SIZE = 10;
+/** Max event-table batches fetched concurrently. */
+const FETCH_CONCURRENCY = 4;
 
 function emptyInitiationStats(): TeamInitiationStats {
   return {
@@ -113,40 +119,56 @@ export const make = Effect.gen(function* () {
 
       // Fetch only the tables not already in shared data; healing and rounds are
       // omitted because they never change initiator/winner (aggregate-only path).
-      const [damage, ability1, ability2] = yield* Effect.tryPromise({
-        try: () =>
-          Promise.all([
-            prisma.damage.findMany({
-              where: { MapDataId: { in: sharedData.mapDataIds } },
-              select: {
-                match_time: true,
-                attacker_name: true,
-                attacker_team: true,
-                victim_name: true,
-                victim_team: true,
-                event_damage: true,
-                MapDataId: true,
-              },
-            }),
-            prisma.ability1Used.findMany({
-              where: { MapDataId: { in: sharedData.mapDataIds } },
-              select: {
-                match_time: true,
-                player_name: true,
-                player_team: true,
-                MapDataId: true,
-              },
-            }),
-            prisma.ability2Used.findMany({
-              where: { MapDataId: { in: sharedData.mapDataIds } },
-              select: {
-                match_time: true,
-                player_name: true,
-                player_team: true,
-                MapDataId: true,
-              },
-            }),
-          ]),
+      // Batched by whole map under bounded concurrency to avoid one unbounded
+      // all-maps query; output is order-independent (the detector sorts events by
+      // match_time internally), so concatenation order does not matter.
+      const batches = chunk(sharedData.mapDataIds, MAP_BATCH_SIZE);
+
+      const { damage, ability1, ability2 } = yield* Effect.tryPromise({
+        try: async () => {
+          const perBatch = await mapWithConcurrency(
+            batches,
+            FETCH_CONCURRENCY,
+            (batch) =>
+              Promise.all([
+                prisma.damage.findMany({
+                  where: { MapDataId: { in: batch } },
+                  select: {
+                    match_time: true,
+                    attacker_name: true,
+                    attacker_team: true,
+                    victim_name: true,
+                    victim_team: true,
+                    event_damage: true,
+                    MapDataId: true,
+                  },
+                }),
+                prisma.ability1Used.findMany({
+                  where: { MapDataId: { in: batch } },
+                  select: {
+                    match_time: true,
+                    player_name: true,
+                    player_team: true,
+                    MapDataId: true,
+                  },
+                }),
+                prisma.ability2Used.findMany({
+                  where: { MapDataId: { in: batch } },
+                  select: {
+                    match_time: true,
+                    player_name: true,
+                    player_team: true,
+                    MapDataId: true,
+                  },
+                }),
+              ])
+          );
+          return {
+            damage: perBatch.flatMap((r) => r[0]),
+            ability1: perBatch.flatMap((r) => r[1]),
+            ability2: perBatch.flatMap((r) => r[2]),
+          };
+        },
         catch: (error) =>
           new TeamQueryErrorClass({
             operation: "fetch initiation event tables",
@@ -154,7 +176,11 @@ export const make = Effect.gen(function* () {
           }),
       }).pipe(
         Effect.withSpan("team.initiation.fetchEventTables", {
-          attributes: { teamId, mapCount: sharedData.mapDataIds.length },
+          attributes: {
+            teamId,
+            mapCount: sharedData.mapDataIds.length,
+            batchCount: batches.length,
+          },
         })
       );
 
