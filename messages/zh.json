@@ -3224,6 +3224,28 @@
         "staggers": "梯次阵亡影响了 {count} 场团战（{fights}），损失约 {cost}% 胜率。整队重整，不要逐个回场。",
         "ultDeficit": "在大招经济落后的情况下接了 {count} 场团战（{fights}），损失约 {cost}%。等大招差距拉平后再接战。",
         "firstDeaths": "{player} 在 {of} 场失利团战中有 {count} 场（{fights}）率先阵亡。复盘这些开局——首死决定团战走向。"
+      },
+      "missed": {
+        "title": "错失的机会",
+        "empty": "无 —— 领先时收得干净利落",
+        "showing": "显示 {total} 个中的 {shown} 个",
+        "fight": "团战 {fight}",
+        "wp": "{before}% → {after}%",
+        "reason": {
+          "objective": "目标点失利",
+          "kills": "击杀交换失利",
+          "ults": "终极技能劣势",
+          "earlyFirstDeath": "过早阵亡：{player}",
+          "stagger": "减员状态下开战 (−{cost}%)",
+          "ultDeficit": "终极技能劣势开战 (−{cost}%)"
+        },
+        "ult": {
+          "value": "{ult} —— {kills} 击杀",
+          "none": "{ult} —— 无效果",
+          "died": "{ult} —— 释放中阵亡",
+          "unknown": "{ult} —— 已使用",
+          "heroFallback": "{hero} 终极技能"
+        }
       }
     },
     "fightInitiation": {

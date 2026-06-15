@@ -1,5 +1,6 @@
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
+import { buildUltInstances, pairUltEvents } from "@/lib/ult-quality";
 import { groupKillsIntoFightsByMapDataId } from "@/lib/server-utils";
 import { loadLatestArtifact } from "@/lib/win-probability/artifact-store";
 import {
@@ -113,7 +114,15 @@ async function assembleStory(
     player: a.player_name,
   }));
 
-  const data = computeMatchStory({ log, artifact, engagements, assists });
+  const [ultStarts, ultEnds, ultKills] = await Promise.all([
+    prisma.ultimateStart.findMany({ where }),
+    prisma.ultimateEnd.findMany({ where }),
+    prisma.kill.findMany({ where }),
+  ]);
+  // Zones aren't needed for the missed-opportunities ult breakdown → no-op zonesAt.
+  const ults = buildUltInstances(pairUltEvents(ultStarts, ultEnds), ultKills, () => []);
+
+  const data = computeMatchStory({ log, artifact, engagements, assists, ults });
   const result: MatchStoryResult =
     data === null ? { status: "no_family_model" } : { status: "ready", data };
   cacheSet(cacheKey, result);

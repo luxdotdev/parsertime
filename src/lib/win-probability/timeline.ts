@@ -3,6 +3,7 @@ import { statesAt } from "./game-state";
 import { type ModelArtifact, predictWinProbability } from "./model";
 import { roundLabels } from "./training/extract";
 import { CASCADE_MIN_WP, type GameState, type WPEventLog } from "./types";
+import type { UltInstance } from "@/lib/ult-quality";
 
 export const SERIES_INTERVAL_SECONDS = 5;
 export const CASCADE_WINDOW_SECONDS = 60;
@@ -40,6 +41,7 @@ export type MatchStoryInputs = {
   artifact: ModelArtifact;
   engagements: EngagementLike[];
   assists: AssistEvent[];
+  ults: UltInstance[];
 };
 
 export type FightEntry = {
@@ -80,6 +82,34 @@ export type MatchStoryInsight = {
   fightIndex?: number;
 };
 
+export type FightUlt = {
+  hero: string;
+  value: "value" | "none" | "died" | "unknown";
+  kills: number;
+};
+
+export type ReasonTag =
+  | { key: "primaryDriver"; group: "objective" | "kills" | "ults" }
+  | { key: "earlyFirstDeath"; player: string; t: number }
+  | { key: "stagger"; cost: number }
+  | { key: "ultDeficit"; cost: number };
+
+export type MissedOpportunity = {
+  fightIndex: number;
+  start: number;
+  zoneName: string | null;
+  wpBefore: number;
+  wpAfter: number;
+  swing: number;
+  reasons: ReasonTag[];
+  ults: FightUlt[];
+};
+
+export type MissedOpportunities = {
+  items: MissedOpportunity[];
+  total: number;
+};
+
 export type MatchStoryData = {
   teams: { team1: string; team2: string };
   points: WpPoint[];
@@ -91,6 +121,7 @@ export type MatchStoryData = {
   /** Coaching prescriptions for team 1 (the viewing team), each citing the
    * fights it was detected from. */
   takeaways: MatchStoryInsight[];
+  missedOpportunities: MissedOpportunities;
   limited: boolean;
 };
 
@@ -138,6 +169,7 @@ export function computeMatchStory(
     wpa,
     insights,
     takeaways,
+    missedOpportunities: generateMissedOpportunities(log, fights, inputs.ults),
     limited,
   };
 }
@@ -145,6 +177,10 @@ export function computeMatchStory(
 const MAX_TAKEAWAYS = 4;
 const LOSS_SWING_FLOOR = -0.02;
 const CARRY_TAKEAWAY_FLOOR = 0.02;
+const FAVORED_WP = 0.55;
+const BLED_WP_SWING = -0.1;
+const EARLY_DEATH_SECONDS = 4;
+const MAX_MISSED = 5;
 const FIRST_DEATH_MIN = 3;
 const LOSS_PROFILE_SHARE = 0.45;
 
@@ -312,6 +348,100 @@ function generateTakeaways(
     .sort((a, b) => b.cost - a.cost)
     .slice(0, MAX_TAKEAWAYS)
     .map(({ cost: _cost, ...beat }) => beat);
+}
+
+function missedReasons(log: WPEventLog, fight: FightEntry): ReasonTag[] {
+  const reasons: ReasonTag[] = [];
+  const dominant = (["objective", "kills", "ults"] as const).reduce((a, b) =>
+    fight.drivers[a] <= fight.drivers[b] ? a : b
+  );
+  if (fight.drivers[dominant] < 0)
+    reasons.push({ key: "primaryDriver", group: dominant });
+  const firstKill = [...log.kills]
+    .filter(
+      (k) =>
+        k.time >= fight.start - ULT_WINDOW_LEAD_SECONDS &&
+        k.time <= fight.end + EDGE_EPSILON
+    )
+    .sort((a, b) => a.time - b.time)[0];
+  if (
+    firstKill !== undefined &&
+    firstKill.victimTeam === log.team1 &&
+    firstKill.time - fight.start <= EARLY_DEATH_SECONDS
+  ) {
+    reasons.push({
+      key: "earlyFirstDeath",
+      player: firstKill.victimName,
+      t: firstKill.time,
+    });
+  }
+  if (
+    fight.carryover !== null &&
+    fight.carryover.stagger <= -CARRY_TAKEAWAY_FLOOR
+  ) {
+    reasons.push({
+      key: "stagger",
+      cost: Math.round(Math.abs(fight.carryover.stagger) * 100),
+    });
+  }
+  if (
+    fight.carryover !== null &&
+    fight.carryover.ultEconomy <= -CARRY_TAKEAWAY_FLOOR
+  ) {
+    reasons.push({
+      key: "ultDeficit",
+      cost: Math.round(Math.abs(fight.carryover.ultEconomy) * 100),
+    });
+  }
+  return reasons;
+}
+
+function bucketUlt(u: UltInstance): FightUlt {
+  let value: FightUlt["value"];
+  if (u.conversionKills === null) value = "unknown";
+  else if (u.conversionKills > 0) value = "value";
+  else if (u.diedDuringUlt) value = "died";
+  else value = "none";
+  return { hero: u.hero, value, kills: u.conversionKills ?? 0 };
+}
+
+function fightUlts(log: WPEventLog, ults: UltInstance[], fight: FightEntry): FightUlt[] {
+  return ults
+    .filter(
+      (u) =>
+        u.playerTeam === log.team1 &&
+        u.startTime >= fight.start - ULT_WINDOW_LEAD_SECONDS &&
+        u.startTime <= fight.end + EDGE_EPSILON
+    )
+    .sort((a, b) => a.startTime - b.startTime)
+    .map(bucketUlt);
+}
+
+function toMissed(log: WPEventLog, fight: FightEntry, ults: UltInstance[]): MissedOpportunity {
+  return {
+    fightIndex: fight.index,
+    start: fight.start,
+    zoneName: fight.zoneName,
+    wpBefore: fight.wpBefore,
+    wpAfter: fight.wpAfter,
+    swing: fight.swing,
+    reasons: missedReasons(log, fight),
+    ults: fightUlts(log, ults, fight),
+  };
+}
+
+export function generateMissedOpportunities(
+  log: WPEventLog,
+  fights: FightEntry[],
+  ults: UltInstance[]
+): MissedOpportunities {
+  const candidates = fights
+    .filter((f) => f.wpBefore >= FAVORED_WP && f.swing <= BLED_WP_SWING)
+    .sort((a, b) => a.swing - b.swing);
+  return {
+    items: candidates.slice(0, MAX_MISSED).map((f) => toMissed(log, f, ults)),
+    total: candidates.length,
+  };
 }
 
 function computeSeries(
