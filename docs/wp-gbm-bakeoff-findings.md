@@ -21,11 +21,11 @@ The harness's own LR reproduces the shipped model's calibrated CV log loss withi
 proving the fold port (FNV-1a, matched to `cv.ts`), calibration (20-bin PAVA), and metrics
 are faithful — so the GBM comparison is apples-to-apples:
 
-| Mode | harness LR | shipped LR | Δ |
-|------|-----------|-----------|---|
-| control | 0.6180 | 0.6180 | +0.0000 |
-| escort_hybrid | 0.6633 | 0.6635 | −0.0002 |
-| flashpoint | 0.5886 | 0.5891 | −0.0005 |
+| Mode          | harness LR | shipped LR | Δ       |
+| ------------- | ---------- | ---------- | ------- |
+| control       | 0.6180     | 0.6180     | +0.0000 |
+| escort_hybrid | 0.6633     | 0.6635     | −0.0002 |
+| flashpoint    | 0.5886     | 0.5891     | −0.0005 |
 
 GBM library: LightGBM 4.6.0 (no fallback). Conservative, untuned params
 (`n_estimators=400, lr=0.05, num_leaves=31, min_child_samples=200`), so these numbers are a
@@ -35,24 +35,24 @@ GBM library: LightGBM 4.6.0 (no fallback). Conservative, untuned params
 
 Calibrated CV log loss (lower = better); decisive = subset with |WP−0.5| > 0.3.
 
-| Mode | config | aggregate | cal max-dev | decisive | decisive n |
-|------|--------|-----------|-------------|----------|------------|
-| **control** | LR-21 | 0.6180 | 0.003 | 0.4318 | 88,992 |
-| | GBM-21 | 0.5970 | 0.003 | **0.3738** | 139,613 |
-| | GBM-123 | 0.5946 | 0.002 | 0.3785 | 148,471 |
-| **escort_hybrid** | LR-21 | 0.6633 | 0.024 | 0.5110 | 364 |
-| | GBM-21 | 0.6379 | 0.059 | **0.4419** | 66,076 |
-| | GBM-123 | 0.6433 | 0.022 | 0.4744 | 22,259 |
-| **flashpoint** | LR-21 | 0.5886 | 0.006 | 0.3461 | 136,312 |
-| | GBM-21 | 0.5841 | 0.004 | **0.3340** | 141,206 |
-| | GBM-123 | 0.5936 | 0.006 | 0.3589 | 125,734 |
+| Mode              | config  | aggregate | cal max-dev | decisive   | decisive n |
+| ----------------- | ------- | --------- | ----------- | ---------- | ---------- |
+| **control**       | LR-21   | 0.6180    | 0.003       | 0.4318     | 88,992     |
+|                   | GBM-21  | 0.5970    | 0.003       | **0.3738** | 139,613    |
+|                   | GBM-123 | 0.5946    | 0.002       | 0.3785     | 148,471    |
+| **escort_hybrid** | LR-21   | 0.6633    | 0.024       | 0.5110     | 364        |
+|                   | GBM-21  | 0.6379    | 0.059       | **0.4419** | 66,076     |
+|                   | GBM-123 | 0.6433    | 0.022       | 0.4744     | 22,259     |
+| **flashpoint**    | LR-21   | 0.5886    | 0.006       | 0.3461     | 136,312    |
+|                   | GBM-21  | 0.5841    | 0.004       | **0.3340** | 141,206    |
+|                   | GBM-123 | 0.5936    | 0.006       | 0.3589     | 125,734    |
 
 **Decisive relative improvement, best GBM vs LR:** control **+13.4%**, escort **+13.5%**,
 flashpoint **+3.5%**. All three clear the 3% bar; control and escort clear it ~4×.
 
 ## What it means
 
-1. **The model class was the bottleneck, decisively.** GBM-21 — the *same 21 features*, just
+1. **The model class was the bottleneck, decisively.** GBM-21 — the _same 21 features_, just
    trees instead of logistic regression — delivers almost the entire gain (+13% decisive on
    control and escort). This cleanly isolates model capacity, not feature engineering, as the
    lever. It confirms the hypothesis that motivated Phase 2.
@@ -65,10 +65,10 @@ flashpoint **+3.5%**. All three clear the 3% bar; control and escort clear it ~4
    number.
 
 3. **Hero identity still does not pay off — even under trees.** GBM-123 (+102 hero columns)
-   is marginally better than GBM-21 on control *aggregate* but **worse on the decisive
+   is marginally better than GBM-21 on control _aggregate_ but **worse on the decisive
    subset** there, and worse on escort and flashpoint. Hero features do earn nonzero
    importance (notably flashpoint, where Tracer/Sojourn/Genji rank 3rd–6th), so there is
-   *some* signal — but not enough to generalize at this data scale; it adds CV-time variance.
+   _some_ signal — but not enough to generalize at this data scale; it adds CV-time variance.
    Shelve hero composition again; the lift is in the model, not these features.
 
 4. **One calibration flag for Phase 2b.** GBM-21 on escort has aggregate calibration
@@ -102,5 +102,5 @@ resolve there (sketched in the earlier Vercel-Python research):
   for escort (the 0.059 flag), and consider light hyperparameter tuning (this prototype was
   untuned, so production GBM should do at least as well).
 
-Hero composition stays shelved. The next *feature* bet, if pursued, is positional/coordinate
+Hero composition stays shelved. The next _feature_ bet, if pursued, is positional/coordinate
 data — not more hero columns.

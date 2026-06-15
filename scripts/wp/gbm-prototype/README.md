@@ -6,12 +6,15 @@ shipped logistic regression at decisive moments (see
 Python is managed with **uv**.
 
 ## Setup (uv)
+
     uv sync                 # creates .venv and installs from pyproject.toml + uv.lock
 
 ## Data
+
 `data/dataset-<family>.csv` are the corrected 126-column matrices (3 meta + 123
 features), gitignored. Regenerate per the plan's Task 1 if missing.
 
 ## Run
+
     uv run pytest             # port unit tests (folds, metrics, calibration)
     uv run python bakeoff.py  # the full LR-vs-GBM comparison

@@ -6,7 +6,6 @@ import {
 } from "@/lib/win-probability/model";
 import { describe, expect, test } from "vitest";
 
-
 const DIMS = FEATURE_NAMES.length;
 
 /** Zero vector with aliveDiff (index 0) set. */
@@ -74,13 +73,21 @@ describe("predictWinProbability", () => {
   });
 });
 
-function gbmArtifact(family: Partial<ModelArtifact["modeFamilies"]>): ModelArtifact {
+function gbmArtifact(
+  family: Partial<ModelArtifact["modeFamilies"]>
+): ModelArtifact {
   return {
     schemaVersion: 1,
     modelVersion: 99,
     createdAt: "2026-06-14T00:00:00.000Z",
     featureHash: featureHash(),
-    modeFamilies: { control: null, escort_hybrid: null, push: null, flashpoint: null, ...family },
+    modeFamilies: {
+      control: null,
+      escort_hybrid: null,
+      push: null,
+      flashpoint: null,
+      ...family,
+    },
   };
 }
 
@@ -89,41 +96,65 @@ const STUMP = {
   kind: "gbm" as const,
   baseScore: 0,
   sampleCount: 1000,
-  trees: [[
-    { feature: 0, threshold: 0.5, left: 1, right: 2, defaultLeft: true },
-    { leaf: -1 },
-    { leaf: 1 },
-  ]],
+  trees: [
+    [
+      { feature: 0, threshold: 0.5, left: 1, right: 2, defaultLeft: true },
+      { leaf: -1 },
+      { leaf: 1 },
+    ],
+  ],
 };
 
 describe("GBM tree inference", () => {
   test("traverses left/right by threshold and sigmoids the leaf sum", () => {
     const art = gbmArtifact({ control: STUMP });
     const zeros = Array(FEATURE_NAMES.length - 1).fill(0) as number[];
-    expect(predictWinProbability(art, "control", [0, ...zeros])).toBeCloseTo(1 / (1 + Math.exp(1)), 6);
-    expect(predictWinProbability(art, "control", [1, ...zeros])).toBeCloseTo(1 / (1 + Math.exp(-1)), 6);
+    expect(predictWinProbability(art, "control", [0, ...zeros])).toBeCloseTo(
+      1 / (1 + Math.exp(1)),
+      6
+    );
+    expect(predictWinProbability(art, "control", [1, ...zeros])).toBeCloseTo(
+      1 / (1 + Math.exp(-1)),
+      6
+    );
   });
 
   test("sums leaves across trees and adds baseScore", () => {
-    const twoTree = { ...STUMP, baseScore: 0.5, trees: [STUMP.trees[0], STUMP.trees[0]] };
+    const twoTree = {
+      ...STUMP,
+      baseScore: 0.5,
+      trees: [STUMP.trees[0], STUMP.trees[0]],
+    };
     const art = gbmArtifact({ control: twoTree });
     const feats = [1, ...Array(FEATURE_NAMES.length - 1).fill(0)];
-    expect(predictWinProbability(art, "control", feats)).toBeCloseTo(1 / (1 + Math.exp(-2.5)), 6);
+    expect(predictWinProbability(art, "control", feats)).toBeCloseTo(
+      1 / (1 + Math.exp(-2.5)),
+      6
+    );
   });
 
   test("NaN feature follows defaultLeft", () => {
     const art = gbmArtifact({ control: STUMP });
     const feats = [NaN, ...Array(FEATURE_NAMES.length - 1).fill(0)];
-    expect(predictWinProbability(art, "control", feats)).toBeCloseTo(1 / (1 + Math.exp(1)), 6);
+    expect(predictWinProbability(art, "control", feats)).toBeCloseTo(
+      1 / (1 + Math.exp(1)),
+      6
+    );
   });
 
   test("a kind-less family is treated as LR (backward compat)", () => {
     const lr = {
       weights: Array(FEATURE_NAMES.length).fill(0),
-      bias: 0, means: Array(FEATURE_NAMES.length).fill(0),
-      stds: Array(FEATURE_NAMES.length).fill(1), sampleCount: 1,
+      bias: 0,
+      means: Array(FEATURE_NAMES.length).fill(0),
+      stds: Array(FEATURE_NAMES.length).fill(1),
+      sampleCount: 1,
     };
-    const art = gbmArtifact({ control: lr as unknown as ModelArtifact["modeFamilies"]["control"] });
-    expect(predictWinProbability(art, "control", Array(FEATURE_NAMES.length).fill(0))).toBeCloseTo(0.5, 6);
+    const art = gbmArtifact({
+      control: lr as unknown as ModelArtifact["modeFamilies"]["control"],
+    });
+    expect(
+      predictWinProbability(art, "control", Array(FEATURE_NAMES.length).fill(0))
+    ).toBeCloseTo(0.5, 6);
   });
 });

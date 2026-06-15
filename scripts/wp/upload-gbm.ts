@@ -15,7 +15,9 @@ if (art.featureHash !== featureHash()) {
 art.createdAt = new Date().toISOString();
 
 const published = await publishArtifact(art);
-console.log(`published ${published.key} (model version ${published.modelVersion})`);
+console.log(
+  `published ${published.key} (model version ${published.modelVersion})`
+);
 
 for (const [fam, m] of Object.entries(art.modeFamilies)) {
   if (m === null) {
@@ -23,5 +25,7 @@ for (const [fam, m] of Object.entries(art.modeFamilies)) {
     continue;
   }
   const kind = "trees" in m ? "gbm" : "lr";
-  console.log(`  ${fam}: ${kind} logLoss=${m.metrics?.logLoss?.toFixed(4) ?? "?"}`);
+  console.log(
+    `  ${fam}: ${kind} logLoss=${m.metrics?.logLoss?.toFixed(4) ?? "?"}`
+  );
 }

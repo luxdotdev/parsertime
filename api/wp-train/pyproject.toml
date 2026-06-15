@@ -4,11 +4,11 @@ version = "0.1.0"
 description = "Vercel Python serverless function: weekly WP GBM trainer"
 requires-python = ">=3.9"
 dependencies = [
-    "lightgbm>=4.0,<5",
-    "scikit-learn>=1.3,<2",
-    # Pin numpy<2: lightgbm/pandas wheels compiled against numpy 1.x crash under
-    # numpy 2.x ("module compiled using NumPy 1.x cannot be run in NumPy 2.4").
-    "numpy>=1.24,<2",
-    "pandas>=2.0,<3",
-    "requests>=2.31,<3",
+  "lightgbm>=4.0,<5",
+  "scikit-learn>=1.3,<2",
+  # Pin numpy<2: lightgbm/pandas wheels compiled against numpy 1.x crash under
+  # numpy 2.x ("module compiled using NumPy 1.x cannot be run in NumPy 2.4").
+  "numpy>=1.24,<2",
+  "pandas>=2.0,<3",
+  "requests>=2.31,<3",
 ]

@@ -66,12 +66,9 @@ describe("computeScatterPoints", () => {
   });
 
   it("restricts buckets and players to the selected heroes", () => {
-    const points = computeScatterPoints(
-      data,
-      "final_blows",
-      "deaths",
-      ["Genji"] as HeroName[]
-    );
+    const points = computeScatterPoints(data, "final_blows", "deaths", [
+      "Genji",
+    ] as HeroName[]);
     // Ana1 never played Genji -> excluded entirely
     expect(points).toHaveLength(1);
     // Genji1: only the Genji bucket (300s, 50 fb) -> (50/5)*10 = 100
@@ -82,7 +79,11 @@ describe("computeScatterPoints", () => {
 
   it("drops players with zero selected playtime", () => {
     const zero: PlayerScatterStats[] = [
-      { playerName: "Z", primaryRole: "Tank", buckets: [bucket("Reinhardt", 0, { deaths: 5 })] },
+      {
+        playerName: "Z",
+        primaryRole: "Tank",
+        buckets: [bucket("Reinhardt", 0, { deaths: 5 })],
+      },
     ];
     expect(computeScatterPoints(zero, "deaths", "deaths", [])).toHaveLength(0);
   });

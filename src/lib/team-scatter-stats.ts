@@ -37,10 +37,10 @@ export const SCATTER_STAT_LABEL_KEYS: Record<ScatterStatKey, string> = {
   environmental_kills: "environmentalKills",
 };
 
-export type PlayerScatterBucket = { hero: HeroName; timePlayed: number } & Record<
-  ScatterStatKey,
-  number
->;
+export type PlayerScatterBucket = {
+  hero: HeroName;
+  timePlayed: number;
+} & Record<ScatterStatKey, number>;
 
 export type PlayerScatterStats = {
   playerName: string;

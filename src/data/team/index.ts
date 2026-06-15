@@ -126,10 +126,7 @@ export {
 } from "./role-stats-service";
 export type { TeamRoleStatsServiceInterface } from "./role-stats-service";
 
-export {
-  TeamScatterService,
-  TeamScatterServiceLive,
-} from "./scatter-service";
+export { TeamScatterService, TeamScatterServiceLive } from "./scatter-service";
 export type { TeamScatterServiceInterface } from "./scatter-service";
 
 export {

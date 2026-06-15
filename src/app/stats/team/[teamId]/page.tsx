@@ -343,7 +343,9 @@ export default async function TeamStatsPage(
             Effect.flatMap((svc) => svc.getBestRoleTrios(teamId, dateRange))
           ),
           scatterData: TeamScatterService.pipe(
-            Effect.flatMap((svc) => svc.getPlayerScatterStats(teamId, dateRange))
+            Effect.flatMap((svc) =>
+              svc.getPlayerScatterStats(teamId, dateRange)
+            )
           ),
           weeklyWinrate: TeamTrendsService.pipe(
             Effect.flatMap((svc) =>

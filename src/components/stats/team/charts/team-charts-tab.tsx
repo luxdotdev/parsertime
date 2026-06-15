@@ -29,7 +29,11 @@ type Props = {
 const PRESETS: { titleKey: string; x: ScatterStatKey; y: ScatterStatKey }[] = [
   { titleKey: "presetDamageDeaths", x: "hero_damage_dealt", y: "deaths" },
   { titleKey: "presetFinalBlowsDeaths", x: "final_blows", y: "deaths" },
-  { titleKey: "presetDamageHealingReceived", x: "damage_taken", y: "healing_received" },
+  {
+    titleKey: "presetDamageHealingReceived",
+    x: "damage_taken",
+    y: "healing_received",
+  },
   { titleKey: "presetBlockedTaken", x: "damage_blocked", y: "damage_taken" },
 ];
 
@@ -57,8 +61,18 @@ function AxisSelectors({
   statLabel: (key: ScatterStatKey) => string;
 }) {
   const axes = [
-    { id: `${idPrefix}-x-axis`, label: xAxisLabel, value: xValue, onChange: onX },
-    { id: `${idPrefix}-y-axis`, label: yAxisLabel, value: yValue, onChange: onY },
+    {
+      id: `${idPrefix}-x-axis`,
+      label: xAxisLabel,
+      value: xValue,
+      onChange: onX,
+    },
+    {
+      id: `${idPrefix}-y-axis`,
+      label: yAxisLabel,
+      value: yValue,
+      onChange: onY,
+    },
   ];
   return (
     <div className="flex flex-wrap items-end gap-4">

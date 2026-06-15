@@ -1,7 +1,14 @@
-import { extractFeatures, FEATURE_NAMES, featureHash } from "@/lib/win-probability/features";
+import {
+  extractFeatures,
+  FEATURE_NAMES,
+  featureHash,
+} from "@/lib/win-probability/features";
 import type { ModelArtifact } from "@/lib/win-probability/model";
 import { predictWinProbability } from "@/lib/win-probability/model";
-import { computeMatchStory, decomposeSwing } from "@/lib/win-probability/timeline";
+import {
+  computeMatchStory,
+  decomposeSwing,
+} from "@/lib/win-probability/timeline";
 import type { GameState, WPEventLog } from "@/lib/win-probability/types";
 import { describe, expect, test } from "vitest";
 
@@ -84,20 +91,36 @@ const TANK_STUMP = {
   kind: "gbm" as const,
   baseScore: 0,
   sampleCount: 1000,
-  trees: [[
-    { feature: TANK_ALIVE_IDX, threshold: 0, left: 1, right: 2, defaultLeft: true },
-    { leaf: -2 },
-    { leaf: 2 },
-  ]],
+  trees: [
+    [
+      {
+        feature: TANK_ALIVE_IDX,
+        threshold: 0,
+        left: 1,
+        right: 2,
+        defaultLeft: true,
+      },
+      { leaf: -2 },
+      { leaf: 2 },
+    ],
+  ],
 };
 
-function gbmArtifact(family: Partial<ModelArtifact["modeFamilies"]>): ModelArtifact {
+function gbmArtifact(
+  family: Partial<ModelArtifact["modeFamilies"]>
+): ModelArtifact {
   return {
     schemaVersion: 1,
     modelVersion: 99,
     createdAt: "2026-06-14T00:00:00.000Z",
     featureHash: featureHash(),
-    modeFamilies: { control: null, escort_hybrid: null, push: null, flashpoint: null, ...family },
+    modeFamilies: {
+      control: null,
+      escort_hybrid: null,
+      push: null,
+      flashpoint: null,
+      ...family,
+    },
   };
 }
 
@@ -137,7 +160,7 @@ describe("decomposeSwing — GBM ablation", () => {
     // after:  tankAliveDiff = +1 (advantage)    → stump leaf +2 → high WP
     // Only alive fields change; objective and ult fields stay neutral.
     const before = baseState({ tankAliveDiff: -1, aliveDiff: -1 });
-    const after  = baseState({ tankAliveDiff:  1, aliveDiff:  1 });
+    const after = baseState({ tankAliveDiff: 1, aliveDiff: 1 });
 
     function wpOf(state: GameState): number {
       return predictWinProbability(art, "control", extractFeatures(state))!;

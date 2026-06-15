@@ -212,6 +212,7 @@ export const make = Effect.gen(function* () {
   } satisfies TeamScatterServiceInterface;
 });
 
-export const TeamScatterServiceLive = Layer.effect(TeamScatterService, make).pipe(
-  Layer.provide(TeamSharedDataServiceLive)
-);
+export const TeamScatterServiceLive = Layer.effect(
+  TeamScatterService,
+  make
+).pipe(Layer.provide(TeamSharedDataServiceLive));

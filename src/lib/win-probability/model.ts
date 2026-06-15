@@ -2,7 +2,11 @@ import { applyCalibration, type CalibrationMap } from "./calibration";
 import { FEATURE_NAMES, featureHash } from "./features";
 import type { ModeFamily } from "./types";
 
-export type FamilyMetrics = { logLoss: number; brier: number; baseRate: number };
+export type FamilyMetrics = {
+  logLoss: number;
+  brier: number;
+  baseRate: number;
+};
 
 export type LRFamilyModel = {
   kind?: "lr";
@@ -20,7 +24,13 @@ export type LRFamilyModel = {
  * constant added to the raw score. LightGBM numeric split: go left if
  * value <= threshold; NaN follows defaultLeft (our features carry no NaN). */
 export type GBMTreeNode =
-  | { feature: number; threshold: number; left: number; right: number; defaultLeft: boolean }
+  | {
+      feature: number;
+      threshold: number;
+      left: number;
+      right: number;
+      defaultLeft: boolean;
+    }
   | { leaf: number };
 
 export type GBMFamilyModel = {
@@ -113,5 +123,7 @@ export function predictWinProbability(
     }
     raw = sigmoid(z);
   }
-  return model.calibration === undefined ? raw : applyCalibration(model.calibration, raw);
+  return model.calibration === undefined
+    ? raw
+    : applyCalibration(model.calibration, raw);
 }

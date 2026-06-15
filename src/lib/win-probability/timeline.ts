@@ -357,12 +357,20 @@ function computeSeries(
 
 const SYNTH_FIGHT_GAP_SECONDS = 15;
 
-const DRIVER_FIELDS: Record<"objective" | "kills" | "ults", (keyof GameState)[]> = {
+const DRIVER_FIELDS: Record<
+  "objective" | "kills" | "ults",
+  (keyof GameState)[]
+> = {
   kills: ["aliveDiff", "tankAliveDiff", "dpsAliveDiff", "supportAliveDiff"],
   ults: ["ultBankDiff", "tankUltDiff", "dpsUltDiff", "supportUltDiff"],
   objective: [
-    "scoreDiff", "objProgressOwn", "objProgressEnemy",
-    "controlProgressOwn", "controlProgressEnemy", "holdsObjective", "objectiveIndex",
+    "scoreDiff",
+    "objProgressOwn",
+    "objProgressEnemy",
+    "controlProgressOwn",
+    "controlProgressEnemy",
+    "holdsObjective",
+    "objectiveIndex",
   ],
 };
 
@@ -449,7 +457,12 @@ function buildLedger(
     const stateAfter = statesAt(log, [fight.end + EDGE_EPSILON])[0].team1;
     const wpBefore = wpOf(stateBefore);
     const wpAfter = wpOf(stateAfter);
-    const drivers = decomposeSwing(wpOf, stateBefore, stateAfter, wpAfter - wpBefore);
+    const drivers = decomposeSwing(
+      wpOf,
+      stateBefore,
+      stateAfter,
+      wpAfter - wpBefore
+    );
 
     function inWindow(t: number): boolean {
       return t >= fight.start - ULT_WINDOW_LEAD_SECONDS && t <= fight.end;

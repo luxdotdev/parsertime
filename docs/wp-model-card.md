@@ -48,7 +48,7 @@ see below).
 | Kills     | `tankAliveDiff`, `dpsAliveDiff`, `supportAliveDiff` (respawn-adjusted, 10s constant, split by the victim's hero role), `aliveDiff × objMax`, `aliveDiff × controlMax` |
 | Ults      | `tankUltDiff`, `dpsUltDiff`, `supportUltDiff` (charged-unspent banks, by role; Echo duplicates count as Damage), `ultBankDiff × timeRemaining`                        |
 | Objective | `scoreDiff`, `objProgressOwn/Enemy` (contest %), `controlProgressOwn/Enemy` (control win %), `holdsObjective` (±1), `objectiveIndexNorm`, `scoreDiff × roundNumber`   |
-| Context   | `timeRemainingNorm`, `isAttacker`, `roundNumberNorm`, `isOvertime`                                                                                                   |
+| Context   | `timeRemainingNorm`, `isAttacker`, `roundNumberNorm`, `isOvertime`                                                                                                    |
 
 The hand-built interaction features (`aliveDiff × objMax`, etc.) are retained but
 are now largely redundant — a tree model discovers interactions itself, and they
@@ -75,12 +75,12 @@ prevent a bad model shipping.
 
 ## Per-family results (5-fold CV, grouped by map; calibrated outputs)
 
-| Family        | Model | Maps  | Log loss (base 0.693) | Status  | vs prior LR |
-| ------------- | ----- | ----- | --------------------- | ------- | ----------- |
-| Control       | GBM   | ~2,300 | 0.5966 | shipped | 0.6180 (−3.5%) |
-| Escort/Hybrid | GBM   | ~3,300 | 0.6378 | shipped | 0.6635 (−3.9%) |
-| Flashpoint    | GBM   | ~1,560 | 0.5841 | shipped | 0.5891 (−0.8%) |
-| Push          | —     | 17     | —      | disabled (no labels) | — |
+| Family        | Model | Maps   | Log loss (base 0.693) | Status               | vs prior LR    |
+| ------------- | ----- | ------ | --------------------- | -------------------- | -------------- |
+| Control       | GBM   | ~2,300 | 0.5966                | shipped              | 0.6180 (−3.5%) |
+| Escort/Hybrid | GBM   | ~3,300 | 0.6378                | shipped              | 0.6635 (−3.9%) |
+| Flashpoint    | GBM   | ~1,560 | 0.5841                | shipped              | 0.5891 (−0.8%) |
+| Push          | —     | 17     | —                     | disabled (no labels) | —              |
 
 Pooled log loss undersells the gain: the win is concentrated at **decisive
 moments**. On snapshots where |WP−0.5| > 0.3, the bake-off measured GBM beating
@@ -141,12 +141,12 @@ context features (time, attacker role) are unattributed by design.
 
 Required Vercel env vars for the weekly retrain (`api/wp-train/`):
 
-| Var | Required | Description |
-| --- | -------- | ----------- |
-| `CRON_SECRET` | yes | Bearer token; must match the `/api/cron/wp-retrain` and `/api/cron/wp-publish` routes |
-| `WP_FEATURE_HASH` | yes | Must equal the TS `featureHash()` (currently `27b4a8ec1f49`); the publish route 400-rejects an artifact whose hash mismatches |
-| `PUBLISH_URL` | yes | Full URL of the publish callback, e.g. `https://<deployment>/api/cron/wp-publish` |
-| `WP_LATEST_MODEL_URL` | no | Public URL of the live artifact JSON; enables champion/challenger. Omit to use the no-incumbent fallback (re-ships GBM wherever it passes the gate) |
+| Var                   | Required | Description                                                                                                                                         |
+| --------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CRON_SECRET`         | yes      | Bearer token; must match the `/api/cron/wp-retrain` and `/api/cron/wp-publish` routes                                                               |
+| `WP_FEATURE_HASH`     | yes      | Must equal the TS `featureHash()` (currently `27b4a8ec1f49`); the publish route 400-rejects an artifact whose hash mismatches                       |
+| `PUBLISH_URL`         | yes      | Full URL of the publish callback, e.g. `https://<deployment>/api/cron/wp-publish`                                                                   |
+| `WP_LATEST_MODEL_URL` | no       | Public URL of the live artifact JSON; enables champion/challenger. Omit to use the no-incumbent fallback (re-ships GBM wherever it passes the gate) |
 
 ## Limitations — read before trusting an edge case
 
@@ -180,11 +180,13 @@ failed or worse mode keeps the previous model serving. Rollback is re-pointing
 ## Reproduction
 
 Local (the bake-off / first-artifact tooling):
+
 ```
 bun scripts/wp/export-dataset.ts          # dev DB → artifacts/wp/dataset-<family>.csv
 cd scripts/wp/gbm-prototype && uv run python build_artifact.py   # champion/challenger → model-gbm.json
 bun scripts/wp/upload-gbm.ts              # validate hash + publish to R2
 ```
+
 Production retrains run weekly via `/api/cron/wp-retrain` → `api/wp-train` →
 `/api/cron/wp-publish`.
 
