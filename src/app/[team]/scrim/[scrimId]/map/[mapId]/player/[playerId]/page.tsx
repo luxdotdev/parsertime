@@ -1,30 +1,17 @@
+import { AppHeader } from "@/components/app-header";
 import { PlayerCharts } from "@/components/charts/player/player-charts";
-import { MainNav } from "@/components/dashboard/main-nav";
-import { Search } from "@/components/dashboard/search";
 import { DirectionalTransition } from "@/components/directional-transition";
-import { GuestNav } from "@/components/guest-nav";
-import { LocaleSwitcher } from "@/components/locale-switcher";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
-import { MobileNav } from "@/components/mobile-nav";
-import { Notifications } from "@/components/notifications";
 import { PlayerAnalytics } from "@/components/player/analytics";
 import { DefaultOverview } from "@/components/player/default-overview";
 import { PlayerTelemetry } from "@/components/player/player-telemetry";
-import { ModeToggle } from "@/components/theme-switcher";
 import { Link } from "@/components/ui/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserNav } from "@/components/user-nav";
 import { PlayerService } from "@/data/player";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
-import {
-  aiChat,
-  dataLabeling,
-  faceitScouting,
-  scoutingTool,
-} from "@/lib/flags";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { translateHeroName, translateMapName } from "@/lib/utils";
@@ -112,74 +99,15 @@ export default async function PlayerDashboardPage(
     },
   })) ?? { guestMode: false };
 
-  const [
-    scoutingEnabled,
-    faceitScoutingEnabled,
-    aiChatEnabled,
-    dataToolsEnabled,
-  ] = await Promise.all([
-    scoutingTool(),
-    faceitScouting(),
-    aiChat(),
-    dataLabeling(),
-  ]);
-
   return (
     <DirectionalTransition>
       <div className="flex-col md:flex">
-        <header
-          className="shadow-xs"
-          style={{ viewTransitionName: "site-header" }}
-        >
-          <div className="hidden min-h-16 items-center px-4 py-2 md:flex">
-            <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
-            <MainNav
-              className="mx-6 hidden lg:block"
-              scoutingEnabled={scoutingEnabled}
-              faceitScoutingEnabled={faceitScoutingEnabled}
-              aiChatEnabled={aiChatEnabled}
-              dataToolsEnabled={dataToolsEnabled}
-            />
-            <MobileNav
-              className="block pl-2 lg:hidden"
-              session={session}
-              aiChatEnabled={aiChatEnabled}
-              dataToolsEnabled={dataToolsEnabled}
-            />
-            <div className="ml-auto flex items-center space-x-4">
-              <Search user={user} />
-              <ModeToggle />
-              <LocaleSwitcher />
-              {session ? (
-                <>
-                  <Notifications />
-                  <UserNav />
-                </>
-              ) : (
-                <GuestNav guestMode={visibility.guestMode} />
-              )}
-            </div>
-          </div>
-          <div className="flex h-16 items-center px-4 md:hidden">
-            <MobileNav
-              session={session}
-              aiChatEnabled={aiChatEnabled}
-              dataToolsEnabled={dataToolsEnabled}
-            />
-            <div className="ml-auto flex items-center space-x-4">
-              <ModeToggle />
-              <LocaleSwitcher />
-              {session ? (
-                <>
-                  <Notifications />
-                  <UserNav />
-                </>
-              ) : (
-                <GuestNav guestMode={visibility.guestMode} />
-              )}
-            </div>
-          </div>
-        </header>
+        <AppHeader
+          switcher={<PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />}
+          session={session}
+          user={user}
+          guestMode={visibility.guestMode}
+        />
         <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
           <nav className="text-muted-foreground flex items-center gap-3 text-sm">
             <Link

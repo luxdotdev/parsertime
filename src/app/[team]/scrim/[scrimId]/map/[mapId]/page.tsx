@@ -1,9 +1,6 @@
+import { AppHeader } from "@/components/app-header";
 import { MapCharts } from "@/components/charts/map/map-charts";
-import { MainNav } from "@/components/dashboard/main-nav";
-import { Search } from "@/components/dashboard/search";
 import { DirectionalTransition } from "@/components/directional-transition";
-import { GuestNav } from "@/components/guest-nav";
-import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ComparePlayers } from "@/components/map/compare-players";
 import { DefaultOverview } from "@/components/map/default-overview";
 import { FightInitiationInspector } from "@/components/map/fight-initiation-inspector";
@@ -17,13 +14,9 @@ import { MatchStoryTab } from "@/components/map/match-story/match-story-tab";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
 import { ReplayTab } from "@/components/map/replay/replay-tab";
 import { RoutesTab } from "@/components/map/routes/routes-tab";
-import { MobileNav } from "@/components/mobile-nav";
-import { Notifications } from "@/components/notifications";
 import { ReplayCode } from "@/components/scrim/replay-code";
-import { ModeToggle } from "@/components/theme-switcher";
 import { TipTap } from "@/components/tiptap/tiptap";
 import { StatsViewBeacon } from "@/components/usage/stats-view-beacon";
-import { UserNav } from "@/components/user-nav";
 import { VodOverview } from "@/components/vods/vod-overview";
 import { MatchStoryService } from "@/data/map/match-story-service";
 import { PlayerService } from "@/data/player";
@@ -34,16 +27,7 @@ import {
   getFightInitiationForMapData,
   type MapInitiationResult,
 } from "@/lib/fight-initiation";
-import {
-  aiChat,
-  coachingCanvas,
-  dataLabeling,
-  faceitScouting,
-  positionalData,
-  scoutingTool,
-  tempoChart,
-  tournament,
-} from "@/lib/flags";
+import { positionalData, tempoChart } from "@/lib/flags";
 import { resolveScrimMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { getColorblindMode } from "@/lib/server-utils";
@@ -133,14 +117,8 @@ export default async function MapDashboardPage(
     visibility,
     heroBans,
     noteContent,
-    scoutingEnabled,
-    faceitScoutingEnabled,
     tempoChartEnabled,
     positionalDataEnabled,
-    aiChatEnabled,
-    dataToolsEnabled,
-    tournamentEnabled,
-    coachingCanvasEnabled,
     matchStory,
     fightInitiation,
   ] = await Promise.all([
@@ -169,14 +147,8 @@ export default async function MapDashboardPage(
       },
       select: { content: true },
     }),
-    scoutingTool(),
-    faceitScouting(),
     tempoChart(),
     positionalData(),
-    aiChat(),
-    dataLabeling(),
-    tournament(),
-    coachingCanvas(),
     // A story failure must never break the map page — the tab just hides.
     AppRuntime.runPromise(
       MatchStoryService.pipe(
@@ -203,63 +175,12 @@ export default async function MapDashboardPage(
     <DirectionalTransition>
       <StatsViewBeacon />
       <div className="flex-col md:flex">
-        <header
-          className="shadow-xs"
-          style={{ viewTransitionName: "site-header" }}
-        >
-          <div className="hidden min-h-16 items-center px-4 py-2 md:flex">
-            <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
-            <MainNav
-              className="mx-6 hidden lg:block"
-              scoutingEnabled={scoutingEnabled}
-              faceitScoutingEnabled={faceitScoutingEnabled}
-              aiChatEnabled={aiChatEnabled}
-              dataToolsEnabled={dataToolsEnabled}
-              tournamentEnabled={tournamentEnabled}
-              coachingCanvasEnabled={coachingCanvasEnabled}
-            />
-            <MobileNav
-              className="block pl-2 lg:hidden"
-              session={session}
-              aiChatEnabled={aiChatEnabled}
-              dataToolsEnabled={dataToolsEnabled}
-              coachingCanvasEnabled={coachingCanvasEnabled}
-            />
-            <div className="ml-auto flex items-center space-x-4">
-              <Search user={user} />
-              <ModeToggle />
-              <LocaleSwitcher />
-              {session ? (
-                <>
-                  <Notifications />
-                  <UserNav />
-                </>
-              ) : (
-                <GuestNav guestMode={visibility?.guestMode ?? false} />
-              )}
-            </div>
-          </div>
-          <div className="flex h-16 items-center px-4 md:hidden">
-            <MobileNav
-              session={session}
-              aiChatEnabled={aiChatEnabled}
-              dataToolsEnabled={dataToolsEnabled}
-              coachingCanvasEnabled={coachingCanvasEnabled}
-            />
-            <div className="ml-auto flex items-center space-x-4">
-              <ModeToggle />
-              <LocaleSwitcher />
-              {session ? (
-                <>
-                  <Notifications />
-                  <UserNav />
-                </>
-              ) : (
-                <GuestNav guestMode={visibility?.guestMode ?? false} />
-              )}
-            </div>
-          </div>
-        </header>
+        <AppHeader
+          switcher={<PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />}
+          session={session}
+          user={user}
+          guestMode={visibility?.guestMode ?? false}
+        />
         <div className="flex-1 space-y-4 px-6 pt-6 pb-12 md:px-8">
           <nav className="text-muted-foreground text-sm">
             <Link
