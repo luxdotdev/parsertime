@@ -182,7 +182,7 @@ export function UltUsageOverviewCard({
                         {cells}
                       </tr>
                     </HoverCardTrigger>
-                    <HoverCardContent align="start" className="w-96">
+                    <HoverCardContent align="center" className="w-96">
                       <OpponentComparisonCard
                         metricLabel={row.label}
                         comparison={row.opponent}
