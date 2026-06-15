@@ -1,47 +1,14 @@
 /* oxlint-disable react/no-array-index-key */
 import { Skeleton } from "@/components/ui/skeleton";
 
+// The header and tab nav live in the persistent layout, so this loading
+// boundary only skeletons the page content that streams in per tab.
 export default function TeamStatsLoading() {
   return (
-    <div className="px-6 pt-8 pb-16 sm:px-10">
-      <header className="border-border flex flex-wrap items-end justify-between gap-x-10 gap-y-4 border-b pb-6">
-        <div className="flex items-end gap-4">
-          <Skeleton className="h-12 w-12 shrink-0 rounded-full" />
-          <div>
-            <Skeleton className="h-3 w-32" />
-            <Skeleton className="mt-3 h-9 w-64" />
-          </div>
-        </div>
-        <div className="flex flex-wrap items-end gap-x-6 gap-y-4">
-          <div className="flex items-baseline gap-x-8">
-            <div className="space-y-2">
-              <Skeleton className="h-2.5 w-12" />
-              <Skeleton className="h-6 w-16" />
-            </div>
-            <div className="space-y-2">
-              <Skeleton className="h-2.5 w-14" />
-              <Skeleton className="h-6 w-12" />
-            </div>
-            <div className="space-y-2">
-              <Skeleton className="h-2.5 w-12" />
-              <Skeleton className="h-6 w-10" />
-            </div>
-          </div>
-          <Skeleton className="h-9 w-32" />
-        </div>
-      </header>
-
-      <nav className="border-border mt-6 flex h-auto w-full flex-wrap justify-start gap-6 border-b pb-3">
-        {Array.from({ length: 10 }).map((_, i) => (
-          <Skeleton key={i} className="h-3 w-16" />
-        ))}
-      </nav>
-
-      <div className="mt-8 space-y-12">
-        <SkeletonRibbon />
-        <SkeletonSection bodyHeight={260} />
-        <SkeletonTable rows={6} />
-      </div>
+    <div className="mt-8 space-y-12">
+      <SkeletonRibbon />
+      <SkeletonSection bodyHeight={260} />
+      <SkeletonTable rows={6} />
     </div>
   );
 }
