@@ -45,7 +45,9 @@ export function TeamStatsTabsNav({
           { segment: "tendencies", label: "Tendencies" },
         ]
       : []),
-    ...(simulationEnabled ? [{ segment: "simulator", label: "Simulator" }] : []),
+    ...(simulationEnabled
+      ? [{ segment: "simulator", label: "Simulator" }]
+      : []),
   ];
 
   return (

@@ -21,7 +21,11 @@ describe("chunk", () => {
 
 describe("mapWithConcurrency", () => {
   test("preserves input order in results", async () => {
-    const out = await mapWithConcurrency([1, 2, 3, 4, 5], 2, async (n) => n * 2);
+    const out = await mapWithConcurrency(
+      [1, 2, 3, 4, 5],
+      2,
+      async (n) => n * 2
+    );
     expect(out).toEqual([2, 4, 6, 8, 10]);
   });
 
