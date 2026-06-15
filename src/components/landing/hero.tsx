@@ -1,12 +1,12 @@
-import Link from 'next/link';
-import { SceneHost } from './scene-host';
-import { getLatestUpdate } from '@/lib/edge-updates';
+import { getLatestUpdate } from "@/lib/edge-updates";
+import Link from "next/link";
+import { SceneHost } from "./scene-host";
 
 const changelog = [
   {
-    tag: 'new · rating',
-    title: 'TSR, the tournament ladder',
-    href: '/docs/tsr/overview',
+    tag: "new · rating",
+    title: "TSR, the tournament ladder",
+    href: "/docs/tsr/overview",
     body: (
       <>
         Per-player rating grounded in FACEIT-hosted Overwatch 2 tournament
@@ -14,12 +14,12 @@ const changelog = [
         and a soft cap above 4000. Sits beside CSR, not on top of it.
       </>
     ),
-    meta: '1 to 5000',
+    meta: "1 to 5000",
   },
   {
-    tag: 'new · match',
-    title: 'Matchmaker',
-    href: '/docs/matchmaker',
+    tag: "new · match",
+    title: "Matchmaker",
+    href: "/docs/matchmaker",
     body: (
       <>
         Find scrim partners at your team&rsquo;s bracket. Requests deliver to
@@ -27,25 +27,25 @@ const changelog = [
         cooldown per target, 10 requests per team per day.
       </>
     ),
-    meta: 'na / emea',
+    meta: "na / emea",
   },
   {
-    tag: 'updated · billing',
-    title: 'AI Analyst on credits',
-    href: '/docs/ai-chat',
+    tag: "updated · billing",
+    title: "AI Analyst on credits",
+    href: "/docs/ai-chat",
     body: (
       <>
         Pay-as-you-go billing replaced with a prepaid credit balance. Top up in
-        $5 / $10 / $25 / $50 increments, or turn on auto-refill. Per-token
-        rates and the live balance sit in the chat header.
+        $5 / $10 / $25 / $50 increments, or turn on auto-refill. Per-token rates
+        and the live balance sit in the chat header.
       </>
     ),
-    meta: 'stripe',
+    meta: "stripe",
   },
   {
-    tag: 'new · telemetry',
-    title: 'Player telemetry',
-    href: '/docs/maps/telemetry',
+    tag: "new · telemetry",
+    title: "Player telemetry",
+    href: "/docs/maps/telemetry",
     body: (
       <>
         A per-player tab modeled on F1 telemetry: damage by target, opponent
@@ -53,12 +53,12 @@ const changelog = [
         ultimate advantage per fight.
       </>
     ),
-    meta: 'per player',
+    meta: "per player",
   },
   {
-    tag: 'new · personal',
-    title: 'Ranked tracker',
-    href: '/docs/ranked/overview',
+    tag: "new · personal",
+    title: "Ranked tracker",
+    href: "/docs/ranked/overview",
     body: (
       <>
         A personal dashboard for your own competitive ladder. Log or bulk-import
@@ -67,12 +67,12 @@ const changelog = [
         public summary.
       </>
     ),
-    meta: 'per player',
+    meta: "per player",
   },
   {
-    tag: 'new · analysis',
-    title: 'Match Story',
-    href: '/docs/maps/match-story',
+    tag: "new · analysis",
+    title: "Match Story",
+    href: "/docs/maps/match-story",
     body: (
       <>
         A win-probability model reads each map as a narrative: a sortable fight
@@ -80,12 +80,12 @@ const changelog = [
         why it moved, and a missed-opportunities pass on the leads you let slip.
       </>
     ),
-    meta: 'per map',
+    meta: "per map",
   },
   {
-    tag: 'new · scouting',
-    title: 'FACEIT Scouting',
-    href: '/docs/scouting/overview',
+    tag: "new · scouting",
+    title: "FACEIT Scouting",
+    href: "/docs/scouting/overview",
     body: (
       <>
         Scout FACEIT teams and players ahead of a match: map and ban tendencies,
@@ -93,12 +93,12 @@ const changelog = [
         skill rating that grades a player against their peers.
       </>
     ),
-    meta: 'premium',
+    meta: "premium",
   },
   {
-    tag: 'new · spatial',
-    title: 'Positional analytics',
-    href: '/docs/maps/routes',
+    tag: "new · spatial",
+    title: "Positional analytics",
+    href: "/docs/maps/routes",
     body: (
       <>
         Movement data turned into insight: route maps, fight-initiation grading,
@@ -106,49 +106,50 @@ const changelog = [
         page, the team stats page, and the scrim overview.
       </>
     ),
-    meta: 'positional',
+    meta: "positional",
   },
 ];
 
 const quickstart = [
   {
-    n: '01',
-    title: 'Collect Workshop logs',
+    n: "01",
+    title: "Collect Workshop logs",
     body: (
       <>
-        In Overwatch 2, enable{' '}
+        In Overwatch 2, enable{" "}
         <em className="not-italic text-fd-foreground">
           Gameplay &rarr; Workshop Inspector Log File
         </em>
-        . Host a custom lobby with workshop code{' '}
+        . Host a custom lobby with workshop code{" "}
         <code className="rounded-sm bg-fd-muted px-1.5 py-0.5 font-mono text-[12px] text-fd-foreground">
-          DKEEH
+          Z0ASA
         </code>
-        . Logs land in your{' '}
+        . Logs land in your{" "}
         <code className="rounded-sm bg-fd-muted px-1.5 py-0.5 font-mono text-[12px] text-fd-foreground">
           Documents/Overwatch/Workshop
-        </code>{' '}
+        </code>{" "}
         folder.
       </>
     ),
-    href: '/docs#collecting-scrim-logs',
+    href: "/docs#collecting-scrim-logs",
   },
   {
-    n: '02',
-    title: 'Upload your first scrim',
+    n: "02",
+    title: "Upload your first scrim",
     body: (
       <>
-        From the dashboard, click <em className="not-italic text-fd-foreground">Create Scrim</em>, name
+        From the dashboard, click{" "}
+        <em className="not-italic text-fd-foreground">Create Scrim</em>, name
         it, assign a team, and drop in the logs for the first map. The rest of
         the maps can be added incrementally. Delete any log under 1KB before
         uploading; those are partial captures.
       </>
     ),
-    href: '/docs/scrims',
+    href: "/docs/scrims",
   },
   {
-    n: '03',
-    title: 'Read the map page',
+    n: "03",
+    title: "Read the map page",
     body: (
       <>
         Over a dozen tabs cover the read &mdash; Overview, Killfeed, Charts,
@@ -157,59 +158,59 @@ const quickstart = [
         sortable everywhere. Compare scrims side by side from any map.
       </>
     ),
-    href: '/docs/maps/overview',
+    href: "/docs/maps/overview",
   },
 ];
 
 const indexGroups = [
   {
-    label: 'Setup',
+    label: "Setup",
     pages: [
-      { title: 'Introduction', href: '/docs' },
-      { title: 'Dashboard', href: '/docs/dashboard' },
-      { title: 'Teams', href: '/docs/teams' },
-      { title: 'Scrims', href: '/docs/scrims' },
-      { title: 'Discord bot', href: '/docs/discord-bot' },
+      { title: "Introduction", href: "/docs" },
+      { title: "Dashboard", href: "/docs/dashboard" },
+      { title: "Teams", href: "/docs/teams" },
+      { title: "Scrims", href: "/docs/scrims" },
+      { title: "Discord bot", href: "/docs/discord-bot" },
     ],
   },
   {
-    label: 'Pages',
+    label: "Pages",
     pages: [
-      { title: 'Maps', href: '/docs/maps' },
-      { title: 'Stats', href: '/docs/stats' },
-      { title: 'Team Stats', href: '/docs/team-stats' },
-      { title: 'Profile', href: '/docs/profile' },
-      { title: 'Ranked', href: '/docs/ranked/overview' },
+      { title: "Maps", href: "/docs/maps" },
+      { title: "Stats", href: "/docs/stats" },
+      { title: "Team Stats", href: "/docs/team-stats" },
+      { title: "Profile", href: "/docs/profile" },
+      { title: "Ranked", href: "/docs/ranked/overview" },
     ],
   },
   {
-    label: 'Ratings',
+    label: "Ratings",
     pages: [
-      { title: 'CSR overview', href: '/docs/csr/overview' },
-      { title: 'CSR leaderboard', href: '/docs/csr/leaderboard' },
-      { title: 'TSR overview', href: '/docs/tsr/overview' },
-      { title: 'TSR leaderboard', href: '/docs/tsr/leaderboard' },
-      { title: 'Team TSR', href: '/docs/tsr/team-tsr' },
+      { title: "CSR overview", href: "/docs/csr/overview" },
+      { title: "CSR leaderboard", href: "/docs/csr/leaderboard" },
+      { title: "TSR overview", href: "/docs/tsr/overview" },
+      { title: "TSR leaderboard", href: "/docs/tsr/leaderboard" },
+      { title: "Team TSR", href: "/docs/tsr/team-tsr" },
     ],
   },
   {
-    label: 'Tools',
+    label: "Tools",
     pages: [
-      { title: 'Matchmaker', href: '/docs/matchmaker' },
-      { title: 'Scouting', href: '/docs/scouting/overview' },
-      { title: 'AI Analyst', href: '/docs/ai-chat' },
-      { title: 'Coaching Canvas', href: '/docs/coaching-canvas' },
-      { title: 'Availability', href: '/docs/availability' },
+      { title: "Matchmaker", href: "/docs/matchmaker" },
+      { title: "Scouting", href: "/docs/scouting/overview" },
+      { title: "AI Analyst", href: "/docs/ai-chat" },
+      { title: "Coaching Canvas", href: "/docs/coaching-canvas" },
+      { title: "Availability", href: "/docs/availability" },
     ],
   },
   {
-    label: 'Account',
+    label: "Account",
     pages: [
-      { title: 'Settings', href: '/docs/settings/overview' },
-      { title: 'Billing', href: '/docs/settings/billing' },
-      { title: 'Linked accounts', href: '/docs/settings/linked-accounts' },
-      { title: 'Reporting bugs', href: '/docs/reporting-bugs' },
-      { title: 'Known issues', href: '/docs/known-issues' },
+      { title: "Settings", href: "/docs/settings/overview" },
+      { title: "Billing", href: "/docs/settings/billing" },
+      { title: "Linked accounts", href: "/docs/settings/linked-accounts" },
+      { title: "Reporting bugs", href: "/docs/reporting-bugs" },
+      { title: "Known issues", href: "/docs/known-issues" },
     ],
   },
 ];
@@ -234,12 +235,11 @@ export async function LandingHero() {
           {/* Top bracket: doc register + version */}
           <div className="flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-fd-muted-foreground">
             <span>[01]</span>
-            <span
-              aria-hidden
-              className="block h-px w-6 bg-fd-border"
-            />
+            <span aria-hidden className="block h-px w-6 bg-fd-border" />
             <span>docs</span>
-            <span aria-hidden className="text-fd-border">·</span>
+            <span aria-hidden className="text-fd-border">
+              ·
+            </span>
             <span className="text-fd-foreground/70">parsertime / v3.0</span>
           </div>
 
@@ -272,8 +272,8 @@ export async function LandingHero() {
 
             <p className="mt-6 max-w-[42ch] text-[15px] leading-relaxed text-fd-muted-foreground">
               Every Parsertime surface, written in plain language. From your
-              first Workshop log upload to the TSR ladder, the Matchmaker,
-              Match Story, and the Ranked tracker. Updated alongside the product.
+              first Workshop log upload to the TSR ladder, the Matchmaker, Match
+              Story, and the Ranked tracker. Updated alongside the product.
             </p>
 
             <div className="mt-7 flex flex-wrap items-center gap-3">
