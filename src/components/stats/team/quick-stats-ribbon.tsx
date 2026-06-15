@@ -4,12 +4,9 @@ import {
   type RibbonCell,
   StatRibbon,
 } from "@/components/stats/team/stat-ribbon";
+import { useTempoReadLabel } from "@/components/stats/team/use-tempo-read-label";
 import type { QuickWinsStats } from "@/data/team/types";
-import {
-  classifyTempo,
-  formatDelta,
-  type TempoBaselineStat,
-} from "@/lib/tempo/classify";
+import type { TempoBaselineStat } from "@/lib/tempo/classify";
 import { useTranslations } from "next-intl";
 
 type QuickStatsRibbonProps = {
@@ -26,7 +23,7 @@ export function QuickStatsRibbon({
   fightBaseline,
 }: QuickStatsRibbonProps) {
   const t = useTranslations("teamStatsPage.quickStatsCard");
-  const tr = useTranslations("teamStatsPage.tempoRead");
+  const tempoLabel = useTempoReadLabel();
 
   function formatFightDuration(seconds: number | null): string {
     if (seconds === null) return "—";
@@ -36,15 +33,7 @@ export function QuickStatsRibbon({
   const last10 = stats.last10GamesPerformance;
   const last10HasGames = last10.wins + last10.losses > 0;
   const dur = stats.averageFightDuration;
-  const fightRead = dur === null ? null : classifyTempo(dur, fightBaseline);
-  const fightSub =
-    dur === null
-      ? "—"
-      : fightRead === null
-        ? "—"
-        : `${tr(fightRead.bucket)} ${tr("delta", {
-            delta: formatDelta(fightRead.deltaVsAvg),
-          })}`;
+  const fightSub = tempoLabel(stats.averageFightDuration, fightBaseline) ?? "—";
 
   const cells: RibbonCell[] = [
     {

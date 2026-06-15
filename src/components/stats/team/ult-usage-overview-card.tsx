@@ -7,12 +7,9 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { useTempoReadLabel } from "@/components/stats/team/use-tempo-read-label";
 import type { TeamUltStats } from "@/data/team/types";
-import {
-  classifyTempo,
-  formatDelta,
-  type TempoBaselineStat,
-} from "@/lib/tempo/classify";
+import type { TempoBaselineStat } from "@/lib/tempo/classify";
 import { toHero } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
@@ -63,7 +60,7 @@ export function UltUsageOverviewCard({
   holdBaseline,
 }: UltUsageOverviewCardProps) {
   const t = useTranslations("teamStatsPage.ultimatesTab.overview");
-  const tr = useTranslations("teamStatsPage.tempoRead");
+  const tempoLabel = useTempoReadLabel();
   const chartConfig: ChartConfig = {
     count: {
       label: t("fightOpenings"),
@@ -86,24 +83,13 @@ export function UltUsageOverviewCard({
   }));
   const chartHeight = Math.max(200, heroChartData.length * 40);
 
-  function tempoSub(
-    value: number,
-    baseline: TempoBaselineStat | null | undefined
-  ): string {
-    const read = classifyTempo(value, baseline);
-    if (read === null) return "—";
-    return `${tr(read.bucket)} ${tr("delta", {
-      delta: formatDelta(read.deltaVsAvg),
-    })}`;
-  }
-
   const tempoRows: { label: string; value: string; sub: string }[] = [];
 
   if (ultStats.avgChargeTime > 0) {
     tempoRows.push({
       label: t("avgChargeTime"),
       value: `${ultStats.avgChargeTime.toFixed(1)}s`,
-      sub: tempoSub(ultStats.avgChargeTime, chargeBaseline),
+      sub: tempoLabel(ultStats.avgChargeTime, chargeBaseline) ?? "—",
     });
   }
 
@@ -111,7 +97,7 @@ export function UltUsageOverviewCard({
     tempoRows.push({
       label: t("avgHoldTime"),
       value: `${ultStats.avgHoldTime.toFixed(1)}s`,
-      sub: tempoSub(ultStats.avgHoldTime, holdBaseline),
+      sub: tempoLabel(ultStats.avgHoldTime, holdBaseline) ?? "—",
     });
   }
 
