@@ -40,6 +40,7 @@ import { AppRuntime } from "@/data/runtime";
 import { auth, canViewTournament, getCurrentUser } from "@/lib/auth";
 import { tournament, simulationTool, ultimateImpactTool } from "@/lib/flags";
 import prisma from "@/lib/prisma";
+import { getTempoBaselines } from "@/lib/tempo/read";
 import { getMapNames } from "@/lib/utils";
 import { ArrowLeft } from "lucide-react";
 import type { Metadata, Route } from "next";
@@ -283,6 +284,8 @@ export default async function TournamentTeamStatsPage(props: {
     ultimateImpactTool(),
   ]);
 
+  const baselines = await getTempoBaselines();
+
   const mapPlaytimes: Record<string, number> = {};
   allMapsPlaytime.forEach((map) => {
     mapPlaytimes[map.name] = map.playtime;
@@ -349,7 +352,7 @@ export default async function TournamentTeamStatsPage(props: {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
-          <QuickStatsCard stats={quickStats} />
+          <QuickStatsCard stats={quickStats} fightBaseline={baselines.FIGHT_DURATION ?? null} />
 
           <div className="grid gap-4 md:grid-cols-2">
             <TeamRosterGrid

@@ -2,19 +2,30 @@
 
 import { SectionHeader } from "@/components/stats/team/section-header";
 import type { QuickWinsStats } from "@/data/team/types";
+import {
+  classifyTempo,
+  formatDelta,
+  type TempoBaselineStat,
+} from "@/lib/tempo/classify";
 import { cn } from "@/lib/utils";
 import { CalendarCheck, Clock, Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 type QuickStatsCardProps = {
   stats: QuickWinsStats;
+  fightBaseline?: TempoBaselineStat | null;
 };
 
 const eyebrowClass =
   "text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase";
 
-export function QuickStatsCard({ stats }: QuickStatsCardProps) {
+export function QuickStatsCard({ stats, fightBaseline }: QuickStatsCardProps) {
   const t = useTranslations("teamStatsPage.quickStatsCard");
+  const tr = useTranslations("teamStatsPage.tempoRead");
+
+  const fightDur = stats.averageFightDuration;
+  const fightRead =
+    fightDur === null ? null : classifyTempo(fightDur, fightBaseline);
 
   function formatFightDuration(seconds: number | null): string {
     if (seconds === null) return t("notAvailable");
@@ -95,13 +106,11 @@ export function QuickStatsCard({ stats }: QuickStatsCardProps) {
             <div className="text-foreground font-mono text-3xl font-bold tabular-nums">
               {formatFightDuration(stats.averageFightDuration)}
             </div>
-            {stats.averageFightDuration !== null && (
+            {fightRead !== null && (
               <div className="text-muted-foreground text-xs">
-                {stats.averageFightDuration < 20
-                  ? t("quickFights")
-                  : stats.averageFightDuration < 30
-                    ? t("standard")
-                    : t("longFights")}
+                {`${tr(fightRead.bucket)} ${tr("delta", {
+                  delta: formatDelta(fightRead.deltaVsAvg),
+                })}`}
               </div>
             )}
           </div>

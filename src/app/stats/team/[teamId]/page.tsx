@@ -11,6 +11,7 @@ import {
   TeamSharedDataService,
   TeamStatsService,
 } from "@/data/team";
+import { getTempoBaselines } from "@/lib/tempo/read";
 import { getMapNames } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
 import { Effect } from "effect";
@@ -98,12 +99,15 @@ export default async function TeamStatsOverviewPage(
     getMapNames(),
   ]);
 
+  const baselines = await getTempoBaselines();
+
   return (
     <div className="mt-8 space-y-12">
       <QuickStatsRibbon
         stats={quickStats}
         uniqueHeroes={heroPool.diversity.totalUniqueHeroes}
         uniqueMaps={allMapsPlaytime.length}
+        fightBaseline={baselines.FIGHT_DURATION ?? null}
       />
 
       <OverviewInsightsBand

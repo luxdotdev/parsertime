@@ -5,20 +5,28 @@ import {
   StatRibbon,
 } from "@/components/stats/team/stat-ribbon";
 import type { QuickWinsStats } from "@/data/team/types";
+import {
+  classifyTempo,
+  formatDelta,
+  type TempoBaselineStat,
+} from "@/lib/tempo/classify";
 import { useTranslations } from "next-intl";
 
 type QuickStatsRibbonProps = {
   stats: QuickWinsStats;
   uniqueHeroes: number;
   uniqueMaps: number;
+  fightBaseline?: TempoBaselineStat | null;
 };
 
 export function QuickStatsRibbon({
   stats,
   uniqueHeroes,
   uniqueMaps,
+  fightBaseline,
 }: QuickStatsRibbonProps) {
   const t = useTranslations("teamStatsPage.quickStatsCard");
+  const tr = useTranslations("teamStatsPage.tempoRead");
 
   function formatFightDuration(seconds: number | null): string {
     if (seconds === null) return "—";
@@ -28,6 +36,15 @@ export function QuickStatsRibbon({
   const last10 = stats.last10GamesPerformance;
   const last10HasGames = last10.wins + last10.losses > 0;
   const dur = stats.averageFightDuration;
+  const fightRead = dur === null ? null : classifyTempo(dur, fightBaseline);
+  const fightSub =
+    dur === null
+      ? "—"
+      : fightRead === null
+        ? "—"
+        : `${tr(fightRead.bucket)} ${tr("delta", {
+            delta: formatDelta(fightRead.deltaVsAvg),
+          })}`;
 
   const cells: RibbonCell[] = [
     {
@@ -41,14 +58,7 @@ export function QuickStatsRibbon({
     {
       label: t("avgFightDuration"),
       value: formatFightDuration(dur),
-      sub:
-        dur === null
-          ? "—"
-          : dur < 20
-            ? t("quickFights")
-            : dur < 30
-              ? t("standard")
-              : t("longFights"),
+      sub: fightSub,
     },
     {
       label: t("heroPool"),
