@@ -204,6 +204,7 @@
     cubic-bezier(0.215, 0.61, 0.355, 1);
   --animate-collapsible-up: collapsible-up 150ms
     cubic-bezier(0.215, 0.61, 0.355, 1);
+  --animate-dot-matrix: dot-matrix 1.2s ease-in-out infinite;
 }
 
 @layer base {
@@ -247,6 +248,16 @@
 }
 
 /* ── Shared Keyframes ── */
+@keyframes dot-matrix {
+  0%,
+  100% {
+    opacity: 0.12;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 @keyframes fade {
   from {
     filter: blur(3px);

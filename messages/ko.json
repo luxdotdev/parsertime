@@ -6717,7 +6717,8 @@
       "allTime": "전체 기간",
       "customRange": "사용자 지정",
       "upgrade": "더 많은 기간을 보려면 업그레이드하세요",
-      "pickDateRange": "날짜 범위 선택"
+      "pickDateRange": "날짜 범위 선택",
+      "loading": "새 기간 불러오는 중"
     },
     "insufficientScrimsPlaceholder": {
       "title": "스크림이 최소 2개 필요합니다",

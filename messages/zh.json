@@ -6717,7 +6717,8 @@
       "allTime": "所有时间",
       "customRange": "自定义范围",
       "upgrade": "升级以查看更多时间范围",
-      "pickDateRange": "选择日期范围"
+      "pickDateRange": "选择日期范围",
+      "loading": "正在加载新时间范围"
     },
     "insufficientScrimsPlaceholder": {
       "title": "至少需要两场训练赛",

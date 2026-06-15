@@ -27,6 +27,7 @@ import { useFormatter, useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import type { DateRange } from "react-day-picker";
+import { useRangeTransition } from "./range-transition-context";
 
 export function TeamRangePicker({
   permissions,
@@ -40,6 +41,7 @@ export function TeamRangePicker({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { startRangeTransition } = useRangeTransition();
 
   const TODAY = new Date();
 
@@ -73,9 +75,13 @@ export function TeamRangePicker({
       }
 
       const qs = params.toString();
-      router.replace(`${pathname}${qs ? `?${qs}` : ""}` as Route);
+      // Wrap the soft navigation in a transition so isPending stays true for the
+      // whole re-render, driving the picker spinner and the dimmed content.
+      startRangeTransition(() => {
+        router.replace(`${pathname}${qs ? `?${qs}` : ""}` as Route);
+      });
     },
-    [router, pathname, searchParams]
+    [router, pathname, searchParams, startRangeTransition]
   );
 
   function onTimeframeChange(val: Timeframe) {

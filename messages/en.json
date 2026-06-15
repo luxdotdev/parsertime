@@ -6745,7 +6745,8 @@
       "allTime": "All Time",
       "customRange": "Custom Range",
       "upgrade": "Upgrade to view more timeframes",
-      "pickDateRange": "Pick a date range"
+      "pickDateRange": "Pick a date range",
+      "loading": "Loading new timeframe"
     },
     "insufficientScrimsPlaceholder": {
       "title": "At least two scrims required",

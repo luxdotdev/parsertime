@@ -1,3 +1,5 @@
+import { RangeTransitionProvider } from "@/components/stats/team/range-transition-context";
+import { TeamStatsContent } from "@/components/stats/team/team-stats-content";
 import { TeamStatsHeaderClient } from "@/components/stats/team/team-stats-header-client";
 import { TeamStatsTabsNav } from "@/components/stats/team/team-stats-tabs-nav";
 import { isAuthedToViewTeam } from "@/lib/auth";
@@ -66,13 +68,15 @@ export default async function TeamStatsLayout(
 
   return (
     <div className="px-6 pt-8 pb-16 sm:px-10">
-      <TeamStatsHeaderClient teamId={teamId} />
-      <TeamStatsTabsNav
-        teamId={teamId}
-        positionalEnabled={positionalEnabled}
-        simulationEnabled={simulationEnabled}
-      />
-      {props.children}
+      <RangeTransitionProvider>
+        <TeamStatsHeaderClient teamId={teamId} />
+        <TeamStatsTabsNav
+          teamId={teamId}
+          positionalEnabled={positionalEnabled}
+          simulationEnabled={simulationEnabled}
+        />
+        <TeamStatsContent>{props.children}</TeamStatsContent>
+      </RangeTransitionProvider>
     </div>
   );
 }
