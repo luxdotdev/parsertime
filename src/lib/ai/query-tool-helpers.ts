@@ -13,7 +13,12 @@ import {
 
 export const QUERY_TOOL_NAMES = ["describeQueryCatalog", "runQuery"] as const;
 
-/** Max rows handed back to the model, to keep token cost and context bounded. */
+/**
+ * Max rows handed back to the model, to keep token cost and context bounded.
+ * NOTE: this value is also stated as "50" in prose in two places — the runQuery
+ * tool description (query-tools.ts) and queryToolsSystemPrompt (system-prompt.ts).
+ * If you change it, update those strings too.
+ */
 export const MODEL_ROW_CAP = 50;
 
 export type SpecValidation =
