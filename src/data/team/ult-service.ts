@@ -29,6 +29,10 @@ import {
 } from "./shared-core";
 import { teamCacheRequestTotal, teamCacheMissTotal } from "./metrics";
 import {
+  buildOpponentComparison,
+  type OpponentObservation,
+} from "@/lib/tempo/opponent-benchmark";
+import {
   TeamSharedDataService,
   TeamSharedDataServiceLive,
 } from "./shared-data-service";
@@ -305,6 +309,8 @@ function emptyTeamUltStats(): TeamUltStats {
     ultsPerMap: 0,
     avgChargeTime: 0,
     avgHoldTime: 0,
+    chargeTimeVsOpponents: null,
+    holdTimeVsOpponents: null,
     fightInitiationRate: 0,
     fightInitiationCount: 0,
     totalFightsWithUlts: 0,
@@ -376,11 +382,17 @@ export type CalculatedStatRow = {
   playerName: string;
   stat: string;
   value: number;
+  MapDataId: number;
+  scrimId: number;
 };
 
 export function processTeamUltStats(
   sharedData: ExtendedTeamData,
-  calculatedStats: CalculatedStatRow[]
+  calculatedStats: CalculatedStatRow[],
+  opponentInfoByScrimId = new Map<
+    number,
+    { opponentTeamId: number | null; name: string | null }
+  >()
 ): TeamUltStats {
   const {
     teamRosterSet,
@@ -601,6 +613,50 @@ export function processTeamUltStats(
       : 0;
   const totalMaps = mapDataIds.length;
 
+  // Opponent comparison: the opponent side is the player_team the roster is not
+  // on. CalculatedStat has no team field, so derive opponent player names per
+  // map from allPlayerStats, then pull their charge/hold values.
+  const opponentNamesByMap = new Map<number, Set<string>>();
+  for (const ps of allPlayerStats) {
+    if (!ps.MapDataId) continue;
+    const ourTeam = teamNameByMapId.get(ps.MapDataId);
+    if (!ourTeam || ps.player_team === ourTeam) continue;
+    let names = opponentNamesByMap.get(ps.MapDataId);
+    if (!names) {
+      names = new Set<string>();
+      opponentNamesByMap.set(ps.MapDataId, names);
+    }
+    names.add(ps.player_name);
+  }
+
+  const chargeObservations: OpponentObservation[] = [];
+  const holdObservations: OpponentObservation[] = [];
+  for (const cs of calculatedStats) {
+    if (cs.value <= 0) continue;
+    const opponentNames = opponentNamesByMap.get(cs.MapDataId);
+    if (!opponentNames || !opponentNames.has(cs.playerName)) continue;
+    const info = opponentInfoByScrimId.get(cs.scrimId);
+    const observation: OpponentObservation = {
+      value: cs.value,
+      opponentTeamId: info?.opponentTeamId ?? null,
+      name: info?.name ?? null,
+      mapId: cs.MapDataId,
+    };
+    if (cs.stat === "AVERAGE_ULT_CHARGE_TIME")
+      chargeObservations.push(observation);
+    else if (cs.stat === "AVERAGE_TIME_TO_USE_ULT")
+      holdObservations.push(observation);
+  }
+
+  const chargeTimeVsOpponents = buildOpponentComparison(
+    avgChargeTime,
+    chargeObservations
+  );
+  const holdTimeVsOpponents = buildOpponentComparison(
+    avgHoldTime,
+    holdObservations
+  );
+
   return {
     totalUltsUsed: totalOurUltsUsed,
     totalUltsEarned,
@@ -608,6 +664,8 @@ export function processTeamUltStats(
     ultsPerMap: totalMaps > 0 ? totalOurUltsUsed / totalMaps : 0,
     avgChargeTime,
     avgHoldTime,
+    chargeTimeVsOpponents,
+    holdTimeVsOpponents,
     fightInitiationRate:
       totalFightsWithUlts > 0
         ? (fightInitiationCount / totalFightsWithUlts) * 100
@@ -732,7 +790,40 @@ export const make = Effect.gen(function* () {
           }),
       });
 
-      const result = processTeamUltStats(data, calculatedStats);
+      const scrimIds = Array.from(
+        new Set(calculatedStats.map((cs) => cs.scrimId))
+      );
+      const scrims = yield* Effect.tryPromise({
+        try: () =>
+          prisma.scrim.findMany({
+            where: { id: { in: scrimIds } },
+            select: {
+              id: true,
+              opponentTeamId: true,
+              opponentTeam: { select: { name: true } },
+            },
+          }),
+        catch: (error) =>
+          new TeamQueryError({
+            operation: "fetch opponent info for ult stats",
+            cause: error,
+          }),
+      });
+      const opponentInfoByScrimId = new Map(
+        scrims.map((s) => [
+          s.id,
+          {
+            opponentTeamId: s.opponentTeamId,
+            name: s.opponentTeam?.name ?? null,
+          },
+        ])
+      );
+
+      const result = processTeamUltStats(
+        data,
+        calculatedStats,
+        opponentInfoByScrimId
+      );
       wideEvent.outcome = "success";
       wideEvent.total_ults = result.totalUltsUsed;
       yield* Metric.increment(ultQuerySuccessTotal);

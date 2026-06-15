@@ -10,6 +10,7 @@ import type {
 import type { $Enums } from "@/generated/prisma/client";
 import { Schema as S } from "effect";
 import type { SubroleUltTiming } from "@/data/scrim/ult-helpers";
+import type { OpponentTempoComparison } from "@/lib/tempo/opponent-benchmark";
 
 export const TeamIdSchema = S.Number.pipe(
   S.int(),
@@ -497,6 +498,8 @@ export type TeamUltStats = {
   ultsPerMap: number;
   avgChargeTime: number;
   avgHoldTime: number;
+  chargeTimeVsOpponents: OpponentTempoComparison | null;
+  holdTimeVsOpponents: OpponentTempoComparison | null;
   fightInitiationRate: number;
   fightInitiationCount: number;
   totalFightsWithUlts: number;

@@ -744,6 +744,8 @@ export const make = Effect.gen(function* () {
               ultsPerMap: 0,
               avgChargeTime: 0,
               avgHoldTime: 0,
+              chargeTimeVsOpponents: null,
+              holdTimeVsOpponents: null,
               fightInitiationRate: 0,
               fightInitiationCount: 0,
               totalFightsWithUlts: 0,
