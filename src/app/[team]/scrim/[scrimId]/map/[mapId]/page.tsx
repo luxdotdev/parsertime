@@ -8,30 +8,32 @@ import { ComparePlayers } from "@/components/map/compare-players";
 import { DefaultOverview } from "@/components/map/default-overview";
 import { FightInitiationInspector } from "@/components/map/fight-initiation-inspector";
 import { HeatmapTab } from "@/components/map/heatmap/heatmap-tab";
-import { ReplayTab } from "@/components/map/replay/replay-tab";
-import { RoutesTab } from "@/components/map/routes/routes-tab";
 import { HeroBans } from "@/components/map/hero-bans";
 import { Killfeed } from "@/components/map/killfeed";
 import { MapEvents } from "@/components/map/map-events";
 import { MapTabs } from "@/components/map/map-tabs";
+import { MapTabsSkeleton } from "@/components/map/map-tabs-skeleton";
 import { MatchStoryTab } from "@/components/map/match-story/match-story-tab";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
+import { ReplayTab } from "@/components/map/replay/replay-tab";
+import { RoutesTab } from "@/components/map/routes/routes-tab";
 import { MobileNav } from "@/components/mobile-nav";
 import { Notifications } from "@/components/notifications";
 import { ReplayCode } from "@/components/scrim/replay-code";
 import { ModeToggle } from "@/components/theme-switcher";
 import { TipTap } from "@/components/tiptap/tiptap";
 import { StatsViewBeacon } from "@/components/usage/stats-view-beacon";
-import { MapTabsSkeleton } from "@/components/map/map-tabs-skeleton";
-import { Suspense, ViewTransition } from "react";
 import { UserNav } from "@/components/user-nav";
 import { VodOverview } from "@/components/vods/vod-overview";
 import { MatchStoryService } from "@/data/map/match-story-service";
 import { PlayerService } from "@/data/player";
-import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth, isAuthedToViewMap } from "@/lib/auth";
+import {
+  getFightInitiationForMapData,
+  type MapInitiationResult,
+} from "@/lib/fight-initiation";
 import {
   aiChat,
   coachingCanvas,
@@ -42,18 +44,16 @@ import {
   tempoChart,
   tournament,
 } from "@/lib/flags";
-import {
-  getFightInitiationForMapData,
-  type MapInitiationResult,
-} from "@/lib/fight-initiation";
 import { resolveScrimMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
-import { translateMapName } from "@/lib/utils";
 import { getColorblindMode } from "@/lib/server-utils";
+import { translateMapName } from "@/lib/utils";
 import type { PagePropsWithLocale, SearchParams } from "@/types/next";
+import { Effect } from "effect";
 import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import { Suspense, ViewTransition } from "react";
 
 export async function generateMetadata(
   props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]">
@@ -376,6 +376,13 @@ export default async function MapDashboardPage(
                     ),
                   },
                   {
+                    value: "initiation",
+                    label: t("tabs.initiation"),
+                    content: (
+                      <FightInitiationInspector result={fightInitiation} />
+                    ),
+                  },
+                  {
                     value: "compare",
                     label: t("tabs.compare"),
                     content: <ComparePlayers id={id} />,
@@ -395,13 +402,6 @@ export default async function MapDashboardPage(
                     value: "vods",
                     label: t("tabs.vod"),
                     content: <VodOverview vod={map?.vod ?? ""} mapId={id} />,
-                  },
-                  {
-                    value: "initiation",
-                    label: t("tabs.initiation"),
-                    content: (
-                      <FightInitiationInspector result={fightInitiation} />
-                    ),
                   },
                 ]}
               />
