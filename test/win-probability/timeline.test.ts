@@ -8,7 +8,9 @@ import { predictWinProbability } from "@/lib/win-probability/model";
 import {
   computeMatchStory,
   decomposeSwing,
+  generateMissedOpportunities,
 } from "@/lib/win-probability/timeline";
+import type { FightEntry } from "@/lib/win-probability/timeline";
 import type { GameState, WPEventLog } from "@/lib/win-probability/types";
 import { describe, expect, test } from "vitest";
 
@@ -759,5 +761,114 @@ describe("computeMatchStory — insights", () => {
     expect(story.insights.every((i) => i.key !== "insights.ultCarryover")).toBe(
       true
     );
+  });
+});
+
+function fe(over: Partial<FightEntry>): FightEntry {
+  return {
+    index: 0,
+    start: 0,
+    end: 10,
+    zoneName: null,
+    winner: null,
+    killsTeam1: 0,
+    killsTeam2: 0,
+    ultsSpentTeam1: 0,
+    ultsSpentTeam2: 0,
+    wpBefore: 0.5,
+    wpAfter: 0.5,
+    swing: 0,
+    drivers: { objective: 0, kills: 0, ults: 0 },
+    carryover: null,
+    unattributedSwing: 0,
+    ...over,
+  };
+}
+const minimalLog = baseLog();
+
+describe("generateMissedOpportunities", () => {
+  test("favored + big WP loss → bledWp; even kills keep it out of lostFight", () => {
+    const f = fe({
+      index: 1,
+      wpBefore: 0.7,
+      swing: -0.2,
+      killsTeam1: 2,
+      killsTeam2: 2,
+      drivers: { objective: -0.18, kills: -0.02, ults: 0 },
+    });
+    const mo = generateMissedOpportunities(minimalLog, [f]);
+    expect(mo.bledWp.map((m) => m.fightIndex)).toEqual([1]);
+    expect(mo.lostFight).toEqual([]);
+    expect(
+      mo.bledWp[0].reasons.some(
+        (r) => r.key === "primaryDriver" && r.group === "objective"
+      )
+    ).toBe(true);
+  });
+
+  test("favored + enemy won → lostFight; small swing keeps it out of bledWp", () => {
+    const f = fe({ index: 2, wpBefore: 0.6, swing: -0.05, killsTeam1: 1, killsTeam2: 3 });
+    const mo = generateMissedOpportunities(minimalLog, [f]);
+    expect(mo.lostFight.map((m) => m.fightIndex)).toEqual([2]);
+    expect(mo.bledWp).toEqual([]);
+  });
+
+  test("favored + big loss + enemy won → BOTH areas", () => {
+    const f = fe({ index: 3, wpBefore: 0.8, swing: -0.3, killsTeam1: 0, killsTeam2: 3 });
+    const mo = generateMissedOpportunities(minimalLog, [f]);
+    expect(mo.bledWp.map((m) => m.fightIndex)).toEqual([3]);
+    expect(mo.lostFight.map((m) => m.fightIndex)).toEqual([3]);
+  });
+
+  test("not favored is excluded even on a big loss", () => {
+    const f = fe({ index: 4, wpBefore: 0.5, swing: -0.4, killsTeam1: 0, killsTeam2: 4 });
+    const mo = generateMissedOpportunities(minimalLog, [f]);
+    expect(mo.bledWp).toEqual([]);
+    expect(mo.lostFight).toEqual([]);
+  });
+
+  test("reasons fire from the data", () => {
+    const f = fe({
+      index: 5,
+      wpBefore: 0.7,
+      swing: -0.2,
+      killsTeam1: 1,
+      killsTeam2: 3,
+      ultsSpentTeam1: 2,
+      drivers: { objective: 0, kills: -0.2, ults: 0 },
+      carryover: { stagger: -0.05, ultEconomy: -0.04 },
+    });
+    const log2 = baseLog({
+      kills: [{ time: 2, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" }],
+    });
+    const r = generateMissedOpportunities(log2, [f]).bledWp[0].reasons.map(
+      (x) => x.key
+    );
+    expect(r).toContain("primaryDriver");
+    expect(r).toContain("earlyFirstDeath");
+    expect(r).toContain("wastedUlt");
+    expect(r).toContain("stagger");
+    expect(r).toContain("ultDeficit");
+  });
+
+  test("late first death does not fire earlyFirstDeath", () => {
+    const f = fe({ index: 6, wpBefore: 0.7, swing: -0.2, killsTeam1: 1, killsTeam2: 2 });
+    const log2 = baseLog({
+      kills: [{ time: 8, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" }],
+    });
+    const r = generateMissedOpportunities(log2, [f]).bledWp[0].reasons.map(
+      (x) => x.key
+    );
+    expect(r).not.toContain("earlyFirstDeath");
+  });
+
+  test("caps each area at 5 and reports the total, most-negative swing first", () => {
+    const fights = Array.from({ length: 8 }, (_, i) =>
+      fe({ index: i, wpBefore: 0.7, swing: -0.2 - i * 0.01, killsTeam1: 0, killsTeam2: 2 })
+    );
+    const mo = generateMissedOpportunities(minimalLog, fights);
+    expect(mo.bledWp.length).toBe(5);
+    expect(mo.bledWpTotal).toBe(8);
+    expect(mo.bledWp[0].swing).toBeLessThanOrEqual(mo.bledWp[1].swing);
   });
 });

@@ -80,6 +80,30 @@ export type MatchStoryInsight = {
   fightIndex?: number;
 };
 
+export type ReasonTag =
+  | { key: "primaryDriver"; group: "objective" | "kills" | "ults" }
+  | { key: "earlyFirstDeath"; player: string; t: number }
+  | { key: "wastedUlt"; count: number }
+  | { key: "stagger"; cost: number }
+  | { key: "ultDeficit"; cost: number };
+
+export type MissedOpportunity = {
+  fightIndex: number;
+  start: number;
+  zoneName: string | null;
+  wpBefore: number;
+  wpAfter: number;
+  swing: number;
+  reasons: ReasonTag[];
+};
+
+export type MissedOpportunities = {
+  bledWp: MissedOpportunity[];
+  bledWpTotal: number;
+  lostFight: MissedOpportunity[];
+  lostFightTotal: number;
+};
+
 export type MatchStoryData = {
   teams: { team1: string; team2: string };
   points: WpPoint[];
@@ -91,6 +115,7 @@ export type MatchStoryData = {
   /** Coaching prescriptions for team 1 (the viewing team), each citing the
    * fights it was detected from. */
   takeaways: MatchStoryInsight[];
+  missedOpportunities: MissedOpportunities;
   limited: boolean;
 };
 
@@ -138,6 +163,7 @@ export function computeMatchStory(
     wpa,
     insights,
     takeaways,
+    missedOpportunities: generateMissedOpportunities(log, fights),
     limited,
   };
 }
@@ -145,6 +171,10 @@ export function computeMatchStory(
 const MAX_TAKEAWAYS = 4;
 const LOSS_SWING_FLOOR = -0.02;
 const CARRY_TAKEAWAY_FLOOR = 0.02;
+const FAVORED_WP = 0.55;
+const BLED_WP_SWING = -0.1;
+const EARLY_DEATH_SECONDS = 4;
+const MAX_MISSED_PER_AREA = 5;
 const FIRST_DEATH_MIN = 3;
 const LOSS_PROFILE_SHARE = 0.45;
 
@@ -312,6 +342,91 @@ function generateTakeaways(
     .sort((a, b) => b.cost - a.cost)
     .slice(0, MAX_TAKEAWAYS)
     .map(({ cost: _cost, ...beat }) => beat);
+}
+
+function missedReasons(log: WPEventLog, fight: FightEntry): ReasonTag[] {
+  const reasons: ReasonTag[] = [];
+  const dominant = (["objective", "kills", "ults"] as const).reduce((a, b) =>
+    fight.drivers[a] <= fight.drivers[b] ? a : b
+  );
+  if (fight.drivers[dominant] < 0)
+    reasons.push({ key: "primaryDriver", group: dominant });
+  const firstKill = [...log.kills]
+    .filter(
+      (k) =>
+        k.time >= fight.start - ULT_WINDOW_LEAD_SECONDS &&
+        k.time <= fight.end + EDGE_EPSILON
+    )
+    .sort((a, b) => a.time - b.time)[0];
+  if (
+    firstKill !== undefined &&
+    firstKill.victimTeam === log.team1 &&
+    firstKill.time - fight.start <= EARLY_DEATH_SECONDS
+  ) {
+    reasons.push({
+      key: "earlyFirstDeath",
+      player: firstKill.victimName,
+      t: firstKill.time,
+    });
+  }
+  if (fight.ultsSpentTeam1 >= 1)
+    reasons.push({ key: "wastedUlt", count: fight.ultsSpentTeam1 });
+  if (
+    fight.carryover !== null &&
+    fight.carryover.stagger <= -CARRY_TAKEAWAY_FLOOR
+  ) {
+    reasons.push({
+      key: "stagger",
+      cost: Math.round(Math.abs(fight.carryover.stagger) * 100),
+    });
+  }
+  if (
+    fight.carryover !== null &&
+    fight.carryover.ultEconomy <= -CARRY_TAKEAWAY_FLOOR
+  ) {
+    reasons.push({
+      key: "ultDeficit",
+      cost: Math.round(Math.abs(fight.carryover.ultEconomy) * 100),
+    });
+  }
+  return reasons;
+}
+
+function toMissed(log: WPEventLog, fight: FightEntry): MissedOpportunity {
+  return {
+    fightIndex: fight.index,
+    start: fight.start,
+    zoneName: fight.zoneName,
+    wpBefore: fight.wpBefore,
+    wpAfter: fight.wpAfter,
+    swing: fight.swing,
+    reasons: missedReasons(log, fight),
+  };
+}
+
+export function generateMissedOpportunities(
+  log: WPEventLog,
+  fights: FightEntry[]
+): MissedOpportunities {
+  const favored = fights.filter((f) => f.wpBefore >= FAVORED_WP);
+  const bled = favored
+    .filter((f) => f.swing <= BLED_WP_SWING)
+    .sort((a, b) => a.swing - b.swing);
+  const lost = favored
+    .filter((f) => f.killsTeam2 > f.killsTeam1)
+    .sort(
+      (a, b) =>
+        b.wpBefore - a.wpBefore ||
+        b.killsTeam2 - b.killsTeam1 - (a.killsTeam2 - a.killsTeam1)
+    );
+  return {
+    bledWp: bled.slice(0, MAX_MISSED_PER_AREA).map((f) => toMissed(log, f)),
+    bledWpTotal: bled.length,
+    lostFight: lost
+      .slice(0, MAX_MISSED_PER_AREA)
+      .map((f) => toMissed(log, f)),
+    lostFightTotal: lost.length,
+  };
 }
 
 function computeSeries(
