@@ -1,6 +1,6 @@
 "use client";
 
-import { OpponentComparisonCard } from "@/components/stats/team/opponent-comparison-card";
+import { OpponentComparisonSection } from "@/components/stats/team/opponent-comparison-section";
 import { SectionHeader } from "@/components/stats/team/section-header";
 import type { ChartConfig } from "@/components/ui/chart";
 import {
@@ -8,11 +8,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
 import { useTempoReadLabel } from "@/components/stats/team/use-tempo-read-label";
 import type { TeamUltStats } from "@/data/team/types";
 import type { TempoBaselineStat } from "@/lib/tempo/classify";
@@ -126,6 +121,11 @@ export function UltUsageOverviewCard({
     });
   }
 
+  const opponentSections = tempoRows.filter(
+    (row): row is typeof row & { opponent: OpponentTempoComparison } =>
+      Boolean(row.opponent)
+  );
+
   return (
     <section className="space-y-6">
       <SectionHeader
@@ -149,50 +149,34 @@ export function UltUsageOverviewCard({
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border)]">
-              {tempoRows.map((row) => {
-                const cells = (
-                  <>
-                    <td className="text-muted-foreground px-4 py-3">
-                      {row.label}
-                    </td>
-                    <td className="text-foreground px-4 py-3 text-right font-mono font-semibold tabular-nums">
-                      {row.value}
-                    </td>
-                    <td className="text-muted-foreground px-4 py-3">
-                      {row.sub}
-                    </td>
-                  </>
-                );
-
-                if (!row.opponent) {
-                  return (
-                    <tr
-                      key={row.label}
-                      className="hover:bg-muted/30 transition-colors"
-                    >
-                      {cells}
-                    </tr>
-                  );
-                }
-
-                return (
-                  <HoverCard key={row.label} openDelay={120} closeDelay={60}>
-                    <HoverCardTrigger asChild>
-                      <tr className="hover:bg-muted/30 cursor-help transition-colors">
-                        {cells}
-                      </tr>
-                    </HoverCardTrigger>
-                    <HoverCardContent align="center" className="w-96">
-                      <OpponentComparisonCard
-                        metricLabel={row.label}
-                        comparison={row.opponent}
-                      />
-                    </HoverCardContent>
-                  </HoverCard>
-                );
-              })}
+              {tempoRows.map((row) => (
+                <tr
+                  key={row.label}
+                  className="hover:bg-muted/30 transition-colors"
+                >
+                  <td className="text-muted-foreground px-4 py-3">
+                    {row.label}
+                  </td>
+                  <td className="text-foreground px-4 py-3 text-right font-mono font-semibold tabular-nums">
+                    {row.value}
+                  </td>
+                  <td className="text-muted-foreground px-4 py-3">{row.sub}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {opponentSections.length > 0 && (
+        <div className="space-y-8">
+          {opponentSections.map((row) => (
+            <OpponentComparisonSection
+              key={row.label}
+              metricLabel={row.label}
+              comparison={row.opponent}
+            />
+          ))}
         </div>
       )}
 
