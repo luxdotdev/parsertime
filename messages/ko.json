@@ -6913,6 +6913,8 @@
           "youFaster": "우리가 {delta}초 빠름",
           "youSlower": "우리가 {delta}초 느림",
           "youEven": "비슷함",
+          "better": "우수",
+          "worse": "저조",
           "unnamed": "이름 없는 상대",
           "colOpponent": "상대",
           "colAvg": "평균",

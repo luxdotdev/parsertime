@@ -90,6 +90,7 @@ export function UltUsageOverviewCard({
     value: string;
     sub: string;
     opponent?: OpponentTempoComparison | null;
+    goodIsPositive?: boolean;
   }[] = [];
 
   if (ultStats.avgChargeTime > 0) {
@@ -98,6 +99,8 @@ export function UltUsageOverviewCard({
       value: `${ultStats.avgChargeTime.toFixed(1)}s`,
       sub: tempoLabel(ultStats.avgChargeTime, chargeBaseline) ?? "—",
       opponent: ultStats.chargeTimeVsOpponents,
+      // Charging faster (a lower time) is the good outcome.
+      goodIsPositive: true,
     });
   }
 
@@ -107,6 +110,8 @@ export function UltUsageOverviewCard({
       value: `${ultStats.avgHoldTime.toFixed(1)}s`,
       sub: tempoLabel(ultStats.avgHoldTime, holdBaseline) ?? "—",
       opponent: ultStats.holdTimeVsOpponents,
+      // Holding ults longer is the bad outcome, so leave good as the negative side.
+      goodIsPositive: false,
     });
   }
 
@@ -175,6 +180,7 @@ export function UltUsageOverviewCard({
               key={row.label}
               metricLabel={row.label}
               comparison={row.opponent}
+              goodIsPositive={row.goodIsPositive ?? false}
             />
           ))}
         </div>

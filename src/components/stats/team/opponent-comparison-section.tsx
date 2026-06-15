@@ -10,9 +10,11 @@ import { useTranslations } from "next-intl";
 export function OpponentComparisonSection({
   metricLabel,
   comparison,
+  goodIsPositive = false,
 }: {
   metricLabel: string;
   comparison: OpponentTempoComparison;
+  goodIsPositive?: boolean;
 }) {
   const t = useTranslations("teamStatsPage.ultimatesTab.overview.vsOpponents");
 
@@ -37,7 +39,10 @@ export function OpponentComparisonSection({
           <span className="text-foreground font-medium">{headline}</span>
         </p>
       </div>
-      <OpponentDeltaChart comparison={comparison} />
+      <OpponentDeltaChart
+        comparison={comparison}
+        goodIsPositive={goodIsPositive}
+      />
     </div>
   );
 }

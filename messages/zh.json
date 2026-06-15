@@ -6913,6 +6913,8 @@
           "youFaster": "我方快 {delta} 秒",
           "youSlower": "我方慢 {delta} 秒",
           "youEven": "相当",
+          "better": "更好",
+          "worse": "更差",
           "unnamed": "未命名对手",
           "colOpponent": "对手",
           "colAvg": "平均",

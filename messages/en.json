@@ -7571,6 +7571,8 @@
           "youFaster": "you {delta}s faster",
           "youSlower": "you {delta}s slower",
           "youEven": "about even",
+          "better": "Better",
+          "worse": "Worse",
           "unnamed": "Unnamed opponents",
           "colOpponent": "Opponent",
           "colAvg": "Avg",

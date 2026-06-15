@@ -22,13 +22,24 @@ import type {
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
 
-type ChartRow = { name: string; delta: number; oppMean: number; maps: number };
+type ChartRow = {
+  name: string;
+  delta: number; // real you-minus-opponent (drives the tooltip + sort)
+  value: number; // display value (negated when goodIsPositive) — drives the bar
+  oppMean: number;
+  maps: number;
+};
 
 type ChartTooltipProps = TooltipProps<ValueType, NameType> & {
   avgLabel: string;
   mapsLabel: string;
   describeDelta: (delta: number) => string;
 };
+
+// Width reserved for the YAxis category labels — the legend pads by this much so
+// its ends line up with the plotting area rather than the opponent names.
+const Y_AXIS_WIDTH = 120;
+const PLOT_MARGIN = 48;
 
 function ChartTooltip({
   active,
@@ -53,8 +64,16 @@ function ChartTooltip({
 
 export function OpponentDeltaChart({
   comparison,
+  goodIsPositive = false,
 }: {
   comparison: OpponentTempoComparison;
+  /**
+   * When true, a faster/lower time is the desirable outcome, so the bar value is
+   * negated (better → positive) and the axis is reversed to keep "better" on the
+   * left. Used for charge time. Hold time leaves this false (longer = worse =
+   * positive on the right). Either way "better" sits on the left.
+   */
+  goodIsPositive?: boolean;
 }) {
   const t = useTranslations("teamStatsPage.ultimatesTab.overview.vsOpponents");
 
@@ -70,84 +89,105 @@ export function OpponentDeltaChart({
     .map((g) => ({
       name: g.name ?? t("unnamed"),
       delta: g.delta,
+      value: goodIsPositive ? -g.delta : g.delta,
       oppMean: g.mean,
       maps: g.maps,
     }))
+    // Sort by the real delta so the best comparison (most-faster) is always on top.
     .sort((a, b) => a.delta - b.delta);
 
-  const maxAbs = Math.max(...rows.map((r) => Math.abs(r.delta)), 1) * 1.35;
+  const maxAbs = Math.max(...rows.map((r) => Math.abs(r.value)), 1) * 1.35;
   const height = Math.max(160, rows.length * 30);
 
+  // Label position is screen-relative; on a reversed axis a positive bar extends
+  // left, so the outer-end side for each sign flips.
+  const positivePosition: "left" | "right" = goodIsPositive ? "left" : "right";
+  const negativePosition: "left" | "right" = goodIsPositive ? "right" : "left";
+
   return (
-    <ResponsiveContainer width="100%" height={height}>
-      <BarChart
-        data={rows}
-        layout="vertical"
-        margin={{ top: 0, right: 48, bottom: 0, left: 48 }}
-      >
-        <XAxis
-          type="number"
-          domain={[-maxAbs, maxAbs]}
-          tick={{
-            fontSize: 10,
-            fill: "var(--muted-foreground)",
-            fontFamily: "var(--font-mono)",
-          }}
-          tickFormatter={(v) => `${formatDelta(Number(v))}s`}
-          axisLine={{ stroke: "var(--border)" }}
-          tickLine={{ stroke: "var(--border)" }}
-        />
-        <YAxis
-          type="category"
-          dataKey="name"
-          width={120}
-          tick={{
-            fontSize: 10,
-            fill: "var(--muted-foreground)",
-            fontFamily: "var(--font-mono)",
-          }}
-          axisLine={{ stroke: "var(--border)" }}
-          tickLine={false}
-        />
-        <ReferenceLine x={0} stroke="var(--muted-foreground)" strokeWidth={1} />
-        <Tooltip
-          content={
-            <ChartTooltip
-              avgLabel={t("colAvg")}
-              mapsLabel={t("colMaps")}
-              describeDelta={describeDelta}
-            />
-          }
-          cursor={{ fill: "var(--muted)", fillOpacity: 0.4 }}
-        />
-        <Bar
-          dataKey="delta"
-          fill="var(--chart-1)"
-          radius={2}
-          isAnimationActive={false}
+    <div className="space-y-1.5">
+      <ResponsiveContainer width="100%" height={height}>
+        <BarChart
+          data={rows}
+          layout="vertical"
+          margin={{ top: 0, right: PLOT_MARGIN, bottom: 0, left: PLOT_MARGIN }}
         >
-          <LabelList
-            dataKey="delta"
-            position="right"
-            fill="var(--foreground)"
-            fontSize={10}
-            className="font-mono tabular-nums"
-            formatter={(value: number | string) =>
-              Number(value) >= 0 ? `${formatDelta(Number(value))}s` : ""
-            }
+          <XAxis
+            type="number"
+            domain={[-maxAbs, maxAbs]}
+            reversed={goodIsPositive}
+            tick={{
+              fontSize: 10,
+              fill: "var(--muted-foreground)",
+              fontFamily: "var(--font-mono)",
+            }}
+            tickFormatter={(v) => `${formatDelta(Number(v))}s`}
+            axisLine={{ stroke: "var(--border)" }}
+            tickLine={{ stroke: "var(--border)" }}
           />
-          <LabelList
-            dataKey="delta"
-            position="left"
-            fill="var(--foreground)"
-            fontSize={10}
-            className="font-mono tabular-nums"
-            formatter={(value: number | string) =>
-              Number(value) < 0 ? `${formatDelta(Number(value))}s` : ""
-            }
+          <YAxis
+            type="category"
+            dataKey="name"
+            width={Y_AXIS_WIDTH}
+            tick={{
+              fontSize: 10,
+              fill: "var(--muted-foreground)",
+              fontFamily: "var(--font-mono)",
+            }}
+            axisLine={{ stroke: "var(--border)" }}
+            tickLine={false}
           />
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
+          <ReferenceLine
+            x={0}
+            stroke="var(--muted-foreground)"
+            strokeWidth={1}
+          />
+          <Tooltip
+            content={
+              <ChartTooltip
+                avgLabel={t("colAvg")}
+                mapsLabel={t("colMaps")}
+                describeDelta={describeDelta}
+              />
+            }
+            cursor={{ fill: "var(--muted)", fillOpacity: 0.4 }}
+          />
+          <Bar
+            dataKey="value"
+            fill="var(--chart-1)"
+            radius={2}
+            isAnimationActive={false}
+          >
+            <LabelList
+              dataKey="value"
+              position={positivePosition}
+              fill="var(--foreground)"
+              fontSize={10}
+              className="font-mono tabular-nums"
+              formatter={(value: number | string) =>
+                Number(value) >= 0 ? `${formatDelta(Number(value))}s` : ""
+              }
+            />
+            <LabelList
+              dataKey="value"
+              position={negativePosition}
+              fill="var(--foreground)"
+              fontSize={10}
+              className="font-mono tabular-nums"
+              formatter={(value: number | string) =>
+                Number(value) < 0 ? `${formatDelta(Number(value))}s` : ""
+              }
+            />
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+      <div
+        className="text-muted-foreground flex items-center justify-between font-mono text-[10px] tracking-[0.14em] uppercase"
+        style={{ paddingLeft: Y_AXIS_WIDTH + PLOT_MARGIN, paddingRight: PLOT_MARGIN }}
+      >
+        <span>← {t("better")}</span>
+        <span>{t("worse")} →</span>
+      </div>
+    </div>
   );
 }
