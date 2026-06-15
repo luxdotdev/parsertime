@@ -435,7 +435,11 @@ export default async function TournamentTeamStatsPage(props: {
         </TabsContent>
 
         <TabsContent value="ultimates" className="space-y-4">
-          <UltUsageOverviewCard ultStats={ultStats} />
+          <UltUsageOverviewCard
+            ultStats={ultStats}
+            chargeBaseline={baselines.ULT_CHARGE_TIME ?? null}
+            holdBaseline={baselines.ULT_HOLD_TIME ?? null}
+          />
           {ultimateImpactToolEnabled && (
             <UltImpactAnalysisCard analysis={ultImpactAnalysis} />
           )}
