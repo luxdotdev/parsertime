@@ -2,7 +2,7 @@ import CreditLowBalanceEmail from "@/components/email/credit-low-balance";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
-import { systemPrompt } from "@/lib/ai/system-prompt";
+import { queryToolsSystemPrompt, systemPrompt } from "@/lib/ai/system-prompt";
 import { chatTelemetry } from "@/lib/ai/telemetry";
 import { buildTools } from "@/lib/ai/tools";
 import { auth } from "@/lib/auth";
@@ -115,9 +115,12 @@ export async function POST(req: Request) {
   const modelMessages = await convertToModelMessages(messages);
 
   return withRequestContext(requestContext, () => {
+    const system = flags.queryBuilderEnabled
+      ? `${systemPrompt}\n${queryToolsSystemPrompt}`
+      : systemPrompt;
     const result = streamText({
       model: "openai/gpt-5.4",
-      system: systemPrompt,
+      system,
       messages: modelMessages,
       tools,
       maxOutputTokens: MAX_CHAT_OUTPUT_TOKENS,
