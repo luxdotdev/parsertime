@@ -2,10 +2,12 @@
 
 import { SectionHeader } from "@/components/section-header";
 import type {
+  FightUlt,
   MissedOpportunities as MissedData,
   MissedOpportunity,
   ReasonTag,
 } from "@/lib/win-probability/timeline";
+import { getHeroUltimate } from "@/types/heroes";
 import { useTranslations } from "next-intl";
 
 type Translate = ReturnType<typeof useTranslations<"mapPage.matchStory">>;
@@ -21,6 +23,13 @@ function reasonText(t: Translate, r: ReasonTag): string {
     case "ultDeficit":
       return t("missed.reason.ultDeficit", { cost: r.cost });
   }
+}
+
+function ultText(t: Translate, u: FightUlt): string {
+  const name =
+    getHeroUltimate(u.hero) ??
+    t("missed.ult.heroFallback", { hero: u.hero });
+  return t(`missed.ult.${u.value}`, { ult: name, kills: u.kills });
 }
 
 function Row({
@@ -67,6 +76,22 @@ function Row({
               className="rounded bg-amber-500/15 px-1.5 py-0.5 text-xs text-amber-700 dark:text-amber-400"
             >
               {reasonText(t, r)}
+            </span>
+          ))}
+        </div>
+      )}
+      {m.ults.length > 0 && (
+        <div className="mt-1 flex flex-col gap-0.5">
+          {m.ults.map((u) => (
+            <span
+              key={`${u.hero}-${u.value}`}
+              className={`text-xs ${
+                u.value === "none" || u.value === "died"
+                  ? "text-amber-700 dark:text-amber-400"
+                  : "text-muted-foreground"
+              }`}
+            >
+              {ultText(t, u)}
             </span>
           ))}
         </div>
