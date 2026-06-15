@@ -145,11 +145,11 @@ context features (time, attacker role) are unattributed by design.
 
 Required Vercel env vars for the weekly retrain (`api/wp-train/`):
 
-| Var                   | Required | Description                                                                                                                                         |
-| --------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `CRON_SECRET`         | yes      | Bearer token; must match the `/api/cron/wp-retrain` and `/api/cron/wp-publish` routes                                                               |
-| `WP_FEATURE_HASH`     | yes      | Must equal the TS `featureHash()` (currently `27b4a8ec1f49`); the publish route 400-rejects an artifact whose hash mismatches                       |
-| `PUBLISH_URL`         | yes      | Full URL of the publish callback, e.g. `https://<deployment>/api/cron/wp-publish`                                                                   |
+| Var               | Required | Description                                                                                                                   |
+| ----------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `CRON_SECRET`     | yes      | Bearer token; must match the `/api/cron/wp-retrain` and `/api/cron/wp-publish` routes                                         |
+| `WP_FEATURE_HASH` | yes      | Must equal the TS `featureHash()` (currently `27b4a8ec1f49`); the publish route 400-rejects an artifact whose hash mismatches |
+| `PUBLISH_URL`     | yes      | Full URL of the publish callback, e.g. `https://<deployment>/api/cron/wp-publish`                                             |
 
 ## Limitations — read before trusting an edge case
 
