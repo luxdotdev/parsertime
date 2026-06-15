@@ -47,4 +47,6 @@ test("formatDelta signs and rounds to one decimal", () => {
   expect(formatDelta(2.34)).toBe("+2.3");
   expect(formatDelta(-1.55)).toBe("-1.6");
   expect(formatDelta(0)).toBe("+0.0");
+  expect(formatDelta(-0.04)).toBe("+0.0");
+  expect(formatDelta(-0.0)).toBe("+0.0");
 });

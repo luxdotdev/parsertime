@@ -35,8 +35,10 @@ export function classifyTempo(
   return { bucket, deltaVsAvg };
 }
 
-/** Signed, one-decimal delta string, e.g. "+2.3" or "-1.6". */
+/** Signed, one-decimal delta string, e.g. "+2.3" or "-1.6". Values that round to
+ * zero render as "+0.0" (never "-0.0"). */
 export function formatDelta(deltaVsAvg: number): string {
-  const sign = deltaVsAvg >= 0 ? "+" : "-";
-  return `${sign}${Math.abs(deltaVsAvg).toFixed(1)}`;
+  const rounded = Number(deltaVsAvg.toFixed(1));
+  const sign = rounded < 0 ? "-" : "+";
+  return `${sign}${Math.abs(rounded).toFixed(1)}`;
 }
