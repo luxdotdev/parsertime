@@ -25,7 +25,7 @@ import type {
 type ChartRow = {
   name: string;
   delta: number; // real you-minus-opponent (drives the tooltip + sort)
-  value: number; // display value (negated when goodIsPositive) — drives the bar
+  value: number; // display value: opponent-minus-you, so better (lower time) is positive
   oppMean: number;
   maps: number;
 };
@@ -64,16 +64,8 @@ function ChartTooltip({
 
 export function OpponentDeltaChart({
   comparison,
-  goodIsPositive = false,
 }: {
   comparison: OpponentTempoComparison;
-  /**
-   * When true, a faster/lower time is the desirable outcome, so the bar value is
-   * negated (better → positive) and the axis is reversed to keep "better" on the
-   * left. Used for charge time. Hold time leaves this false (longer = worse =
-   * positive on the right). Either way "better" sits on the left.
-   */
-  goodIsPositive?: boolean;
 }) {
   const t = useTranslations("teamStatsPage.ultimatesTab.overview.vsOpponents");
 
@@ -89,20 +81,16 @@ export function OpponentDeltaChart({
     .map((g) => ({
       name: g.name ?? t("unnamed"),
       delta: g.delta,
-      value: goodIsPositive ? -g.delta : g.delta,
+      // Negate so a lower time (better) reads as a positive value extending right.
+      value: -g.delta,
       oppMean: g.mean,
       maps: g.maps,
     }))
-    // Sort by the real delta so the best comparison (most-faster) is always on top.
+    // Sort by the real delta so the best comparison (most-faster) is on top.
     .sort((a, b) => a.delta - b.delta);
 
   const maxAbs = Math.max(...rows.map((r) => Math.abs(r.value)), 1) * 1.35;
   const height = Math.max(160, rows.length * 30);
-
-  // Label position is screen-relative; on a reversed axis a positive bar extends
-  // left, so the outer-end side for each sign flips.
-  const positivePosition: "left" | "right" = goodIsPositive ? "left" : "right";
-  const negativePosition: "left" | "right" = goodIsPositive ? "right" : "left";
 
   return (
     <div className="space-y-1.5">
@@ -115,7 +103,6 @@ export function OpponentDeltaChart({
           <XAxis
             type="number"
             domain={[-maxAbs, maxAbs]}
-            reversed={goodIsPositive}
             tick={{
               fontSize: 10,
               fill: "var(--muted-foreground)",
@@ -160,7 +147,7 @@ export function OpponentDeltaChart({
           >
             <LabelList
               dataKey="value"
-              position={positivePosition}
+              position="right"
               fill="var(--foreground)"
               fontSize={10}
               className="font-mono tabular-nums"
@@ -170,7 +157,7 @@ export function OpponentDeltaChart({
             />
             <LabelList
               dataKey="value"
-              position={negativePosition}
+              position="left"
               fill="var(--foreground)"
               fontSize={10}
               className="font-mono tabular-nums"
@@ -183,10 +170,13 @@ export function OpponentDeltaChart({
       </ResponsiveContainer>
       <div
         className="text-muted-foreground flex items-center justify-between font-mono text-[10px] tracking-[0.14em] uppercase"
-        style={{ paddingLeft: Y_AXIS_WIDTH + PLOT_MARGIN, paddingRight: PLOT_MARGIN }}
+        style={{
+          paddingLeft: Y_AXIS_WIDTH + PLOT_MARGIN,
+          paddingRight: PLOT_MARGIN,
+        }}
       >
-        <span>← {t("better")}</span>
-        <span>{t("worse")} →</span>
+        <span>← {t("worse")}</span>
+        <span>{t("better")} →</span>
       </div>
     </div>
   );
