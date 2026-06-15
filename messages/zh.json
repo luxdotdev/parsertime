@@ -6710,7 +6710,7 @@
       "faster": "快于平均",
       "about": "接近平均",
       "slower": "慢于平均",
-      "delta": "(对比平均 {delta}秒)"
+      "delta": "(对比平均 {delta} 秒)"
     },
     "rangePicker": {
       "selectTimeframe": "选择时间范围",
