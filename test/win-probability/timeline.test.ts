@@ -191,6 +191,7 @@ describe("computeMatchStory — series", () => {
       artifact: testArtifact({ dpsAliveDiff: 1 }),
       engagements: [],
       assists: [],
+      ults: [],
     });
     expect(story).not.toBeNull();
     expect(story!.points[0].wp).toBeCloseTo(0.5);
@@ -237,6 +238,7 @@ describe("computeMatchStory — series", () => {
       artifact: testArtifact({ dpsAliveDiff: 1 }),
       engagements: [],
       assists: [],
+      ults: [],
     })!;
     expect(story.objectiveMarkers).toEqual([
       { t: 50, team: "Alpha" },
@@ -253,6 +255,7 @@ describe("computeMatchStory — series", () => {
         artifact,
         engagements: [],
         assists: [],
+      ults: [],
       })
     ).toBeNull();
   });
@@ -290,6 +293,7 @@ describe("computeMatchStory — ledger and cascades", () => {
       artifact: testArtifact({ dpsAliveDiff: 1 }),
       engagements: [engagement(100, 104, "Bravo", { Bravo: 3 })],
       assists: [],
+      ults: [],
     })!;
     const [fight] = story.fights;
     expect(fight.wpBefore).toBeCloseTo(0.5, 1);
@@ -325,6 +329,7 @@ describe("computeMatchStory — ledger and cascades", () => {
         engagement(120, 130, "Bravo", { Bravo: 1 }),
       ],
       assists: [],
+      ults: [],
     })!;
     const second = story.fights[1];
     // Entering fight 2: Alpha bank 0, Bravo bank 2 → ultBankDiff −2.
@@ -363,6 +368,7 @@ describe("computeMatchStory — ledger and cascades", () => {
         engagement(150, 150, "Alpha", { Alpha: 1 }),
       ],
       assists: [],
+      ults: [],
     })!;
     expect(story.fights[1].carryover).toBeNull();
   });
@@ -387,6 +393,7 @@ describe("computeMatchStory — ledger and cascades", () => {
         engagement(110, 115, "Bravo", { Bravo: 1 }),
       ],
       assists: [],
+      ults: [],
     })!;
     expect(story.limited).toBe(true);
     expect(story.fights[1].carryover).toBeNull();
@@ -418,6 +425,7 @@ describe("computeMatchStory — WPA", () => {
       artifact: testArtifact({ dpsAliveDiff: 1 }),
       engagements: [engagement(100, 102, "Bravo", { Bravo: 2 })],
       assists: [{ time: 101, team: "Bravo", player: "b3" }],
+      ults: [],
     })!;
     const [fight] = story.fights;
     const byPlayer = new Map(story.wpa.map((p) => [p.player, p]));
@@ -450,6 +458,7 @@ describe("computeMatchStory — WPA", () => {
       artifact: testArtifact({ dpsUltDiff: 1 }),
       engagements: [engagement(100, 105, "Bravo", {})],
       assists: [],
+      ults: [],
     })!;
     const [fight] = story.fights;
     expect(fight.unattributedSwing).not.toBe(0);
@@ -491,6 +500,7 @@ describe("computeMatchStory — engagement fallback", () => {
       artifact: testArtifact({ dpsAliveDiff: 1 }),
       engagements: [], // no positional data
       assists: [],
+      ults: [],
     })!;
     expect(story.fights).toHaveLength(2);
     expect(story.fights[0].winner).toBe("Bravo");
@@ -539,6 +549,7 @@ describe("computeMatchStory — takeaways", () => {
         engagement(100 + i * 60, 102 + i * 60, "Bravo", { Bravo: 2 })
       ),
       assists: [],
+      ults: [],
     })!;
     const keys = story.takeaways.map((i) => i.key);
     expect(keys).toContain("takeaways.lossProfileKills");
@@ -573,6 +584,7 @@ describe("computeMatchStory — takeaways", () => {
       artifact: testArtifact({ dpsAliveDiff: 1 }),
       engagements: [engagement(100, 102, "Bravo", { Bravo: 1 })],
       assists: [],
+      ults: [],
     })!;
     expect(
       story.takeaways.every(
@@ -618,6 +630,7 @@ describe("computeMatchStory — insights", () => {
         engagement(125, 135, "Bravo", { Bravo: 1 }),
       ],
       assists: [],
+      ults: [],
     })!;
     const keys = story.insights.map((i) => i.key);
     expect(keys.some((k) => k.startsWith("insights.biggestSwing"))).toBe(true);
@@ -671,6 +684,7 @@ describe("computeMatchStory — insights", () => {
       artifact: testArtifact({ dpsAliveDiff: 0.2, holdsObjective: 1.5 }),
       engagements: [engagement(100, 103, "Bravo", { Bravo: 1 })],
       assists: [],
+      ults: [],
     })!;
     const [fight] = story.fights;
     // Objective flip dominates: holder went +1 → −1 across the fight.
@@ -721,6 +735,7 @@ describe("computeMatchStory — insights", () => {
         engagement(k.time, k.time + 5, "Bravo", { Bravo: 1 })
       ),
       assists: [],
+      ults: [],
     })!;
     const keys = story.insights.map((i) => i.key);
     expect(keys).toContain("insights.winStreak");
@@ -757,6 +772,7 @@ describe("computeMatchStory — insights", () => {
         engagement(110, 115, "Bravo", { Bravo: 1 }),
       ],
       assists: [],
+      ults: [],
     })!;
     expect(story.insights.every((i) => i.key !== "insights.ultCarryover")).toBe(
       true
@@ -784,91 +800,65 @@ function fe(over: Partial<FightEntry>): FightEntry {
     ...over,
   };
 }
-const minimalLog = baseLog();
+const log = { team1: "Alpha", team2: "Bravo", kills: [] } as any;
+const NO_ULTS: any[] = [];
 
 describe("generateMissedOpportunities", () => {
-  test("favored + big WP loss → bledWp; even kills keep it out of lostFight", () => {
-    const f = fe({
-      index: 1,
-      wpBefore: 0.7,
-      swing: -0.2,
-      killsTeam1: 2,
-      killsTeam2: 2,
-      drivers: { objective: -0.18, kills: -0.02, ults: 0 },
-    });
-    const mo = generateMissedOpportunities(minimalLog, [f]);
-    expect(mo.bledWp.map((m) => m.fightIndex)).toEqual([1]);
-    expect(mo.lostFight).toEqual([]);
-    expect(
-      mo.bledWp[0].reasons.some(
-        (r) => r.key === "primaryDriver" && r.group === "objective"
-      )
-    ).toBe(true);
+  test("favored + big WP loss is a missed opportunity; small loss and not-favored are not", () => {
+    const fights = [
+      fe({ index: 1, wpBefore: 0.7, swing: -0.2 }),
+      fe({ index: 2, wpBefore: 0.6, swing: -0.05 }),
+      fe({ index: 3, wpBefore: 0.5, swing: -0.4 }),
+    ];
+    const mo = generateMissedOpportunities(log, fights, NO_ULTS);
+    expect(mo.items.map((m) => m.fightIndex)).toEqual([1]);
+    expect(mo.total).toBe(1);
   });
 
-  test("favored + enemy won → lostFight; small swing keeps it out of bledWp", () => {
-    const f = fe({ index: 2, wpBefore: 0.6, swing: -0.05, killsTeam1: 1, killsTeam2: 3 });
-    const mo = generateMissedOpportunities(minimalLog, [f]);
-    expect(mo.lostFight.map((m) => m.fightIndex)).toEqual([2]);
-    expect(mo.bledWp).toEqual([]);
-  });
-
-  test("favored + big loss + enemy won → BOTH areas", () => {
-    const f = fe({ index: 3, wpBefore: 0.8, swing: -0.3, killsTeam1: 0, killsTeam2: 3 });
-    const mo = generateMissedOpportunities(minimalLog, [f]);
-    expect(mo.bledWp.map((m) => m.fightIndex)).toEqual([3]);
-    expect(mo.lostFight.map((m) => m.fightIndex)).toEqual([3]);
-  });
-
-  test("not favored is excluded even on a big loss", () => {
-    const f = fe({ index: 4, wpBefore: 0.5, swing: -0.4, killsTeam1: 0, killsTeam2: 4 });
-    const mo = generateMissedOpportunities(minimalLog, [f]);
-    expect(mo.bledWp).toEqual([]);
-    expect(mo.lostFight).toEqual([]);
-  });
-
-  test("reasons fire from the data", () => {
-    const f = fe({
-      index: 5,
-      wpBefore: 0.7,
-      swing: -0.2,
-      killsTeam1: 1,
-      killsTeam2: 3,
-      ultsSpentTeam1: 2,
-      drivers: { objective: 0, kills: -0.2, ults: 0 },
-      carryover: { stagger: -0.05, ultEconomy: -0.04 },
-    });
-    const log2 = baseLog({
-      kills: [{ time: 2, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" }],
-    });
-    const r = generateMissedOpportunities(log2, [f]).bledWp[0].reasons.map(
-      (x) => x.key
-    );
-    expect(r).toContain("primaryDriver");
-    expect(r).toContain("earlyFirstDeath");
-    expect(r).toContain("wastedUlt");
-    expect(r).toContain("stagger");
-    expect(r).toContain("ultDeficit");
-  });
-
-  test("late first death does not fire earlyFirstDeath", () => {
-    const f = fe({ index: 6, wpBefore: 0.7, swing: -0.2, killsTeam1: 1, killsTeam2: 2 });
-    const log2 = baseLog({
-      kills: [{ time: 8, victimTeam: "Alpha", victimName: "a1", attackerTeam: "Bravo", attackerName: "b1" }],
-    });
-    const r = generateMissedOpportunities(log2, [f]).bledWp[0].reasons.map(
-      (x) => x.key
-    );
-    expect(r).not.toContain("earlyFirstDeath");
-  });
-
-  test("caps each area at 5 and reports the total, most-negative swing first", () => {
+  test("ranked most-negative swing first, capped at 5 with total", () => {
     const fights = Array.from({ length: 8 }, (_, i) =>
-      fe({ index: i, wpBefore: 0.7, swing: -0.2 - i * 0.01, killsTeam1: 0, killsTeam2: 2 })
-    );
-    const mo = generateMissedOpportunities(minimalLog, fights);
-    expect(mo.bledWp.length).toBe(5);
-    expect(mo.bledWpTotal).toBe(8);
-    expect(mo.bledWp[0].swing).toBeLessThanOrEqual(mo.bledWp[1].swing);
+      fe({ index: i, wpBefore: 0.7, swing: -0.2 - i * 0.01 }));
+    const mo = generateMissedOpportunities(log, fights, NO_ULTS);
+    expect(mo.items.length).toBe(5);
+    expect(mo.total).toBe(8);
+    expect(mo.items[0].swing).toBeLessThanOrEqual(mo.items[1].swing);
+  });
+
+  test("reason chips fire and wastedUlt is gone", () => {
+    const f = fe({ index: 5, wpBefore: 0.7, swing: -0.2, ultsSpentTeam1: 2,
+      drivers: { objective: -0.2, kills: 0, ults: 0 },
+      carryover: { stagger: -0.05, ultEconomy: -0.04 } });
+    const log2 = { team1: "Alpha", team2: "Bravo",
+      kills: [{ time: 2, victimTeam: "Alpha", victimName: "a1" }] } as any;
+    const keys = generateMissedOpportunities(log2, [f], NO_ULTS).items[0].reasons.map((r) => r.key);
+    expect(keys).toContain("primaryDriver");
+    expect(keys).toContain("earlyFirstDeath");
+    expect(keys).toContain("stagger");
+    expect(keys).toContain("ultDeficit");
+    expect(keys).not.toContain("wastedUlt");
+  });
+
+  test("ult breakdown: team-1 ults in the fight window, bucketed by value", () => {
+    const f = fe({ index: 6, wpBefore: 0.7, swing: -0.2, start: 100, end: 110 });
+    const ults = [
+      { playerTeam: "Alpha", hero: "Sojourn", startTime: 102, conversionKills: 2, diedDuringUlt: false },
+      { playerTeam: "Alpha", hero: "Kiriko", startTime: 105, conversionKills: 0, diedDuringUlt: false },
+      { playerTeam: "Alpha", hero: "Genji", startTime: 106, conversionKills: 0, diedDuringUlt: true },
+      { playerTeam: "Alpha", hero: "Ana", startTime: 107, conversionKills: null, diedDuringUlt: false },
+      { playerTeam: "Bravo", hero: "Mei", startTime: 103, conversionKills: 3, diedDuringUlt: false },
+      { playerTeam: "Alpha", hero: "Mauga", startTime: 200, conversionKills: 1, diedDuringUlt: false },
+    ] as any;
+    const m = generateMissedOpportunities(log, [f], ults).items[0];
+    expect(m.ults).toEqual([
+      { hero: "Sojourn", value: "value", kills: 2 },
+      { hero: "Kiriko", value: "none", kills: 0 },
+      { hero: "Genji", value: "died", kills: 0 },
+      { hero: "Ana", value: "unknown", kills: 0 },
+    ]);
+  });
+
+  test("no ult data → empty per-fight ults", () => {
+    const f = fe({ index: 7, wpBefore: 0.7, swing: -0.2 });
+    expect(generateMissedOpportunities(log, [f], NO_ULTS).items[0].ults).toEqual([]);
   });
 });

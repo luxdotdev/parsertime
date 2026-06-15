@@ -16,8 +16,6 @@ function reasonText(t: Translate, r: ReasonTag): string {
       return t(`missed.reason.${r.group}`);
     case "earlyFirstDeath":
       return t("missed.reason.earlyFirstDeath", { player: r.player });
-    case "wastedUlt":
-      return t("missed.reason.wastedUlt", { count: r.count });
     case "stagger":
       return t("missed.reason.stagger", { cost: r.cost });
     case "ultDeficit":
@@ -77,52 +75,6 @@ function Row({
   );
 }
 
-function Area({
-  t,
-  label,
-  items,
-  total,
-  focusFight,
-  onFocusFight,
-}: {
-  t: Translate;
-  label: string;
-  items: MissedOpportunity[];
-  total: number;
-  focusFight: number | null;
-  onFocusFight: (i: number) => void;
-}) {
-  return (
-    <div className="space-y-1">
-      <p className="text-muted-foreground bg-muted/30 border-border border-b px-4 py-2 font-mono text-[10px] tracking-[0.16em] uppercase">
-        {label}
-      </p>
-      {items.length === 0 ? (
-        <div className="px-3 py-2 text-sm text-muted-foreground">
-          {t("missed.empty")}
-        </div>
-      ) : (
-        <>
-          {items.map((m) => (
-            <Row
-              key={m.fightIndex}
-              t={t}
-              m={m}
-              focusFight={focusFight}
-              onFocusFight={onFocusFight}
-            />
-          ))}
-          {total > items.length && (
-            <div className="px-3 py-1 text-xs text-muted-foreground">
-              {t("missed.showing", { shown: items.length, total })}
-            </div>
-          )}
-        </>
-      )}
-    </div>
-  );
-}
-
 export function MissedOpportunities({
   data,
   focusFight,
@@ -133,27 +85,25 @@ export function MissedOpportunities({
   onFocusFight: (i: number) => void;
 }) {
   const t = useTranslations("mapPage.matchStory");
-  if (data.bledWpTotal === 0 && data.lostFightTotal === 0) return null;
+  if (data.total === 0) return null;
   return (
     <div>
       <SectionHeader id="missed-opportunities" title={t("missed.title")} />
-      <div className="border-border grid overflow-hidden rounded-md border sm:grid-cols-2">
-        <Area
-          t={t}
-          label={t("missed.bledWp")}
-          items={data.bledWp}
-          total={data.bledWpTotal}
-          focusFight={focusFight}
-          onFocusFight={onFocusFight}
-        />
-        <Area
-          t={t}
-          label={t("missed.lostFight")}
-          items={data.lostFight}
-          total={data.lostFightTotal}
-          focusFight={focusFight}
-          onFocusFight={onFocusFight}
-        />
+      <div className="border-border overflow-hidden rounded-md border">
+        {data.items.map((m) => (
+          <Row
+            key={m.fightIndex}
+            t={t}
+            m={m}
+            focusFight={focusFight}
+            onFocusFight={onFocusFight}
+          />
+        ))}
+        {data.total > data.items.length && (
+          <div className="px-3 py-1 text-xs text-muted-foreground">
+            {t("missed.showing", { shown: data.items.length, total: data.total })}
+          </div>
+        )}
       </div>
     </div>
   );
