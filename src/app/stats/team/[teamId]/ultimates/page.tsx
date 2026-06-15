@@ -1,6 +1,5 @@
 import { StatRibbon } from "@/components/stats/team/stat-ribbon";
 import { TeamStatsGate } from "@/components/stats/team/team-stats-gate";
-import { TeamStatsHeader } from "@/components/stats/team/team-stats-header";
 import { UltCombosCard } from "@/components/stats/team/ult-combos-card";
 import { UltEconomyCard } from "@/components/stats/team/ult-economy-card";
 import { UltImpactAnalysisCard } from "@/components/stats/team/ult-impact-analysis-card";
@@ -14,7 +13,7 @@ import { TeamFightStatsService, TeamUltService } from "@/data/team";
 import { ultimateImpactTool } from "@/lib/flags";
 import type { PagePropsWithLocale } from "@/types/next";
 import { Effect } from "effect";
-import { loadTeamStatsHeaderData, loadTeamStatsShell } from "../_lib/context";
+import { loadTeamStatsShell } from "../_lib/context";
 
 export const maxDuration = 60;
 
@@ -27,13 +26,10 @@ export default async function Page(
   const searchParams = await props.searchParams;
   const shell = await loadTeamStatsShell(params.teamId, searchParams);
   if (shell.gated) {
-    return (
-      <TeamStatsGate team={shell.team} scrimCount={shell.totalScrimCount} />
-    );
+    return <TeamStatsGate scrimCount={shell.totalScrimCount} />;
   }
 
   const { teamId, dateRange } = shell;
-  const headerData = await loadTeamStatsHeaderData(shell);
 
   const [
     { ultStats, fightStats, ultImpactAnalysis, ultCombos, ultEconomy },
@@ -65,55 +61,43 @@ export default async function Page(
   ]);
 
   return (
-    <div className="px-6 pt-8 pb-16 sm:px-10">
-      <TeamStatsHeader
-        team={shell.team}
-        teamId={teamId}
-        effectiveTimeframe={shell.effectiveTimeframe}
-        permissions={shell.permissions}
-        headerData={headerData}
-        totalScrimCount={shell.totalScrimCount}
-        positionalEnabled={shell.positionalEnabled}
-        simulationEnabled={shell.simulationEnabled}
+    <div className="mt-8 space-y-12">
+      <StatRibbon
+        cells={[
+          {
+            label: "Total ultimates",
+            value: String(ultStats.totalUltsUsed),
+            sub: `${ultStats.ultsPerMap.toFixed(1)} per map`,
+            emphasis: true,
+          },
+          {
+            label: "In fights",
+            value: `${ultStats.fightInitiationRate.toFixed(0)}%`,
+            sub: `${ultStats.fightInitiationCount} initiations`,
+          },
+          {
+            label: "Avg charge",
+            value: `${ultStats.avgChargeTime.toFixed(0)}s`,
+            sub: `held ${ultStats.avgHoldTime.toFixed(0)}s`,
+          },
+          {
+            label: "Wasted",
+            value: String(fightStats.wastedUltimates),
+            sub: "no fight impact",
+          },
+        ]}
+        columns={4}
       />
-      <div className="mt-8 space-y-12">
-        <StatRibbon
-          cells={[
-            {
-              label: "Total ultimates",
-              value: String(ultStats.totalUltsUsed),
-              sub: `${ultStats.ultsPerMap.toFixed(1)} per map`,
-              emphasis: true,
-            },
-            {
-              label: "In fights",
-              value: `${ultStats.fightInitiationRate.toFixed(0)}%`,
-              sub: `${ultStats.fightInitiationCount} initiations`,
-            },
-            {
-              label: "Avg charge",
-              value: `${ultStats.avgChargeTime.toFixed(0)}s`,
-              sub: `held ${ultStats.avgHoldTime.toFixed(0)}s`,
-            },
-            {
-              label: "Wasted",
-              value: String(fightStats.wastedUltimates),
-              sub: "no fight impact",
-            },
-          ]}
-          columns={4}
-        />
-        <UltUsageOverviewCard ultStats={ultStats} />
-        {ultimateImpactToolEnabled && (
-          <UltImpactAnalysisCard analysis={ultImpactAnalysis} />
-        )}
-        <UltCombosCard analysis={ultCombos} />
-        <UltResponseCard analysis={ultCombos} />
-        <UltimateEconomyCard fightStats={fightStats} />
-        <UltEconomyCard analysis={ultEconomy} />
-        <UltRoleBreakdownCard ultStats={ultStats} />
-        <UltPlayerRankingsCard ultStats={ultStats} />
-      </div>
+      <UltUsageOverviewCard ultStats={ultStats} />
+      {ultimateImpactToolEnabled && (
+        <UltImpactAnalysisCard analysis={ultImpactAnalysis} />
+      )}
+      <UltCombosCard analysis={ultCombos} />
+      <UltResponseCard analysis={ultCombos} />
+      <UltimateEconomyCard fightStats={fightStats} />
+      <UltEconomyCard analysis={ultEconomy} />
+      <UltRoleBreakdownCard ultStats={ultStats} />
+      <UltPlayerRankingsCard ultStats={ultStats} />
     </div>
   );
 }

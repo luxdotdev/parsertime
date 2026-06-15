@@ -1,14 +1,13 @@
 import { RecentFormCard } from "@/components/stats/team/recent-form-card";
 import { StatRibbon } from "@/components/stats/team/stat-ribbon";
 import { TeamStatsGate } from "@/components/stats/team/team-stats-gate";
-import { TeamStatsHeader } from "@/components/stats/team/team-stats-header";
 import { WinLossStreaksCard } from "@/components/stats/team/win-loss-streaks-card";
 import { WinrateOverTimeChart } from "@/components/stats/team/winrate-over-time-chart";
 import { AppRuntime } from "@/data/runtime";
 import { TeamTrendsService } from "@/data/team";
 import type { PagePropsWithLocale } from "@/types/next";
 import { Effect } from "effect";
-import { loadTeamStatsHeaderData, loadTeamStatsShell } from "../_lib/context";
+import { loadTeamStatsShell } from "../_lib/context";
 
 export const maxDuration = 60;
 
@@ -21,13 +20,10 @@ export default async function Page(
   const searchParams = await props.searchParams;
   const shell = await loadTeamStatsShell(params.teamId, searchParams);
   if (shell.gated) {
-    return (
-      <TeamStatsGate team={shell.team} scrimCount={shell.totalScrimCount} />
-    );
+    return <TeamStatsGate scrimCount={shell.totalScrimCount} />;
   }
 
   const { teamId, dateRange } = shell;
-  const headerData = await loadTeamStatsHeaderData(shell);
 
   const { weeklyWinrate, monthlyWinrate, recentForm, streakInfo } =
     await AppRuntime.runPromise(
@@ -55,76 +51,64 @@ export default async function Page(
     );
 
   return (
-    <div className="px-6 pt-8 pb-16 sm:px-10">
-      <TeamStatsHeader
-        team={shell.team}
-        teamId={teamId}
-        effectiveTimeframe={shell.effectiveTimeframe}
-        permissions={shell.permissions}
-        headerData={headerData}
-        totalScrimCount={shell.totalScrimCount}
-        positionalEnabled={shell.positionalEnabled}
-        simulationEnabled={shell.simulationEnabled}
+    <div className="mt-8 space-y-12">
+      <StatRibbon
+        cells={[
+          {
+            label: "Last 5",
+            value:
+              recentForm.last5.length > 0
+                ? `${recentForm.last5Winrate.toFixed(0)}%`
+                : "—",
+            sub:
+              recentForm.last5.length > 0
+                ? `${recentForm.last5.filter((m) => m.result === "win").length}–${recentForm.last5.filter((m) => m.result === "loss").length}`
+                : "no data",
+            emphasis: true,
+          },
+          {
+            label: "Last 10",
+            value:
+              recentForm.last10.length > 0
+                ? `${recentForm.last10Winrate.toFixed(0)}%`
+                : "—",
+            sub:
+              recentForm.last10.length > 0
+                ? `${recentForm.last10.filter((m) => m.result === "win").length}–${recentForm.last10.filter((m) => m.result === "loss").length}`
+                : "no data",
+          },
+          {
+            label: "Last 20",
+            value:
+              recentForm.last20.length > 0
+                ? `${recentForm.last20Winrate.toFixed(0)}%`
+                : "—",
+            sub:
+              recentForm.last20.length > 0
+                ? `${recentForm.last20.filter((m) => m.result === "win").length}–${recentForm.last20.filter((m) => m.result === "loss").length}`
+                : "no data",
+          },
+          {
+            label: "Current streak",
+            value:
+              streakInfo.currentStreak.count > 0
+                ? `${streakInfo.currentStreak.count}${streakInfo.currentStreak.type === "win" ? "W" : "L"}`
+                : "—",
+            sub:
+              streakInfo.longestWinStreak.count > 0
+                ? `${streakInfo.longestWinStreak.count}W best run`
+                : "no streaks yet",
+          },
+        ]}
+        columns={4}
       />
-      <div className="mt-8 space-y-12">
-        <StatRibbon
-          cells={[
-            {
-              label: "Last 5",
-              value:
-                recentForm.last5.length > 0
-                  ? `${recentForm.last5Winrate.toFixed(0)}%`
-                  : "—",
-              sub:
-                recentForm.last5.length > 0
-                  ? `${recentForm.last5.filter((m) => m.result === "win").length}–${recentForm.last5.filter((m) => m.result === "loss").length}`
-                  : "no data",
-              emphasis: true,
-            },
-            {
-              label: "Last 10",
-              value:
-                recentForm.last10.length > 0
-                  ? `${recentForm.last10Winrate.toFixed(0)}%`
-                  : "—",
-              sub:
-                recentForm.last10.length > 0
-                  ? `${recentForm.last10.filter((m) => m.result === "win").length}–${recentForm.last10.filter((m) => m.result === "loss").length}`
-                  : "no data",
-            },
-            {
-              label: "Last 20",
-              value:
-                recentForm.last20.length > 0
-                  ? `${recentForm.last20Winrate.toFixed(0)}%`
-                  : "—",
-              sub:
-                recentForm.last20.length > 0
-                  ? `${recentForm.last20.filter((m) => m.result === "win").length}–${recentForm.last20.filter((m) => m.result === "loss").length}`
-                  : "no data",
-            },
-            {
-              label: "Current streak",
-              value:
-                streakInfo.currentStreak.count > 0
-                  ? `${streakInfo.currentStreak.count}${streakInfo.currentStreak.type === "win" ? "W" : "L"}`
-                  : "—",
-              sub:
-                streakInfo.longestWinStreak.count > 0
-                  ? `${streakInfo.longestWinStreak.count}W best run`
-                  : "no streaks yet",
-            },
-          ]}
-          columns={4}
-        />
-        <WinrateOverTimeChart
-          weeklyData={weeklyWinrate}
-          monthlyData={monthlyWinrate}
-        />
-        <div className="grid gap-4 md:grid-cols-2">
-          <RecentFormCard recentForm={recentForm} />
-          <WinLossStreaksCard streakInfo={streakInfo} />
-        </div>
+      <WinrateOverTimeChart
+        weeklyData={weeklyWinrate}
+        monthlyData={monthlyWinrate}
+      />
+      <div className="grid gap-4 md:grid-cols-2">
+        <RecentFormCard recentForm={recentForm} />
+        <WinLossStreaksCard streakInfo={streakInfo} />
       </div>
     </div>
   );

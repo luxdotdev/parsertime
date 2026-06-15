@@ -3,7 +3,6 @@ import { HeroOurBansCard } from "@/components/stats/team/hero-our-bans-card";
 import { HeroPoolContainer } from "@/components/stats/team/hero-pool-container";
 import { StatRibbon } from "@/components/stats/team/stat-ribbon";
 import { TeamStatsGate } from "@/components/stats/team/team-stats-gate";
-import { TeamStatsHeader } from "@/components/stats/team/team-stats-header";
 import { AppRuntime } from "@/data/runtime";
 import {
   TeamAnalyticsService,
@@ -13,7 +12,7 @@ import {
 import { calculateHeroPickrateMatrix } from "@/lib/hero-pickrate-utils";
 import type { PagePropsWithLocale } from "@/types/next";
 import { Effect } from "effect";
-import { loadTeamStatsHeaderData, loadTeamStatsShell } from "../_lib/context";
+import { loadTeamStatsShell } from "../_lib/context";
 
 export const maxDuration = 60;
 
@@ -26,13 +25,10 @@ export default async function Page(
   const searchParams = await props.searchParams;
   const shell = await loadTeamStatsShell(params.teamId, searchParams);
   if (shell.gated) {
-    return (
-      <TeamStatsGate team={shell.team} scrimCount={shell.totalScrimCount} />
-    );
+    return <TeamStatsGate scrimCount={shell.totalScrimCount} />;
   }
 
   const { teamId, dateRange } = shell;
-  const headerData = await loadTeamStatsHeaderData(shell);
 
   const { heroPool, banImpactAnalysis, heroPickrateRawData } =
     await AppRuntime.runPromise(
@@ -60,53 +56,41 @@ export default async function Page(
   const heroPickrateMatrix = calculateHeroPickrateMatrix(heroPickrateRawData);
 
   return (
-    <div className="px-6 pt-8 pb-16 sm:px-10">
-      <TeamStatsHeader
-        team={shell.team}
-        teamId={teamId}
-        effectiveTimeframe={shell.effectiveTimeframe}
-        permissions={shell.permissions}
-        headerData={headerData}
-        totalScrimCount={shell.totalScrimCount}
-        positionalEnabled={shell.positionalEnabled}
-        simulationEnabled={shell.simulationEnabled}
+    <div className="mt-8 space-y-12">
+      <StatRibbon
+        cells={[
+          {
+            label: "Heroes played",
+            value: String(heroPool.diversity.totalUniqueHeroes),
+            sub: "unique heroes",
+            emphasis: true,
+          },
+          {
+            label: "Effective pool",
+            value: heroPool.diversity.effectiveHeroPool.toFixed(1),
+            sub: "core rotation",
+          },
+          {
+            label: "Top winrate",
+            value: heroPool.topHeroWinrates[0]
+              ? `${heroPool.topHeroWinrates[0].winrate.toFixed(0)}%`
+              : "—",
+            sub: heroPool.topHeroWinrates[0]?.heroName ?? "—",
+          },
+          {
+            label: "Bans against us",
+            value: String(banImpactAnalysis.received.totalMapsAnalyzed),
+            sub: `${banImpactAnalysis.received.banImpacts.length} unique`,
+          },
+        ]}
+        columns={4}
       />
-      <div className="mt-8 space-y-12">
-        <StatRibbon
-          cells={[
-            {
-              label: "Heroes played",
-              value: String(heroPool.diversity.totalUniqueHeroes),
-              sub: "unique heroes",
-              emphasis: true,
-            },
-            {
-              label: "Effective pool",
-              value: heroPool.diversity.effectiveHeroPool.toFixed(1),
-              sub: "core rotation",
-            },
-            {
-              label: "Top winrate",
-              value: heroPool.topHeroWinrates[0]
-                ? `${heroPool.topHeroWinrates[0].winrate.toFixed(0)}%`
-                : "—",
-              sub: heroPool.topHeroWinrates[0]?.heroName ?? "—",
-            },
-            {
-              label: "Bans against us",
-              value: String(banImpactAnalysis.received.totalMapsAnalyzed),
-              sub: `${banImpactAnalysis.received.banImpacts.length} unique`,
-            },
-          ]}
-          columns={4}
-        />
-        <HeroPoolContainer
-          initialData={heroPool}
-          heatmapInitialData={heroPickrateMatrix}
-        />
-        <HeroBanImpactCard analysis={banImpactAnalysis} />
-        <HeroOurBansCard outgoing={banImpactAnalysis.outgoing} />
-      </div>
+      <HeroPoolContainer
+        initialData={heroPool}
+        heatmapInitialData={heroPickrateMatrix}
+      />
+      <HeroBanImpactCard analysis={banImpactAnalysis} />
+      <HeroOurBansCard outgoing={banImpactAnalysis.outgoing} />
     </div>
   );
 }

@@ -3,7 +3,6 @@ import { OverviewInsightsBand } from "@/components/stats/team/overview-insights-
 import { QuickStatsRibbon } from "@/components/stats/team/quick-stats-ribbon";
 import { TeamRosterGrid } from "@/components/stats/team/team-roster-grid";
 import { TeamStatsGate } from "@/components/stats/team/team-stats-gate";
-import { TeamStatsHeader } from "@/components/stats/team/team-stats-header";
 import { AppRuntime } from "@/data/runtime";
 import {
   TeamHeroPoolService,
@@ -15,7 +14,7 @@ import {
 import { getMapNames } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
 import { Effect } from "effect";
-import { loadTeamStatsHeaderData, loadTeamStatsShell } from "./_lib/context";
+import { loadTeamStatsShell } from "./_lib/context";
 
 // The heaviest dashboard in the app: dozens of services over a shared
 // connection pool. The platform default (20s on preview) is too tight for
@@ -31,14 +30,10 @@ export default async function TeamStatsOverviewPage(
   const searchParams = await props.searchParams;
   const shell = await loadTeamStatsShell(params.teamId, searchParams);
   if (shell.gated) {
-    return (
-      <TeamStatsGate team={shell.team} scrimCount={shell.totalScrimCount} />
-    );
+    return <TeamStatsGate scrimCount={shell.totalScrimCount} />;
   }
 
   const { teamId, dateRange, isManager, substituteNames } = shell;
-  const headerData = await loadTeamStatsHeaderData(shell);
-  const { winrates } = headerData;
 
   const [
     {
@@ -51,6 +46,7 @@ export default async function TeamStatsOverviewPage(
       allMapsPlaytime,
       heroPool,
       teamRoster,
+      winrates,
     },
     mapNames,
   ] = await Promise.all([
@@ -77,7 +73,9 @@ export default async function TeamStatsOverviewPage(
             Effect.flatMap((svc) => svc.getBlindSpotMap(teamId, dateRange))
           ),
           top5Maps: TeamStatsService.pipe(
-            Effect.flatMap((svc) => svc.getTop5MapsByPlaytime(teamId, dateRange))
+            Effect.flatMap((svc) =>
+              svc.getTop5MapsByPlaytime(teamId, dateRange)
+            )
           ),
           allMapsPlaytime: TeamStatsService.pipe(
             Effect.flatMap((svc) => svc.getTopMapsByPlaytime(teamId, dateRange))
@@ -90,6 +88,9 @@ export default async function TeamStatsOverviewPage(
           teamRoster: TeamSharedDataService.pipe(
             Effect.flatMap((svc) => svc.getTeamRoster(teamId))
           ),
+          winrates: TeamStatsService.pipe(
+            Effect.flatMap((svc) => svc.getTeamWinrates(teamId, dateRange))
+          ),
         },
         { concurrency: "unbounded" }
       )
@@ -98,48 +99,36 @@ export default async function TeamStatsOverviewPage(
   ]);
 
   return (
-    <div className="px-6 pt-8 pb-16 sm:px-10">
-      <TeamStatsHeader
-        team={shell.team}
-        teamId={teamId}
-        effectiveTimeframe={shell.effectiveTimeframe}
-        permissions={shell.permissions}
-        headerData={headerData}
-        totalScrimCount={shell.totalScrimCount}
-        positionalEnabled={shell.positionalEnabled}
-        simulationEnabled={shell.simulationEnabled}
+    <div className="mt-8 space-y-12">
+      <QuickStatsRibbon
+        stats={quickStats}
+        uniqueHeroes={heroPool.diversity.totalUniqueHeroes}
+        uniqueMaps={allMapsPlaytime.length}
       />
-      <div className="mt-8 space-y-12">
-        <QuickStatsRibbon
-          stats={quickStats}
-          uniqueHeroes={heroPool.diversity.totalUniqueHeroes}
-          uniqueMaps={allMapsPlaytime.length}
-        />
 
-        <OverviewInsightsBand
-          quickStats={quickStats}
-          roleStats={roleStats}
-          roleBalance={roleBalance}
-          bestMap={bestMapByWinrate}
-          blindSpot={blindSpotMap}
-          mapNames={mapNames}
-        />
+      <OverviewInsightsBand
+        quickStats={quickStats}
+        roleStats={roleStats}
+        roleBalance={roleBalance}
+        bestMap={bestMapByWinrate}
+        blindSpot={blindSpotMap}
+        mapNames={mapNames}
+      />
 
-        <MapPerformanceTable
-          topMaps={top5Maps}
-          winrates={winrates.byMap}
-          bestMap={bestMapByWinrate}
-          blindSpot={blindSpotMap}
-          mapNames={mapNames}
-        />
+      <MapPerformanceTable
+        topMaps={top5Maps}
+        winrates={winrates.byMap}
+        bestMap={bestMapByWinrate}
+        blindSpot={blindSpotMap}
+        mapNames={mapNames}
+      />
 
-        <TeamRosterGrid
-          roster={teamRoster}
-          teamId={teamId}
-          isManager={isManager}
-          substitutes={[...substituteNames]}
-        />
-      </div>
+      <TeamRosterGrid
+        roster={teamRoster}
+        teamId={teamId}
+        isManager={isManager}
+        substitutes={[...substituteNames]}
+      />
     </div>
   );
 }
