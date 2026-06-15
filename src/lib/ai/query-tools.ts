@@ -45,6 +45,12 @@ export function buildQueryTools(opts: { allowedTeamIds: Set<number> }) {
           return { datasets: buildCatalogIndex() };
         }
         const catalog = buildDatasetCatalog(dataset);
+        if (resolveOptionsFor && teamId === undefined) {
+          return {
+            catalog,
+            error: "resolveOptionsFor requires teamId to resolve team-scoped values.",
+          };
+        }
         if (resolveOptionsFor && teamId !== undefined) {
           assertTeamAccess(allowedTeamIds, teamId);
           const options = await getFieldOptions(
