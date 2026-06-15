@@ -1,7 +1,7 @@
+import type { $Enums } from "@/generated/prisma/client";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { vercelAdapter } from "@flags-sdk/vercel";
-import type { $Enums } from "@/generated/prisma/client";
 import { dedupe, flag } from "flags/next";
 
 type Entities = {
@@ -241,9 +241,7 @@ export const queryBuilder = flag<boolean, Entities>({
     { value: true, label: "Enabled" },
     { value: false, label: "Disabled" },
   ],
-  // Defaulted on while the feature is in active development. Flip back to
-  // false (or drive it from the Vercel dashboard) before it ships broadly.
-  defaultValue: true,
+  defaultValue: false,
   description: "Enable or disable the read-only query builder",
   identify,
 });
