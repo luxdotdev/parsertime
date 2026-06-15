@@ -6734,6 +6734,12 @@
       "ogDescription": "Stats for {teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
       "ogImage": "{teamName} Stats"
     },
+    "tempoRead": {
+      "faster": "Faster than average",
+      "about": "About average",
+      "slower": "Slower than average",
+      "delta": "({delta}s vs avg)"
+    },
     "rangePicker": {
       "selectTimeframe": "Select timeframe",
       "lastWeek": "Last Week",
@@ -7311,9 +7317,6 @@
       "avgFightDuration": "Avg Fight Duration",
       "notAvailable": "N/A",
       "durationSeconds": "{seconds}s",
-      "quickFights": "Quick fights",
-      "standard": "Standard",
-      "longFights": "Long fights",
       "firstPickSuccess": "First Pick Success",
       "firstPickSuccessRate": "{successfulFirstPicks} / {totalFirstPicks} picks won",
       "heroPool": "Hero Pool",
@@ -7557,13 +7560,7 @@
         "totalUltsUsed": "Total Ultimates Used",
         "ultsPerMap": "{count} per map average",
         "avgChargeTime": "Avg Charge Time",
-        "chargeTimeFast": "Fast charge speed",
-        "chargeTimeAverage": "Average charge speed",
-        "chargeTimeSlow": "Slow — consider building ult faster",
         "avgHoldTime": "Avg Hold Time",
-        "holdTimeGood": "Good discipline — using ults quickly",
-        "holdTimeAverage": "Average hold time",
-        "holdTimeSlow": "Holding too long — use ults sooner",
         "fightInitiation": "Fight Initiation Rate",
         "fightInitiationDetail": "{count} of {total} ult fights",
         "metric": "Metric",

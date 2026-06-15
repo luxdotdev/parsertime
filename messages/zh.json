@@ -6706,6 +6706,12 @@
     "selector": {
       "select": "选择团队..."
     },
+    "tempoRead": {
+      "faster": "快于平均",
+      "about": "接近平均",
+      "slower": "慢于平均",
+      "delta": "(对比平均 {delta}秒)"
+    },
     "rangePicker": {
       "selectTimeframe": "选择时间范围",
       "lastWeek": "过去一周",
@@ -6896,13 +6902,7 @@
         "totalUltsUsed": "终极技能使用总数",
         "ultsPerMap": "平均每张地图 {count} 次",
         "avgChargeTime": "平均充能时间",
-        "chargeTimeFast": "充能速度快",
-        "chargeTimeAverage": "平均充能速度",
-        "chargeTimeSlow": "偏慢 — 建议更快积攒终极技能",
         "avgHoldTime": "平均持有时间",
-        "holdTimeGood": "纪律良好 — 快速使用终极技能",
-        "holdTimeAverage": "平均持有时间",
-        "holdTimeSlow": "持有过久 — 应更早使用终极技能",
         "fightInitiation": "战斗发起率",
         "fightInitiationDetail": "{total} 场终极技能战斗中的 {count} 场",
         "metric": "指标",
@@ -7536,9 +7536,6 @@
       "avgFightDuration": "平均团战时长",
       "notAvailable": "暂无",
       "durationSeconds": "{seconds} 秒",
-      "quickFights": "快速团战",
-      "standard": "标准",
-      "longFights": "长团战",
       "firstPickSuccess": "首杀成功率",
       "firstPickSuccessRate": "{totalFirstPicks} 次首杀中赢下 {successfulFirstPicks} 次",
       "heroPool": "英雄池",

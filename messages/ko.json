@@ -6706,6 +6706,12 @@
     "selector": {
       "select": "팀 선택..."
     },
+    "tempoRead": {
+      "faster": "평균보다 빠름",
+      "about": "평균 수준",
+      "slower": "평균보다 느림",
+      "delta": "(평균 대비 {delta}초)"
+    },
     "rangePicker": {
       "selectTimeframe": "기간 선택",
       "lastWeek": "지난주",
@@ -6896,13 +6902,7 @@
         "totalUltsUsed": "총 사용한 궁극기",
         "ultsPerMap": "맵당 평균 {count}회",
         "avgChargeTime": "평균 충전 시간",
-        "chargeTimeFast": "빠른 충전 속도",
-        "chargeTimeAverage": "평균 충전 속도",
-        "chargeTimeSlow": "느림 — 궁극기를 더 빠르게 채워 보세요",
         "avgHoldTime": "평균 보유 시간",
-        "holdTimeGood": "좋은 규율 — 궁극기를 빠르게 사용 중",
-        "holdTimeAverage": "평균 보유 시간",
-        "holdTimeSlow": "너무 오래 보유 중 — 궁극기를 더 빨리 사용하세요",
         "fightInitiation": "교전 개시율",
         "fightInitiationDetail": "궁극기 교전 {total}회 중 {count}회",
         "metric": "지표",
@@ -7536,9 +7536,6 @@
       "avgFightDuration": "평균 교전 시간",
       "notAvailable": "해당 없음",
       "durationSeconds": "{seconds}초",
-      "quickFights": "빠른 교전",
-      "standard": "보통",
-      "longFights": "긴 교전",
       "firstPickSuccess": "첫 처치 성공",
       "firstPickSuccessRate": "{totalFirstPicks}번 중 {successfulFirstPicks}번 승리",
       "heroPool": "영웅 풀",
