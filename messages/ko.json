@@ -5552,7 +5552,9 @@
       "mapEvents": "맵 이벤트",
       "playerComparison": "플레이어 비교",
       "customTargets": "맞춤형 목표",
-      "overviewCard": "개요 카드"
+      "overviewCard": "개요 카드",
+      "tempoChart": "템포 차트",
+      "positionalData": "위치 데이터 및 히트맵"
     },
     "playerStatistics": {
       "title": "플레이어 통계",
@@ -5577,10 +5579,10 @@
       "description": "사례 연구 보기"
     },
     "testimonial": {
-      "quote": "“Parsertime은 내 선수들이 적극적으로 도움을 필요로 하는 부분, 예를 들어 더 오래 생존하거나 궁극기를 오래 유지하며 인내심을 가지는 것과 같은 부분에서 코칭을 받을 수 있도록 도와주는 매우 효과적인 도구입니다.”",
+      "quote": "“Parsertime은 오버워치 스크림 통계를 확인하기에 정말 놀라운 방법입니다. 이 도구를 통해 통계 전반에 대해 더 깊이 이해하게 되었고, 지금은 네 팀을 위해 데이터 사이언스를 하고 있습니다 (Parsertime도 사용 중입니다). 이 플랫폼에서 얻은 정보는 플레이어들이 더 오래 생존하기, 궁극기를 좀 더 오래 간직하기, 인내심을 갖기 등 실제로 도움이 필요한 부분을 중심으로 코칭할 수 있도록 해줍니다. 만약 어떤 플레이어의 치유량이 다른 서포트보다 낮다면, 그 이유를 찾아볼 수도 있죠. Parsertime은 더 광범위한 데이터를 기반으로 세밀한 분석이 가능하도록 해주는 환상적인 툴입니다.”",
       "author": "coy (@shy.coy)",
       "role": "o7 Esports 매니저",
-      "starRating": "별 5개 중 5개"
+      "starRating": "별 5개 만점에 5개"
     },
     "faq": {
       "title": "자주 묻는 질문",
@@ -5608,7 +5610,13 @@
     },
     "tools": {
       "title": "도구",
-      "simulator": "승리 확률 시뮬레이터"
+      "aiChat": "AI 분석가 채팅",
+      "coachingCanvas": "코칭 캔버스",
+      "ultimateImpact": "궁극기 및 스킬 영향",
+      "simulator": "승리 확률 시뮬레이터",
+      "scouting": "FACEIT 팀 스카우팅",
+      "queryBuilder": "쿼리 빌더",
+      "creditBased": "크레딧 기반"
     },
     "logoCloud": {
       "title": "대학 및 프로 팀이 신뢰합니다"

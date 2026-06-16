@@ -5664,7 +5664,9 @@
       "mapEvents": "Map Events",
       "playerComparison": "Player Comparison",
       "customTargets": "Custom Targets",
-      "overviewCard": "Overview Card"
+      "overviewCard": "Overview Card",
+      "tempoChart": "Tempo Chart",
+      "positionalData": "Positional Data & Heatmaps"
     },
     "playerStatistics": {
       "title": "Player Statistics",
@@ -5686,7 +5688,13 @@
     },
     "tools": {
       "title": "Tools",
-      "simulator": "Win Probability Simulator"
+      "aiChat": "AI Analyst Chat",
+      "coachingCanvas": "Coaching Canvas",
+      "ultimateImpact": "Ultimate & Ability Impact",
+      "simulator": "Win Probability Simulator",
+      "scouting": "FACEIT Team Scouting",
+      "queryBuilder": "Query Builder",
+      "creditBased": "Credit-based"
     },
     "logoCloud": {
       "title": "Trusted by collegiate and professional teams"
@@ -5708,9 +5716,9 @@
     },
     "testimonial": {
       "starRating": "5 out of 5 stars",
-      "quote": "“Parsertime is so impactful to the point where my players can be coached on things they actively need help with, like living more, or holding their ult longer and being patient.”",
-      "author": "coy (@shy.coy)",
-      "role": "Manager for o7 Esports"
+      "quote": "“In my 8 years of coaching, I have used many different tools for analysis but this is the one I wish I had all along. Parsertime has been a game changer for us by identified trends and metrics that would otherwise be overlooked with just coaches watching alone. Both the ability to track team improvement incrementally and developing scouting plans based on scrim data make this tool a must for any serious coaches and teams.”",
+      "author": "DSG byZenith (@byZenith)",
+      "role": "Head Coach, Disguised"
     },
     "faq": {
       "title": "Frequently asked questions",

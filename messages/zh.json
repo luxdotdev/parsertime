@@ -5552,7 +5552,9 @@
       "mapEvents": "地图事件",
       "playerComparison": "玩家比较",
       "customTargets": "自定义目标",
-      "overviewCard": "概览卡片"
+      "overviewCard": "概览卡片",
+      "tempoChart": "节奏图表",
+      "positionalData": "站位数据与热力图"
     },
     "playerStatistics": {
       "title": "玩家统计",
@@ -5577,10 +5579,10 @@
       "description": "查看我们的案例研究"
     },
     "testimonial": {
-      "quote": "“Parsertime 的影响非常大，甚至可以帮助我的队员们在他们需要帮助的事情上进行指导，比如更长时间地存活、保持终极技能更长时间以及更有耐心。”",
+      "quote": "“Parsertime 是分析《守望先锋》比赛统计的绝佳工具。它让我深入了解数据并激发了我对数据科学的兴趣。如今，我使用 Parsertime 为四支队伍提供数据支持。它提供的见解影响深远，我可以帮助队员改进，例如延长存活时间、更有效地使用终极技能等。如果他们的治疗量低于平均值，我们还能一起找出原因。这是一个神奇的工具，帮助我们以广阔视角分析细节。”",
       "author": "coy (@shy.coy)",
-      "role": "o7 Esports 的经理",
-      "starRating": "5颗星中的5颗"
+      "role": "o7 电竞经理",
+      "starRating": "5 星好评"
     },
     "faq": {
       "title": "常见问题解答",
@@ -5608,7 +5610,13 @@
     },
     "tools": {
       "title": "工具",
-      "simulator": "胜率模拟器"
+      "aiChat": "AI 分析师聊天",
+      "coachingCanvas": "教练画布",
+      "ultimateImpact": "终极技能与技能影响",
+      "simulator": "胜率模拟器",
+      "scouting": "FACEIT 团队球探",
+      "queryBuilder": "查询构建器",
+      "creditBased": "按额度计费"
     },
     "logoCloud": {
       "title": "受到大学和职业战队的信赖"

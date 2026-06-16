@@ -126,6 +126,8 @@ export default async function PricingPage() {
         t("features.scrims"),
         t("features.joinTeams"),
         t("features.data"),
+        t("tools.aiChat"),
+        t("tools.coachingCanvas"),
         t("features.createTeams.free"),
         t("features.teamMembers.free"),
         t("support.discord"),
@@ -142,7 +144,9 @@ export default async function PricingPage() {
       highlights: [
         t("features.createTeams.basic"),
         t("features.teamMembers.basic"),
-        t("mapStatistics.overviewCard"),
+        t("tools.ultimateImpact"),
+        t("mapStatistics.positionalData"),
+        t("mapStatistics.tempoChart"),
         `${t("playerStatistics.last3Months")} – ${t(
           "playerStatistics.last6Months"
         )}`,
@@ -162,6 +166,8 @@ export default async function PricingPage() {
         t("features.createTeams.premium"),
         t("features.teamMembers.premium"),
         t("features.earlyAccess"),
+        t("tools.scouting"),
+        t("tools.queryBuilder"),
         `${t("playerStatistics.allTime")} & ${t("playerStatistics.custom")}`,
         t("tools.simulator"),
         t("support.custom"),
@@ -275,6 +281,24 @@ export default async function PricingPage() {
         },
         {
           name: t("mapStatistics.overviewCard"),
+          tiers: {
+            "tier-free": true,
+            "tier-basic": true,
+            "tier-premium": true,
+          },
+          comingSoon: false,
+        },
+        {
+          name: t("mapStatistics.tempoChart"),
+          tiers: {
+            "tier-free": true,
+            "tier-basic": true,
+            "tier-premium": true,
+          },
+          comingSoon: false,
+        },
+        {
+          name: t("mapStatistics.positionalData"),
           tiers: { "tier-basic": true, "tier-premium": true },
           comingSoon: false,
         },
@@ -346,7 +370,40 @@ export default async function PricingPage() {
       name: t("tools.title"),
       features: [
         {
+          name: t("tools.aiChat"),
+          tiers: {
+            "tier-free": t("tools.creditBased"),
+            "tier-basic": t("tools.creditBased"),
+            "tier-premium": t("tools.creditBased"),
+          },
+          comingSoon: false,
+        },
+        {
+          name: t("tools.coachingCanvas"),
+          tiers: {
+            "tier-free": true,
+            "tier-basic": true,
+            "tier-premium": true,
+          },
+          comingSoon: false,
+        },
+        {
+          name: t("tools.ultimateImpact"),
+          tiers: { "tier-basic": true, "tier-premium": true },
+          comingSoon: false,
+        },
+        {
           name: t("tools.simulator"),
+          tiers: { "tier-premium": true },
+          comingSoon: false,
+        },
+        {
+          name: t("tools.scouting"),
+          tiers: { "tier-premium": true },
+          comingSoon: false,
+        },
+        {
+          name: t("tools.queryBuilder"),
           tiers: { "tier-premium": true },
           comingSoon: false,
         },
