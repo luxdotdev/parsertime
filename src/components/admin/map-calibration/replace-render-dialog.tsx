@@ -259,7 +259,7 @@ export function ReplaceRenderDialog({
         </DialogHeader>
 
         {!staged ? (
-          <div className="space-y-4">
+          <div className="min-w-0 space-y-4">
             <input
               type="file"
               name="newRender"
@@ -280,10 +280,10 @@ export function ReplaceRenderDialog({
             ) : null}
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="min-w-0 space-y-4">
             <div className="space-y-2">
               <p className="text-sm">{t("staged")}</p>
-              <code className="bg-muted block rounded px-2 py-1 text-xs">
+              <code className="bg-muted block rounded px-2 py-1 text-xs break-words">
                 {t("scriptHint")}
               </code>
               <label className="text-sm font-medium" htmlFor="transform-json">
@@ -321,7 +321,7 @@ export function ReplaceRenderDialog({
                 ) : null}
                 {/* Cap the canvas height inside the dialog; the shared
                     MapCanvas hard-codes min-h-[500px], so override it here. */}
-                <div className="h-[45vh] [&>*]:min-h-0!">
+                <div className="h-[45vh] w-full min-w-0 [&>*]:min-h-0!">
                   <MapCanvas
                     imageUrl={staged.stagedDisplayUrl}
                     imageWidth={staged.newWidth}

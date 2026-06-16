@@ -6038,7 +6038,7 @@
       "alignSummary": "{inliers} inliers · residual {residual}px",
       "lowConfidence": "Low confidence — verify the anchor dots carefully before confirming.",
       "staged": "Render uploaded. Run the alignment script locally and paste its output below.",
-      "scriptHint": "scripts/map-align ▸ uv run cli.py <old-image> <new-render>",
+      "scriptHint": "scripts/map-align ▸ uv run cli.py [old-image] [new-render]",
       "transformLabel": "Alignment transform (JSON)",
       "transformPlaceholder": "Paste the script's JSON output here",
       "parseError": "Couldn't read that — paste the full JSON output of the alignment script.",
