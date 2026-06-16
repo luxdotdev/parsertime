@@ -6028,6 +6028,24 @@
       "gridOn": "Grid ON",
       "gridOff": "Grid OFF",
       "instructions": "{zoom} · Scroll to zoom · Drag to pan · Click to place"
+    },
+    "replaceRender": {
+      "button": "Replace render",
+      "title": "Replace render for {mapName}",
+      "description": "Upload a new render. We align it to the current image and move your calibration onto it. Nothing changes until you confirm.",
+      "selectFile": "Select new render",
+      "uploading": "Uploading…",
+      "aligning": "Aligning to current image…",
+      "alignSummary": "{inliers} inliers · residual {residual}px",
+      "lowConfidence": "Low confidence — verify the anchor dots carefully before confirming.",
+      "unalignable": "Couldn't align automatically. Re-anchor this map manually instead.",
+      "showingOld": "Showing old image",
+      "showingNew": "Showing new render",
+      "confirm": "Confirm & apply",
+      "cancel": "Cancel",
+      "applying": "Applying…",
+      "applied": "Render replaced and calibration preserved.",
+      "applyError": "Failed to apply the new render."
     }
   },
   "credits": {

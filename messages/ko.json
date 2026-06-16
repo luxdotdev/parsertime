@@ -6269,6 +6269,24 @@
       "gridOn": "그리드 켜짐",
       "gridOff": "그리드 꺼짐",
       "instructions": "{zoom} · 스크롤로 확대/축소 · 드래그로 이동 · 클릭으로 배치"
+    },
+    "replaceRender": {
+      "button": "Replace render",
+      "title": "Replace render for {mapName}",
+      "description": "Upload a new render. We align it to the current image and move your calibration onto it. Nothing changes until you confirm.",
+      "selectFile": "Select new render",
+      "uploading": "Uploading…",
+      "aligning": "Aligning to current image…",
+      "alignSummary": "{inliers} inliers · residual {residual}px",
+      "lowConfidence": "Low confidence — verify the anchor dots carefully before confirming.",
+      "unalignable": "Couldn't align automatically. Re-anchor this map manually instead.",
+      "showingOld": "Showing old image",
+      "showingNew": "Showing new render",
+      "confirm": "Confirm & apply",
+      "cancel": "Cancel",
+      "applying": "Applying…",
+      "applied": "Render replaced and calibration preserved.",
+      "applyError": "Failed to apply the new render."
     }
   },
   "credits": {

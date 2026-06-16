@@ -4,6 +4,7 @@ import { AnchorDialog } from "@/components/admin/map-calibration/anchor-dialog";
 import { AnchorList } from "@/components/admin/map-calibration/anchor-list";
 import { MapCanvas } from "@/components/admin/map-calibration/map-canvas";
 import { MapImageUpload } from "@/components/admin/map-calibration/map-image-upload";
+import { ReplaceRenderDialog } from "@/components/admin/map-calibration/replace-render-dialog";
 import { PreviewMode } from "@/components/admin/map-calibration/preview-mode";
 import { TransformDisplay } from "@/components/admin/map-calibration/transform-display";
 import { Button } from "@/components/ui/button";
@@ -300,6 +301,18 @@ export function CalibrationEditor({
             }
           }}
         />
+        {calibration.anchors.length >= 3 ? (
+          <ReplaceRenderDialog
+            calibrationId={calibration.id}
+            mapName={mapName}
+            anchors={calibration.anchors.map((a) => ({
+              imageU: a.imageU,
+              imageV: a.imageV,
+              label: a.label,
+            }))}
+            onApplied={() => router.refresh()}
+          />
+        ) : null}
       </Header>
 
       <div className="flex min-h-0 flex-1 gap-4">

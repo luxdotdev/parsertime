@@ -6269,6 +6269,24 @@
       "gridOn": "网格开启",
       "gridOff": "网格关闭",
       "instructions": "{zoom} · 滚动缩放 · 拖动平移 · 点击放置"
+    },
+    "replaceRender": {
+      "button": "Replace render",
+      "title": "Replace render for {mapName}",
+      "description": "Upload a new render. We align it to the current image and move your calibration onto it. Nothing changes until you confirm.",
+      "selectFile": "Select new render",
+      "uploading": "Uploading…",
+      "aligning": "Aligning to current image…",
+      "alignSummary": "{inliers} inliers · residual {residual}px",
+      "lowConfidence": "Low confidence — verify the anchor dots carefully before confirming.",
+      "unalignable": "Couldn't align automatically. Re-anchor this map manually instead.",
+      "showingOld": "Showing old image",
+      "showingNew": "Showing new render",
+      "confirm": "Confirm & apply",
+      "cancel": "Cancel",
+      "applying": "Applying…",
+      "applied": "Render replaced and calibration preserved.",
+      "applyError": "Failed to apply the new render."
     }
   },
   "credits": {
