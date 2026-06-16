@@ -37,7 +37,7 @@ export function remapCalibration<A extends RemappableAnchor>(
     throw new Error("At least 3 anchor points are required to remap");
   }
 
-  const remapped = anchors.map((anchor) => {
+  const remapped = anchors.map((anchor): A => {
     const { u, v } = applyPixelAffine(p, anchor.imageU, anchor.imageV);
     return { ...anchor, imageU: u, imageV: v };
   });

@@ -1,4 +1,4 @@
-import { remapCalibration } from "@/lib/map-calibration/remap";
+import { applyPixelAffine, remapCalibration } from "@/lib/map-calibration/remap";
 import type { MapTransform, PixelAffine } from "@/lib/map-calibration/types";
 import { worldToImage } from "@/lib/map-calibration/world-to-image";
 import { describe, expect, it } from "vitest";
@@ -54,6 +54,24 @@ describe("remapCalibration", () => {
         ],
         P
       )
-    ).toThrow();
+    ).toThrow("At least 3");
+  });
+});
+
+describe("applyPixelAffine", () => {
+  it("identity transform leaves (u, v) unchanged", () => {
+    const p = { a: 1, b: 0, c: 0, d: 1, tx: 0, ty: 0 };
+    const result = applyPixelAffine(p, 42, 99);
+    expect(result.u).toBeCloseTo(42);
+    expect(result.v).toBeCloseTo(99);
+  });
+
+  it("non-identity transform produces the expected scalar output", () => {
+    // u = 2*10 + 1*20 + 5 = 45
+    // v = -1*10 + 3*20 + (-4) = 46
+    const p = { a: 2, b: 1, c: -1, d: 3, tx: 5, ty: -4 };
+    const result = applyPixelAffine(p, 10, 20);
+    expect(result.u).toBeCloseTo(45);
+    expect(result.v).toBeCloseTo(46);
   });
 });
