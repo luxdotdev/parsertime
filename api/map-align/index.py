@@ -18,12 +18,9 @@ import traceback
 import urllib.request
 from http.server import BaseHTTPRequestHandler
 
-import cv2
-import numpy as np
+from align import align_bounded, AlignError
 
-from align import align_images, AlignError
-
-MAX_IMAGE_BYTES = 25 * 1024 * 1024
+MAX_IMAGE_BYTES = 150 * 1024 * 1024  # 8K map PNGs run ~100 MB
 
 
 def _bearer(headers):
@@ -45,17 +42,13 @@ def _authorized(headers):
     return hmac.compare_digest(provided, expected)
 
 
-def _download_image(url):
-    """Fetch a presigned URL, decode it as a BGR image, enforce size limit."""
-    with urllib.request.urlopen(url, timeout=60) as resp:  # noqa: S310 (trusted presigned URL) — 60s per-image download budget (function maxDuration is 60s)
+def _download_bytes(url):
+    """Fetch a presigned URL as raw bytes, enforcing the size limit."""
+    with urllib.request.urlopen(url, timeout=60) as resp:  # noqa: S310 (trusted presigned URL)
         data = resp.read(MAX_IMAGE_BYTES + 1)
     if len(data) > MAX_IMAGE_BYTES:
         raise AlignError("image exceeds size limit")
-    arr = np.frombuffer(data, dtype=np.uint8)
-    img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
-    if img is None:
-        raise AlignError("could not decode image")
-    return img
+    return data
 
 
 class handler(BaseHTTPRequestHandler):  # noqa: N801 — Vercel requires this name
@@ -86,9 +79,9 @@ class handler(BaseHTTPRequestHandler):  # noqa: N801 — Vercel requires this na
             return
 
         try:
-            old_img = _download_image(old_url)
-            new_img = _download_image(new_url)
-            P, inliers, residual = align_images(old_img, new_img)
+            old_bytes = _download_bytes(old_url)
+            new_bytes = _download_bytes(new_url)
+            P, inliers, residual = align_bounded(old_bytes, new_bytes)
             self._send(200, {
                 "transform": P,
                 "inliers": inliers,
