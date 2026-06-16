@@ -252,7 +252,7 @@ export function ReplaceRenderDialog({
           {t("button")}
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{t("title", { mapName })}</DialogTitle>
           <DialogDescription>{t("description")}</DialogDescription>
@@ -319,15 +319,19 @@ export function ReplaceRenderDialog({
                     {t("lowConfidence")}
                   </p>
                 ) : null}
-                <MapCanvas
-                  imageUrl={staged.stagedDisplayUrl}
-                  imageWidth={staged.newWidth}
-                  imageHeight={staged.newHeight}
-                  anchors={projectedAnchors}
-                  transform={null}
-                  testPoints={[]}
-                  onImageClick={() => undefined}
-                />
+                {/* Cap the canvas height inside the dialog; the shared
+                    MapCanvas hard-codes min-h-[500px], so override it here. */}
+                <div className="h-[45vh] [&>*]:min-h-0!">
+                  <MapCanvas
+                    imageUrl={staged.stagedDisplayUrl}
+                    imageWidth={staged.newWidth}
+                    imageHeight={staged.newHeight}
+                    anchors={projectedAnchors}
+                    transform={null}
+                    testPoints={[]}
+                    onImageClick={() => undefined}
+                  />
+                </div>
                 <div className="space-y-2">
                   <div className="flex flex-wrap items-center gap-2 text-sm">
                     <span className="text-muted-foreground">
@@ -360,12 +364,7 @@ export function ReplaceRenderDialog({
                       </Button>
                     ) : null}
                   </div>
-                  <div
-                    className="bg-muted relative w-full overflow-hidden rounded border"
-                    style={{
-                      aspectRatio: `${staged.newWidth} / ${staged.newHeight}`,
-                    }}
-                  >
+                  <div className="bg-muted relative h-[40vh] w-full overflow-hidden rounded border">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={staged.stagedDisplayUrl}
