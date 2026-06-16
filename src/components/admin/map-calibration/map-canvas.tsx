@@ -69,8 +69,12 @@ export function MapCanvas({
   const [showGrid, setShowGrid] = useState(true);
 
   useEffect(() => {
+    // No crossOrigin: the canvas only draws the image, never reads its pixels
+    // back (no getImageData/toDataURL), so tainting is irrelevant. Setting
+    // crossOrigin would make the load fail whenever the R2 response lacks CORS
+    // headers — which is exactly why presigned map images would hang loading.
+    setImageLoaded(false);
     const img = new Image();
-    img.crossOrigin = "anonymous";
     img.onload = () => {
       imageRef.current = img;
       setImageLoaded(true);
@@ -84,6 +88,10 @@ export function MapCanvas({
         );
         setView({ offsetX: 0, offsetY: 0, zoom: fitZoom });
       }
+    };
+    img.onerror = () => {
+      // eslint-disable-next-line no-console
+      console.error(`MapCanvas: failed to load image ${imageUrl}`);
     };
     img.src = imageUrl;
   }, [imageUrl, imageWidth, imageHeight]);
