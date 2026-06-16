@@ -58,9 +58,10 @@ function parseTransform(text: string): ParsedTransform | null {
   const raw: unknown = JSON.parse(text);
   if (typeof raw !== "object" || raw === null) return null;
   const obj = raw as Record<string, unknown>;
-  const affineSource = ("pixelAffine" in obj ? obj.pixelAffine : obj) as
-    | Record<string, unknown>
-    | null;
+  const affineSource = ("pixelAffine" in obj ? obj.pixelAffine : obj) as Record<
+    string,
+    unknown
+  > | null;
   if (typeof affineSource !== "object" || affineSource === null) return null;
   const keys = ["a", "b", "c", "d", "tx", "ty"] as const;
   const affine: Record<(typeof keys)[number], number> = {

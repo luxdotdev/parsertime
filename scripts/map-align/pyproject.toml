@@ -10,6 +10,4 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = [
-  "pytest>=8,<9",
-]
+dev = ["pytest>=8,<9"]

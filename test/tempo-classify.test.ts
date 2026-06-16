@@ -33,7 +33,9 @@ test("returns null when baseline is missing", () => {
 });
 
 test("returns null when sample size is below the read floor", () => {
-  expect(classifyTempo(30, { ...base, sampleN: MIN_SAMPLE_FOR_READ - 1 })).toBeNull();
+  expect(
+    classifyTempo(30, { ...base, sampleN: MIN_SAMPLE_FOR_READ - 1 })
+  ).toBeNull();
 });
 
 test("zero stdDev falls back to about (no divide-by-zero)", () => {

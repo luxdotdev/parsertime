@@ -19,8 +19,18 @@ test("summarize handles an empty list", () => {
 
 test("bucketTeamSamples excludes teams below the map floor", () => {
   const samples: TeamTempoSample[] = [
-    { mapCount: MIN_MAPS_FOR_BASELINE - 1, fightDuration: 99, chargeTime: 99, holdTime: 99 },
-    { mapCount: MIN_MAPS_FOR_BASELINE, fightDuration: 25, chargeTime: 100, holdTime: 30 },
+    {
+      mapCount: MIN_MAPS_FOR_BASELINE - 1,
+      fightDuration: 99,
+      chargeTime: 99,
+      holdTime: 99,
+    },
+    {
+      mapCount: MIN_MAPS_FOR_BASELINE,
+      fightDuration: 25,
+      chargeTime: 100,
+      holdTime: 30,
+    },
     { mapCount: 50, fightDuration: 27, chargeTime: 110, holdTime: 35 },
   ];
   const out = bucketTeamSamples(samples);

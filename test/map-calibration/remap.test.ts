@@ -1,4 +1,7 @@
-import { applyPixelAffine, remapCalibration } from "@/lib/map-calibration/remap";
+import {
+  applyPixelAffine,
+  remapCalibration,
+} from "@/lib/map-calibration/remap";
 import type { MapTransform, PixelAffine } from "@/lib/map-calibration/types";
 import { worldToImage } from "@/lib/map-calibration/world-to-image";
 import { describe, expect, it } from "vitest";
@@ -11,7 +14,14 @@ function applyPixel(p: PixelAffine, u: number, v: number) {
 describe("remapCalibration", () => {
   it("preserves world→new-image geometry for every anchor", () => {
     // Known world→old-image transform.
-    const oldT: MapTransform = { a: 2, b: 0.1, c: -0.05, d: 1.8, tx: 30, ty: 50 };
+    const oldT: MapTransform = {
+      a: 2,
+      b: 0.1,
+      c: -0.05,
+      d: 1.8,
+      tx: 30,
+      ty: 50,
+    };
     const worlds = [
       { worldX: 0, worldY: 0 },
       { worldX: 100, worldY: 0 },
@@ -20,11 +30,24 @@ describe("remapCalibration", () => {
     ];
     const anchors = worlds.map((w, i) => {
       const { u, v } = worldToImage({ x: w.worldX, y: w.worldY }, oldT);
-      return { id: i, worldX: w.worldX, worldY: w.worldY, imageU: u, imageV: v };
+      return {
+        id: i,
+        worldX: w.worldX,
+        worldY: w.worldY,
+        imageU: u,
+        imageV: v,
+      };
     });
 
     // Known old-pixel → new-pixel transform (rotate-ish + scale + shift).
-    const P: PixelAffine = { a: 0.9, b: -0.2, c: 0.15, d: 1.05, tx: -12, ty: 8 };
+    const P: PixelAffine = {
+      a: 0.9,
+      b: -0.2,
+      c: 0.15,
+      d: 1.05,
+      tx: -12,
+      ty: 8,
+    };
 
     const result = remapCalibration(anchors, P);
 

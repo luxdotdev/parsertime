@@ -637,8 +637,7 @@ export function processTeamUltStats(
     const opponentNames = opponentNamesByMap.get(cs.MapDataId);
     if (!opponentNames || !opponentNames.has(cs.playerName)) continue;
     const rawName = opponentTeamNameByMap.get(cs.MapDataId);
-    const name =
-      rawName && !isDefaultTeamName(rawName) ? rawName.trim() : null;
+    const name = rawName && !isDefaultTeamName(rawName) ? rawName.trim() : null;
     const observation: OpponentObservation = {
       value: cs.value,
       name,

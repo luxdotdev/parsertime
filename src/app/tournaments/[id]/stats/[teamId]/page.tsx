@@ -352,7 +352,10 @@ export default async function TournamentTeamStatsPage(props: {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
-          <QuickStatsCard stats={quickStats} fightBaseline={baselines.FIGHT_DURATION ?? null} />
+          <QuickStatsCard
+            stats={quickStats}
+            fightBaseline={baselines.FIGHT_DURATION ?? null}
+          />
 
           <div className="grid gap-4 md:grid-cols-2">
             <TeamRosterGrid
