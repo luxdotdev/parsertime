@@ -47,6 +47,7 @@ export async function POST(request: Request, props: Params) {
     if (!rawKey || typeof rawKey !== "string") {
       wideEvent.status_code = 400;
       wideEvent.outcome = "error";
+      wideEvent.error = { message: "Missing rawKey" };
       return NextResponse.json({ error: "Missing rawKey" }, { status: 400 });
     }
 
@@ -67,6 +68,7 @@ export async function POST(request: Request, props: Params) {
     if (!rawKey.startsWith(`map-images/${slug}/raw-`)) {
       wideEvent.status_code = 400;
       wideEvent.outcome = "error";
+      wideEvent.error = { message: "rawKey does not match map" };
       return NextResponse.json(
         { error: "rawKey does not match map" },
         { status: 400 }
@@ -75,6 +77,7 @@ export async function POST(request: Request, props: Params) {
     if (calibration.anchors.length < 3) {
       wideEvent.status_code = 400;
       wideEvent.outcome = "error";
+      wideEvent.error = { message: "Map needs at least 3 anchors to re-align" };
       return NextResponse.json(
         { error: "Map needs at least 3 anchors to re-align" },
         { status: 400 }
@@ -89,6 +92,7 @@ export async function POST(request: Request, props: Params) {
     if (!newWidth || !newHeight) {
       wideEvent.status_code = 400;
       wideEvent.outcome = "error";
+      wideEvent.error = { message: "Could not determine image dimensions" };
       return NextResponse.json(
         { error: "Could not determine image dimensions" },
         { status: 400 }
@@ -113,6 +117,7 @@ export async function POST(request: Request, props: Params) {
       contentType: "image/png",
     });
     await r2.delete(rawKey);
+    wideEvent.staged_keys = keys;
 
     // Presign OLD original + NEW staged original for the engine.
     const [oldUrl, newUrl, stagedDisplayUrl] = await Promise.all([
@@ -120,6 +125,16 @@ export async function POST(request: Request, props: Params) {
       r2.getPresignedUrl({ key: keys.original, expiresIn: 600 }),
       r2.getPresignedUrl({ key: keys.display, expiresIn: 3600 }),
     ]);
+
+    if (!process.env.CRON_SECRET) {
+      wideEvent.status_code = 500;
+      wideEvent.outcome = "engine_error";
+      wideEvent.error = { message: "CRON_SECRET is not configured" };
+      return NextResponse.json(
+        { error: "Alignment engine failed" },
+        { status: 500 }
+      );
+    }
 
     const origin = new URL(request.url).origin;
     const engineRes = await fetch(`${origin}/api/map-align`, {
@@ -129,6 +144,7 @@ export async function POST(request: Request, props: Params) {
         Authorization: `Bearer ${process.env.CRON_SECRET}`,
       },
       body: JSON.stringify({ oldUrl, newUrl }),
+      signal: AbortSignal.timeout(50_000), // 50s — headroom under the 60s maxDuration
     });
 
     if (engineRes.status === 422) {
@@ -245,6 +261,10 @@ export async function DELETE(_request: Request, props: Params) {
     }
     wideEvent.status_code = 500;
     wideEvent.outcome = "error";
+    wideEvent.error = {
+      message: error instanceof Error ? error.message : "Unknown error",
+      type: error instanceof Error ? error.name : "Error",
+    };
     return NextResponse.json(
       { error: "An unknown error occurred" },
       { status: 500 }
