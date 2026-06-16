@@ -255,9 +255,7 @@ export async function Footer() {
               </div>
             )}
 
-            <WorkshopCodePill
-              code={positionalDataEnabled ? "Z0ASA" : "DKEEH"}
-            />
+            <WorkshopCodePill code="Z0ASA" />
 
             <p className="text-muted-foreground font-mono text-xs">
               &copy; 2024&ndash;{new Date().getFullYear()} lux.dev
