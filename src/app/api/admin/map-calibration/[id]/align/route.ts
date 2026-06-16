@@ -119,11 +119,16 @@ export async function POST(request: Request, props: Params) {
     await r2.delete(rawKey);
     wideEvent.staged_keys = keys;
 
-    // Presign OLD original + NEW staged original for the engine.
-    const [oldUrl, newUrl, stagedDisplayUrl] = await Promise.all([
+    // Presign OLD original + NEW staged original for the engine, plus the OLD
+    // and NEW display images for the review UI's old↔new compare.
+    const [oldUrl, newUrl, stagedDisplayUrl, oldDisplayUrl] = await Promise.all([
       r2.getPresignedUrl({ key: calibration.imageUrl, expiresIn: 600 }),
       r2.getPresignedUrl({ key: keys.original, expiresIn: 600 }),
       r2.getPresignedUrl({ key: keys.display, expiresIn: 3600 }),
+      r2.getPresignedUrl({
+        key: calibration.displayImageKey ?? calibration.imageUrl,
+        expiresIn: 3600,
+      }),
     ]);
 
     if (!process.env.CRON_SECRET) {
@@ -194,6 +199,7 @@ export async function POST(request: Request, props: Params) {
       stagedOriginalKey: keys.original,
       stagedDisplayKey: keys.display,
       stagedDisplayUrl,
+      oldDisplayUrl,
       newWidth,
       newHeight,
     });

@@ -30,6 +30,7 @@ type AlignResult = {
   stagedOriginalKey: string;
   stagedDisplayKey: string;
   stagedDisplayUrl: string;
+  oldDisplayUrl: string;
   newWidth: number;
   newHeight: number;
 };
@@ -58,6 +59,9 @@ export function ReplaceRenderDialog({
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<AlignResult | null>(null);
+  const [compareMode, setCompareMode] = useState<"blink" | "swipe">("blink");
+  const [showOld, setShowOld] = useState(false);
+  const [swipe, setSwipe] = useState(50);
 
   function reset() {
     setResult(null);
@@ -241,6 +245,74 @@ export function ReplaceRenderDialog({
               testPoints={[]}
               onImageClick={() => undefined}
             />
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-2 text-sm">
+                <span className="text-muted-foreground">
+                  {t("compareTitle")}
+                </span>
+                <Button
+                  type="button"
+                  variant={compareMode === "blink" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCompareMode("blink")}
+                >
+                  {t("compareBlink")}
+                </Button>
+                <Button
+                  type="button"
+                  variant={compareMode === "swipe" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setCompareMode("swipe")}
+                >
+                  {t("compareSwipe")}
+                </Button>
+                {compareMode === "blink" ? (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowOld((s) => !s)}
+                  >
+                    {showOld ? t("showingOld") : t("showingNew")}
+                  </Button>
+                ) : null}
+              </div>
+              <div
+                className="bg-muted relative w-full overflow-hidden rounded border"
+                style={{
+                  aspectRatio: `${result.newWidth} / ${result.newHeight}`,
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={result.stagedDisplayUrl}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-contain"
+                />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={result.oldDisplayUrl}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-contain"
+                  style={
+                    compareMode === "swipe"
+                      ? { clipPath: `inset(0 ${100 - swipe}% 0 0)` }
+                      : { opacity: showOld ? 1 : 0 }
+                  }
+                />
+              </div>
+              {compareMode === "swipe" ? (
+                <input
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={swipe}
+                  onChange={(e) => setSwipe(Number(e.target.value))}
+                  aria-label={t("compareSwipe")}
+                  className="w-full"
+                />
+              ) : null}
+            </div>
             <div className="flex justify-end gap-2">
               <Button
                 variant="outline"
