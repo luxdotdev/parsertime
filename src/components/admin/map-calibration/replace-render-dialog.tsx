@@ -23,16 +23,19 @@ type Anchor = {
   label: string | null;
 };
 
-type AlignResult = {
-  pixelAffine: PixelAffine;
-  inliers: number;
-  residual: number;
+type StagedResult = {
   stagedOriginalKey: string;
   stagedDisplayKey: string;
   stagedDisplayUrl: string;
   oldDisplayUrl: string;
   newWidth: number;
   newHeight: number;
+};
+
+type ParsedTransform = {
+  pixelAffine: PixelAffine;
+  inliers: number | null;
+  residual: number | null;
 };
 
 type ReplaceRenderDialogProps = {
@@ -44,9 +47,39 @@ type ReplaceRenderDialogProps = {
 
 // Heuristics for the "verify carefully" banner (informational only — never gates
 // Confirm). Residual is mean reprojection error in original-image pixels; inliers
-// is the RANSAC inlier match count from the alignment engine.
+// is the RANSAC inlier match count from the alignment script.
 const LOW_CONFIDENCE_RESIDUAL = 5;
 const LOW_CONFIDENCE_INLIERS = 25;
+
+// Parse the alignment CLI's output. Accepts either the full payload
+// { pixelAffine: {...}, inliers, residual } or a bare { a,b,c,d,tx,ty }.
+// Returns null if the shape/values are invalid. Caller wraps JSON.parse errors.
+function parseTransform(text: string): ParsedTransform | null {
+  const raw: unknown = JSON.parse(text);
+  if (typeof raw !== "object" || raw === null) return null;
+  const obj = raw as Record<string, unknown>;
+  const affineSource = ("pixelAffine" in obj ? obj.pixelAffine : obj) as
+    | Record<string, unknown>
+    | null;
+  if (typeof affineSource !== "object" || affineSource === null) return null;
+  const keys = ["a", "b", "c", "d", "tx", "ty"] as const;
+  const affine: Record<(typeof keys)[number], number> = {
+    a: 0,
+    b: 0,
+    c: 0,
+    d: 0,
+    tx: 0,
+    ty: 0,
+  };
+  for (const k of keys) {
+    const v = affineSource[k];
+    if (typeof v !== "number" || !Number.isFinite(v)) return null;
+    affine[k] = v;
+  }
+  const inliers = typeof obj.inliers === "number" ? obj.inliers : null;
+  const residual = typeof obj.residual === "number" ? obj.residual : null;
+  return { pixelAffine: affine as PixelAffine, inliers, residual };
+}
 
 export function ReplaceRenderDialog({
   calibrationId,
@@ -58,20 +91,29 @@ export function ReplaceRenderDialog({
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState<AlignResult | null>(null);
+  const [staged, setStaged] = useState<StagedResult | null>(null);
+  const [transformText, setTransformText] = useState("");
+  const [parsed, setParsed] = useState<ParsedTransform | null>(null);
+  const [parseError, setParseError] = useState(false);
   const [compareMode, setCompareMode] = useState<"blink" | "swipe">("blink");
   const [showOld, setShowOld] = useState(false);
   const [swipe, setSwipe] = useState(50);
 
   function reset() {
-    setResult(null);
+    setStaged(null);
+    setTransformText("");
+    setParsed(null);
+    setParseError(false);
     setStatus("");
     setBusy(false);
   }
 
   async function handleFile(file: File) {
     setBusy(true);
-    setResult(null);
+    setStaged(null);
+    setParsed(null);
+    setTransformText("");
+    setParseError(false);
     try {
       setStatus(t("uploading"));
       const presignRes = await fetch(
@@ -95,8 +137,7 @@ export function ReplaceRenderDialog({
       });
       if (!put.ok) throw new Error("upload");
 
-      setStatus(t("aligning"));
-      const alignRes = await fetch(
+      const stageRes = await fetch(
         `/api/admin/map-calibration/${calibrationId}/align`,
         {
           method: "POST",
@@ -104,18 +145,30 @@ export function ReplaceRenderDialog({
           body: JSON.stringify({ rawKey }),
         }
       );
-      if (alignRes.status === 422) {
-        toast.error(t("unalignable"));
-        reset();
-        return;
-      }
-      if (!alignRes.ok) throw new Error("align");
-      setResult((await alignRes.json()) as AlignResult);
+      if (!stageRes.ok) throw new Error("stage");
+      setStaged((await stageRes.json()) as StagedResult);
     } catch {
       toast.error(t("applyError"));
     } finally {
       setBusy(false);
       setStatus("");
+    }
+  }
+
+  function handleTransformChange(text: string) {
+    setTransformText(text);
+    if (text.trim() === "") {
+      setParsed(null);
+      setParseError(false);
+      return;
+    }
+    try {
+      const result = parseTransform(text);
+      setParsed(result);
+      setParseError(result === null);
+    } catch {
+      setParsed(null);
+      setParseError(true);
     }
   }
 
@@ -126,7 +179,7 @@ export function ReplaceRenderDialog({
   }
 
   async function handleConfirm() {
-    if (!result) return;
+    if (!staged || !parsed) return;
     setBusy(true);
     setStatus(t("applying"));
     try {
@@ -136,17 +189,17 @@ export function ReplaceRenderDialog({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            pixelAffine: result.pixelAffine,
-            stagedOriginalKey: result.stagedOriginalKey,
-            stagedDisplayKey: result.stagedDisplayKey,
-            newWidth: result.newWidth,
-            newHeight: result.newHeight,
+            pixelAffine: parsed.pixelAffine,
+            stagedOriginalKey: staged.stagedOriginalKey,
+            stagedDisplayKey: staged.stagedDisplayKey,
+            newWidth: staged.newWidth,
+            newHeight: staged.newHeight,
           }),
         }
       );
       if (!res.ok) throw new Error("apply");
       toast.success(t("applied"));
-      setResult(null);
+      setStaged(null);
       setOpen(false);
       reset();
       onApplied();
@@ -159,33 +212,33 @@ export function ReplaceRenderDialog({
   }
 
   async function handleCancel() {
-    await discardStaging();
+    if (staged) await discardStaging();
     setOpen(false);
     reset();
   }
 
-  // Anchors re-projected onto the new render via P (the decisive visual).
-  const projectedAnchors: Anchor[] = result
-    ? anchors.map((a) => {
-        const { u, v } = applyPixelAffine(
-          result.pixelAffine,
-          a.imageU,
-          a.imageV
-        );
-        return { imageU: u, imageV: v, label: a.label };
-      })
-    : [];
+  const projectedAnchors: Anchor[] =
+    staged && parsed
+      ? anchors.map((a) => {
+          const { u, v } = applyPixelAffine(
+            parsed.pixelAffine,
+            a.imageU,
+            a.imageV
+          );
+          return { imageU: u, imageV: v, label: a.label };
+        })
+      : [];
 
   const lowConfidence =
-    result != null &&
-    (result.residual > LOW_CONFIDENCE_RESIDUAL ||
-      result.inliers < LOW_CONFIDENCE_INLIERS);
+    parsed != null &&
+    ((parsed.residual != null && parsed.residual > LOW_CONFIDENCE_RESIDUAL) ||
+      (parsed.inliers != null && parsed.inliers < LOW_CONFIDENCE_INLIERS));
 
   return (
     <Dialog
       open={open}
       onOpenChange={(next) => {
-        if (!next && result) void discardStaging();
+        if (!next && staged) void discardStaging();
         setOpen(next);
         if (!next) reset();
       }}
@@ -202,7 +255,7 @@ export function ReplaceRenderDialog({
           <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
-        {!result ? (
+        {!staged ? (
           <div className="space-y-4">
             <input
               type="file"
@@ -225,94 +278,124 @@ export function ReplaceRenderDialog({
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-sm">
-              {t("alignSummary", {
-                inliers: result.inliers,
-                residual: result.residual.toFixed(1),
-              })}
-            </p>
-            {lowConfidence ? (
-              <p className="text-sm text-amber-500" role="alert">
-                {t("lowConfidence")}
-              </p>
-            ) : null}
-            <MapCanvas
-              imageUrl={result.stagedDisplayUrl}
-              imageWidth={result.newWidth}
-              imageHeight={result.newHeight}
-              anchors={projectedAnchors}
-              transform={null}
-              testPoints={[]}
-              onImageClick={() => undefined}
-            />
             <div className="space-y-2">
-              <div className="flex flex-wrap items-center gap-2 text-sm">
-                <span className="text-muted-foreground">
-                  {t("compareTitle")}
-                </span>
-                <Button
-                  type="button"
-                  variant={compareMode === "blink" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCompareMode("blink")}
-                >
-                  {t("compareBlink")}
-                </Button>
-                <Button
-                  type="button"
-                  variant={compareMode === "swipe" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setCompareMode("swipe")}
-                >
-                  {t("compareSwipe")}
-                </Button>
-                {compareMode === "blink" ? (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowOld((s) => !s)}
-                  >
-                    {showOld ? t("showingOld") : t("showingNew")}
-                  </Button>
-                ) : null}
-              </div>
-              <div
-                className="bg-muted relative w-full overflow-hidden rounded border"
-                style={{
-                  aspectRatio: `${result.newWidth} / ${result.newHeight}`,
-                }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={result.stagedDisplayUrl}
-                  alt=""
-                  className="absolute inset-0 h-full w-full object-contain"
-                />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={result.oldDisplayUrl}
-                  alt=""
-                  className="absolute inset-0 h-full w-full object-contain"
-                  style={
-                    compareMode === "swipe"
-                      ? { clipPath: `inset(0 ${100 - swipe}% 0 0)` }
-                      : { opacity: showOld ? 1 : 0 }
-                  }
-                />
-              </div>
-              {compareMode === "swipe" ? (
-                <input
-                  type="range"
-                  min={0}
-                  max={100}
-                  value={swipe}
-                  onChange={(e) => setSwipe(Number(e.target.value))}
-                  aria-label={t("compareSwipe")}
-                  className="w-full"
-                />
+              <p className="text-sm">{t("staged")}</p>
+              <code className="bg-muted block rounded px-2 py-1 text-xs">
+                {t("scriptHint")}
+              </code>
+              <label className="text-sm font-medium" htmlFor="transform-json">
+                {t("transformLabel")}
+              </label>
+              <textarea
+                id="transform-json"
+                value={transformText}
+                onChange={(e) => handleTransformChange(e.target.value)}
+                placeholder={t("transformPlaceholder")}
+                rows={5}
+                className="border-input bg-background block w-full rounded border px-2 py-1 font-mono text-xs"
+              />
+              {parseError ? (
+                <p className="text-sm text-red-500" role="alert">
+                  {t("parseError")}
+                </p>
               ) : null}
             </div>
+
+            {parsed ? (
+              <div className="space-y-4">
+                {parsed.inliers != null && parsed.residual != null ? (
+                  <p className="text-sm">
+                    {t("alignSummary", {
+                      inliers: parsed.inliers,
+                      residual: parsed.residual.toFixed(1),
+                    })}
+                  </p>
+                ) : null}
+                {lowConfidence ? (
+                  <p className="text-sm text-amber-500" role="alert">
+                    {t("lowConfidence")}
+                  </p>
+                ) : null}
+                <MapCanvas
+                  imageUrl={staged.stagedDisplayUrl}
+                  imageWidth={staged.newWidth}
+                  imageHeight={staged.newHeight}
+                  anchors={projectedAnchors}
+                  transform={null}
+                  testPoints={[]}
+                  onImageClick={() => undefined}
+                />
+                <div className="space-y-2">
+                  <div className="flex flex-wrap items-center gap-2 text-sm">
+                    <span className="text-muted-foreground">
+                      {t("compareTitle")}
+                    </span>
+                    <Button
+                      type="button"
+                      variant={compareMode === "blink" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCompareMode("blink")}
+                    >
+                      {t("compareBlink")}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={compareMode === "swipe" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCompareMode("swipe")}
+                    >
+                      {t("compareSwipe")}
+                    </Button>
+                    {compareMode === "blink" ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowOld((s) => !s)}
+                      >
+                        {showOld ? t("showingOld") : t("showingNew")}
+                      </Button>
+                    ) : null}
+                  </div>
+                  <div
+                    className="bg-muted relative w-full overflow-hidden rounded border"
+                    style={{
+                      aspectRatio: `${staged.newWidth} / ${staged.newHeight}`,
+                    }}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={staged.stagedDisplayUrl}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-contain"
+                    />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={staged.oldDisplayUrl}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-contain"
+                      style={
+                        compareMode === "swipe"
+                          ? { clipPath: `inset(0 ${100 - swipe}% 0 0)` }
+                          : { opacity: showOld ? 1 : 0 }
+                      }
+                    />
+                  </div>
+                  {compareMode === "swipe" ? (
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      value={swipe}
+                      onChange={(e) => setSwipe(Number(e.target.value))}
+                      aria-label={t("compareSwipe")}
+                      className="w-full"
+                    />
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
+
             <div className="flex justify-end gap-2">
               <Button
                 variant="outline"
@@ -321,7 +404,10 @@ export function ReplaceRenderDialog({
               >
                 {t("cancel")}
               </Button>
-              <Button onClick={() => void handleConfirm()} disabled={busy}>
+              <Button
+                onClick={() => void handleConfirm()}
+                disabled={busy || !parsed}
+              >
                 {busy ? status : t("confirm")}
               </Button>
             </div>
