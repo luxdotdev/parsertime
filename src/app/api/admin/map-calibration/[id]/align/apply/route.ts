@@ -63,6 +63,15 @@ export async function POST(request: Request, props: Params) {
     const body = parsed.data;
     wideEvent.user = { id: user.id, email: user.email };
     wideEvent.calibration_id = numericId;
+    if (Number.isNaN(numericId)) {
+      wideEvent.status_code = 400;
+      wideEvent.outcome = "error";
+      wideEvent.error = { message: "Invalid calibration id" };
+      return NextResponse.json(
+        { error: "Invalid calibration id" },
+        { status: 400 }
+      );
+    }
 
     const calibration = await prisma.mapCalibration.findUnique({
       where: { id: numericId },
@@ -88,10 +97,11 @@ export async function POST(request: Request, props: Params) {
     }
 
     const slug = slugForMapName(calibration.mapName);
-    const stagedPrefix = `map-images/${slug}/staging-`;
+    const expectedStagedOriginal = `map-images/${slug}/staging-original.png`;
+    const expectedStagedDisplay = `map-images/${slug}/staging-display.png`;
     if (
-      !body.stagedOriginalKey.startsWith(stagedPrefix) ||
-      !body.stagedDisplayKey.startsWith(stagedPrefix)
+      body.stagedOriginalKey !== expectedStagedOriginal ||
+      body.stagedDisplayKey !== expectedStagedDisplay
     ) {
       wideEvent.status_code = 400;
       wideEvent.outcome = "error";
@@ -115,8 +125,10 @@ export async function POST(request: Request, props: Params) {
     const backupDisplay = `map-images/${slug}/backup-display.png`;
     const backupSnapshot = `map-images/${slug}/backup-calibration.json`;
 
+    // Single-slot backup: each apply overwrites the previous backup, so only
+    // the most recent swap is revertible (matches the "revert last swap" design).
     // 1) Back up the current live image + a JSON snapshot of prior calibration.
-    const [curOriginal, curDisplaySettled] = await Promise.all([
+    const [curOriginal, existingDisplay] = await Promise.all([
       r2.download(calibration.imageUrl),
       calibration.displayImageKey
         ? r2.download(calibration.displayImageKey)
@@ -152,10 +164,10 @@ export async function POST(request: Request, props: Params) {
         body: curOriginal,
         contentType: "image/png",
       }),
-      curDisplaySettled
+      existingDisplay
         ? r2.upload({
             key: backupDisplay,
-            body: curDisplaySettled,
+            body: existingDisplay,
             contentType: "image/png",
           })
         : Promise.resolve(),
@@ -184,6 +196,10 @@ export async function POST(request: Request, props: Params) {
       }),
     ]);
 
+    // If the DB transaction below fails, R2 already holds the new image at the
+    // live keys. Recover by copying backupOriginal/backupDisplay back over the
+    // live keys; backup-calibration.json holds the prior DB state (anchors +
+    // affine + dims). The revert route automates this.
     // 3) Remap the DB atomically: update anchors + affine + dims.
     const t = remap.transform;
     await prisma.$transaction([
@@ -220,6 +236,11 @@ export async function POST(request: Request, props: Params) {
     wideEvent.outcome = "success";
     wideEvent.map_name = calibration.mapName;
     wideEvent.residual = remap.residualError;
+    wideEvent.staged_keys = {
+      original: body.stagedOriginalKey,
+      display: body.stagedDisplayKey,
+    };
+    wideEvent.backup_display_skipped = !calibration.displayImageKey;
 
     return NextResponse.json({
       ok: true,
