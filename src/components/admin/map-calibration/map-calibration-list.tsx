@@ -15,8 +15,8 @@ import type {
   MapCalibrationAnchor,
 } from "@/generated/prisma/browser";
 import type { Route } from "next";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 type CalibrationWithAnchors = MapCalibration & {
@@ -37,6 +37,9 @@ const MAP_TYPES = [
  */
 const CALIBRATION_MAPS: { name: string; type: string }[] = [
   { name: "Aatlis", type: "Flashpoint" },
+  { name: "Antarctic Peninsula: Sublevel", type: "Control" },
+  { name: "Antarctic Peninsula: Icebreaker", type: "Control" },
+  { name: "Antarctic Peninsula: Labs", type: "Control" },
   { name: "Blizzard World", type: "Hybrid" },
   { name: "Busan: Downtown", type: "Control" },
   { name: "Busan: Meka Base", type: "Control" },
