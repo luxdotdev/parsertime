@@ -768,6 +768,27 @@ export const Roadhog = {
   ultimate: { name: "Whole Hog" },
 } as const;
 
+export const Shion = {
+  name: "Shion",
+  image: "shion.png",
+  ability1: {
+    name: "Evade",
+    description: "Dash and briefly gain overhealth.",
+    cooldown: 6,
+    tags: ["movement", "sustain"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Joyride",
+    description:
+      "Rev your engine. Reactivate to dismount and launch your bike forward.",
+    cooldown: 15,
+    tags: ["damage", "movement"],
+    impact: "low",
+  },
+  ultimate: { name: "Satsuriku Spree" },
+} as const;
+
 export const Sierra = {
   name: "Sierra",
   image: "sierra.png",
