@@ -132,6 +132,10 @@ def decode_bounded(data, target=ALIGN_TARGET_PX):
         }[reduce_factor]
         img = cv2.imdecode(arr, flag)
     else:
+        # Non-PNG (no IHDR to read dimensions from): decode at full resolution,
+        # then resize below. The upload pipeline always re-encodes to PNG, so in
+        # production this branch is unreachable; a very large non-PNG input would
+        # allocate its full raster here before the downscale.
         img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
         orig_long = None
 
