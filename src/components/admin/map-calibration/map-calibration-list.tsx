@@ -37,9 +37,9 @@ const MAP_TYPES = [
  */
 const CALIBRATION_MAPS: { name: string; type: string }[] = [
   { name: "Aatlis", type: "Flashpoint" },
-  { name: "Antarctic Peninsula: Sublevel", type: "Control" },
+  { name: "Antarctic Peninsula: Drilling Rig", type: "Control" },
   { name: "Antarctic Peninsula: Icebreaker", type: "Control" },
-  { name: "Antarctic Peninsula: Labs", type: "Control" },
+  { name: "Antarctic Peninsula: Anomaly", type: "Control" },
   { name: "Blizzard World", type: "Hybrid" },
   { name: "Busan: Downtown", type: "Control" },
   { name: "Busan: Meka Base", type: "Control" },
