@@ -106,6 +106,9 @@ export function ReplaceRenderDialog({
     setParseError(false);
     setStatus("");
     setBusy(false);
+    setCompareMode("blink");
+    setShowOld(false);
+    setSwipe(50);
   }
 
   async function handleFile(file: File) {
