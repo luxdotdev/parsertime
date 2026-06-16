@@ -21,7 +21,7 @@ import {
 import type { UnlabeledMatchesResult } from "@/data/admin/types";
 import { useQuery } from "@tanstack/react-query";
 import type { Route } from "next";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -29,6 +29,7 @@ const PAGE_SIZE = 20;
 
 export function UnlabeledMatchList() {
   const t = useTranslations("dataLabeling.matchList");
+  const formatter = useFormatter();
   const [page, setPage] = useState(0);
 
   const { data, isLoading, isError, error } = useQuery<UnlabeledMatchesResult>({
@@ -40,7 +41,7 @@ export function UnlabeledMatchList() {
       });
 
       const res = await fetch(`/api/data-labeling/matches?${params}`);
-      if (!res.ok) throw new Error("Failed to fetch matches");
+      if (!res.ok) throw new Error(t("fetchError"));
 
       return res.json() as Promise<UnlabeledMatchesResult>;
     },
@@ -50,8 +51,10 @@ export function UnlabeledMatchList() {
     ? Math.max(1, Math.ceil(data.totalCount / PAGE_SIZE))
     : 1;
 
-  function formatDate(date: Date) {
-    return new Date(date).toLocaleDateString("en-US", {
+  function formatDate(date: Date | string) {
+    const value = date instanceof Date ? date : new Date(date);
+
+    return formatter.dateTime(value, {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -63,7 +66,9 @@ export function UnlabeledMatchList() {
       <Card>
         <CardContent className="flex items-center justify-center py-12">
           <p className="text-muted-foreground">
-            Error loading matches: {error?.message}
+            {t("errorLoading", {
+              message: error?.message ?? t("unknownError"),
+            })}
           </p>
         </CardContent>
       </Card>
@@ -74,10 +79,10 @@ export function UnlabeledMatchList() {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          <span>{t("title", { defaultMessage: "Unlabeled Matches" })}</span>
+          <span>{t("title")}</span>
           {data && (
             <Badge variant="outline" className="tabular-nums">
-              {data.totalCount} matches
+              {t("matchCount", { count: data.totalCount })}
             </Badge>
           )}
         </CardTitle>

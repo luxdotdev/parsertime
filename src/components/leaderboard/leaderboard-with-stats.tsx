@@ -34,36 +34,19 @@ export function LeaderboardWithStats({ data, role }: Props) {
     useState<LeaderboardPlayer | null>(null);
 
   return (
-    <>
-      <div className="bg-muted mb-4 rounded-lg p-4 text-sm">
-        <p className="text-muted-foreground">
-          <strong>Tip:</strong> Click on any player row to view detailed
-          statistics, including their SR distribution and performance breakdown.
-        </p>
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+      <div className="min-w-0">
+        <LeaderboardTable
+          data={data}
+          role={role}
+          selectedPlayer={selectedPlayer}
+          onPlayerSelect={setSelectedPlayer}
+        />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-6">
-        <div className="min-w-0 lg:col-span-3">
-          <LeaderboardTable
-            data={data}
-            role={role}
-            selectedPlayer={selectedPlayer}
-            onPlayerSelect={setSelectedPlayer}
-          />
-        </div>
-
-        <div className="hidden lg:col-span-3 lg:block">
-          <div className="sticky top-6">
-            <PlayerStatsColumn player={selectedPlayer} leaderboardData={data} />
-          </div>
-        </div>
-      </div>
-
-      {selectedPlayer && (
-        <div className="mt-6 lg:hidden">
-          <PlayerStatsColumn player={selectedPlayer} leaderboardData={data} />
-        </div>
-      )}
-    </>
+      <aside className="lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:pr-2">
+        <PlayerStatsColumn player={selectedPlayer} leaderboardData={data} />
+      </aside>
+    </div>
   );
 }

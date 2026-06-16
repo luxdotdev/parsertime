@@ -5,21 +5,24 @@ on: [push]
 jobs:
   format:
     runs-on: ubuntu-latest
-    permissions: write-all
+    permissions:
+      contents: read
 
     strategy:
       matrix:
         node-version: [22.x]
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v3
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
-          version: 8
+          persist-credentials: false
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+        with:
+          version: 9.15.9
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: "pnpm"
-      - run: pnpm install
+      - run: pnpm install --frozen-lockfile
       - run: pnpm format:check

@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Trash2 } from "lucide-react";
+import { useFormatter, useTranslations } from "next-intl";
 
 type Anchor = {
   id: number;
@@ -26,10 +27,13 @@ type AnchorListProps = {
 };
 
 export function AnchorList({ anchors, onDelete }: AnchorListProps) {
+  const t = useTranslations("mapCalibrationPage.anchorList");
+  const formatter = useFormatter();
+
   if (anchors.length === 0) {
     return (
       <p className="text-muted-foreground py-4 text-center text-sm">
-        No anchor points yet. Click on the map image to place one.
+        {t("empty")}
       </p>
     );
   }
@@ -39,9 +43,9 @@ export function AnchorList({ anchors, onDelete }: AnchorListProps) {
       <TableHeader>
         <TableRow>
           <TableHead className="w-8">#</TableHead>
-          <TableHead>Label</TableHead>
-          <TableHead>World (X, Z)</TableHead>
-          <TableHead>Image (U, V)</TableHead>
+          <TableHead>{t("label")}</TableHead>
+          <TableHead>{t("worldCoordinates")}</TableHead>
+          <TableHead>{t("imageCoordinates")}</TableHead>
           <TableHead className="w-12" />
         </TableRow>
       </TableHeader>
@@ -55,10 +59,21 @@ export function AnchorList({ anchors, onDelete }: AnchorListProps) {
               )}
             </TableCell>
             <TableCell className="font-mono text-xs">
-              ({anchor.worldX.toFixed(2)}, {anchor.worldY.toFixed(2)})
+              (
+              {formatter.number(anchor.worldX, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+              ,{" "}
+              {formatter.number(anchor.worldY, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+              )
             </TableCell>
             <TableCell className="font-mono text-xs">
-              ({Math.round(anchor.imageU)}, {Math.round(anchor.imageV)})
+              ({formatter.number(Math.round(anchor.imageU))},{" "}
+              {formatter.number(Math.round(anchor.imageV))})
             </TableCell>
             <TableCell>
               <Button
@@ -66,7 +81,9 @@ export function AnchorList({ anchors, onDelete }: AnchorListProps) {
                 size="sm"
                 onClick={() => onDelete(anchor.id)}
                 className="h-7 w-7 p-0"
-                aria-label={`Delete anchor ${anchor.label ?? String(i + 1)}`}
+                aria-label={t("deleteAnchor", {
+                  label: anchor.label ?? formatter.number(i + 1),
+                })}
               >
                 <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
               </Button>

@@ -20,6 +20,7 @@ import {
   TeamSharedDataService,
   TeamSharedDataServiceLive,
 } from "@/data/team/shared-data-service";
+import { getTeamSubstituteNames } from "@/data/team/substitutes";
 import { IntelligenceQueryError } from "./errors";
 import {
   playerCacheRequestTotal,
@@ -463,7 +464,29 @@ export const make = Effect.gen(function* () {
         })
       );
 
-      const { allPlayerStats, teamRoster, teamRosterSet } = baseData;
+      const { allPlayerStats } = baseData;
+
+      const substituteNames = yield* Effect.tryPromise({
+        try: () => getTeamSubstituteNames(userTeamId),
+        catch: (error) =>
+          new IntelligenceQueryError({
+            operation: "fetch team substitutes",
+            cause: error,
+          }),
+      }).pipe(
+        Effect.withSpan("player.intelligence.fetchSubstitutes", {
+          attributes: { userTeamId },
+        })
+      );
+
+      // Substitutes stay individually trackable elsewhere, but a player-vs-roster
+      // readiness read should weigh only the active roster — both as the players
+      // shown and as the intra-team z-score peer baseline ("relative to your
+      // other <role> players").
+      const teamRoster = baseData.teamRoster.filter(
+        (p) => !substituteNames.has(p)
+      );
+      const teamRosterSet = new Set(teamRoster);
 
       const allPlayerHeroes = new Map<string, PlayerHeroAgg[]>();
       for (const player of teamRoster) {
@@ -524,7 +547,7 @@ export const make = Effect.gen(function* () {
           );
 
         for (const match of opponentMatches) {
-          const opponentSide = match.team1 === opponentAbbr ? "team2" : "team1";
+          const opponentSide = match.team1 === opponentAbbr ? "team1" : "team2";
           for (const map of match.maps) {
             totalOpponentMaps++;
             for (const ban of map.heroBans) {

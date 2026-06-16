@@ -17,6 +17,7 @@ import type {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
+import { useTranslations } from "next-intl";
 
 type ChartDatum = {
   subrole: string;
@@ -36,6 +37,7 @@ function CustomTooltip({
   teamNames: readonly [string, string];
   data: ChartDatum[];
 }) {
+  const t = useTranslations("scrimPage.overviewSections.ultimates.chart");
   const { team1, team2 } = useColorblindMode();
 
   if (!active || !payload?.length) return null;
@@ -43,15 +45,17 @@ function CustomTooltip({
   const datum = data.find((d) => d.subrole === label);
 
   return (
-    <div className="bg-primary text-primary-foreground z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs">
+    <div className="bg-popover text-popover-foreground border-border z-50 overflow-hidden rounded-md border px-3 py-1.5 text-xs shadow-md">
       <h3 className="text-base font-medium">{label}</h3>
       <p className="text-sm">
         <strong style={{ color: team1 }}>{teamNames[0]}</strong>:{" "}
-        {datum?.ourLabel ?? ""} &mdash; {payload[0]?.value ?? 0} ults
+        {datum?.ourLabel ?? ""} &mdash;{" "}
+        {t("ultCount", { count: Number(payload[0]?.value ?? 0) })}
       </p>
       <p className="text-sm">
         <strong style={{ color: team2 }}>{teamNames[1]}</strong>:{" "}
-        {datum?.opponentLabel ?? ""} &mdash; {payload[1]?.value ?? 0} ults
+        {datum?.opponentLabel ?? ""} &mdash;{" "}
+        {t("ultCount", { count: Number(payload[1]?.value ?? 0) })}
       </p>
     </div>
   );
@@ -63,6 +67,7 @@ type Props = {
 };
 
 export function UltComparisonChart({ comparisons, teamNames }: Props) {
+  const t = useTranslations("scrimPage.overviewSections.ultimates.chart");
   const { team1, team2 } = useColorblindMode();
 
   if (comparisons.length === 0) return null;
@@ -73,10 +78,10 @@ export function UltComparisonChart({ comparisons, teamNames }: Props) {
     opponentUlts: c.opponentUltCount,
     ourLabel: c.ourPlayerName
       ? `${c.ourPlayerName} (${c.ourHero})`
-      : "No player",
+      : t("noPlayer"),
     opponentLabel: c.opponentPlayerName
       ? `${c.opponentPlayerName} (${c.opponentHero})`
-      : "No player",
+      : t("noPlayer"),
   }));
 
   return (
@@ -86,8 +91,24 @@ export function UltComparisonChart({ comparisons, teamNames }: Props) {
         margin={{ top: 10, right: 10, left: -10, bottom: 5 }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="subrole" tick={{ fontSize: 11 }} />
-        <YAxis allowDecimals={false} />
+        <XAxis
+          dataKey="subrole"
+          tick={{
+            fontSize: 10,
+            fontFamily: "var(--font-mono)",
+            letterSpacing: "0.06em",
+            fill: "var(--muted-foreground)",
+          }}
+          tickFormatter={(v: string) => v.toUpperCase()}
+        />
+        <YAxis
+          allowDecimals={false}
+          tick={{
+            fontSize: 10,
+            fontFamily: "var(--font-mono)",
+            fill: "var(--muted-foreground)",
+          }}
+        />
         <Legend />
         <Tooltip
           content={<CustomTooltip teamNames={teamNames} data={data} />}

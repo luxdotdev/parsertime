@@ -24,6 +24,7 @@ import type {
   NameType,
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
+import { useFormatter, useTranslations } from "next-intl";
 
 type LeaderboardPlayer = {
   composite_sr: number;
@@ -34,7 +35,9 @@ type LeaderboardPlayer = {
 
 type Props = {
   leaderboardData: LeaderboardPlayer[];
-  selectedPlayer: LeaderboardPlayer;
+  selectedPlayer?: LeaderboardPlayer;
+  showOtherPlayers?: boolean;
+  showPlayerAsLine?: boolean;
 };
 
 type PlayerPointData = {
@@ -54,6 +57,9 @@ type BellCurvePointData = {
 type TooltipPayloadData = PlayerPointData | BellCurvePointData;
 
 function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
+  const t = useTranslations("leaderboardPage.csr.distributionChart");
+  const formatter = useFormatter();
+
   if (active && payload?.length) {
     const data = payload[0].payload as TooltipPayloadData;
 
@@ -63,16 +69,22 @@ function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
           <p className="mb-1 text-sm font-semibold">{data.player_name}</p>
           <div className="text-muted-foreground space-y-0.5">
             <p>
-              SR: <span className="text-foreground font-medium">{data.sr}</span>
+              {t("sr")}:{" "}
+              <span className="text-foreground font-medium">
+                {formatter.number(data.sr)}
+              </span>
             </p>
             <p>
-              Rank:{" "}
+              {t("rank")}:{" "}
               <span className="text-foreground font-medium">#{data.rank}</span>
             </p>
             <p>
-              Percentile:{" "}
+              {t("percentile")}:{" "}
               <span className="text-foreground font-medium">
-                {parseFloat(data.percentile).toFixed(1)}%
+                {formatter.number(parseFloat(data.percentile) / 100, {
+                  style: "percent",
+                  maximumFractionDigits: 1,
+                })}
               </span>
             </p>
           </div>
@@ -83,7 +95,8 @@ function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
     return (
       <div className="bg-popover text-popover-foreground border-border z-50 overflow-hidden rounded-md border px-3 py-1.5 text-xs shadow-xl">
         <p>
-          SR: <span className="font-medium">{data.sr}</span>
+          {t("sr")}:{" "}
+          <span className="font-medium">{formatter.number(data.sr)}</span>
         </p>
       </div>
     );
@@ -94,12 +107,17 @@ function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
 export function SRDistributionChart({
   leaderboardData,
   selectedPlayer,
+  showOtherPlayers = true,
+  showPlayerAsLine = false,
 }: Props) {
+  const t = useTranslations("leaderboardPage.csr.distributionChart");
+  const formatter = useFormatter();
+
   const chartData = useMemo(() => {
     const srValues = leaderboardData.map((p) => p.composite_sr);
     const mean = calculateMean(srValues);
     const stdDev = calculateStandardDeviation(srValues, mean);
-    const { min, max } = getSRRange(mean, stdDev);
+    const { min, max } = getSRRange(mean, stdDev, srValues);
 
     const bellCurveData = generateBellCurveData(mean, stdDev, min, max, 100);
 
@@ -118,8 +136,14 @@ export function SRDistributionChart({
       player_name: player.player_name,
       rank: player.rank,
       percentile: player.percentile,
-      isSelected: player.player_name === selectedPlayer.player_name,
+      isSelected: player.player_name === selectedPlayer?.player_name,
     }));
+
+    const playerSR = selectedPlayer?.composite_sr ?? mean;
+    const playerPercent = Math.max(
+      0,
+      Math.min(100, ((playerSR - min) / (max - min)) * 100)
+    );
 
     return {
       bellCurveData: normalizedBellCurve,
@@ -128,6 +152,7 @@ export function SRDistributionChart({
       stdDev,
       min,
       max,
+      playerPercent,
     };
   }, [leaderboardData, selectedPlayer]);
 
@@ -137,10 +162,7 @@ export function SRDistributionChart({
   if (leaderboardData.length < 3) {
     return (
       <div className="bg-muted rounded-lg p-6 text-center">
-        <p className="text-muted-foreground">
-          Not enough data to generate a meaningful distribution. At least 3
-          players are needed.
-        </p>
+        <p className="text-muted-foreground">{t("notEnoughData")}</p>
       </div>
     );
   }
@@ -155,14 +177,18 @@ export function SRDistributionChart({
             type="number"
             domain={[chartData.min, chartData.max]}
             label={{
-              value: "Skill Rating (SR)",
+              value: t("skillRatingAxis"),
               position: "insideBottom",
               offset: -15,
             }}
             tick={{ fontSize: 12 }}
           />
           <YAxis
-            label={{ value: "Frequency", angle: -90, position: "insideLeft" }}
+            label={{
+              value: t("frequencyAxis"),
+              angle: -90,
+              position: "insideLeft",
+            }}
             tick={{ fontSize: 12 }}
           />
           <Tooltip content={<CustomTooltip />} />
@@ -173,15 +199,43 @@ export function SRDistributionChart({
               <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.8} />
               <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0.1} />
             </linearGradient>
+            <linearGradient id="colorSplitFill" x1="0" y1="0" x2="1" y2="0">
+              <stop
+                offset={`${chartData.playerPercent}%`}
+                stopColor="var(--chart-1)"
+                stopOpacity={0.5}
+              />
+              <stop
+                offset={`${chartData.playerPercent}%`}
+                stopColor="var(--muted-foreground)"
+                stopOpacity={0.15}
+              />
+            </linearGradient>
+            <linearGradient id="colorSplitStroke" x1="0" y1="0" x2="1" y2="0">
+              <stop
+                offset={`${chartData.playerPercent}%`}
+                stopColor="var(--chart-1)"
+                stopOpacity={1}
+              />
+              <stop
+                offset={`${chartData.playerPercent}%`}
+                stopColor="var(--muted-foreground)"
+                stopOpacity={0.45}
+              />
+            </linearGradient>
           </defs>
 
           <Area
             data={chartData.bellCurveData}
             type="monotone"
             dataKey="frequency"
-            stroke="var(--chart-1)"
-            fill="url(#colorFrequency)"
-            name="Distribution"
+            stroke={
+              showPlayerAsLine ? "url(#colorSplitStroke)" : "var(--chart-1)"
+            }
+            fill={
+              showPlayerAsLine ? "url(#colorSplitFill)" : "url(#colorFrequency)"
+            }
+            name={showPlayerAsLine ? t("achievedPotential") : t("distribution")}
             isAnimationActive={false}
           />
 
@@ -190,51 +244,81 @@ export function SRDistributionChart({
             stroke="var(--muted-foreground)"
             strokeDasharray="3 3"
             label={{
-              value: `Mean (${Math.round(chartData.mean)})`,
+              value: t("meanLabel", { value: Math.round(chartData.mean) }),
               position: "top",
             }}
           />
 
-          <Scatter
-            data={otherPoints}
-            dataKey="value"
-            fill="var(--chart-2)"
-            name="Other Players"
-            shape="circle"
-          />
+          {showPlayerAsLine && selectedPlayer && (
+            <ReferenceLine
+              x={selectedPlayer.composite_sr}
+              stroke="var(--primary)"
+              strokeWidth={2}
+              label={{
+                value: `${selectedPlayer.player_name} (${selectedPlayer.composite_sr})`,
+                position: "insideTopRight",
+                fill: "var(--primary)",
+                fontSize: 12,
+                offset: 24,
+              }}
+            />
+          )}
 
-          <Scatter
-            data={selectedPoint ? [selectedPoint] : []}
-            dataKey="value"
-            fill="var(--chart-5)"
-            name="Selected Player"
-            shape="circle"
-            r={8}
-          />
+          {showOtherPlayers && (
+            <Scatter
+              data={otherPoints}
+              dataKey="value"
+              fill="var(--chart-2)"
+              name={t("otherPlayers")}
+              shape="circle"
+            />
+          )}
+
+          {!showPlayerAsLine && selectedPlayer && (
+            <Scatter
+              data={selectedPoint ? [selectedPoint] : []}
+              dataKey="value"
+              fill="var(--chart-5)"
+              name={t("selectedPlayer")}
+              shape="circle"
+              r={8}
+            />
+          )}
         </ComposedChart>
       </ResponsiveContainer>
 
       <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
         <div>
-          <p className="text-muted-foreground">Mean SR</p>
-          <p className="text-lg font-semibold">{Math.round(chartData.mean)}</p>
-        </div>
-        <div>
-          <p className="text-muted-foreground">Standard Deviation</p>
+          <p className="text-muted-foreground">{t("meanSr")}</p>
           <p className="text-lg font-semibold">
-            ±{Math.round(chartData.stdDev)}
+            {formatter.number(Math.round(chartData.mean))}
           </p>
         </div>
         <div>
-          <p className="text-muted-foreground">Selected Player SR</p>
-          <p className="text-lg font-semibold">{selectedPlayer.composite_sr}</p>
-        </div>
-        <div>
-          <p className="text-muted-foreground">Percentile</p>
+          <p className="text-muted-foreground">{t("standardDeviation")}</p>
           <p className="text-lg font-semibold">
-            {parseFloat(selectedPlayer.percentile).toFixed(1)}%
+            {t("plusMinus", { value: Math.round(chartData.stdDev) })}
           </p>
         </div>
+        {selectedPlayer && (
+          <>
+            <div>
+              <p className="text-muted-foreground">{t("selectedPlayerSr")}</p>
+              <p className="text-lg font-semibold">
+                {formatter.number(selectedPlayer.composite_sr)}
+              </p>
+            </div>
+            <div>
+              <p className="text-muted-foreground">{t("percentile")}</p>
+              <p className="text-lg font-semibold">
+                {formatter.number(parseFloat(selectedPlayer.percentile) / 100, {
+                  style: "percent",
+                  maximumFractionDigits: 1,
+                })}
+              </p>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -1,10 +1,24 @@
 "use client";
 
+import {
+  buildHeatmapImageData,
+  HEATMAP_RAMP,
+} from "@/components/map/heatmap/heatmap-render";
 import type { HeatmapSubMap, KillPoint } from "@/data/map/heatmap/types";
+import { useMapViewport } from "@/components/map/use-map-viewport";
 import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import { toHero, toTimestamp } from "@/lib/utils";
+import { useTheme } from "next-themes";
 import Image from "next/image";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useFormatter, useTranslations } from "next-intl";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 type HeatmapCategory = "damage" | "healing" | "kills";
 
@@ -22,99 +36,6 @@ type HeatmapCanvasProps = {
   };
 };
 
-const DOWNSCALE = 4;
-const SIGMA = 20;
-
-const COLOR_RAMP: [number, number, number, number][] = [
-  [100, 150, 255, 0],
-  [100, 150, 255, 90],
-  [60, 60, 220, 130],
-  [120, 40, 200, 160],
-  [180, 30, 160, 185],
-  [220, 20, 100, 205],
-  [240, 10, 60, 225],
-  [200, 0, 120, 240],
-];
-
-function interpolateColor(t: number): [number, number, number, number] {
-  const clamped = Math.max(0, Math.min(1, t));
-  const idx = clamped * (COLOR_RAMP.length - 1);
-  const lo = Math.floor(idx);
-  const hi = Math.min(lo + 1, COLOR_RAMP.length - 1);
-  const frac = idx - lo;
-
-  return [
-    Math.round(
-      COLOR_RAMP[lo][0] + (COLOR_RAMP[hi][0] - COLOR_RAMP[lo][0]) * frac
-    ),
-    Math.round(
-      COLOR_RAMP[lo][1] + (COLOR_RAMP[hi][1] - COLOR_RAMP[lo][1]) * frac
-    ),
-    Math.round(
-      COLOR_RAMP[lo][2] + (COLOR_RAMP[hi][2] - COLOR_RAMP[lo][2]) * frac
-    ),
-    Math.round(
-      COLOR_RAMP[lo][3] + (COLOR_RAMP[hi][3] - COLOR_RAMP[lo][3]) * frac
-    ),
-  ];
-}
-
-function buildHeatmapImageData(
-  points: { u: number; v: number }[],
-  imageWidth: number,
-  imageHeight: number
-): ImageData | null {
-  if (points.length === 0) return null;
-
-  const gw = Math.ceil(imageWidth / DOWNSCALE);
-  const gh = Math.ceil(imageHeight / DOWNSCALE);
-  const sigma = SIGMA / DOWNSCALE;
-  const sigma2 = 2 * sigma * sigma;
-  const radius = Math.ceil(sigma * 3);
-
-  const density = new Float32Array(gw * gh);
-
-  for (const pt of points) {
-    const gx = pt.u / DOWNSCALE;
-    const gy = pt.v / DOWNSCALE;
-    const x0 = Math.max(0, Math.floor(gx - radius));
-    const x1 = Math.min(gw - 1, Math.ceil(gx + radius));
-    const y0 = Math.max(0, Math.floor(gy - radius));
-    const y1 = Math.min(gh - 1, Math.ceil(gy + radius));
-
-    for (let y = y0; y <= y1; y++) {
-      for (let x = x0; x <= x1; x++) {
-        const dx = x - gx;
-        const dy = y - gy;
-        density[y * gw + x] += Math.exp(-(dx * dx + dy * dy) / sigma2);
-      }
-    }
-  }
-
-  let maxDensity = 0;
-  for (const d of density) {
-    if (d > maxDensity) maxDensity = d;
-  }
-  if (maxDensity === 0) return null;
-
-  const imgData = new ImageData(gw, gh);
-  const data = imgData.data;
-  const threshold = 0.05;
-
-  for (let i = 0; i < density.length; i++) {
-    const t = density[i] / maxDensity;
-    if (t < threshold) continue;
-    const [r, g, b, a] = interpolateColor(t);
-    const off = i * 4;
-    data[off] = r;
-    data[off + 1] = g;
-    data[off + 2] = b;
-    data[off + 3] = a;
-  }
-
-  return imgData;
-}
-
 export function HeatmapCanvas({
   imageUrl,
   imageWidth,
@@ -124,17 +45,22 @@ export function HeatmapCanvas({
   killPoints,
   labels,
 }: HeatmapCanvasProps) {
+  const t = useTranslations("mapPage.heatmap.canvas");
+  const format = useFormatter();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
-  const [view, setView] = useState({ offsetX: 0, offsetY: 0, zoom: 1 });
-  const draggingRef = useRef(false);
-  const dragStartRef = useRef({ x: 0, y: 0 });
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 });
+  const { containerRef, containerSize, view, isDragging, handlers } =
+    useMapViewport({
+      imageWidth,
+      imageHeight,
+      imageLoaded,
+    });
   const [activeCategories, setActiveCategories] = useState<
     Set<HeatmapCategory>
   >(new Set(["damage", "healing", "kills"]));
+  const { resolvedTheme } = useTheme();
+  const srListId = useId();
 
   function toggleCategory(cat: HeatmapCategory) {
     setActiveCategories((prev) => {
@@ -154,36 +80,34 @@ export function HeatmapCanvas({
     img.onload = () => {
       imageRef.current = img;
       setImageLoaded(true);
-
-      if (containerRef.current) {
-        const container = containerRef.current;
-        const fitZoom = Math.min(
-          container.clientWidth / imageWidth,
-          container.clientHeight / imageHeight
-        );
-        setView({ offsetX: 0, offsetY: 0, zoom: fitZoom });
-      }
     };
     img.src = imageUrl;
-  }, [imageUrl, imageWidth, imageHeight]);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        setCanvasSize({
-          width: entry.contentRect.width,
-          height: entry.contentRect.height,
-        });
-      }
-    });
-    observer.observe(container);
-    return () => observer.disconnect();
-  }, []);
+  }, [imageUrl]);
 
   const { team1, team2 } = useColorblindMode();
+
+  const themeTokens = useMemo(() => {
+    void resolvedTheme;
+    if (typeof window === "undefined") {
+      return {
+        background: "#0a0a0a",
+        team1: team1,
+        team2: team2,
+      };
+    }
+    const styles = getComputedStyle(document.documentElement);
+    function resolve(token: string) {
+      return styles.getPropertyValue(token).trim();
+    }
+    function resolveTeam(c: string) {
+      return c.startsWith("var(") ? resolve(c.slice(4, -1)) : c;
+    }
+    return {
+      background: resolve("--background") || "#0a0a0a",
+      team1: resolveTeam(team1),
+      team2: resolveTeam(team2),
+    };
+  }, [resolvedTheme, team1, team2]);
 
   const killsOnly =
     activeCategories.has("kills") &&
@@ -202,7 +126,12 @@ export function HeatmapCanvas({
     () =>
       killsOnly
         ? null
-        : buildHeatmapImageData(activePoints, imageWidth, imageHeight),
+        : buildHeatmapImageData(
+            activePoints,
+            imageWidth,
+            imageHeight,
+            HEATMAP_RAMP
+          ),
     [activePoints, imageWidth, imageHeight, killsOnly]
   );
 
@@ -226,38 +155,28 @@ export function HeatmapCanvas({
     const img = imageRef.current;
     if (!canvas || !ctx || !img || !imageLoaded) return;
 
+    const currentView = view;
     const dpr = window.devicePixelRatio ?? 1;
-    canvas.width = canvasSize.width * dpr;
-    canvas.height = canvasSize.height * dpr;
+    canvas.width = containerSize.width * dpr;
+    canvas.height = containerSize.height * dpr;
     ctx.scale(dpr, dpr);
 
-    const bgColor =
-      getComputedStyle(canvas).getPropertyValue("--color-background");
-    ctx.fillStyle = bgColor.trim() || "#0a0a0a";
-    ctx.fillRect(0, 0, canvasSize.width, canvasSize.height);
+    ctx.fillStyle = themeTokens.background;
+    ctx.fillRect(0, 0, containerSize.width, containerSize.height);
 
     ctx.save();
-    ctx.translate(canvasSize.width / 2, canvasSize.height / 2);
-    ctx.scale(view.zoom, view.zoom);
+    ctx.translate(containerSize.width / 2, containerSize.height / 2);
+    ctx.scale(currentView.zoom, currentView.zoom);
     ctx.translate(
-      -imageWidth / 2 + view.offsetX / view.zoom,
-      -imageHeight / 2 + view.offsetY / view.zoom
+      -imageWidth / 2 + currentView.offsetX / currentView.zoom,
+      -imageHeight / 2 + currentView.offsetY / currentView.zoom
     );
     ctx.drawImage(img, 0, 0, imageWidth, imageHeight);
 
     if (killsOnly) {
-      const styles = getComputedStyle(canvas);
-      function resolveColor(c: string) {
-        return c.startsWith("var(")
-          ? styles.getPropertyValue(c.slice(4, -1)).trim()
-          : c;
-      }
-      const t1Color = resolveColor(team1);
-      const t2Color = resolveColor(team2);
-      const dotRadius = Math.max(12, 6 / view.zoom);
-
+      const dotRadius = Math.max(12, 6 / currentView.zoom);
       for (const kp of killPoints) {
-        const color = kp.team === 1 ? t1Color : t2Color;
+        const color = kp.team === 1 ? themeTokens.team1 : themeTokens.team2;
         ctx.beginPath();
         ctx.arc(kp.u, kp.v, dotRadius, 0, Math.PI * 2);
         ctx.fillStyle = color;
@@ -276,7 +195,7 @@ export function HeatmapCanvas({
 
     ctx.restore();
   }, [
-    canvasSize,
+    containerSize,
     view,
     imageLoaded,
     imageWidth,
@@ -284,13 +203,13 @@ export function HeatmapCanvas({
     heatmapBitmap,
     killsOnly,
     killPoints,
-    team1,
-    team2,
+    themeTokens,
   ]);
 
   useEffect(() => {
-    requestAnimationFrame(render);
-  }, [render]);
+    const raf = requestAnimationFrame(render);
+    return () => cancelAnimationFrame(raf);
+  }, [render, view]);
 
   const [hoveredKill, setHoveredKill] = useState<{
     kill: KillPoint;
@@ -301,34 +220,19 @@ export function HeatmapCanvas({
   function screenToImage(screenX: number, screenY: number) {
     return {
       u:
-        (screenX - canvasSize.width / 2) / view.zoom +
+        (screenX - containerSize.width / 2) / view.zoom +
         imageWidth / 2 -
         view.offsetX / view.zoom,
       v:
-        (screenY - canvasSize.height / 2) / view.zoom +
+        (screenY - containerSize.height / 2) / view.zoom +
         imageHeight / 2 -
         view.offsetY / view.zoom,
     };
   }
 
-  function handlePointerDown(e: React.PointerEvent) {
-    if (e.button === 0) {
-      draggingRef.current = true;
-      dragStartRef.current = { x: e.clientX, y: e.clientY };
-      (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    }
-  }
-
   function handlePointerMove(e: React.PointerEvent) {
-    if (draggingRef.current) {
-      const dx = e.clientX - dragStartRef.current.x;
-      const dy = e.clientY - dragStartRef.current.y;
-      dragStartRef.current = { x: e.clientX, y: e.clientY };
-      setView((v) => ({
-        ...v,
-        offsetX: v.offsetX + dx,
-        offsetY: v.offsetY + dy,
-      }));
+    handlers.onPointerMove(e);
+    if (isDragging.current) {
       if (hoveredKill) setHoveredKill(null);
       return;
     }
@@ -364,29 +268,6 @@ export function HeatmapCanvas({
     }
   }
 
-  function handlePointerUp() {
-    draggingRef.current = false;
-  }
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    function handler(e: WheelEvent) {
-      e.preventDefault();
-      const factor = e.deltaY > 0 ? 0.9 : 1.1;
-      const minZoom = canvasSize.height / imageHeight;
-      setView((v) => {
-        const newZoom = Math.max(minZoom, Math.min(10, v.zoom * factor));
-        if (newZoom <= minZoom) {
-          return { offsetX: 0, offsetY: 0, zoom: newZoom };
-        }
-        return { ...v, zoom: newZoom };
-      });
-    }
-    canvas.addEventListener("wheel", handler, { passive: false });
-    return () => canvas.removeEventListener("wheel", handler);
-  }, [canvasSize.height, imageHeight]);
-
   const categories: { key: HeatmapCategory; label: string; count: number }[] = [
     { key: "damage", label: labels.damage, count: damagePoints.length },
     { key: "healing", label: labels.healing, count: healingPoints.length },
@@ -401,40 +282,67 @@ export function HeatmapCanvas({
             key={key}
             type="button"
             onClick={() => toggleCategory(key)}
-            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+            aria-pressed={activeCategories.has(key)}
+            className={`inline-flex h-5 items-center rounded-sm px-2 py-0.5 text-xs transition-colors ${
               activeCategories.has(key)
                 ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
+                : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
             }`}
           >
             {label}
-            <span className="ml-1.5 opacity-60">
-              ({count.toLocaleString()})
+            <span className="ml-1 font-mono tabular-nums opacity-60">
+              ({format.number(count)})
             </span>
           </button>
         ))}
-        <span className="text-muted-foreground text-xs">
-          {activePoints.length.toLocaleString()} total
+        <span className="text-muted-foreground font-mono text-xs tabular-nums">
+          {t("total", { count: activePoints.length })}
         </span>
       </div>
       <div
         ref={containerRef}
-        className="bg-background relative min-h-[500px] w-full overflow-hidden rounded-lg border"
+        role="application"
+        // oxlint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- focus required for keyboard pan/zoom
+        tabIndex={0}
+        aria-describedby={killsOnly ? srListId : undefined}
+        onKeyDown={handlers.onKeyDown}
+        className="bg-background focus-visible:ring-ring/50 relative min-h-[500px] w-full overflow-hidden rounded-lg border outline-none focus-visible:ring-[3px]"
       >
         <canvas
           ref={canvasRef}
-          aria-label="Fight heatmap overlay on map image. Drag to pan, scroll to zoom."
+          aria-label={t("canvasLabel")}
           role="img"
-          style={{ width: canvasSize.width, height: canvasSize.height }}
+          style={{ width: containerSize.width, height: containerSize.height }}
           className={`active:cursor-grabbing ${hoveredKill ? "cursor-pointer" : "cursor-grab"}`}
           onContextMenu={(e) => e.preventDefault()}
-          onPointerDown={handlePointerDown}
+          onPointerDown={handlers.onPointerDown}
           onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
+          onPointerUp={handlers.onPointerUp}
         />
+        {killsOnly && (
+          <ul
+            id={srListId}
+            className="sr-only"
+            aria-label={t("killEvents", { count: killPoints.length })}
+          >
+            {killPoints.map((kp) => (
+              <li
+                key={`${kp.matchTime}-${kp.attackerName}-${kp.attackerHero}-${kp.victimName}-${kp.victimHero}`}
+              >
+                {t("killEvent", {
+                  attackerName: kp.attackerName,
+                  attackerHero: kp.attackerHero,
+                  victimName: kp.victimName,
+                  victimHero: kp.victimHero,
+                  time: toTimestamp(kp.matchTime),
+                })}
+              </li>
+            ))}
+          </ul>
+        )}
         {!imageLoaded && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-muted-foreground">Loading map image...</p>
+            <p className="text-muted-foreground">{t("loadingImage")}</p>
           </div>
         )}
         {hoveredKill && (
@@ -446,8 +354,8 @@ export function HeatmapCanvas({
             team2Color={team2}
           />
         )}
-        <div className="absolute right-2 bottom-2 rounded-md bg-black/60 px-2.5 py-1.5 text-xs text-white/60 backdrop-blur-sm">
-          {Math.round(view.zoom * 100)}% · Scroll to zoom · Drag to pan
+        <div className="bg-popover/95 text-muted-foreground absolute right-2 bottom-2 rounded-md border px-2.5 py-1.5 text-xs">
+          {t("zoomHint", { zoom: Math.round(view.zoom * 100) })}
         </div>
       </div>
     </div>
@@ -467,6 +375,7 @@ function KillTooltip({
   team1Color: string;
   team2Color: string;
 }) {
+  const t = useTranslations("mapPage.heatmap.canvas");
   const color = kill.team === 1 ? team1Color : team2Color;
 
   return (
@@ -489,7 +398,7 @@ function KillTooltip({
           />
           <span className="font-medium">{kill.attackerName}</span>
         </div>
-        <span className="text-muted-foreground">&rarr;</span>
+        <span className="text-muted-foreground">→</span>
         <div className="flex items-center gap-1.5">
           <Image
             src={`/heroes/${toHero(kill.victimHero)}.png`}
@@ -504,8 +413,8 @@ function KillTooltip({
       </div>
       <div className="text-muted-foreground mt-1 flex items-center gap-2">
         <span>{toTimestamp(kill.matchTime)}</span>
-        <span>&bull;</span>
-        <span>{kill.ability === "0" ? "Primary Fire" : kill.ability}</span>
+        <span>·</span>
+        <span>{kill.ability === "0" ? t("primaryFire") : kill.ability}</span>
       </div>
     </div>
   );

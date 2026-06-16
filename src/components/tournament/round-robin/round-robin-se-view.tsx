@@ -5,7 +5,7 @@ import type { BracketMatchData } from "@/components/tournament/bracket/bracket-m
 import { RRMatchGrid } from "@/components/tournament/round-robin/rr-match-grid";
 import { StandingsTable } from "@/components/tournament/round-robin/standings-table";
 import { Button } from "@/components/ui/button";
-import type { TournamentMatchStatus } from "@prisma/client";
+import type { TournamentMatchStatus } from "@/generated/prisma/browser";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";

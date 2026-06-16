@@ -14,3 +14,20 @@ export type MapTransform = {
   tx: number;
   ty: number;
 };
+
+/**
+ * 2D affine mapping image pixels → image pixels (old render → new render):
+ *   u' = a*u + b*v + tx
+ *   v' = c*u + d*v + ty
+ *
+ * Same shape as MapTransform but a different coordinate space (pixel→pixel,
+ * not world→pixel). Produced by the OpenCV alignment engine.
+ */
+export type PixelAffine = {
+  a: number;
+  b: number;
+  c: number;
+  d: number;
+  tx: number;
+  ty: number;
+};

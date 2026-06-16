@@ -1,7 +1,7 @@
+import type { $Enums } from "@/generated/prisma/client";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { vercelAdapter } from "@flags-sdk/vercel";
-import type { $Enums } from "@prisma/client";
 import { dedupe, flag } from "flags/next";
 
 type Entities = {
@@ -95,6 +95,18 @@ export const scoutingTool = flag<boolean, Entities>({
   identify,
 });
 
+export const faceitScouting = flag<boolean, Entities>({
+  key: "faceit-scouting",
+  adapter: vercelAdapter(),
+  options: [
+    { value: true, label: "Enabled" },
+    { value: false, label: "Disabled" },
+  ],
+  defaultValue: false,
+  description: "Enable or disable the FACEIT team scouting tool",
+  identify,
+});
+
 export const dataLabeling = flag<boolean, Entities>({
   key: "data-labeling",
   adapter: vercelAdapter(),
@@ -169,7 +181,8 @@ export const positionalData = flag<boolean, Entities>({
     { value: false, label: "Disabled" },
   ],
   defaultValue: false,
-  description: "Show the Heatmap tab on map detail pages",
+  description:
+    "Show positional data features (heatmap/replay tabs, profile positioning card)",
   identify,
 });
 
@@ -218,5 +231,17 @@ export const coachingCanvas = flag<boolean, Entities>({
   ],
   defaultValue: false,
   description: "Enable or disable the coaching canvas tool",
+  identify,
+});
+
+export const queryBuilder = flag<boolean, Entities>({
+  key: "query-builder",
+  adapter: vercelAdapter(),
+  options: [
+    { value: true, label: "Enabled" },
+    { value: false, label: "Disabled" },
+  ],
+  defaultValue: false,
+  description: "Enable or disable the read-only query builder",
   identify,
 });

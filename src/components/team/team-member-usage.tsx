@@ -3,7 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { type ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { TEAM_MEMBER_LIMIT } from "@/lib/usage";
-import type { $Enums } from "@prisma/client";
+import type { $Enums } from "@/generated/prisma/browser";
 import { useTranslations } from "next-intl";
 import { PolarAngleAxis, RadialBar, RadialBarChart } from "recharts";
 

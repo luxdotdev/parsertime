@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { calculateWinner } from "@/lib/winrate";
-import type { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@/generated/prisma/client";
 import {
   Cache,
   Context,
@@ -196,6 +196,8 @@ export function processTeamWinrates(sharedData: BaseTeamData): TeamWinrates {
       team2PointProgress: team2PointProgressMap.get(mapDataId) ?? [],
     });
 
+    if (winner === "N/A") continue;
+
     const isWin = winner === teamName;
 
     if (isWin) {
@@ -334,6 +336,7 @@ export const make = Effect.gen(function* () {
       yield* Effect.annotateCurrentSpan("teamId", teamId);
       const data = yield* sharedData.getBaseTeamData(teamId, {
         excludePush: true,
+        excludeClash: true,
         dateRange,
       });
       const result = processTeamWinrates(data);

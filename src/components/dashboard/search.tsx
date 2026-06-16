@@ -3,7 +3,7 @@
 import { CommandMenuContext } from "@/components/command-menu-provider";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { User } from "@prisma/client";
+import type { User } from "@/generated/prisma/browser";
 import type { DialogProps } from "@radix-ui/react-dialog";
 import { SearchIcon } from "lucide-react";
 import { useTranslations } from "next-intl";

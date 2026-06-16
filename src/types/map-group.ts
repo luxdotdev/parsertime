@@ -1,4 +1,4 @@
-import type { MapGroup } from "@prisma/client";
+import type { MapGroup } from "@/generated/prisma/client";
 
 /**
  * Map group with creator information

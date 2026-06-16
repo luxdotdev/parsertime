@@ -1,3 +1,4 @@
+import { BrandThemeProvider } from "@/components/brand-theme-provider";
 import { CommandDialogMenu } from "@/components/command-menu";
 import { CommandMenuProvider } from "@/components/command-menu-provider";
 import { DevTools } from "@/components/devtools";
@@ -12,17 +13,21 @@ import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { register } from "@/instrumentation";
 import { auth } from "@/lib/auth";
+import { DSG_TEAM_ID } from "@/lib/brand-theme";
 import { WebVitals } from "@/lib/axiom/client";
 import { resolveAllFlags, toFlagValues } from "@/lib/flags-helpers";
 import { QueryProvider } from "@/lib/query";
 import { cn } from "@/lib/utils";
+import { UsageBeacon } from "@/components/usage/usage-beacon";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { FlagValues } from "flags/react";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
+import { Suspense } from "react";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 
@@ -52,9 +57,21 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const geistSans = Geist({
-  subsets: ["latin"],
-  weight: ["400", "700"],
+const switzer = localFont({
+  src: [
+    {
+      path: "../../public/fonts/Switzer-Variable.woff2",
+      weight: "100 900",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/Switzer-VariableItalic.woff2",
+      weight: "100 900",
+      style: "italic",
+    },
+  ],
+  variable: "--font-switzer",
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
@@ -62,7 +79,7 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
 });
 
-register();
+void register();
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const locale = await getLocale();
@@ -76,35 +93,50 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     );
   }
 
+  let isDsgMember = false;
+
+  if (session) {
+    isDsgMember = await AppRuntime.runPromise(
+      UserService.pipe(
+        Effect.flatMap((svc) =>
+          svc.isMemberOfTeam(session.user.email, DSG_TEAM_ID)
+        )
+      )
+    );
+  }
+
   const flags = await resolveAllFlags();
 
   return (
     <html lang={locale} className="h-full" suppressHydrationWarning>
       <body
         className={cn(
-          geistSans.className,
+          switzer.variable,
           geistMono.variable,
-          "h-full antialiased"
+          "font-sans h-full antialiased"
         )}
       >
         <NuqsAdapter>
           <QueryProvider>
             <ThemeProvider
               attribute="class"
-              defaultTheme="system"
+              defaultTheme={isDsgMember ? "disguised" : "system"}
               enableSystem
+              themes={["light", "dark", "disguised"]}
               disableTransitionOnChange
             >
               <TooltipProvider>
                 <NextIntlClientProvider messages={messages}>
                   <CommandMenuProvider>
                     <AppSettingsProvider>
-                      <FeatureFlagsProvider flags={flags}>
-                        <FlagValues values={toFlagValues(flags)} />
-                        <BetaBanner />
-                        {children}
-                        <CommandDialogMenu user={user} />
-                      </FeatureFlagsProvider>
+                      <BrandThemeProvider canUseDisguised={isDsgMember}>
+                        <FeatureFlagsProvider flags={flags}>
+                          <FlagValues values={toFlagValues(flags)} />
+                          <BetaBanner />
+                          {children}
+                          <CommandDialogMenu user={user} />
+                        </FeatureFlagsProvider>
+                      </BrandThemeProvider>
                     </AppSettingsProvider>
                   </CommandMenuProvider>
                 </NextIntlClientProvider>
@@ -112,6 +144,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
               <Toaster />
               <SpeedInsights />
               <Analytics />
+              <Suspense fallback={null}>
+                <UsageBeacon />
+              </Suspense>
               <DevTools />
               <WebVitals />
             </ThemeProvider>

@@ -37,15 +37,39 @@ import {
 } from "@/data/tournament-team";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
-import { auth } from "@/lib/auth";
+import { auth, canViewTournament, getCurrentUser } from "@/lib/auth";
 import { tournament, simulationTool, ultimateImpactTool } from "@/lib/flags";
 import prisma from "@/lib/prisma";
+import { getTempoBaselines } from "@/lib/tempo/read";
 import { getMapNames } from "@/lib/utils";
 import { ArrowLeft } from "lucide-react";
-import type { Route } from "next";
+import type { Metadata, Route } from "next";
+import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+export async function generateMetadata(props: {
+  params: Promise<{ id: string; teamId: string }>;
+}): Promise<Metadata> {
+  const { teamId } = await props.params;
+  const t = await getTranslations("tournamentsPage.teamStats.metadata");
+  const id = Number(teamId);
+
+  const team = Number.isNaN(id)
+    ? null
+    : await prisma.tournamentTeam.findUnique({
+        where: { id },
+        select: { name: true },
+      });
+
+  if (!team) return { title: "Tournament Stats | Parsertime" };
+
+  return {
+    title: t("title", { team: team.name }),
+    description: t("description", { team: team.name }),
+  };
+}
 
 export default async function TournamentTeamStatsPage(props: {
   params: Promise<{ id: string; teamId: string }>;
@@ -60,6 +84,9 @@ export default async function TournamentTeamStatsPage(props: {
   const tournamentId = Number(params.id);
   const tournamentTeamId = Number(params.teamId);
   if (Number.isNaN(tournamentId) || Number.isNaN(tournamentTeamId)) notFound();
+
+  const user = await getCurrentUser();
+  if (!(await canViewTournament(tournamentId, user))) notFound();
 
   const tournamentData = await prisma.tournament.findFirst({
     where: { id: tournamentId },
@@ -257,6 +284,8 @@ export default async function TournamentTeamStatsPage(props: {
     ultimateImpactTool(),
   ]);
 
+  const baselines = await getTempoBaselines();
+
   const mapPlaytimes: Record<string, number> = {};
   allMapsPlaytime.forEach((map) => {
     mapPlaytimes[map.name] = map.playtime;
@@ -323,12 +352,17 @@ export default async function TournamentTeamStatsPage(props: {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-4">
-          <QuickStatsCard stats={quickStats} />
+          <QuickStatsCard
+            stats={quickStats}
+            fightBaseline={baselines.FIGHT_DURATION ?? null}
+          />
 
           <div className="grid gap-4 md:grid-cols-2">
             <TeamRosterGrid
               roster={teamRoster}
               teamId={tournamentTeam.team?.id ?? tournamentTeamId}
+              isManager={false}
+              substitutes={[]}
             />
             <RecentActivityCalendar scrims={scrims} />
           </div>
@@ -404,7 +438,11 @@ export default async function TournamentTeamStatsPage(props: {
         </TabsContent>
 
         <TabsContent value="ultimates" className="space-y-4">
-          <UltUsageOverviewCard ultStats={ultStats} />
+          <UltUsageOverviewCard
+            ultStats={ultStats}
+            chargeBaseline={baselines.ULT_CHARGE_TIME ?? null}
+            holdBaseline={baselines.ULT_HOLD_TIME ?? null}
+          />
           {ultimateImpactToolEnabled && (
             <UltImpactAnalysisCard analysis={ultImpactAnalysis} />
           )}

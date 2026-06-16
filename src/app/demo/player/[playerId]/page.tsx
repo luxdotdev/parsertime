@@ -5,6 +5,7 @@ import { LocaleSwitcher } from "@/components/locale-switcher";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
 import { PlayerAnalytics } from "@/components/player/analytics";
 import { DefaultOverview } from "@/components/player/default-overview";
+import { PlayerTelemetry } from "@/components/player/player-telemetry";
 import { ModeToggle } from "@/components/theme-switcher";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Effect } from "effect";
@@ -17,6 +18,15 @@ import type { PagePropsWithLocale } from "@/types/next";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+
+function decodePlayerId(playerId: string) {
+  try {
+    return decodeURIComponent(playerId);
+  } catch {
+    return null;
+  }
+}
 
 export async function generateMetadata(
   props: PagePropsWithLocale<"/demo/player/[playerId]">
@@ -26,7 +36,7 @@ export async function generateMetadata(
     locale: params.locale,
     namespace: "mapPage.playerMetadata",
   });
-  const playerName = decodeURIComponent(params.playerId);
+  const playerName = decodePlayerId(params.playerId) ?? "Player";
 
   return {
     title: t("title", { playerName }),
@@ -58,11 +68,22 @@ export default async function PlayerDashboardDemoPage(
   const t = await getTranslations("mapPage.player.dashboard");
   const id = 10148;
   const mapDataId = await resolveMapDataId(id);
-  const playerName = decodeURIComponent(params.playerId);
+  const playerName = decodePlayerId(params.playerId);
+
+  if (!playerName) {
+    notFound();
+  }
 
   const mostPlayedHeroes = await AppRuntime.runPromise(
     PlayerService.pipe(Effect.flatMap((svc) => svc.getMostPlayedHeroes(id)))
   );
+  const playerExists = mostPlayedHeroes.some(
+    (player) => player.player_name === playerName
+  );
+
+  if (!playerExists) {
+    notFound();
+  }
 
   const mapName = await prisma.matchStart.findFirst({
     where: {
@@ -109,6 +130,7 @@ export default async function PlayerDashboardDemoPage(
             <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
             <TabsTrigger value="analytics">{t("analytics")}</TabsTrigger>
             <TabsTrigger value="charts">{t("charts")}</TabsTrigger>
+            <TabsTrigger value="telemetry">{t("telemetry")}</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="space-y-4">
             <DefaultOverview id={id} playerName={playerName} />
@@ -118,6 +140,9 @@ export default async function PlayerDashboardDemoPage(
           </TabsContent>
           <TabsContent value="charts" className="space-y-4">
             <PlayerCharts id={id} playerName={playerName} />
+          </TabsContent>
+          <TabsContent value="telemetry" className="space-y-4">
+            <PlayerTelemetry id={id} playerName={playerName} />
           </TabsContent>
         </Tabs>
       </div>

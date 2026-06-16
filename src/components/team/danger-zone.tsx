@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ClientOnly } from "@/lib/client-only";
-import type { Team } from "@prisma/client";
+import type { Team } from "@/generated/prisma/browser";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";

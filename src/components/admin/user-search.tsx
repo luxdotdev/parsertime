@@ -18,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
 import {
   Table,
   TableBody,
@@ -28,9 +27,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import type { User } from "@prisma/client";
+import type { User } from "@/generated/prisma/browser";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
 import {
   CalendarIcon,
   CheckCircle,
@@ -40,7 +38,7 @@ import {
   Search,
   X,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { useDebounce } from "use-debounce";
@@ -61,10 +59,10 @@ export function UserSearch({
   height = "max-h-[500px]",
 }: UserSearchProps) {
   const t = useTranslations("settingsPage.admin.user-search");
+  const formatter = useFormatter();
   const loadMoreRef = useRef<HTMLTableRowElement>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [trustRange, setTrustRange] = useState([0, 100]);
   const [billingPlanFilter, setBillingPlanFilter] = useState<string>("all");
   const [joinDateRange, setJoinDateRange] = useState<DateRange | undefined>();
   const [showFilters, setShowFilters] = useState(false);
@@ -81,7 +79,6 @@ export function UserSearch({
     queryKey: [
       "users",
       debouncedSearch,
-      trustRange,
       billingPlanFilter,
       joinDateRange,
       limit,
@@ -93,8 +90,6 @@ export function UserSearch({
       params.set("limit", limit.toString());
 
       if (debouncedSearch) params.set("search", debouncedSearch);
-      params.set("trustScoreMin", trustRange[0].toString());
-      params.set("trustScoreMax", trustRange[1].toString());
       if (billingPlanFilter !== "all")
         params.set("billingPlan", billingPlanFilter);
 
@@ -141,49 +136,58 @@ export function UserSearch({
   function getBillingPlanBadge(score: string) {
     if (score === "FREE")
       return (
-        <Badge className="bg-blue-400 text-white dark:bg-blue-600">FREE</Badge>
+        <Badge className="bg-blue-400 text-white dark:bg-blue-600">
+          {t("plans.free")}
+        </Badge>
       );
     if (score === "BASIC")
       return (
         <Badge className="bg-purple-400 text-white dark:bg-purple-600">
-          BASIC
+          {t("plans.basic")}
         </Badge>
       );
     if (score === "PREMIUM")
       return (
         <Badge className="bg-gradient-to-r from-pink-600 to-purple-600 text-white">
-          PREMIUM
+          {t("plans.premium")}
         </Badge>
       );
-    return <Badge className="bg-red-500">UNKNOWN</Badge>;
+    return <Badge className="bg-red-500">{t("plans.unknown")}</Badge>;
   }
 
   function formatJoinDateRange() {
-    if (!joinDateRange) return "Select join date range";
+    if (!joinDateRange) return t("filters.select-join-date-range");
 
     if (joinDateRange.from && joinDateRange.to) {
+      const from = formatter.dateTime(joinDateRange.from, {
+        dateStyle: "medium",
+      });
+      const to = formatter.dateTime(joinDateRange.to, { dateStyle: "medium" });
       if (
         joinDateRange.from.toDateString() === joinDateRange.to.toDateString()
       ) {
-        return format(joinDateRange.from, "PPP");
+        return from;
       }
-      return `${format(joinDateRange.from, "PP")} - ${format(joinDateRange.to, "PP")}`;
+      return t("filters.date-range", { from, to });
     }
 
     if (joinDateRange.from) {
-      return `From ${format(joinDateRange.from, "PP")}`;
+      return t("filters.date-range-from", {
+        date: formatter.dateTime(joinDateRange.from, { dateStyle: "medium" }),
+      });
     }
 
     if (joinDateRange.to) {
-      return `Until ${format(joinDateRange.to, "PP")}`;
+      return t("filters.date-range-until", {
+        date: formatter.dateTime(joinDateRange.to, { dateStyle: "medium" }),
+      });
     }
 
-    return "Select join date range";
+    return t("filters.select-join-date-range");
   }
 
   function clearFilters() {
     setSearchQuery("");
-    setTrustRange([0, 100]);
     setBillingPlanFilter("all");
     setJoinDateRange(undefined);
   }
@@ -212,26 +216,7 @@ export function UserSearch({
       </div>
 
       {showFilters && (
-        <div className="grid gap-4 rounded-lg border p-4 md:grid-cols-2 lg:grid-cols-4">
-          <div className="space-y-2">
-            <Label htmlFor="trust-score">{t("filters.trust-score")}</Label>
-            <div className="pt-4">
-              <Slider
-                id="trust-score"
-                defaultValue={[0, 100]}
-                min={0}
-                max={100}
-                step={1}
-                value={trustRange}
-                onValueChange={setTrustRange}
-              />
-            </div>
-            <div className="text-muted-foreground flex justify-between text-xs">
-              <span>{trustRange[0]}</span>
-              <span>{trustRange[1]}</span>
-            </div>
-          </div>
-
+        <div className="grid gap-4 rounded-lg border p-4 md:grid-cols-2 lg:grid-cols-3">
           <div className="space-y-2">
             <Label htmlFor="billing-plan">{t("filters.billing-plan")}</Label>
             <Select
@@ -355,7 +340,9 @@ export function UserSearch({
                       </TableCell>
                       <TableCell>
                         <span className="text-muted-foreground text-sm">
-                          {format(new Date(user.createdAt), "PPP")}
+                          {formatter.dateTime(new Date(user.createdAt), {
+                            dateStyle: "medium",
+                          })}
                         </span>
                       </TableCell>
 

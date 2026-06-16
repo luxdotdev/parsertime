@@ -1,9 +1,17 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { DialogClose, DialogHeader } from "@/components/ui/dialog";
-import { Form, FormField, FormMessage } from "@/components/ui/form";
+import { DialogClose, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { parseVodUrl } from "@/lib/vods";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -27,24 +35,11 @@ export function VodForm({
 
   const t = useTranslations("mapPage.vod");
 
-  const ALLOWED_DOMAINS = [
-    "https://www.youtube.com/",
-    "https://youtube.com/",
-    "https://youtu.be/",
-    "https://www.twitch.tv/",
-    "https://twitch.tv/",
-  ];
-
   const formSchema = z.object({
     vodUrl: z
       .string()
-      .min(1, { message: t("vodLabel") })
-      .refine(
-        (url) => {
-          return ALLOWED_DOMAINS.some((domain) => url.startsWith(domain));
-        },
-        { message: t("invalidUrl") }
-      ),
+      .min(1, { message: t("vodRequired") })
+      .refine((url) => parseVodUrl(url) !== null, { message: t("invalidUrl") }),
   });
 
   const [loading, setLoading] = useState(false);
@@ -79,13 +74,12 @@ export function VodForm({
         return;
       }
 
+      const updatedMap = (await res.json()) as { vod?: string | null };
       toast.success(t("vodSuccess"));
-      setVodState(data.vodUrl);
+      setVodState(updatedMap.vod ?? data.vodUrl);
       setLoading(false);
       setIsOpen(false);
       router.refresh();
-
-      return res.json();
     } catch (error) {
       toast.error(t("vodFail"), {
         description: String(error),
@@ -96,22 +90,26 @@ export function VodForm({
   }
   return (
     <div>
-      <DialogHeader className="mb-4">{t("uploadVOD")}</DialogHeader>
+      <DialogHeader className="mb-4">
+        <DialogTitle>{t("uploadVOD")}</DialogTitle>
+      </DialogHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
             name="vodUrl"
             render={({ field }) => (
-              <>
-                <Input
-                  {...field}
-                  type="text"
-                  placeholder={t("inputPlaceholder")}
-                  className="mb-2"
-                />
+              <FormItem>
+                <FormLabel>{t("vodLabel")}</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder={t("inputPlaceholder")}
+                    {...field}
+                  />
+                </FormControl>
                 <FormMessage />
-              </>
+              </FormItem>
             )}
           />
           <div className="flex gap-2">

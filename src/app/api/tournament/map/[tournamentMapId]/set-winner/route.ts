@@ -3,13 +3,15 @@ import { auth } from "@/lib/auth";
 import { advanceMatch } from "@/lib/tournaments/advancement";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { unauthorized } from "next/navigation";
+import { unauthorized, unstable_rethrow } from "next/navigation";
 import { after, type NextRequest } from "next/server";
 import { z } from "zod";
 
 const setWinnerSchema = z.object({
   winner: z.string().min(1),
 });
+
+const TOURNAMENT_MATCH_LOCK_NAMESPACE = 61_042;
 
 export async function POST(
   req: NextRequest,
@@ -77,6 +79,14 @@ export async function POST(
 
     const match = tournamentMap.match;
     event.matchId = match.id;
+    if (!match.team1?.name || !match.team2?.name) {
+      event.outcome = "missing_teams";
+      event.statusCode = 400;
+      return Response.json(
+        { error: "Match teams must be assigned before setting a winner" },
+        { status: 400 }
+      );
+    }
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
@@ -92,71 +102,117 @@ export async function POST(
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    await prisma.tournamentMap.update({
-      where: { id: tournamentMapId },
-      data: { winnerOverride: parsed.data.winner },
-    });
-
-    const allMaps = await prisma.tournamentMap.findMany({
-      where: { matchId: match.id },
-    });
-
-    let team1Wins = 0;
-    let team2Wins = 0;
-
-    for (const map of allMaps) {
-      const winner =
-        map.id === tournamentMapId ? parsed.data.winner : map.winnerOverride;
-      if (winner === match.team1?.name) team1Wins++;
-      else if (winner === match.team2?.name) team2Wins++;
+    if (![match.team1.name, match.team2.name].includes(parsed.data.winner)) {
+      event.outcome = "invalid_winner";
+      event.statusCode = 400;
+      return Response.json({ error: "Invalid winner" }, { status: 400 });
     }
 
-    const bestOf = match.round.bestOf ?? match.tournament.bestOf;
-    const winsNeeded = Math.ceil(bestOf / 2);
-    const isDecided = team1Wins >= winsNeeded || team2Wins >= winsNeeded;
-    const winnerId =
-      team1Wins >= winsNeeded
-        ? match.team1Id
-        : team2Wins >= winsNeeded
-          ? match.team2Id
-          : null;
+    const mutation = await prisma.$transaction(async (tx) => {
+      await tx.$executeRaw`SELECT pg_advisory_xact_lock(${TOURNAMENT_MATCH_LOCK_NAMESPACE}::integer, ${match.id}::integer)`;
 
-    event.matchDecided = isDecided;
+      const lockedMatch = await tx.tournamentMatch.findUnique({
+        where: { id: match.id },
+        include: {
+          tournament: true,
+          team1: true,
+          team2: true,
+          round: true,
+          maps: true,
+        },
+      });
+      if (!lockedMatch) return { status: "not_found" as const };
+      if (lockedMatch.status === "COMPLETED" && lockedMatch.winnerId) {
+        return { status: "match_completed" as const };
+      }
 
-    await prisma.tournamentMatch.update({
-      where: { id: match.id },
-      data: {
-        team1Score: team1Wins,
-        team2Score: team2Wins,
-        status: isDecided ? "COMPLETED" : "ONGOING",
-        winnerId: isDecided ? winnerId : null,
-      },
-    });
+      await tx.tournamentMap.update({
+        where: { id: tournamentMapId },
+        data: { winnerOverride: parsed.data.winner },
+      });
 
-    if (isDecided && winnerId) {
-      const loserId =
-        winnerId === match.team1Id ? match.team2Id : match.team1Id;
+      let team1Wins = 0;
+      let team2Wins = 0;
 
-      await advanceMatch(
-        {
-          id: match.id,
-          tournamentId: match.tournamentId,
-          bracketPosition: match.bracketPosition,
-          team1Id: match.team1Id,
-          team2Id: match.team2Id,
+      for (const map of lockedMatch.maps) {
+        const winner =
+          map.id === tournamentMapId ? parsed.data.winner : map.winnerOverride;
+        if (winner === lockedMatch.team1?.name) team1Wins++;
+        else if (winner === lockedMatch.team2?.name) team2Wins++;
+      }
+
+      const bestOf = lockedMatch.round.bestOf ?? lockedMatch.tournament.bestOf;
+      const winsNeeded = Math.ceil(bestOf / 2);
+      const isDecided = team1Wins >= winsNeeded || team2Wins >= winsNeeded;
+      const winnerId =
+        team1Wins >= winsNeeded
+          ? lockedMatch.team1Id
+          : team2Wins >= winsNeeded
+            ? lockedMatch.team2Id
+            : null;
+
+      await tx.tournamentMatch.update({
+        where: { id: lockedMatch.id },
+        data: {
+          team1Score: team1Wins,
+          team2Score: team2Wins,
+          status: isDecided ? "COMPLETED" : "ONGOING",
+          winnerId: isDecided ? winnerId : null,
+        },
+      });
+
+      const loserId = winnerId
+        ? winnerId === lockedMatch.team1Id
+          ? lockedMatch.team2Id
+          : lockedMatch.team1Id
+        : null;
+
+      return {
+        status: "ok" as const,
+        isDecided,
+        winnerId,
+        loserId,
+        match: {
+          id: lockedMatch.id,
+          tournamentId: lockedMatch.tournamentId,
+          bracketPosition: lockedMatch.bracketPosition,
+          team1Id: lockedMatch.team1Id,
+          team2Id: lockedMatch.team2Id,
           round: {
-            roundNumber: match.round.roundNumber,
-            bracket: match.round.bracket,
+            roundNumber: lockedMatch.round.roundNumber,
+            bracket: lockedMatch.round.bracket,
           },
           tournament: {
-            format: match.tournament.format,
-            bestOf: match.tournament.bestOf,
-            grandFinalReset: match.tournament.grandFinalReset,
+            format: lockedMatch.tournament.format,
+            bestOf: lockedMatch.tournament.bestOf,
+            grandFinalReset: lockedMatch.tournament.grandFinalReset,
           },
         },
-        winnerId,
-        loserId
+      };
+    });
+
+    if (mutation.status === "not_found") {
+      event.outcome = "not_found";
+      event.statusCode = 404;
+      return Response.json(
+        { error: "Tournament map not found" },
+        { status: 404 }
       );
+    }
+
+    if (mutation.status === "match_completed") {
+      event.outcome = "match_completed";
+      event.statusCode = 409;
+      return Response.json(
+        { error: "Cannot change winners after a match is completed" },
+        { status: 409 }
+      );
+    }
+
+    event.matchDecided = mutation.isDecided;
+
+    if (mutation.isDecided && mutation.winnerId && mutation.loserId) {
+      await advanceMatch(mutation.match, mutation.winnerId, mutation.loserId);
     }
 
     after(async () => {
@@ -172,6 +228,7 @@ export async function POST(
     event.statusCode = 200;
     return Response.json({ success: true });
   } catch (e) {
+    unstable_rethrow(e);
     event.outcome = "error";
     event.statusCode = 500;
     event.error = e instanceof Error ? e.message : String(e);

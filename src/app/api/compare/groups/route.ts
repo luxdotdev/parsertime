@@ -1,7 +1,4 @@
-import { Effect } from "effect";
-import { AppRuntime } from "@/data/runtime";
-import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { auth, canViewMaps, canViewTeam, getCurrentUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import type { HeroName } from "@/types/heroes";
@@ -35,9 +32,7 @@ export async function GET(request: NextRequest) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const user = await AppRuntime.runPromise(
-      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-    );
+    const user = await getCurrentUser();
     if (!user) {
       wideEvent.status_code = 404;
       wideEvent.outcome = "user_not_found";
@@ -63,6 +58,13 @@ export async function GET(request: NextRequest) {
       wideEvent.outcome = "invalid_team_id";
       wideEvent.error = { message: "Invalid team ID" };
       return new Response("Invalid team ID", { status: 400 });
+    }
+
+    if (!(await canViewTeam(teamId, user))) {
+      wideEvent.status_code = 403;
+      wideEvent.outcome = "forbidden";
+      wideEvent.error = { message: "User cannot view team" };
+      return new Response("Forbidden", { status: 403 });
     }
 
     wideEvent.team = { id: teamId };
@@ -152,9 +154,7 @@ export async function POST(request: NextRequest) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const user = await AppRuntime.runPromise(
-      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-    );
+    const user = await getCurrentUser();
     if (!user) {
       wideEvent.status_code = 404;
       wideEvent.outcome = "user_not_found";
@@ -213,7 +213,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (team.users.length === 0 && team.ownerId !== user.id) {
+    if (!(await canViewTeam(teamId, user))) {
       wideEvent.status_code = 403;
       wideEvent.outcome = "forbidden";
       wideEvent.error = { message: "User is not a member of this team" };
@@ -223,6 +223,19 @@ export async function POST(request: NextRequest) {
           error: "You must be a member of this team to save comparison groups",
         },
         { status: 403 }
+      );
+    }
+
+    if (!(await canViewMaps(mapIds, user))) {
+      wideEvent.status_code = 400;
+      wideEvent.outcome = "invalid_map_ids";
+      wideEvent.error = { message: "User cannot view one or more maps" };
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Map IDs must belong to an accessible scrim",
+        },
+        { status: 400 }
       );
     }
 

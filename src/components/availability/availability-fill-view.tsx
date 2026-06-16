@@ -13,7 +13,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { AvailabilitySettingsShape } from "@/lib/availability/slots";
+import { useFormatter, useTranslations } from "next-intl";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -52,6 +54,8 @@ export function AvailabilityFillView({
   prefillName,
   sessionUserLoggedIn,
 }: Props) {
+  const t = useTranslations("availability.fillView");
+  const format = useFormatter();
   const weekStartDate = useMemo(() => new Date(weekStart), [weekStart]);
 
   const [name, setName] = useState(prefillName ?? "");
@@ -110,7 +114,7 @@ export function AvailabilityFillView({
 
   const save = useCallback(async () => {
     if (!name.trim()) {
-      toast.error("Please enter your name");
+      toast.error(t("toast.nameRequired"));
       return;
     }
     setSaving(true);
@@ -133,13 +137,13 @@ export function AvailabilityFillView({
         setPasswordRequired(true);
         toast.error(
           body?.error === "Password required"
-            ? "Password required to edit this name"
-            : "Incorrect password"
+            ? t("toast.passwordRequired")
+            : t("toast.incorrectPassword")
         );
         return;
       }
       if (!res.ok) {
-        toast.error("Failed to save availability");
+        toast.error(t("toast.saveFailed"));
         return;
       }
       const { response } = (await res.json()) as {
@@ -149,31 +153,36 @@ export function AvailabilityFillView({
         const others = prev.filter((r) => r.id !== response.id);
         return [...others, response];
       });
-      toast.success("Availability saved");
+      toast.success(t("toast.saved"));
     } finally {
       setSaving(false);
     }
-  }, [name, password, mySlots, fillLocalTz, scheduleId]);
+  }, [name, password, mySlots, fillLocalTz, scheduleId, t]);
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 p-6">
       <header className="space-y-1">
-        <h1 className="text-2xl font-bold">{teamName} availability</h1>
+        <h1 className="text-2xl font-bold">{t("title", { teamName })}</h1>
         <p className="text-muted-foreground text-sm">
-          Week of {new Date(weekStartDate).toLocaleDateString()} — pick the
-          times you&apos;re free.
+          {t("weekIntro", {
+            date: format.dateTime(weekStartDate, {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            }),
+          })}
         </p>
       </header>
 
       <div className="grid items-end gap-3 sm:grid-cols-3">
         <div className="space-y-1.5">
-          <Label htmlFor="name">Name</Label>
+          <Label htmlFor="name">{t("name")}</Label>
           <Input
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             onBlur={checkName}
-            placeholder="Your name"
+            placeholder={t("namePlaceholder")}
             disabled={sessionUserLoggedIn && Boolean(prefillName)}
             autoComplete="off"
           />
@@ -181,7 +190,9 @@ export function AvailabilityFillView({
         {!sessionUserLoggedIn ? (
           <div className="space-y-1.5">
             <Label htmlFor="password">
-              Password {passwordRequired ? "(required)" : "(optional)"}
+              {t("password", {
+                required: passwordRequired ? "true" : "false",
+              })}
             </Label>
             <Input
               id="password"
@@ -189,7 +200,9 @@ export function AvailabilityFillView({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={
-                passwordRequired ? "Enter your password" : "Set a password"
+                passwordRequired
+                  ? t("passwordRequiredPlaceholder")
+                  : t("passwordOptionalPlaceholder")
               }
               autoComplete="off"
             />
@@ -198,7 +211,7 @@ export function AvailabilityFillView({
           <div />
         )}
         <div className="space-y-1.5">
-          <Label htmlFor="viewer-tz">Viewing timezone</Label>
+          <Label htmlFor="viewer-tz">{t("viewingTimezone")}</Label>
           <TimezoneSelect
             id="viewer-tz"
             value={viewerTz}
@@ -210,7 +223,7 @@ export function AvailabilityFillView({
 
       <div className="grid gap-6 md:grid-cols-2">
         <section className="space-y-4">
-          <h2 className="text-lg font-semibold">Your availability</h2>
+          <h2 className="text-lg font-semibold">{t("yourAvailability")}</h2>
 
           <AvailabilityGrid
             settings={settings}
@@ -223,7 +236,7 @@ export function AvailabilityFillView({
 
           <div className="flex flex-wrap gap-2">
             <Button onClick={save} disabled={saving}>
-              {saving ? "Saving…" : "Save my availability"}
+              {saving ? t("saving") : t("save")}
             </Button>
             <Button
               type="button"
@@ -231,29 +244,33 @@ export function AvailabilityFillView({
               onClick={() => setMySlots(new Set())}
               disabled={saving || mySlots.size === 0}
             >
-              Clear
+              {t("clear")}
             </Button>
           </div>
           {tzMismatch ? (
             <div className="rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-600 dark:text-amber-400">
-              <span className="font-medium">Heads up:</span> the team&apos;s
-              calendar is set to <strong>{settings.timezone}</strong>, but
-              you&apos;re in <strong>{fillLocalTz}</strong>. Pick slots in your
-              local time — we&apos;ll translate to the team&apos;s timezone
-              automatically.
+              {t.rich("timezoneMismatch", {
+                label: (chunks) => (
+                  <span className="font-medium">{chunks}</span>
+                ),
+                teamTimezone: (chunks) => <strong>{chunks}</strong>,
+                localTimezone: (chunks) => <strong>{chunks}</strong>,
+                teamTz: settings.timezone,
+                localTz: fillLocalTz,
+              })}
             </div>
           ) : (
             <p className="text-muted-foreground text-xs">
-              Selecting in your local time: {fillLocalTz}
+              {t("localTimezone", { timezone: fillLocalTz })}
             </p>
           )}
         </section>
 
         <section className="space-y-4">
           <h2 className="text-lg font-semibold">
-            Group availability
+            {t("groupAvailability")}
             <span className="text-muted-foreground ml-2 text-sm font-normal">
-              ({responses.length} responses)
+              {t("responseCount", { count: responses.length })}
             </span>
           </h2>
 
@@ -271,7 +288,7 @@ export function AvailabilityFillView({
 
           <div className="border-border text-muted-foreground min-h-[2rem] rounded-md border px-3 py-2 text-xs">
             {hoveredSlot === null
-              ? "Hover a cell to see who's available"
+              ? t("hoverPrompt")
               : (() => {
                   const available = heatmap.get(hoveredSlot) ?? [];
                   const unavailable = responses
@@ -281,13 +298,19 @@ export function AvailabilityFillView({
                     <>
                       <div>
                         <span className="text-foreground font-medium">
-                          {available.length} / {responses.length}
+                          {t("availabilityRatio", {
+                            available: available.length,
+                            total: responses.length,
+                          })}
                         </span>
-                        {available.length > 0 && ` — ${available.join(", ")}`}
+                        {available.length > 0 &&
+                          t("namesSuffix", { names: available.join(", ") })}
                       </div>
                       {unavailable.length > 0 && (
                         <div className="mt-1">
-                          Unavailable: {unavailable.join(", ")}
+                          {t("unavailable", {
+                            names: unavailable.join(", "),
+                          })}
                         </div>
                       )}
                     </>
@@ -303,58 +326,33 @@ export function AvailabilityFillView({
 }
 
 function ParsertimePromoCard() {
+  const t = useTranslations("availability.fillView.promo");
+
+  function strong(chunks: ReactNode) {
+    return <span className="text-foreground font-medium">{chunks}</span>;
+  }
+
   return (
     <Card className="border-border/60">
       <CardHeader>
-        <CardTitle className="text-xl">
-          Scrim analytics and team tools for Overwatch
-        </CardTitle>
-        <CardDescription>
-          Parsertime turns raw Workshop Log data into skill ratings, trend
-          lines, and coaching insights — plus team management tools like the
-          availability calendar you&apos;re using right now.
-        </CardDescription>
+        <CardTitle className="text-xl">{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <ul className="text-muted-foreground grid gap-2 text-sm sm:grid-cols-2">
-          <li>
-            <span className="text-foreground font-medium">Instant review.</span>{" "}
-            Upload a scrim, see per-player stats, maps, and teamfights in
-            minutes — no spreadsheets.
-          </li>
-          <li>
-            <span className="text-foreground font-medium">CSR ratings.</span>{" "}
-            Objective 1–5000 hero skill ratings across role-specific metrics.
-          </li>
-          <li>
-            <span className="text-foreground font-medium">Trends.</span> Watch
-            players improve across weeks and seasons, not just single matches.
-          </li>
-          <li>
-            <span className="text-foreground font-medium">
-              Coaching canvas.
-            </span>{" "}
-            Draw up strats on a shared whiteboard and keep them alongside the
-            scrims they came from.
-          </li>
-          <li>
-            <span className="text-foreground font-medium">
-              Team availability.
-            </span>{" "}
-            This calendar, plus Discord reminders that ping your role at the
-            start of each week.
-          </li>
-          <li>
-            <span className="text-foreground font-medium">Free to start.</span>{" "}
-            Two teams and five members on the free tier, no credit card.
-          </li>
+          <li>{t.rich("bullets.instantReview", { strong })}</li>
+          <li>{t.rich("bullets.csrRatings", { strong })}</li>
+          <li>{t.rich("bullets.trends", { strong })}</li>
+          <li>{t.rich("bullets.coachingCanvas", { strong })}</li>
+          <li>{t.rich("bullets.teamAvailability", { strong })}</li>
+          <li>{t.rich("bullets.freeToStart", { strong })}</li>
         </ul>
         <div className="flex flex-wrap gap-2">
           <Link href="/sign-in">
-            <Button>Sign in to see your team&apos;s scrims</Button>
+            <Button>{t("signIn")}</Button>
           </Link>
           <Link href="/">
-            <Button variant="outline">Learn more about Parsertime</Button>
+            <Button variant="outline">{t("learnMore")}</Button>
           </Link>
         </div>
       </CardContent>

@@ -2,13 +2,6 @@
 
 import { MenuBar } from "@/components/tiptap/menu-bar";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { noteDataSchema } from "@/lib/utils";
 import Highlight from "@tiptap/extension-highlight";
 import TextAlign from "@tiptap/extension-text-align";
@@ -75,7 +68,7 @@ export function TipTap({
     editorProps: {
       attributes: {
         class:
-          "min-h-[300px] p-4 border border-muted rounded-lg bg-background prose prose-sm sm:prose lg:prose-lg xl:prose-xl focus:outline-none focus:ring-1 focus:ring-ring focus:border-ring dark:prose-invert max-w-full",
+          "min-h-[300px] p-4 border border-border rounded-md bg-background prose prose-sm sm:prose focus:outline-none focus:ring-[3px] focus:ring-ring/50 focus:border-ring dark:prose-invert max-w-full",
       },
     },
     immediatelyRender: false,
@@ -85,8 +78,10 @@ export function TipTap({
   });
 
   useEffect(() => {
+    if (!editor) return;
+    if (editor.getHTML() === noteContent) return;
     savedContentRef.current = noteContent;
-    editor?.commands.setContent(noteContent);
+    editor.commands.setContent(noteContent);
   }, [noteContent, editor]);
 
   async function handleSave() {
@@ -102,24 +97,33 @@ export function TipTap({
   }
 
   return (
-    <Card className="border-muted shadow-md">
-      <CardHeader>
-        <CardTitle className="text-lg font-semibold">{t("notes")}</CardTitle>
+    <section aria-label={t("notes")} className="space-y-5">
+      <div className="space-y-1">
+        <span className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
+          {t("eyebrow")}
+        </span>
+        <h2 className="text-foreground text-xl font-semibold tracking-tight">
+          {t("notes")}
+        </h2>
         <p className="text-muted-foreground text-sm">{t("placeholder")}</p>
+      </div>
 
-        <MenuBar editor={editor} />
-      </CardHeader>
-      <CardContent className="max-w-full">
-        <EditorContent editor={editor} />
-      </CardContent>
-      <CardFooter className="justify-end gap-2">
-        {hasUnsavedChanges && (
-          <p className="text-muted-foreground text-sm">{t("unsavedChanges")}</p>
-        )}
-        <Button onClick={handleSave} disabled={!hasUnsavedChanges || isSaving}>
+      <MenuBar editor={editor} />
+
+      <EditorContent editor={editor} />
+
+      <div className="flex items-center justify-end gap-2">
+        <span aria-live="polite" className="text-muted-foreground text-sm">
+          {hasUnsavedChanges ? t("unsavedChanges") : ""}
+        </span>
+        <Button
+          onClick={handleSave}
+          disabled={!hasUnsavedChanges || isSaving}
+          aria-busy={isSaving}
+        >
           {isSaving ? t("saving") : t("save")}
         </Button>
-      </CardFooter>
-    </Card>
+      </div>
+    </section>
   );
 }

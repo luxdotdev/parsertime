@@ -2,7 +2,7 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auditLog } from "@/lib/audit-logs";
-import { auth } from "@/lib/auth";
+import { auth, canViewTeam } from "@/lib/auth";
 import {
   generateDoubleEliminationBracket,
   generateRoundRobinSEBracket,
@@ -12,7 +12,9 @@ import {
 } from "@/lib/tournaments/bracket";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { TournamentFormat } from "@prisma/client";
+import { UsageEventName } from "@/lib/usage/names";
+import { usage } from "@/lib/usage/server";
+import { TournamentFormat } from "@/generated/prisma/browser";
 import { Ratelimit } from "@upstash/ratelimit";
 import { ipAddress } from "@vercel/functions";
 import { kv } from "@vercel/kv";
@@ -29,23 +31,52 @@ const bestOfSchema = z
     message: "Best-of must be an odd number",
   });
 
-const createTournamentSchema = z.object({
-  name: z.string().min(2).max(50),
-  format: z.nativeEnum(TournamentFormat),
-  bestOf: bestOfSchema,
-  playoffBestOf: bestOfSchema.optional(),
-  advancingTeams: z.number().int().min(2).optional(),
-  teams: z
-    .array(
-      z.object({
-        name: z.string().min(1).max(50),
-        teamId: z.number().int().optional(),
-        seed: z.number().int().min(1),
-      })
-    )
-    .min(2)
-    .max(64),
-});
+const createTournamentSchema = z
+  .object({
+    name: z.string().min(2).max(50),
+    format: z.nativeEnum(TournamentFormat),
+    bestOf: bestOfSchema,
+    playoffBestOf: bestOfSchema.optional(),
+    advancingTeams: z.number().int().min(2).optional(),
+    teams: z
+      .array(
+        z.object({
+          name: z.string().min(1).max(50),
+          teamId: z.number().int().optional(),
+          seed: z.number().int().min(1),
+        })
+      )
+      .min(2)
+      .max(64),
+  })
+  .superRefine((value, ctx) => {
+    const teamCount = value.teams.length;
+    if (value.format === TournamentFormat.DOUBLE_ELIMINATION && teamCount < 4) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["teams"],
+        message: "Double elimination requires at least 4 teams.",
+      });
+    }
+    if (value.format === TournamentFormat.ROUND_ROBIN_SE && teamCount < 3) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["teams"],
+        message: "Round robin requires at least 3 teams.",
+      });
+    }
+    if (
+      value.format === TournamentFormat.ROUND_ROBIN_SE &&
+      value.advancingTeams !== undefined &&
+      value.advancingTeams > teamCount
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["advancingTeams"],
+        message: "Advancing teams cannot exceed the team count.",
+      });
+    }
+  });
 
 export type CreateTournamentRequestData = z.infer<
   typeof createTournamentSchema
@@ -122,6 +153,18 @@ export async function POST(request: NextRequest) {
       event.outcome = "user_not_found";
       event.statusCode = 404;
       return Response.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const linkedTeamIds = teams
+      .map((team) => team.teamId)
+      .filter((id): id is number => id !== undefined);
+    const linkedTeamAccess = await Promise.all(
+      [...new Set(linkedTeamIds)].map((teamId) => canViewTeam(teamId, user))
+    );
+    if (linkedTeamAccess.some((allowed) => !allowed)) {
+      event.outcome = "forbidden_team";
+      event.statusCode = 403;
+      return Response.json({ error: "Forbidden linked team" }, { status: 403 });
     }
 
     const bracket =
@@ -294,6 +337,11 @@ export async function POST(request: NextRequest) {
     });
 
     event.tournamentId = tournament.id;
+
+    void usage.track({
+      name: UsageEventName.TOURNAMENT_CREATE,
+      userId: user.id,
+    });
 
     after(async () => {
       await auditLog.createAuditLog({

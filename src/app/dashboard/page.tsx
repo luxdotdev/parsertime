@@ -6,8 +6,9 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
+import { getPendingFeedbackCount } from "@/lib/team-ops/scrim-feedback";
 import type { PagePropsWithLocale } from "@/types/next";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
@@ -50,31 +51,44 @@ export default async function DashboardPage() {
     getTranslations("dashboard"),
   ]);
 
-  const userData = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
-  );
+  const email = session?.user?.email;
+
+  const [userData, manageableTeams] = await Promise.all([
+    AppRuntime.runPromise(
+      UserService.pipe(Effect.flatMap((svc) => svc.getUser(email)))
+    ),
+    AppRuntime.runPromise(
+      UserService.pipe(Effect.flatMap((svc) => svc.getTeamsWithPerms(email)))
+    ),
+  ]);
 
   const isAdmin = userData?.role === $Enums.UserRole.ADMIN;
 
+  const manageableTeamIds = manageableTeams.map((team) => team.id);
+  const pendingFeedbackCount = await getPendingFeedbackCount(manageableTeamIds);
+
   return (
     <DirectionalTransition>
-      <div className="flex-1 space-y-4 p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight text-balance">
-            {t("title")}
-          </h2>
+      <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+        <div className="mb-3 flex items-end justify-between gap-4">
+          <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
         </div>
-        <Tabs defaultValue="overview" className="space-y-4">
+        {pendingFeedbackCount > 0 && (
+          <p className="text-muted-foreground mb-4 text-sm">
+            {t("pendingFeedback", { count: pendingFeedbackCount })}
+          </p>
+        )}
+        <Tabs defaultValue="overview">
           {isAdmin && (
-            <TabsList>
+            <TabsList className="mb-5">
               <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
               <TabsTrigger value="admin">{t("admin")}</TabsTrigger>
             </TabsList>
           )}
-          <TabsContent value="overview" className="space-y-4">
+          <TabsContent value="overview" className="mt-0">
             <ScrimPagination seenOnboarding={userData?.seenOnboarding} />
           </TabsContent>
-          <TabsContent value="admin" className="space-y-4">
+          <TabsContent value="admin" className="mt-0">
             <ScrimPagination isAdmin={true} seenOnboarding={true} />
           </TabsContent>
         </Tabs>

@@ -53,7 +53,10 @@ export const make: Effect.Effect<PlayerServiceInterface> = Effect.gen(
         const rows = yield* Effect.tryPromise({
           try: () =>
             prisma.playerStat.findMany({
-              where: { MapDataId: mapDataId },
+              where: {
+                MapDataId: mapDataId,
+                hero_time_played: { gt: 0 },
+              },
               select: {
                 player_name: true,
                 player_team: true,

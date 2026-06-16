@@ -1,22 +1,19 @@
 import { DamageByRoundChart } from "@/components/charts/map/damage-by-round-chart";
 import { KillsByFightChart } from "@/components/charts/map/kills-by-fight-chart";
 import { KillsByRoleChart } from "@/components/charts/map/kills-by-role-chart";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { MapUltAdvantageCard } from "@/components/charts/map/map-ult-advantage";
+import { TempoChartServer } from "@/components/map/tempo/tempo-chart-server";
 import { Link } from "@/components/ui/link";
+import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { getMapUltAdvantage } from "@/data/map/ult-advantage";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
-import type { Kill } from "@prisma/client";
+import type { Kill } from "@/generated/prisma/client";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { getTranslations } from "next-intl/server";
 
@@ -25,7 +22,7 @@ async function ChartTooltip() {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <InfoCircledIcon className="h-4 w-4" />
+        <InfoCircledIcon className="text-muted-foreground h-3.5 w-3.5" />
       </TooltipTrigger>
       <TooltipContent className="max-w-[280px]">
         {t.rich("tooltip", {
@@ -46,31 +43,27 @@ async function groupKillsByInterval(id: number, maxInterval: number) {
     where: {
       MapDataId: mdId,
     },
+    orderBy: [{ match_time: "asc" }, { id: "asc" }],
   });
 
   const groupedKills: Kill[][] = [];
   let currentGroup: Kill[] = [];
 
   kills.forEach((kill, index) => {
-    // Add the first kill to the current group
     if (currentGroup.length === 0) {
       currentGroup.push(kill);
     } else {
-      // Calculate the time difference between the current kill and the previous one
       const timeDifference = kill.match_time - kills[index - 1].match_time;
 
-      // If the time difference is within the maxInterval, add it to the current group
       if (timeDifference <= maxInterval) {
         currentGroup.push(kill);
       } else {
-        // If the difference is greater than maxInterval, start a new group
         groupedKills.push(currentGroup);
-        currentGroup = [kill]; // Start a new group with the current kill
+        currentGroup = [kill];
       }
     }
   });
 
-  // Add the last group if it's not empty
   if (currentGroup.length > 0) {
     groupedKills.push(currentGroup);
   }
@@ -78,7 +71,56 @@ async function groupKillsByInterval(id: number, maxInterval: number) {
   return groupedKills;
 }
 
-export async function MapCharts({ id }: { id: number }) {
+type ChartSectionProps = {
+  id: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  children: React.ReactNode;
+};
+
+function ChartSection({
+  id,
+  eyebrow,
+  title,
+  description,
+  children,
+}: ChartSectionProps) {
+  return (
+    <div className="space-y-3">
+      <div className="space-y-1">
+        <span className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
+          {eyebrow}
+        </span>
+        <div className="flex items-center gap-1.5">
+          <h3
+            id={id}
+            className="font-sans text-base font-semibold tracking-tight"
+          >
+            {title}
+          </h3>
+          <ChartTooltip />
+        </div>
+      </div>
+      <div className="-ml-2">{children}</div>
+      <p className="text-muted-foreground text-xs leading-relaxed">
+        {description}
+      </p>
+    </div>
+  );
+}
+
+export async function MapCharts({
+  id,
+  team1Color,
+  team2Color,
+  tempoChartEnabled,
+}: {
+  id: number;
+  team1Color: string;
+  team2Color: string;
+  tempoChartEnabled: boolean;
+}) {
   const t = await getTranslations("mapPage.charts");
   const mapDataId = await resolveMapDataId(id);
   const teams = await prisma.matchStart.findFirst({
@@ -96,6 +138,8 @@ export async function MapCharts({ id }: { id: number }) {
   const teamNames = [team1Name, team2Name] as const;
 
   const fights = await groupKillsByInterval(id, 15);
+
+  const ultAdvantage = await getMapUltAdvantage(id, team1Name);
 
   const team1Kills = await prisma.kill.findMany({
     where: {
@@ -134,54 +178,79 @@ export async function MapCharts({ id }: { id: number }) {
   });
 
   return (
-    <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
-      <Card className="col-span-full hidden md:grid">
-        <CardHeader>
-          <CardTitle>
-            <span className="inline-flex gap-1">
-              {t("killsByFight.title")} <ChartTooltip />
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pl-2">
-          <KillsByFightChart fights={fights} teamNames={teamNames} />
-        </CardContent>
-        <CardFooter>
-          <p className="text-sm text-gray-500">
-            {t("killsByFight.description")}
-          </p>
-        </CardFooter>
-      </Card>
-      <Card className="col-span-3">
-        <CardHeader>
-          <CardTitle>
-            <span className="inline-flex gap-1">
-              {t("finalBlowsByRole.title")} <ChartTooltip />
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pl-2">
+    <section aria-label={t("title")} className="space-y-6">
+      {tempoChartEnabled && (
+        <>
+          <ChartSection
+            id="tempo"
+            eyebrow={t("tempo.eyebrow")}
+            title={t("tempo.title")}
+            description={t("tempo.description")}
+          >
+            <TempoChartServer
+              id={id}
+              team1Color={team1Color}
+              team2Color={team2Color}
+            />
+          </ChartSection>
+
+          <Separator />
+        </>
+      )}
+
+      <ChartSection
+        id="kills-by-fight"
+        eyebrow={t("killsByFight.eyebrow")}
+        title={t("killsByFight.title")}
+        description={t("killsByFight.description")}
+      >
+        <KillsByFightChart fights={fights} teamNames={teamNames} />
+      </ChartSection>
+
+      {ultAdvantage.timeline.length > 0 && (
+        <>
+          <Separator />
+
+          <ChartSection
+            id="ult-advantage"
+            eyebrow={t("ultAdvantage.eyebrow")}
+            title={t("ultAdvantage.title")}
+            description={t("ultAdvantage.description", { team: team1Name })}
+          >
+            <MapUltAdvantageCard
+              timeline={ultAdvantage.timeline}
+              analysis={ultAdvantage.analysis}
+              team1Name={team1Name}
+              team2Name={team2Name}
+              team1Color={team1Color}
+              team2Color={team2Color}
+            />
+          </ChartSection>
+        </>
+      )}
+
+      <Separator />
+
+      <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
+        <ChartSection
+          id="final-blows-by-role"
+          eyebrow={t("finalBlowsByRole.eyebrow")}
+          title={t("finalBlowsByRole.title")}
+          description={t("finalBlowsByRole.description")}
+        >
           <KillsByRoleChart
             team1Kills={team1Kills}
             team2Kills={team2Kills}
             teamNames={teamNames}
           />
-        </CardContent>
-        <CardFooter>
-          <p className="text-sm text-gray-500">
-            {t("finalBlowsByRole.description")}
-          </p>
-        </CardFooter>
-      </Card>
-      <Card className="col-span-3">
-        <CardHeader>
-          <CardTitle>
-            <span className="inline-flex gap-1">
-              {t("dmgByRound.title")} <ChartTooltip />
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="pl-2">
+        </ChartSection>
+
+        <ChartSection
+          id="damage-by-round"
+          eyebrow={t("dmgByRound.eyebrow")}
+          title={t("dmgByRound.title")}
+          description={t("dmgByRound.description")}
+        >
           <DamageByRoundChart
             team1DamageByRound={team1DamageByRound.sort(
               (a, b) => a.round_number - b.round_number
@@ -191,11 +260,8 @@ export async function MapCharts({ id }: { id: number }) {
             )}
             teamNames={teamNames}
           />
-        </CardContent>
-        <CardFooter>
-          <p className="text-sm text-gray-500">{t("dmgByRound.description")}</p>
-        </CardFooter>
-      </Card>
-    </div>
+        </ChartSection>
+      </div>
+    </section>
   );
 }

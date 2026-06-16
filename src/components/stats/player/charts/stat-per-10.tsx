@@ -1,10 +1,8 @@
 "use client";
 
-import { CardContent, CardFooter } from "@/components/ui/card";
-import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import type { NonMappableStat, Stat } from "@/lib/player-charts";
 import { cn, format, round, toMins } from "@/lib/utils";
-import type { PlayerStat, Scrim } from "@prisma/client";
+import type { PlayerStat, Scrim } from "@/generated/prisma/browser";
 import { TrendingDownIcon, TrendingUpIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -71,14 +69,12 @@ function CustomTooltip({
   payload,
   label,
 }: TooltipProps<ValueType, NameType>) {
-  const { team1 } = useColorblindMode();
-
   if (active && payload?.length) {
     return (
-      <div className="bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs">
+      <div className="bg-popover text-popover-foreground border-border animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 overflow-hidden rounded-md border px-3 py-1.5 text-xs shadow-md">
         <h3 className="text-base font-bold">{label}</h3>
         <p className="text-sm">
-          <span style={{ color: team1 }}>
+          <span style={{ color: "var(--chart-1)" }}>
             {(payload[0].value as number).toFixed(2)}
           </span>
         </p>
@@ -116,7 +112,6 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
   better,
 }: Props<T>) {
   const t = useTranslations("statsPage.playerStats");
-  const { team1 } = useColorblindMode();
   const [focused, setFocused] = useState<string | null>(null);
 
   function getOpacity(key: string) {
@@ -165,10 +160,12 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
   const trendIsGood = better === "higher" ? slopeIsPositive : !slopeIsPositive;
   const trendLineColor =
     slope === 0
-      ? "var(--color-muted-foreground)"
+      ? "var(--muted-foreground)"
       : trendIsGood
-        ? "var(--color-green-500)"
-        : "var(--color-red-500)";
+        ? "var(--primary)"
+        : "var(--destructive)";
+
+  const dataLineColor = "var(--chart-1)";
 
   const avg =
     processedData.reduce((acc, curr) => acc + curr.pv, 0) /
@@ -179,139 +176,150 @@ export function StatPer10Chart<T extends keyof Omit<Stat, NonMappableStat>>({
 
   const percentageChange = calculatePercentageChange(processedData);
 
+  const trendIsPositive =
+    (better === "higher" && percentageChange.includes("+")) ||
+    (better === "lower" && percentageChange.includes("-"));
+
   return (
-    <>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={250}>
-          <LineChart
-            width={500}
-            height={250}
-            data={chartDataWithTrend}
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5,
+    <div className="space-y-3">
+      <ResponsiveContainer width="100%" height={250}>
+        <LineChart
+          width={500}
+          height={250}
+          data={chartDataWithTrend}
+          margin={{
+            top: 5,
+            right: 30,
+            left: 20,
+            bottom: 5,
+          }}
+        >
+          <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />
+          <XAxis
+            dataKey="name"
+            stroke="var(--muted-foreground)"
+            tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+          />
+          <YAxis
+            stroke="var(--muted-foreground)"
+            tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+          />
+          <Tooltip content={<CustomTooltip />} />
+          <Line
+            type="monotone"
+            dataKey="pv"
+            stroke={dataLineColor}
+            strokeOpacity={getOpacity("pv")}
+            activeDot={{ r: 8 }}
+            dot={{
+              fillOpacity: getOpacity("pv"),
+              strokeOpacity: getOpacity("pv"),
             }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip content={<CustomTooltip />} />
+            name={t(`stats.${stat}` as never)}
+          />
+          {chartDataWithTrend.length >= 2 && (
             <Line
-              type="monotone"
-              dataKey="pv"
-              stroke={team1}
-              strokeOpacity={getOpacity("pv")}
-              activeDot={{ r: 8 }}
-              dot={{
-                fillOpacity: getOpacity("pv"),
-                strokeOpacity: getOpacity("pv"),
-              }}
-              name={t(`stats.${stat}` as never)}
+              type="linear"
+              dataKey="trend"
+              stroke={trendLineColor}
+              strokeDasharray="6 3"
+              strokeWidth={1.5}
+              strokeOpacity={getOpacity("trend")}
+              dot={false}
+              activeDot={false}
+              name={t("statPer10.trend")}
+              connectNulls
             />
-            {chartDataWithTrend.length >= 2 && (
-              <Line
-                type="linear"
-                dataKey="trend"
-                stroke={trendLineColor}
-                strokeDasharray="6 3"
-                strokeWidth={1.5}
-                strokeOpacity={getOpacity("trend")}
-                dot={false}
-                activeDot={false}
-                name={t("statPer10.trend")}
-                connectNulls
+          )}
+        </LineChart>
+      </ResponsiveContainer>
+      <div className="flex flex-col items-center gap-0.5">
+        <div className="flex items-center gap-3">
+          {[
+            {
+              key: "pv",
+              label: t(`stats.${stat}` as never),
+              color: dataLineColor,
+            },
+            ...(chartDataWithTrend.length >= 2
+              ? [
+                  {
+                    key: "trend",
+                    label: t("statPer10.trend"),
+                    color: trendLineColor,
+                  },
+                ]
+              : []),
+          ].map((item) => (
+            <button
+              key={item.key}
+              type="button"
+              className="flex cursor-pointer items-center gap-1"
+              onClick={() =>
+                setFocused((prev) => (prev === item.key ? null : item.key))
+              }
+            >
+              <div
+                className="h-2 w-2 rounded-full transition-opacity"
+                style={{
+                  backgroundColor: item.color,
+                  opacity: getOpacity(item.key),
+                }}
               />
-            )}
-          </LineChart>
-        </ResponsiveContainer>
-        <div className="flex flex-col items-center gap-0.5 pt-1">
-          <div className="flex items-center gap-3">
-            {[
-              { key: "pv", label: t(`stats.${stat}` as never), color: team1 },
-              ...(chartDataWithTrend.length >= 2
-                ? [
-                    {
-                      key: "trend",
-                      label: t("statPer10.trend"),
-                      color: trendLineColor,
-                    },
-                  ]
-                : []),
-            ].map((item) => (
-              <button
-                key={item.key}
-                type="button"
-                className="flex cursor-pointer items-center gap-1"
-                onClick={() =>
-                  setFocused((prev) => (prev === item.key ? null : item.key))
-                }
+              <span
+                className="text-muted-foreground text-[10px] transition-opacity"
+                style={{ opacity: getOpacity(item.key) }}
               >
-                <div
-                  className="h-2 w-2 rounded-full transition-opacity"
-                  style={{
-                    backgroundColor: item.color,
-                    opacity: getOpacity(item.key),
-                  }}
-                />
-                <span
-                  className="text-muted-foreground text-[10px] transition-opacity"
-                  style={{ opacity: getOpacity(item.key) }}
-                >
-                  {typeof item.label === "string" ? item.label : ""}
-                </span>
-              </button>
-            ))}
-          </div>
-          <span className="text-muted-foreground/60 text-[9px]">
-            Click to isolate
-          </span>
-        </div>
-      </CardContent>
-      <CardFooter>
-        <div className="space-y-1">
-          <div className="text-foreground inline-flex items-center gap-1">
-            <p>
-              {t.rich("statPer10.footer", {
-                span: (chunks) => (
-                  <span
-                    className={cn(
-                      better === "higher" && percentageChange.includes("+")
-                        ? "text-green-500"
-                        : better === "higher" && percentageChange.includes("-")
-                          ? "text-red-500"
-                          : better === "lower" && percentageChange.includes("+")
-                            ? "text-red-500"
-                            : "text-green-500",
-                      "inline-flex items-center gap-1"
-                    )}
-                  >
-                    {chunks}
-                  </span>
-                ),
-                percentageChange,
-                scrimData: scrimData.length,
-              })}{" "}
-              <span className="inline-flex">
-                {better === "higher" && percentageChange.includes("+") ? (
-                  <TrendingUpIcon size={16} className="translate-y-[3px]" />
-                ) : (
-                  <TrendingDownIcon size={16} className="translate-y-[3px]" />
-                )}
+                {typeof item.label === "string" ? item.label : ""}
               </span>
-            </p>
-          </div>
-          <p className="text-muted-foreground text-sm">
-            {t("statPer10.avg")}{" "}
-            <span className="text-foreground">{format(round(avg))}</span>{" "}
-            {t("statPer10.max")}{" "}
-            <span className="text-foreground">{format(round(max))}</span>{" "}
-            {t("statPer10.min")}{" "}
-            <span className="text-foreground">{format(round(min))}</span>
+            </button>
+          ))}
+        </div>
+        <span className="text-muted-foreground/60 text-[9px]">
+          Click to isolate
+        </span>
+      </div>
+      <div className="space-y-1 pt-1">
+        <div className="text-foreground inline-flex items-center gap-1">
+          <p>
+            {t.rich("statPer10.footer", {
+              span: (chunks) => (
+                <span
+                  className={cn(
+                    trendIsPositive ? "text-primary" : "text-destructive",
+                    "inline-flex items-center gap-1 font-mono tabular-nums"
+                  )}
+                >
+                  {chunks}
+                </span>
+              ),
+              percentageChange,
+              scrimData: scrimData.length,
+            })}{" "}
+            <span className="inline-flex">
+              {trendIsPositive ? (
+                <TrendingUpIcon size={16} className="translate-y-[3px]" />
+              ) : (
+                <TrendingDownIcon size={16} className="translate-y-[3px]" />
+              )}
+            </span>
           </p>
         </div>
-      </CardFooter>
-    </>
+        <p className="text-muted-foreground text-sm">
+          {t("statPer10.avg")}{" "}
+          <span className="text-foreground font-mono tabular-nums">
+            {format(round(avg))}
+          </span>{" "}
+          {t("statPer10.max")}{" "}
+          <span className="text-foreground font-mono tabular-nums">
+            {format(round(max))}
+          </span>{" "}
+          {t("statPer10.min")}{" "}
+          <span className="text-foreground font-mono tabular-nums">
+            {format(round(min))}
+          </span>
+        </p>
+      </div>
+    </div>
   );
 }

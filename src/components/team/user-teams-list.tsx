@@ -7,7 +7,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { Link } from "@/components/ui/link";
-import type { Team } from "@prisma/client";
+import type { Team } from "@/generated/prisma/browser";
 import { CalendarIcon, ChartBarIcon, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Route } from "next";

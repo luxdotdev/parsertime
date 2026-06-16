@@ -6,13 +6,22 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getFormatter, getTranslations } from "next-intl/server";
+import type { Metadata } from "next";
 
 type PageProps = { params: Promise<{ teamId: string }> };
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("availability.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 export default async function AvailabilityIndexPage({ params }: PageProps) {
   const { teamId: raw } = await params;
   const teamId = parseInt(raw);
   if (!Number.isFinite(teamId)) notFound();
+  const t = await getTranslations("availability.indexPage");
+  const format = await getFormatter();
 
   const canManage = await isTeamOwnerOrManager(teamId);
 
@@ -36,20 +45,31 @@ export default async function AvailabilityIndexPage({ params }: PageProps) {
 
   const tz = settings?.timezone ?? "America/New_York";
   const now = new Date();
-  const currentWeekStart = weekStartInTz(now, tz);
+  const currentWeekStart = weekStartInTz(
+    now,
+    tz,
+    settings?.reminderDayOfWeek ?? 0
+  );
   const currentWeekEnd = weekEndInTz(currentWeekStart, tz);
 
   const currentSchedule = schedules.find(
     (s) => s.weekStart.getTime() === currentWeekStart.getTime()
   );
+  function formatDate(date: Date) {
+    return format.dateTime(date, {
+      dateStyle: "medium",
+    });
+  }
 
   return (
     <div className="mx-auto max-w-4xl space-y-6 p-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{team.name} — Availability</h1>
+        <h1 className="text-2xl font-bold">
+          {t("title", { teamName: team.name })}
+        </h1>
         {canManage && (
           <Link href={`/team/${teamId}/availability/settings` as never}>
-            <Button variant="outline">Settings</Button>
+            <Button variant="outline">{t("settings")}</Button>
           </Link>
         )}
       </div>
@@ -58,17 +78,18 @@ export default async function AvailabilityIndexPage({ params }: PageProps) {
         <Card>
           <CardContent className="pt-6">
             <p className="text-muted-foreground text-sm">
-              Availability is not configured for this team yet.{" "}
-              {canManage ? (
-                <Link
-                  href={`/team/${teamId}/availability/settings` as never}
-                  className="underline"
-                >
-                  Set it up
-                </Link>
-              ) : (
-                "Ask an owner or manager to configure it."
-              )}
+              {canManage
+                ? t.rich("notConfiguredManager", {
+                    setup: (chunks) => (
+                      <Link
+                        href={`/team/${teamId}/availability/settings` as never}
+                        className="underline"
+                      >
+                        {chunks}
+                      </Link>
+                    ),
+                  })
+                : t("notConfiguredViewer")}
             </p>
           </CardContent>
         </Card>
@@ -78,16 +99,19 @@ export default async function AvailabilityIndexPage({ params }: PageProps) {
         <Card>
           <CardHeader>
             <CardTitle>
-              Current week: {currentWeekStart.toLocaleDateString()} –{" "}
-              {currentWeekEnd.toLocaleDateString()}
+              {t("currentWeek", {
+                start: formatDate(currentWeekStart),
+                end: formatDate(currentWeekEnd),
+              })}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {currentSchedule ? (
               <>
                 <p className="text-muted-foreground text-sm">
-                  {currentSchedule._count.responses} response
-                  {currentSchedule._count.responses === 1 ? "" : "s"} so far.
+                  {t("responsesSoFar", {
+                    count: currentSchedule._count.responses,
+                  })}
                 </p>
                 <div className="flex gap-2">
                   <Link
@@ -95,7 +119,7 @@ export default async function AvailabilityIndexPage({ params }: PageProps) {
                       `/team/${teamId}/availability/${currentSchedule.id}` as never
                     }
                   >
-                    <Button>Open share link</Button>
+                    <Button>{t("openShareLink")}</Button>
                   </Link>
                 </div>
               </>
@@ -109,7 +133,7 @@ export default async function AvailabilityIndexPage({ params }: PageProps) {
       {schedules.length > 1 && (
         <Card>
           <CardHeader>
-            <CardTitle>Past weeks</CardTitle>
+            <CardTitle>{t("pastWeeks")}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="divide-y">
@@ -121,17 +145,21 @@ export default async function AvailabilityIndexPage({ params }: PageProps) {
                     className="flex items-center justify-between py-2"
                   >
                     <span className="text-sm">
-                      {s.weekStart.toLocaleDateString()} –{" "}
-                      {s.weekEnd.toLocaleDateString()}{" "}
+                      {t("pastWeekRange", {
+                        start: formatDate(s.weekStart),
+                        end: formatDate(s.weekEnd),
+                      })}{" "}
                       <span className="text-muted-foreground">
-                        ({s._count.responses} responses)
+                        {t("pastWeekResponses", {
+                          count: s._count.responses,
+                        })}
                       </span>
                     </span>
                     <Link
                       href={`/team/${teamId}/availability/${s.id}` as never}
                       className="text-sm underline"
                     >
-                      View
+                      {t("view")}
                     </Link>
                   </li>
                 ))}
@@ -154,7 +182,11 @@ async function startCurrentWeek(teamId: number) {
     update: {},
   });
   const now = new Date();
-  const weekStart = weekStartInTz(now, settings.timezone);
+  const weekStart = weekStartInTz(
+    now,
+    settings.timezone,
+    settings.reminderDayOfWeek
+  );
   const weekEnd = weekEndInTz(weekStart, settings.timezone);
   await prisma.availabilitySchedule.upsert({
     where: { teamId_weekStart: { teamId, weekStart } },
@@ -164,10 +196,12 @@ async function startCurrentWeek(teamId: number) {
   revalidatePath(`/team/${teamId}/availability`);
 }
 
-function StartCurrentWeekForm({ teamId }: { teamId: number }) {
+async function StartCurrentWeekForm({ teamId }: { teamId: number }) {
+  const t = await getTranslations("availability.indexPage");
+
   return (
     <form action={startCurrentWeek.bind(null, teamId)}>
-      <Button type="submit">Start this week</Button>
+      <Button type="submit">{t("startThisWeek")}</Button>
     </form>
   );
 }

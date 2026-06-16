@@ -1,0 +1,14 @@
+packages:
+  - .
+
+allowBuilds:
+  "@parcel/watcher": true
+  "@prisma/client": true
+  "@prisma/engines": true
+  "@tailwindcss/oxide": true
+  "@vercel/speed-insights": true
+  esbuild: true
+  msgpackr-extract: true
+  prisma: true
+  protobufjs: true
+  sharp: true

@@ -4,6 +4,7 @@ import { AnchorDialog } from "@/components/admin/map-calibration/anchor-dialog";
 import { AnchorList } from "@/components/admin/map-calibration/anchor-list";
 import { MapCanvas } from "@/components/admin/map-calibration/map-canvas";
 import { MapImageUpload } from "@/components/admin/map-calibration/map-image-upload";
+import { ReplaceRenderDialog } from "@/components/admin/map-calibration/replace-render-dialog";
 import { PreviewMode } from "@/components/admin/map-calibration/preview-mode";
 import { TransformDisplay } from "@/components/admin/map-calibration/transform-display";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import { ArrowLeft, Calculator, Save } from "lucide-react";
 import type { Route } from "next";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useFormatter, useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -57,6 +59,8 @@ export function CalibrationEditor({
   mapName,
   calibration: initialCalibration,
 }: CalibrationEditorProps) {
+  const t = useTranslations("mapCalibrationPage.editor");
+  const formatter = useFormatter();
   const router = useRouter();
   const [calibration, setCalibration] = useState<CalibrationWithAnchors | null>(
     initialCalibration
@@ -126,7 +130,7 @@ export function CalibrationEditor({
         setCalibration(data);
       }
     } else {
-      toast.error("Failed to create calibration record.");
+      toast.error(t("createRecordError"));
     }
   }
 
@@ -155,7 +159,7 @@ export function CalibrationEditor({
       );
       setTransformSaved(false);
     } else {
-      toast.error("Failed to add anchor point.");
+      toast.error(t("addAnchorError"));
     }
   }
 
@@ -178,7 +182,7 @@ export function CalibrationEditor({
       );
       setTransformSaved(false);
     } else {
-      toast.error("Failed to delete anchor point.");
+      toast.error(t("deleteAnchorError"));
     }
   }
 
@@ -203,7 +207,7 @@ export function CalibrationEditor({
         setTransformSaved(false);
       } else {
         const err = (await res.json()) as { error?: string };
-        toast.error(err.error ?? "Failed to compute transform.");
+        toast.error(err.error ?? t("computeTransformError"));
       }
     } finally {
       setComputing(false);
@@ -230,10 +234,10 @@ export function CalibrationEditor({
 
       if (res.ok) {
         setTransformSaved(true);
-        toast.success("Transform saved.");
+        toast.success(t("transformSaved"));
         router.refresh();
       } else {
-        toast.error("Failed to save transform.");
+        toast.error(t("saveTransformError"));
       }
     } finally {
       setSaving(false);
@@ -245,9 +249,7 @@ export function CalibrationEditor({
       <div className="space-y-6">
         <Header mapName={mapName} />
         <div className="flex min-h-[400px] flex-col items-center justify-center gap-4 rounded-lg border border-dashed">
-          <p className="text-muted-foreground">
-            No image uploaded for this map yet.
-          </p>
+          <p className="text-muted-foreground">{t("noImageUploaded")}</p>
           <MapImageUpload
             mapName={mapName}
             onUploadComplete={handleImageUpload}
@@ -292,13 +294,25 @@ export function CalibrationEditor({
                 setResidualError(null);
                 setTransformSaved(false);
                 setTestPoints([]);
-                toast.success("Image replaced. Anchors cleared.");
+                toast.success(t("imageReplaced"));
               }
             } else {
-              toast.error("Failed to replace image.");
+              toast.error(t("replaceImageError"));
             }
           }}
         />
+        {calibration.anchors.length >= 3 ? (
+          <ReplaceRenderDialog
+            calibrationId={calibration.id}
+            mapName={mapName}
+            anchors={calibration.anchors.map((a) => ({
+              imageU: a.imageU,
+              imageV: a.imageV,
+              label: a.label,
+            }))}
+            onApplied={() => router.refresh()}
+          />
+        ) : null}
       </Header>
 
       <div className="flex min-h-0 flex-1 gap-4">
@@ -317,7 +331,10 @@ export function CalibrationEditor({
         <div className="flex w-80 shrink-0 flex-col gap-4 overflow-y-auto">
           <div className="rounded-lg border p-3">
             <h4 className="mb-2 text-sm font-medium">
-              Anchor Points ({calibration.anchors.length})
+              {t("anchorPoints", {
+                count: calibration.anchors.length,
+                formattedCount: formatter.number(calibration.anchors.length),
+              })}
             </h4>
             <AnchorList
               anchors={calibration.anchors}
@@ -333,7 +350,7 @@ export function CalibrationEditor({
               className="flex-1"
             >
               <Calculator className="mr-2 h-4 w-4" />
-              {computing ? "Computing…" : "Compute Transform"}
+              {computing ? t("computing") : t("computeTransform")}
             </Button>
             {computedTransform && !transformSaved ? (
               <Button
@@ -343,15 +360,14 @@ export function CalibrationEditor({
                 variant="default"
               >
                 <Save className="mr-2 h-4 w-4" />
-                {saving ? "Saving…" : "Save"}
+                {saving ? t("saving") : t("save")}
               </Button>
             ) : null}
           </div>
 
           {calibration.anchors.length < 3 ? (
             <p className="text-muted-foreground text-xs">
-              Place at least 3 anchor points to compute a transform. More points
-              improve accuracy.
+              {t("minimumAnchorsHint")}
             </p>
           ) : null}
 
@@ -393,12 +409,14 @@ function Header({
   mapName: string;
   children?: React.ReactNode;
 }) {
+  const t = useTranslations("mapCalibrationPage.editor");
+
   return (
     <div className="flex items-center gap-4">
       <Link href={"/map-calibration" as Route}>
         <Button variant="ghost" size="sm">
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Back
+          {t("back")}
         </Button>
       </Link>
       <div className="flex-1">

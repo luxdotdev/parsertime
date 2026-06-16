@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   Tooltip,
   TooltipContent,
@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import type { Scrim } from "@prisma/client";
+import type { Scrim } from "@/generated/prisma/browser";
 import { useMemo, useState } from "react";
 
 type RecentActivityCalendarProps = {
@@ -244,7 +244,7 @@ function ActivityBarChart({ data }: { data: DayActivity[] }) {
                         "w-full rounded-t-sm transition-colors",
                         day.count === 0
                           ? "bg-muted"
-                          : "bg-green-500 hover:bg-green-400 dark:bg-green-600 dark:hover:bg-green-500"
+                          : "bg-primary hover:bg-primary/80"
                       )}
                       style={{
                         height: day.count > 0 ? `${heightPercent}%` : "4px",
@@ -302,10 +302,10 @@ function ActivityBarChart({ data }: { data: DayActivity[] }) {
 function DayCell({ day }: { day: DayActivity }) {
   const levelColors = {
     0: "bg-muted",
-    1: "bg-green-200 dark:bg-green-900",
-    2: "bg-green-300 dark:bg-green-700",
-    3: "bg-green-400 dark:bg-green-600",
-    4: "bg-green-500 dark:bg-green-500",
+    1: "bg-primary/20",
+    2: "bg-primary/40",
+    3: "bg-primary/60",
+    4: "bg-primary",
   };
 
   return (
@@ -313,7 +313,7 @@ function DayCell({ day }: { day: DayActivity }) {
       <Tooltip>
         <TooltipTrigger asChild>
           <div
-            className={`h-3 w-3 rounded-sm transition-colors hover:ring-2 hover:ring-green-400 ${levelColors[day.level]}`}
+            className={`hover:ring-primary h-3 w-3 rounded-sm transition-colors hover:ring-2 ${levelColors[day.level]}`}
           />
         </TooltipTrigger>
         <TooltipContent>
@@ -441,10 +441,10 @@ function CalendarHeatmap({
           <div className="mt-4 flex items-center justify-end gap-2 text-xs">
             <span className="text-muted-foreground">Less</span>
             <div className="bg-muted h-3 w-3 rounded-sm" />
-            <div className="h-3 w-3 rounded-sm bg-green-200 dark:bg-green-900" />
-            <div className="h-3 w-3 rounded-sm bg-green-300 dark:bg-green-700" />
-            <div className="h-3 w-3 rounded-sm bg-green-400 dark:bg-green-600" />
-            <div className="h-3 w-3 rounded-sm bg-green-500 dark:bg-green-500" />
+            <div className="bg-primary/20 h-3 w-3 rounded-sm" />
+            <div className="bg-primary/40 h-3 w-3 rounded-sm" />
+            <div className="bg-primary/60 h-3 w-3 rounded-sm" />
+            <div className="bg-primary h-3 w-3 rounded-sm" />
             <span className="text-muted-foreground">More</span>
           </div>
 
@@ -524,40 +524,46 @@ export function RecentActivityCalendar({
   const daysActive = displayData.filter((day) => day.count > 0).length;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Recent Activity</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <p className="text-2xl font-bold">{totalScrims}</p>
-              <p className="text-muted-foreground text-xs">Total Scrims</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{daysActive}</p>
-              <p className="text-muted-foreground text-xs">Days Active</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{longestStreak}</p>
-              <p className="text-muted-foreground text-xs">Longest Streak</p>
-            </div>
-          </div>
-
-          {useBarChart ? (
-            <ActivityBarChart data={barData} />
-          ) : (
-            <CalendarHeatmap
-              calendarData={calendarData}
-              years={years}
-              selectedYear={selectedYear}
-              onYearChange={setSelectedYear}
-              showYearPicker={!dateRange}
-            />
-          )}
+    <section className="space-y-4">
+      <SectionHeader eyebrow="Overview · Activity" title="Recent activity" />
+      <div className="grid grid-cols-3 gap-4">
+        <div className="space-y-1">
+          <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+            Total Scrims
+          </p>
+          <p className="text-foreground font-mono text-2xl font-bold tabular-nums">
+            {totalScrims}
+          </p>
         </div>
-      </CardContent>
-    </Card>
+        <div className="space-y-1">
+          <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+            Days Active
+          </p>
+          <p className="text-foreground font-mono text-2xl font-bold tabular-nums">
+            {daysActive}
+          </p>
+        </div>
+        <div className="space-y-1">
+          <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+            Longest Streak
+          </p>
+          <p className="text-foreground font-mono text-2xl font-bold tabular-nums">
+            {longestStreak}
+          </p>
+        </div>
+      </div>
+
+      {useBarChart ? (
+        <ActivityBarChart data={barData} />
+      ) : (
+        <CalendarHeatmap
+          calendarData={calendarData}
+          years={years}
+          selectedYear={selectedYear}
+          onYearChange={setSelectedYear}
+          showYearPicker={!dateRange}
+        />
+      )}
+    </section>
   );
 }

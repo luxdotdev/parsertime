@@ -1,10 +1,9 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { toKebabCase, toTimestampWithHours } from "@/lib/utils";
+import { SectionHeader } from "@/components/stats/team/section-header";
+import { toKebabCase } from "@/lib/utils";
 import { TrendingDown, TrendingUp } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import Image from "next/image";
 
 type StrengthsWeaknessesCardProps = {
@@ -27,37 +26,51 @@ export function StrengthsWeaknessesCard({
   mapNames,
 }: StrengthsWeaknessesCardProps) {
   const t = useTranslations("teamStatsPage.strengthsWeaknessesCard");
+  const format = useFormatter();
+
+  function formatPercent(value: number): string {
+    return format.number(value / 100, {
+      style: "percent",
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+  }
+
+  function formatPlaytime(seconds: number): string {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = Math.round(seconds % 60);
+
+    return t("durationHoursMinutesSeconds", {
+      hours,
+      minutes,
+      seconds: remainingSeconds,
+    });
+  }
 
   if (!bestMap && !blindSpot) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">{t("noData")}</p>
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
+        <p className="text-muted-foreground text-sm">{t("noData")}</p>
+      </section>
     );
   }
 
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Best Map - Strength */}
+    <section className="space-y-4">
+      <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
+      <div className="grid gap-6 md:grid-cols-2">
         {bestMap && (
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
-              <h3 className="font-semibold text-green-600 dark:text-green-400">
+              <TrendingUp className="text-muted-foreground size-4" />
+              <h3 className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
                 {t("strongestMap")}
               </h3>
             </div>
 
-            <div className="relative h-32 overflow-hidden rounded-lg border-2 border-green-500">
+            <div className="border-border relative h-32 overflow-hidden rounded-lg border">
               <Image
                 src={`/maps/${toKebabCase(bestMap.mapName)}.webp`}
                 alt={
@@ -68,20 +81,20 @@ export function StrengthsWeaknessesCard({
               />
 
               <div className="absolute inset-0 flex flex-col justify-between p-4">
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between gap-2">
                   <h4 className="text-lg font-bold text-white drop-shadow-lg">
                     {mapNames.get(toKebabCase(bestMap.mapName)) ??
                       bestMap.mapName}
                   </h4>
-                  <Badge className="bg-green-500 font-bold text-white">
-                    {bestMap.winrate.toFixed(1)}%
-                  </Badge>
+                  <span className="rounded-sm bg-white/15 px-2 py-0.5 font-mono text-[10px] font-bold tracking-[0.16em] text-white uppercase tabular-nums backdrop-blur-sm">
+                    {formatPercent(bestMap.winrate)}
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-white/90">
                     {t("playtime", {
-                      time: toTimestampWithHours(bestMap.playtime),
+                      time: formatPlaytime(bestMap.playtime),
                     })}
                   </span>
                   <span className="text-xs text-white/70">
@@ -93,17 +106,16 @@ export function StrengthsWeaknessesCard({
           </div>
         )}
 
-        {/* Blind Spot - Weakness */}
         {blindSpot && (
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <TrendingDown className="h-5 w-5 text-red-600 dark:text-red-400" />
-              <h3 className="font-semibold text-red-600 dark:text-red-400">
+              <TrendingDown className="text-muted-foreground size-4" />
+              <h3 className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
                 {t("blindSpot")}
               </h3>
             </div>
 
-            <div className="relative h-32 overflow-hidden rounded-lg border-2 border-red-500">
+            <div className="border-border relative h-32 overflow-hidden rounded-lg border">
               <Image
                 src={`/maps/${toKebabCase(blindSpot.mapName)}.webp`}
                 alt={
@@ -115,20 +127,20 @@ export function StrengthsWeaknessesCard({
               />
 
               <div className="absolute inset-0 flex flex-col justify-between p-4">
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between gap-2">
                   <h4 className="text-lg font-bold text-white drop-shadow-lg">
                     {mapNames.get(toKebabCase(blindSpot.mapName)) ??
                       blindSpot.mapName}
                   </h4>
-                  <Badge className="bg-red-500 font-bold text-white">
-                    {blindSpot.winrate.toFixed(1)}%
-                  </Badge>
+                  <span className="rounded-sm bg-white/15 px-2 py-0.5 font-mono text-[10px] font-bold tracking-[0.16em] text-white uppercase tabular-nums backdrop-blur-sm">
+                    {formatPercent(blindSpot.winrate)}
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-white/90">
                     {t("playtime", {
-                      time: toTimestampWithHours(blindSpot.playtime),
+                      time: formatPlaytime(blindSpot.playtime),
                     })}
                   </span>
                   <span className="text-xs text-white/70">
@@ -139,7 +151,7 @@ export function StrengthsWeaknessesCard({
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

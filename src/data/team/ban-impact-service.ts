@@ -149,6 +149,7 @@ export function processBanImpactAnalysis(
       team1PointProgress: team1PointProgressMap.get(mapDataId) ?? [],
       team2PointProgress: team2PointProgressMap.get(mapDataId) ?? [],
     });
+    if (winner === "N/A") continue;
 
     const isWin = winner === teamName;
     const mapBans = bansByMapId.get(mapDataId) ?? [];
@@ -301,7 +302,11 @@ export const make = Effect.gen(function* () {
 
     return Effect.gen(function* () {
       yield* Effect.annotateCurrentSpan("teamId", teamId);
-      const sharedData = yield* shared.getBaseTeamData(teamId, { dateRange });
+      const sharedData = yield* shared.getBaseTeamData(teamId, {
+        dateRange,
+        excludePush: true,
+        excludeClash: true,
+      });
 
       const { mapDataRecords, mapDataIds } = sharedData;
 

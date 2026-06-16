@@ -1,61 +1,34 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { TempoChartServer } from "@/components/map/tempo/tempo-chart-server";
-import { getMapEvents, getUltimatesUsedList } from "@/lib/get-map-events";
+import { EventsTimeline } from "@/components/map/events/events-timeline";
+import { getMapEventsData } from "@/lib/get-map-events";
 import { getTranslations } from "next-intl/server";
 
 export async function MapEvents({
   id,
   team1Color,
   team2Color,
-  tempoChartEnabled,
+  includePositional = false,
 }: {
   id: number;
   team1Color: string;
   team2Color: string;
-  tempoChartEnabled: boolean;
+  includePositional?: boolean;
 }) {
-  const [events, ultimates] = await Promise.all([
-    getMapEvents(id, team1Color, team2Color),
-    getUltimatesUsedList(id, team1Color, team2Color),
-  ]);
-
+  const data = await getMapEventsData(id, includePositional);
   const t = await getTranslations("mapPage.events");
 
+  if (!data) {
+    return (
+      <section aria-label={t("mapEvents.title")} className="space-y-5">
+        <p className="text-muted-foreground text-sm">{t("noData")}</p>
+      </section>
+    );
+  }
+
   return (
-    <div className="space-y-4">
-      {tempoChartEnabled && (
-        <TempoChartServer
-          id={id}
-          team1Color={team1Color}
-          team2Color={team2Color}
-        />
-      )}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>{t("mapEvents.title")}</CardTitle>
-            <CardDescription>{t("mapEvents.description")}</CardDescription>
-          </CardHeader>
-          <CardContent className="max-h-[150vh] overflow-y-auto pl-4">
-            {events}
-          </CardContent>
-        </Card>
-        <Card className="col-span-3">
-          <CardHeader>
-            <CardTitle>{t("ultsUsed.title")}</CardTitle>
-            <CardDescription>{t("ultsUsed.description")}</CardDescription>
-          </CardHeader>
-          <CardContent className="max-h-[150vh] overflow-y-auto pl-4">
-            {ultimates}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+    <EventsTimeline
+      data={data}
+      team1Color={team1Color}
+      team2Color={team2Color}
+    />
   );
 }

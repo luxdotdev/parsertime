@@ -16,7 +16,7 @@ import {
   type KillfeedDisplayOptions,
   type SerializedCalibrationData,
 } from "@/data/map/killfeed/types";
-import type { Kill, RoundEnd } from "@prisma/client";
+import type { Kill, RoundEnd } from "@/generated/prisma/browser";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 

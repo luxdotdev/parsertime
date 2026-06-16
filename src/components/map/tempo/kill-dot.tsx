@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/tooltip";
 import { toHero, toTimestamp } from "@/lib/utils";
 import Image from "next/image";
+import { memo } from "react";
 
 type KillDotProps = {
   x: number;
@@ -20,7 +21,7 @@ type KillDotProps = {
   time: number;
 };
 
-export function KillDot({
+function KillDotImpl({
   x,
   y,
   attackerHero,
@@ -80,3 +81,5 @@ export function KillDot({
     </Tooltip>
   );
 }
+
+export const KillDot = memo(KillDotImpl);

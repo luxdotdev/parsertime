@@ -1,4 +1,4 @@
-import type { Notification } from "@prisma/client";
+import type { Notification } from "@/generated/prisma/client";
 
 export type InAppNotification = {
   userId: string;

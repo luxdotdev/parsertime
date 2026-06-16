@@ -13,10 +13,18 @@ import {
   TeamTrendsService,
 } from "@/data/team";
 import { Effect } from "effect";
+import { buildQueryTools } from "@/lib/ai/query-tools";
 import prisma from "@/lib/prisma";
+import {
+  aggregateStatsByPlayer,
+  POSITIONAL_STAT_TYPES,
+} from "@/lib/positional-rollups";
+import { SPATIAL_STAT_TYPES } from "@/lib/spatial-stats";
+import { ULT_STAT_TYPES } from "@/lib/ult-quality";
+import { round } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
 import { allHeroes } from "@/types/heroes";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
 import { tool } from "ai";
 import { z } from "zod";
 import {
@@ -130,8 +138,9 @@ export function buildTools(opts: {
   userId: string;
   allowedTeamIds: Set<number>;
   userTeams: { id: number; name: string; image: string | null }[];
+  enableQueryTools: boolean;
 }) {
-  const { userId, allowedTeamIds, userTeams } = opts;
+  const { userId, allowedTeamIds, userTeams, enableQueryTools } = opts;
 
   function assertTeamAccess(teamId: number) {
     if (!allowedTeamIds.has(teamId)) {
@@ -249,7 +258,7 @@ export function buildTools(opts: {
 
     getScrimAnalysis: tool({
       description:
-        "Get a detailed analysis of a specific scrim, including player performance, fight analysis, ultimate economy, hero swaps, and statistical outliers. Requires a scrim ID (get from getScrimList) and the team ID.",
+        "Get a detailed analysis of a specific scrim, including player performance, fight analysis, ultimate economy, hero swaps, and statistical outliers. Requires a scrim ID (get from getScrimList) and the team ID. When the scrim's maps have positional data, the response includes positionalStats — per-player averages of spatial stats (engagement distance m, high ground kill %, isolation death %, fight start spread m) and ult stats (conversion kills, ult death %, displacement m, ults on objective %).",
       inputSchema: z.object({
         scrimId: z.number().describe("The scrim ID to analyze."),
         teamId: z
@@ -271,7 +280,22 @@ export function buildTools(opts: {
             Effect.flatMap((svc) => svc.getScrimOverview(scrimId, teamId))
           )
         );
-        return formatScrimOverview(data);
+        const positionalRows = await prisma.calculatedStat.findMany({
+          where: { scrimId, stat: { in: [...POSITIONAL_STAT_TYPES] } },
+          select: { playerName: true, stat: true, value: true },
+        });
+        return {
+          ...formatScrimOverview(data),
+          positionalStats:
+            positionalRows.length > 0
+              ? Object.fromEntries(
+                  Array.from(
+                    aggregateStatsByPlayer(positionalRows),
+                    ([player, stats]) => [player, Object.fromEntries(stats)]
+                  )
+                )
+              : undefined,
+        };
       },
     }),
 
@@ -360,11 +384,12 @@ export function buildTools(opts: {
 
     getPlayerPerformance: tool({
       description:
-        "Get detailed performance stats for a specific player across selected maps. Requires map IDs (get from getScrimList or getScrimAnalysis). Optionally filter by specific heroes.",
+        "Get detailed performance stats for a specific player across selected maps. Requires map IDs (get from getScrimList or getScrimAnalysis). Optionally filter by specific heroes. When the maps have positional data, the response includes spatialStats (average engagement distance in meters, high ground kill %, isolation death %, fight start spread in meters) averaged across the selected maps. spatialStats are per-map whole-player values and are not filtered by the heroes parameter. ultStats (ult conversion kills, ult death %, ult displacement in meters, ults-on-objective %) follow the same rules.",
       inputSchema: z.object({
         mapIds: z
           .array(z.number())
           .min(1)
+          .max(25)
           .describe(
             "Array of map IDs to analyze the player's performance across."
           ),
@@ -383,9 +408,12 @@ export function buildTools(opts: {
           where: { id: { in: mapIds } },
           select: { Scrim: { select: { teamId: true } } },
         });
-        const hasAccess = maps.some(
-          (m) => m.Scrim?.teamId && allowedTeamIds.has(m.Scrim.teamId)
-        );
+        const uniqueMapIds = new Set(mapIds);
+        const hasAccess =
+          maps.length === uniqueMapIds.size &&
+          maps.every(
+            (m) => m.Scrim?.teamId && allowedTeamIds.has(m.Scrim.teamId)
+          );
         if (!hasAccess) {
           return { error: "You don't have access to the requested maps." };
         }
@@ -400,6 +428,39 @@ export function buildTools(opts: {
             )
           )
         );
+        const spatialRows = await prisma.calculatedStat.findMany({
+          where: {
+            playerName,
+            stat: { in: [...SPATIAL_STAT_TYPES, ...ULT_STAT_TYPES] },
+            MapData: { mapId: { in: mapIds } },
+          },
+          select: { stat: true, value: true },
+        });
+
+        const spatialStats: Record<string, number> = {};
+        for (const type of SPATIAL_STAT_TYPES) {
+          const values = spatialRows
+            .filter((row) => row.stat === type)
+            .map((row) => row.value);
+          if (values.length > 0) {
+            spatialStats[type] = round(
+              values.reduce((acc, v) => acc + v, 0) / values.length
+            );
+          }
+        }
+
+        const ultStats: Record<string, number> = {};
+        for (const type of ULT_STAT_TYPES) {
+          const values = spatialRows
+            .filter((row) => row.stat === type)
+            .map((row) => row.value);
+          if (values.length > 0) {
+            ultStats[type] = round(
+              values.reduce((acc, v) => acc + v, 0) / values.length
+            );
+          }
+        }
+
         return {
           playerName: data.playerName,
           mapCount: data.mapCount,
@@ -407,6 +468,9 @@ export function buildTools(opts: {
           aggregated: data.aggregated,
           trends: data.trends,
           perMapBreakdown: data.perMapBreakdown.slice(0, 5),
+          spatialStats:
+            Object.keys(spatialStats).length > 0 ? spatialStats : undefined,
+          ultStats: Object.keys(ultStats).length > 0 ? ultStats : undefined,
         };
       },
     }),
@@ -877,5 +941,7 @@ export function buildTools(opts: {
         };
       },
     }),
+
+    ...(enableQueryTools ? buildQueryTools({ allowedTeamIds }) : {}),
   };
 }

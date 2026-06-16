@@ -16,7 +16,7 @@ import {
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { locales } from "@/i18n/config";
 import { setUserLocale } from "@/lib/locale";
-import type { User } from "@prisma/client";
+import type { User } from "@/generated/prisma/browser";
 import {
   ChevronRightIcon,
   DashboardIcon,

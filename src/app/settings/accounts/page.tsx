@@ -1,5 +1,6 @@
 import { DiscordLoginButton } from "@/components/settings/discord-login-button";
 import { NotificationConfig } from "@/components/settings/notification-config";
+import { RankedPrivacyToggle } from "@/components/ranked/ranked-privacy-toggle";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -82,6 +83,15 @@ export default async function LinkedAccountSettingsPage() {
               {t("bot.invite")}
             </a>
           </Button>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("ranked.title")}</CardTitle>
+          <CardDescription>{t("ranked.description")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RankedPrivacyToggle initial={user.rankedStatsPublic} />
         </CardContent>
       </Card>
       <NotificationConfig teams={teams} />

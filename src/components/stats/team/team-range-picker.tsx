@@ -20,13 +20,14 @@ import {
 } from "@/components/ui/select";
 import type { Timeframe } from "@/lib/timeframe";
 import { cn } from "@/lib/utils";
-import { addMonths, addWeeks, addYears, format } from "date-fns";
+import { addMonths, addWeeks, addYears } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import type { Route } from "next";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import type { DateRange } from "react-day-picker";
+import { useRangeTransition } from "./range-transition-context";
 
 export function TeamRangePicker({
   permissions,
@@ -36,9 +37,11 @@ export function TeamRangePicker({
   defaultTimeframe?: Timeframe;
 }) {
   const t = useTranslations("teamStatsPage.rangePicker");
+  const formatter = useFormatter();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { startRangeTransition } = useRangeTransition();
 
   const TODAY = new Date();
 
@@ -72,9 +75,13 @@ export function TeamRangePicker({
       }
 
       const qs = params.toString();
-      router.replace(`${pathname}${qs ? `?${qs}` : ""}` as Route);
+      // Wrap the soft navigation in a transition so isPending stays true for the
+      // whole re-render, driving the picker spinner and the dimmed content.
+      startRangeTransition(() => {
+        router.replace(`${pathname}${qs ? `?${qs}` : ""}` as Route);
+      });
     },
-    [router, pathname, searchParams]
+    [router, pathname, searchParams, startRangeTransition]
   );
 
   function onTimeframeChange(val: Timeframe) {
@@ -188,11 +195,24 @@ export function TeamRangePicker({
               {date?.from ? (
                 date.to ? (
                   <>
-                    {format(date.from, "LLL dd, y")} -{" "}
-                    {format(date.to, "LLL dd, y")}
+                    {formatter.dateTime(date.from, {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}{" "}
+                    -{" "}
+                    {formatter.dateTime(date.to, {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
                   </>
                 ) : (
-                  format(date.from, "LLL dd, y")
+                  formatter.dateTime(date.from, {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })
                 )
               ) : (
                 <span>{t("pickDateRange")}</span>

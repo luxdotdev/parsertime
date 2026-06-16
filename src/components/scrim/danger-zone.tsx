@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ClientOnly } from "@/lib/client-only";
-import type { Scrim } from "@prisma/client";
+import type { Scrim } from "@/generated/prisma/browser";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";

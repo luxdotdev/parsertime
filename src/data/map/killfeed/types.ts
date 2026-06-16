@@ -1,6 +1,6 @@
-import type { Kill } from "@prisma/client";
+import type { Kill } from "@/generated/prisma/client";
 import type { LoadedCalibration } from "@/lib/map-calibration/load-calibration";
-import type { $Enums } from "@prisma/client";
+import type { $Enums } from "@/generated/prisma/client";
 
 export type UltimateSpan = {
   id: number;

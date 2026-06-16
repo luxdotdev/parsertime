@@ -8,13 +8,13 @@ import { HeroService } from "@/data/hero";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { auth, getViewableScrimIds } from "@/lib/auth";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { translateHeroName } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import type { PagePropsWithLocale } from "@/types/next";
-import type { Kill, PlayerStat, Scrim } from "@prisma/client";
+import type { Kill, PlayerStat, Scrim } from "@/generated/prisma/client";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -86,7 +86,10 @@ export default async function HeroStats(
     distinct: ["scrimId"],
   });
 
-  const scrimIds = heroScrims.map((scrim) => scrim.scrimId);
+  const scrimIds = await getViewableScrimIds(
+    heroScrims.map((scrim) => scrim.scrimId),
+    user
+  );
 
   const allScrims = await prisma.scrim.findMany({
     where: { id: { in: scrimIds } },
@@ -125,17 +128,22 @@ export default async function HeroStats(
   const yearScrims = allScrims.filter((scrim) => scrim.date >= year);
 
   const data: Record<Timeframe, Scrim[]> = {
-    "one-week": oneWeekScrims,
-    "two-weeks": twoWeeksScrims,
-    "one-month": monthScrims,
-    "three-months": threeMonthsScrims,
-    "six-months": sixMonthsScrims,
-    "one-year": yearScrims,
-    "all-time": allScrims,
+    "one-week": timeframe1 ? oneWeekScrims : [],
+    "two-weeks": timeframe1 ? twoWeeksScrims : [],
+    "one-month": timeframe1 ? monthScrims : [],
+    "three-months": timeframe2 ? threeMonthsScrims : [],
+    "six-months": timeframe2 ? sixMonthsScrims : [],
+    "one-year": timeframe3 ? yearScrims : [],
+    "all-time": timeframe3 ? allScrims : [],
     custom: [],
   };
 
-  const allScrimIds = allScrims.map((scrim) => scrim.id);
+  const permitted = timeframe3
+    ? "all-time"
+    : timeframe2
+      ? "six-months"
+      : "one-month";
+  const permittedScrimIds = data[permitted].map((scrim) => scrim.id);
 
   let allHeroStats: PlayerStat[];
   let allHeroKills: Kill[];
@@ -146,13 +154,19 @@ export default async function HeroStats(
       Effect.all(
         [
           HeroService.pipe(
-            Effect.flatMap((svc) => svc.getAllStatsForHero(allScrimIds, hero))
+            Effect.flatMap((svc) =>
+              svc.getAllStatsForHero(permittedScrimIds, hero)
+            )
           ),
           HeroService.pipe(
-            Effect.flatMap((svc) => svc.getAllKillsForHero(allScrimIds, hero))
+            Effect.flatMap((svc) =>
+              svc.getAllKillsForHero(permittedScrimIds, hero)
+            )
           ),
           HeroService.pipe(
-            Effect.flatMap((svc) => svc.getAllDeathsForHero(allScrimIds, hero))
+            Effect.flatMap((svc) =>
+              svc.getAllDeathsForHero(permittedScrimIds, hero)
+            )
           ),
         ],
         { concurrency: "unbounded" }
@@ -160,26 +174,24 @@ export default async function HeroStats(
     );
   } catch {
     return (
-      <div className="flex-1 space-y-4 p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">
-            {t("header", { hero: translatedHeroName })}
-          </h2>
+      <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold tracking-tight">
+            {translatedHeroName}
+          </h1>
         </div>
 
-        <Card className="h-[70vh] border-none">
-          <div className="flex h-full items-center justify-center">
-            <div className="text-center text-xl font-bold text-red-500">
+        <Card className="h-[60vh] border-none">
+          <div className="flex h-full flex-col items-center justify-center gap-2">
+            <p className="text-destructive text-base font-semibold">
               {t("heroFail", { hero: translatedHeroName })}
-              <div className="text-center">
-                <Link
-                  href="/stats"
-                  className="text-muted-foreground text-base font-normal"
-                >
-                  &larr; {t("back")}
-                </Link>
-              </div>
-            </div>
+            </p>
+            <Link
+              href="/stats/hero"
+              className="text-muted-foreground text-sm font-normal"
+            >
+              &larr; {t("back")}
+            </Link>
           </div>
         </Card>
       </div>
@@ -187,11 +199,11 @@ export default async function HeroStats(
   }
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">
-          {t("header", { hero: translatedHeroName })}
-        </h2>
+    <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold tracking-tight">
+          {translatedHeroName}
+        </h1>
       </div>
 
       <RangePicker

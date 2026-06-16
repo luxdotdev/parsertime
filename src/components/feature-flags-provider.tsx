@@ -5,6 +5,7 @@ import { createContext, use, useMemo } from "react";
 
 const defaultFlags: FeatureFlags = {
   scoutingEnabled: false,
+  faceitScoutingEnabled: false,
   mapComparisonEnabled: false,
   overviewCardEnabled: false,
   dataLabelingEnabled: false,
@@ -16,6 +17,7 @@ const defaultFlags: FeatureFlags = {
   positionalDataEnabled: false,
   tournamentEnabled: false,
   coachingCanvasEnabled: false,
+  queryBuilderEnabled: false,
 };
 
 const FeatureFlagsContext = createContext<FeatureFlags>(defaultFlags);

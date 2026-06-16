@@ -2,6 +2,7 @@
   "name": "parsertime",
   "version": "3.0.0",
   "private": true,
+  "packageManager": "pnpm@9.15.9",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -14,10 +15,12 @@
     "format": "oxfmt",
     "format:check": "oxfmt --check",
     "typecheck": "next typegen && tsc --noEmit",
-    "db:push": "prisma db push",
+    "db:push": "prisma db push && prisma generate",
     "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev",
-    "db:deploy": "prisma migrate deploy"
+    "db:migrate": "prisma migrate dev && prisma generate",
+    "db:deploy": "prisma migrate deploy",
+    "wp:export": "bun scripts/wp/export-dataset.ts",
+    "wp:train": "bun scripts/wp/train.ts"
   },
   "dependencies": {
     "@ai-sdk/react": "^3.0.136",
@@ -49,7 +52,8 @@
     "@opentelemetry/sdk-trace-base": "^2.2.0",
     "@opentelemetry/sdk-trace-node": "^2.2.0",
     "@opentelemetry/semantic-conventions": "^1.38.0",
-    "@prisma/client": "^6.16.2",
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "@prisma/instrumentation": "^7.2.0",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -115,6 +119,7 @@
     "ansi-to-react": "^6.2.6",
     "babel-plugin-react-compiler": "^1.0.0",
     "botid": "^1.5.10",
+    "cheerio": "^1.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -132,7 +137,7 @@
     "media-chrome": "^4.18.2",
     "motion": "^12.23.26",
     "nanoid": "^5.1.5",
-    "next": "16.2.3",
+    "next": "16.2.6",
     "next-auth": "5.0.0-beta.29",
     "next-axiom": "^1.9.2",
     "next-intl": "^4.3.9",
@@ -140,6 +145,7 @@
     "next-themes": "^0.4.6",
     "nextstepjs": "^2.1.2",
     "nuqs": "^2.8.9",
+    "pg": "^8.21.0",
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-day-picker": "^9.12.0",
@@ -163,7 +169,7 @@
     "use-stick-to-bottom": "^1.1.3",
     "validator": "^13.15.15",
     "vaul": "^1.1.2",
-    "xlsx": "^0.18.5",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz",
     "zod": "^4.1.8"
   },
   "devDependencies": {
@@ -171,10 +177,12 @@
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/color": "^4.2.0",
     "@types/node": "^20.19.15",
+    "@types/pg": "^8.20.0",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
     "@types/three": "^0.183.1",
     "@types/validator": "^13.15.3",
+    "dotenv": "^17.4.2",
     "globals": "^16.4.0",
     "oxfmt": "^0.40.0",
     "oxlint": "^1.58.0",
@@ -182,7 +190,7 @@
     "postcss": "^8.5.6",
     "prettier": "^3.7.4",
     "prettier-plugin-tailwindcss": "^0.6.14",
-    "prisma": "^6.16.2",
+    "prisma": "^7.8.0",
     "sass": "^1.93.2",
     "tailwindcss": "^4.1.13",
     "tw-animate-css": "^1.3.8",
@@ -197,11 +205,16 @@
       "@types/react-dom": "19.2.2"
     },
     "onlyBuiltDependencies": [
-      "@tailwindcss/oxide",
-      "@vercel/speed-insights",
+      "@parcel/watcher",
       "@prisma/client",
       "@prisma/engines",
-      "prisma"
+      "@tailwindcss/oxide",
+      "@vercel/speed-insights",
+      "esbuild",
+      "msgpackr-extract",
+      "prisma",
+      "protobufjs",
+      "sharp"
     ]
   }
 }

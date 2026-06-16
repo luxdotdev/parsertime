@@ -3,7 +3,9 @@
 import type { LoadedCalibration } from "@/lib/map-calibration/load-calibration";
 import type { PlayerState } from "@/lib/replay/build-player-timeline";
 import { worldToImage } from "@/lib/map-calibration/world-to-image";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { GHOST_OPACITY } from "./ghost-controls";
 import { ReplayPlayerMarker } from "./replay-player-marker";
 
 type PlayerRender = {
@@ -11,6 +13,7 @@ type PlayerRender = {
   playerName: string;
   playerTeam: string;
   state: PlayerState;
+  isInactive: boolean;
 };
 
 type ReplayMapProps = {
@@ -28,6 +31,10 @@ type ReplayMapProps = {
     victimZ: number;
     attackerTeam: string;
   } | null;
+  ghost?: {
+    players: PlayerRender[];
+    teamColorsSwapped?: boolean;
+  };
 };
 
 const MARKER_SIZE = 32;
@@ -41,7 +48,9 @@ export function ReplayMap({
   selectedPlayer,
   onSelectPlayerAction,
   recentKill,
+  ghost,
 }: ReplayMapProps) {
+  const t = useTranslations("mapPage.replay.map");
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({
     width: 800,
@@ -52,6 +61,7 @@ export function ReplayMap({
   const dragStartRef = useRef({ x: 0, y: 0 });
 
   const [view, setView] = useState({ offsetX: 0, offsetY: 0, zoom: 1 });
+  const previousViewRef = useRef(view);
 
   const { transform, imagePresignedUrl, imageWidth, imageHeight } = calibration;
 
@@ -104,6 +114,14 @@ export function ReplayMap({
     };
   }
 
+  const viewRef = useRef(view);
+  useEffect(() => {
+    viewRef.current = view;
+  }, [view]);
+
+  const dragRafRef = useRef<number | null>(null);
+  const pendingDragRef = useRef<{ dx: number; dy: number } | null>(null);
+
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     if (e.button === 0) {
       draggingRef.current = true;
@@ -117,15 +135,45 @@ export function ReplayMap({
     const dx = e.clientX - dragStartRef.current.x;
     const dy = e.clientY - dragStartRef.current.y;
     dragStartRef.current = { x: e.clientX, y: e.clientY };
-    setView((v) => ({
-      ...v,
-      offsetX: v.offsetX + dx,
-      offsetY: v.offsetY + dy,
-    }));
+    const pending = pendingDragRef.current ?? { dx: 0, dy: 0 };
+    pending.dx += dx;
+    pending.dy += dy;
+    pendingDragRef.current = pending;
+    if (dragRafRef.current != null) return;
+    dragRafRef.current = requestAnimationFrame(() => {
+      dragRafRef.current = null;
+      const queued = pendingDragRef.current;
+      pendingDragRef.current = null;
+      if (!queued) return;
+      const v = viewRef.current;
+      viewRef.current = {
+        ...v,
+        offsetX: v.offsetX + queued.dx,
+        offsetY: v.offsetY + queued.dy,
+      };
+      setView(viewRef.current);
+    });
   }, []);
 
   const handlePointerUp = useCallback(() => {
-    draggingRef.current = false;
+    if (draggingRef.current) {
+      draggingRef.current = false;
+      if (dragRafRef.current != null) {
+        cancelAnimationFrame(dragRafRef.current);
+        dragRafRef.current = null;
+      }
+      const queued = pendingDragRef.current;
+      pendingDragRef.current = null;
+      if (queued) {
+        const v = viewRef.current;
+        viewRef.current = {
+          ...v,
+          offsetX: v.offsetX + queued.dx,
+          offsetY: v.offsetY + queued.dy,
+        };
+      }
+      setView(viewRef.current);
+    }
   }, []);
 
   useEffect(() => {
@@ -172,6 +220,16 @@ export function ReplayMap({
     top: imgTop,
   };
 
+  const previousView = previousViewRef.current;
+  const didViewChange =
+    previousView.offsetX !== view.offsetX ||
+    previousView.offsetY !== view.offsetY ||
+    previousView.zoom !== view.zoom;
+
+  useEffect(() => {
+    previousViewRef.current = view;
+  }, [view]);
+
   const killLine = recentKill
     ? {
         from: worldToScreen(recentKill.attackerX, recentKill.attackerZ),
@@ -193,7 +251,7 @@ export function ReplayMap({
         // oxlint-disable-next-line @next/next/no-img-element
         <img
           src={imagePresignedUrl}
-          alt="Map"
+          alt={t("mapAlt")}
           style={imgStyle}
           draggable={false}
           className="pointer-events-none max-w-none select-none"
@@ -202,7 +260,7 @@ export function ReplayMap({
 
       {!imageLoaded && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <p className="text-muted-foreground">Loading map image...</p>
+          <p className="text-muted-foreground">{t("loadingImage")}</p>
         </div>
       )}
 
@@ -226,6 +284,40 @@ export function ReplayMap({
         </svg>
       )}
 
+      {/* Ghost player markers (beneath primary markers) */}
+      {imageLoaded && ghost && ghost.players.length > 0 && (
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{ opacity: GHOST_OPACITY, zIndex: 4 }}
+        >
+          {ghost.players.map((p) => {
+            const screen = worldToScreen(p.state.x, p.state.z);
+            const isTeam1 = p.playerTeam === team1Name;
+            const useTeam1Color = ghost.teamColorsSwapped ? !isTeam1 : isTeam1;
+            const color = useTeam1Color ? team1Color : team2Color;
+
+            return (
+              <ReplayPlayerMarker
+                key={`ghost-${p.key}`}
+                heroName={p.state.hero}
+                color={color}
+                x={screen.x}
+                y={screen.y}
+                size={MARKER_SIZE}
+                isDead={p.state.isDead}
+                isUlting={false}
+                isInactive={p.isInactive}
+                playerName={p.playerName}
+                isSelected={false}
+                animatePosition={!didViewChange}
+                borderStyle="dashed"
+                zIndexBase={5}
+              />
+            );
+          })}
+        </div>
+      )}
+
       {/* Player markers */}
       {imageLoaded &&
         players.map((p) => {
@@ -242,16 +334,18 @@ export function ReplayMap({
               size={MARKER_SIZE}
               isDead={p.state.isDead}
               isUlting={p.state.isUlting}
+              isInactive={p.isInactive}
               playerName={p.playerName}
               isSelected={selectedPlayer === p.key}
+              animatePosition={!didViewChange}
               onClick={() => onSelectPlayerAction(p.key)}
             />
           );
         })}
 
       {/* Zoom indicator */}
-      <div className="absolute right-2 bottom-2 rounded-md bg-black/60 px-2.5 py-1.5 text-xs text-white/60 backdrop-blur-sm">
-        {Math.round(view.zoom * 100)}% · Scroll to zoom · Drag to pan
+      <div className="bg-popover/95 text-muted-foreground absolute right-2 bottom-2 rounded-md border px-2.5 py-1.5 text-xs">
+        {t("zoomHint", { zoom: Math.round(view.zoom * 100) })}
       </div>
     </div>
   );

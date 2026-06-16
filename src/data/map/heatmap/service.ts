@@ -8,7 +8,7 @@ import { loadCalibration } from "@/lib/map-calibration/load-calibration";
 import type { MapTransform } from "@/lib/map-calibration/types";
 import { worldToImage } from "@/lib/map-calibration/world-to-image";
 import prisma from "@/lib/prisma";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { MapQueryError } from "../errors";
 import {

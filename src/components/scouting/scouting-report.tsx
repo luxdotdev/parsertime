@@ -1,164 +1,168 @@
 "use client";
 
-import { ConfidenceIndicator } from "@/components/scouting/confidence-indicator";
-import { InsightCard } from "@/components/scouting/insight-card";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import type { DataAvailabilityProfile } from "@/lib/data-availability";
-import type { InsightReport } from "@/lib/insights";
+import { SectionHeader } from "@/components/stats/team/section-header";
+import type { Insight, InsightCategory, InsightReport } from "@/lib/insights";
 import { cn } from "@/lib/utils";
-import { ChevronDown, Info } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-type ScoutingReportProps = {
+type Props = {
   report: InsightReport;
-  opponentAbbr: string;
   hasUserTeamLink: boolean;
-  dataAvailability?: DataAvailabilityProfile;
 };
 
-export function ScoutingReport({
-  report,
-  opponentAbbr,
-  hasUserTeamLink,
-  dataAvailability,
-}: ScoutingReportProps) {
-  const [secondaryOpen, setSecondaryOpen] = useState(false);
+type Tone = "exploit" | "threat" | "neutral";
 
-  const isScrimOnly = dataAvailability?.opponentDataSource === "scrim";
-  const hasInsights = report.primary.length > 0 || report.secondary.length > 0;
+/** Your edge vs. their threat — carried by tone, never asserted by color alone. */
+function toneFor(insight: Insight): Tone {
+  const c: InsightCategory = insight.category;
+  if (
+    c === "map_advantage" ||
+    c === "ban_exploitation" ||
+    c === "player_highlight"
+  )
+    return "exploit";
+  if (
+    c === "map_vulnerability" ||
+    c === "ban_defense" ||
+    c === "player_vulnerability"
+  )
+    return "threat";
+  // trend_alert: opponent improving is a threat, declining is an opening.
+  if (insight.id.includes("improving")) return "threat";
+  if (insight.id.includes("declining")) return "exploit";
+  return "neutral";
+}
+
+const DOT: Record<Tone, string> = {
+  exploit: "bg-primary",
+  threat: "bg-destructive",
+  neutral: "bg-muted-foreground/50",
+};
+
+const CONFIDENCE_TONE: Record<string, string> = {
+  high: "text-primary",
+  medium: "text-foreground",
+  low: "text-muted-foreground",
+  insufficient: "text-muted-foreground",
+};
+
+export function ScoutingReport({ report, hasUserTeamLink }: Props) {
+  const t = useTranslations("scoutingPage.team.report");
+  const [expanded, setExpanded] = useState(false);
+
+  const hasInsights = report.primary.length > 0;
 
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <div className="flex flex-wrap items-center gap-3">
-          <h2 className="text-xl font-bold tracking-tight">
-            Pre-Match Brief: vs. {opponentAbbr}
-          </h2>
-          <ConfidenceIndicator confidence={report.overallConfidence} />
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        description={t("subtitle")}
+        rightSlot={
+          hasInsights ? (
+            <span className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase tabular-nums">
+              {t("confidenceLabel", {
+                level: t(`confidence.${report.overallConfidence.level}`),
+              })}
+            </span>
+          ) : null
+        }
+      />
+
+      {!hasInsights ? (
+        <div className="border-border rounded-md border border-dashed px-4 py-6">
+          <p className="text-muted-foreground text-sm">
+            {hasUserTeamLink ? t("emptyLinked") : t("emptyUnlinked")}
+          </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <SourceLabel dataAvailability={dataAvailability} />
-          {isScrimOnly && (
-            <Badge
-              variant="secondary"
-              className="border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400"
-            >
-              Scrim data only — no competitive history available
-            </Badge>
-          )}
-        </div>
-      </div>
-
-      {!hasUserTeamLink && (
-        <Card className="border-amber-500/30 bg-amber-500/5">
-          <CardContent className="flex items-start gap-3 py-4">
-            <Info
-              className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400"
-              aria-hidden="true"
-            />
-            <div>
-              <p className="text-sm font-medium">
-                Select your team for the full report
-              </p>
-              <p className="text-muted-foreground text-xs">
-                Cross-referenced insights (map matchups, player vulnerabilities)
-                require selecting your team with the &ldquo;Scouting for&rdquo;
-                picker above. Opponent-only insights are shown below.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {hasInsights ? (
-        <>
-          {report.primary.length > 0 && (
-            <section aria-label="Top insights">
-              <h3 className="text-muted-foreground mb-3 text-sm font-semibold tracking-wider uppercase">
-                Top Insights
-              </h3>
-              <div className="grid gap-4 md:grid-cols-2">
-                {report.primary.map((insight, i) => (
-                  <InsightCard key={insight.id} insight={insight} index={i} />
-                ))}
-              </div>
-            </section>
-          )}
-
-          {report.secondary.length > 0 && (
-            <Collapsible open={secondaryOpen} onOpenChange={setSecondaryOpen}>
-              <CollapsibleTrigger className="hover:bg-muted/50 flex w-full items-center gap-2 rounded-md border px-4 py-3 text-sm font-medium">
-                <ChevronDown
-                  className={cn(
-                    "h-4 w-4 transition-transform",
-                    secondaryOpen && "rotate-180"
-                  )}
-                  aria-hidden="true"
-                />
-                Additional Findings ({report.secondary.length})
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  {report.secondary.map((insight, i) => (
-                    <InsightCard key={insight.id} insight={insight} index={i} />
-                  ))}
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-          )}
-        </>
       ) : (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <Info
-              className="text-muted-foreground mx-auto mb-3 h-8 w-8"
-              aria-hidden="true"
-            />
-            <p className="font-medium">Not enough data yet</p>
-            <p className="text-muted-foreground mt-1 text-sm">
-              Check back after more matches are played. Insights require a
-              minimum sample size to be reliable.
-            </p>
-          </CardContent>
-        </Card>
+        <>
+          <ol className="border-border divide-border divide-y border-y">
+            {report.primary.map((insight) => (
+              <InsightRow key={insight.id} insight={insight} t={t} />
+            ))}
+          </ol>
+
+          {report.secondary.length > 0 ? (
+            <>
+              {expanded ? (
+                <ol className="border-border divide-border divide-y border-b">
+                  {report.secondary.map((insight) => (
+                    <InsightRow key={insight.id} insight={insight} t={t} />
+                  ))}
+                </ol>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => setExpanded((v) => !v)}
+                className="text-muted-foreground hover:text-foreground font-mono text-[11px] tracking-[0.16em] uppercase transition-colors"
+              >
+                {expanded
+                  ? t("showFewer")
+                  : t("showMore", { count: report.secondary.length })}
+              </button>
+            </>
+          ) : null}
+        </>
       )}
-    </div>
+    </section>
   );
 }
 
-function SourceLabel({
-  dataAvailability,
+function InsightRow({
+  insight,
+  t,
 }: {
-  dataAvailability?: DataAvailabilityProfile;
+  insight: Insight;
+  t: ReturnType<typeof useTranslations>;
 }) {
-  if (!dataAvailability) return null;
-
-  const { opponentOwcsMaps, opponentScrimMaps, opponentDataSource } =
-    dataAvailability;
-
-  const labelParts: string[] = [];
-  if (opponentDataSource === "owcs" || opponentDataSource === "owcs+scrim") {
-    labelParts.push(
-      `${opponentOwcsMaps} competitive ${opponentOwcsMaps === 1 ? "map" : "maps"}`
-    );
-  }
-  if (opponentDataSource === "scrim" || opponentDataSource === "owcs+scrim") {
-    labelParts.push(
-      `${opponentScrimMaps} scrim ${opponentScrimMaps === 1 ? "map" : "maps"}`
-    );
-  }
-
-  if (labelParts.length === 0) return null;
-
+  const tone = toneFor(insight);
   return (
-    <span className="text-muted-foreground text-sm tabular-nums">
-      Based on {labelParts.join(" and ")}
-    </span>
+    <li className="flex gap-3 py-4">
+      <span
+        className={cn("mt-1.5 size-1.5 shrink-0 rounded-full", DOT[tone])}
+        aria-hidden="true"
+      />
+      <div className="min-w-0 flex-1 space-y-1.5">
+        <p className="text-foreground leading-snug font-medium text-pretty">
+          {insight.headline}
+        </p>
+        <p className="text-muted-foreground text-sm leading-relaxed text-pretty">
+          {insight.detail}
+        </p>
+        {insight.actionItems.length > 0 ? (
+          <ul className="space-y-1 pt-0.5">
+            {insight.actionItems.map((action) => (
+              <li
+                key={action}
+                className="text-foreground/90 flex items-baseline gap-1.5 text-sm"
+              >
+                <ArrowRight
+                  className="text-muted-foreground size-3 shrink-0 translate-y-0.5"
+                  aria-hidden="true"
+                />
+                <span className="text-pretty">{action}</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-0.5">
+          <span
+            className={cn(
+              "font-mono text-[10px] tracking-[0.14em] uppercase tabular-nums",
+              CONFIDENCE_TONE[insight.confidence.level]
+            )}
+          >
+            {t(`confidence.${insight.confidence.level}`)} ·{" "}
+            {t("sampleMaps", { count: insight.confidence.sampleSize })}
+          </span>
+          <span className="border-border text-muted-foreground rounded-sm border px-1.5 py-0.5 font-mono text-[9px] tracking-[0.14em] uppercase">
+            {t(`source.${insight.dataSource}`)}
+          </span>
+        </div>
+      </div>
+    </li>
   );
 }

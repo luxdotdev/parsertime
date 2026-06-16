@@ -74,9 +74,21 @@ export function getPercentileLabel(percentile: number): string {
 
 export function getSRRange(
   mean: number,
-  stdDev: number
+  stdDev: number,
+  values: number[] = []
 ): { min: number; max: number } {
-  const min = Math.max(1000, Math.floor(mean - 4 * stdDev));
-  const max = Math.min(5000, Math.ceil(mean + 4 * stdDev));
+  let min = Math.floor(mean - 4 * stdDev);
+  let max = Math.ceil(mean + 4 * stdDev);
+
+  if (values.length > 0) {
+    const dataMin = Math.min(...values);
+    const dataMax = Math.max(...values);
+    const padding = Math.max(stdDev * 0.15, 25);
+    min = Math.max(min, Math.floor(dataMin - padding));
+    max = Math.min(max, Math.ceil(dataMax + padding));
+  }
+
+  min = Math.max(0, min);
+
   return { min, max };
 }

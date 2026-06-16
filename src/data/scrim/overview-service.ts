@@ -8,6 +8,10 @@ import {
   ScrimAbilityTimingServiceLive,
 } from "@/data/scrim/ability-timing-service";
 import { filterUtilityRoundStartSwaps } from "@/data/team/hero-swap-service";
+import {
+  aggregateFightAdvantages,
+  processUltEconomy,
+} from "@/data/team/ult-economy";
 import type {
   SwapRecord,
   SwapTimingOutcome,
@@ -17,6 +21,8 @@ import {
   TeamSharedDataService,
   TeamSharedDataServiceLive,
 } from "@/data/team/shared-data-service";
+import { getTeamSubstituteNames } from "@/data/team/substitutes";
+import { computeTeamTotals } from "@/data/scrim/team-totals";
 import { EffectObservabilityLive } from "@/instrumentation";
 import prisma from "@/lib/prisma";
 import type { ValidStatColumn } from "@/lib/stat-percentiles";
@@ -27,7 +33,7 @@ import {
   ultimateStartToKillEvent,
   type Fight,
 } from "@/lib/utils";
-import { calculateWinner } from "@/lib/winrate";
+import { resolveMapWinner } from "@/lib/winrate";
 import type { HeroName, RoleName, SubroleName } from "@/types/heroes";
 import {
   getHeroRole,
@@ -44,7 +50,7 @@ import {
   type ObjectiveCaptured,
   type PlayerStat,
   type RoundEnd,
-} from "@prisma/client";
+} from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { ScrimQueryError } from "./errors";
 import {
@@ -365,6 +371,7 @@ function emptyOverviewData(): ScrimOverviewData {
     },
     fightAnalysis: emptyFightAnalysis(),
     ultAnalysis: emptyUltAnalysis(),
+    ultEconomy: aggregateFightAdvantages([], 0),
     swapAnalysis: emptySwapAnalysis(),
     abilityTimingAnalysis: { rows: [], outliers: [] },
   };
@@ -1537,6 +1544,7 @@ export const make: Effect.Effect<
             select: {
               id: true,
               name: true,
+              winner: true,
               mapData: { select: { id: true } },
             },
           }),
@@ -1600,6 +1608,15 @@ export const make: Effect.Effect<
         })
       );
 
+      const substituteNames = yield* Effect.tryPromise({
+        try: () => getTeamSubstituteNames(teamId),
+        catch: (error) =>
+          new ScrimQueryError({
+            operation: "getScrimOverview.fetchSubstitutes",
+            cause: error,
+          }),
+      });
+
       const teamRosterSet = new Set(teamRoster);
       const scrimPlayers = scrimPlayerNames
         .map((p) => p.player_name)
@@ -1628,6 +1645,7 @@ export const make: Effect.Effect<
         allHeroSwaps,
         allRoundStarts,
         allMatchEnds,
+        allUltimateCharges,
       ] = yield* Effect.tryPromise({
         try: () =>
           Promise.all([
@@ -1721,6 +1739,15 @@ export const make: Effect.Effect<
             prisma.matchEnd.findMany({
               where: { MapDataId: { in: mapDataIds } },
               select: { match_time: true, MapDataId: true },
+            }),
+            prisma.ultimateCharged.findMany({
+              where: { MapDataId: { in: mapDataIds } },
+              select: {
+                player_team: true,
+                player_name: true,
+                match_time: true,
+                MapDataId: true,
+              },
             }),
           ]),
         catch: (error) =>
@@ -1915,6 +1942,18 @@ export const make: Effect.Effect<
         scrimPlayers
       );
 
+      const ultEconomy = processUltEconomy(
+        {
+          teamRosterSet,
+          mapDataIds,
+          allPlayerStats: finalRoundStats,
+          allKills,
+          allRezzes,
+          allUltimates,
+        },
+        allUltimateCharges
+      );
+
       // Determine W/L/D for each map
       const mapResults: MapResult[] = [];
       let wins = 0;
@@ -1951,7 +1990,7 @@ export const make: Effect.Effect<
           ? (mapPointProgress?.get(matchStart.team_2_name) ?? [])
           : [];
 
-        const winnerName = calculateWinner({
+        const winnerName = resolveMapWinner(map.winner, {
           matchDetails: matchStart,
           finalRound,
           team1Captures: team1Caps,
@@ -2139,6 +2178,7 @@ export const make: Effect.Effect<
           outliers: [],
           trend,
           trendData,
+          isSubstitute: substituteNames.has(playerName),
         } satisfies PlayerScrimPerformance);
       }
 
@@ -2216,26 +2256,9 @@ export const make: Effect.Effect<
           a.playerName.localeCompare(b.playerName)
       );
 
-      const teamTotals = teamPlayers.reduce(
-        (acc, p) => ({
-          eliminations: acc.eliminations + p.eliminations,
-          deaths: acc.deaths + p.deaths,
-          heroDamage: acc.heroDamage + p.heroDamageDealt,
-          healing: acc.healing + p.healingDealt,
-          kdRatio: 0,
-        }),
-        {
-          eliminations: 0,
-          deaths: 0,
-          heroDamage: 0,
-          healing: 0,
-          kdRatio: 0,
-        }
-      );
-      teamTotals.kdRatio =
-        teamTotals.deaths > 0
-          ? teamTotals.eliminations / teamTotals.deaths
-          : teamTotals.eliminations;
+      // Substitutes stay in `teamPlayers` (individually visible) but are
+      // excluded from team-level totals.
+      const teamTotals = computeTeamTotals(teamPlayers);
 
       const insights = generateInsights(teamPlayers);
 
@@ -2292,6 +2315,7 @@ export const make: Effect.Effect<
         teamTotals,
         fightAnalysis,
         ultAnalysis,
+        ultEconomy,
         swapAnalysis,
         abilityTimingAnalysis,
       };

@@ -18,6 +18,7 @@ import {
 import { listCommonTimezones } from "@/lib/availability/tz";
 import { cn } from "@/lib/utils";
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 
 function detectLocalTz(): string | null {
@@ -48,6 +49,7 @@ export function TimezoneSelect({
   id,
   teamTimezone,
 }: Props) {
+  const t = useTranslations("availability.timezoneSelect");
   const [open, setOpen] = useState(false);
   const [detected, setDetected] = useState<string | null>(null);
   const listboxId = `tz-listbox-${id ?? "select"}`;
@@ -89,11 +91,11 @@ export function TimezoneSelect({
       </PopoverTrigger>
       <PopoverContent className="w-[--radix-popover-trigger-width] min-w-[260px] p-0">
         <Command>
-          <CommandInput placeholder="Search timezone…" />
+          <CommandInput placeholder={t("searchPlaceholder")} />
           <CommandList id={listboxId} className="max-h-[320px]">
-            <CommandEmpty>No timezone found.</CommandEmpty>
+            <CommandEmpty>{t("empty")}</CommandEmpty>
             {detected && (
-              <CommandGroup heading="Detected">
+              <CommandGroup heading={t("detected")}>
                 <TzItem
                   zone={detected}
                   current={value}
@@ -105,7 +107,7 @@ export function TimezoneSelect({
               </CommandGroup>
             )}
             {showTeamSection && teamTimezone && (
-              <CommandGroup heading="Team default">
+              <CommandGroup heading={t("teamDefault")}>
                 <TzItem
                   zone={teamTimezone}
                   current={value}
@@ -117,7 +119,7 @@ export function TimezoneSelect({
               </CommandGroup>
             )}
             {detected && regional.length > 1 && (
-              <CommandGroup heading={region ?? "Regional"}>
+              <CommandGroup heading={region ?? t("regional")}>
                 {regional
                   .filter((z) => z !== detected && z !== teamTimezone)
                   .map((z) => (
@@ -134,7 +136,7 @@ export function TimezoneSelect({
               </CommandGroup>
             )}
             {(detected ?? showTeamSection) && <CommandSeparator />}
-            <CommandGroup heading="All timezones">
+            <CommandGroup heading={t("allTimezones")}>
               {allZones.map((z) => (
                 <TzItem
                   key={z}

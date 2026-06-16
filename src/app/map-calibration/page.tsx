@@ -1,17 +1,20 @@
 import { MapCalibrationList } from "@/components/admin/map-calibration/map-calibration-list";
-import { auth } from "@/lib/auth";
+import { getCurrentUser, isAdminUser } from "@/lib/auth";
 import { dataLabeling } from "@/lib/flags";
 import prisma from "@/lib/prisma";
+import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 
 export default async function MapCalibrationPage() {
   const enabled = await dataLabeling();
   if (!enabled) notFound();
+  const t = await getTranslations("mapCalibrationPage");
 
-  const session = await auth();
-  if (!session?.user) {
+  const user = await getCurrentUser();
+  if (!user) {
     redirect("/sign-in");
   }
+  if (!isAdminUser(user)) notFound();
 
   const calibrations = await prisma.mapCalibration.findMany({
     include: { anchors: true },
@@ -21,11 +24,8 @@ export default async function MapCalibrationPage() {
     <div className="flex flex-1 flex-col px-4 pt-8 pb-8 sm:px-8">
       <div className="mx-auto w-full max-w-7xl space-y-6">
         <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight">Map Calibration</h1>
-          <p className="text-muted-foreground">
-            Calibrate coordinate transforms for top-down map images. Each map
-            needs anchor points mapping world coordinates to image pixels.
-          </p>
+          <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
+          <p className="text-muted-foreground">{t("description")}</p>
         </div>
         <MapCalibrationList calibrations={calibrations} />
       </div>

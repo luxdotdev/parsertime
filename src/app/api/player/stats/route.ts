@@ -2,7 +2,7 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { ScrimService } from "@/data/scrim";
-import { auth } from "@/lib/auth";
+import { auth, getViewableScrimIds } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
@@ -48,7 +48,10 @@ export async function GET(request: NextRequest) {
     distinct: ["scrimId"],
   });
 
-  const scrimIds = playerScrims.map((scrim) => scrim.scrimId);
+  const scrimIds = await getViewableScrimIds(
+    playerScrims.map((scrim) => scrim.scrimId),
+    user
+  );
 
   const allScrims = await prisma.scrim.findMany({
     where: { id: { in: scrimIds } },
@@ -98,6 +101,16 @@ export async function GET(request: NextRequest) {
       : "one-month";
 
   const permittedScrimIds = data[permitted].map((scrim) => scrim.id);
+  const responseScrims = {
+    "one-week": data["one-week"],
+    "two-weeks": data["two-weeks"],
+    "one-month": data["one-month"],
+    "three-months": timeframe2 || timeframe3 ? data["three-months"] : [],
+    "six-months": timeframe2 || timeframe3 ? data["six-months"] : [],
+    "one-year": timeframe3 ? data["one-year"] : [],
+    "all-time": timeframe3 ? data["all-time"] : [],
+    custom: [],
+  };
 
   try {
     const { allPlayerStats, allPlayerKills, mapWinrates, allPlayerDeaths } =
@@ -133,7 +146,7 @@ export async function GET(request: NextRequest) {
       success: true,
       data: {
         playerName: name,
-        scrims: data,
+        scrims: responseScrims,
         stats: allPlayerStats,
         kills: allPlayerKills,
         mapWinrates,

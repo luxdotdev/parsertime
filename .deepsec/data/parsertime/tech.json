@@ -1,0 +1,6 @@
+{
+  "tags": ["github-actions", "nextjs", "node", "prisma", "react"],
+  "sentinels": ["next.config.ts", "package.json"],
+  "detectedAt": "2026-05-27T15:25:18.654Z",
+  "rootPath": "/Users/lucasdoell/code/parsertime"
+}

@@ -26,7 +26,7 @@ import {
   tournamentCacheMissTotal,
 } from "./metrics";
 
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/generated/prisma/client";
 
 type GetTournamentResult = Awaited<
   ReturnType<typeof prisma.tournament.findUnique>

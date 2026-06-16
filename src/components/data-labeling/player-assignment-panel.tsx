@@ -47,7 +47,6 @@ export function PlayerAssignmentPanel({
       <h4 className="text-muted-foreground text-xs font-medium">
         {t("playerAssignments", {
           team: teamLabel,
-          defaultMessage: `${teamLabel} Player Assignments`,
         })}
       </h4>
       <div className="space-y-1">
@@ -77,14 +76,9 @@ export function PlayerAssignmentPanel({
                   className="h-7 min-w-0 flex-1 text-xs"
                   aria-label={t("assignPlayer", {
                     hero,
-                    defaultMessage: `Assign player for ${hero}`,
                   })}
                 >
-                  <SelectValue
-                    placeholder={t("selectPlayer", {
-                      defaultMessage: "Select player...",
-                    })}
-                  />
+                  <SelectValue placeholder={t("selectPlayer")} />
                 </SelectTrigger>
                 <SelectContent position="popper">
                   {eligible.map((player) => {

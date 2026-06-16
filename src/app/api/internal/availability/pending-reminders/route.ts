@@ -7,7 +7,7 @@ import {
   isWithinReminderWindow,
   wasFiredThisWeek,
 } from "@/lib/availability/reminder";
-import { weekStartInTz } from "@/lib/availability/tz";
+import { isValidTimeZone, weekStartInTz } from "@/lib/availability/tz";
 import prisma from "@/lib/prisma";
 import type { NextRequest } from "next/server";
 
@@ -27,13 +27,18 @@ export async function GET(req: NextRequest) {
   const pending: ReminderJob[] = [];
 
   for (const s of enabled) {
-    if (!isWithinReminderWindow(now, s)) continue;
+    try {
+      if (!isValidTimeZone(s.timezone)) continue;
+      if (!isWithinReminderWindow(now, s)) continue;
 
-    const weekStart = weekStartInTz(now, s.timezone);
-    if (wasFiredThisWeek(s.lastReminderFiredAt, weekStart)) continue;
+      const weekStart = weekStartInTz(now, s.timezone, s.reminderDayOfWeek);
+      if (wasFiredThisWeek(s.lastReminderFiredAt, weekStart)) continue;
 
-    const job = await buildReminderJob(s.teamId, baseUrl);
-    if (job) pending.push(job);
+      const job = await buildReminderJob(s.teamId, baseUrl);
+      if (job) pending.push(job);
+    } catch {
+      continue;
+    }
   }
 
   return Response.json({ pending });

@@ -1,6 +1,6 @@
 import { EffectObservabilityLive } from "@/instrumentation";
 import prisma from "@/lib/prisma";
-import type { MapType, Prisma } from "@prisma/client";
+import type { MapType, Prisma } from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { ScoutingQueryError } from "./errors";
 import {

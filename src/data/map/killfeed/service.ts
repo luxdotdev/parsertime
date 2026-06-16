@@ -1,7 +1,8 @@
 import { EffectObservabilityLive } from "@/instrumentation";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
-import { groupKillsIntoFights, type Fight } from "@/lib/utils";
+import type { Fight } from "@/lib/utils";
+import { groupKillsIntoFights } from "@/lib/server-utils";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { MapQueryError } from "../errors";
 import {
@@ -27,11 +28,8 @@ function assignNestingDepths(spans: UltimateSpan[]): void {
   const activeEndTimes: number[] = [];
 
   for (const span of sorted) {
-    while (
-      activeEndTimes.length > 0 &&
-      activeEndTimes[activeEndTimes.length - 1] <= span.startTime
-    ) {
-      activeEndTimes.pop();
+    while (activeEndTimes.length > 0 && activeEndTimes[0] <= span.startTime) {
+      activeEndTimes.shift();
     }
 
     span.depth = activeEndTimes.length;

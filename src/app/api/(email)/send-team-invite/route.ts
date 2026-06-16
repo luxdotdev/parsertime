@@ -1,8 +1,6 @@
-import { Effect } from "effect";
-import { AppRuntime } from "@/data/runtime";
-import { UserService } from "@/data/user";
 import TeamInviteUserEmail from "@/components/email/team-invite";
 import { auditLog } from "@/lib/audit-logs";
+import { canManageTeam, getCurrentUser } from "@/lib/auth";
 import { email } from "@/lib/email";
 import { createShortLink } from "@/lib/link-service";
 import { Logger } from "@/lib/logger";
@@ -12,7 +10,14 @@ import { isTaggedError } from "@/lib/utils";
 import { render } from "@react-email/render";
 import { track } from "@vercel/analytics/server";
 import { checkBotId } from "botid/server";
+import { unauthorized } from "next/navigation";
 import { after, type NextRequest } from "next/server";
+import { z } from "zod";
+
+const SendInviteSchema = z.object({
+  email: z.email().max(254),
+  token: z.string().min(1).max(128),
+});
 
 export async function POST(req: NextRequest) {
   const verification = await checkBotId();
@@ -20,39 +25,49 @@ export async function POST(req: NextRequest) {
     return new Response("Access denied", { status: 403 });
   }
 
-  const inviteeEmail = req.nextUrl.searchParams.get("email");
-  const inviteToken = req.nextUrl.searchParams.get("token");
+  const user = await getCurrentUser();
+  if (!user) unauthorized();
+
+  const parsed = SendInviteSchema.safeParse({
+    email: req.nextUrl.searchParams.get("email"),
+    token: req.nextUrl.searchParams.get("token"),
+  });
+  if (!parsed.success) {
+    return new Response("Invalid request", { status: 400 });
+  }
+
+  const { email: inviteeEmail, token: inviteToken } = parsed.data;
+  const normalizedInviteeEmail = inviteeEmail.toLowerCase();
 
   const baseUrl =
     process.env.NODE_ENV === "production"
       ? "https://parsertime.app"
       : "http://localhost:3000";
 
-  if (!inviteeEmail || !inviteToken) {
-    return new Response("Missing email or token", { status: 400 });
-  }
-
-  const teamInviteToken = await prisma.teamInviteToken.findFirst({
+  const teamInviteToken = await prisma.teamInviteToken.findUnique({
     where: { token: inviteToken },
+    select: { email: true, expires: true, teamId: true },
   });
-  if (!teamInviteToken) return new Response("Token not found", { status: 404 });
-
-  const inviter = await AppRuntime.runPromise(
-    UserService.pipe(
-      Effect.flatMap((svc) => svc.getUser(teamInviteToken?.email))
-    )
-  );
-  if (!inviter) return new Response("Inviter not found", { status: 404 });
+  if (!teamInviteToken) return new Response("Invalid invite", { status: 404 });
+  if (teamInviteToken.expires <= new Date()) {
+    return new Response("Invite expired", { status: 410 });
+  }
+  if (teamInviteToken.email.toLowerCase() !== normalizedInviteeEmail) {
+    return new Response("Forbidden", { status: 403 });
+  }
+  if (!(await canManageTeam(teamInviteToken.teamId, user))) {
+    return new Response("Forbidden", { status: 403 });
+  }
 
   const team = await prisma.team.findFirst({
     where: { id: teamInviteToken.teamId },
   });
   if (!team) return new Response("Team not found", { status: 404 });
 
-  const user = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(inviteeEmail)))
-  );
-  if (!user) return new Response("User not found", { status: 404 });
+  const invitee = await prisma.user.findUnique({
+    where: { email: normalizedInviteeEmail },
+    select: { id: true, image: true, name: true },
+  });
 
   const shortLink = await createShortLink(
     `${baseUrl}/team/join/${inviteToken}`
@@ -61,27 +76,31 @@ export async function POST(req: NextRequest) {
   const emailHtml = await render(
     TeamInviteUserEmail({
       username: inviteeEmail,
-      userImage: user.image ?? `https://avatar.vercel.sh/${user.name}.png`,
-      invitedByUsername: inviter.name ?? "Unknown",
-      invitedByEmail: inviter.email ?? "Unknown",
+      userImage:
+        invitee?.image ??
+        `https://avatar.vercel.sh/${normalizedInviteeEmail}.png`,
+      invitedByUsername: user.name ?? "Unknown",
+      invitedByEmail: user.email ?? "Unknown",
       teamName: team.name ?? "Unknown",
       teamImage: team.image ?? `https://avatar.vercel.sh/${team.name}.png`,
       inviteLink: shortLink,
     })
   );
 
-  try {
-    await notifications.createInAppNotification({
-      userId: user.id,
-      title: `You've been invited to join ${team.name} on Parsertime`,
-      description: `You've been invited to join ${team.name} by ${inviter.name}. Click this notification to accept the invitation.`,
-      href: `/team/join/${inviteToken}`,
-    });
-  } catch (error) {
-    if (error && typeof error === "object" && "_tag" in error) {
-      Logger.error("Error creating in-app notification", error._tag);
+  if (invitee) {
+    try {
+      await notifications.createInAppNotification({
+        userId: invitee.id,
+        title: `You've been invited to join ${team.name} on Parsertime`,
+        description: `You've been invited to join ${team.name} by ${user.name}. Click this notification to accept the invitation.`,
+        href: `/team/join/${inviteToken}`,
+      });
+    } catch (error) {
+      if (error && typeof error === "object" && "_tag" in error) {
+        Logger.error("Error creating in-app notification", error._tag);
+      }
+      // fail silently, just log the error as notifications are not critical
     }
-    // fail silently, just log the error as notifications are not critical
   }
 
   try {
@@ -128,13 +147,13 @@ export async function POST(req: NextRequest) {
   after(async () => {
     await Promise.all([
       auditLog.createAuditLog({
-        userEmail: inviter.email,
+        userEmail: user.email,
         action: "TEAM_INVITE_SENT",
         target: inviteeEmail,
         details: `Invited ${inviteeEmail} to join ${team.name}`,
       }),
       track("Team Invite Sent", {
-        user: inviter.email,
+        user: user.email,
         team: team.name,
         invitee: inviteeEmail,
       }),

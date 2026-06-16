@@ -2,10 +2,12 @@ import {
   aiChat,
   coachingCanvas,
   dataLabeling,
+  faceitScouting,
   mapComparison,
   newLandingPage,
   overviewCard,
   positionalData,
+  queryBuilder,
   scoutingTool,
   simulationTool,
   tempoChart,
@@ -15,6 +17,7 @@ import {
 
 export type FeatureFlags = {
   scoutingEnabled: boolean;
+  faceitScoutingEnabled: boolean;
   mapComparisonEnabled: boolean;
   overviewCardEnabled: boolean;
   dataLabelingEnabled: boolean;
@@ -26,11 +29,13 @@ export type FeatureFlags = {
   positionalDataEnabled: boolean;
   tournamentEnabled: boolean;
   coachingCanvasEnabled: boolean;
+  queryBuilderEnabled: boolean;
 };
 
 export async function resolveAllFlags(): Promise<FeatureFlags> {
   const [
     scoutingEnabled,
+    faceitScoutingEnabled,
     mapComparisonEnabled,
     overviewCardEnabled,
     dataLabelingEnabled,
@@ -42,8 +47,10 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     positionalDataEnabled,
     tournamentEnabled,
     coachingCanvasEnabled,
+    queryBuilderEnabled,
   ] = await Promise.all([
     scoutingTool(),
+    faceitScouting(),
     mapComparison(),
     overviewCard(),
     dataLabeling(),
@@ -55,10 +62,12 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     positionalData(),
     tournament(),
     coachingCanvas(),
+    queryBuilder(),
   ]);
 
   return {
     scoutingEnabled,
+    faceitScoutingEnabled,
     mapComparisonEnabled,
     overviewCardEnabled,
     dataLabelingEnabled,
@@ -70,12 +79,14 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     positionalDataEnabled,
     tournamentEnabled,
     coachingCanvasEnabled,
+    queryBuilderEnabled,
   };
 }
 
 export function toFlagValues(flags: FeatureFlags): Record<string, boolean> {
   return {
     "scouting-tool": flags.scoutingEnabled,
+    "faceit-scouting": flags.faceitScoutingEnabled,
     "map-comparison": flags.mapComparisonEnabled,
     "overview-card": flags.overviewCardEnabled,
     "data-labeling": flags.dataLabelingEnabled,
@@ -87,5 +98,6 @@ export function toFlagValues(flags: FeatureFlags): Record<string, boolean> {
     "positional-data": flags.positionalDataEnabled,
     tournament: flags.tournamentEnabled,
     "coaching-canvas": flags.coachingCanvasEnabled,
+    "query-builder": flags.queryBuilderEnabled,
   };
 }

@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import type { Notification } from "@prisma/client";
+import type { Notification } from "@/generated/prisma/client";
 import { Context, Effect, Layer, ManagedRuntime } from "effect";
 import {
   DatabaseError,
@@ -415,4 +415,4 @@ export {
 } from "./errors";
 
 // Re-export types for advanced users
-export type { Notification } from "@prisma/client";
+export type { Notification } from "@/generated/prisma/client";

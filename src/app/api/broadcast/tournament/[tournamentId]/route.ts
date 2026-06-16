@@ -1,6 +1,7 @@
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { BroadcastService } from "@/data/tournament";
+import { auth, canViewTournament, getCurrentUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import { Ratelimit } from "@upstash/ratelimit";
 import { ipAddress } from "@vercel/functions";
@@ -25,6 +26,13 @@ export async function GET(
   };
 
   try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      event.outcome = "unauthorized";
+      event.statusCode = 401;
+      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const identifier = ipAddress(request) ?? "127.0.0.1";
     const { success } = await ratelimit.limit(identifier);
 
@@ -47,6 +55,13 @@ export async function GET(
     }
     event.tournamentId = tournamentId;
 
+    const user = await getCurrentUser();
+    if (!(await canViewTournament(tournamentId, user))) {
+      event.outcome = "forbidden";
+      event.statusCode = 403;
+      return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const data = await AppRuntime.runPromise(
       BroadcastService.pipe(
         Effect.flatMap((svc) => svc.getTournamentBroadcastData(tournamentId))
@@ -63,9 +78,7 @@ export async function GET(
     event.statusCode = 200;
     event.playerCount = data.players.length;
     return Response.json(data, {
-      headers: {
-        "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
-      },
+      headers: { "Cache-Control": "private, no-store" },
     });
   } catch (error) {
     event.outcome = "error";

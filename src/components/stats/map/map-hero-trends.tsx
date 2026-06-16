@@ -1,0 +1,699 @@
+"use client";
+
+import { HeroPickRateHoverChart } from "@/components/charts/map/hero-pick-rate-hover-chart";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import type {
+  MapHeroTrendGroup,
+  MapHeroTrendPoint,
+} from "@/data/map/hero-trends-service";
+import {
+  cn,
+  toHero,
+  toKebabCase,
+  useHeroNames,
+  useMapNames,
+} from "@/lib/utils";
+import { SUBROLE_ORDER, type RoleName, type SubroleName } from "@/types/heroes";
+import type { OverwatchPatch } from "@/types/overwatch-patches";
+import { $Enums } from "@/generated/prisma/browser";
+import { CheckIcon, ChevronsUpDownIcon, LayersIcon } from "lucide-react";
+import Image from "next/image";
+import { useFormatter, useTranslations } from "next-intl";
+import { useId, useMemo, useState } from "react";
+
+type RoleFilter = "All" | RoleName | SubroleName;
+type SortKey = "playtime" | "pickRate" | "winrate" | "trend";
+
+const primaryRoleValues: RoleFilter[] = ["All", "Tank", "Damage", "Support"];
+
+const sortOptions: { value: SortKey; key: string }[] = [
+  { value: "pickRate", key: "sort.pickRate" },
+  { value: "playtime", key: "sort.playtime" },
+  { value: "winrate", key: "sort.winrate" },
+  { value: "trend", key: "sort.trend" },
+];
+
+const MAP_TYPE_ORDER: $Enums.MapType[] = [
+  $Enums.MapType.Control,
+  $Enums.MapType.Escort,
+  $Enums.MapType.Hybrid,
+  $Enums.MapType.Push,
+  $Enums.MapType.Flashpoint,
+  $Enums.MapType.Clash,
+];
+
+function formatPlaytime(
+  seconds: number,
+  formatter: ReturnType<typeof useFormatter>,
+  t: ReturnType<typeof useTranslations>
+): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.round((seconds % 3600) / 60);
+  if (hours > 0) {
+    return t("playtimeHoursMinutes", {
+      hours: formatter.number(hours),
+      minutes: formatter.number(minutes, {
+        minimumIntegerDigits: 2,
+        useGrouping: false,
+      }),
+    });
+  }
+  return t("playtimeMinutes", { minutes: formatter.number(minutes) });
+}
+
+function formatPercent(
+  value: number,
+  formatter: ReturnType<typeof useFormatter>,
+  digits = 0
+): string {
+  return formatter.number(value / 100, {
+    style: "percent",
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  });
+}
+
+const COLS =
+  "grid-cols-[2.5rem_minmax(0,1fr)_5rem_5.5rem_5.5rem_5.5rem_4.5rem_5.5rem]";
+
+export function MapHeroTrends({
+  allMaps,
+  perMap,
+  patches,
+}: {
+  allMaps: MapHeroTrendGroup;
+  perMap: MapHeroTrendGroup[];
+  patches: OverwatchPatch[];
+}) {
+  const t = useTranslations("statsPage.mapHeroTrends");
+  const formatter = useFormatter();
+  const heroNames = useHeroNames();
+  const mapNames = useMapNames();
+  const [selectedMap, setSelectedMap] = useState<string | null>(null);
+  const [roleFilter, setRoleFilter] = useState<RoleFilter>("All");
+  const [sortKey, setSortKey] = useState<SortKey>("pickRate");
+  const [mapPickerOpen, setMapPickerOpen] = useState(false);
+  const mapPickerListboxId = useId();
+
+  const selectedGroup = useMemo(() => {
+    if (selectedMap === null) return allMaps;
+    return perMap.find((g) => g.mapName === selectedMap) ?? allMaps;
+  }, [allMaps, perMap, selectedMap]);
+
+  const mapsByType = useMemo(() => {
+    const byType = new Map<$Enums.MapType, MapHeroTrendGroup[]>();
+    const other: MapHeroTrendGroup[] = [];
+    for (const group of perMap) {
+      if (group.mapType) {
+        const existing = byType.get(group.mapType) ?? [];
+        existing.push(group);
+        byType.set(group.mapType, existing);
+      } else {
+        other.push(group);
+      }
+    }
+    return { byType, other };
+  }, [perMap]);
+
+  const heroes = useMemo(() => {
+    if (!selectedGroup) return [];
+    const filtered = selectedGroup.heroes.filter((hero) => {
+      if (roleFilter === "All") return true;
+      if (
+        roleFilter === "Tank" ||
+        roleFilter === "Damage" ||
+        roleFilter === "Support"
+      ) {
+        return hero.role === roleFilter;
+      }
+      return hero.subrole === roleFilter;
+    });
+    return [...filtered].sort((a, b) => {
+      if (sortKey === "playtime") return b.totalPlaytime - a.totalPlaytime;
+      if (sortKey === "pickRate") return b.pickRate - a.pickRate;
+      if (sortKey === "winrate") return b.winrate - a.winrate;
+      return b.playtimeTrend - a.playtimeTrend;
+    });
+  }, [roleFilter, selectedGroup, sortKey]);
+
+  const isAllMaps = selectedMap === null;
+  const primaryRoles = primaryRoleValues.map((value) => ({
+    value,
+    label: getRoleFilterLabel(value, t),
+  }));
+  const subroleFilters = SUBROLE_ORDER.map((value) => ({
+    value,
+    label: getRoleFilterLabel(value, t),
+  }));
+
+  if (perMap.length === 0) {
+    return (
+      <div className="px-6 pt-10 pb-16 sm:px-10">
+        <p className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
+          {t("eyebrow")}
+        </p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight">
+          {t("empty.title")}
+        </h1>
+        <p className="text-muted-foreground mt-2 max-w-prose text-sm">
+          {t("empty.description")}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="px-6 pt-8 pb-16 sm:px-10">
+      <header className="border-border flex flex-wrap items-end justify-between gap-x-10 gap-y-4 border-b pb-6">
+        <div>
+          <p className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
+            {isAllMaps
+              ? t("eyebrowWithCount", { count: perMap.length })
+              : t("eyebrow")}
+          </p>
+          <h1 className="mt-3 text-4xl leading-none font-semibold tracking-tight">
+            {isAllMaps
+              ? t("allMaps")
+              : (mapNames.get(toKebabCase(selectedGroup.mapName)) ??
+                selectedGroup.mapName)}
+          </h1>
+        </div>
+        <dl className="flex flex-wrap items-baseline gap-x-8 gap-y-2 font-mono">
+          <Stat
+            label={t("stats.scrims")}
+            value={selectedGroup.scrimsAnalyzed}
+            formatter={formatter}
+          />
+          <Stat
+            label={t("stats.maps")}
+            value={selectedGroup.mapsAnalyzed}
+            formatter={formatter}
+          />
+          <Stat
+            label={t("stats.heroes")}
+            value={selectedGroup.heroes.length}
+            formatter={formatter}
+          />
+        </dl>
+      </header>
+
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <Popover open={mapPickerOpen} onOpenChange={setMapPickerOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={mapPickerOpen}
+              aria-controls={mapPickerListboxId}
+              className="h-9 w-full justify-between sm:w-[280px]"
+            >
+              {isAllMaps ? (
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="bg-muted text-muted-foreground flex h-5 w-9 items-center justify-center rounded-sm">
+                    <LayersIcon className="size-3.5" />
+                  </span>
+                  <span className="truncate">{t("allMaps")}</span>
+                </div>
+              ) : (
+                <div className="flex min-w-0 items-center gap-2">
+                  <Image
+                    src={`/maps/${toKebabCase(selectedGroup.mapName)}.webp`}
+                    alt={
+                      mapNames.get(toKebabCase(selectedGroup.mapName)) ??
+                      selectedGroup.mapName
+                    }
+                    width={36}
+                    height={20}
+                    className="rounded-sm object-cover"
+                  />
+                  <span className="truncate">
+                    {mapNames.get(toKebabCase(selectedGroup.mapName)) ??
+                      selectedGroup.mapName}
+                  </span>
+                </div>
+              )}
+              <ChevronsUpDownIcon className="ml-2 size-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent
+            id={mapPickerListboxId}
+            className="w-[280px] p-0"
+            align="start"
+          >
+            <Command>
+              <CommandInput placeholder={t("searchMaps")} />
+              <CommandList>
+                <CommandEmpty>{t("noMapsFound")}</CommandEmpty>
+                <CommandGroup>
+                  <CommandItem
+                    value={t("allMaps")}
+                    onSelect={() => {
+                      setSelectedMap(null);
+                      setMapPickerOpen(false);
+                    }}
+                  >
+                    <CheckIcon
+                      className={cn(
+                        "mr-2 size-4",
+                        isAllMaps ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    <span className="bg-muted text-muted-foreground mr-2 flex h-5 w-9 items-center justify-center rounded-sm">
+                      <LayersIcon className="size-3.5" />
+                    </span>
+                    <span>{t("allMaps")}</span>
+                  </CommandItem>
+                </CommandGroup>
+                {MAP_TYPE_ORDER.map((type) => {
+                  const mapsInType = mapsByType.byType.get(type);
+                  if (!mapsInType || mapsInType.length === 0) return null;
+                  return (
+                    <CommandGroup key={type} heading={getMapTypeLabel(type, t)}>
+                      {mapsInType.map((g) => (
+                        <MapCommandItem
+                          key={g.mapName}
+                          group={g}
+                          selected={selectedMap === g.mapName}
+                          onSelect={() => {
+                            setSelectedMap(g.mapName);
+                            setMapPickerOpen(false);
+                          }}
+                          displayName={
+                            mapNames.get(toKebabCase(g.mapName)) ?? g.mapName
+                          }
+                        />
+                      ))}
+                    </CommandGroup>
+                  );
+                })}
+                {mapsByType.other.length > 0 ? (
+                  <CommandGroup heading={t("mapTypes.other")}>
+                    {mapsByType.other.map((g) => (
+                      <MapCommandItem
+                        key={g.mapName}
+                        group={g}
+                        selected={selectedMap === g.mapName}
+                        onSelect={() => {
+                          setSelectedMap(g.mapName);
+                          setMapPickerOpen(false);
+                        }}
+                        displayName={
+                          mapNames.get(toKebabCase(g.mapName)) ?? g.mapName
+                        }
+                      />
+                    ))}
+                  </CommandGroup>
+                ) : null}
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+
+        <FilterPills
+          filters={primaryRoles}
+          value={roleFilter}
+          onChange={setRoleFilter}
+          label={t("roleFilter")}
+        />
+
+        <div className="ml-auto flex items-center gap-2">
+          <span className="text-muted-foreground hidden font-mono text-[11px] tracking-wider uppercase sm:inline">
+            {t("sortLabel")}
+          </span>
+          <Select
+            value={sortKey}
+            onValueChange={(v) => setSortKey(v as SortKey)}
+          >
+            <SelectTrigger className="h-9 w-40 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {sortOptions.map((o) => (
+                <SelectItem key={o.value} value={o.value}>
+                  {t(o.key)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-x-1 gap-y-1">
+        {subroleFilters.map((f) => {
+          const active = roleFilter === f.value;
+          return (
+            <button
+              key={f.value}
+              type="button"
+              onClick={() => setRoleFilter(active ? "All" : f.value)}
+              className={cn(
+                "rounded-sm px-2 py-0.5 text-xs transition-colors",
+                active
+                  ? "bg-primary/15 text-primary"
+                  : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+              )}
+            >
+              {f.label}
+            </button>
+          );
+        })}
+      </div>
+
+      <section className="mt-8">
+        <div
+          className={cn(
+            "text-muted-foreground border-border grid items-center gap-4 border-b pb-3 font-mono text-[11px] tracking-[0.14em] uppercase",
+            COLS
+          )}
+        >
+          <div>#</div>
+          <div>{t("table.hero")}</div>
+          <div>{t("table.role")}</div>
+          <div className="text-right">{t("table.playtime")}</div>
+          <div className="text-right">{t("table.pick")}</div>
+          <div className="text-right">{t("table.winrate")}</div>
+          <div className="text-right">{t("table.sample")}</div>
+          <div className="text-right">{t("table.trend")}</div>
+        </div>
+
+        {heroes.length === 0 ? (
+          <div className="text-muted-foreground py-12 text-center text-sm">
+            {t("noHeroesMatch")}
+          </div>
+        ) : (
+          <ul key={selectedMap ?? "all-maps"}>
+            {heroes.map((hero, index) => (
+              <HeroRow
+                key={hero.hero}
+                index={index}
+                hero={hero}
+                name={heroNames.get(toHero(hero.hero)) ?? hero.hero}
+                patches={patches}
+                formatter={formatter}
+              />
+            ))}
+          </ul>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function MapCommandItem({
+  group,
+  selected,
+  displayName,
+  onSelect,
+}: {
+  group: MapHeroTrendGroup;
+  selected: boolean;
+  displayName: string;
+  onSelect: () => void;
+}) {
+  const kebab = toKebabCase(group.mapName);
+  return (
+    <CommandItem value={displayName} onSelect={onSelect}>
+      <CheckIcon
+        className={cn("mr-2 size-4", selected ? "opacity-100" : "opacity-0")}
+      />
+      <Image
+        src={`/maps/${kebab}.webp`}
+        alt={displayName}
+        width={36}
+        height={20}
+        className="rounded-sm object-cover"
+      />
+      <span>{displayName}</span>
+    </CommandItem>
+  );
+}
+
+function Stat({
+  label,
+  value,
+  formatter,
+}: {
+  label: string;
+  value: number;
+  formatter: ReturnType<typeof useFormatter>;
+}) {
+  return (
+    <div className="flex items-baseline gap-2">
+      <dt className="text-muted-foreground text-[11px] tracking-wider uppercase">
+        {label}
+      </dt>
+      <dd className="text-lg font-medium tabular-nums">
+        {formatter.number(value)}
+      </dd>
+    </div>
+  );
+}
+
+function FilterPills({
+  filters,
+  value,
+  onChange,
+  label,
+}: {
+  filters: { value: RoleFilter; label: string }[];
+  value: RoleFilter;
+  onChange: (v: RoleFilter) => void;
+  label: string;
+}) {
+  return (
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className="border-border bg-card flex rounded-md border p-0.5"
+    >
+      {filters.map((f) => {
+        const active = value === f.value;
+        return (
+          <button
+            key={f.value}
+            type="button"
+            role="radio"
+            aria-checked={active}
+            onClick={() => onChange(f.value)}
+            className={cn(
+              "h-8 rounded-sm px-3 text-sm transition-colors",
+              active
+                ? "bg-primary text-primary-foreground font-medium"
+                : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {f.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+type HeroRowData = {
+  hero: string;
+  role: string;
+  subrole: SubroleName | null;
+  totalPlaytime: number;
+  pickRate: number;
+  wins: number;
+  losses: number;
+  winrate: number;
+  samples: number;
+  playtimeTrend: number;
+  trend: MapHeroTrendPoint[];
+};
+
+function HeroRow({
+  index,
+  hero,
+  name,
+  patches,
+  formatter,
+}: {
+  index: number;
+  hero: HeroRowData;
+  name: string;
+  patches: OverwatchPatch[];
+  formatter: ReturnType<typeof useFormatter>;
+}) {
+  const t = useTranslations("statsPage.mapHeroTrends");
+  const isTop = index === 0;
+  const rank = String(index + 1).padStart(2, "0");
+  const games = hero.wins + hero.losses;
+  const trend = hero.playtimeTrend;
+  const trendUp = trend > 1;
+  const trendDown = trend < -1;
+  const trendFlat = !trendUp && !trendDown;
+
+  return (
+    <li
+      className={cn(
+        "border-border hover:bg-muted/40 group grid items-center gap-4 border-b py-3 transition-colors",
+        "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-1 motion-safe:duration-200 motion-safe:[animation-fill-mode:both]",
+        COLS
+      )}
+      style={{ animationDelay: `${Math.min(index, 20) * 15}ms` }}
+    >
+      <div
+        className={cn(
+          "font-mono text-sm tabular-nums",
+          isTop ? "text-primary" : "text-muted-foreground"
+        )}
+      >
+        {rank}
+      </div>
+
+      <HeroPickRateHoverChart
+        heroLabel={name}
+        subrole={hero.subrole ? getRoleFilterLabel(hero.subrole, t) : null}
+        trend={hero.trend}
+        pickRate={hero.pickRate}
+        patches={patches}
+      >
+        <button
+          type="button"
+          className="-mx-1 flex min-w-0 cursor-pointer items-center gap-3 rounded-sm px-1 py-0.5 text-left focus-visible:ring-2 focus-visible:ring-[var(--ring)] focus-visible:outline-none"
+          aria-label={t("showPickRateTrend", { hero: name })}
+        >
+          <Image
+            src={`/heroes/${toHero(hero.hero)}.png`}
+            alt={name}
+            width={36}
+            height={36}
+            className="border-border/70 h-9 w-9 rounded-[4px] border object-cover"
+          />
+          <div className="min-w-0">
+            <div
+              className={cn(
+                "truncate leading-tight font-medium",
+                isTop && "text-primary"
+              )}
+            >
+              {name}
+            </div>
+            {hero.subrole ? (
+              <div className="text-muted-foreground font-mono text-[10px] tracking-wider uppercase">
+                {getRoleFilterLabel(hero.subrole, t)}
+              </div>
+            ) : null}
+          </div>
+        </button>
+      </HeroPickRateHoverChart>
+
+      <div className="text-muted-foreground font-mono text-[11px] tracking-wider uppercase">
+        {getRoleFilterLabel(hero.role as RoleName, t)}
+      </div>
+
+      <div className="text-right font-mono text-sm tabular-nums">
+        {formatPlaytime(hero.totalPlaytime, formatter, t)}
+      </div>
+
+      <div className="text-right font-mono text-sm tabular-nums">
+        {formatPercent(hero.pickRate, formatter)}
+      </div>
+
+      <div className="text-right">
+        <div className="font-mono text-sm tabular-nums">
+          {games > 0 ? formatPercent(hero.winrate, formatter) : "—"}
+        </div>
+        {games > 0 ? (
+          <div className="text-muted-foreground font-mono text-[10px] tabular-nums">
+            {t("record", { wins: hero.wins, losses: hero.losses })}
+          </div>
+        ) : null}
+      </div>
+
+      <div className="text-muted-foreground text-right font-mono text-sm tabular-nums">
+        {formatter.number(hero.samples)}
+      </div>
+
+      <div
+        className={cn(
+          "flex items-baseline justify-end gap-1.5 font-mono text-sm tabular-nums",
+          trendUp && "text-foreground",
+          (trendDown || trendFlat) && "text-muted-foreground"
+        )}
+      >
+        <span aria-hidden className="text-xs leading-none">
+          {trendUp ? "↑" : trendDown ? "↓" : "·"}
+        </span>
+        <span>
+          {Math.abs(trend) < 0.5
+            ? "—"
+            : formatPercent(Math.abs(trend), formatter)}
+        </span>
+      </div>
+    </li>
+  );
+}
+
+function getRoleFilterLabel(
+  value: RoleFilter,
+  t: ReturnType<typeof useTranslations>
+) {
+  switch (value) {
+    case "All":
+      return t("roles.all");
+    case "Tank":
+      return t("roles.tank");
+    case "Damage":
+      return t("roles.damage");
+    case "Support":
+      return t("roles.support");
+    case "GroundTank":
+      return t("subroles.groundTank");
+    case "DiveTank":
+      return t("subroles.diveTank");
+    case "HitscanDamage":
+      return t("subroles.hitscanDamage");
+    case "FlexDamage":
+      return t("subroles.flexDamage");
+    case "FlexSupport":
+      return t("subroles.flexSupport");
+    case "MainSupport":
+      return t("subroles.mainSupport");
+  }
+}
+
+function getMapTypeLabel(
+  value: $Enums.MapType,
+  t: ReturnType<typeof useTranslations>
+) {
+  switch (value) {
+    case $Enums.MapType.Control:
+      return t("mapTypes.control");
+    case $Enums.MapType.Escort:
+      return t("mapTypes.escort");
+    case $Enums.MapType.Hybrid:
+      return t("mapTypes.hybrid");
+    case $Enums.MapType.Push:
+      return t("mapTypes.push");
+    case $Enums.MapType.Flashpoint:
+      return t("mapTypes.flashpoint");
+    case $Enums.MapType.Clash:
+      return t("mapTypes.clash");
+    default:
+      return value;
+  }
+}

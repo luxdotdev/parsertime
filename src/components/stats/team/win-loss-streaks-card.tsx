@@ -1,18 +1,23 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import type { StreakInfo } from "@/data/team/types";
-import { cn } from "@/lib/utils";
-import { Flame, TrendingDown, TrendingUp } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 
 type WinLossStreaksCardProps = {
   streakInfo: StreakInfo;
 };
 
+type StreakTile = {
+  label: string;
+  value: string;
+  sub: string | null;
+  emphasis?: boolean;
+};
+
 export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
   const t = useTranslations("teamStatsPage.winLossStreaksCard");
+  const format = useFormatter();
 
   const { currentStreak, longestWinStreak, longestLossStreak } = streakInfo;
 
@@ -23,153 +28,99 @@ export function WinLossStreaksCard({ streakInfo }: WinLossStreaksCardProps) {
 
   if (!hasData) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">{t("noData")}</p>
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
+        <p className="text-muted-foreground text-sm">{t("noData")}</p>
+      </section>
     );
   }
 
   function formatDateRange(start: Date | null, end: Date | null): string {
     if (!start || !end) return t("na");
-    const startStr = start.toLocaleDateString("en-US", {
+    const startStr = format.dateTime(start, {
       month: "short",
       day: "numeric",
     });
-    const endStr = end.toLocaleDateString("en-US", {
+    const endStr = format.dateTime(end, {
       month: "short",
       day: "numeric",
       year: "numeric",
     });
-    return `${startStr} - ${endStr}`;
+    return t("dateRange", { start: startStr, end: endStr });
   }
 
+  const currentStreakValue =
+    currentStreak.count > 0
+      ? currentStreak.type === "win"
+        ? t("winStreakCount", { count: currentStreak.count })
+        : t("lossStreakCount", { count: currentStreak.count })
+      : t("noData");
+
+  const tiles: StreakTile[] = [
+    {
+      label: t("currentStreak"),
+      value: currentStreakValue,
+      sub: null,
+      emphasis: currentStreak.count > 0,
+    },
+    {
+      label: t("longestWinStreak"),
+      value: longestWinStreak.count > 0 ? `${longestWinStreak.count}` : "—",
+      sub:
+        longestWinStreak.count > 0
+          ? formatDateRange(
+              longestWinStreak.startDate,
+              longestWinStreak.endDate
+            )
+          : t("noWinsYet"),
+    },
+    {
+      label: t("longestLossStreak"),
+      value: longestLossStreak.count > 0 ? `${longestLossStreak.count}` : "—",
+      sub:
+        longestLossStreak.count > 0
+          ? formatDateRange(
+              longestLossStreak.startDate,
+              longestLossStreak.endDate
+            )
+          : t("noLossesYet"),
+    },
+  ];
+
+  const hint =
+    currentStreak.type === "win" && currentStreak.count >= 3
+      ? t("keepMomentumGoing")
+      : currentStreak.type === "loss" && currentStreak.count >= 3
+        ? t("timeToBreakStreak")
+        : null;
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("title")}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {currentStreak.count > 0 && (
-            <div
-              className={cn(
-                "rounded-lg border-2 p-4",
-                currentStreak.type === "win"
-                  ? "border-green-500 bg-green-50 dark:bg-green-950/30"
-                  : "border-red-500 bg-red-50 dark:bg-red-950/30"
-              )}
+    <section className="space-y-4">
+      <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
+      <dl className="border-border grid grid-cols-1 divide-x divide-y divide-[var(--border)] border-y sm:grid-cols-3 sm:divide-y-0">
+        {tiles.map((tile) => (
+          <div key={tile.label} className="flex flex-col gap-1 px-4 py-4">
+            <dt className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
+              {tile.label}
+            </dt>
+            <dd
+              className={
+                tile.emphasis
+                  ? "text-primary font-mono text-2xl leading-none font-semibold tabular-nums"
+                  : "text-foreground font-mono text-2xl leading-none font-semibold tabular-nums"
+              }
             >
-              <div className="flex items-center gap-2">
-                <Flame
-                  className={cn(
-                    "h-5 w-5",
-                    currentStreak.type === "win"
-                      ? "text-green-600 dark:text-green-400"
-                      : "text-red-600 dark:text-red-400"
-                  )}
-                />
-                <h3 className="text-sm font-semibold">{t("currentStreak")}</h3>
-              </div>
-              <div className="mt-2 flex items-center justify-between">
-                <span className="text-2xl font-bold">
-                  {currentStreak.type === "win"
-                    ? t("winStreakCount", {
-                        count: currentStreak.count,
-                      })
-                    : t("lossStreakCount", {
-                        count: currentStreak.count,
-                      })}
-                </span>
-                <Badge
-                  className={cn(
-                    "text-sm font-bold",
-                    currentStreak.type === "win" ? "bg-green-500" : "bg-red-500"
-                  )}
-                >
-                  {currentStreak.type === "win" ? t("hot") : t("cold")}
-                </Badge>
-              </div>
-            </div>
-          )}
-
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-lg border p-4">
-              <div className="mb-3 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
-                <h3 className="text-sm font-semibold text-green-600 dark:text-green-400">
-                  {t("longestWinStreak")}
-                </h3>
-              </div>
-              {longestWinStreak.count > 0 ? (
-                <>
-                  <div className="mb-2 text-3xl font-bold">
-                    {longestWinStreak.count}
-                  </div>
-                  <p className="text-muted-foreground text-xs">
-                    {formatDateRange(
-                      longestWinStreak.startDate,
-                      longestWinStreak.endDate
-                    )}
-                  </p>
-                </>
-              ) : (
-                <p className="text-muted-foreground text-sm">
-                  {t("noWinsYet")}
-                </p>
-              )}
-            </div>
-
-            <div className="rounded-lg border p-4">
-              <div className="mb-3 flex items-center gap-2">
-                <TrendingDown className="h-4 w-4 text-red-600 dark:text-red-400" />
-                <h3 className="text-sm font-semibold text-red-600 dark:text-red-400">
-                  {t("longestLossStreak")}
-                </h3>
-              </div>
-              {longestLossStreak.count > 0 ? (
-                <>
-                  <div className="mb-2 text-3xl font-bold">
-                    {longestLossStreak.count}
-                  </div>
-                  <p className="text-muted-foreground text-xs">
-                    {formatDateRange(
-                      longestLossStreak.startDate,
-                      longestLossStreak.endDate
-                    )}
-                  </p>
-                </>
-              ) : (
-                <p className="text-muted-foreground text-sm">
-                  {t("noLossesYet")}
-                </p>
-              )}
-            </div>
+              {tile.value}
+            </dd>
+            {tile.sub ? (
+              <dd className="text-muted-foreground text-xs">{tile.sub}</dd>
+            ) : null}
           </div>
-
-          {currentStreak.type === "win" && currentStreak.count >= 3 && (
-            <div className="bg-muted/50 rounded-lg p-3 text-center">
-              <p className="text-sm">
-                🎯{" "}
-                <span className="font-semibold">{t("keepMomentumGoing")}</span>
-              </p>
-            </div>
-          )}
-
-          {currentStreak.type === "loss" && currentStreak.count >= 3 && (
-            <div className="bg-muted/50 rounded-lg p-3 text-center">
-              <p className="text-sm">
-                💪{" "}
-                <span className="font-semibold">{t("timeToBreakStreak")}</span>
-              </p>
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+        ))}
+      </dl>
+      {hint ? (
+        <p className="text-muted-foreground text-sm font-medium">{hint}</p>
+      ) : null}
+    </section>
   );
 }

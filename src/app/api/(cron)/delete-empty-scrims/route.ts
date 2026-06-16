@@ -5,8 +5,42 @@ import {
 } from "@/lib/axiom/metrics";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
+import { timingSafeEqual } from "node:crypto";
+import type { NextRequest } from "next/server";
 
-export async function DELETE() {
+type CronAuthResult =
+  | { ok: true }
+  | { ok: false; status: number; body: string };
+
+function authorizeCron(req: NextRequest): CronAuthResult {
+  const secret = process.env.CRON_SECRET;
+  if (!secret) {
+    return { ok: false, status: 500, body: "Server misconfigured" };
+  }
+
+  const header = req.headers.get("Authorization");
+  const provided = header?.startsWith("Bearer ") ? header.slice(7) : null;
+  if (!provided || provided.length !== secret.length) {
+    return { ok: false, status: 401, body: "Unauthorized" };
+  }
+
+  try {
+    if (timingSafeEqual(Buffer.from(provided), Buffer.from(secret))) {
+      return { ok: true };
+    }
+  } catch {
+    // Fall through to the unauthorized response.
+  }
+
+  return { ok: false, status: 401, body: "Unauthorized" };
+}
+
+export async function DELETE(req: NextRequest) {
+  const auth = authorizeCron(req);
+  if (!auth.ok) {
+    return new Response(auth.body, { status: auth.status });
+  }
+
   const start = performance.now();
   cronJobCounter.add(1, { job: "delete-empty-scrims" });
 
@@ -31,7 +65,13 @@ export async function DELETE() {
 
   for (const scrim of scrimsWithoutMaps) {
     Logger.info(`Deleting scrim ${scrim.id}`);
-    await prisma.scrim.delete({ where: { id: scrim.id } });
+    await prisma.scrim.deleteMany({
+      where: {
+        id: scrim.id,
+        maps: { none: {} },
+        tournamentMatch: null,
+      },
+    });
   }
 
   cronDeletedItemsCounter.add(scrimsWithoutMaps.length, {
@@ -45,6 +85,6 @@ export async function DELETE() {
 }
 
 // This is necessary for using Vercel Cron Jobs
-export async function GET() {
-  return await DELETE();
+export async function GET(req: NextRequest) {
+  return await DELETE(req);
 }

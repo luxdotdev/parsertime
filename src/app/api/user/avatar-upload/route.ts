@@ -1,88 +1,78 @@
-import { Effect } from "effect";
-import { AppRuntime } from "@/data/runtime";
-import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { getCurrentUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { Ratelimit } from "@upstash/ratelimit";
 import { track } from "@vercel/analytics/server";
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { kv } from "@vercel/kv";
-import { unauthorized } from "next/navigation";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  const session = await auth();
-
-  if (!session?.user) {
-    unauthorized();
-  }
-
-  const authedUser = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-  );
-
-  if (!authedUser) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
-  }
-
   const body = (await request.json()) as HandleUploadBody;
   const userId = request.nextUrl.searchParams.get("userId");
 
-  if (!userId) {
+  if (body.type === "blob.generate-client-token" && !userId) {
     return NextResponse.json({ error: "userId is required" }, { status: 400 });
   }
 
-  // Create a new ratelimiter, that allows 5 requests per 1 minute
-  const ratelimit = new Ratelimit({
-    redis: kv,
-    limiter: Ratelimit.slidingWindow(5, "1 m"),
-    analytics: true,
+  Logger.info("Handling avatar upload request", {
+    userId: userId ?? "callback",
+    type: body.type,
   });
-
-  // Limit the requests to 5 per minute per user
-  const identifier = `api/image-upload/${authedUser.id}`;
-  const { success } = await ratelimit.limit(identifier);
-
-  if (!success) {
-    Logger.warn(`Rate limit exceeded for user: ${authedUser.id}`);
-    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
-  }
-
-  Logger.info(`Uploading avatar for user: ${userId}`);
 
   try {
     const jsonResponse = await handleUpload({
       body,
       request,
-      onBeforeGenerateToken: async () => {
+      onBeforeGenerateToken: async (pathname) => {
         // pathname: string
         /* clientPayload?: string, */
         // Generate a client token for the browser to upload the file
         // ⚠️ Authenticate and authorize users before generating the token.
         // Otherwise, you're allowing anonymous uploads.
-        const user = await prisma.user.findUnique({ where: { id: userId } });
-        if (!user) throw new Error("User not found");
+        const authedUser = await getCurrentUser();
+        if (!authedUser) throw new Error("Unauthorized");
+        if (authedUser.id !== userId) throw new Error("Forbidden");
+        if (pathname !== `avatars/${authedUser.id}.png`) {
+          throw new Error("Invalid upload path");
+        }
 
-        return { tokenPayload: JSON.stringify({ userId: user.id }) };
+        const ratelimit = new Ratelimit({
+          redis: kv,
+          limiter: Ratelimit.slidingWindow(5, "1 m"),
+          analytics: true,
+        });
+        const { success } = await ratelimit.limit(
+          `api/image-upload/${authedUser.id}`
+        );
+        if (!success) throw new Error("Rate limit exceeded");
+
+        return {
+          tokenPayload: JSON.stringify({ userId: authedUser.id }),
+          allowedContentTypes: ["image/png", "image/jpeg", "image/webp"],
+          maximumSizeInBytes: 5 * 1024 * 1024,
+        };
       },
       onUploadCompleted: async ({ blob, tokenPayload }) => {
         // Get notified of client upload completion
         // ⚠️ This will not work on `localhost` websites,
         // Use ngrok or similar to get the full upload flow
 
-        Logger.info(`blob upload completed: ${blob.url} for user: ${userId}`);
-        await track("Image Upload", { label: "User Avatar" });
-
         try {
           // Run any logic after the file upload completed
-          const { userId } = JSON.parse(tokenPayload!) as { userId: string };
+          const { userId } = JSON.parse(tokenPayload ?? "{}") as {
+            userId?: string;
+          };
+          if (!userId) throw new Error("Missing token payload userId");
 
-          const user = await prisma.user.findUnique({ where: { id: userId } });
-          if (!user) throw new Error("User not found");
+          Logger.info("Avatar blob upload completed", {
+            blobUrl: blob.url,
+            userId,
+          });
+          await track("Image Upload", { label: "User Avatar" });
 
           await prisma.user.update({
-            where: { id: user?.id },
+            where: { id: userId },
             data: { image: blob.url },
           });
         } catch {

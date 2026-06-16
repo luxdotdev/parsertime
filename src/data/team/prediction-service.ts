@@ -1,7 +1,7 @@
 import type { HeroName } from "@/types/heroes";
 import { roleHeroMapping } from "@/types/heroes";
 import { mapNameToMapTypeMapping } from "@/types/map";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import {
   Cache,
   Context,
@@ -23,10 +23,6 @@ import {
 import { TeamMapModeService, TeamMapModeServiceLive } from "./map-mode-service";
 import { TeamMatchupService, TeamMatchupServiceLive } from "./matchup-service";
 import { teamCacheMissTotal, teamCacheRequestTotal } from "./metrics";
-import {
-  TeamRoleStatsService,
-  TeamRoleStatsServiceLive,
-} from "./role-stats-service";
 import { type TeamDateRange, parseDateRangeFromCacheKey } from "./shared-core";
 import { TeamStatsService, TeamStatsServiceLive } from "./stats-service";
 
@@ -76,7 +72,6 @@ export const make = Effect.gen(function* () {
   const banImpactService = yield* TeamBanImpactService;
   const heroPoolService = yield* TeamHeroPoolService;
   const mapModeService = yield* TeamMapModeService;
-  const roleStatsService = yield* TeamRoleStatsService;
   const matchupService = yield* TeamMatchupService;
 
   function getSimulatorContext(
@@ -92,31 +87,27 @@ export const make = Effect.gen(function* () {
     return Effect.gen(function* () {
       yield* Effect.annotateCurrentSpan("teamId", teamId);
 
-      const {
-        winrates,
-        banAnalysis,
-        heroPool,
-        mapModePerf,
-        roleTrios,
-        enemyHeroes,
-      } = yield* Effect.all(
-        {
-          winrates: statsService.getTeamWinrates(teamId, dateRange),
-          banAnalysis: banImpactService.getTeamBanImpactAnalysis(
-            teamId,
-            dateRange
-          ),
-          heroPool: heroPoolService.getHeroPoolAnalysis(
-            teamId,
-            dateRange?.from,
-            dateRange?.to
-          ),
-          mapModePerf: mapModeService.getMapModePerformance(teamId, dateRange),
-          roleTrios: roleStatsService.getBestRoleTrios(teamId, dateRange),
-          enemyHeroes: matchupService.getEnemyHeroAnalysis(teamId, dateRange),
-        },
-        { concurrency: "unbounded" }
-      );
+      const { winrates, banAnalysis, heroPool, mapModePerf, enemyHeroes } =
+        yield* Effect.all(
+          {
+            winrates: statsService.getTeamWinrates(teamId, dateRange),
+            banAnalysis: banImpactService.getTeamBanImpactAnalysis(
+              teamId,
+              dateRange
+            ),
+            heroPool: heroPoolService.getHeroPoolAnalysis(
+              teamId,
+              dateRange?.from,
+              dateRange?.to
+            ),
+            mapModePerf: mapModeService.getMapModePerformance(
+              teamId,
+              dateRange
+            ),
+            enemyHeroes: matchupService.getEnemyHeroAnalysis(teamId, dateRange),
+          },
+          { concurrency: "unbounded" }
+        );
 
       const totalGames = winrates.overallWins + winrates.overallLosses;
       const baseWinrate =
@@ -201,7 +192,6 @@ export const make = Effect.gen(function* () {
         mapWinrates,
         mapSampleSizes,
         mapModeWinrates,
-        roleTrioWinrates: roleTrios,
         heroPoolWinrates,
         heroPoolSampleSizes,
         enemyHeroWinrates,
@@ -276,7 +266,6 @@ export const TeamPredictionServiceLive = Layer.effect(
       TeamBanImpactServiceLive,
       TeamHeroPoolServiceLive,
       TeamMapModeServiceLive,
-      TeamRoleStatsServiceLive,
       TeamMatchupServiceLive
     )
   )

@@ -206,6 +206,54 @@ export const scrimOverviewDuration = Metric.histogram(
   "Distribution of scrim overview query duration in milliseconds"
 );
 
+// positional-stats-service
+
+export const scrimPositionalStatsSuccessTotal = Metric.counter(
+  "scrim.positional_stats.query.success",
+  {
+    description: "Total successful scrim positional stats queries",
+    incremental: true,
+  }
+);
+
+export const scrimPositionalStatsErrorTotal = Metric.counter(
+  "scrim.positional_stats.query.error",
+  {
+    description: "Total scrim positional stats query failures",
+    incremental: true,
+  }
+);
+
+export const scrimPositionalStatsDuration = Metric.histogram(
+  "scrim.positional_stats.query.duration_ms",
+  MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
+  "Distribution of scrim positional stats query duration in milliseconds"
+);
+
+// positional-artifacts-service
+
+export const scrimPositionalArtifactsSuccessTotal = Metric.counter(
+  "scrim.positional_artifacts.query.success",
+  {
+    description: "Total successful scrim positional artifacts queries",
+    incremental: true,
+  }
+);
+
+export const scrimPositionalArtifactsErrorTotal = Metric.counter(
+  "scrim.positional_artifacts.query.error",
+  {
+    description: "Total scrim positional artifacts query failures",
+    incremental: true,
+  }
+);
+
+export const scrimPositionalArtifactsDuration = Metric.histogram(
+  "scrim.positional_artifacts.query.duration_ms",
+  MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
+  "Distribution of scrim positional artifacts query duration in milliseconds"
+);
+
 // opponent-service
 
 export const scrimOpponentMapResultsSuccessTotal = Metric.counter(

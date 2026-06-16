@@ -13,15 +13,23 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import type { RoleName } from "@/lib/target-stats";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 
 type Props = {
   params: Promise<{ teamId: string }>;
 };
 
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("targets.metadata");
+  return { title: t("title"), description: t("description") };
+}
+
 export default async function TeamTargetsPage(props: Props) {
   const params = await props.params;
   const teamId = parseInt(params.teamId);
+  const t = await getTranslations("targets");
 
   const session = await auth();
   const user = await AppRuntime.runPromise(
@@ -31,7 +39,7 @@ export default async function TeamTargetsPage(props: Props) {
   if (!user) {
     return (
       <div className="flex-1 p-8 pt-6">
-        <p className="text-muted-foreground">Please sign in to view targets.</p>
+        <p className="text-muted-foreground">{t("signInRequired")}</p>
       </div>
     );
   }
@@ -41,7 +49,7 @@ export default async function TeamTargetsPage(props: Props) {
   if (!team) {
     return (
       <div className="flex-1 p-8 pt-6">
-        <p className="text-muted-foreground">Team not found.</p>
+        <p className="text-muted-foreground">{t("teamNotFound")}</p>
       </div>
     );
   }
@@ -57,18 +65,17 @@ export default async function TeamTargetsPage(props: Props) {
   if (!isPremium) {
     return (
       <div className="flex-1 space-y-4 p-8 pt-6">
-        <h2 className="text-3xl font-bold tracking-tight">Player Targets</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t("title")}</h2>
         <div className="bg-card rounded-xl border p-8 text-center shadow">
-          <h3 className="text-xl font-semibold">Premium Feature</h3>
+          <h3 className="text-xl font-semibold">{t("premiumFeature")}</h3>
           <p className="text-muted-foreground mt-2">
-            Player targets require a Premium plan. Upgrade to set measurable
-            improvement goals for your players.
+            {t("premiumRequired")} {t("upgradePrompt")}
           </p>
           <Link
             href="/pricing"
             className="bg-primary text-primary-foreground hover:bg-primary/90 mt-4 inline-block rounded-md px-4 py-2"
           >
-            View Pricing
+            {t("viewPricing")}
           </Link>
         </div>
       </div>
@@ -132,11 +139,14 @@ export default async function TeamTargetsPage(props: Props) {
       const topHero = await prisma.$queryRaw<
         { player_hero: string; total_time: number }[]
       >`
-        SELECT player_hero, SUM(hero_time_played) AS total_time
-        FROM "PlayerStat"
-        WHERE player_name ILIKE ${playerName}
-          AND hero_time_played > 0
-        GROUP BY player_hero
+        SELECT ps.player_hero, SUM(ps.hero_time_played) AS total_time
+        FROM "PlayerStat" ps
+        INNER JOIN "MapData" md ON md.id = ps."MapDataId"
+        INNER JOIN "Scrim" s ON s.id = md."scrimId"
+        WHERE ps.player_name ILIKE ${playerName}
+          AND ps.hero_time_played > 0
+          AND s."teamId" = ${teamId}
+        GROUP BY ps.player_hero
         ORDER BY total_time DESC
         LIMIT 1
       `;
@@ -184,7 +194,7 @@ export default async function TeamTargetsPage(props: Props) {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Player Targets</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t("title")}</h2>
       </div>
       <TeamTargetsOverview
         players={players}

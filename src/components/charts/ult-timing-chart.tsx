@@ -18,9 +18,9 @@ import type {
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
 
-const INITIATION_COLOR = "#22c55e";
-const MIDFIGHT_COLOR = "#eab308";
-const LATE_COLOR = "#ef4444";
+const INITIATION_COLOR = "var(--chart-1)";
+const MIDFIGHT_COLOR = "var(--chart-3)";
+const LATE_COLOR = "var(--chart-5)";
 
 type TimingRow = {
   label: string;
@@ -109,7 +109,7 @@ function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
   if (!row || row.total === 0) return null;
 
   return (
-    <div className="bg-primary text-primary-foreground z-50 overflow-hidden rounded-md px-3 py-2 text-xs">
+    <div className="bg-popover text-popover-foreground border-border z-50 overflow-hidden rounded-md border px-3 py-2 text-xs shadow-md">
       <h3 className="text-sm font-semibold">{row.label}</h3>
       <p className="text-sm">
         <span className="font-semibold tabular-nums">{row.total}</span>{" "}

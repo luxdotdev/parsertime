@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useNotifications } from "@/hooks/use-notifications";
 import { cn } from "@/lib/utils";
-import type { Notification } from "@prisma/client";
+import type { Notification } from "@/generated/prisma/browser";
 import { formatDistanceToNow } from "date-fns";
 import { Bell, Loader2, Trash2 } from "lucide-react";
 import type { Route } from "next";

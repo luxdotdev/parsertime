@@ -4,7 +4,7 @@ import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import { unauthorized } from "next/navigation";
 
 export async function GET() {
@@ -18,6 +18,7 @@ export async function GET() {
   const userId = await AppRuntime.runPromise(
     UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
   );
+  if (!userId) unauthorized();
 
   // find teams where the user is the owner or a manager
   const teams = await prisma.team.findMany({

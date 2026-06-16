@@ -34,10 +34,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import type { AuditLog } from "@prisma/client";
-import { $Enums } from "@prisma/client";
+import type { AuditLog } from "@/generated/prisma/browser";
+import { $Enums } from "@/generated/prisma/browser";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { addWeeks, format } from "date-fns";
+import { addWeeks } from "date-fns";
 import {
   Bot,
   Bug,
@@ -65,7 +65,7 @@ import {
   VenetianMask,
   X,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { useDebounce } from "use-debounce";
@@ -73,31 +73,26 @@ import { useDebounce } from "use-debounce";
 const actionTypes = {
   // User Management Actions
   [$Enums.AuditLogAction.USER_BAN]: {
-    label: "User Ban",
     className: "border-red-500 text-red-500",
     iconClassName: "text-red-500",
     icon: UserX,
   },
   [$Enums.AuditLogAction.USER_UNBAN]: {
-    label: "User Unban",
     className: "border-emerald-500 text-emerald-500",
     iconClassName: "text-emerald-500",
     icon: UserCheck,
   },
   [$Enums.AuditLogAction.USER_AVATAR_UPDATED]: {
-    label: "User Avatar Updated",
     className: "border-blue-500 text-blue-500",
     iconClassName: "text-blue-500",
     icon: ImageIcon,
   },
   [$Enums.AuditLogAction.USER_ACCOUNT_DELETED]: {
-    label: "User Account Deleted",
     className: "border-red-600 text-red-600",
     iconClassName: "text-red-600",
     icon: UserMinus,
   },
   [$Enums.AuditLogAction.USER_NAME_UPDATED]: {
-    label: "User Name Updated",
     className: "border-blue-400 text-blue-400",
     iconClassName: "text-blue-400",
     icon: Edit,
@@ -105,19 +100,16 @@ const actionTypes = {
 
   // Security & Admin Actions
   [$Enums.AuditLogAction.TRUST_SCORE_ADJUST]: {
-    label: "Trust Score Adjust",
     className: "border-indigo-500 text-indigo-500",
     iconClassName: "text-indigo-500",
     icon: Shield,
   },
   [$Enums.AuditLogAction.IMPERSONATE_USER]: {
-    label: "Impersonate User",
     className: "border-purple-500 text-purple-500",
     iconClassName: "text-purple-500",
     icon: VenetianMask,
   },
   [$Enums.AuditLogAction.SUSPICIOUS_ACTIVITY_DETECTED]: {
-    label: "Suspicious Activity Detected",
     className: "border-orange-500 text-orange-500",
     iconClassName: "text-orange-500",
     icon: ShieldAlert,
@@ -125,67 +117,56 @@ const actionTypes = {
 
   // Team Management Actions
   [$Enums.AuditLogAction.TEAM_CREATED]: {
-    label: "Team Created",
     className: "border-green-500 text-green-500",
     iconClassName: "text-green-500",
     icon: Plus,
   },
   [$Enums.AuditLogAction.TEAM_UPDATED]: {
-    label: "Team Updated",
     className: "border-blue-500 text-blue-500",
     iconClassName: "text-blue-500",
     icon: Edit,
   },
   [$Enums.AuditLogAction.TEAM_DELETED]: {
-    label: "Team Deleted",
     className: "border-red-500 text-red-500",
     iconClassName: "text-red-500",
     icon: Trash2,
   },
   [$Enums.AuditLogAction.TEAM_AVATAR_UPDATED]: {
-    label: "Team Avatar Updated",
     className: "border-cyan-500 text-cyan-500",
     iconClassName: "text-cyan-500",
     icon: ImageIcon,
   },
   [$Enums.AuditLogAction.TEAM_INVITE_SENT]: {
-    label: "Team Invite Sent",
     className: "border-violet-500 text-violet-500",
     iconClassName: "text-violet-500",
     icon: Mail,
   },
   [$Enums.AuditLogAction.TEAM_JOINED]: {
-    label: "Team Joined",
     className: "border-green-400 text-green-400",
     iconClassName: "text-green-400",
     icon: UserPlus,
   },
   [$Enums.AuditLogAction.TEAM_LEFT]: {
-    label: "Team Left",
     className: "border-yellow-500 text-yellow-500",
     iconClassName: "text-yellow-500",
     icon: UserMinus,
   },
   [$Enums.AuditLogAction.TEAM_MEMBER_PROMOTED]: {
-    label: "Team Member Promoted",
     className: "border-emerald-600 text-emerald-600",
     iconClassName: "text-emerald-600",
     icon: TrendingUp,
   },
   [$Enums.AuditLogAction.TEAM_MEMBER_DEMOTED]: {
-    label: "Team Member Demoted",
     className: "border-orange-400 text-orange-400",
     iconClassName: "text-orange-400",
     icon: TrendingDown,
   },
   [$Enums.AuditLogAction.TEAM_MEMBER_REMOVED]: {
-    label: "Team Member Removed",
     className: "border-red-400 text-red-400",
     iconClassName: "text-red-400",
     icon: Minus,
   },
   [$Enums.AuditLogAction.TEAM_OWNERSHIP_TRANSFERRED]: {
-    label: "Team Ownership Transferred",
     className: "border-amber-500 text-amber-500",
     iconClassName: "text-amber-500",
     icon: Crown,
@@ -193,19 +174,16 @@ const actionTypes = {
 
   // Scrim Management Actions
   [$Enums.AuditLogAction.SCRIM_CREATED]: {
-    label: "Scrim Created",
     className: "border-teal-500 text-teal-500",
     iconClassName: "text-teal-500",
     icon: Target,
   },
   [$Enums.AuditLogAction.SCRIM_UPDATED]: {
-    label: "Scrim Updated",
     className: "border-teal-400 text-teal-400",
     iconClassName: "text-teal-400",
     icon: Edit,
   },
   [$Enums.AuditLogAction.SCRIM_DELETED]: {
-    label: "Scrim Deleted",
     className: "border-red-300 text-red-300",
     iconClassName: "text-red-300",
     icon: Trash2,
@@ -213,19 +191,16 @@ const actionTypes = {
 
   // Map Management Actions
   [$Enums.AuditLogAction.MAP_CREATED]: {
-    label: "Map Created",
     className: "border-slate-500 text-slate-500",
     iconClassName: "text-slate-500",
     icon: Map,
   },
   [$Enums.AuditLogAction.MAP_UPDATED]: {
-    label: "Map Updated",
     className: "border-slate-400 text-slate-400",
     iconClassName: "text-slate-400",
     icon: Edit,
   },
   [$Enums.AuditLogAction.MAP_DELETED]: {
-    label: "Map Deleted",
     className: "border-slate-600 text-slate-600",
     iconClassName: "text-slate-600",
     icon: Trash2,
@@ -233,14 +208,24 @@ const actionTypes = {
 
   // System Actions
   [$Enums.AuditLogAction.BUG_REPORT_SUBMITTED]: {
-    label: "Bug Report Submitted",
     className: "border-pink-500 text-pink-500",
     iconClassName: "text-pink-500",
     icon: Bug,
   },
 };
 
-function getActionBadge(action: string) {
+function getActionLabel(
+  t: ReturnType<typeof useTranslations<"settingsPage.admin.audit-log">>,
+  action: string
+) {
+  if (action in actionTypes) return t(`actions.${action}`);
+  return action.replace("_", " ");
+}
+
+function getActionBadge(
+  action: string,
+  t: ReturnType<typeof useTranslations<"settingsPage.admin.audit-log">>
+) {
   const actionInfo = actionTypes[action as keyof typeof actionTypes];
 
   if (actionInfo) {
@@ -248,7 +233,7 @@ function getActionBadge(action: string) {
     return (
       <Badge variant="outline" className={actionInfo.className}>
         <Icon className="mr-1 h-3 w-3" />
-        {actionInfo.label}
+        {getActionLabel(t, action)}
       </Badge>
     );
   }
@@ -256,7 +241,7 @@ function getActionBadge(action: string) {
   return (
     <Badge variant="outline">
       <ShieldAlert className="mr-1 h-3 w-3" />
-      {action.replace("_", " ")}
+      {getActionLabel(t, action)}
     </Badge>
   );
 }
@@ -269,6 +254,7 @@ export function AuditLog({
   height?: string;
 }) {
   const t = useTranslations("settingsPage.admin.audit-log");
+  const formatter = useFormatter();
   const loadMoreRef = useRef<HTMLTableRowElement>(null);
 
   const TODAY = new Date();
@@ -364,24 +350,30 @@ export function AuditLog({
   const logs: AuditLog[] = data ? data.pages.flatMap((page) => page.items) : [];
 
   function formatDateRange() {
-    if (!dateRange) return "Select date range";
+    if (!dateRange) return t("date-range.select");
 
     if (dateRange.from && dateRange.to) {
+      const from = formatter.dateTime(dateRange.from, { dateStyle: "medium" });
+      const to = formatter.dateTime(dateRange.to, { dateStyle: "medium" });
       if (dateRange.from.toDateString() === dateRange.to.toDateString()) {
-        return format(dateRange.from, "PPP");
+        return from;
       }
-      return `${format(dateRange.from, "PP")} - ${format(dateRange.to, "PP")}`;
+      return t("date-range.range", { from, to });
     }
 
     if (dateRange.from) {
-      return `From ${format(dateRange.from, "PP")}`;
+      return t("date-range.from", {
+        date: formatter.dateTime(dateRange.from, { dateStyle: "medium" }),
+      });
     }
 
     if (dateRange.to) {
-      return `Until ${format(dateRange.to, "PP")}`;
+      return t("date-range.until", {
+        date: formatter.dateTime(dateRange.to, { dateStyle: "medium" }),
+      });
     }
 
-    return "Select date range";
+    return t("date-range.select");
   }
 
   function toggleActionType(actionType: string) {
@@ -473,7 +465,7 @@ export function AuditLog({
                         />
                       )}
                       {actionInfo
-                        ? actionInfo.label
+                        ? getActionLabel(t, actionType)
                         : actionType.replace("_", " ")}
                     </span>
                   </DropdownMenuCheckboxItem>
@@ -491,7 +483,7 @@ export function AuditLog({
               size="icon"
               onClick={clearFilters}
               className="h-9 w-9"
-              aria-label="Clear filters"
+              aria-label={t("clear-filters")}
             >
               <X className="h-4 w-4" />
             </Button>
@@ -523,26 +515,21 @@ export function AuditLog({
               />
             </Badge>
           )}
-          {selectedActions.map((action) => {
-            const actionInfo = actionTypes[action as keyof typeof actionTypes];
-            return (
-              <Badge
-                key={action}
-                variant="secondary"
-                className="flex items-center gap-1"
-              >
-                {actionInfo ? actionInfo.label : action.replace("_", " ")}
-                <X
-                  className="h-3 w-3 cursor-pointer"
-                  onClick={() =>
-                    setSelectedActions((prev) =>
-                      prev.filter((a) => a !== action)
-                    )
-                  }
-                />
-              </Badge>
-            );
-          })}
+          {selectedActions.map((action) => (
+            <Badge
+              key={action}
+              variant="secondary"
+              className="flex items-center gap-1"
+            >
+              {getActionLabel(t, action)}
+              <X
+                className="h-3 w-3 cursor-pointer"
+                onClick={() =>
+                  setSelectedActions((prev) => prev.filter((a) => a !== action))
+                }
+              />
+            </Badge>
+          ))}
           {dateRange && (
             <Badge variant="secondary" className="flex items-center gap-1">
               {formatDateRange()}
@@ -633,6 +620,8 @@ export function AuditLog({
 
 function AuditLogHoverCard({ log }: { log: AuditLog }) {
   const t = useTranslations("settingsPage.admin.audit-log");
+  const formatter = useFormatter();
+  const createdAt = new Date(log.createdAt);
 
   return (
     <HoverCard>
@@ -642,15 +631,15 @@ function AuditLogHoverCard({ log }: { log: AuditLog }) {
             {log.userEmail === "System" && <Bot className="h-4 w-4" />}
             {log.userEmail}
           </TableCell>
-          <TableCell>{getActionBadge(log.action)}</TableCell>
+          <TableCell>{getActionBadge(log.action, t)}</TableCell>
           <TableCell>{log.target}</TableCell>
           <TableCell className="max-w-xs truncate" title={log.details}>
             {log.details}
           </TableCell>
           <TableCell>
             {t("table.date-time-format", {
-              date: format(new Date(log.createdAt), "PP"),
-              time: format(new Date(log.createdAt), "p"),
+              date: formatter.dateTime(createdAt, { dateStyle: "medium" }),
+              time: formatter.dateTime(createdAt, { timeStyle: "short" }),
             })}
           </TableCell>
         </TableRow>
@@ -672,7 +661,7 @@ function AuditLogHoverCard({ log }: { log: AuditLog }) {
               <h3 className="text-muted-foreground text-sm font-semibold">
                 {t("hover.action")}
               </h3>
-              <span>{getActionBadge(log.action)}</span>
+              <span>{getActionBadge(log.action, t)}</span>
             </div>
           </div>
 
@@ -702,7 +691,10 @@ function AuditLogHoverCard({ log }: { log: AuditLog }) {
                   {t("hover.timestamp")}
                 </h4>
                 <p className="bg-muted rounded-md px-2 py-1 text-sm font-medium">
-                  {format(new Date(log.createdAt), "PPPp")}
+                  {formatter.dateTime(createdAt, {
+                    dateStyle: "long",
+                    timeStyle: "short",
+                  })}
                 </p>
               </div>
             </div>

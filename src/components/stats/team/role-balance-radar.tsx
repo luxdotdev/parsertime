@@ -1,13 +1,12 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import type {
   RoleBalanceAnalysis,
   RolePerformanceStats,
 } from "@/data/team/types";
-import { round } from "@/lib/utils";
-import { useTranslations } from "next-intl";
+import { cn, round } from "@/lib/utils";
+import { useFormatter, useTranslations } from "next-intl";
 import {
   Legend,
   PolarAngleAxis,
@@ -24,19 +23,33 @@ import type {
   ValueType,
 } from "recharts/types/component/DefaultTooltipContent";
 
-function CustomTooltip({ active, payload }: TooltipProps<ValueType, NameType>) {
+type RoleKey = "Tank" | "Damage" | "Support";
+
+type CustomTooltipProps = TooltipProps<ValueType, NameType> & {
+  title: string;
+  roleLabels: Record<RoleKey, string>;
+  formatValue: (value: number) => string;
+};
+
+function CustomTooltip({
+  active,
+  payload,
+  title,
+  roleLabels,
+  formatValue,
+}: CustomTooltipProps) {
   if (active && payload?.length) {
     return (
       <div className="bg-popover text-popover-foreground border-border z-50 overflow-hidden rounded-md border px-3 py-2 shadow-xl">
-        <p className="text-sm font-semibold">Role Balance</p>
-        <p className="text-[#3b82f6]">
-          Tank: {round(payload[0].value as number)}
+        <p className="text-sm font-semibold">{title}</p>
+        <p className="text-foreground font-mono text-xs tabular-nums">
+          {roleLabels.Tank}: {formatValue(round(payload[0].value as number))}
         </p>
-        <p className="text-[#ef4444]">
-          Damage: {round(payload[1].value as number)}
+        <p className="text-foreground font-mono text-xs tabular-nums">
+          {roleLabels.Damage}: {formatValue(round(payload[1].value as number))}
         </p>
-        <p className="text-[#eab308]">
-          Support: {round(payload[2].value as number)}
+        <p className="text-foreground font-mono text-xs tabular-nums">
+          {roleLabels.Support}: {formatValue(round(payload[2].value as number))}
         </p>
       </div>
     );
@@ -53,21 +66,51 @@ export function RoleBalanceRadar({
   balanceAnalysis,
 }: RoleBalanceRadarProps) {
   const t = useTranslations("teamStatsPage.roleBalanceRadar");
+  const format = useFormatter();
 
   const hasData = ["Tank", "Damage", "Support"].some(
     (role) => roleStats[role as keyof RolePerformanceStats].totalPlaytime > 0
   );
 
+  const roleLabels: Record<RoleKey, string> = {
+    Tank: t("roles.Tank"),
+    Damage: t("roles.Damage"),
+    Support: t("roles.Support"),
+  };
+
+  function formatRole(role: RoleKey): string {
+    return roleLabels[role];
+  }
+
+  function getBalanceBadgeClass(): string {
+    if (hasData && balanceAnalysis.balanceScore >= 0.8) {
+      return "bg-primary/15 text-primary";
+    }
+
+    return "bg-muted text-muted-foreground";
+  }
+
+  const balanceBadge = (
+    <span
+      className={cn(
+        "rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase",
+        getBalanceBadgeClass()
+      )}
+    >
+      {balanceAnalysis.overall}
+    </span>
+  );
+
   if (!hasData) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">{t("noData")}</p>
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          rightSlot={balanceBadge}
+        />
+        <p className="text-muted-foreground text-sm">{t("noData")}</p>
+      </section>
     );
   }
 
@@ -114,102 +157,93 @@ export function RoleBalanceRadar({
     },
   ];
 
-  function getBalanceBadgeColor(
-    overall: RoleBalanceAnalysis["overall"]
-  ): string {
-    switch (overall) {
-      case "Balanced":
-        return "bg-green-500";
-      case "Insufficient data":
-        return "bg-gray-500";
-      default:
-        return "bg-yellow-500";
-    }
-  }
-
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>{t("title")}</CardTitle>
-          <Badge className={getBalanceBadgeColor(balanceAnalysis.overall)}>
-            {balanceAnalysis.overall}
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <ResponsiveContainer width="100%" height={300}>
-            <RadarChart data={chartData}>
-              <PolarGrid />
-              <PolarAngleAxis dataKey="metric" />
-              <PolarRadiusAxis angle={90} domain={[0, 100]} />
-              <Radar
-                name={t("tank")}
-                dataKey="Tank"
-                stroke="#3b82f6"
-                fill="#3b82f6"
-                fillOpacity={0.5}
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        rightSlot={balanceBadge}
+      />
+      <ResponsiveContainer width="100%" height={300}>
+        <RadarChart data={chartData}>
+          <PolarGrid />
+          <PolarAngleAxis dataKey="metric" />
+          <PolarRadiusAxis angle={90} domain={[0, 100]} />
+          <Radar
+            name={t("tank")}
+            dataKey="Tank"
+            stroke="var(--chart-1)"
+            fill="var(--chart-1)"
+            fillOpacity={0.4}
+          />
+          <Radar
+            name={t("damage")}
+            dataKey="Damage"
+            stroke="var(--chart-3)"
+            fill="var(--chart-3)"
+            fillOpacity={0.4}
+          />
+          <Radar
+            name={t("support")}
+            dataKey="Support"
+            stroke="var(--chart-5)"
+            fill="var(--chart-5)"
+            fillOpacity={0.4}
+          />
+          <Legend />
+          <Tooltip
+            content={
+              <CustomTooltip
+                title={t("tooltipTitle")}
+                roleLabels={roleLabels}
+                formatValue={(value) => format.number(value)}
               />
-              <Radar
-                name={t("damage")}
-                dataKey="Damage"
-                stroke="#ef4444"
-                fill="#ef4444"
-                fillOpacity={0.5}
-              />
-              <Radar
-                name={t("support")}
-                dataKey="Support"
-                stroke="#eab308"
-                fill="#eab308"
-                fillOpacity={0.5}
-              />
-              <Legend />
-              <Tooltip content={<CustomTooltip />} />
-            </RadarChart>
-          </ResponsiveContainer>
+            }
+          />
+        </RadarChart>
+      </ResponsiveContainer>
 
-          {balanceAnalysis.insights.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-sm font-semibold">{t("insights")}</h4>
-              <ul className="text-muted-foreground space-y-1 text-sm">
-                {balanceAnalysis.insights.map((insight) => (
-                  <li key={insight} className="flex gap-2">
-                    <span>•</span>
-                    <span>{insight}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {balanceAnalysis.strongestRole && balanceAnalysis.weakestRole && (
-            <div className="bg-muted/50 rounded-lg p-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t("strongest")}</span>
-                <span className="font-semibold text-green-600 dark:text-green-400">
-                  {balanceAnalysis.strongestRole}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">{t("needsWork")}</span>
-                <span className="font-semibold text-red-600 dark:text-red-400">
-                  {balanceAnalysis.weakestRole}
-                </span>
-              </div>
-              <div className="mt-2 flex justify-between">
-                <span className="text-muted-foreground">
-                  {t("balanceScore")}
-                </span>
-                <span className="font-semibold">
-                  {(balanceAnalysis.balanceScore * 100).toFixed(0)}%
-                </span>
-              </div>
-            </div>
-          )}
+      {balanceAnalysis.insights.length > 0 && (
+        <div className="space-y-2">
+          <h4 className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+            {t("insights")}
+          </h4>
+          <ul className="text-muted-foreground space-y-1 text-sm">
+            {balanceAnalysis.insights.map((insight) => (
+              <li key={insight} className="flex gap-2">
+                <span>•</span>
+                <span>{insight}</span>
+              </li>
+            ))}
+          </ul>
         </div>
-      </CardContent>
-    </Card>
+      )}
+
+      {balanceAnalysis.strongestRole && balanceAnalysis.weakestRole && (
+        <div className="bg-muted/50 rounded-lg p-3 text-sm">
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">{t("strongest")}</span>
+            <span className="text-foreground font-semibold">
+              {formatRole(balanceAnalysis.strongestRole)}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">{t("needsWork")}</span>
+            <span className="text-foreground font-semibold">
+              {formatRole(balanceAnalysis.weakestRole)}
+            </span>
+          </div>
+          <div className="mt-2 flex justify-between">
+            <span className="text-muted-foreground">{t("balanceScore")}</span>
+            <span className="text-foreground font-mono font-semibold tabular-nums">
+              {format.number(balanceAnalysis.balanceScore, {
+                style: "percent",
+                maximumFractionDigits: 0,
+              })}
+            </span>
+          </div>
+        </div>
+      )}
+    </section>
   );
 }

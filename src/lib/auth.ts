@@ -1,13 +1,14 @@
 import MagicLinkEmail from "@/components/email/magic-link";
 import UserOnboardingEmail from "@/components/email/onboarding";
+import { AppRuntime } from "@/data/runtime";
+import { UserService } from "@/data/user";
 import {
   authNewUserCounter,
   authSignInCounter,
   rateLimitHitCounter,
 } from "@/lib/axiom/metrics";
-import { AppRuntime } from "@/data/runtime";
-import { ScrimService } from "@/data/scrim";
-import { UserService } from "@/data/user";
+import { UsageEventName } from "@/lib/usage/names";
+import { usage } from "@/lib/usage/server";
 import { email } from "@/lib/email";
 import { createShortLink } from "@/lib/link-service";
 import { Logger } from "@/lib/logger";
@@ -20,7 +21,7 @@ import {
   sendDiscordWebhook,
 } from "@/lib/webhooks";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { $Enums, type User } from "@prisma/client";
+import { $Enums, type User } from "@/generated/prisma/browser";
 import { render } from "@react-email/render";
 import { Ratelimit } from "@upstash/ratelimit";
 import { track } from "@vercel/analytics/server";
@@ -30,12 +31,20 @@ import { createHash, randomBytes } from "crypto";
 import { Effect } from "effect";
 import NextAuth, { type NextAuthConfig } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
+import FaceitProvider from "next-auth/providers/faceit";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 import isEmail from "validator/lib/isEmail";
 
 const isProd = process.env.NODE_ENV === "production";
 const isPreview = process.env.VERCEL_ENV === "preview";
+
+function hasUnsafeRedirectChars(value: string) {
+  return [...value].some((char) => {
+    const code = char.charCodeAt(0);
+    return char === "\\" || code <= 31 || code === 127;
+  });
+}
 
 export type Availability = "public" | "private";
 
@@ -81,6 +90,10 @@ export const config = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+    FaceitProvider({
+      clientId: process.env.FACEIT_CLIENT_ID,
+      clientSecret: process.env.FACEIT_CLIENT_SECRET,
     }),
     {
       id: "email",
@@ -138,22 +151,22 @@ export const config = {
       const allowedUsers = (await get<string[]>("allowedUsers")) ?? [];
 
       // allow all lux.dev emails
-      if (user.email.includes("lux.dev")) return true;
+      if (user.email.toLowerCase().endsWith("@lux.dev")) return true;
       if (allowedUsers.includes(user.email)) return true;
 
       Logger.warn(`User not authorized for private access: ${user.email}`);
       return false;
     },
     redirect({ url, baseUrl }) {
-      // Allow safe relative URLs (reject protocol-relative URLs like "//evil.com")
-      if (url.startsWith("/") && !url.startsWith("//"))
-        return `${baseUrl}${url}`;
-      // Allow URLs on the same origin
+      if (hasUnsafeRedirectChars(url)) return `${baseUrl}/dashboard`;
+
       try {
-        if (new URL(url).origin === baseUrl) return url;
+        const parsed = new URL(url, baseUrl);
+        if (parsed.origin === baseUrl) return parsed.href;
       } catch {
         // Invalid URL, fall through to default
       }
+
       // Default to dashboard
       return `${baseUrl}/dashboard`;
     },
@@ -194,9 +207,11 @@ export const config = {
       }
 
       authSignInCounter.add(1);
+      void usage.track({ name: UsageEventName.SIGNIN, userId: user.id });
 
       if (isNewUser) {
         authNewUserCounter.add(1);
+        void usage.track({ name: UsageEventName.SIGNUP, userId: user.id });
         // Log new user signups
         Logger.info(`New user signed up: ${user.email}`);
 
@@ -220,6 +235,19 @@ export const config = {
           });
         } catch (error) {
           handleEmailError(error);
+        }
+
+        // Claim any ranked-tracker data parked for this user during migration.
+        if (user.id) {
+          try {
+            const { claimRankedDataForUser } =
+              await import("@/lib/ranked/claim");
+            await claimRankedDataForUser(user.id);
+          } catch (error) {
+            Logger.warn(
+              `Ranked data auto-claim failed for ${user.email}: ${String(error)}`
+            );
+          }
         }
       }
     },
@@ -250,45 +278,96 @@ export const config = {
 
 export const { handlers, auth, signIn, signOut } = NextAuth(config);
 
-export async function isAuthedToViewScrim(id: number) {
+export async function getCurrentUser() {
   const session = await auth();
+  if (!session?.user?.email) return null;
 
-  const user = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  return await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
   );
+}
 
-  // if user is admin return true
-  if (user !== null && user?.role === $Enums.UserRole.ADMIN) {
-    return true;
-  }
+export function isAdminUser(user: Pick<User, "role"> | null | undefined) {
+  return user?.role === $Enums.UserRole.ADMIN;
+}
 
-  const scrim = await AppRuntime.runPromise(
-    ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(id)))
+export async function canManageTeam(
+  teamId: number | null | undefined,
+  user: Pick<User, "id" | "role"> | null | undefined
+) {
+  if (!teamId || !user) return false;
+  if (isAdminUser(user)) return true;
+
+  const team = await prisma.team.findFirst({
+    where: { id: teamId },
+    select: {
+      ownerId: true,
+      managers: { where: { userId: user.id }, select: { id: true } },
+    },
+  });
+  if (!team) return false;
+
+  return team.ownerId === user.id || team.managers.length > 0;
+}
+
+export async function canViewTeam(
+  teamId: number | null | undefined,
+  user: Pick<User, "id" | "role"> | null | undefined
+) {
+  if (!teamId || !user) return false;
+  if (isAdminUser(user)) return true;
+
+  const team = await prisma.team.findFirst({
+    where: { id: teamId },
+    select: {
+      ownerId: true,
+      users: { where: { id: user.id }, select: { id: true } },
+      managers: { where: { userId: user.id }, select: { id: true } },
+    },
+  });
+  if (!team) return false;
+
+  return (
+    team.ownerId === user.id ||
+    team.users.length > 0 ||
+    team.managers.length > 0
   );
-  if (!scrim) return false;
+}
 
-  if (scrim.guestMode) return true;
-
-  if (!session) {
-    return false;
-  }
-
+export async function canEditScrim(
+  scrimId: number,
+  user: Pick<User, "id" | "role"> | null | undefined
+) {
   if (!user) return false;
+  if (isAdminUser(user)) return true;
 
-  const listOfViewableScrims = await AppRuntime.runPromise(
-    ScrimService.pipe(
-      Effect.flatMap((svc) => svc.getUserViewableScrims(user.id))
-    )
-  );
+  const scrim = await prisma.scrim.findUnique({
+    where: { id: scrimId },
+    select: { creatorId: true, teamId: true },
+  });
+  if (!scrim) return false;
+  if (scrim.creatorId === user.id) return true;
 
-  if (listOfViewableScrims.some((scrim) => scrim.id === id)) {
-    return true;
-  }
+  return await canManageTeam(scrim.teamId, user);
+}
 
-  // Check if this is a tournament synthetic scrim — allow access if the user
-  // is the tournament creator or a member of a participating team
+export async function canViewScrim(
+  scrimId: number,
+  user: Pick<User, "id" | "role"> | null | undefined
+) {
+  const scrim = await prisma.scrim.findUnique({
+    where: { id: scrimId },
+    select: { id: true, creatorId: true, teamId: true, guestMode: true },
+  });
+  if (!scrim) return false;
+  if (scrim.guestMode) return true;
+  if (!user) return false;
+  if (isAdminUser(user)) return true;
+  if (scrim.creatorId === user.id) return true;
+  if (await canViewTeam(scrim.teamId, user)) return true;
+
   const tournamentMatch = await prisma.tournamentMatch.findFirst({
-    where: { scrimId: id },
+    where: { scrimId },
     select: {
       tournament: {
         select: {
@@ -299,50 +378,126 @@ export async function isAuthedToViewScrim(id: number) {
     },
   });
 
-  if (tournamentMatch) {
-    if (tournamentMatch.tournament.creatorId === user.id) return true;
+  if (!tournamentMatch) return false;
+  if (tournamentMatch.tournament.creatorId === user.id) return true;
 
-    const participatingTeamIds = tournamentMatch.tournament.teams
-      .map((t) => t.teamId)
-      .filter((id): id is number => id !== null);
+  const participatingTeamIds = tournamentMatch.tournament.teams
+    .map((team) => team.teamId)
+    .filter((id): id is number => id !== null);
+  if (participatingTeamIds.length === 0) return false;
 
-    if (participatingTeamIds.length > 0) {
-      const userTeams = await prisma.team.findMany({
-        where: {
-          id: { in: participatingTeamIds },
-          users: { some: { id: user.id } },
-        },
-        select: { id: true },
-      });
-      if (userTeams.length > 0) return true;
-    }
-  }
+  const userTeams = await prisma.team.count({
+    where: {
+      id: { in: participatingTeamIds },
+      users: { some: { id: user.id } },
+    },
+  });
+  return userTeams > 0;
+}
 
-  // Return false if the user fails all checks:
-  // - not an admin
-  // - not in the list of viewable scrims
-  // - scrim is not in guest mode
-  // - not a tournament participant/creator
-  return false;
+export async function canManageTournament(
+  tournamentId: number,
+  user: Pick<User, "id" | "role"> | null | undefined
+) {
+  if (!user) return false;
+  if (isAdminUser(user)) return true;
+
+  const tournament = await prisma.tournament.findUnique({
+    where: { id: tournamentId },
+    select: { creatorId: true },
+  });
+  if (!tournament) return false;
+
+  return tournament.creatorId === user.id;
+}
+
+export async function canViewTournament(
+  tournamentId: number,
+  user: Pick<User, "id" | "role"> | null | undefined
+) {
+  if (!user) return false;
+  if (isAdminUser(user)) return true;
+
+  const tournament = await prisma.tournament.findUnique({
+    where: { id: tournamentId },
+    select: {
+      creatorId: true,
+      teams: { select: { teamId: true } },
+    },
+  });
+  if (!tournament) return false;
+  if (tournament.creatorId === user.id) return true;
+
+  const teamIds = tournament.teams
+    .map((team) => team.teamId)
+    .filter((id): id is number => id !== null);
+  if (teamIds.length === 0) return false;
+
+  const matchingTeams = await prisma.team.count({
+    where: {
+      id: { in: teamIds },
+      OR: [
+        { ownerId: user.id },
+        { users: { some: { id: user.id } } },
+        { managers: { some: { userId: user.id } } },
+      ],
+    },
+  });
+  return matchingTeams > 0;
+}
+
+export async function getViewableScrimIds(
+  scrimIds: number[],
+  user: Pick<User, "id" | "role"> | null | undefined
+) {
+  const uniqueIds = [...new Set(scrimIds)];
+  const checks = await Promise.all(
+    uniqueIds.map(async (id) => ({
+      id,
+      canView: await canViewScrim(id, user),
+    }))
+  );
+  return checks.filter((check) => check.canView).map((check) => check.id);
+}
+
+export async function canViewMapData(
+  mapDataId: number,
+  user: Pick<User, "id" | "role"> | null | undefined
+) {
+  const mapData = await prisma.mapData.findUnique({
+    where: { id: mapDataId },
+    select: { scrimId: true },
+  });
+  if (!mapData) return false;
+  return await canViewScrim(mapData.scrimId, user);
+}
+
+export async function canViewMaps(
+  mapIds: number[],
+  user: Pick<User, "id" | "role"> | null | undefined
+) {
+  const uniqueIds = [...new Set(mapIds)];
+  const maps = await prisma.map.findMany({
+    where: { id: { in: uniqueIds } },
+    select: { id: true, scrimId: true },
+  });
+  if (maps.length !== uniqueIds.length) return false;
+
+  const scrimIds = maps
+    .map((map) => map.scrimId)
+    .filter((id): id is number => id !== null);
+  if (scrimIds.length !== maps.length) return false;
+
+  const viewableScrimIds = new Set(await getViewableScrimIds(scrimIds, user));
+  return maps.every((map) => map.scrimId && viewableScrimIds.has(map.scrimId));
+}
+
+export async function isAuthedToViewScrim(id: number) {
+  const user = await getCurrentUser();
+  return await canViewScrim(id, user);
 }
 
 export async function isAuthedToViewMap(scrimId: number, mapId: number) {
-  const session = await auth();
-
-  const user = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
-  );
-
-  // if user is admin return true
-  if (user !== null && user?.role === $Enums.UserRole.ADMIN) {
-    return true;
-  }
-
-  const scrim = await AppRuntime.runPromise(
-    ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(scrimId)))
-  );
-  if (!scrim) return false;
-
   const scrimMaps = await prisma.map.findMany({
     where: {
       scrimId,
@@ -355,15 +510,7 @@ export async function isAuthedToViewMap(scrimId: number, mapId: number) {
 
   if (!map) return false;
 
-  if (scrim.guestMode) return true;
-
-  if (!session) {
-    return false;
-  }
-
-  if (!user) return false;
-
-  return true;
+  return await isAuthedToViewScrim(scrimId);
 }
 
 export async function isTeamOwnerOrManager(id: number) {
@@ -390,34 +537,9 @@ export async function isTeamOwnerOrManager(id: number) {
 }
 
 export async function isAuthedToViewTeam(id: number) {
-  const session = await auth();
-  if (!session) {
-    return false;
-  }
+  const user = await getCurrentUser();
 
-  const user = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
-  );
-
-  if (!user) {
-    return false;
-  }
-
-  if (user.role === $Enums.UserRole.ADMIN) {
-    return true;
-  }
-
-  const teamMembersById = await prisma.team.findFirst({
-    where: { id },
-    select: {
-      users: true,
-    },
-  });
-
-  if (teamMembersById?.users?.some((u) => u.id === user.id)) {
-    return true;
-  }
-  return false;
+  return await canViewTeam(id, user);
 }
 
 /**
@@ -448,9 +570,7 @@ export async function getImpersonateUrl(email: string, isProd = true) {
     token,
   });
 
-  Logger.info(
-    `Impersonation URL generated for user: ${email}: ${callbackUrl}/api/auth/callback/email?${params.toString()}`
-  );
+  Logger.info(`Impersonation URL generated for user: ${email}`);
 
   return `${callbackUrl}/api/auth/callback/email?${params.toString()}`;
 }

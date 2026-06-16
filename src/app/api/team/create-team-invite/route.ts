@@ -1,39 +1,48 @@
-import { auth } from "@/lib/auth";
+import { auth, canManageTeam, getCurrentUser } from "@/lib/auth";
 import { generateRandomToken } from "@/lib/invite-token";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { TEAM_MEMBER_LIMIT } from "@/lib/usage";
 import { unauthorized } from "next/navigation";
 import type { NextRequest } from "next/server";
+import { z } from "zod";
+
+const CreateTeamInviteSchema = z.object({
+  id: z.coerce.number().int().positive(),
+  email: z
+    .email()
+    .max(254)
+    .transform((email) => email.toLowerCase()),
+});
 
 export async function POST(req: NextRequest) {
   const session = await auth();
-  const token = req.headers.get("Authorization");
 
-  const testingEmail = "lucas@lux.dev";
-
-  if (!session) {
-    if (token !== process.env.DEV_TOKEN) {
-      Logger.warn("Unauthorized request to create team invite");
-      unauthorized();
-    }
-    Logger.log("Authorized request to create team invite using dev token");
+  if (!session?.user?.email) {
+    Logger.warn("Unauthorized request to create team invite");
+    unauthorized();
   }
 
-  const teamId = req.nextUrl.searchParams.get("id")
-    ? parseInt(req.nextUrl.searchParams.get("id")!)
-    : null;
-
-  if (!teamId) {
-    Logger.error("No team id provided to create team invite");
-    return new Response("No team id provided", { status: 400 });
+  const parsed = CreateTeamInviteSchema.safeParse({
+    id: req.nextUrl.searchParams.get("id"),
+    email: req.nextUrl.searchParams.get("email"),
+  });
+  if (!parsed.success) {
+    Logger.error("Invalid request to create team invite");
+    return new Response("Invalid request", { status: 400 });
   }
+  const { id: teamId, email: inviteeEmail } = parsed.data;
 
   const teamData = await prisma.team.findFirst({
     where: { id: teamId },
     select: { users: true, ownerId: true },
   });
   if (!teamData) return new Response("Team not found", { status: 404 });
+
+  const user = await getCurrentUser();
+  if (!(await canManageTeam(teamId, user))) {
+    return new Response("Forbidden", { status: 403 });
+  }
 
   const teamCreator = await prisma.user.findFirst({
     where: { id: teamData.ownerId },
@@ -87,7 +96,7 @@ export async function POST(req: NextRequest) {
     data: {
       token: inviteToken,
       teamId,
-      email: session?.user?.email ?? testingEmail,
+      email: inviteeEmail,
       expires: new Date(expiresAt),
     },
   });

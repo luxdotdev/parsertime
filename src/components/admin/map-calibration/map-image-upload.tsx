@@ -10,6 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Upload } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -27,6 +28,7 @@ export function MapImageUpload({
   mapName,
   onUploadComplete,
 }: MapImageUploadProps) {
+  const t = useTranslations("mapCalibrationPage.upload");
   const [open, setOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [status, setStatus] = useState("");
@@ -35,7 +37,7 @@ export function MapImageUpload({
   async function handleUpload(file: File) {
     setUploading(true);
     try {
-      setStatus("Requesting upload URL…");
+      setStatus(t("requestingUploadUrl"));
       const presignRes = await fetch(
         "/api/admin/map-calibration/upload/presign",
         {
@@ -48,14 +50,14 @@ export function MapImageUpload({
         }
       );
 
-      if (!presignRes.ok) throw new Error("Failed to get upload URL");
+      if (!presignRes.ok) throw new Error(t("uploadUrlError"));
 
       const { uploadUrl, rawKey } = (await presignRes.json()) as {
         uploadUrl: string;
         rawKey: string;
       };
 
-      setStatus("Uploading image to storage\u2026");
+      setStatus(t("uploadingToStorage"));
       const uploadRes = await fetch(uploadUrl, {
         method: "PUT",
         body: file,
@@ -64,16 +66,16 @@ export function MapImageUpload({
         },
       });
 
-      if (!uploadRes.ok) throw new Error("Failed to upload image to storage");
+      if (!uploadRes.ok) throw new Error(t("storageUploadError"));
 
-      setStatus("Processing image\u2026");
+      setStatus(t("processingImage"));
       const processRes = await fetch("/api/admin/map-calibration/upload", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rawKey, mapName }),
       });
 
-      if (!processRes.ok) throw new Error("Failed to process image");
+      if (!processRes.ok) throw new Error(t("processImageError"));
 
       const data = (await processRes.json()) as {
         imageKey: string;
@@ -90,7 +92,7 @@ export function MapImageUpload({
       );
       setOpen(false);
     } catch {
-      toast.error("Failed to upload image.");
+      toast.error(t("uploadError"));
     } finally {
       setUploading(false);
       setStatus("");
@@ -102,16 +104,13 @@ export function MapImageUpload({
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
           <Upload className="mr-2 h-4 w-4" />
-          Upload Image
+          {t("button")}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Upload Map Image</DialogTitle>
-          <DialogDescription>
-            Upload a top-down orthographic image for {mapName}. Supports PNG and
-            JPEG up to 150MB.
-          </DialogDescription>
+          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogDescription>{t("description", { mapName })}</DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <input
@@ -119,7 +118,7 @@ export function MapImageUpload({
             type="file"
             name="mapImage"
             accept="image/png,image/jpeg"
-            aria-label="Select map image file"
+            aria-label={t("selectFile")}
             className="file:bg-primary file:text-primary-foreground block w-full text-sm file:mr-4 file:rounded file:border-0 file:px-4 file:py-2 file:text-sm"
             onChange={(e) => {
               const file = e.target.files?.[0];
@@ -129,7 +128,7 @@ export function MapImageUpload({
           />
           {uploading ? (
             <p className="text-muted-foreground text-sm" aria-live="polite">
-              {status || "Uploading…"} This may take a moment for large images.
+              {status || t("uploading")} {t("largeImageNote")}
             </p>
           ) : null}
         </div>

@@ -1,10 +1,9 @@
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { auth, isAdminUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import { notifications } from "@/lib/notifications";
-import { getSession } from "next-auth/react";
 import { notFound, unauthorized } from "next/navigation";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
@@ -63,8 +62,8 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await getSession();
-  if (!session) unauthorized();
+  const session = await auth();
+  if (!session?.user?.email) unauthorized();
 
   try {
     const body = createNotificationSchema.safeParse(await request.json());
@@ -72,30 +71,14 @@ export async function POST(request: NextRequest) {
       return new Response("Invalid request body", { status: 400 });
     }
 
-    // Determine the target user ID
-    let targetUserId: string;
+    const sessionUser = await AppRuntime.runPromise(
+      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
+    );
+    if (!sessionUser) unauthorized();
 
-    if (body.data.userId) {
-      // Explicit user ID provided - verify session user has permission
-      const sessionUser = await AppRuntime.runPromise(
-        UserService.pipe(
-          Effect.flatMap((svc) => svc.getUser(session.user.email))
-        )
-      );
-      if (!sessionUser) unauthorized();
-
-      // For now, allow any authenticated user to create notifications for any user
-      // TODO: Add role-based checks here
-      targetUserId = body.data.userId;
-    } else {
-      // Fallback to session user (backward compatibility)
-      const sessionUser = await AppRuntime.runPromise(
-        UserService.pipe(
-          Effect.flatMap((svc) => svc.getUser(session.user.email))
-        )
-      );
-      if (!sessionUser) unauthorized();
-      targetUserId = sessionUser.id;
+    const targetUserId = body.data.userId ?? sessionUser.id;
+    if (targetUserId !== sessionUser.id && !isAdminUser(sessionUser)) {
+      return new Response("Forbidden", { status: 403 });
     }
 
     const notification = await notifications.createInAppNotification({

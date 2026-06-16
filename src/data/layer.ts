@@ -6,23 +6,34 @@ import { ComparisonTrendsServiceLive } from "./comparison/trends-service";
 import { HeroServiceLive } from "./hero/service";
 import { HeroBanIntelligenceServiceLive } from "./intelligence/hero-ban-service";
 import { MapIntelligenceServiceLive } from "./intelligence/map-service";
+import { FightUltQualityServiceLive } from "./map/fight-ult-quality-service";
+import { MatchStoryServiceLive } from "./map/match-story-service";
 import { HeatmapServiceLive } from "./map/heatmap/service";
 import { MapGroupServiceLive } from "./map/group-service";
+import { MapHeroTrendsServiceLive } from "./map/hero-trends-service";
 import { KillfeedCalibrationServiceLive } from "./map/killfeed/calibration";
 import { KillfeedServiceLive } from "./map/killfeed/service";
 import { ReplayServiceLive } from "./map/replay/service";
+import { PlayerTelemetryServiceLive } from "./map/player-telemetry-service";
 import { RotationDeathServiceLive } from "./map/rotation-death-service";
+import { RouteMiningServiceLive } from "./map/route-mining-service";
 import { TempoServiceLive } from "./map/tempo-service";
 import { IntelligenceServiceLive } from "./player/intelligence-service";
 import { PlayerServiceLive } from "./player/player-service";
 import { ScoutingAnalyticsServiceLive } from "./player/scouting-analytics-service";
 import { ScoutingServiceLive as PlayerScoutingServiceLive } from "./player/scouting-service";
 import { TargetsServiceLive } from "./player/targets-service";
+import { FaceitTeamScoutingServiceLive } from "./faceit/team-service";
+import { FaceitPlayerScoutingServiceLive } from "./faceit/player-service";
 import { OpponentStrengthServiceLive } from "./scouting/opponent-strength-service";
+import { ScoutingFaceitLinkServiceLive } from "./scouting/faceit-link-service";
 import { ScoutingServiceLive } from "./scouting/scouting-service";
 import { ScrimAbilityTimingServiceLive } from "./scrim/ability-timing-service";
+import { ScrimInitiationServiceLive } from "./scrim/initiation-service";
 import { ScrimOpponentServiceLive } from "./scrim/opponent-service";
 import { ScrimOverviewServiceLive } from "./scrim/overview-service";
+import { ScrimPositionalArtifactsServiceLive } from "./scrim/positional-artifacts-service";
+import { ScrimPositionalStatsServiceLive } from "./scrim/positional-stats-service";
 import { ScrimServiceLive } from "./scrim/scrim-service";
 import { TeamAbilityImpactServiceLive } from "./team/ability-impact-service";
 import { TeamBanImpactServiceLive } from "./team/ban-impact-service";
@@ -30,12 +41,17 @@ import { TeamComparisonServiceLive } from "./team/comparison-service";
 import { TeamFightStatsServiceLive } from "./team/fight-stats-service";
 import { TeamHeroPoolServiceLive } from "./team/hero-pool-service";
 import { TeamHeroSwapServiceLive } from "./team/hero-swap-service";
+import { TeamInitiationServiceLive } from "./team/initiation-service";
 import { TeamMapModeServiceLive } from "./team/map-mode-service";
 import { TeamAnalyticsServiceLive } from "./team/analytics-service";
 import { TeamMatchupServiceLive } from "./team/matchup-service";
+import { TeamPositionalArtifactsServiceLive } from "./team/positional-artifacts-service";
+import { TeamPositionalStatsServiceLive } from "./team/positional-stats-service";
 import { TeamPredictionServiceLive } from "./team/prediction-service";
 import { TeamQuickWinsServiceLive } from "./team/quick-wins-service";
 import { TeamRoleStatsServiceLive } from "./team/role-stats-service";
+import { TeamScatterServiceLive } from "./team/scatter-service";
+import { FightFieldServiceLive } from "./team/fight-field-service";
 import { TeamSharedDataServiceLive } from "./team/shared-data-service";
 import { TeamStatsServiceLive } from "./team/stats-service";
 import { TeamTrendsServiceLive } from "./team/trends-service";
@@ -44,10 +60,12 @@ import { BroadcastServiceLive } from "./tournament/broadcast-service";
 import { TournamentServiceLive } from "./tournament/tournament-service";
 import { TournamentTeamSharedDataServiceLive } from "./tournament-team/shared-data-service";
 import { TournamentTeamStatsServiceLive } from "./tournament-team/stats-service";
+import { RankedServiceLive } from "./ranked/service";
 import { UserServiceLive } from "./user/service";
 
 export const DataLayerLive = Layer.mergeAll(
   UserServiceLive,
+  RankedServiceLive,
   DataLabelingServiceLive,
   HeroServiceLive,
   TournamentServiceLive,
@@ -58,11 +76,17 @@ export const DataLayerLive = Layer.mergeAll(
 
   ScoutingServiceLive,
   OpponentStrengthServiceLive,
+  ScoutingFaceitLinkServiceLive,
+  FaceitTeamScoutingServiceLive,
+  FaceitPlayerScoutingServiceLive,
 
   ScrimServiceLive,
   ScrimOverviewServiceLive,
   ScrimOpponentServiceLive,
   ScrimAbilityTimingServiceLive,
+  ScrimInitiationServiceLive,
+  ScrimPositionalStatsServiceLive,
+  ScrimPositionalArtifactsServiceLive,
 
   PlayerServiceLive,
   IntelligenceServiceLive,
@@ -75,8 +99,13 @@ export const DataLayerLive = Layer.mergeAll(
   KillfeedCalibrationServiceLive,
   ReplayServiceLive,
   TempoServiceLive,
+  PlayerTelemetryServiceLive,
   RotationDeathServiceLive,
+  FightUltQualityServiceLive,
+  MatchStoryServiceLive,
+  RouteMiningServiceLive,
   MapGroupServiceLive,
+  MapHeroTrendsServiceLive,
 
   HeroBanIntelligenceServiceLive,
   MapIntelligenceServiceLive,
@@ -86,8 +115,10 @@ export const DataLayerLive = Layer.mergeAll(
   TeamTrendsServiceLive,
   TeamFightStatsServiceLive,
   TeamRoleStatsServiceLive,
+  TeamScatterServiceLive,
   TeamHeroPoolServiceLive,
   TeamHeroSwapServiceLive,
+  TeamInitiationServiceLive,
   TeamMapModeServiceLive,
   TeamQuickWinsServiceLive,
   TeamUltServiceLive,
@@ -95,8 +126,11 @@ export const DataLayerLive = Layer.mergeAll(
   TeamAbilityImpactServiceLive,
   TeamComparisonServiceLive,
   TeamMatchupServiceLive,
+  TeamPositionalStatsServiceLive,
+  TeamPositionalArtifactsServiceLive,
   TeamAnalyticsServiceLive,
   TeamPredictionServiceLive,
+  FightFieldServiceLive,
   TournamentTeamSharedDataServiceLive,
   TournamentTeamStatsServiceLive
 );

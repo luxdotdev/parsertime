@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
 import { useTitleTranslation } from "@/lib/utils";
-import type { BillingPlan, Title } from "@prisma/client";
+import type { BillingPlan, Title } from "@/generated/prisma/browser";
 import type { Route } from "next";
 import Image from "next/image";
 

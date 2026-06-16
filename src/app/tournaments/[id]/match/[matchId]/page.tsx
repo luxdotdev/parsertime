@@ -6,13 +6,39 @@ import { Badge } from "@/components/ui/badge";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { TournamentService } from "@/data/tournament";
-import { auth } from "@/lib/auth";
+import { auth, canViewTournament, getCurrentUser } from "@/lib/auth";
 import { tournament } from "@/lib/flags";
-import prisma from "@/lib/prisma";
 import { ArrowLeft } from "lucide-react";
-import type { Route } from "next";
+import type { Metadata, Route } from "next";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+export async function generateMetadata(props: {
+  params: Promise<{ id: string; matchId: string }>;
+}): Promise<Metadata> {
+  const { matchId } = await props.params;
+  const t = await getTranslations("tournamentsPage.match.metadata");
+  const id = Number(matchId);
+
+  const match = Number.isNaN(id)
+    ? null
+    : await AppRuntime.runPromise(
+        TournamentService.pipe(
+          Effect.flatMap((svc) => svc.getTournamentMatch(id))
+        )
+      );
+
+  if (!match) return { title: "Match | Parsertime" };
+
+  const team1 = match.team1?.name ?? "TBD";
+  const team2 = match.team2?.name ?? "TBD";
+
+  return {
+    title: t("title", { team1, team2 }),
+    description: t("description", { team1, team2 }),
+  };
+}
 
 export default async function TournamentMatchPage(props: {
   params: Promise<{ id: string; matchId: string }>;
@@ -32,6 +58,9 @@ export default async function TournamentMatchPage(props: {
   );
   if (!match || match.tournamentId !== tournamentId) notFound();
 
+  const user = await getCurrentUser();
+  if (!(await canViewTournament(tournamentId, user))) notFound();
+
   const isCompleted = match.status === "COMPLETED";
   const team1IsWinner = isCompleted && match.winnerId === match.team1Id;
   const team2IsWinner = isCompleted && match.winnerId === match.team2Id;
@@ -44,10 +73,6 @@ export default async function TournamentMatchPage(props: {
   const session = await auth();
   let canUpload = false;
   if (session?.user?.email) {
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true, role: true },
-    });
     canUpload =
       user?.id === match.tournament.creatorId ||
       user?.role === "ADMIN" ||

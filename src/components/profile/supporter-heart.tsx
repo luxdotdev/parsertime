@@ -4,7 +4,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { BillingPlan } from "@prisma/client";
+import { BillingPlan } from "@/generated/prisma/browser";
 import { Heart } from "lucide-react";
 
 export function SupporterHeart({

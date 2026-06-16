@@ -11,18 +11,21 @@ import type { Route } from "next";
 import type { Session } from "next-auth";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import * as React from "react";
 
-const mainNav: { title: string; href: Route }[] = [
-  { title: "Dashboard", href: "/dashboard" },
-  { title: "Stats", href: "/stats" },
-  { title: "Hero Stats", href: "/stats/hero" },
-  { title: "Compare Players", href: "/stats/compare" },
-  { title: "Your Teams", href: "/team" },
-  { title: "Team Stats", href: "/stats/team" },
-  { title: "Settings", href: "/settings" },
-  { title: "Contact", href: "/contact" },
-  { title: "Docs", href: "https://docs.parsertime.app" },
+const mainNav: { labelKey: string; href: Route }[] = [
+  { labelKey: "dashboard", href: "/dashboard" },
+  { labelKey: "stats", href: "/stats" },
+  { labelKey: "heroStats", href: "/stats/hero" },
+  { labelKey: "mapStats", href: "/stats/map" },
+  { labelKey: "compareStats", href: "/stats/compare" },
+  { labelKey: "yourTeams", href: "/team" },
+  { labelKey: "matchmaker", href: "/matchmaker" },
+  { labelKey: "ranked", href: "/ranked" as Route },
+  { labelKey: "settings", href: "/settings" },
+  { labelKey: "contact", href: "/contact" },
+  { labelKey: "docs", href: "https://docs.parsertime.app" },
 ];
 
 export function MobileNav({
@@ -38,6 +41,7 @@ export function MobileNav({
   coachingCanvasEnabled?: boolean;
   className?: string;
 }) {
+  const t = useTranslations("dashboard.mainNav");
   const [open, setOpen] = React.useState(false);
   const { teamId } = React.use(TeamSwitcherContext);
   const availabilityHref = (
@@ -83,7 +87,7 @@ export function MobileNav({
               strokeLinejoin="round"
             ></path>
           </svg>
-          <span className="sr-only">Toggle Menu</span>
+          <span className="sr-only">{t("toggleMenu")}</span>
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="pt-3 pr-0 pl-4">
@@ -113,28 +117,28 @@ export function MobileNav({
                     href={item.href}
                     onOpenChange={setOpen}
                   >
-                    {item.title}
+                    {t(item.labelKey)}
                   </MobileLink>
                 )
             )}
             <MobileLink href={availabilityHref} onOpenChange={setOpen}>
-              Availability
+              {t("availability")}
             </MobileLink>
             {aiChatEnabled && (
               <MobileLink href={"/chat" as Route} onOpenChange={setOpen}>
-                Analyst
+                {t("chat")}
               </MobileLink>
             )}
             {dataToolsEnabled && (
               <>
                 <MobileLink href="/data-labeling" onOpenChange={setOpen}>
-                  Data Labeling
+                  {t("dataLabeling")}
                 </MobileLink>
                 <MobileLink
                   href={"/map-calibration" as Route}
                   onOpenChange={setOpen}
                 >
-                  Map Calibration
+                  {t("mapCalibration")}
                 </MobileLink>
               </>
             )}
@@ -143,7 +147,7 @@ export function MobileNav({
                 href={"/coaching/canvas" as Route}
                 onOpenChange={setOpen}
               >
-                Coaching Canvas
+                {t("coachingCanvas")}
               </MobileLink>
             )}
           </div>

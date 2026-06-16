@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import type { TournamentMatchStatus } from "@prisma/client";
+import type { TournamentMatchStatus } from "@/generated/prisma/client";
 import type { Route } from "next";
 import Link from "next/link";
 

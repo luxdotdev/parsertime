@@ -4,7 +4,11 @@ import type { ValidStatColumn } from "@/lib/stat-percentiles";
 import { removeDuplicateRows } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
 import { heroRoleMapping } from "@/types/heroes";
-import { CalculatedStatType, type PlayerStat, Prisma } from "@prisma/client";
+import {
+  CalculatedStatType,
+  type PlayerStat,
+  Prisma,
+} from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { ScoutingAnalyticsQueryError } from "./errors";
 import {
@@ -602,15 +606,10 @@ async function fetchCompetitiveMapWinrates(
   for (const assignment of assignments) {
     if (mapResults.has(assignment.mapResult.id)) continue;
 
-    const isTeam1 = assignment.team === "team1";
-    const playerTeamAbbr = isTeam1
-      ? assignment.mapResult.match.team1
-      : assignment.mapResult.match.team2;
-
     mapResults.set(assignment.mapResult.id, {
       mapName: assignment.mapResult.mapName,
       mapType: assignment.mapResult.mapType,
-      won: assignment.mapResult.winner === playerTeamAbbr,
+      won: assignment.mapResult.winner === assignment.team,
     });
   }
 
@@ -816,6 +815,9 @@ export type ScoutingAnalyticsServiceInterface = {
   readonly getPlayerScoutingAnalytics: (
     playerName: string
   ) => Effect.Effect<PlayerScoutingAnalytics, ScoutingAnalyticsQueryError>;
+  readonly getPublicPlayerScoutingAnalytics: (
+    playerName: string
+  ) => Effect.Effect<PlayerScoutingAnalytics, ScoutingAnalyticsQueryError>;
 };
 
 export class ScoutingAnalyticsService extends Context.Tag(
@@ -891,7 +893,7 @@ export const make: Effect.Effect<ScoutingAnalyticsServiceInterface> =
                 FROM
                     "PlayerStat"
                 WHERE
-                    "player_name" ILIKE ${playerName}
+                    lower("player_name") = lower(${playerName})
                 GROUP BY
                     "MapDataId"
               )
@@ -901,7 +903,7 @@ export const make: Effect.Effect<ScoutingAnalyticsServiceInterface> =
                   "PlayerStat" ps
                   INNER JOIN maxTime m ON ps."match_time" = m.max_time AND ps."MapDataId" = m."MapDataId"
               WHERE
-                  ps."player_name" ILIKE ${playerName}`;
+                  lower(ps."player_name") = lower(${playerName})`;
             return removeDuplicateRows(raw);
           },
           catch: (error) =>
@@ -1127,6 +1129,38 @@ export const make: Effect.Effect<ScoutingAnalyticsServiceInterface> =
       );
     }
 
+    function getPublicPlayerScoutingAnalytics(
+      playerName: string
+    ): Effect.Effect<PlayerScoutingAnalytics, ScoutingAnalyticsQueryError> {
+      return Effect.gen(function* () {
+        const competitiveMapWinrates = yield* Effect.tryPromise({
+          try: () => fetchCompetitiveMapWinrates(playerName),
+          catch: (error) =>
+            new ScoutingAnalyticsQueryError({
+              operation: "fetch public competitive map winrates",
+              cause: error,
+            }),
+        }).pipe(
+          Effect.withSpan(
+            "player.scoutingAnalytics.fetchPublicCompetitiveMapWinrates",
+            { attributes: { playerName } }
+          )
+        );
+
+        const analytics: PlayerScoutingAnalytics = {
+          scrimData: null,
+          competitiveMapWinrates,
+          scrimMapWinrates: null,
+          strengths: [],
+          weaknesses: [],
+        };
+        const insights = generatePlayerInsights(analytics);
+        analytics.strengths = insights.strengths;
+        analytics.weaknesses = insights.weaknesses;
+        return analytics;
+      }).pipe(Effect.withSpan("player.getPublicPlayerScoutingAnalytics"));
+    }
+
     const scoutingAnalyticsCache = yield* Cache.make({
       capacity: CACHE_CAPACITY,
       timeToLive: CACHE_TTL,
@@ -1141,6 +1175,7 @@ export const make: Effect.Effect<ScoutingAnalyticsServiceInterface> =
         scoutingAnalyticsCache
           .get(playerName)
           .pipe(Effect.tap(() => Metric.increment(playerCacheRequestTotal))),
+      getPublicPlayerScoutingAnalytics,
     } satisfies ScoutingAnalyticsServiceInterface;
   });
 

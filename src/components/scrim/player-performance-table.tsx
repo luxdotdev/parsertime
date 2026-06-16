@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/tooltip";
 import type { PlayerScrimPerformance } from "@/data/scrim/types";
 import { cn, format, toHero } from "@/lib/utils";
-import { ArrowDownIcon, ArrowUpIcon, MinusIcon } from "@radix-ui/react-icons";
+import { useTranslations } from "next-intl";
 
 function toDisplayText(value: unknown, fallback: string): string {
   if (typeof value !== "string") return fallback;
@@ -26,42 +26,43 @@ function toSafeHeroImageSlug(heroName: string): string {
   }
 }
 
+const COLS =
+  "grid-cols-[minmax(10rem,1fr)_3rem_3.5rem_4rem_4.5rem_5rem_5.5rem_3rem_minmax(6rem,8rem)]";
+
 export function TrendIndicator({
   trend,
   trendData,
 }: Pick<PlayerScrimPerformance, "trend" | "trendData">) {
+  const t = useTranslations("scrimPage.playerPerformance");
   const improving = trendData?.improvingMetrics.length ?? 0;
   const declining = trendData?.decliningMetrics.length ?? 0;
 
   if (trend === "improving") {
     return (
       <span
-        className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400"
-        aria-label={`Improving: ${improving} metrics trending up`}
+        className="font-mono text-xs leading-none text-emerald-600 tabular-nums dark:text-emerald-400"
+        aria-label={t("trend.improvingAria", { count: improving })}
       >
-        <ArrowUpIcon className="h-3.5 w-3.5" aria-hidden />
-        <span className="sr-only">Improving</span>
+        ↑<span className="sr-only">{t("trend.improving")}</span>
       </span>
     );
   }
   if (trend === "declining") {
     return (
       <span
-        className="inline-flex items-center gap-1 text-xs font-medium text-rose-600 dark:text-rose-400"
-        aria-label={`Declining: ${declining} metrics trending down`}
+        className="font-mono text-xs leading-none text-rose-600 tabular-nums dark:text-rose-400"
+        aria-label={t("trend.decliningAria", { count: declining })}
       >
-        <ArrowDownIcon className="h-3.5 w-3.5" aria-hidden />
-        <span className="sr-only">Declining</span>
+        ↓<span className="sr-only">{t("trend.declining")}</span>
       </span>
     );
   }
   return (
     <span
-      className="text-muted-foreground inline-flex items-center gap-1 text-xs"
-      aria-label="Stable performance"
+      className="text-muted-foreground/60 font-mono text-xs leading-none"
+      aria-label={t("trend.stableAria")}
     >
-      <MinusIcon className="h-3.5 w-3.5" aria-hidden />
-      <span className="sr-only">Stable</span>
+      ·<span className="sr-only">{t("trend.stable")}</span>
     </span>
   );
 }
@@ -71,7 +72,10 @@ export function OutlierBadge({
 }: {
   outlier: PlayerScrimPerformance["outliers"][number];
 }) {
+  const t = useTranslations("scrimPage.playerPerformance");
   const isPositive = outlier.direction === "high";
+  const status = isPositive ? t("outlier.elite") : t("outlier.belowAverage");
+
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -80,34 +84,61 @@ export function OutlierBadge({
             "cursor-default font-mono text-[10px]",
             isPositive
               ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-              : "border-orange-500/30 bg-orange-500/10 text-orange-700 dark:text-orange-400"
+              : "border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-400"
           )}
           variant="outline"
-          aria-label={`${outlier.label} at ${outlier.percentile}th percentile vs database`}
+          aria-label={t("outlier.aria", {
+            label: outlier.label,
+            percentile: outlier.percentile,
+            status,
+          })}
         >
           {outlier.label}
         </Badge>
       </TooltipTrigger>
       <TooltipContent>
         <p>
-          {outlier.label}: {outlier.percentile}th %ile vs database
-          {isPositive ? " (elite)" : " (below avg)"}
+          {t("outlier.tooltip", {
+            label: outlier.label,
+            percentile: outlier.percentile,
+            status,
+          })}
         </p>
       </TooltipContent>
     </Tooltip>
   );
 }
 
-function PlayerRow({ player }: { player: PlayerScrimPerformance }) {
+function PlayerRow({
+  player,
+  index,
+}: {
+  player: PlayerScrimPerformance;
+  index: number;
+}) {
+  const t = useTranslations("scrimPage.playerPerformance");
   const topOutliers = player.outliers.slice(0, 2);
   const heroCount = Array.isArray(player.heroes) ? player.heroes.length : 0;
-  const playerDisplayName = toDisplayText(player.playerName, "Unknown Player");
-  const primaryHeroDisplay = toDisplayText(player.primaryHero, "Unknown Hero");
+  const playerDisplayName = toDisplayText(
+    player.playerName,
+    t("fallback.unknownPlayer")
+  );
+  const primaryHeroDisplay = toDisplayText(
+    player.primaryHero,
+    t("fallback.unknownHero")
+  );
   const heroImageSlug = toSafeHeroImageSlug(primaryHeroDisplay);
 
   return (
-    <tr className="hover:bg-muted/50 border-b transition-colors">
-      <td className="min-w-[140px] p-2 align-middle whitespace-nowrap">
+    <li
+      className={cn(
+        "border-border hover:bg-muted/40 grid items-center gap-4 border-b py-3 transition-colors",
+        "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-1 motion-safe:duration-200 motion-safe:[animation-fill-mode:both]",
+        COLS
+      )}
+      style={{ animationDelay: `${Math.min(index, 12) * 20}ms` }}
+    >
+      <div className="min-w-0">
         <PlayerPerformanceHoverChart
           playerName={playerDisplayName}
           primaryHero={player.primaryHero}
@@ -116,42 +147,42 @@ function PlayerRow({ player }: { player: PlayerScrimPerformance }) {
           heroCount={heroCount}
           perMapPerformance={player.perMapPerformance}
         />
-      </td>
-      <td className="p-2 text-center align-middle text-sm whitespace-nowrap tabular-nums">
+      </div>
+      <div className="text-muted-foreground text-right font-mono text-sm tabular-nums">
         {player.mapsPlayed}
-      </td>
-      <td className="p-2 text-center align-middle text-sm whitespace-nowrap tabular-nums">
+      </div>
+      <div className="text-right font-mono text-sm tabular-nums">
         {player.kdRatio.toFixed(2)}
-      </td>
-      <td className="p-2 text-center align-middle text-sm whitespace-nowrap tabular-nums">
+      </div>
+      <div className="text-right font-mono text-sm tabular-nums">
         {player.eliminationsPer10.toFixed(1)}
-      </td>
-      <td className="p-2 text-center align-middle text-sm whitespace-nowrap tabular-nums">
+      </div>
+      <div className="text-right font-mono text-sm tabular-nums">
         {player.heroDamagePer10 > 0
           ? format(Math.round(player.heroDamagePer10))
           : "\u2014"}
-      </td>
-      <td className="p-2 text-center align-middle text-sm whitespace-nowrap tabular-nums">
+      </div>
+      <div className="text-right font-mono text-sm tabular-nums">
         {player.firstDeathRate.toFixed(1)}%
-      </td>
-      <td className="p-2 text-center align-middle text-sm whitespace-nowrap tabular-nums">
+      </div>
+      <div className="text-right font-mono text-sm tabular-nums">
         {player.teamFirstDeathRate.toFixed(1)}%
-      </td>
-      <td className="p-2 text-center align-middle whitespace-nowrap">
+      </div>
+      <div className="text-center">
         <TrendIndicator trend={player.trend} trendData={player.trendData} />
-      </td>
-      <td className="p-2 align-middle whitespace-nowrap">
-        <div className="flex flex-wrap gap-1">
-          {topOutliers.length > 0 ? (
-            topOutliers.map((outlier) => (
-              <OutlierBadge key={outlier.stat} outlier={outlier} />
-            ))
-          ) : (
-            <span className="text-muted-foreground text-xs">&mdash;</span>
-          )}
-        </div>
-      </td>
-    </tr>
+      </div>
+      <div className="flex flex-wrap items-center gap-1">
+        {topOutliers.length > 0 ? (
+          topOutliers.map((outlier) => (
+            <OutlierBadge key={outlier.stat} outlier={outlier} />
+          ))
+        ) : (
+          <span className="text-muted-foreground/60 font-mono text-xs">
+            &mdash;
+          </span>
+        )}
+      </div>
+    </li>
   );
 }
 
@@ -160,48 +191,35 @@ export function PlayerPerformanceTable({
 }: {
   players: PlayerScrimPerformance[];
 }) {
+  const t = useTranslations("scrimPage.playerPerformance");
+
   if (players.length === 0) return null;
 
   return (
-    <div className="relative w-full overflow-x-auto">
-      <table className="w-full caption-bottom text-sm">
-        <thead className="[&_tr]:border-b">
-          <tr className="hover:bg-muted/50 border-b transition-colors">
-            <th className="text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap">
-              Player
-            </th>
-            <th className="text-foreground h-10 px-2 text-center align-middle font-medium whitespace-nowrap">
-              Maps
-            </th>
-            <th className="text-foreground h-10 px-2 text-center align-middle font-medium whitespace-nowrap">
-              K/D
-            </th>
-            <th className="text-foreground h-10 px-2 text-center align-middle font-medium whitespace-nowrap">
-              Elims/10
-            </th>
-            <th className="text-foreground h-10 px-2 text-center align-middle font-medium whitespace-nowrap">
-              Dmg/10
-            </th>
-            <th className="text-foreground h-10 px-2 text-center align-middle font-medium whitespace-nowrap">
-              1st Death %
-            </th>
-            <th className="text-foreground h-10 px-2 text-center align-middle font-medium whitespace-nowrap">
-              Team 1st Death %
-            </th>
-            <th className="text-foreground h-10 px-2 text-center align-middle font-medium whitespace-nowrap">
-              Trend
-            </th>
-            <th className="text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap">
-              Outliers
-            </th>
-          </tr>
-        </thead>
-        <tbody className="[&_tr:last-child]:border-0">
-          {players.map((player) => (
-            <PlayerRow key={player.playerKey} player={player} />
+    <div className="w-full overflow-x-auto">
+      <div className="min-w-[44rem]">
+        <div
+          className={cn(
+            "text-muted-foreground border-border grid items-center gap-4 border-b pb-3 font-mono text-[11px] tracking-[0.14em] uppercase",
+            COLS
+          )}
+        >
+          <div>{t("columns.player")}</div>
+          <div className="text-right">{t("columns.maps")}</div>
+          <div className="text-right">{t("columns.kd")}</div>
+          <div className="text-right">{t("columns.elimsPer10")}</div>
+          <div className="text-right">{t("columns.damagePer10")}</div>
+          <div className="text-right">{t("columns.firstDeath")}</div>
+          <div className="text-right">{t("columns.teamFirstDeath")}</div>
+          <div className="text-center">{t("columns.trend")}</div>
+          <div>{t("columns.outliers")}</div>
+        </div>
+        <ul>
+          {players.map((player, index) => (
+            <PlayerRow key={player.playerKey} player={player} index={index} />
           ))}
-        </tbody>
-      </table>
+        </ul>
+      </div>
     </div>
   );
 }

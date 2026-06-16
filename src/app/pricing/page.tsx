@@ -15,7 +15,6 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
-import { createCheckout, getCustomerPortalUrl } from "@/lib/stripe";
 import { toTitleCase } from "@/lib/utils";
 import type { Metadata, Route } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -103,18 +102,15 @@ export default async function PricingPage() {
     UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
   );
 
-  const plan = toTitleCase(user?.billingPlan ?? "");
-  const isLoggedIn = !!session?.user;
+  const plan = toTitleCase(user?.billingPlan ?? "FREE");
+  const isLoggedIn = !!user;
 
-  async function getLink(tier: string) {
-    if (session) {
-      if (plan === "Free") {
-        const checkout = await createCheckout(session, tier);
-        return checkout.url as Route;
-      }
-      return await getCustomerPortalUrl(user!);
+  function getLink(tier: string) {
+    if (!session?.user?.email || !user) {
+      return "/dashboard";
     }
-    return "/dashboard";
+
+    return `/api/stripe/checkout?tier=${encodeURIComponent(tier)}` as Route;
   }
 
   const tiers: TierData[] = [
@@ -138,7 +134,7 @@ export default async function PricingPage() {
     {
       name: t("tiers.basic"),
       id: "tier-basic",
-      href: ((await getLink("Basic")) as Route) ?? "/sign-in",
+      href: getLink("Basic"),
       priceMonthly: t("tiers.basicMonthly"),
       description: t("tiers.basicDescription"),
       mostPopular: true,
@@ -157,7 +153,7 @@ export default async function PricingPage() {
     {
       name: t("tiers.premium"),
       id: "tier-premium",
-      href: ((await getLink("Premium")) as Route) ?? "/sign-in",
+      href: getLink("Premium"),
       priceMonthly: t("tiers.premiumMonthly"),
       description: t("tiers.premiumDescription"),
       mostPopular: false,

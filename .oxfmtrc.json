@@ -15,6 +15,7 @@
     "**/__tmp__/**",
     "lerna.json",
     ".github",
-    "pnpm-lock.yaml"
+    "pnpm-lock.yaml",
+    "src/generated/**"
   ]
 }

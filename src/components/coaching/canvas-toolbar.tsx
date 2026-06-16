@@ -45,10 +45,10 @@ const TOOLS: { value: Tool; icon: LucideIcon; labelKey: string }[] = [
   { value: "eraser", icon: EraserIcon, labelKey: "eraser" },
 ];
 
-const NEUTRAL_COLORS: { value: string; label: string }[] = [
-  { value: "#ffffff", label: "White" },
-  { value: "#000000", label: "Black" },
-  { value: "#facc15", label: "Yellow" },
+const NEUTRAL_COLORS: { value: string; labelKey: string }[] = [
+  { value: "#ffffff", labelKey: "neutralColors.white" },
+  { value: "#000000", labelKey: "neutralColors.black" },
+  { value: "#facc15", labelKey: "neutralColors.yellow" },
 ];
 
 export function CanvasToolbar() {
@@ -80,7 +80,10 @@ export function CanvasToolbar() {
   const colorPresets = [
     { value: team1, label: t("team1Color") },
     { value: team2, label: t("team2Color") },
-    ...NEUTRAL_COLORS,
+    ...NEUTRAL_COLORS.map(({ value, labelKey }) => ({
+      value,
+      label: t(labelKey),
+    })),
   ];
 
   return (
@@ -103,7 +106,11 @@ export function CanvasToolbar() {
                 <ToggleGroupItem
                   value={value}
                   aria-label={label}
-                  className={activeTool === value ? "bg-muted" : ""}
+                  className={
+                    activeTool === value
+                      ? "bg-primary! text-primary-foreground! border-primary! hover:bg-primary/90! hover:text-primary-foreground!"
+                      : ""
+                  }
                 >
                   <Icon className="size-4" />
                 </ToggleGroupItem>
@@ -128,12 +135,12 @@ export function CanvasToolbar() {
                     color: value,
                   })
                 }
-                className="size-5 rounded-full border transition-transform hover:scale-110"
+                className="border-border size-5 rounded-full border transition-transform hover:scale-110"
                 style={{
                   backgroundColor: value,
                   boxShadow:
                     strokeColor === value
-                      ? "0 0 0 2px var(--color-ring)"
+                      ? "0 0 0 2px var(--color-background), 0 0 0 4px var(--color-ring)"
                       : undefined,
                 }}
                 aria-label={label}
@@ -147,7 +154,7 @@ export function CanvasToolbar() {
       <Separator orientation="vertical" className="h-6" />
 
       <div className="flex items-center gap-2">
-        <span className="text-muted-foreground text-xs whitespace-nowrap">
+        <span className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] whitespace-nowrap uppercase">
           {t("strokeWidth")}
         </span>
         <Slider
@@ -161,7 +168,7 @@ export function CanvasToolbar() {
           }
           aria-label={t("strokeWidth")}
         />
-        <span className="text-muted-foreground w-4 text-center text-xs tabular-nums">
+        <span className="text-muted-foreground w-4 text-center font-mono text-xs tabular-nums">
           {strokeWidth}
         </span>
       </div>

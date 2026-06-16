@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardDescription } from "@/components/ui/card";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { ClientOnly } from "@/lib/client-only";
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export function EmptyTeamView() {
+  const t = useTranslations("teamPage.empty");
   const [newTeamCreated, setNewTeamCreated] = useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = useState(false);
   const router = useRouter();
@@ -27,22 +29,18 @@ export function EmptyTeamView() {
         <CardDescription>
           <div className="flex h-[36rem] flex-col items-center justify-center space-y-2">
             <h2 className="text-2xl font-bold tracking-tight text-black dark:text-white">
-              No Teams
+              {t("title")}
             </h2>
             <p className="text-gray-500">
-              <Link href="/team/join">
-                Click here to join a team from an invite code.
-              </Link>
+              <Link href="/team/join">{t("joinInvite")}</Link>
             </p>
-            <p className="text-gray-500">
-              Or, create a new team by clicking the button below.
-            </p>
+            <p className="text-gray-500">{t("createPrompt")}</p>
             <Dialog
               open={showNewTeamDialog}
               onOpenChange={setShowNewTeamDialog}
             >
               <DialogTrigger asChild>
-                <Button>Create Team</Button>
+                <Button>{t("createTeam")}</Button>
               </DialogTrigger>
               <CreateTeamDialog
                 setShowNewTeamDialog={setShowNewTeamDialog}

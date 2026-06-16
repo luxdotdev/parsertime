@@ -1,5 +1,5 @@
 import type { ConfidenceMetadata } from "@/lib/confidence";
-import type { PlayerTarget } from "@prisma/client";
+import type { PlayerTarget } from "@/generated/prisma/client";
 import { Schema as S } from "effect";
 
 export type MostPlayedHeroRow = {

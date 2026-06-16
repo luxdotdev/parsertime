@@ -11,7 +11,7 @@ import {
   userUnsubscribedWebhookConstructor,
 } from "@/lib/webhooks";
 import type { BillingPlans } from "@/types/billing-plans";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import { render } from "@react-email/render";
 import { get } from "@vercel/edge-config";
 import type Stripe from "stripe";
@@ -21,22 +21,42 @@ type SubscriptionEvent =
   | "customer.subscription.updated"
   | "customer.subscription.deleted";
 
+async function resolveCurrentBillingPlan(
+  customerId: string,
+  billingPlans: BillingPlans
+) {
+  const subscriptions = await stripe.subscriptions.list({
+    customer: customerId,
+    status: "all",
+    limit: 10,
+  });
+
+  const current = subscriptions.data
+    .filter((subscription) =>
+      ["active", "trialing"].includes(subscription.status)
+    )
+    .sort((a, b) => b.created - a.created)[0];
+
+  if (!current) return $Enums.BillingPlan.FREE;
+
+  const productId = current.items.data[0]?.plan.product;
+  if (typeof productId !== "string") return $Enums.BillingPlan.FREE;
+
+  const billingPlan = billingPlans.find((plan) => plan.id === productId);
+  return billingPlan?.name ?? $Enums.BillingPlan.FREE;
+}
+
 export async function handleSubscriptionEvent(
   event: Stripe.Event,
   eventType: SubscriptionEvent
 ) {
   const subscription = event.data.object as Stripe.Subscription;
 
-  const product = await stripe.products.retrieve(
-    subscription.items.data[0].plan.product as string
-  );
-
   const billingPlans = (await get<BillingPlans>("billingPlans")) ?? [];
-  const billingPlan = billingPlans.find((plan) => plan.id === product.id);
-
-  if (!billingPlan) {
-    throw new Error("Billing plan not found");
-  }
+  const currentBillingPlan = await resolveCurrentBillingPlan(
+    subscription.customer as string,
+    billingPlans
+  );
 
   const user = await prisma.user.findUnique({
     where: {
@@ -55,7 +75,7 @@ export async function handleSubscriptionEvent(
           stripeId: subscription.customer as string,
         },
         data: {
-          billingPlan: billingPlan.name,
+          billingPlan: currentBillingPlan,
         },
       });
 
@@ -69,12 +89,12 @@ export async function handleSubscriptionEvent(
           from: "noreply@lux.dev",
           subject: `Thank you for subscribing to Parsertime!`,
           html: await render(
-            SubscriptionCreatedEmail({ user, billingPlan: billingPlan.name })
+            SubscriptionCreatedEmail({ user, billingPlan: currentBillingPlan })
           ),
         });
         Logger.info("Subscription created email sent");
 
-        const wh = userSubscribedWebhookConstructor(user, billingPlan.name);
+        const wh = userSubscribedWebhookConstructor(user, currentBillingPlan);
         await sendDiscordWebhook(process.env.DISCORD_WEBHOOK_URL, wh);
       } catch (e) {
         Logger.error("Error sending email", e);
@@ -82,14 +102,14 @@ export async function handleSubscriptionEvent(
       break;
     case "customer.subscription.updated":
       // only notify user if billing plan has changed
-      if (billingPlan.name === user.billingPlan) break;
+      if (currentBillingPlan === user.billingPlan) break;
 
       await prisma.user.update({
         where: {
           stripeId: subscription.customer as string,
         },
         data: {
-          billingPlan: billingPlan.name,
+          billingPlan: currentBillingPlan,
         },
       });
 
@@ -108,7 +128,10 @@ export async function handleSubscriptionEvent(
             from: "noreply@lux.dev",
             subject: `Your Parsertime subscription has been updated`,
             html: await render(
-              SubscriptionUpdatedEmail({ user, billingPlan: billingPlan.name })
+              SubscriptionUpdatedEmail({
+                user,
+                billingPlan: currentBillingPlan,
+              })
             ),
           });
           Logger.info("Subscription updated email sent");
@@ -123,7 +146,7 @@ export async function handleSubscriptionEvent(
           stripeId: subscription.customer as string,
         },
         data: {
-          billingPlan: $Enums.BillingPlan.FREE,
+          billingPlan: currentBillingPlan,
         },
       });
 
@@ -140,7 +163,7 @@ export async function handleSubscriptionEvent(
         });
         Logger.info("Subscription deleted email sent");
 
-        const wh = userUnsubscribedWebhookConstructor(user, billingPlan.name);
+        const wh = userUnsubscribedWebhookConstructor(user, currentBillingPlan);
         await sendDiscordWebhook(process.env.DISCORD_WEBHOOK_URL, wh);
       } catch (e) {
         Logger.error("Error sending email", e);

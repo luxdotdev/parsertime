@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { StatPanel } from "@/components/player/stat-panel";
 import { Link } from "@/components/ui/link";
 import { getHeroNames, toHero } from "@/lib/utils";
-import { roleHeroMapping } from "@/types/heroes";
+import { type HeroName, roleHeroMapping } from "@/types/heroes";
 import type { PagePropsWithLocale } from "@/types/next";
 import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
@@ -35,112 +35,69 @@ export async function generateMetadata(
 
 export default async function HeroSelect() {
   const t = await getTranslations("statsPage.heroStats");
-  const allHeroesByRole = Object.entries(roleHeroMapping);
-
   const heroNames = await getHeroNames();
 
-  const tankHeroes = allHeroesByRole[0][1];
-  const damageHeroes = allHeroesByRole[1][1];
-  const supportHeroes = allHeroesByRole[2][1];
+  const groups: { id: string; title: string; heroes: HeroName[] }[] = [
+    { id: "tank-roster", title: t("tank"), heroes: roleHeroMapping.Tank },
+    { id: "damage-roster", title: t("damage"), heroes: roleHeroMapping.Damage },
+    {
+      id: "support-roster",
+      title: t("support"),
+      heroes: roleHeroMapping.Support,
+    },
+  ];
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">{t("title")}</h2>
-      </div>
-
-      <div className="grid grid-cols-6 gap-4 md:grid-cols-3 xl:grid-cols-6">
-        <Card className="col-span-full xl:col-span-2">
-          <CardHeader>
-            <CardTitle>{t("tank")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-4 gap-4 md:grid-cols-6">
-              {tankHeroes.map((hero) => (
-                <Link
-                  key={hero}
-                  href={`/stats/hero/${hero}` as Route}
-                  className="flex flex-col items-center text-center"
-                >
-                  <Image
-                    src={`/heroes/${toHero(hero)}.png`}
-                    alt={t("altText", {
-                      hero: heroNames.get(toHero(hero)) ?? hero,
-                    })}
-                    width={128}
-                    height={128}
-                    className="h-12 w-12 rounded border md:h-16 md:w-16"
-                  />
-                  <span className="text-sm font-semibold tracking-tight">
-                    {heroNames.get(toHero(hero)) ?? hero}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="col-span-full xl:col-span-2">
-          <CardHeader>
-            <CardTitle>{t("damage")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-4 gap-4 md:grid-cols-6">
-              {damageHeroes.map((hero) => (
-                <Link
-                  key={hero}
-                  href={`/stats/hero/${hero}` as Route}
-                  className="flex flex-col items-center text-center"
-                >
-                  <Image
-                    src={`/heroes/${toHero(hero)}.png`}
-                    alt={t("altText", {
-                      hero: heroNames.get(toHero(hero)) ?? hero,
-                    })}
-                    width={128}
-                    height={128}
-                    className="h-12 w-12 rounded border md:h-16 md:w-16"
-                  />
-                  <span className="text-sm font-semibold tracking-tight">
-                    {heroNames.get(toHero(hero)) ?? hero}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="col-span-full xl:col-span-2">
-          <CardHeader>
-            <CardTitle>{t("support")}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-4 gap-4 md:grid-cols-6">
-              {supportHeroes.map((hero) => (
-                <Link
-                  key={hero}
-                  href={`/stats/hero/${hero}` as Route}
-                  className="flex flex-col items-center text-center"
-                >
-                  <Image
-                    src={`/heroes/${toHero(hero)}.png`}
-                    alt={t("altText", {
-                      hero: heroNames.get(toHero(hero)) ?? hero,
-                    })}
-                    width={128}
-                    height={128}
-                    className="h-12 w-12 rounded border md:h-16 md:w-16"
-                  />
-                  <span className="text-sm font-semibold tracking-tight">
-                    {heroNames.get(toHero(hero)) ?? hero}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        <p className="text-muted-foreground col-span-6 text-center">
+    <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold tracking-tight">
+          {t("pickerTitle")}
+        </h1>
+        <p className="text-muted-foreground mt-1 max-w-prose text-sm">
           {t("description")}
         </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        {groups.map((group) => (
+          <section
+            key={group.id}
+            aria-labelledby={group.id}
+            className="flex flex-col gap-3"
+          >
+            <h2
+              id={group.id}
+              className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.08em] uppercase"
+            >
+              {group.title}
+            </h2>
+            <StatPanel className="flex-1">
+              <div className="bg-border grid grid-cols-3 gap-px sm:grid-cols-4 md:grid-cols-3">
+                {group.heroes.map((hero) => {
+                  const heroLabel = heroNames.get(toHero(hero)) ?? hero;
+                  return (
+                    <Link
+                      key={hero}
+                      href={`/stats/hero/${hero}` as Route}
+                      className="bg-card [@media(hover:hover)_and_(pointer:fine)]:hover:bg-muted/40 flex flex-col items-center gap-2 px-3 py-4 text-center no-underline transition-colors"
+                    >
+                      <Image
+                        src={`/heroes/${toHero(hero)}.png`}
+                        alt={t("altText", { hero: heroLabel })}
+                        width={128}
+                        height={128}
+                        className="ring-foreground/10 size-14 rounded-md object-cover ring-1"
+                      />
+                      <span className="truncate text-xs font-medium">
+                        {heroLabel}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </StatPanel>
+          </section>
+        ))}
       </div>
     </div>
   );

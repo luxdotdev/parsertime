@@ -1,6 +1,7 @@
 "use client";
 
 import { AddToMapGroupDialog } from "@/components/scrim/add-to-map-group-dialog";
+import { MapWinnerDialog } from "@/components/scrim/map-winner-dialog";
 import { ReplayCode } from "@/components/scrim/replay-code";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -24,8 +25,9 @@ import {
   mapSelectionStore,
   selectIsMapSelected,
 } from "@/stores/map-selection-store";
-import type { Map } from "@prisma/client";
+import type { Map } from "@/generated/prisma/browser";
 import { useSelector } from "@xstate/store/react";
+import { Pencil1Icon } from "@radix-ui/react-icons";
 import type { Route } from "next";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -38,16 +40,40 @@ type MapCardWithSelectionProps = {
   teamId: number | string;
   locale: string;
   mapComparisonEnabled: boolean;
+  team1Name?: string | null;
+  team2Name?: string | null;
+  ourTeamName?: string | null;
+  resolvedWinner?: string | null;
+  canManage?: boolean;
 };
+
+type MapResultLabel = "won" | "lost" | "winner" | "unknown";
+
+function deriveResultLabel(
+  resolvedWinner: string | null | undefined,
+  ourTeamName: string | null | undefined
+): MapResultLabel {
+  if (!resolvedWinner || resolvedWinner === "N/A") return "unknown";
+  // No viewing-team context (new team, individual scrim, overview off): we
+  // can't say Won/Lost, but we still know who won — show that team neutrally.
+  if (!ourTeamName) return "winner";
+  return resolvedWinner === ourTeamName ? "won" : "lost";
+}
 
 function MapCardWithSelectionComponent({
   map,
   scrimId,
   teamId,
   mapComparisonEnabled,
+  team1Name,
+  team2Name,
+  ourTeamName,
+  resolvedWinner,
+  canManage = false,
 }: MapCardWithSelectionProps) {
   const t = useTranslations("scrimPage.mapCard");
   const [isMapGroupDialogOpen, setIsMapGroupDialogOpen] = useState(false);
+  const [isWinnerDialogOpen, setIsWinnerDialogOpen] = useState(false);
 
   // Memoize selector function
   const isSelectedSelector = useCallback(
@@ -87,16 +113,38 @@ function MapCardWithSelectionComponent({
     setIsMapGroupDialogOpen(true);
   }, []);
 
+  const handleOpenWinnerDialog = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsWinnerDialogOpen(true);
+  }, []);
+
+  const resultLabel = deriveResultLabel(resolvedWinner, ourTeamName);
+  const resultText =
+    resultLabel === "won"
+      ? t("won")
+      : resultLabel === "lost"
+        ? t("lost")
+        : resultLabel === "winner"
+          ? (resolvedWinner ?? "—")
+          : "—";
+  const canEditWinner = canManage && !!team1Name && !!team2Name;
+
   const card = (
     <Card
       className={cn(
-        "relative aspect-video overflow-hidden transition-all duration-150",
+        "relative aspect-video overflow-hidden",
         "ring-foreground/10 shadow-xs ring-1",
-        "@media (hover: hover) hover:ring-primary/30 hover:shadow-md",
-        isSelected && "ring-primary border-primary border-l-4 shadow-lg ring-2"
+        "motion-safe:transition-[box-shadow,outline-color] motion-safe:duration-150",
+        "[@media(hover:hover)_and_(pointer:fine)]:hover:ring-foreground/25 [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-md",
+        isSelected && "ring-primary shadow-lg ring-2"
       )}
       role="article"
-      aria-label={`${displayName} map card${isSelected ? ", selected for comparison" : ""}`}
+      aria-label={
+        isSelected
+          ? t("ariaLabelSelected", { map: displayName })
+          : t("ariaLabel", { map: displayName })
+      }
     >
       <Link
         href={`/${teamId}/scrim/${scrimId}/map/${map.id}` as Route}
@@ -115,9 +163,44 @@ function MapCardWithSelectionComponent({
             fill
             className="rounded-md object-cover brightness-[0.65] select-none"
           />
+          <div
+            className="pointer-events-none absolute inset-0 rounded-md bg-gradient-to-b from-black/65 via-transparent to-black/55"
+            aria-hidden="true"
+          />
         </CardContent>
       </Link>
-      <CardFooter className="flex items-center justify-end pt-12">
+      <CardFooter className="absolute inset-x-0 bottom-0 z-10 flex items-center justify-between gap-2 p-3">
+        <div className="z-10 flex items-center gap-1.5">
+          <span
+            className={cn(
+              "inline-flex items-center rounded-sm px-1.5 py-0.5 font-mono text-[0.625rem] font-semibold tracking-[0.08em] uppercase tabular-nums",
+              resultLabel === "won" && "bg-emerald-500/85 text-white",
+              resultLabel === "lost" && "bg-red-500/85 text-white",
+              resultLabel === "winner" && "bg-black/70 text-white",
+              resultLabel === "unknown" && "bg-black/55 text-white/80"
+            )}
+          >
+            {resultText}
+          </span>
+          {map.winnerSource === "auto_coords" && (
+            <span
+              className="inline-flex items-center rounded-sm bg-black/55 px-1.5 py-0.5 font-mono text-[0.625rem] tracking-[0.08em] text-white/70 uppercase"
+              title={t("autoTooltip")}
+            >
+              {t("auto")}
+            </span>
+          )}
+          {canEditWinner && (
+            <button
+              type="button"
+              onClick={handleOpenWinnerDialog}
+              aria-label={t("editWinner", { map: displayName })}
+              className="inline-flex size-5 items-center justify-center rounded-sm bg-black/55 text-white/80 transition-colors hover:bg-black/75 hover:text-white"
+            >
+              <Pencil1Icon className="size-3" aria-hidden="true" />
+            </button>
+          )}
+        </div>
         <div className="z-10 font-semibold tracking-tight text-white">
           {map.replayCode && <ReplayCode replayCode={map.replayCode} />}
         </div>
@@ -142,6 +225,17 @@ function MapCardWithSelectionComponent({
           mapName={displayName}
         />
       )}
+      {canEditWinner && (
+        <MapWinnerDialog
+          open={isWinnerDialogOpen}
+          onOpenChange={setIsWinnerDialogOpen}
+          mapId={map.id}
+          mapName={displayName}
+          team1Name={team1Name ?? ""}
+          team2Name={team2Name ?? ""}
+          currentWinner={map.winner}
+        />
+      )}
       {mapComparisonEnabled ? (
         <ContextMenu>
           <ContextMenuTrigger asChild>{card}</ContextMenuTrigger>
@@ -157,6 +251,11 @@ function MapCardWithSelectionComponent({
             <ContextMenuItem onSelect={handleAddToMapGroup}>
               {t("contextMenu.addToMapGroup")}
             </ContextMenuItem>
+            {canEditWinner && (
+              <ContextMenuItem onSelect={() => setIsWinnerDialogOpen(true)}>
+                {t("contextMenu.setWinner")}
+              </ContextMenuItem>
+            )}
             <ContextMenuSeparator />
             <ContextMenuItem asChild>
               <Link
@@ -185,8 +284,15 @@ export const MapCardWithSelection = memo(
   MapCardWithSelectionComponent,
   (prev, next) =>
     prev.map.id === next.map.id &&
+    prev.map.winner === next.map.winner &&
+    prev.map.winnerSource === next.map.winnerSource &&
     prev.scrimId === next.scrimId &&
     prev.teamId === next.teamId &&
     prev.locale === next.locale &&
-    prev.mapComparisonEnabled === next.mapComparisonEnabled
+    prev.mapComparisonEnabled === next.mapComparisonEnabled &&
+    prev.team1Name === next.team1Name &&
+    prev.team2Name === next.team2Name &&
+    prev.ourTeamName === next.ourTeamName &&
+    prev.resolvedWinner === next.resolvedWinner &&
+    prev.canManage === next.canManage
 );

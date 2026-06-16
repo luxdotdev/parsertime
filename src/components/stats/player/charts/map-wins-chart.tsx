@@ -1,11 +1,9 @@
 "use client";
 
-import { CardContent, CardFooter } from "@/components/ui/card";
 import type { Winrate } from "@/data/scrim/types";
-import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import { cn, toKebabCase, toTitleCase, useMapNames } from "@/lib/utils";
 import { type MapName, mapNameToMapTypeMapping } from "@/types/map";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import { useTranslations } from "next-intl";
 import {
   Bar,
@@ -37,6 +35,9 @@ const mapVariantMapping: Record<string, string> = {
   "Eichenwalde (Halloween)": "Eichenwalde",
   "Hollywood (Halloween)": "Hollywood",
 };
+
+const WIN_COLOR = "var(--primary)";
+const LOSS_COLOR = "var(--destructive)";
 
 function processMapWinrates(
   mapWinrates: Winrate,
@@ -82,7 +83,6 @@ function CustomTooltip({
   label,
 }: TooltipProps<ValueType, NameType>) {
   const t = useTranslations("statsPage.playerStats.mapWinrates");
-  const { team1, team2 } = useColorblindMode();
 
   if (active && payload?.length) {
     const percentage =
@@ -91,20 +91,25 @@ function CustomTooltip({
       100;
 
     return (
-      <div className="bg-primary text-primary-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 overflow-hidden rounded-md px-3 py-1.5 text-xs">
+      <div className="bg-popover text-popover-foreground border-border animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 overflow-hidden rounded-md border px-3 py-1.5 text-xs shadow-md">
         <h3 className="text-base font-bold">{label}</h3>
         <p className="text-sm">
           {t("tooltip.wins")}{" "}
-          <span style={{ color: team1 }}>{payload[0].value as number}</span>
+          <span style={{ color: WIN_COLOR }}>{payload[0].value as number}</span>
         </p>
         <p className="text-sm">
           {t("tooltip.losses")}{" "}
-          <span style={{ color: team2 }}>{payload[1].value as number}</span>
+          <span className="text-muted-foreground">
+            {payload[1].value as number}
+          </span>
         </p>
         <p className="text-sm">
           {t("tooltip.percentage")}{" "}
           <span
-            className={cn(percentage >= 50 ? "text-green-500" : "text-red-500")}
+            className={cn(
+              percentage >= 50 ? "text-primary" : "text-destructive",
+              "font-mono tabular-nums"
+            )}
           >
             {percentage.toFixed(2)}%
           </span>
@@ -124,48 +129,48 @@ export function MapWinsChart({ data }: Props) {
   const t = useTranslations("statsPage.playerStats.mapWinrates");
   const maps = useMapNames();
   const processedData = processMapWinrates(data, maps);
-  const { team1, team2 } = useColorblindMode();
 
   return (
-    <>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart
-            width={500}
-            height={400}
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 70,
-            }}
-            data={processedData}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="name"
-              interval={0} // Ensures all labels are displayed
-              angle={-45} // Rotates the labels
-              textAnchor="end" // Adjusts the anchor for readability
-              height={60} // Adjusts height to accommodate rotated labels
-            />
-            <YAxis />
-            <Tooltip content={<CustomTooltip />} />
-            <Legend layout="vertical" verticalAlign="top" align="left" />
-            <Bar dataKey="wins" name={t("wins")} stackId="a" fill={team1} />
-            <Bar
-              dataKey="losses"
-              name={t("losses")}
-              stackId="a"
-              fill={team2}
-              radius={[4, 4, 0, 0]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </CardContent>
-      <CardFooter>
-        <p className="text-muted-foreground text-sm">{t("footer")}</p>
-      </CardFooter>
-    </>
+    <div className="space-y-3">
+      <ResponsiveContainer width="100%" height={400}>
+        <BarChart
+          width={500}
+          height={400}
+          margin={{
+            top: 5,
+            right: 30,
+            left: 20,
+            bottom: 70,
+          }}
+          data={processedData}
+        >
+          <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" />
+          <XAxis
+            dataKey="name"
+            interval={0}
+            angle={-45}
+            textAnchor="end"
+            height={60}
+            stroke="var(--muted-foreground)"
+            tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+          />
+          <YAxis
+            stroke="var(--muted-foreground)"
+            tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+          />
+          <Tooltip content={<CustomTooltip />} />
+          <Legend layout="vertical" verticalAlign="top" align="left" />
+          <Bar dataKey="wins" name={t("wins")} stackId="a" fill={WIN_COLOR} />
+          <Bar
+            dataKey="losses"
+            name={t("losses")}
+            stackId="a"
+            fill={LOSS_COLOR}
+            radius={[4, 4, 0, 0]}
+          />
+        </BarChart>
+      </ResponsiveContainer>
+      <p className="text-muted-foreground text-sm">{t("footer")}</p>
+    </div>
   );
 }

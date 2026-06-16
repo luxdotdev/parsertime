@@ -11,7 +11,7 @@ import {
   ROLE_SUBROLES,
   SUBROLE_DISPLAY_NAMES,
 } from "@/types/heroes";
-import type { Kill } from "@prisma/client";
+import type { Kill } from "@/generated/prisma/client";
 import {
   Cache,
   Context,
@@ -28,6 +28,11 @@ import {
   parseDateRangeFromCacheKey,
 } from "./shared-core";
 import { teamCacheRequestTotal, teamCacheMissTotal } from "./metrics";
+import {
+  buildOpponentComparison,
+  isDefaultTeamName,
+  type OpponentObservation,
+} from "@/lib/tempo/opponent-benchmark";
 import {
   TeamSharedDataService,
   TeamSharedDataServiceLive,
@@ -63,6 +68,8 @@ export type {
   PlayerUltRanking,
   FightOpeningHero,
   TeamUltStats,
+  UltCombosAnalysis,
+  UltEconomyAnalysis,
 } from "./types";
 import type {
   ScenarioStats,
@@ -72,7 +79,11 @@ import type {
   PlayerUltRanking,
   FightOpeningHero,
   TeamUltStats,
+  UltCombosAnalysis,
+  UltEconomyAnalysis,
 } from "./types";
+import { processUltCombos } from "./ult-combos";
+import { processUltEconomy } from "./ult-economy";
 
 function emptyScenario(): ScenarioStats {
   return { fights: 0, wins: 0, losses: 0, winrate: 0 };
@@ -299,6 +310,8 @@ function emptyTeamUltStats(): TeamUltStats {
     ultsPerMap: 0,
     avgChargeTime: 0,
     avgHoldTime: 0,
+    chargeTimeVsOpponents: null,
+    holdTimeVsOpponents: null,
     fightInitiationRate: 0,
     fightInitiationCount: 0,
     totalFightsWithUlts: 0,
@@ -370,6 +383,8 @@ export type CalculatedStatRow = {
   playerName: string;
   stat: string;
   value: number;
+  MapDataId: number;
+  scrimId: number;
 };
 
 export function processTeamUltStats(
@@ -595,6 +610,54 @@ export function processTeamUltStats(
       : 0;
   const totalMaps = mapDataIds.length;
 
+  // Opponent comparison: the opponent side is the player_team the roster is not
+  // on. CalculatedStat has no team field, so derive opponent player names (and
+  // the opponent's in-game team name) per map from allPlayerStats.
+  const opponentNamesByMap = new Map<number, Set<string>>();
+  const opponentTeamNameByMap = new Map<number, string>();
+  for (const ps of allPlayerStats) {
+    if (!ps.MapDataId) continue;
+    const ourTeam = teamNameByMapId.get(ps.MapDataId);
+    if (!ourTeam || ps.player_team === ourTeam) continue;
+    let names = opponentNamesByMap.get(ps.MapDataId);
+    if (!names) {
+      names = new Set<string>();
+      opponentNamesByMap.set(ps.MapDataId, names);
+    }
+    names.add(ps.player_name);
+    if (!opponentTeamNameByMap.has(ps.MapDataId)) {
+      opponentTeamNameByMap.set(ps.MapDataId, ps.player_team);
+    }
+  }
+
+  const chargeObservations: OpponentObservation[] = [];
+  const holdObservations: OpponentObservation[] = [];
+  for (const cs of calculatedStats) {
+    if (cs.value <= 0) continue;
+    const opponentNames = opponentNamesByMap.get(cs.MapDataId);
+    if (!opponentNames || !opponentNames.has(cs.playerName)) continue;
+    const rawName = opponentTeamNameByMap.get(cs.MapDataId);
+    const name = rawName && !isDefaultTeamName(rawName) ? rawName.trim() : null;
+    const observation: OpponentObservation = {
+      value: cs.value,
+      name,
+      mapId: cs.MapDataId,
+    };
+    if (cs.stat === "AVERAGE_ULT_CHARGE_TIME")
+      chargeObservations.push(observation);
+    else if (cs.stat === "AVERAGE_TIME_TO_USE_ULT")
+      holdObservations.push(observation);
+  }
+
+  const chargeTimeVsOpponents = buildOpponentComparison(
+    avgChargeTime,
+    chargeObservations
+  );
+  const holdTimeVsOpponents = buildOpponentComparison(
+    avgHoldTime,
+    holdObservations
+  );
+
   return {
     totalUltsUsed: totalOurUltsUsed,
     totalUltsEarned,
@@ -602,6 +665,8 @@ export function processTeamUltStats(
     ultsPerMap: totalMaps > 0 ? totalOurUltsUsed / totalMaps : 0,
     avgChargeTime,
     avgHoldTime,
+    chargeTimeVsOpponents,
+    holdTimeVsOpponents,
     fightInitiationRate:
       totalFightsWithUlts > 0
         ? (fightInitiationCount / totalFightsWithUlts) * 100
@@ -624,6 +689,16 @@ export type TeamUltServiceInterface = {
     teamId: number,
     dateRange?: TeamDateRange
   ) => Effect.Effect<TeamUltStats, TeamQueryError>;
+
+  readonly getTeamUltCombos: (
+    teamId: number,
+    dateRange?: TeamDateRange
+  ) => Effect.Effect<UltCombosAnalysis, TeamQueryError>;
+
+  readonly getTeamUltEconomy: (
+    teamId: number,
+    dateRange?: TeamDateRange
+  ) => Effect.Effect<UltEconomyAnalysis, TeamQueryError>;
 };
 
 export class TeamUltService extends Context.Tag(
@@ -748,6 +823,123 @@ export const make = Effect.gen(function* () {
     );
   }
 
+  function getTeamUltCombos(
+    teamId: number,
+    dateRange?: TeamDateRange
+  ): Effect.Effect<UltCombosAnalysis, TeamQueryError> {
+    const startTime = Date.now();
+    const wideEvent: Record<string, unknown> = {
+      teamId,
+      hasDateRange: !!dateRange,
+    };
+
+    return Effect.gen(function* () {
+      yield* Effect.annotateCurrentSpan("teamId", teamId);
+      const data = yield* shared.getExtendedTeamData(teamId, { dateRange });
+      const result = processUltCombos(data);
+      wideEvent.outcome = "success";
+      wideEvent.combo_count = result.combos.length;
+      wideEvent.response_count = result.responses.length;
+      yield* Metric.increment(ultQuerySuccessTotal);
+      return result;
+    }).pipe(
+      Effect.tapError((error) =>
+        Effect.sync(() => {
+          wideEvent.outcome = "error";
+          wideEvent.error_tag = error._tag;
+          wideEvent.error_message = error.message;
+        }).pipe(Effect.andThen(Metric.increment(ultQueryErrorTotal)))
+      ),
+      Effect.ensuring(
+        Effect.suspend(() => {
+          const durationMs = Date.now() - startTime;
+          wideEvent.duration_ms = durationMs;
+          wideEvent.outcome ??= "interrupted";
+          const log =
+            wideEvent.outcome === "error"
+              ? Effect.logError("team.ult.getTeamUltCombos")
+              : Effect.logInfo("team.ult.getTeamUltCombos");
+          return log.pipe(
+            Effect.annotateLogs(wideEvent),
+            Effect.andThen(ultQueryDuration(Effect.succeed(durationMs)))
+          );
+        })
+      ),
+      Effect.withSpan("team.ult.getTeamUltCombos")
+    );
+  }
+
+  function getTeamUltEconomy(
+    teamId: number,
+    dateRange?: TeamDateRange
+  ): Effect.Effect<UltEconomyAnalysis, TeamQueryError> {
+    const startTime = Date.now();
+    const wideEvent: Record<string, unknown> = {
+      teamId,
+      hasDateRange: !!dateRange,
+    };
+
+    return Effect.gen(function* () {
+      yield* Effect.annotateCurrentSpan("teamId", teamId);
+      const data = yield* shared.getExtendedTeamData(teamId, { dateRange });
+
+      if (data.mapDataIds.length === 0) {
+        wideEvent.outcome = "success";
+        wideEvent.total_fights = 0;
+        yield* Metric.increment(ultQuerySuccessTotal);
+        return processUltEconomy(data, []);
+      }
+
+      const charged = yield* Effect.tryPromise({
+        try: () =>
+          prisma.ultimateCharged.findMany({
+            where: { MapDataId: { in: data.mapDataIds } },
+            select: {
+              player_team: true,
+              player_name: true,
+              match_time: true,
+              MapDataId: true,
+            },
+          }),
+        catch: (error) =>
+          new TeamQueryError({
+            operation: "fetch ultimate charges for ult economy",
+            cause: error,
+          }),
+      });
+
+      const result = processUltEconomy(data, charged);
+      wideEvent.outcome = "success";
+      wideEvent.total_fights = result.totalFights;
+      yield* Metric.increment(ultQuerySuccessTotal);
+      return result;
+    }).pipe(
+      Effect.tapError((error) =>
+        Effect.sync(() => {
+          wideEvent.outcome = "error";
+          wideEvent.error_tag = error._tag;
+          wideEvent.error_message = error.message;
+        }).pipe(Effect.andThen(Metric.increment(ultQueryErrorTotal)))
+      ),
+      Effect.ensuring(
+        Effect.suspend(() => {
+          const durationMs = Date.now() - startTime;
+          wideEvent.duration_ms = durationMs;
+          wideEvent.outcome ??= "interrupted";
+          const log =
+            wideEvent.outcome === "error"
+              ? Effect.logError("team.ult.getTeamUltEconomy")
+              : Effect.logInfo("team.ult.getTeamUltEconomy");
+          return log.pipe(
+            Effect.annotateLogs(wideEvent),
+            Effect.andThen(ultQueryDuration(Effect.succeed(durationMs)))
+          );
+        })
+      ),
+      Effect.withSpan("team.ult.getTeamUltEconomy")
+    );
+  }
+
   const CACHE_TTL = Duration.seconds(30);
   const CACHE_CAPACITY = 64;
 
@@ -785,6 +977,36 @@ export const make = Effect.gen(function* () {
     },
   });
 
+  const ultCombosCache = yield* Cache.make({
+    capacity: CACHE_CAPACITY,
+    timeToLive: CACHE_TTL,
+    lookup: (key: string) => {
+      const [teamIdStr, rest] = [
+        key.slice(0, key.indexOf(":")),
+        key.slice(key.indexOf(":") + 1),
+      ];
+      const dr = parseDateRangeFromCacheKey(rest);
+      return getTeamUltCombos(Number(teamIdStr), dr).pipe(
+        Effect.tap(() => Metric.increment(teamCacheMissTotal))
+      );
+    },
+  });
+
+  const ultEconomyCache = yield* Cache.make({
+    capacity: CACHE_CAPACITY,
+    timeToLive: CACHE_TTL,
+    lookup: (key: string) => {
+      const [teamIdStr, rest] = [
+        key.slice(0, key.indexOf(":")),
+        key.slice(key.indexOf(":") + 1),
+      ];
+      const dr = parseDateRangeFromCacheKey(rest);
+      return getTeamUltEconomy(Number(teamIdStr), dr).pipe(
+        Effect.tap(() => Metric.increment(teamCacheMissTotal))
+      );
+    },
+  });
+
   return {
     getTeamUltImpact: (teamId: number, dateRange?: TeamDateRange) =>
       ultImpactCache
@@ -792,6 +1014,14 @@ export const make = Effect.gen(function* () {
         .pipe(Effect.tap(() => Metric.increment(teamCacheRequestTotal))),
     getTeamUltStats: (teamId: number, dateRange?: TeamDateRange) =>
       ultStatsCache
+        .get(cacheKeyOf(teamId, dateRange))
+        .pipe(Effect.tap(() => Metric.increment(teamCacheRequestTotal))),
+    getTeamUltCombos: (teamId: number, dateRange?: TeamDateRange) =>
+      ultCombosCache
+        .get(cacheKeyOf(teamId, dateRange))
+        .pipe(Effect.tap(() => Metric.increment(teamCacheRequestTotal))),
+    getTeamUltEconomy: (teamId: number, dateRange?: TeamDateRange) =>
+      ultEconomyCache
         .get(cacheKeyOf(teamId, dateRange))
         .pipe(Effect.tap(() => Metric.increment(teamCacheRequestTotal))),
   } satisfies TeamUltServiceInterface;

@@ -1,3 +1,4 @@
+import { CreditsCard } from "@/components/settings/credits-card";
 import { UsageCard } from "@/components/settings/usage-card";
 import { Separator } from "@/components/ui/separator";
 import { Effect } from "effect";
@@ -57,13 +58,16 @@ export default async function SettingsBillingPage() {
         <p className="text-muted-foreground text-sm">{t("description")}</p>
       </div>
       <Separator className="my-6" />
-      <UsageCard
-        manageSubscriptionUrl={billingPortalUrl}
-        billingPlan={user.billingPlan}
-        teamCount={teamCount}
-        scrimCount={scrimCount}
-        teamMemberCount={teamMemberCount}
-      />
+      <div className="space-y-6">
+        <UsageCard
+          manageSubscriptionUrl={billingPortalUrl}
+          billingPlan={user.billingPlan}
+          teamCount={teamCount}
+          scrimCount={scrimCount}
+          teamMemberCount={teamMemberCount}
+        />
+        <CreditsCard />
+      </div>
     </section>
   );
 }

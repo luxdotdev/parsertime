@@ -6,10 +6,11 @@ import type {
   PayloadProgress,
   PointProgress,
   RoundEnd,
-} from "@prisma/client";
-import type { $Enums } from "@prisma/client";
+} from "@/generated/prisma/client";
+import type { $Enums } from "@/generated/prisma/client";
 import { Schema as S } from "effect";
 import type { SubroleUltTiming } from "@/data/scrim/ult-helpers";
+import type { OpponentTempoComparison } from "@/lib/tempo/opponent-benchmark";
 
 export const TeamIdSchema = S.Number.pipe(
   S.int(),
@@ -214,6 +215,28 @@ export type TeamFightStats = {
   avgUltsInLostFights: number;
   wastedUltimates: number;
   totalUltsUsed: number;
+};
+
+// ---------- initiation-service types ----------
+
+export type TeamInitiationStats = {
+  totalFights: number;
+  decidedFights: number;
+  contestedFights: number;
+  wentFirst: number;
+  wentFirstWins: number;
+  wentSecond: number;
+  wentSecondWins: number;
+  /** Win rate of fights we initiated, 0-100 (headline). */
+  initiationWinrate: number;
+  /** Share of decided fights we initiated, 0-100. */
+  initiationFrequency: number;
+  /** Win rate of fights the enemy initiated, 0-100. */
+  goingSecondWinrate: number;
+  /** Modern-format maps that contributed initiation data. */
+  mapsCovered: number;
+  /** All core-roster maps in range (for coverage disclosure). */
+  mapsTotal: number;
 };
 
 // ---------- role-stats-service types ----------
@@ -423,6 +446,51 @@ export type PlayerUltRanking = {
 
 export type FightOpeningHero = { hero: string; count: number };
 
+// ---------- ult-combos-service types ----------
+
+/** A two-ultimate combo: a pair of our heroes whose ults were used together. */
+export type UltComboStat = {
+  /** Heroes are stored alphabetically so heroA/heroB is a stable, order-free key. */
+  heroA: string;
+  heroB: string;
+  /** Number of fights in which both ults were used within the combo window. */
+  count: number;
+  wins: number;
+  losses: number;
+  /** Win rate of the fights this combo appeared in, 0-100. */
+  winrate: number;
+};
+
+/** One enemy ult and the ult our team answered it with. */
+export type UltResponseStat = {
+  enemyHero: string;
+  ourHero: string;
+  /** Fights in which we answered this enemy ult with this hero, within the window. */
+  count: number;
+  wins: number;
+  losses: number;
+  /** Win rate of the fights this response appeared in, 0-100. */
+  winrate: number;
+};
+
+export type UltCombosAnalysis = {
+  /** All combos, sorted by count (desc), then win rate (desc). */
+  combos: UltComboStat[];
+  /** Every enemy-ult to our-response pairing observed. */
+  responses: UltResponseStat[];
+  /** Enemy heroes we answered, sorted by total responses (desc). */
+  enemyHeroes: string[];
+  /** Our heroes used as responses, sorted by total uses (desc). */
+  responseHeroes: string[];
+  /** Sum of combo counts (fights containing a tracked combo). */
+  totalCombos: number;
+  /** Sum of response counts. */
+  totalResponses: number;
+  totalMaps: number;
+  /** Seconds within which two ults count as combined / a response. */
+  windowSeconds: number;
+};
+
 export type TeamUltStats = {
   totalUltsUsed: number;
   totalUltsEarned: number;
@@ -430,12 +498,59 @@ export type TeamUltStats = {
   ultsPerMap: number;
   avgChargeTime: number;
   avgHoldTime: number;
+  chargeTimeVsOpponents: OpponentTempoComparison | null;
+  holdTimeVsOpponents: OpponentTempoComparison | null;
   fightInitiationRate: number;
   fightInitiationCount: number;
   totalFightsWithUlts: number;
   topFightOpeningHeroes: FightOpeningHero[];
   roleBreakdown: TeamUltRoleBreakdown[];
   playerRankings: PlayerUltRanking[];
+};
+
+// ---------- ult-economy-service types ----------
+
+export type UltAdvantageBucketKey =
+  | "behind2"
+  | "behind1"
+  | "even"
+  | "ahead1"
+  | "ahead2";
+
+/** Fights grouped by how many more/fewer ults we held than the enemy entering them. */
+export type UltAdvantageBucket = {
+  key: UltAdvantageBucketKey;
+  fights: number;
+  wins: number;
+  winrate: number;
+  /** Percentage of all analyzed fights that fall in this bucket. */
+  share: number;
+};
+
+/** Average ult advantage entering the Nth fight of a map, averaged across maps. */
+export type UltTempoPoint = {
+  fightNumber: number;
+  avgAdvantage: number;
+  samples: number;
+};
+
+export type UltEconomyAnalysis = {
+  /** Fights with usable bank data (maps that recorded ultimate charges). */
+  totalFights: number;
+  /** Ordered behind2, behind1, even, ahead1, ahead2. */
+  buckets: UltAdvantageBucket[];
+  /** Share of fights entered ult-disadvantaged / even / advantaged (0-100). */
+  disadvantagedShare: number;
+  evenShare: number;
+  advantagedShare: number;
+  /** Win rate when entering a fight ahead / even / behind on ults (0-100). */
+  winrateAhead: number;
+  winrateEven: number;
+  winrateBehind: number;
+  /** Mean (our bank − enemy bank) across analyzed fights. */
+  avgAdvantage: number;
+  tempo: UltTempoPoint[];
+  totalMaps: number;
 };
 
 // ---------- ban-impact-service types ----------
@@ -605,7 +720,6 @@ export type SimulatorContext = {
   mapWinrates: Record<string, number>;
   mapSampleSizes: Record<string, number>;
   mapModeWinrates: Record<string, number>;
-  roleTrioWinrates: RoleTrio[];
   heroPoolWinrates: Record<string, number>;
   heroPoolSampleSizes: Record<string, number>;
   enemyHeroWinrates: Record<string, number>;

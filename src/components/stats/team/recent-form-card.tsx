@@ -1,7 +1,6 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import {
   Select,
   SelectContent,
@@ -11,8 +10,7 @@ import {
 } from "@/components/ui/select";
 import type { RecentForm } from "@/data/team/types";
 import { cn } from "@/lib/utils";
-import { TrendingDown, TrendingUp } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 
 type RecentFormCardProps = {
@@ -21,6 +19,7 @@ type RecentFormCardProps = {
 
 export function RecentFormCard({ recentForm }: RecentFormCardProps) {
   const t = useTranslations("teamStatsPage.recentFormCard");
+  const format = useFormatter();
   const [view, setView] = useState<"5" | "10" | "20">("5");
 
   const matches =
@@ -36,130 +35,149 @@ export function RecentFormCard({ recentForm }: RecentFormCardProps) {
         ? recentForm.last10Winrate
         : recentForm.last20Winrate;
 
+  function formatWinrate(value: number): string {
+    return format.number(value / 100, {
+      style: "percent",
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+  }
+
+  const viewSelect = (
+    <Select value={view} onValueChange={(v) => setView(v as "5" | "10" | "20")}>
+      <SelectTrigger className="w-32">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="5">{t("last5")}</SelectItem>
+        <SelectItem value="10">{t("last10")}</SelectItem>
+        <SelectItem value="20">{t("last20")}</SelectItem>
+      </SelectContent>
+    </Select>
+  );
+
   if (matches.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">{t("noData")}</p>
-        </CardContent>
-      </Card>
+      <section className="space-y-4">
+        <SectionHeader
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          rightSlot={viewSelect}
+        />
+        <p className="text-muted-foreground text-sm">{t("noData")}</p>
+      </section>
     );
   }
 
   const wins = matches.filter((m) => m.result === "win").length;
   const losses = matches.filter((m) => m.result === "loss").length;
 
-  return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>{t("title")}</CardTitle>
-            <p className="text-muted-foreground mt-1 text-sm">
-              {t("winsLosses", {
-                wins,
-                losses,
-                winrate: winrate.toFixed(1),
-              })}
-            </p>
-          </div>
-          <Select
-            value={view}
-            onValueChange={(v) => setView(v as "5" | "10" | "20")}
-          >
-            <SelectTrigger className="w-32">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="5">{t("last5")}</SelectItem>
-              <SelectItem value="10">{t("last10")}</SelectItem>
-              <SelectItem value="20">{t("last20")}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
-          <div className="mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {winrate >= 60 ? (
-                <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
-              ) : winrate <= 40 ? (
-                <TrendingDown className="h-5 w-5 text-red-600 dark:text-red-400" />
-              ) : null}
-              <span className="text-sm font-medium">
-                {winrate >= 60
-                  ? t("strongRecentPerformance")
-                  : winrate <= 40
-                    ? t("strugglingRecently")
-                    : t("averagePerformance")}
-              </span>
-            </div>
-            <Badge
-              className={cn(
-                "font-bold",
-                winrate >= 60
-                  ? "bg-green-500"
-                  : winrate >= 50
-                    ? "bg-blue-500"
-                    : "bg-red-500"
-              )}
-            >
-              {winrate.toFixed(1)}%
-            </Badge>
-          </div>
+  const formLabel =
+    winrate >= 60
+      ? t("strongRecentPerformance")
+      : winrate <= 40
+        ? t("strugglingRecently")
+        : t("averagePerformance");
 
-          <div className="space-y-2">
+  const formTagClass =
+    winrate >= 60
+      ? "bg-primary/15 text-primary"
+      : winrate <= 40
+        ? "bg-destructive/15 text-destructive"
+        : "bg-muted text-muted-foreground";
+
+  return (
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        description={t("winsLosses", {
+          wins,
+          losses,
+          winrate: formatWinrate(winrate),
+        })}
+        rightSlot={viewSelect}
+      />
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <span
+          className={cn(
+            "rounded-sm px-2 py-0.5 font-mono text-[10px] tracking-[0.16em] uppercase",
+            formTagClass
+          )}
+        >
+          {formLabel}
+        </span>
+        <span className="text-foreground font-mono text-sm font-semibold tabular-nums">
+          {formatWinrate(winrate)}
+        </span>
+      </div>
+
+      <div className="border-border overflow-hidden rounded-md border">
+        <table className="w-full text-sm">
+          <thead className="bg-muted/30">
+            <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
+              <th className="w-20 px-4 py-2 text-left font-medium">
+                {t("result")}
+              </th>
+              <th className="px-4 py-2 text-left font-medium">{t("scrim")}</th>
+              <th className="px-4 py-2 text-left font-medium">{t("map")}</th>
+              <th className="w-28 px-4 py-2 text-right font-medium">
+                {t("date")}
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-[var(--border)]">
             {matches.map((match) => (
-              <div
+              <tr
                 key={`${match.scrimId}-${match.mapName}`}
-                className="flex items-center justify-between rounded-lg border p-3"
+                className="hover:bg-muted/30 transition-colors"
               >
-                <div className="flex items-center gap-3">
-                  <div
+                <td className="px-4 py-3">
+                  <span
                     className={cn(
-                      "flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold",
+                      "inline-flex h-6 min-w-6 items-center justify-center rounded-sm px-1.5 font-mono text-[10px] font-semibold tracking-[0.16em] uppercase tabular-nums",
                       match.result === "win"
-                        ? "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400"
-                        : "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-400"
+                        ? "bg-primary/15 text-primary"
+                        : "bg-destructive/15 text-destructive"
                     )}
                   >
                     {match.result === "win" ? t("win") : t("loss")}
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">{match.scrimName}</p>
-                    <p className="text-muted-foreground text-xs">
-                      {match.mapName}
-                    </p>
-                  </div>
-                </div>
-                <span className="text-muted-foreground text-xs">
-                  {match.date.toLocaleDateString("en-US", {
+                  </span>
+                </td>
+                <td className="text-foreground px-4 py-3 font-medium">
+                  {match.scrimName}
+                </td>
+                <td className="text-muted-foreground px-4 py-3">
+                  {match.mapName}
+                </td>
+                <td className="text-muted-foreground px-4 py-3 text-right font-mono text-xs tabular-nums">
+                  {format.dateTime(match.date, {
                     month: "short",
                     day: "numeric",
                   })}
-                </span>
-              </div>
+                </td>
+              </tr>
             ))}
-          </div>
+          </tbody>
+        </table>
+      </div>
 
-          <div className="bg-muted/50 mt-4 flex items-center justify-center gap-1 rounded-lg p-3">
-            {matches.map((match) => (
-              <div
-                key={`indicator-${match.scrimId}-${match.mapName}`}
-                className={cn(
-                  "h-3 w-3 rounded-full",
-                  match.result === "win" ? "bg-green-500" : "bg-red-500"
-                )}
-                title={`${match.scrimName} - ${match.result === "win" ? t("win") : t("loss")}`}
-              />
-            ))}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+      <div className="border-border flex items-center gap-1 rounded-md border px-3 py-2.5">
+        {matches.map((match) => (
+          <span
+            key={`indicator-${match.scrimId}-${match.mapName}`}
+            className={cn(
+              "h-2 flex-1 rounded-sm",
+              match.result === "win" ? "bg-primary/70" : "bg-destructive/70"
+            )}
+            title={t("indicatorTitle", {
+              scrimName: match.scrimName,
+              result: match.result === "win" ? t("win") : t("loss"),
+            })}
+          />
+        ))}
+      </div>
+    </section>
   );
 }

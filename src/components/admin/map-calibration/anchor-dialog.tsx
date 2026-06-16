@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useColorblindMode } from "@/hooks/use-colorblind-mode";
+import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 
 type AnchorDialogProps = {
@@ -35,6 +36,8 @@ export function AnchorDialog({
   imageV,
   onSubmit,
 }: AnchorDialogProps) {
+  const t = useTranslations("mapCalibrationPage.anchorDialog");
+  const formatter = useFormatter();
   const { team1, team2 } = useColorblindMode();
   const [worldX, setWorldX] = useState("");
   const [worldY, setWorldY] = useState("");
@@ -64,32 +67,28 @@ export function AnchorDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add Anchor Point</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>
-            Image position: ({imageU}, {imageV}). Enter the corresponding
-            in-game world coordinates. Overwatch uses (
-            <span className="font-semibold" style={{ color: team1 }}>
-              X
-            </span>
-            , <span>Y</span>,{" "}
-            <span className="font-semibold" style={{ color: team2 }}>
-              Z
-            </span>
-            ) where Y is vertical — enter only{" "}
-            <span className="font-semibold" style={{ color: team1 }}>
-              X
-            </span>{" "}
-            and{" "}
-            <span className="font-semibold" style={{ color: team2 }}>
-              Z
-            </span>
-            .
+            {t.rich("description", {
+              imageU: formatter.number(imageU),
+              imageV: formatter.number(imageV),
+              x: (chunks) => (
+                <span className="font-semibold" style={{ color: team1 }}>
+                  {chunks}
+                </span>
+              ),
+              z: (chunks) => (
+                <span className="font-semibold" style={{ color: team2 }}>
+                  {chunks}
+                </span>
+              ),
+            })}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="worldX">World X</Label>
+              <Label htmlFor="worldX">{t("worldX")}</Label>
               <Input
                 id="worldX"
                 name="worldX"
@@ -98,13 +97,13 @@ export function AnchorDialog({
                 autoComplete="off"
                 value={worldX}
                 onChange={(e) => setWorldX(e.target.value)}
-                placeholder="e.g. 42.5"
+                placeholder={t("worldXPlaceholder")}
                 // oxlint-disable-next-line jsx-a11y/no-autofocus -- intentional focus management in dialog
                 autoFocus
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="worldY">World Z</Label>
+              <Label htmlFor="worldY">{t("worldZ")}</Label>
               <Input
                 id="worldY"
                 name="worldY"
@@ -113,19 +112,19 @@ export function AnchorDialog({
                 autoComplete="off"
                 value={worldY}
                 onChange={(e) => setWorldY(e.target.value)}
-                placeholder="e.g. -18.3"
+                placeholder={t("worldZPlaceholder")}
               />
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="label">Label (optional)</Label>
+            <Label htmlFor="label">{t("label")}</Label>
             <Input
               id="label"
               name="anchorLabel"
               autoComplete="off"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
-              placeholder="e.g. Point A, Spawn door"
+              placeholder={t("labelPlaceholder")}
             />
           </div>
           <DialogFooter>
@@ -134,10 +133,10 @@ export function AnchorDialog({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              Cancel
+              {t("cancel")}
             </Button>
             <Button type="submit" disabled={!worldX || !worldY}>
-              Add Anchor
+              {t("addAnchor")}
             </Button>
           </DialogFooter>
         </form>

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNotifications } from "@/hooks/use-notifications";
 import { cn } from "@/lib/utils";
-import type { Notification } from "@prisma/client";
+import type { Notification } from "@/generated/prisma/browser";
 import { formatDistanceToNow } from "date-fns";
 import { ArrowLeft, Bell, Loader2, Trash2 } from "lucide-react";
 import type { Route } from "next";

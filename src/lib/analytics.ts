@@ -2,13 +2,28 @@ import { AppRuntime } from "@/data/runtime";
 import { ScrimService } from "@/data/scrim";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
-import { groupKillsIntoFights, removeDuplicateRows, round } from "@/lib/utils";
+import { removeDuplicateRows, round } from "@/lib/utils";
+import {
+  groupKillsIntoFights,
+  groupKillsIntoFightsByMapDataId,
+} from "@/lib/server-utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
-import type { RoundEnd, UltimateCharged, UltimateStart } from "@prisma/client";
+import type {
+  RoundEnd,
+  UltimateCharged,
+  UltimateStart,
+} from "@/generated/prisma/client";
 import { Effect } from "effect";
 
 export async function getAverageUltChargeTime(id: number, playerName: string) {
   const mapDataId = await resolveMapDataId(id);
+  return getAverageUltChargeTimeForMapData(mapDataId, playerName);
+}
+
+export async function getAverageUltChargeTimeForMapData(
+  mapDataId: number,
+  playerName: string
+) {
   const [ultimatesCharged, ultimateEnds] = await Promise.all([
     prisma.ultimateCharged.findMany({
       where: { MapDataId: mapDataId, player_name: playerName },
@@ -22,6 +37,8 @@ export async function getAverageUltChargeTime(id: number, playerName: string) {
   // Take the first ultimate charged and the next ultimate end
   // Then take the next ultimate charged and the next ultimate end
   // Continue until the end of the match
+  if (ultimatesCharged.length === 0) return 0;
+
   const ultimateTimes = [ultimatesCharged[0].match_time];
 
   // for each ultimate end, calculate the time between the next ultimate charged and the current ultimate end
@@ -52,6 +69,10 @@ function assignRoundNumbersToUltimates(
   ultimateStarts: (UltimateStart & { round_number?: number })[],
   roundEnds: RoundEnd[]
 ) {
+  if (roundEnds.length === 0) {
+    return { ultimatesCharged, ultimateStarts };
+  }
+
   roundEnds.sort((a, b) => a.match_time - b.match_time);
 
   function findRoundNumber(matchTime: number) {
@@ -77,6 +98,13 @@ function assignRoundNumbersToUltimates(
 
 export async function getAverageTimeToUseUlt(id: number, playerName: string) {
   const mapDataId = await resolveMapDataId(id);
+  return getAverageTimeToUseUltForMapData(mapDataId, playerName);
+}
+
+export async function getAverageTimeToUseUltForMapData(
+  mapDataId: number,
+  playerName: string
+) {
   const [ultimatesCharged, ultimateStarts, roundEnds] = await Promise.all([
     prisma.ultimateCharged.findMany({
       where: { MapDataId: mapDataId, player_name: playerName },
@@ -132,6 +160,13 @@ export async function getAverageTimeToUseUlt(id: number, playerName: string) {
 
 export async function getKillsPerUltimate(id: number, playerName: string) {
   const mapDataId = await resolveMapDataId(id);
+  return getKillsPerUltimateForMapData(mapDataId, playerName);
+}
+
+export async function getKillsPerUltimateForMapData(
+  mapDataId: number,
+  playerName: string
+) {
   const [ultimatesCharged, ultKills] = await Promise.all([
     prisma.ultimateCharged.findMany({
       where: { MapDataId: mapDataId, player_name: playerName },
@@ -145,12 +180,22 @@ export async function getKillsPerUltimate(id: number, playerName: string) {
     }),
   ]);
 
+  if (ultimatesCharged.length === 0) return 0;
+
   const killsPerUltimate = ultKills.length / ultimatesCharged.length;
 
   return killsPerUltimate;
 }
 
 export async function getDuelWinrates(id: number, playerName: string) {
+  const mapDataId = await resolveMapDataId(id);
+  return getDuelWinratesForMapData(mapDataId, playerName);
+}
+
+export async function getDuelWinratesForMapData(
+  mapDataId: number,
+  playerName: string
+) {
   type AggregatedDuel = {
     player_name: string;
     player_hero: string;
@@ -162,7 +207,6 @@ export async function getDuelWinrates(id: number, playerName: string) {
     enemy_deaths: number;
   };
 
-  const mapDataId = await resolveMapDataId(id);
   const [playerKills, playerDeaths] = await Promise.all([
     prisma.kill.findMany({
       where: { MapDataId: mapDataId, attacker_name: playerName },
@@ -219,6 +263,7 @@ export async function getDuelWinrates(id: number, playerName: string) {
 
 async function calculateAverageDuelWinrate(id: number, playerName: string) {
   const duels = await getDuelWinrates(id, playerName);
+  if (duels.length === 0) return 0;
 
   const winrates = duels.map((duel) => {
     const totalKills = duel.enemy_kills + duel.enemy_deaths;
@@ -273,9 +318,11 @@ export async function calculateXFactor(mapId: number, playerName: string) {
   );
   const mostPlayedHero = playerStats.sort(
     (a, b) => b.hero_time_played - a.hero_time_played
-  )[0].player_hero;
+  )[0]?.player_hero;
+  if (!mostPlayedHero) return 0;
 
   const heroRole = heroRoleMapping[mostPlayedHero as HeroName];
+  if (!heroRole) return 0;
 
   const fights = await groupKillsIntoFights(mapId);
 
@@ -289,10 +336,10 @@ export async function calculateXFactor(mapId: number, playerName: string) {
   );
 
   const firstPickPercentage = round(
-    (playerFirstKills.length / fights.length) * 100
+    fights.length > 0 ? (playerFirstKills.length / fights.length) * 100 : 0
   );
   const firstDeathPercentage = round(
-    (playerFirstDeaths.length / fights.length) * 100
+    fights.length > 0 ? (playerFirstDeaths.length / fights.length) * 100 : 0
   );
 
   const fightReversals = fights.filter((fight) => {
@@ -307,7 +354,7 @@ export async function calculateXFactor(mapId: number, playerName: string) {
   });
 
   const fightReversalPercentage = round(
-    (fightReversals.length / fights.length) * 100
+    fights.length > 0 ? (fightReversals.length / fights.length) * 100 : 0
   );
 
   const duelWinratePercentage = await calculateAverageDuelWinrate(
@@ -356,7 +403,9 @@ export async function calculateXFactor(mapId: number, playerName: string) {
   );
 
   const playerFletaDeadliftPercentage =
-    (playerFinalBlows / (teamTotalFinalBlows - playerFinalBlows)) * 100;
+    teamTotalFinalBlows > 0
+      ? (playerFinalBlows / teamTotalFinalBlows) * 100
+      : 0;
 
   type DeathsPer10 = { player_name: string; deaths_per_10: number };
 
@@ -372,10 +421,14 @@ export async function calculateXFactor(mapId: number, playerName: string) {
     GROUP BY
         "player_name"`;
 
+  const deathsPer10Raw = dPer10[0]?.deaths_per_10 ?? 0;
+  const normalizedDeathsPer10 = Number.isFinite(deathsPer10Raw)
+    ? deathsPer10Raw
+    : 0;
   const deathsPer10 =
-    dPer10[0].deaths_per_10 > 5
-      ? 0 - dPer10[0].deaths_per_10 // If the player has more than 5 deaths per 10 minutes, they should be penalized
-      : 1 + dPer10[0].deaths_per_10; // If the player has less than 5 deaths per 10 minutes, they should be rewarded
+    normalizedDeathsPer10 > 5
+      ? 0 - normalizedDeathsPer10 // If the player has more than 5 deaths per 10 minutes, they should be penalized
+      : 1 + normalizedDeathsPer10; // If the player has less than 5 deaths per 10 minutes, they should be rewarded
 
   let xFactor = 0;
   switch (heroRole) {
@@ -411,7 +464,21 @@ export async function calculateXFactor(mapId: number, playerName: string) {
 
 export async function calculateDroughtTime(id: number, playerName: string) {
   const fights = await groupKillsIntoFights(id);
+  return calculateDroughtTimeFromFights(fights, playerName);
+}
 
+export async function calculateDroughtTimeForMapData(
+  mapDataId: number,
+  playerName: string
+) {
+  const fights = await groupKillsIntoFightsByMapDataId(mapDataId);
+  return calculateDroughtTimeFromFights(fights, playerName);
+}
+
+function calculateDroughtTimeFromFights(
+  fights: Awaited<ReturnType<typeof groupKillsIntoFights>>,
+  playerName: string
+) {
   const playerKills = fights
     .map((fight) =>
       fight.kills.filter((kill) => kill.attacker_name === playerName)
@@ -427,6 +494,8 @@ export async function calculateDroughtTime(id: number, playerName: string) {
     return kill.match_time - previousKill.match_time;
   });
 
+  if (droughts.length === 0) return 0;
+
   const averageDrought = droughts.reduce((a, b) => a + b, 0) / droughts.length;
 
   return round(averageDrought);
@@ -434,6 +503,13 @@ export async function calculateDroughtTime(id: number, playerName: string) {
 
 export async function getAjaxes(id: number, playerName: string) {
   const mapDataId = await resolveMapDataId(id);
+  return getAjaxesForMapData(mapDataId, playerName);
+}
+
+export async function getAjaxesForMapData(
+  mapDataId: number,
+  playerName: string
+) {
   const [kills, ultimateEnds] = await Promise.all([
     prisma.kill.findMany({
       where: {

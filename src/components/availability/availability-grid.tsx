@@ -7,6 +7,7 @@ import {
   visibleSlotsPerDay,
   type AvailabilitySettingsShape,
 } from "@/lib/availability/slots";
+import { useLocale } from "next-intl";
 import {
   Fragment,
   useCallback,
@@ -29,8 +30,8 @@ type GridProps = {
   onHoverSlot?: (slotIndex: number | null) => void;
 };
 
-function formatHourLabel(d: Date, tz: string) {
-  return new Intl.DateTimeFormat("en-US", {
+function formatHourLabel(d: Date, tz: string, locale: string) {
+  return new Intl.DateTimeFormat(locale, {
     timeZone: tz,
     hour: "numeric",
     minute: "2-digit",
@@ -38,8 +39,8 @@ function formatHourLabel(d: Date, tz: string) {
   }).format(d);
 }
 
-function formatDayLabel(d: Date, tz: string) {
-  return new Intl.DateTimeFormat("en-US", {
+function formatDayLabel(d: Date, tz: string, locale: string) {
+  return new Intl.DateTimeFormat(locale, {
     timeZone: tz,
     weekday: "short",
     month: "numeric",
@@ -59,6 +60,7 @@ export function AvailabilityGrid({
   totalRespondents = 0,
   onHoverSlot,
 }: GridProps) {
+  const locale = useLocale();
   const perDay = visibleSlotsPerDay(settings);
   const totalSlots = perDay * DAYS_PER_WEEK;
 
@@ -73,22 +75,24 @@ export function AvailabilityGrid({
   const dayHeaders = useMemo(() => {
     const out: string[] = [];
     for (let d = 0; d < DAYS_PER_WEEK; d++) {
-      out.push(formatDayLabel(slotInstants[d * perDay], viewerTimezone));
+      out.push(
+        formatDayLabel(slotInstants[d * perDay], viewerTimezone, locale)
+      );
     }
     return out;
-  }, [slotInstants, perDay, viewerTimezone]);
+  }, [slotInstants, perDay, viewerTimezone, locale]);
 
   const rowLabels = useMemo(() => {
     const out: { label: string; key: string }[] = [];
     for (let r = 0; r < perDay; r++) {
       const inst = slotInstants[r];
       out.push({
-        label: formatHourLabel(inst, viewerTimezone),
+        label: formatHourLabel(inst, viewerTimezone, locale),
         key: inst.toISOString(),
       });
     }
     return out;
-  }, [slotInstants, perDay, viewerTimezone]);
+  }, [slotInstants, perDay, viewerTimezone, locale]);
 
   const [dragMode, setDragMode] = useState<"add" | "remove" | null>(null);
   const draftRef = useRef<Set<number>>(new Set(selected));

@@ -9,6 +9,7 @@ import { Slider } from "@/components/ui/slider";
 import { PLAYBACK_SPEEDS, type ReplayStore } from "@/stores/replay-store";
 import { useSelector } from "@xstate/store/react";
 import { Pause, Play, SkipBack, SkipForward } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 
 type ReplayTimelineProps = {
@@ -17,6 +18,7 @@ type ReplayTimelineProps = {
   team1Name: string;
   team1Color: string;
   team2Color: string;
+  keyboardHintId?: string;
 };
 
 function formatTime(seconds: number): string {
@@ -31,7 +33,9 @@ export function ReplayTimeline({
   team1Name,
   team1Color,
   team2Color,
+  keyboardHintId,
 }: ReplayTimelineProps) {
+  const t = useTranslations("mapPage.replay");
   const currentTime = useSelector(store, (s) => s.context.currentTime);
   const isPlaying = useSelector(store, (s) => s.context.isPlaying);
   const playbackSpeed = useSelector(store, (s) => s.context.playbackSpeed);
@@ -56,20 +60,18 @@ export function ReplayTimeline({
       .filter((e): e is RoundDisplayEvent => e.type === "round_start")
       .map((r) => ({
         position: duration > 0 ? ((r.t - minTime) / duration) * 100 : 0,
-        label: `R${r.roundNumber}`,
+        label: t("timeline.roundShort", { number: r.roundNumber }),
       }));
-  }, [displayEvents, minTime, duration]);
+  }, [displayEvents, minTime, duration, t]);
 
   return (
-    <div className="bg-card rounded-lg border p-3">
-      {/* Timeline scrubber with markers */}
-      <div className="relative mb-3">
-        {/* Kill tick marks (behind the slider) */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-6">
+    <div className="space-y-5">
+      <div className="relative flex h-7 items-center">
+        <div className="pointer-events-none absolute inset-x-0 inset-y-1">
           {killMarkers.map((m) => (
             <div
               key={`k-${m.position}-${m.color}`}
-              className="absolute top-1 h-4 w-0.5 rounded-full opacity-40"
+              className="absolute inset-y-0 w-0.5 rounded-full opacity-40"
               style={{
                 left: `${m.position}%`,
                 backgroundColor: m.color,
@@ -79,7 +81,7 @@ export function ReplayTimeline({
           {roundMarkers.map((m) => (
             <div
               key={`r-${m.position}`}
-              className="absolute top-0 h-6 w-0.5 bg-yellow-500/60"
+              className="bg-primary/60 absolute inset-y-0 w-0.5"
               style={{ left: `${m.position}%` }}
             />
           ))}
@@ -91,28 +93,27 @@ export function ReplayTimeline({
           step={0.1}
           value={[currentTime]}
           onValueChange={([v]) => store.send({ type: "seek", time: v })}
-          className="relative z-10"
+          aria-label={t("timeline.scrubber")}
+          aria-valuetext={formatTime(currentTime)}
+          className="relative z-10 w-full"
         />
       </div>
 
-      {/* Controls row */}
       <div className="flex items-center gap-3">
-        {/* Skip back */}
         <button
           type="button"
           onClick={() => store.send({ type: "seek", time: currentTime - 5 })}
           className="text-muted-foreground hover:text-foreground transition-colors"
-          title="Back 5s"
+          aria-label={t("timeline.skipBack", { seconds: 5 })}
         >
           <SkipBack className="h-4 w-4" />
         </button>
 
-        {/* Play/Pause */}
         <button
           type="button"
           onClick={() => store.send({ type: "togglePlayback" })}
           className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:opacity-90"
-          title={isPlaying ? "Pause" : "Play"}
+          aria-label={isPlaying ? t("timeline.pause") : t("timeline.play")}
         >
           {isPlaying ? (
             <Pause className="h-4 w-4" />
@@ -121,22 +122,26 @@ export function ReplayTimeline({
           )}
         </button>
 
-        {/* Skip forward */}
         <button
           type="button"
           onClick={() => store.send({ type: "seek", time: currentTime + 5 })}
           className="text-muted-foreground hover:text-foreground transition-colors"
-          title="Forward 5s"
+          aria-label={t("timeline.skipForward", { seconds: 5 })}
         >
           <SkipForward className="h-4 w-4" />
         </button>
 
-        {/* Speed selector */}
-        <div className="flex items-center gap-1">
+        <div
+          role="radiogroup"
+          aria-label={t("timeline.playbackSpeed")}
+          className="flex items-center gap-1"
+        >
           {PLAYBACK_SPEEDS.map((speed) => (
             <button
               key={speed}
               type="button"
+              role="radio"
+              aria-checked={playbackSpeed === speed}
               onClick={() => store.send({ type: "setSpeed", speed })}
               className={`rounded px-1.5 py-0.5 text-xs font-medium transition-colors ${
                 playbackSpeed === speed
@@ -149,15 +154,16 @@ export function ReplayTimeline({
           ))}
         </div>
 
-        {/* Time display */}
-        <div className="text-muted-foreground ml-auto font-mono text-sm">
+        <div className="text-muted-foreground ml-auto font-mono text-sm tabular-nums">
           {formatTime(currentTime)} / {formatTime(maxTime)}
         </div>
       </div>
 
-      {/* Keyboard hint */}
-      <div className="text-muted-foreground mt-2 text-[10px]">
-        Space: play/pause · Arrow keys: seek 5s (Shift: 1s) · [ / ]: speed
+      <div
+        id={keyboardHintId}
+        className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.06em] uppercase"
+      >
+        {t("timeline.keyboardHint")}
       </div>
     </div>
   );

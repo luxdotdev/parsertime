@@ -1,11 +1,7 @@
-import { Effect } from "effect";
-import { AppRuntime } from "@/data/runtime";
-import { UserService } from "@/data/user";
 import { auditLog } from "@/lib/audit-logs";
-import { auth } from "@/lib/auth";
+import { auth, getCurrentUser, isAdminUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { $Enums } from "@prisma/client";
 import { unauthorized } from "next/navigation";
 import { after, type NextRequest } from "next/server";
 
@@ -15,33 +11,21 @@ export async function POST(req: NextRequest) {
   const id = parseInt(params.get("id") ?? "");
   if (!id) return new Response("Missing ID", { status: 400 });
 
-  const token = req.headers.get("Authorization");
-
   const session = await auth();
 
-  if (!session) {
-    if (token !== process.env.DEV_TOKEN) {
-      Logger.warn("Unauthorized request to remove team: ", id);
-      unauthorized();
-    }
-    Logger.log("Authorized removal of team with dev token");
+  if (!session?.user?.email) {
+    Logger.warn("Unauthorized request to remove team: ", id);
+    unauthorized();
   }
 
-  const user = await AppRuntime.runPromise(
-    UserService.pipe(
-      Effect.flatMap((svc) =>
-        svc.getUser(session?.user?.email ?? "lucas@lux.dev")
-      )
-    )
-  );
+  const user = await getCurrentUser();
   if (!user) return new Response("User not found", { status: 404 });
 
   const team = await prisma.team.findFirst({ where: { id } });
   if (!team) return new Response("Team not found", { status: 404 });
 
   const hasPerms =
-    user.role === $Enums.UserRole.ADMIN || // Admins can delete anything
-    user.role === $Enums.UserRole.MANAGER || // Managers can delete anything
+    isAdminUser(user) || // Admins can delete anything
     user.id === team.ownerId; // Creators can delete their own teams
 
   if (!hasPerms) unauthorized();

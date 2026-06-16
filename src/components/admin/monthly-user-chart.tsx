@@ -5,6 +5,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTranslations } from "next-intl";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 type ChartConfig = {
@@ -20,22 +22,20 @@ type ChartConfig = {
 type MonthlyUserData = {
   month: string;
   users: number;
+  projected: number;
 };
 
 type MonthlyUserChartProps = {
-  data: MonthlyUserData[];
+  twelveMonth: MonthlyUserData[];
+  historical: MonthlyUserData[];
 };
 
-export function MonthlyUserChart({ data }: MonthlyUserChartProps) {
-  const chartConfig: ChartConfig = {
-    users: {
-      label: "Users",
-      color: "var(--chart-1)",
-    },
-  };
-
+function renderChart(
+  data: MonthlyUserData[],
+  opts: { chartConfig: ChartConfig; shortTicks: boolean }
+) {
   return (
-    <ChartContainer config={chartConfig} className="h-[200px] w-full">
+    <ChartContainer config={opts.chartConfig} className="h-[200px] w-full">
       <BarChart accessibilityLayer data={data}>
         <CartesianGrid vertical={false} />
         <XAxis
@@ -43,11 +43,54 @@ export function MonthlyUserChart({ data }: MonthlyUserChartProps) {
           tickLine={false}
           tickMargin={10}
           axisLine={false}
-          tickFormatter={(value: string) => value.slice(0, 3)}
+          tickFormatter={(value: string) =>
+            opts.shortTicks ? value.slice(0, 3) : value
+          }
+          interval={opts.shortTicks ? 0 : "preserveStartEnd"}
+          minTickGap={opts.shortTicks ? 0 : 24}
         />
         <ChartTooltip content={<ChartTooltipContent />} />
-        <Bar dataKey="users" fill="var(--color-users)" radius={4} />
+        <Bar dataKey="users" stackId="a" fill="var(--color-users)" radius={4} />
+        <Bar
+          dataKey="projected"
+          stackId="a"
+          fill="var(--color-projected)"
+          fillOpacity={0.4}
+          radius={4}
+        />
       </BarChart>
     </ChartContainer>
+  );
+}
+
+export function MonthlyUserChart({
+  twelveMonth,
+  historical,
+}: MonthlyUserChartProps) {
+  const t = useTranslations("settingsPage.admin.analytics.charts");
+  const chartConfig: ChartConfig = {
+    users: {
+      label: t("users"),
+      color: "var(--chart-1)",
+    },
+    projected: {
+      label: t("projected"),
+      color: "var(--chart-1)",
+    },
+  };
+
+  return (
+    <Tabs defaultValue="twelve-months" className="w-full">
+      <TabsList className="mb-4">
+        <TabsTrigger value="twelve-months">{t("last12Months")}</TabsTrigger>
+        <TabsTrigger value="historical">{t("allTime")}</TabsTrigger>
+      </TabsList>
+      <TabsContent value="twelve-months">
+        {renderChart(twelveMonth, { chartConfig, shortTicks: true })}
+      </TabsContent>
+      <TabsContent value="historical">
+        {renderChart(historical, { chartConfig, shortTicks: false })}
+      </TabsContent>
+    </Tabs>
   );
 }

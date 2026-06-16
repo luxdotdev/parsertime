@@ -5,13 +5,31 @@ import {
 } from "@/lib/availability/password";
 import { normalizeNameKey, sanitizeSlots } from "@/lib/availability/slots";
 import prisma from "@/lib/prisma";
+import { Ratelimit } from "@upstash/ratelimit";
+import { checkBotId } from "botid/server";
+import { ipAddress } from "@vercel/functions";
+import { kv } from "@vercel/kv";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
+
+const submitRatelimit = new Ratelimit({
+  redis: kv,
+  limiter: Ratelimit.slidingWindow(20, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:availability:submit",
+});
+
+const nameRatelimit = new Ratelimit({
+  redis: kv,
+  limiter: Ratelimit.slidingWindow(6, "1 m"),
+  analytics: true,
+  prefix: "ratelimit:availability:name",
+});
 
 const BodySchema = z.object({
   name: z.string().trim().min(1).max(40),
   password: z.string().min(1).max(100).optional(),
-  slots: z.array(z.number().int().nonnegative()),
+  slots: z.array(z.number().int().nonnegative()).max(7 * 24 * 4),
   submittedFromTz: z.string().max(64).optional(),
 });
 
@@ -19,6 +37,11 @@ type RouteCtx = { params: Promise<{ scheduleId: string }> };
 
 export async function POST(req: NextRequest, ctx: RouteCtx) {
   const { scheduleId } = await ctx.params;
+
+  const verification = await checkBotId();
+  if (verification.isBot) {
+    return new Response("Access denied", { status: 403 });
+  }
 
   const parsed = BodySchema.safeParse(await req.json());
   if (!parsed.success) {
@@ -40,6 +63,14 @@ export async function POST(req: NextRequest, ctx: RouteCtx) {
   const slots = sanitizeSlots(parsed.data.slots, settings);
   const nameKey = normalizeNameKey(parsed.data.name);
   const displayName = parsed.data.name.trim();
+  const identifier = ipAddress(req) ?? "127.0.0.1";
+  const [submitLimit, nameLimit] = await Promise.all([
+    submitRatelimit.limit(`${identifier}:${scheduleId}`),
+    nameRatelimit.limit(`${identifier}:${scheduleId}:${nameKey}`),
+  ]);
+  if (!submitLimit.success || !nameLimit.success) {
+    return new Response("Rate limit exceeded", { status: 429 });
+  }
 
   const session = await auth();
   const sessionUser = session?.user?.email
@@ -55,6 +86,9 @@ export async function POST(req: NextRequest, ctx: RouteCtx) {
 
   if (existing) {
     const ownedBySessionUser = existing.userId === sessionUser?.id;
+    if (existing.userId && !ownedBySessionUser) {
+      return new Response("Forbidden", { status: 403 });
+    }
     if (!ownedBySessionUser) {
       if (existing.passwordHash) {
         if (!parsed.data.password) {
@@ -87,6 +121,13 @@ export async function POST(req: NextRequest, ctx: RouteCtx) {
       select: { id: true, displayName: true, slots: true, updatedAt: true },
     });
     return Response.json({ response: updated });
+  }
+
+  const responseCount = await prisma.availabilityResponse.count({
+    where: { scheduleId },
+  });
+  if (responseCount >= 200) {
+    return new Response("Response limit reached", { status: 403 });
   }
 
   const passwordHash = sessionUser

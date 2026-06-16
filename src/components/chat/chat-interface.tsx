@@ -6,6 +6,8 @@ import {
   ConversationEmptyState,
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
+import { BalanceChip } from "@/components/chat/balance-chip";
+import { BalanceModal } from "@/components/chat/balance-modal";
 import {
   Message,
   MessageAction,
@@ -30,6 +32,8 @@ import {
 } from "@/components/chat/tool-cards";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { useCreditBalance } from "@/hooks/use-credits";
+import { MIN_BALANCE_TO_CHAT_CENTS } from "@/lib/chat-pricing";
 import { useChat } from "@ai-sdk/react";
 import { useQueryClient } from "@tanstack/react-query";
 import type { ToolUIPart, UIMessage } from "ai";
@@ -40,10 +44,10 @@ import {
   CornerDownLeftIcon,
   PencilIcon,
   RefreshCwIcon,
-  SparklesIcon,
   SquareIcon,
   XIcon,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import {
   type KeyboardEvent,
@@ -53,12 +57,8 @@ import {
   useState,
 } from "react";
 
-const SUGGESTIONS = [
-  "How did my team perform in our last scrim?",
-  "Which maps do we have the best win rate on?",
-  "What are our performance trends this month?",
-  "Who had the most outlier stats recently?",
-];
+const EYEBROW =
+  "text-muted-foreground font-mono text-[11px] font-medium tracking-[0.16em] uppercase";
 
 const transport = new DefaultChatTransport({ api: "/api/chat" });
 
@@ -71,6 +71,8 @@ export function ChatInterface({
   conversationId: initialConversationId,
   initialMessages,
 }: ChatInterfaceProps) {
+  const t = useTranslations("analyst");
+  const suggestions = t.raw("empty.suggestions") as string[];
   const router = useRouter();
   const queryClient = useQueryClient();
   const [conversationId, setConversationId] = useState(initialConversationId);
@@ -85,6 +87,11 @@ export function ChatInterface({
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [balanceModalOpen, setBalanceModalOpen] = useState(false);
+
+  const { data: balance } = useCreditBalance();
+  const blocked =
+    balance !== undefined && balance.balanceCents < MIN_BALANCE_TO_CHAT_CENTS;
 
   const isLoading = status === "streaming" || status === "submitted";
 
@@ -102,7 +109,7 @@ export function ChatInterface({
     const title =
       firstUserText && "text" in firstUserText
         ? firstUserText.text.slice(0, 100)
-        : "New conversation";
+        : t("newConversation");
 
     if (!conversationId) {
       void fetch("/api/chat/conversations", {
@@ -127,7 +134,7 @@ export function ChatInterface({
         queryClient.invalidateQueries({ queryKey: ["chat-conversations"] })
       );
     }
-  }, [status, messages, conversationId, queryClient, router]);
+  }, [status, messages, conversationId, queryClient, router, t]);
 
   function handleSubmit(text: string) {
     const trimmed = text.trim();
@@ -200,37 +207,55 @@ export function ChatInterface({
 
   return (
     <div className="flex h-full flex-col">
+      <div className="flex items-center justify-between border-b px-4 py-2.5">
+        <span className={EYEBROW}>{t("eyebrow")}</span>
+        <BalanceChip />
+      </div>
       <Conversation className="flex-1">
         <ConversationContent>
           {messages.length === 0 ? (
-            <ConversationEmptyState>
-              <div className="flex flex-col items-center gap-6">
-                <div className="flex flex-col items-center gap-2">
-                  <SparklesIcon
-                    className="text-primary size-8"
-                    aria-hidden="true"
-                  />
-                  <h3 className="text-base font-medium text-balance">
-                    Analyst
-                  </h3>
-                  <p className="text-muted-foreground max-w-sm text-center text-sm text-pretty">
-                    Your AI-powered scrim analyst. Ask about team performance,
-                    fight breakdowns, ability impact, and more.
+            <ConversationEmptyState className="justify-center">
+              <div className="flex w-full max-w-lg flex-col items-start gap-6 text-left">
+                <div className="space-y-2">
+                  <p className={EYEBROW}>{t("eyebrow")}</p>
+                  <h2 className="text-foreground text-xl font-semibold tracking-tight text-balance">
+                    {t("empty.title")}
+                  </h2>
+                  <p className="text-muted-foreground text-sm text-pretty">
+                    {t("empty.description")}
                   </p>
                 </div>
-                <div className="grid w-full max-w-lg grid-cols-1 gap-2 sm:grid-cols-2">
-                  {SUGGESTIONS.map((s) => (
-                    <Button
-                      key={s}
-                      variant="outline"
-                      size="sm"
-                      className="h-auto cursor-pointer justify-start px-3 py-2.5 text-left text-xs whitespace-normal active:scale-[0.98]"
-                      onClick={() => handleSubmit(s)}
-                    >
-                      {s}
+                {blocked ? (
+                  <div className="border-border w-full space-y-3 rounded-md border border-dashed p-4">
+                    <p className="text-muted-foreground text-xs text-pretty">
+                      {t("empty.blocked.description")}
+                    </p>
+                    <Button size="sm" onClick={() => setBalanceModalOpen(true)}>
+                      {t("empty.blocked.addCredits")}
                     </Button>
-                  ))}
-                </div>
+                  </div>
+                ) : (
+                  <div className="w-full space-y-1.5">
+                    <p className={EYEBROW}>{t("empty.tryAsking")}</p>
+                    {suggestions.map((s, i) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => handleSubmit(s)}
+                        className="group/prompt border-border hover:bg-muted/50 focus-visible:border-ring focus-visible:ring-ring/50 flex w-full cursor-pointer items-center gap-3 rounded-md border px-3 py-2.5 text-left text-sm transition-colors outline-none focus-visible:ring-[3px] active:scale-[0.99]"
+                      >
+                        <span className="text-muted-foreground font-mono text-[11px] tabular-nums">
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                        <span className="flex-1 text-pretty">{s}</span>
+                        <CornerDownLeftIcon
+                          className="text-muted-foreground size-3.5 shrink-0 opacity-0 transition-opacity group-hover/prompt:opacity-100"
+                          aria-hidden="true"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </ConversationEmptyState>
           ) : (
@@ -256,7 +281,7 @@ export function ChatInterface({
                           className="active:scale-[0.96]"
                         >
                           <XIcon className="mr-1 size-3" />
-                          Cancel
+                          {t("edit.cancel")}
                         </Button>
                         <Button
                           size="sm"
@@ -264,7 +289,7 @@ export function ChatInterface({
                           disabled={!editText.trim()}
                           className="active:scale-[0.96]"
                         >
-                          Resend
+                          {t("edit.resend")}
                         </Button>
                       </div>
                     </div>
@@ -336,7 +361,7 @@ export function ChatInterface({
                       >
                         {message.role === "assistant" && (
                           <MessageAction
-                            tooltip="Copy"
+                            tooltip={t("actions.copy")}
                             onClick={() => handleCopy(message)}
                           >
                             <span className="relative grid size-3.5 place-items-center">
@@ -352,7 +377,7 @@ export function ChatInterface({
                         {message.role === "assistant" &&
                           messageIdx === lastAssistantIdx && (
                             <MessageAction
-                              tooltip="Regenerate"
+                              tooltip={t("actions.regenerate")}
                               onClick={handleRetry}
                             >
                               <RefreshCwIcon className="size-3.5" />
@@ -360,7 +385,7 @@ export function ChatInterface({
                           )}
                         {message.role === "user" && (
                           <MessageAction
-                            tooltip="Edit"
+                            tooltip={t("actions.edit")}
                             onClick={() => handleEditStart(message)}
                           >
                             <PencilIcon className="size-3.5" />
@@ -377,30 +402,53 @@ export function ChatInterface({
         <ConversationScrollButton />
       </Conversation>
 
-      <div className="px-4 py-3 shadow-[0_-1px_3px_rgba(0,0,0,0.05)]">
+      <div className="border-t px-4 py-3">
+        {blocked && (
+          <div className="border-border bg-muted/40 mx-auto mb-2 flex max-w-3xl items-center justify-between gap-3 rounded-md border px-3 py-2 text-xs">
+            <span className="text-muted-foreground text-pretty">
+              {t("blockedBanner.message")}
+            </span>
+            <Button
+              size="sm"
+              className="shrink-0"
+              onClick={() => setBalanceModalOpen(true)}
+            >
+              {t("blockedBanner.addCredits")}
+            </Button>
+          </div>
+        )}
         <form
           onSubmit={(e) => {
             e.preventDefault();
+            if (blocked) {
+              setBalanceModalOpen(true);
+              return;
+            }
             handleSubmit(input);
           }}
-          className="relative mx-auto max-w-3xl"
+          className="border-input focus-within:border-ring focus-within:ring-ring/50 dark:bg-input/30 mx-auto flex max-w-3xl items-end gap-2 rounded-lg border py-2 pr-2 pl-3 shadow-xs transition-[color,box-shadow] focus-within:ring-[3px]"
         >
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask about your team's performance…"
-            disabled={isLoading}
+            placeholder={
+              blocked
+                ? t("composer.placeholderBlocked")
+                : t("composer.placeholder")
+            }
+            disabled={isLoading || blocked}
             rows={1}
-            className="resize-none pr-12 text-sm"
+            className="max-h-40 min-h-0 flex-1 resize-none border-0 bg-transparent px-0 py-1.5 text-sm shadow-none focus-visible:ring-0 dark:bg-transparent"
           />
           <Button
             type={isLoading ? "button" : "submit"}
-            size="icon"
-            variant="ghost"
-            className="absolute right-1.5 bottom-1.5 size-8 active:scale-[0.96]"
+            size="icon-sm"
+            variant={isLoading ? "ghost" : "default"}
+            disabled={blocked && !isLoading}
+            className="shrink-0 active:scale-[0.96]"
             onClick={isLoading ? stop : undefined}
-            aria-label={isLoading ? "Stop generating" : "Send message"}
+            aria-label={isLoading ? t("composer.stop") : t("composer.send")}
           >
             <span className="relative grid size-4 place-items-center">
               <CornerDownLeftIcon
@@ -413,6 +461,10 @@ export function ChatInterface({
           </Button>
         </form>
       </div>
+      <BalanceModal
+        open={balanceModalOpen}
+        onOpenChange={setBalanceModalOpen}
+      />
     </div>
   );
 }

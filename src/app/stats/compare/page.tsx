@@ -3,11 +3,9 @@
 import { ComparisonView } from "@/components/stats/compare/comparison-view";
 import type { Timeframe } from "@/components/stats/player/range-picker";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import type { Winrate } from "@/data/scrim";
-import type { Kill, PlayerStat, Scrim } from "@prisma/client";
+import type { Kill, PlayerStat, Scrim } from "@/generated/prisma/browser";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -43,7 +41,6 @@ async function fetchPlayerStats(
   const data = (await response.json()) as PlayerStatsResponse;
 
   if (data.success && data.data) {
-    // Convert date strings back to Date objects for scrims
     const convertedScrims = Object.fromEntries(
       Object.entries(data.data.scrims).map(([timeframe, scrims]) => [
         timeframe,
@@ -56,7 +53,6 @@ async function fetchPlayerStats(
       ])
     ) as Record<Timeframe, Scrim[]>;
 
-    // Convert date strings in mapWinrates
     const convertedMapWinrates = data.data.mapWinrates.map((winrate) => ({
       ...winrate,
       date: new Date(winrate.date),
@@ -115,99 +111,102 @@ export default function ComparePage() {
 
   const bothPlayersLoaded =
     player1Query.data?.success && player2Query.data?.success;
+  const isLoading = player1Query.isLoading || player2Query.isLoading;
+  const isError = player1Query.isError || player2Query.isError;
 
   return (
-    <div className="flex-1 space-y-4 p-4 pt-6 md:p-6 lg:p-8">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">{t("title")}</h2>
-      </div>
+    <div className="px-6 pt-8 pb-16 sm:px-10">
+      <header className="border-border flex flex-wrap items-end justify-between gap-x-10 gap-y-4 border-b pb-6">
+        <div>
+          <p className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
+            {t("eyebrow")}
+          </p>
+          <h1 className="mt-3 text-4xl leading-none font-semibold tracking-tight">
+            {t("title")}
+          </h1>
+        </div>
+        {(player1Name ?? player2Name) ? (
+          <Button type="button" variant="outline" onClick={handleReset}>
+            {t("reset")}
+          </Button>
+        ) : null}
+      </header>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("enterPlayerNames")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleCompare} className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="player1">{t("player1")}</Label>
-                <Input
-                  id="player1"
-                  placeholder={t("player1Placeholder")}
-                  value={player1Input}
-                  onChange={(e) => setPlayer1Input(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="player2">{t("player2")}</Label>
-                <Input
-                  id="player2"
-                  placeholder={t("player2Placeholder")}
-                  value={player2Input}
-                  onChange={(e) => setPlayer2Input(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button
-                type="submit"
-                disabled={!player1Input.trim() || !player2Input.trim()}
-              >
-                {t("compare")}
-              </Button>
-              {(player1Name ?? player2Name) && (
-                <Button type="button" variant="outline" onClick={handleReset}>
-                  {t("reset")}
-                </Button>
-              )}
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+      <form
+        onSubmit={handleCompare}
+        className="border-border mt-8 flex flex-wrap items-end gap-x-6 gap-y-4 border-b pb-8"
+      >
+        <div className="min-w-[14rem] flex-1 space-y-2">
+          <label
+            htmlFor="player1"
+            className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase"
+          >
+            {t("player1")}
+          </label>
+          <Input
+            id="player1"
+            placeholder={t("player1Placeholder")}
+            value={player1Input}
+            onChange={(e) => setPlayer1Input(e.target.value)}
+          />
+        </div>
+        <div className="min-w-[14rem] flex-1 space-y-2">
+          <label
+            htmlFor="player2"
+            className="text-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase"
+          >
+            {t("player2")}
+          </label>
+          <Input
+            id="player2"
+            placeholder={t("player2Placeholder")}
+            value={player2Input}
+            onChange={(e) => setPlayer2Input(e.target.value)}
+          />
+        </div>
+        <Button
+          type="submit"
+          disabled={!player1Input.trim() || !player2Input.trim()}
+        >
+          {t("compare")}
+        </Button>
+      </form>
 
-      {(player1Query.isLoading || player2Query.isLoading) && (
-        <Card>
-          <CardContent className="flex h-[200px] items-center justify-center">
-            <div className="flex items-center gap-2">
-              <Loader2 className="h-6 w-6 animate-spin" />
-              <span>{t("loading")}</span>
-            </div>
-          </CardContent>
-        </Card>
+      {isLoading && (
+        <div className="text-muted-foreground mt-12 flex items-center justify-center gap-2 py-16 text-sm">
+          <Loader2 className="size-4 animate-spin" />
+          <span>{t("loading")}</span>
+        </div>
       )}
 
-      {(player1Query.isError || player2Query.isError) && (
-        <Card>
-          <CardContent className="flex h-[200px] items-center justify-center">
-            <div className="text-center text-red-500">
-              <p className="font-bold">{t("errorLoading")}</p>
-              <p className="text-sm">
-                {player1Query.isError && t("errorPlayer1")}
-                {player1Query.isError && player2Query.isError
-                  ? t("errorBoth")
-                  : ""}
-                {player2Query.isError && t("errorPlayer2")}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+      {isError && (
+        <div className="mt-12 py-16 text-center">
+          <p className="text-destructive text-base font-semibold">
+            {t("errorLoading")}
+          </p>
+          <p className="text-muted-foreground mt-1 text-sm">
+            {player1Query.isError && t("errorPlayer1")}
+            {player1Query.isError && player2Query.isError ? t("errorBoth") : ""}
+            {player2Query.isError && t("errorPlayer2")}
+          </p>
+        </div>
       )}
 
       {bothPlayersLoaded &&
         player1Query.data?.data &&
         player2Query.data?.data && (
-          <ComparisonView
-            player1Data={player1Query.data.data}
-            player2Data={player2Query.data.data}
-          />
+          <div className="mt-10">
+            <ComparisonView
+              player1Data={player1Query.data.data}
+              player2Data={player2Query.data.data}
+            />
+          </div>
         )}
 
-      {!player1Name && !player2Name && (
-        <Card>
-          <CardContent className="flex h-[200px] items-center justify-center">
-            <p className="text-muted-foreground">{t("enterPlayersPrompt")}</p>
-          </CardContent>
-        </Card>
+      {!player1Name && !player2Name && !isLoading && (
+        <p className="text-muted-foreground mt-12 py-16 text-center text-sm">
+          {t("enterPlayersPrompt")}
+        </p>
       )}
     </div>
   );

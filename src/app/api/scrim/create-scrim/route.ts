@@ -2,28 +2,36 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auditLog } from "@/lib/audit-logs";
-import { auth } from "@/lib/auth";
-import { setRequestContext } from "@/lib/axiom/baggage";
+import { auth, canManageTeam } from "@/lib/auth";
+import { withRequestContext } from "@/lib/axiom/baggage";
 import {
   rateLimitHitCounter,
   scrimCreatedCounter,
   scrimParsingDuration,
 } from "@/lib/axiom/metrics";
+import { UsageEventName } from "@/lib/usage/names";
+import { usage } from "@/lib/usage/server";
 import { sendScrimNotifications } from "@/lib/bot-events";
 import { Logger } from "@/lib/logger";
 import { createNewScrimFromParsedData } from "@/lib/parser";
+import { Permission } from "@/lib/permissions";
 import { normalizeMapForScrim } from "@/lib/team-normalization";
+import prisma from "@/lib/prisma";
+import { resolveScrimLink } from "@/lib/team-ops/scrim-feedback";
+import { resolveSetWinnerOutcome } from "@/lib/scrim/set-winner-validation";
 import {
   newSuspiciousActivityWebhookConstructor,
   sendDiscordWebhook,
 } from "@/lib/webhooks";
 import type { ParserData } from "@/types/parser";
-import type { User } from "@prisma/client";
+import type { UploadWinnerSource } from "@/lib/winner-source";
+import type { User } from "@/generated/prisma/client";
 import { Ratelimit } from "@upstash/ratelimit";
 import { ipAddress } from "@vercel/functions";
 import { kv } from "@vercel/kv";
 import { unauthorized } from "next/navigation";
 import { after, type NextRequest, userAgent } from "next/server";
+import { z } from "zod";
 
 export type CreateScrimRequestData = {
   name: string;
@@ -40,7 +48,54 @@ export type CreateScrimRequestData = {
     team: string;
     banPosition: number;
   }[];
+  winner?: string | null;
+  winnerSource?: UploadWinnerSource | null;
+  scrimRequestId?: string | null;
+  opponentTeamId?: number | null;
 };
+
+const parserDataSchema = z.custom<ParserData>((value) => {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  const map = value as Record<string, unknown>;
+  return (
+    Array.isArray(map.match_start) &&
+    Array.isArray(map.round_end) &&
+    Array.isArray(map.player_stat)
+  );
+});
+
+export const createScrimSchema = z.object({
+  name: z.string().min(1).max(100),
+  team: z
+    .string()
+    .regex(/^\d+$/)
+    .refine((value) => Number.isSafeInteger(Number(value)), {
+      message: "Team ID is too large",
+    }),
+  date: z.string().min(1),
+  map: parserDataSchema,
+  replayCode: z.string().max(100),
+  opponentTeamAbbr: z.string().max(20).nullable().optional(),
+  autoAssignTeamNames: z.boolean().optional(),
+  team1Name: z.string().max(100).nullable().optional(),
+  team2Name: z.string().max(100).nullable().optional(),
+  heroBans: z
+    .array(
+      z.object({
+        hero: z.string().min(1).max(100),
+        team: z.string().min(1).max(100),
+        banPosition: z.number().int().min(0),
+      })
+    )
+    .default([]),
+  winner: z.string().min(1).max(100).nullable().optional(),
+  winnerSource: z.enum(["auto_coords", "manual"]).nullable().optional(),
+  scrimRequestId: z.string().min(1).nullable().optional(),
+  opponentTeamId: z.number().int().positive().nullable().optional(),
+});
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -117,7 +172,17 @@ export async function POST(request: NextRequest) {
       return new Response("Rate limit exceeded", { status: 429 });
     }
 
-    const data = (await request.json()) as CreateScrimRequestData;
+    const parsed = createScrimSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      event.outcome = "validation_error";
+      event.status_code = 400;
+      return Response.json(
+        { error: "Invalid request", details: parsed.error.flatten() },
+        { status: 400 }
+      );
+    }
+
+    const data = parsed.data;
     event.scrim_name = data.name;
     event.team_id_raw = data.team;
     event.has_hero_bans = data.heroBans.length > 0;
@@ -136,58 +201,129 @@ export async function POST(request: NextRequest) {
     event.user_id = user?.id;
     event.billing_plan = user?.billingPlan;
 
-    if (user) {
-      setRequestContext({
+    if (!user) {
+      event.outcome = "user_not_found";
+      event.status_code = 404;
+      return new Response("User not found", { status: 404 });
+    }
+
+    return await withRequestContext(
+      {
         user_id: user.id,
         billing_plan: user.billingPlan,
-      });
-    }
+      },
+      async () => {
+        const canCreateScrim = await new Permission("create-scrim").check();
+        if (!canCreateScrim) {
+          event.outcome = "permission_denied";
+          event.status_code = 403;
+          return new Response("Forbidden", { status: 403 });
+        }
 
-    const teamId = parseInt(data.team) === 0 ? null : parseInt(data.team);
-    event.team_id = teamId;
+        const parsedTeamId = Number(data.team);
+        const teamId = parsedTeamId === 0 ? null : parsedTeamId;
+        event.team_id = teamId;
+        if (teamId && !(await canManageTeam(teamId, user))) {
+          event.outcome = "forbidden_team";
+          event.status_code = 403;
+          return new Response("Forbidden", { status: 403 });
+        }
 
-    if (data.autoAssignTeamNames && teamId && data.team1Name) {
-      event.normalized_teams = true;
-      data.map = await normalizeMapForScrim(
-        data.map,
-        teamId,
-        data.team1Name,
-        data.team2Name ?? null
-      );
-    }
+        // Validate the chosen winner against the RAW uploaded team names
+        // before any normalization renames them.
+        if (data.winner) {
+          const winnerOutcome = resolveSetWinnerOutcome(data.winner, {
+            team1: String(data.map.match_start[0][4]),
+            team2: String(data.map.match_start[0][5]),
+          });
+          if (!winnerOutcome.ok) {
+            event.outcome = "invalid_winner";
+            event.status_code = 400;
+            return Response.json(
+              { error: winnerOutcome.error },
+              { status: 400 }
+            );
+          }
+        }
 
-    const parseStart = performance.now();
-    await createNewScrimFromParsedData(data, session);
-    const parseDuration = performance.now() - parseStart;
-    scrimParsingDuration.record(parseDuration);
-    scrimCreatedCounter.add(1);
-
-    event.parse_duration_ms = Math.round(parseDuration);
-    event.outcome = "success";
-    event.status_code = 200;
-
-    after(async () => {
-      await auditLog.createAuditLog({
-        userEmail: session.user.email,
-        action: "SCRIM_CREATED",
-        target: `${data.name} (Team: ${data.team})`,
-        details: `Scrim created: ${data.name}`,
-      });
-
-      if (teamId) {
-        await sendScrimNotifications(teamId, {
-          event: "scrim.created",
-          data: {
-            scrimName: data.name,
-            scrimId: 0, // Scrim ID not returned from parser
-            createdBy: session.user.email,
+        if (data.autoAssignTeamNames && teamId && data.team1Name) {
+          event.normalized_teams = true;
+          const result = await normalizeMapForScrim(
+            data.map,
             teamId,
-          },
-        });
-      }
-    });
+            data.team1Name,
+            data.team2Name ?? null,
+            data.winner ?? null
+          );
+          data.map = result.map;
+          data.winner = result.winner;
+        }
 
-    return new Response("OK", { status: 200 });
+        const parseStart = performance.now();
+        const newScrimId = await createNewScrimFromParsedData(data, session);
+        const parseDuration = performance.now() - parseStart;
+        scrimParsingDuration.record(parseDuration);
+        scrimCreatedCounter.add(1);
+        void usage.track({
+          name: UsageEventName.SCRIM_CREATE,
+          userId: user.id,
+          teamId,
+        });
+
+        event.parse_duration_ms = Math.round(parseDuration);
+        event.scrim_id = newScrimId;
+        event.outcome = "success";
+        event.status_code = 200;
+
+        // Linking is best-effort: the scrim is already created, so a failed
+        // link update must not turn a successful creation into a 500.
+        if (teamId && data.scrimRequestId && data.opponentTeamId) {
+          try {
+            const link = await resolveScrimLink({
+              teamId,
+              scrimRequestId: data.scrimRequestId,
+              opponentTeamId: data.opponentTeamId,
+            });
+            if (link) {
+              await prisma.scrim.update({
+                where: { id: newScrimId },
+                data: {
+                  scrimRequestId: link.scrimRequestId,
+                  opponentTeamId: link.opponentTeamId,
+                },
+              });
+              event.linked_request = true;
+            }
+          } catch (linkErr) {
+            event.link_error =
+              linkErr instanceof Error ? linkErr.message : String(linkErr);
+          }
+        }
+
+        after(async () => {
+          await auditLog.createAuditLog({
+            userEmail: session.user.email,
+            action: "SCRIM_CREATED",
+            target: `${data.name} (Team: ${data.team})`,
+            details: `Scrim created: ${data.name}`,
+          });
+
+          if (teamId) {
+            await sendScrimNotifications(teamId, {
+              event: "scrim.created",
+              data: {
+                scrimName: data.name,
+                scrimId: newScrimId,
+                createdBy: session.user.email,
+                teamId,
+              },
+            });
+          }
+        });
+
+        return Response.json({ scrimId: newScrimId }, { status: 200 });
+      }
+    );
   } catch (error) {
     event.outcome = "error";
     event.status_code = 500;

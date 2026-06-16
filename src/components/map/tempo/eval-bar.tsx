@@ -5,6 +5,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useTranslations } from "next-intl";
 
 type EvalBarProps = {
   team1Score: number;
@@ -23,6 +24,7 @@ export function EvalBar({
   team1Color,
   team2Color,
 }: EvalBarProps) {
+  const t = useTranslations("mapPage.events.tempo");
   const total = team1Score + team2Score;
   const team1Pct = total > 0 ? (team1Score / total) * 100 : 50;
   const team2Pct = 100 - team1Pct;
@@ -30,7 +32,7 @@ export function EvalBar({
   const diff = team1Score - team2Score;
   const sign = diff > 0 ? "+" : "";
   const label = `${sign}${diff.toFixed(2)}`;
-  const leading = diff > 0 ? team1Name : diff < 0 ? team2Name : "Even";
+  const leading = diff > 0 ? team1Name : diff < 0 ? team2Name : t("even");
 
   return (
     <Tooltip>

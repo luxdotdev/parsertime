@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/hover-card";
 import { Link } from "@/components/ui/link";
 import { toHero, toTimestampWithHours, useHeroNames } from "@/lib/utils";
-import { BillingPlan } from "@prisma/client";
+import { BillingPlan } from "@/generated/prisma/browser";
 import { useQuery } from "@tanstack/react-query";
 import type { Route } from "next";
 import { useTranslations } from "next-intl";
@@ -38,7 +38,8 @@ async function getTop3Heroes(player: string) {
     ),
   });
 
-  const response = await fetch(`/api/player/top-3-heroes?player=${player}`);
+  const params = new URLSearchParams({ player });
+  const response = await fetch(`/api/player/top-3-heroes?${params}`);
   const data = await response.json();
 
   const parsedData = resultSchema.safeParse(data);
@@ -80,7 +81,8 @@ export function PlayerHoverCard({
   const maxTimePlayed =
     heroes.length > 0 ? Math.max(...heroes.map((h) => h.total_time_played)) : 1;
 
-  const t = useTranslations("titles");
+  const titleT = useTranslations("titles");
+  const t = useTranslations("profilePage.hoverCard");
 
   return (
     <HoverCard>
@@ -93,7 +95,7 @@ export function PlayerHoverCard({
               {playerData.bannerImage && (
                 <Image
                   src={playerData.bannerImage}
-                  alt={`${playerData.name} banner`}
+                  alt={t("bannerAlt", { playerName: playerData.name })}
                   fill
                   className="object-cover"
                   priority
@@ -127,7 +129,7 @@ export function PlayerHoverCard({
               </h4>
               {playerData.title ? (
                 <p className="text-muted-foreground mt-1 text-xs font-semibold tracking-wider uppercase">
-                  {t(playerData.title)}
+                  {titleT(playerData.title)}
                 </p>
               ) : (
                 <div className="h-4 w-4" aria-hidden="true" />
@@ -137,25 +139,25 @@ export function PlayerHoverCard({
 
           <div className="space-y-3">
             <div className="text-muted-foreground flex items-center justify-between px-1 text-xs font-medium">
-              <span>Top Heroes</span>
-              <span>Time Played</span>
+              <span>{t("topHeroes")}</span>
+              <span>{t("timePlayed")}</span>
             </div>
 
             {isLoading && (
               <div className="text-muted-foreground py-4 text-center text-sm">
-                Loading...
+                {t("loading")}
               </div>
             )}
 
             {isError && (
               <div className="text-destructive py-4 text-center text-sm">
-                Error loading data
+                {t("error")}
               </div>
             )}
 
             {!isLoading && !isError && heroes.length === 0 && (
               <div className="text-muted-foreground py-4 text-center text-sm">
-                No data available
+                {t("empty")}
               </div>
             )}
 
@@ -196,7 +198,9 @@ export function PlayerHoverCard({
         </div>
         {/* Add a lighter color card section with a link to the player's profile */}
         <div className="bg-muted text-primary p-2 text-center">
-          <Link href={`/profile/${player}` as Route}>View Profile &rarr;</Link>
+          <Link href={`/profile/${encodeURIComponent(player)}` as Route}>
+            {t("viewProfile")}
+          </Link>
         </div>
       </HoverCardContent>
     </HoverCard>

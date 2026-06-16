@@ -30,21 +30,39 @@ export function UserAuthForm({
 }: React.HTMLAttributes<HTMLDivElement> & { callbackUrl?: string }) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [email, setEmail] = React.useState("");
+  const [lastSignedInUsing, setLastSignedInUsing] = React.useState<
+    string | null
+  >(null);
 
-  const lastSignedInUsing = localStorage.getItem("lastSignedInUsing");
+  React.useEffect(() => {
+    try {
+      setLastSignedInUsing(localStorage.getItem("lastSignedInUsing"));
+    } catch {
+      setLastSignedInUsing(null);
+    }
+  }, []);
+
+  function rememberSignInMethod(method: string) {
+    setLastSignedInUsing(method);
+    try {
+      localStorage.setItem("lastSignedInUsing", method);
+    } catch {
+      // Storage can be disabled; sign-in should still continue.
+    }
+  }
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
     setIsLoading(true);
     track("Sign In", { location: "Auth form", method: "Email" });
-    localStorage.setItem("lastSignedInUsing", "email");
+    rememberSignInMethod("email");
     await signIn("email", { email, callbackUrl: callbackUrl ?? "/dashboard" });
   }
 
   async function handleProviderSignIn(provider: string) {
     setIsLoading(true);
     track("Sign In", { location: "Auth form", method: provider });
-    localStorage.setItem("lastSignedInUsing", provider);
+    rememberSignInMethod(provider);
     await signIn(provider, { callbackUrl: callbackUrl ?? "/dashboard" });
   }
 

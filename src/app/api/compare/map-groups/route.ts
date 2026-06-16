@@ -1,8 +1,7 @@
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
-import { UserService } from "@/data/user";
 import { MapGroupService } from "@/data/map";
-import { auth } from "@/lib/auth";
+import { auth, canManageTeam, canViewTeam, getCurrentUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import type { NextRequest } from "next/server";
@@ -13,9 +12,17 @@ const CreateMapGroupSchema = z.object({
   name: z.string().min(1, "Name is required").max(100, "Name is too long"),
   description: z.string().max(500, "Description is too long").optional(),
   teamId: z.number().int().positive("Team ID must be positive"),
-  mapIds: z.array(z.number()).min(1, "At least one map must be selected"),
+  mapIds: z
+    .array(z.number().int().positive())
+    .min(1, "At least one map must be selected"),
   category: z.string().max(50, "Category is too long").optional(),
 });
+
+function parsePositiveInt(value: string | null) {
+  if (!value || !/^[1-9]\d*$/.test(value)) return null;
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) ? parsed : null;
+}
 
 export async function GET(request: NextRequest) {
   const startTime = Date.now();
@@ -34,9 +41,7 @@ export async function GET(request: NextRequest) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const user = await AppRuntime.runPromise(
-      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-    );
+    const user = await getCurrentUser();
     if (!user) {
       wideEvent.status_code = 404;
       wideEvent.outcome = "user_not_found";
@@ -56,12 +61,19 @@ export async function GET(request: NextRequest) {
       return new Response("Team ID is required", { status: 400 });
     }
 
-    const teamId = parseInt(teamIdParam);
-    if (isNaN(teamId)) {
+    const teamId = parsePositiveInt(teamIdParam);
+    if (!teamId) {
       wideEvent.status_code = 400;
       wideEvent.outcome = "invalid_team_id";
       wideEvent.error = { message: "Invalid team ID" };
       return new Response("Invalid team ID", { status: 400 });
+    }
+
+    if (!(await canViewTeam(teamId, user))) {
+      wideEvent.status_code = 403;
+      wideEvent.outcome = "forbidden";
+      wideEvent.error = { message: "User cannot view team" };
+      return new Response("Forbidden", { status: 403 });
     }
 
     wideEvent.team = { id: teamId };
@@ -148,9 +160,7 @@ export async function POST(request: NextRequest) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const user = await AppRuntime.runPromise(
-      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-    );
+    const user = await getCurrentUser();
     if (!user) {
       wideEvent.status_code = 404;
       wideEvent.outcome = "user_not_found";
@@ -208,16 +218,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (team.users.length === 0 && team.ownerId !== user.id) {
+    if (!(await canManageTeam(teamId, user))) {
       wideEvent.status_code = 403;
       wideEvent.outcome = "forbidden";
-      wideEvent.error = { message: "User is not a member of this team" };
+      wideEvent.error = { message: "User cannot manage this team" };
       return NextResponse.json(
         {
           success: false,
-          error: "You must be a member of this team to create map groups",
+          error: "You must manage this team to create map groups",
         },
         { status: 403 }
+      );
+    }
+
+    const validMaps = await prisma.map.count({
+      where: {
+        id: { in: mapIds },
+        Scrim: { teamId },
+      },
+    });
+    if (validMaps !== new Set(mapIds).size) {
+      wideEvent.status_code = 400;
+      wideEvent.outcome = "invalid_map_ids";
+      wideEvent.error = { message: "Map IDs must belong to the team" };
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Map IDs must belong to the team",
+        },
+        { status: 400 }
       );
     }
 

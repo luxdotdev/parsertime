@@ -1,12 +1,22 @@
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { TeamComparisonService } from "@/data/team";
+import { auth, canViewMaps, canViewTeam, getCurrentUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import type { HeroName } from "@/types/heroes";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   try {
+    const session = await auth();
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    const user = await getCurrentUser();
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
     const { searchParams } = new URL(request.url);
 
     const mapIdsParam = searchParams.get("mapIds");
@@ -37,6 +47,13 @@ export async function GET(request: Request) {
         { error: "teamId must be a valid number" },
         { status: 400 }
       );
+    }
+
+    if (
+      !(await canViewTeam(teamId, user)) ||
+      !(await canViewMaps(mapIds, user))
+    ) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const heroes = heroesParam

@@ -1,7 +1,7 @@
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
-import { $Enums, type User } from "@prisma/client";
+import { $Enums, type User } from "@/generated/prisma/browser";
 import { get } from "@vercel/edge-config";
 import { Effect } from "effect";
 

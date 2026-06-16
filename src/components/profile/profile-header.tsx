@@ -6,8 +6,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cn, useTitleTranslation } from "@/lib/utils";
-import type { BillingPlan, Title } from "@prisma/client";
+import { useTitleTranslation } from "@/lib/utils";
+import type { BillingPlan, Title } from "@/generated/prisma/client";
 import Image from "next/image";
 
 type ProfileHeaderProps = {
@@ -15,99 +15,119 @@ type ProfileHeaderProps = {
     name: string;
     image?: string | null;
     bannerImage?: string | null;
-    title?: Title | null; // e.g. "Squire", "Grandmaster"
-    level?: number;
-    endorsementLevel?: number;
-    rankIcon?: string; // URL to rank icon
+    title?: Title | null;
     billingPlan: BillingPlan;
     email?: string | null;
   };
-  className?: string;
+  stats: {
+    label: string;
+    value: string;
+    sub?: string;
+  }[];
+  rightSlot?: React.ReactNode;
 };
 
-export function ProfileHeader({ player, className }: ProfileHeaderProps) {
+export function ProfileHeader({
+  player,
+  stats,
+  rightSlot,
+}: ProfileHeaderProps) {
   const titleTranslation = useTitleTranslation(player.title!);
+  const isEmployee = player.email?.endsWith("@lux.dev") ?? false;
+  const eyebrow = player.title ? `Player · ${titleTranslation}` : "Player";
+  const hasBanner = Boolean(player.bannerImage);
 
   return (
-    <div
-      className={cn(
-        "bg-background relative w-full overflow-hidden rounded-lg border",
-        className
-      )}
-    >
-      {/* Banner Section */}
-      <div className="relative aspect-[3/1] max-h-[300px] w-full overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600">
-        {player.bannerImage && (
+    <header>
+      {hasBanner ? (
+        <div className="border-border bg-muted/40 relative aspect-[3/1] max-h-[280px] w-full overflow-hidden rounded-md border">
           <Image
-            src={player.bannerImage}
-            alt={`${player.name} banner`}
+            src={player.bannerImage!}
+            alt=""
             fill
-            className="object-cover"
+            sizes="100vw"
             priority
+            className="object-cover object-center"
           />
-        )}
-        <div className="absolute inset-0 bg-black/20" />
-      </div>
+          <div
+            aria-hidden
+            className="from-background pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t to-transparent"
+          />
+        </div>
+      ) : null}
 
-      {/* User Info Bar */}
-      <div className="relative px-8 pb-6">
-        <div className="-mt-12 flex flex-col items-start gap-6 sm:-mt-16 sm:flex-row sm:items-end">
-          {/* Avatar Section */}
-          <div className="relative">
-            <div className="border-background bg-background rounded-full border-4 p-1">
-              <Avatar className="border-muted h-36 w-36 rounded-full border-2">
-                <AvatarImage
-                  src={player.image ?? undefined}
-                  alt={player.name}
-                />
-                <AvatarFallback className="text-4xl font-bold">
-                  {player.name.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-          </div>
-
-          {/* Player Details */}
-          <div className="mb-2 flex flex-col space-y-1">
-            <div className="flex items-center gap-3">
-              <h1 className="text-foreground flex items-center gap-4 text-4xl font-black tracking-tighter uppercase italic">
-                {player.name}
-                <SupporterHeart
-                  billingPlan={player.billingPlan}
-                  className="h-6 w-6"
-                />
-              </h1>
-            </div>
-
-            {player.title && (
-              <div className="text-muted-foreground text-sm font-semibold tracking-widest uppercase">
-                {titleTranslation}
-              </div>
-            )}
-          </div>
-
-          {/* Rank/Extra Info (Right Side) */}
-          <div className="ml-auto hidden sm:block">
-            {/* Could put rank icon here */}
-            {player.email?.endsWith("@lux.dev") && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Badge
-                    variant="default"
-                    className="drop-shadow-[0_0_8px_rgba(100,104,240,0.5)]"
-                  >
-                    Employee Account
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent>
-                  This user is a verified employee of lux.dev LLC. Their account
-                  is made with their lux.dev email address.
-                </TooltipContent>
-              </Tooltip>
-            )}
+      <div
+        className={
+          hasBanner
+            ? "border-border flex flex-wrap items-end justify-between gap-x-10 gap-y-4 border-b pt-4 pb-8"
+            : "border-border flex flex-wrap items-end justify-between gap-x-10 gap-y-4 border-b pb-8"
+        }
+      >
+        <div className="flex items-end gap-5">
+          <Avatar
+            className={
+              hasBanner
+                ? "ring-background bg-card -mt-16 h-24 w-24 shrink-0 ring-4 sm:-mt-20 sm:h-28 sm:w-28"
+                : "border-border bg-card h-14 w-14 shrink-0 border"
+            }
+          >
+            <AvatarImage src={player.image ?? undefined} alt={player.name} />
+            <AvatarFallback
+              className={
+                hasBanner ? "text-2xl font-semibold" : "text-base font-semibold"
+              }
+            >
+              {player.name.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div className="pb-1">
+            <p className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
+              {eyebrow}
+            </p>
+            <h1 className="mt-2 flex items-center gap-3 text-4xl leading-none font-semibold tracking-tight">
+              {player.name}
+              <SupporterHeart
+                billingPlan={player.billingPlan}
+                className="h-5 w-5"
+              />
+              {isEmployee ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge variant="secondary" className="text-[10px]">
+                      Employee
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    Verified employee of lux.dev LLC.
+                  </TooltipContent>
+                </Tooltip>
+              ) : null}
+            </h1>
           </div>
         </div>
+        <div className="flex flex-wrap items-end gap-x-6 gap-y-4 pb-1">
+          {stats.length > 0 ? (
+            <dl className="flex flex-wrap items-baseline gap-x-8 gap-y-2 font-mono">
+              {stats.map((stat) => (
+                <div key={stat.label} className="flex flex-col">
+                  <dt className="text-muted-foreground text-[10px] tracking-[0.18em] uppercase">
+                    {stat.label}
+                  </dt>
+                  <dd className="text-lg font-medium tabular-nums">
+                    {stat.value}
+                  </dd>
+                  {stat.sub ? (
+                    <dd className="text-muted-foreground/80 text-[10px]">
+                      {stat.sub}
+                    </dd>
+                  ) : null}
+                </div>
+              ))}
+            </dl>
+          ) : null}
+          {rightSlot}
+        </div>
       </div>
-    </div>
+    </header>
   );
 }

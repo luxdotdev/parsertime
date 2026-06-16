@@ -1,4 +1,4 @@
-import type { $Enums } from "@prisma/client";
+import type { $Enums } from "@/generated/prisma/client";
 import type { HeroName } from "./heroes";
 
 type DefaultPlayerTeam = "Team 1" | "Team 2";

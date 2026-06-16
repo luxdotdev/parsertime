@@ -34,31 +34,29 @@ export function HeroSidebar({ onHeroSelect, pendingHero }: HeroSidebarProps) {
         onValueChange={(v) => setActiveTeam(v as "1" | "2")}
         className="flex h-full flex-col"
       >
-        <TabsList className="mx-2 mt-2 grid w-auto grid-cols-2">
+        <TabsList className="border-border mx-2 mt-2 flex h-auto w-auto justify-start gap-5 rounded-none border-b bg-transparent p-0">
           <TabsTrigger
             value="1"
-            className="relative"
+            className="text-muted-foreground data-[state=active]:text-foreground flex items-center gap-1.5 rounded-none border-0 border-b-2 border-b-transparent bg-transparent px-0 pt-1 pb-2.5 text-sm shadow-none transition-colors data-[state=active]:bg-transparent data-[state=active]:shadow-none"
             style={{
-              borderBottom:
-                activeTeam === "1" ? `2px solid ${team1}` : undefined,
+              borderBottomColor: activeTeam === "1" ? team1 : undefined,
             }}
           >
             <span
-              className="mr-1.5 inline-block size-2.5 rounded-full"
+              className="inline-block size-2.5 rounded-full"
               style={{ backgroundColor: team1 }}
             />
             {t("team1")}
           </TabsTrigger>
           <TabsTrigger
             value="2"
-            className="relative"
+            className="text-muted-foreground data-[state=active]:text-foreground flex items-center gap-1.5 rounded-none border-0 border-b-2 border-b-transparent bg-transparent px-0 pt-1 pb-2.5 text-sm shadow-none transition-colors data-[state=active]:bg-transparent data-[state=active]:shadow-none"
             style={{
-              borderBottom:
-                activeTeam === "2" ? `2px solid ${team2}` : undefined,
+              borderBottomColor: activeTeam === "2" ? team2 : undefined,
             }}
           >
             <span
-              className="mr-1.5 inline-block size-2.5 rounded-full"
+              className="inline-block size-2.5 rounded-full"
               style={{ backgroundColor: team2 }}
             />
             {t("team2")}
@@ -105,7 +103,7 @@ function HeroGrid({
       <div className="space-y-3 p-2">
         {ROLES.map((role) => (
           <div key={role}>
-            <p className="text-muted-foreground mb-1 px-1 text-xs font-medium tracking-wider uppercase">
+            <p className="text-muted-foreground mb-1.5 px-1 font-mono text-[10px] tracking-[0.18em] uppercase">
               {t(ROLE_I18N_KEYS[role])}
             </p>
             <div className="grid grid-cols-4 gap-1">

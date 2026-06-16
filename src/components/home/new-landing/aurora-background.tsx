@@ -82,10 +82,10 @@ const fragmentShader = `
 
     float noise = n1 * 0.5 + n2 * 0.3 + n3 * 0.2;
 
-    // Aurora color mixing - indigo/cyan palette (no magenta)
-    vec3 color1 = vec3(0.31 * uRedFactor, 0.15, 0.85 * uBlueFactor);   // indigo
-    vec3 color2 = vec3(0.15 * uRedFactor, 0.65 * uGreenFactor, 0.85 * uBlueFactor); // cyan
-    vec3 color3 = vec3(0.20 * uRedFactor, 0.25, 0.90 * uBlueFactor);   // blue-violet
+    // Aurora color mixing - amber family (deep bronze → brand amber → pale honey)
+    vec3 color1 = vec3(0.40 * uRedFactor, 0.22 * uGreenFactor, 0.08 * uBlueFactor); // deep bronze
+    vec3 color2 = vec3(0.96 * uRedFactor, 0.72 * uGreenFactor, 0.25 * uBlueFactor); // brand amber
+    vec3 color3 = vec3(0.98 * uRedFactor, 0.85 * uGreenFactor, 0.55 * uBlueFactor); // pale honey
 
     vec3 color = mix(color1, color2, smoothstep(-0.3, 0.3, noise));
     color = mix(color, color3, smoothstep(0.1, 0.6, n2));

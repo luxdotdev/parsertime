@@ -1,4 +1,4 @@
-import type { BillingPlan } from "@prisma/client";
+import type { BillingPlan } from "@/generated/prisma/client";
 
 export const TEAM_CREATION_LIMIT = {
   FREE: 2,

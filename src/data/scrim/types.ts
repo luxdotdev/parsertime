@@ -1,8 +1,12 @@
 import type { TrendsAnalysis } from "@/data/comparison/types";
-import type { SwapTimingOutcome, SwapWinrateBucket } from "@/data/team/types";
+import type {
+  SwapTimingOutcome,
+  SwapWinrateBucket,
+  UltEconomyAnalysis,
+} from "@/data/team/types";
 import type { ValidStatColumn } from "@/lib/stat-percentiles";
 import type { HeroName, RoleName } from "@/types/heroes";
-import type { MapType } from "@prisma/client";
+import type { MapType } from "@/generated/prisma/client";
 import { Schema as S } from "effect";
 import type { PlayerUltComparison, SubroleUltTiming } from "./ult-helpers";
 
@@ -151,6 +155,12 @@ export type PlayerScrimPerformance = {
   outliers: ScrimOutlier[];
   trend: "improving" | "stable" | "declining";
   trendData?: TrendsAnalysis;
+  /**
+   * Whether this player is designated a substitute for the team. Substitutes
+   * remain in `teamPlayers` (individually visible) but are excluded from
+   * team-level aggregates such as {@link ScrimTeamTotals}.
+   */
+  isSubstitute: boolean;
 };
 
 export type ScrimInsight = {
@@ -284,11 +294,35 @@ export type ScrimOverviewData = {
   teamTotals: ScrimTeamTotals;
   fightAnalysis: ScrimFightAnalysis;
   ultAnalysis: ScrimUltAnalysis;
+  ultEconomy: UltEconomyAnalysis;
   swapAnalysis: ScrimSwapAnalysis;
   abilityTimingAnalysis: AbilityTimingAnalysis;
 };
 
 export type Winrate = { map: string; wins: number; date: Date }[];
+
+// ---------- initiation-service types ----------
+
+export type ScrimTeamInitiation = {
+  teamName: string;
+  wentFirst: number;
+  wentFirstWins: number;
+  wentSecond: number;
+  wentSecondWins: number;
+  decidedFights: number;
+  initiationWinrate: number;
+  initiationFrequency: number;
+  goingSecondWinrate: number;
+};
+
+export type ScrimInitiationData = {
+  /** Both teams, ordered by descending fights-initiated. Empty when unavailable. */
+  teams: ScrimTeamInitiation[];
+  totalFights: number;
+  contestedFights: number;
+  mapsCovered: number;
+  mapsTotal: number;
+};
 
 export type { PlayerUltSummary } from "./ult-helpers";
 export type { SwapTimingOutcome, SwapWinrateBucket, TrendsAnalysis };

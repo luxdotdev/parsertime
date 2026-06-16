@@ -8,7 +8,7 @@ import {
   type LoadedCalibration,
 } from "@/lib/map-calibration/load-calibration";
 import prisma from "@/lib/prisma";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { MapQueryError } from "../errors";
 import {

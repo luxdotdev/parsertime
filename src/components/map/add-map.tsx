@@ -1,6 +1,11 @@
 "use client";
 
-import { SortableBanItem } from "@/components/map/sortable-ban-item";
+import { MapUploadList } from "@/components/map/bulk-upload/map-upload-list";
+import {
+  runSequentialUpload,
+  uploadMapStream,
+} from "@/components/map/bulk-upload/sequential-upload";
+import { useBulkMapUpload } from "@/components/map/bulk-upload/use-bulk-map-upload";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,237 +15,97 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Link } from "@/components/ui/link";
 import { ClientOnly } from "@/lib/client-only";
-import { parseData } from "@/lib/parser-client";
-import { cn, detectFileCorruption } from "@/lib/utils";
-import { heroRoleMapping } from "@/types/heroes";
-import type { ParserData } from "@/types/parser";
-import {
-  closestCenter,
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { Upload } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
-const XLSX =
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
-const TXT = "text/plain";
-
-const ACCEPTED_FILE_TYPES = [XLSX, TXT];
-
-const MAX_FILE_SIZE = 10000000; // 10MB in bytes
-
-export function AddMapCard() {
-  const [dragActive, setDragActive] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [parsedData, setParsedData] = useState<ParserData | null>(null);
-  const [heroBans, setHeroBans] = useState<
-    { hero: string; team: string; banPosition: number }[]
-  >([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
-  const pathname = usePathname();
+export function AddMapCard({
+  scrimId,
+  existingMapCount,
+}: {
+  scrimId: number;
+  existingMapCount: number;
+}) {
   const t = useTranslations("scrimPage.addMap");
+  const tb = useTranslations("bulkUpload");
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
+  const upload = useBulkMapUpload();
+  const { pendingMaps, isParsing, failedCount, reset, patchMap } = upload;
+  const baseOrderRef = useRef<number | null>(null);
 
-  function validateFile(file: File): string | null {
-    if (file.size > MAX_FILE_SIZE) return t("fileMessage.maxSize");
-    if (!ACCEPTED_FILE_TYPES.includes(file.type))
-      return t("fileMessage.accepted");
-    return null;
-  }
-
-  async function handleFile(file: File) {
-    const error = validateFile(file);
-    if (error) {
-      toast.error(error);
-      return;
-    }
-
-    // Check for corrupted data before parsing
-    const hasCorruptedData = await detectFileCorruption(file);
-
-    if (hasCorruptedData.isCorrupted) {
-      let warningMessage = t("dataCorruption.warning.baseDescription");
-
-      if (hasCorruptedData.hasInvalidMercyRez) {
-        warningMessage += `\n${t("dataCorruption.warning.invalidMercyRez")}`;
-      }
-      if (hasCorruptedData.hasAsterisks) {
-        warningMessage += `\n${t("dataCorruption.warning.asteriskValues")}`;
-      }
-
-      toast.warning(t("dataCorruption.warning.title"), {
-        description: warningMessage,
-        duration: 8000,
-      });
-    }
-
-    const data = await parseData(file);
-
-    setSelectedFile(file);
-    setParsedData(data);
-    setModalOpen(true);
-  }
+  const usableMaps = pendingMaps.filter((m) => !m.parseFailed);
 
   async function handleSubmit() {
-    if (!parsedData) return;
+    if (usableMaps.length === 0) return;
+    setBusy(true);
+    baseOrderRef.current ??= existingMapCount;
 
-    setIsSubmitting(true);
-    const scrimId = pathname.split("/")[3];
-
-    toast.error(t("handleFile.creatingTitle"), {
-      description: t("handleFile.creatingDescription"),
-      duration: 5000,
+    const { allSucceeded } = await runSequentialUpload({
+      maps: usableMaps,
+      patchMap,
+      baseOrder: baseOrderRef.current,
+      initialScrimId: scrimId,
+      uploadMap: async (map, order, sid, reportProgress) => {
+        await uploadMapStream(
+          `/api/scrim/add-map-stream?id=${sid}`,
+          {
+            map: map.parsedData,
+            order,
+            heroBans: map.heroBans.length > 0 ? map.heroBans : undefined,
+          },
+          reportProgress
+        );
+        return sid!;
+      },
     });
 
-    const hasCorruptedData = selectedFile
-      ? await detectFileCorruption(selectedFile)
-      : { isCorrupted: false };
+    setBusy(false);
 
-    const requestData = {
-      map: parsedData,
-      heroBans: heroBans.length > 0 ? heroBans : undefined,
-    };
-
-    const res = await fetch(`/api/scrim/add-map?id=${scrimId}`, {
-      method: "POST",
-      body: JSON.stringify(requestData),
-    });
-
-    if (res.ok) {
-      if (hasCorruptedData.isCorrupted) {
-        toast.success(t("dataCorruption.success.title"), {
-          description: t("dataCorruption.success.description"),
-          duration: 6000,
-        });
-      } else {
-        toast.success(t("handleFile.createTitle"), {
-          description: t("handleFile.createDescription"),
-          duration: 5000,
-        });
-      }
-      setModalOpen(false);
-      setHeroBans([]);
-      setSelectedFile(null);
-      setParsedData(null);
+    if (allSucceeded) {
+      toast.success(tb("uploadedTitle"), {
+        description: tb("uploadedCount", { count: usableMaps.length }),
+      });
+      setOpen(false);
+      reset();
+      baseOrderRef.current = null;
       router.refresh();
     } else {
-      toast.error(t("handleFile.errorTitle"), {
-        description: t.rich("handleFile.errorDescription", {
-          res: `${await res.text()} (${res.status})`,
-          here: (chunks) => (
-            <Link
-              href="https://docs.parsertime.app/#common-errors"
-              target="_blank"
-              className="underline"
-              external
-            >
-              {chunks}
-            </Link>
-          ),
-        }),
-        duration: 5000,
+      toast.error(tb("partialFailureTitle"), {
+        description: tb("partialFailureDescription"),
       });
     }
-    setIsSubmitting(false);
   }
 
-  function handleDrag(e: React.DragEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
+  function handleOpenChange(next: boolean) {
+    if (busy) return;
+    setOpen(next);
+    if (!next) {
+      // Persisted maps (if any) should now be visible; drop unsent state.
+      const hadDone = pendingMaps.some((m) => m.status === "done");
+      reset();
+      baseOrderRef.current = null;
+      if (hadDone) router.refresh();
     }
   }
 
-  function handleDrop(e: React.DragEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    setDragActive(false);
-
-    if (e.dataTransfer.files?.[0]) {
-      void handleFile(e.dataTransfer.files[0]);
-    }
-  }
-
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    e.preventDefault();
-    if (e.target.files?.[0]) {
-      void handleFile(e.target.files[0]);
-    }
-  }
-
-  function handleClick() {
-    fileInputRef.current?.click();
-  }
-
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
-
-    if (over && active.id !== over.id) {
-      const oldIndex = heroBans.findIndex(
-        (ban) => `ban-${ban.hero}-${ban.team}-${ban.banPosition}` === active.id
-      );
-      const newIndex = heroBans.findIndex(
-        (ban) => `ban-${ban.hero}-${ban.team}-${ban.banPosition}` === over.id
-      );
-
-      if (oldIndex !== -1 && newIndex !== -1) {
-        const reorderedBans = arrayMove(heroBans, oldIndex, newIndex);
-        const updatedBans = reorderedBans.map((ban, i) => ({
-          ...ban,
-          banPosition: i + 1,
-        }));
-        setHeroBans(updatedBans);
-      }
-    }
-  }
+  const submitLabel =
+    failedCount > 0
+      ? tb("retryFailed", { count: failedCount })
+      : tb("uploadMaps", { count: usableMaps.length });
 
   return (
     <ClientOnly>
       <button
         type="button"
-        className={cn(
-          "border-border flex w-full cursor-pointer items-center gap-4 rounded-xl border-2 border-dashed px-5 py-6 text-left transition-colors",
-          dragActive
-            ? "border-green-500 bg-green-500/5"
-            : "hover:border-muted-foreground/30 hover:bg-muted/30"
-        )}
-        onDragEnter={handleDrag}
-        onDragLeave={handleDrag}
-        onDragOver={handleDrag}
-        onDrop={handleDrop}
-        onClick={handleClick}
+        onClick={() => setOpen(true)}
+        className="border-border hover:border-muted-foreground/30 hover:bg-muted/30 flex w-full cursor-pointer items-center gap-4 rounded-xl border-2 border-dashed px-5 py-6 text-left transition-colors"
       >
         <div className="bg-muted rounded-full p-2.5">
           <Upload className="text-muted-foreground h-4 w-4" />
@@ -248,118 +113,41 @@ export function AddMapCard() {
         <div>
           <p className="text-foreground text-sm font-medium">{t("title")}</p>
           <p className="text-muted-foreground text-xs">
-            {t.rich("description", {
-              here: (chunks) => (
-                <Label
-                  htmlFor="file"
-                  className="text-primary hover:text-primary/90 inline cursor-pointer font-medium"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {chunks}
-                </Label>
-              ),
-            })}
+            {tb("addDescription")}
           </p>
         </div>
-        <Input
-          ref={fileInputRef}
-          type="file"
-          id="file"
-          className="hidden"
-          accept=".xlsx, .txt"
-          onChange={handleChange}
-        />
       </button>
 
-      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogContent className="flex max-h-[90vh] max-w-2xl flex-col overflow-hidden">
           <DialogHeader>
-            <DialogTitle>{t("heroBansTitle")}</DialogTitle>
-            <DialogDescription>{t("heroBansDescription")}</DialogDescription>
+            <DialogTitle>{tb("addTitle")}</DialogTitle>
+            <DialogDescription>{tb("addDialogDescription")}</DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4">
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={handleDragEnd}
-            >
-              <SortableContext
-                items={heroBans.map(
-                  (ban) => `ban-${ban.hero}-${ban.team}-${ban.banPosition}`
-                )}
-                strategy={verticalListSortingStrategy}
-              >
-                {heroBans.map((ban, index) => (
-                  <SortableBanItem
-                    key={`ban-${ban.hero}-${ban.team}-${ban.banPosition}`}
-                    ban={ban}
-                    index={index}
-                    overwatchHeroes={Object.keys(heroRoleMapping)}
-                    team1Name={parsedData?.match_start?.[0]?.[4]}
-                    team2Name={parsedData?.match_start?.[0]?.[5]}
-                    onHeroChange={(value) => {
-                      const newBans = [...heroBans];
-                      newBans[index] = {
-                        ...newBans[index],
-                        hero: value,
-                      };
-                      setHeroBans(newBans);
-                    }}
-                    onTeamChange={(value) => {
-                      const newBans = [...heroBans];
-                      newBans[index] = {
-                        ...newBans[index],
-                        team: value,
-                      };
-                      setHeroBans(newBans);
-                    }}
-                    onRemove={() => {
-                      const newBans = heroBans.filter((_, i) => i !== index);
-                      const updatedBans = newBans.map((ban, i) => ({
-                        ...ban,
-                        banPosition: i + 1,
-                      }));
-                      setHeroBans(updatedBans);
-                    }}
-                  />
-                ))}
-              </SortableContext>
-            </DndContext>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                setHeroBans([
-                  ...heroBans,
-                  {
-                    hero: "",
-                    team: "",
-                    banPosition: heroBans.length + 1,
-                  },
-                ]);
-              }}
-            >
-              {t("addHeroBan")}
-            </Button>
+          <div className="-mx-1 flex-1 overflow-y-auto px-1 py-1">
+            <MapUploadList upload={upload} busy={busy} />
           </div>
 
           <DialogFooter>
             <Button
-              variant="outline"
-              onClick={() => setModalOpen(false)}
-              disabled={isSubmitting}
+              variant="ghost"
+              onClick={() => handleOpenChange(false)}
+              disabled={busy}
             >
-              Cancel
+              {t("cancel")}
             </Button>
-            <Button onClick={handleSubmit} disabled={isSubmitting}>
-              {isSubmitting ? (
+            <Button
+              onClick={handleSubmit}
+              disabled={busy || isParsing || usableMaps.length === 0}
+            >
+              {busy ? (
                 <>
-                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                  {t("submitting")}
+                  <ReloadIcon className="mr-2 size-4 animate-spin" />
+                  {tb("uploading")}
                 </>
               ) : (
-                t("submit")
+                submitLabel
               )}
             </Button>
           </DialogFooter>

@@ -3,6 +3,7 @@ import { email } from "@/lib/email";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { render } from "@react-email/render";
+import { timingSafeEqual } from "node:crypto";
 
 function formatDate(date: Date): string {
   return date.toLocaleDateString("en-US", {
@@ -12,10 +13,35 @@ function formatDate(date: Date): string {
   });
 }
 
-export async function GET(request: Request) {
+function isAuthorizedCronRequest(request: Request) {
+  const expected = process.env.CRON_SECRET;
+  if (!expected) return { ok: false, status: 500 };
+
   const authHeader = request.headers.get("Authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new Response("Unauthorized", { status: 401 });
+  const provided = authHeader?.startsWith("Bearer ")
+    ? authHeader.slice(7)
+    : null;
+  if (!provided || provided.length !== expected.length) {
+    return { ok: false, status: 401 };
+  }
+
+  try {
+    return {
+      ok: timingSafeEqual(Buffer.from(provided), Buffer.from(expected)),
+      status: 401,
+    };
+  } catch {
+    return { ok: false, status: 401 };
+  }
+}
+
+export async function GET(request: Request) {
+  const auth = isAuthorizedCronRequest(request);
+  if (!auth.ok) {
+    return new Response(
+      auth.status === 500 ? "Server misconfigured" : "Unauthorized",
+      { status: auth.status }
+    );
   }
 
   const now = new Date();

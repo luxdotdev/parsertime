@@ -159,7 +159,7 @@ export function CoachingCanvas() {
   );
 
   return (
-    <div className="flex h-[calc(100vh-12rem)] flex-col gap-3 overflow-hidden">
+    <div className="flex h-[calc(100vh-14rem)] flex-col gap-3 overflow-hidden">
       <div className="flex items-center gap-3">
         <MapSelector />
         <CanvasToolbar />
@@ -171,7 +171,7 @@ export function CoachingCanvas() {
       </div>
       <ResizablePanelGroup
         direction="horizontal"
-        className="flex-1 rounded-lg border"
+        className="border-border bg-card flex-1 overflow-hidden rounded-xl border"
       >
         <ResizablePanel defaultSize={20} minSize={15} maxSize={30} collapsible>
           <HeroSidebar

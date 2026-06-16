@@ -48,19 +48,48 @@ const teamEntrySchema = z.object({
   teamId: z.number().optional(),
 });
 
-const formSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters").max(50),
-  format: z.enum([
-    "SINGLE_ELIMINATION",
-    "DOUBLE_ELIMINATION",
-    "ROUND_ROBIN_SE",
-    "SWISS",
-  ]),
-  bestOf: z.number().int().min(1).max(9),
-  playoffBestOf: z.number().int().min(1).max(9).optional(),
-  advancingTeams: z.number().int().min(2).optional(),
-  teams: z.array(teamEntrySchema).min(2, "At least 2 teams required"),
-});
+const formSchema = z
+  .object({
+    name: z.string().min(2, "Name must be at least 2 characters").max(50),
+    format: z.enum([
+      "SINGLE_ELIMINATION",
+      "DOUBLE_ELIMINATION",
+      "ROUND_ROBIN_SE",
+      "SWISS",
+    ]),
+    bestOf: z.number().int().min(1).max(9),
+    playoffBestOf: z.number().int().min(1).max(9).optional(),
+    advancingTeams: z.number().int().min(2).optional(),
+    teams: z.array(teamEntrySchema).min(2, "At least 2 teams required"),
+  })
+  .superRefine((value, ctx) => {
+    const teamCount = value.teams.length;
+    if (value.format === "DOUBLE_ELIMINATION" && teamCount < 4) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["teams"],
+        message: "Double elimination requires at least 4 teams.",
+      });
+    }
+    if (value.format === "ROUND_ROBIN_SE" && teamCount < 3) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["teams"],
+        message: "Round robin requires at least 3 teams.",
+      });
+    }
+    if (
+      value.format === "ROUND_ROBIN_SE" &&
+      value.advancingTeams !== undefined &&
+      value.advancingTeams > teamCount
+    ) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["advancingTeams"],
+        message: "Advancing teams cannot exceed the team count.",
+      });
+    }
+  });
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -221,6 +250,22 @@ export function TournamentCreationForm({
   }
 
   const selectedFormat = watch("format");
+  const selectedAdvancingTeams = watch("advancingTeams");
+  const minimumTeamCount =
+    selectedFormat === "DOUBLE_ELIMINATION"
+      ? 4
+      : selectedFormat === "ROUND_ROBIN_SE"
+        ? 3
+        : 2;
+  const invalidAdvancingTeamCount =
+    selectedFormat === "ROUND_ROBIN_SE" &&
+    selectedAdvancingTeams !== undefined &&
+    selectedAdvancingTeams > fields.length;
+  const cannotSubmit =
+    loading ||
+    fields.length < minimumTeamCount ||
+    invalidAdvancingTeamCount ||
+    selectedFormat === "SWISS";
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -347,6 +392,9 @@ export function TournamentCreationForm({
               />
             )}
           />
+          {errors.advancingTeams?.message && (
+            <FieldError>{errors.advancingTeams.message}</FieldError>
+          )}
         </Field>
       )}
 
@@ -442,7 +490,7 @@ export function TournamentCreationForm({
         >
           Cancel
         </Button>
-        <Button type="submit" disabled={loading || fields.length < 2}>
+        <Button type="submit" disabled={cannotSubmit}>
           {loading && <ReloadIcon className="mr-2 size-4 animate-spin" />}
           Create Tournament
         </Button>

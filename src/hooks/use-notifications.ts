@@ -13,7 +13,7 @@ import {
   selectHasUnread,
   selectUnreadCount,
 } from "@/stores/notifications-store";
-import type { Notification } from "@prisma/client";
+import type { Notification } from "@/generated/prisma/client";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "@xstate/store/react";
 import { useTranslations } from "next-intl";

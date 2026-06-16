@@ -1,5 +1,5 @@
 import { auditLog } from "@/lib/audit-logs";
-import { auth } from "@/lib/auth";
+import { auth, canManageTeam, getCurrentUser } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { unauthorized } from "next/navigation";
 import { after, type NextRequest } from "next/server";
@@ -29,6 +29,26 @@ export async function POST(req: NextRequest) {
 
   const body = TeamNameUpdateSchema.safeParse(await req.json());
   if (!body.success) return new Response("Invalid request", { status: 400 });
+
+  const user = await getCurrentUser();
+  if (!(await canManageTeam(body.data.teamId, user))) {
+    return new Response("Forbidden", { status: 403 });
+  }
+
+  if (body.data.scoutingTeamAbbr) {
+    const scoutingTeam = await prisma.scoutingMatch.findFirst({
+      where: {
+        OR: [
+          { team1: body.data.scoutingTeamAbbr },
+          { team2: body.data.scoutingTeamAbbr },
+        ],
+      },
+      select: { id: true },
+    });
+    if (!scoutingTeam) {
+      return new Response("Invalid scouting team", { status: 400 });
+    }
+  }
 
   await prisma.team.update({
     where: { id: body.data.teamId },

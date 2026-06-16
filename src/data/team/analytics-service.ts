@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import { calculateWinner } from "@/lib/winrate";
 import type { HeroName } from "@/types/heroes";
 import { mapNameToMapTypeMapping } from "@/types/map";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import {
   Cache,
   Context,
@@ -690,20 +690,31 @@ export const make = Effect.gen(function* () {
   }
 
   function pickrateCacheKeyOf(teamId: number, dateFrom?: Date, dateTo?: Date) {
-    return `${teamId}:${dateFrom?.toISOString() ?? ""}:${dateTo?.toISOString() ?? ""}`;
+    return JSON.stringify({
+      teamId,
+      dateFrom: dateFrom?.toISOString() ?? null,
+      dateTo: dateTo?.toISOString() ?? null,
+    });
+  }
+
+  function parseCacheDate(value: string | null | undefined) {
+    if (!value) return undefined;
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? undefined : date;
   }
 
   const pickrateCache = yield* Cache.make({
     capacity: CACHE_CAPACITY,
     timeToLive: CACHE_TTL,
     lookup: (key: string) => {
-      const parts = key.split(":");
-      const teamIdStr = parts[0];
-      const dateFromStr = parts.slice(1, -1).join(":") || "";
-      const dateToStr = parts[parts.length - 1] || "";
-      const dateFrom = dateFromStr ? new Date(dateFromStr) : undefined;
-      const dateTo = dateToStr ? new Date(dateToStr) : undefined;
-      return getHeroPickrateMatrix(Number(teamIdStr), dateFrom, dateTo).pipe(
+      const parsed = JSON.parse(key) as {
+        teamId: number;
+        dateFrom?: string | null;
+        dateTo?: string | null;
+      };
+      const dateFrom = parseCacheDate(parsed.dateFrom);
+      const dateTo = parseCacheDate(parsed.dateTo);
+      return getHeroPickrateMatrix(parsed.teamId, dateFrom, dateTo).pipe(
         Effect.tap(() => Metric.increment(teamCacheMissTotal))
       );
     },

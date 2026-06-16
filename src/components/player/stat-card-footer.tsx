@@ -16,11 +16,27 @@ type StatCardFooterProps = {
   hero: string;
 };
 
-function displayHeroRating(heroRating: number) {
+type HeroRatingLabels = {
+  unplaced: string;
+  sr: string;
+  maxScore: string;
+  ranks: {
+    bronze: string;
+    silver: string;
+    gold: string;
+    platinum: string;
+    diamond: string;
+    master: string;
+    grandmaster: string;
+    champion: string;
+  };
+};
+
+function displayHeroRating(heroRating: number, labels: HeroRatingLabels) {
   if (heroRating === 0) {
     return (
       <div className="items-center gap-1 pt-2">
-        <p className="text-muted-foreground text-xs">Unplaced</p>
+        <p className="text-muted-foreground text-xs">{labels.unplaced}</p>
       </div>
     );
   }
@@ -30,24 +46,45 @@ function displayHeroRating(heroRating: number) {
       // Bronze
       return (
         <div className="flex items-center gap-1 pt-2">
-          <Image src="/ranks/bronze.png" alt="Bronze" width={16} height={16} />
-          <span className="text-xs text-amber-900">{heroRating} SR</span>
+          <Image
+            src="/ranks/bronze.png"
+            alt={labels.ranks.bronze}
+            width={16}
+            height={16}
+          />
+          <span className="text-xs text-amber-900">
+            {heroRating} {labels.sr}
+          </span>
         </div>
       );
     case heroRating < 2000:
       // Silver
       return (
         <div className="flex items-center gap-1 pt-2">
-          <Image src="/ranks/silver.png" alt="Silver" width={16} height={16} />
-          <span className="text-xs text-gray-400">{heroRating} SR</span>
+          <Image
+            src="/ranks/silver.png"
+            alt={labels.ranks.silver}
+            width={16}
+            height={16}
+          />
+          <span className="text-xs text-gray-400">
+            {heroRating} {labels.sr}
+          </span>
         </div>
       );
     case heroRating < 2500:
       // Gold
       return (
         <div className="flex items-center gap-1 pt-2">
-          <Image src="/ranks/gold.png" alt="Gold" width={16} height={16} />
-          <span className="text-xs text-amber-400">{heroRating} SR</span>
+          <Image
+            src="/ranks/gold.png"
+            alt={labels.ranks.gold}
+            width={16}
+            height={16}
+          />
+          <span className="text-xs text-amber-400">
+            {heroRating} {labels.sr}
+          </span>
         </div>
       );
     case heroRating < 3000:
@@ -56,12 +93,12 @@ function displayHeroRating(heroRating: number) {
         <div className="flex items-center gap-1 pt-2">
           <Image
             src="/ranks/platinum.png"
-            alt="Platinum"
+            alt={labels.ranks.platinum}
             width={16}
             height={16}
           />
           <span className="text-xs text-gray-500 dark:text-gray-300">
-            {heroRating} SR
+            {heroRating} {labels.sr}
           </span>
         </div>
       );
@@ -71,19 +108,28 @@ function displayHeroRating(heroRating: number) {
         <div className="flex items-center gap-1 pt-2">
           <Image
             src="/ranks/diamond.png"
-            alt="Diamond"
+            alt={labels.ranks.diamond}
             width={16}
             height={16}
           />
-          <span className="text-xs text-sky-300">{heroRating} SR</span>
+          <span className="text-xs text-sky-300">
+            {heroRating} {labels.sr}
+          </span>
         </div>
       );
     case heroRating < 4000:
       // Master
       return (
         <div className="flex items-center gap-1 pt-2">
-          <Image src="/ranks/masters.png" alt="Master" width={16} height={16} />
-          <span className="text-xs text-emerald-500">{heroRating} SR</span>
+          <Image
+            src="/ranks/masters.png"
+            alt={labels.ranks.master}
+            width={16}
+            height={16}
+          />
+          <span className="text-xs text-emerald-500">
+            {heroRating} {labels.sr}
+          </span>
         </div>
       );
     case heroRating < 4500:
@@ -92,11 +138,13 @@ function displayHeroRating(heroRating: number) {
         <div className="flex items-center gap-1 pt-2">
           <Image
             src="/ranks/grandmaster.png"
-            alt="Grandmaster"
+            alt={labels.ranks.grandmaster}
             width={16}
             height={16}
           />
-          <span className="text-xs text-indigo-400">{heroRating} SR</span>
+          <span className="text-xs text-indigo-400">
+            {heroRating} {labels.sr}
+          </span>
         </div>
       );
     case heroRating < 5000:
@@ -105,11 +153,13 @@ function displayHeroRating(heroRating: number) {
         <div className="flex items-center gap-1 pt-2">
           <Image
             src="/ranks/champion.png"
-            alt="Champion"
+            alt={labels.ranks.champion}
             width={16}
             height={16}
           />
-          <span className="text-xs text-violet-500">{heroRating} SR</span>
+          <span className="text-xs text-violet-500">
+            {heroRating} {labels.sr}
+          </span>
         </div>
       );
     default:
@@ -118,12 +168,12 @@ function displayHeroRating(heroRating: number) {
         <div className="flex items-center gap-1 pt-2">
           <Image
             src="/ranks/champion.png"
-            alt="Champion"
+            alt={labels.ranks.champion}
             width={16}
             height={16}
           />
           <span className="text-xs text-violet-500">
-            {heroRating} SR (Max score!)
+            {heroRating} {labels.sr} ({labels.maxScore})
           </span>
         </div>
       );
@@ -137,6 +187,21 @@ export function StatCardFooter({
   hero,
 }: StatCardFooterProps) {
   const t = useTranslations("mapPage.compare.playerCard");
+  const heroRatingLabels: HeroRatingLabels = {
+    unplaced: t("unplaced"),
+    sr: t("sr"),
+    maxScore: t("maxScore"),
+    ranks: {
+      bronze: t("ranks.bronze"),
+      silver: t("ranks.silver"),
+      gold: t("ranks.gold"),
+      platinum: t("ranks.platinum"),
+      diamond: t("ranks.diamond"),
+      master: t("ranks.master"),
+      grandmaster: t("ranks.grandmaster"),
+      champion: t("ranks.champion"),
+    },
+  };
 
   if (!comparison) {
     return <div className="text-muted-foreground text-sm">{baseText}</div>;
@@ -147,24 +212,28 @@ export function StatCardFooter({
       <div className="text-sm">{baseText}</div>
       <Tooltip>
         <TooltipTrigger>
-          <div className="flex items-center gap-1">
-            <span>
+          <div className="flex items-center gap-1.5">
+            <span className="tabular-nums">
               {t("vsAverage", {
                 average: comparison.heroAverage.toLocaleString(),
               })}
             </span>
-            <span>&mdash;</span>
-            <span className="text-foreground">
+            <span className="text-muted-foreground/40" aria-hidden="true">
+              ·
+            </span>
+            <span className="text-foreground tabular-nums">
               {t("percentile", {
                 percentile: comparison.percentile.toFixed(0),
               })}
             </span>
-            <span>
+            <span className="tabular-nums">
               ({comparison.zScore > 0 ? "+" : ""}
               {comparison.zScore.toFixed(2)}σ)
             </span>
           </div>
-          <span>{displayHeroRating(comparison.estimatedSR)}</span>
+          <span>
+            {displayHeroRating(comparison.estimatedSR, heroRatingLabels)}
+          </span>
         </TooltipTrigger>
         <TooltipContent>
           <p>

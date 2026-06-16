@@ -1,3 +1,9 @@
+import { RangeTransitionProvider } from "@/components/stats/team/range-transition-context";
+import { TeamStatsContent } from "@/components/stats/team/team-stats-content";
+import { TeamStatsHeaderClient } from "@/components/stats/team/team-stats-header-client";
+import { TeamStatsTabsNav } from "@/components/stats/team/team-stats-tabs-nav";
+import { isAuthedToViewTeam } from "@/lib/auth";
+import { positionalData, simulationTool } from "@/lib/flags";
 import prisma from "@/lib/prisma";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -10,10 +16,16 @@ export async function generateMetadata(
   const locale = await getLocale();
 
   const teamId = parseInt(params.teamId);
-  const team = await prisma.team.findFirst({
-    where: { id: teamId },
-    select: { name: true },
-  });
+  const canViewTeam =
+    Number.isSafeInteger(teamId) &&
+    teamId > 0 &&
+    (await isAuthedToViewTeam(teamId));
+  const team = canViewTeam
+    ? await prisma.team.findFirst({
+        where: { id: teamId },
+        select: { name: true },
+      })
+    : null;
 
   const teamName = team?.name ?? t("defaultTeam");
 
@@ -38,8 +50,33 @@ export async function generateMetadata(
   };
 }
 
-export default function TeamStatsLayout({
-  children,
-}: LayoutProps<"/stats/team/[teamId]">) {
-  return children;
+// The persistent shell: header (client, authed via API) + tab nav. This layout
+// performs NO authorization — auth lives in each page's loadTeamStatsShell and
+// in the header's stats-summary API route, since layouts do not re-render on
+// soft navigation and are not a valid security boundary. Only non-sensitive
+// data (feature flags, the teamId already in the URL) is read here.
+export default async function TeamStatsLayout(
+  props: LayoutProps<"/stats/team/[teamId]">
+) {
+  const params = await props.params;
+  const teamId = parseInt(params.teamId);
+
+  const [positionalEnabled, simulationEnabled] = await Promise.all([
+    positionalData(),
+    simulationTool(),
+  ]);
+
+  return (
+    <div className="px-6 pt-8 pb-16 sm:px-10">
+      <RangeTransitionProvider>
+        <TeamStatsHeaderClient teamId={teamId} />
+        <TeamStatsTabsNav
+          teamId={teamId}
+          positionalEnabled={positionalEnabled}
+          simulationEnabled={simulationEnabled}
+        />
+        <TeamStatsContent>{props.children}</TeamStatsContent>
+      </RangeTransitionProvider>
+    </div>
+  );
 }

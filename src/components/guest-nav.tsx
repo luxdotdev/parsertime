@@ -10,10 +10,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { PersonIcon } from "@radix-ui/react-icons";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-export function GuestNav({ guestMode }: { guestMode: boolean }) {
+export async function GuestNav({ guestMode }: { guestMode: boolean }) {
+  const t = await getTranslations("dashboard.guestNav");
+
   if (!guestMode) {
     redirect("/sign-in");
   }
@@ -30,13 +33,13 @@ export function GuestNav({ guestMode }: { guestMode: boolean }) {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm leading-none font-medium">Guest User</p>
+            <p className="text-sm leading-none font-medium">{t("guestUser")}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <Link href="/sign-in">
-            <DropdownMenuItem>Sign In</DropdownMenuItem>
+            <DropdownMenuItem>{t("signIn")}</DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>
       </DropdownMenuContent>

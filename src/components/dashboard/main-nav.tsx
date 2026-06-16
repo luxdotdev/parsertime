@@ -10,12 +10,12 @@ import { usePathname } from "next/navigation";
 import { use } from "react";
 
 const navLinkStyles =
-  "text-muted-foreground hover:text-primary inline-flex min-h-11 items-center px-1.5 text-sm font-medium transition-colors";
+  "text-muted-foreground hover:text-foreground inline-flex min-h-11 items-center px-1.5 text-sm font-medium transition-colors";
 
 const dropdownItemStyles =
   "hover:bg-accent hover:text-accent-foreground flex w-full items-center rounded-sm px-2 py-1.5 text-sm transition-colors";
 
-const STATS_PLAYER_ROUTE = /^\/stats\/(?!hero$|team$|compare$)[^/]+$/;
+const STATS_PLAYER_ROUTE = /^\/stats\/(?!hero$|team$|map$|compare$)[^/]+$/;
 const SCOUTING_TEAM_ROUTE = /^\/scouting\/(?!player$|team$)[^/]+$/;
 
 function handleDropdownKeyDown(e: React.KeyboardEvent<HTMLLIElement>) {
@@ -28,17 +28,21 @@ function handleDropdownKeyDown(e: React.KeyboardEvent<HTMLLIElement>) {
 
 export function MainNav({
   scoutingEnabled,
+  faceitScoutingEnabled,
   aiChatEnabled,
   dataToolsEnabled,
   tournamentEnabled,
   coachingCanvasEnabled,
+  queryBuilderEnabled,
   className,
 }: React.HTMLAttributes<HTMLElement> & {
   scoutingEnabled: boolean;
+  faceitScoutingEnabled?: boolean;
   aiChatEnabled?: boolean;
   dataToolsEnabled?: boolean;
   tournamentEnabled?: boolean;
   coachingCanvasEnabled?: boolean;
+  queryBuilderEnabled?: boolean;
 }) {
   const pathname = usePathname();
   const t = useTranslations("dashboard.mainNav");
@@ -116,6 +120,16 @@ export function MainNav({
                 {t("teamStats")}
               </Link>
               <Link
+                href="/stats/map"
+                role="menuitem"
+                className={cn(
+                  dropdownItemStyles,
+                  pathname.startsWith("/stats/map") && "text-primary"
+                )}
+              >
+                {t("mapStats")}
+              </Link>
+              <Link
                 href="/stats/compare"
                 role="menuitem"
                 className={cn(
@@ -130,10 +144,10 @@ export function MainNav({
         </li>
         <li>
           <Link
-            href="/leaderboard"
+            href="/leaderboard/csr"
             className={cn(
               navLinkStyles,
-              pathname === "/leaderboard" && "text-primary"
+              pathname.startsWith("/leaderboard") && "text-primary"
             )}
           >
             {t("leaderboard")}
@@ -146,9 +160,7 @@ export function MainNav({
             className={cn(
               navLinkStyles,
               "gap-1",
-              (pathname.split("/")[1] === "team" ||
-                pathname.startsWith("/stats/team")) &&
-                "text-primary"
+              pathname.split("/")[1] === "team" && "text-primary"
             )}
           >
             {t("teams")}
@@ -173,14 +185,14 @@ export function MainNav({
                 {t("yourTeams")}
               </Link>
               <Link
-                href="/stats/team"
+                href="/matchmaker"
                 role="menuitem"
                 className={cn(
                   dropdownItemStyles,
-                  pathname.startsWith("/stats/team") && "text-primary"
+                  pathname.startsWith("/matchmaker") && "text-primary"
                 )}
               >
-                {t("teamStats")}
+                {t("matchmaker")}
               </Link>
               <Link
                 href={availabilityHref}
@@ -194,6 +206,30 @@ export function MainNav({
               </Link>
             </div>
           </div>
+        </li>
+        {queryBuilderEnabled && (
+          <li>
+            <Link
+              href={"/query" as Route}
+              className={cn(
+                navLinkStyles,
+                pathname.startsWith("/query") && "text-primary"
+              )}
+            >
+              {t("query")}
+            </Link>
+          </li>
+        )}
+        <li>
+          <Link
+            href={"/ranked" as Route}
+            className={cn(
+              navLinkStyles,
+              pathname.startsWith("/ranked") && "text-primary"
+            )}
+          >
+            {t("ranked")}
+          </Link>
         </li>
         {tournamentEnabled && (
           <li>
@@ -256,7 +292,7 @@ export function MainNav({
             </div>
           </li>
         )}
-        {scoutingEnabled && (
+        {(scoutingEnabled || faceitScoutingEnabled) && (
           <li className="group relative" onKeyDown={handleDropdownKeyDown}>
             <button
               type="button"
@@ -264,7 +300,9 @@ export function MainNav({
               className={cn(
                 navLinkStyles,
                 "gap-1",
-                pathname.startsWith("/scouting") && "text-primary"
+                (pathname.startsWith("/scouting") ||
+                  pathname.startsWith("/faceit")) &&
+                  "text-primary"
               )}
             >
               {t("scouting")}
@@ -278,28 +316,59 @@ export function MainNav({
                 className="bg-popover text-popover-foreground ring-foreground/10 w-[200px] rounded-md p-1 shadow-md ring-1"
                 role="menu"
               >
-                <Link
-                  href="/scouting"
-                  role="menuitem"
-                  className={cn(
-                    dropdownItemStyles,
-                    (SCOUTING_TEAM_ROUTE.test(pathname) ||
-                      pathname === "/scouting") &&
-                      "text-primary"
-                  )}
-                >
-                  {t("scoutTeam")}
-                </Link>
-                <Link
-                  href="/scouting/player"
-                  role="menuitem"
-                  className={cn(
-                    dropdownItemStyles,
-                    pathname.startsWith("/scouting/player") && "text-primary"
-                  )}
-                >
-                  {t("scoutPlayer")}
-                </Link>
+                {scoutingEnabled && (
+                  <>
+                    <Link
+                      href="/scouting"
+                      role="menuitem"
+                      className={cn(
+                        dropdownItemStyles,
+                        (SCOUTING_TEAM_ROUTE.test(pathname) ||
+                          pathname === "/scouting") &&
+                          "text-primary"
+                      )}
+                    >
+                      {t("scoutTeam")}
+                    </Link>
+                    <Link
+                      href="/scouting/player"
+                      role="menuitem"
+                      className={cn(
+                        dropdownItemStyles,
+                        pathname.startsWith("/scouting/player") &&
+                          "text-primary"
+                      )}
+                    >
+                      {t("scoutPlayer")}
+                    </Link>
+                  </>
+                )}
+                {faceitScoutingEnabled && (
+                  <>
+                    <Link
+                      href="/faceit"
+                      role="menuitem"
+                      className={cn(
+                        dropdownItemStyles,
+                        (pathname === "/faceit" ||
+                          pathname.startsWith("/faceit/team")) &&
+                          "text-primary"
+                      )}
+                    >
+                      {t("scoutFaceitTeam")}
+                    </Link>
+                    <Link
+                      href="/faceit/player"
+                      role="menuitem"
+                      className={cn(
+                        dropdownItemStyles,
+                        pathname.startsWith("/faceit/player") && "text-primary"
+                      )}
+                    >
+                      {t("scoutFaceitPlayer")}
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </li>

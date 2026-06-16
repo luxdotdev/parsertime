@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 
 export function authenticateBotSecret(request: Request): boolean {
   const authHeader = request.headers.get("Authorization");

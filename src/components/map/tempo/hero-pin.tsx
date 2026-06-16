@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { toHero, toTimestamp } from "@/lib/utils";
+import { memo } from "react";
 
 type HeroPinProps = {
   x: number;
@@ -20,7 +21,7 @@ type HeroPinProps = {
   curveY?: number;
 };
 
-export function HeroPin({
+function HeroPinImpl({
   x,
   y,
   hero,
@@ -103,3 +104,5 @@ export function HeroPin({
     </Tooltip>
   );
 }
+
+export const HeroPin = memo(HeroPinImpl);

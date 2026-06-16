@@ -2,8 +2,9 @@ import { MatchLabelingView } from "@/components/data-labeling/match-labeling-vie
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { DataLabelingService } from "@/data/admin";
+import { getCurrentUser, isAdminUser } from "@/lib/auth";
 import { dataLabeling } from "@/lib/flags";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 type Params = { matchId: string };
 
@@ -14,6 +15,9 @@ export default async function MatchLabelingPage({
 }) {
   const enabled = await dataLabeling();
   if (!enabled) notFound();
+  const user = await getCurrentUser();
+  if (!user) redirect("/sign-in");
+  if (!isAdminUser(user)) notFound();
 
   const { matchId } = await params;
   const id = Number(matchId);

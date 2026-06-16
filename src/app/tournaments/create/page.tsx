@@ -1,7 +1,14 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { CreateTournamentButton } from "@/components/tournament/create-tournament-button";
 import { tournament } from "@/lib/flags";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("tournamentsPage.create.metadata");
+  return { title: t("title"), description: t("description") };
+}
 
 export default async function CreateTournamentPage() {
   const tournamentEnabled = await tournament();

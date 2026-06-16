@@ -2,13 +2,12 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 model Account {
@@ -62,6 +61,7 @@ model User {
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @default(now()) @updatedAt
   battletag              String?
+  rankedStatsPublic      Boolean                 @default(false)
   appliedTitles          AppliedTitle[]
   seenOnboarding         Boolean                 @default(false)
   comparisonGroups       ComparisonGroup[]
@@ -71,6 +71,14 @@ model User {
   chatConversations      ChatConversation[]
   chatReports            ChatReport[]
   availabilityResponses  AvailabilityResponse[]
+  credits                UserCredits?
+  creditTransactions     CreditTransaction[]
+  pendingAutoRefill      PendingAutoRefill?
+  scrimRequestsSent      ScrimRequest[]
+  teamSubstitutes        TeamSubstitute[]
+  teamBlacklists         TeamBlacklist[]
+  scrimFeedback          ScrimFeedback[]
+  rankedMatches          RankedMatch[]
 
   @@index([id, email])
 }
@@ -107,15 +115,13 @@ enum ColorblindMode {
 
 model AppSettings {
   id               Int            @id @default(autoincrement())
-  userId           String
+  userId           String         @unique
   colorblindMode   ColorblindMode @default(OFF)
   customTeam1Color String?
   customTeam2Color String?
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
   user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
 }
 
 enum BillingPlan {
@@ -162,6 +168,8 @@ enum AuditLogAction {
   TEAM_MEMBER_PROMOTED
   TEAM_MEMBER_DEMOTED
   TEAM_MEMBER_REMOVED
+  TEAM_SUBSTITUTE_MARKED
+  TEAM_SUBSTITUTE_UNMARKED
   TEAM_OWNERSHIP_TRANSFERRED
   SCRIM_CREATED
   SCRIM_UPDATED
@@ -179,6 +187,7 @@ enum AuditLogAction {
   TOURNAMENT_UPDATED
   TOURNAMENT_DELETED
   TOURNAMENT_MATCH_UPDATED
+  SCRIM_REQUEST_SENT
 }
 
 model AuditLog {
@@ -211,6 +220,13 @@ model Team {
   tournamentTeams       TournamentTeam[]
   availabilitySettings  TeamAvailabilitySettings?
   availabilitySchedules AvailabilitySchedule[]
+  teamTsrSnapshot       TeamTsrSnapshot?
+  scrimRequestsFrom     ScrimRequest[]            @relation("ScrimRequestFrom")
+  scrimRequestsTo       ScrimRequest[]            @relation("ScrimRequestTo")
+  substitutes           TeamSubstitute[]
+  blacklistsOwned       TeamBlacklist[]           @relation("BlacklistOwner")
+  blacklistedBy         TeamBlacklist[]           @relation("BlacklistBlocked")
+  scrimsAgainst         Scrim[]                   @relation("ScrimOpponent")
 }
 
 model BotNotificationConfig {
@@ -239,10 +255,37 @@ model TeamManager {
   @@index([userId])
 }
 
+model TeamSubstitute {
+  id         Int      @id @default(autoincrement())
+  teamId     Int
+  playerName String
+  createdBy  String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  team    Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  creator User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, playerName])
+  @@index([createdBy])
+}
+
 enum UserRole {
   ADMIN
   MANAGER
   USER
+}
+
+enum TeamBlacklistSource {
+  MANUAL
+  POST_SCRIM
+}
+
+enum ScrimFeedbackVerdict {
+  GOOD
+  NEUTRAL
+  BLACKLISTED
+  DISMISSED
 }
 
 model TeamInviteToken {
@@ -267,7 +310,6 @@ model ComparisonGroup {
   team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
   creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
 
-  @@index([teamId])
   @@index([createdBy])
   @@index([teamId, playerName])
 }
@@ -289,6 +331,19 @@ model MapGroup {
   @@index([createdBy])
 }
 
+model SavedQuery {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  teamId    Int
+  spec      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([teamId])
+}
+
 model Scrim {
   id                  Int              @id @default(autoincrement())
   name                String
@@ -305,23 +360,32 @@ model Scrim {
   team1Name           String?
   team2Name           String?
   tournamentMatch     TournamentMatch?
+  opponentTeamId      Int?
+  scrimRequestId      String?
+  opponentTeam        Team?            @relation("ScrimOpponent", fields: [opponentTeamId], references: [id], onDelete: SetNull)
+  scrimRequest        ScrimRequest?    @relation(fields: [scrimRequestId], references: [id], onDelete: SetNull)
+  feedback            ScrimFeedback?
 
-  @@index([teamId])
+  @@index([opponentTeamId])
+  @@index([teamId, opponentTeamId])
 }
 
 model Map {
-  id              Int              @id @default(autoincrement())
-  name            String
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  mapData         MapData[]
-  Scrim           Scrim?           @relation(fields: [scrimId], references: [id])
-  vod             String?
-  scrimId         Int?
-  replayCode      String?
-  tournamentMaps  TournamentMap[]
+  id             Int             @id @default(autoincrement())
+  name           String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  order          Int             @default(0)
+  mapData        MapData[]
+  Scrim          Scrim?          @relation(fields: [scrimId], references: [id])
+  vod            String?
+  scrimId        Int?
+  replayCode     String?
+  winner         String?
+  winnerSource   WinnerSource?
+  tournamentMaps TournamentMap[]
 
-  @@index([scrimId])
+  @@index([scrimId, order])
 }
 
 model HeroBan {
@@ -364,7 +428,6 @@ model Note {
   MapDataId Int
 
   @@unique([scrimId, MapDataId])
-  @@index([scrimId, MapDataId])
 }
 
 model AppliedTitle {
@@ -376,7 +439,6 @@ model AppliedTitle {
   user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, title])
-  @@index([userId])
 }
 
 enum CalculatedStatType {
@@ -394,6 +456,14 @@ enum CalculatedStatType {
   KILLS_PER_ULTIMATE
   DUEL_WINRATE_PERCENTAGE
   FIGHT_REVERSAL_PERCENTAGE
+  AVERAGE_ENGAGEMENT_DISTANCE
+  HIGH_GROUND_KILL_PERCENTAGE
+  ISOLATION_DEATH_PERCENTAGE
+  AVERAGE_FIGHT_START_SPREAD
+  AVERAGE_ULT_CONVERSION_KILLS
+  ULT_DEATH_PERCENTAGE
+  AVERAGE_ULT_DISPLACEMENT
+  ULTS_ON_OBJECTIVE_PERCENTAGE
 }
 
 enum Role {
@@ -417,6 +487,7 @@ model CalculatedStat {
 
   @@index([scrimId, MapDataId])
   @@index([playerName, hero, stat])
+  @@index([MapDataId, stat])
 }
 
 enum EventType {
@@ -456,6 +527,12 @@ enum MapType {
   Flashpoint
   Hybrid
   Push
+}
+
+enum WinnerSource {
+  auto_score
+  auto_coords
+  manual
 }
 
 enum TournamentFormat {
@@ -830,6 +907,7 @@ model PlayerStat {
 
   @@index([scrimId])
   @@index([MapDataId])
+  @@index([player_name, player_hero, hero_time_played])
 }
 
 model PointProgress {
@@ -1184,7 +1262,6 @@ model ScoutingHeroAssignment {
   updatedAt   DateTime          @updatedAt
 
   @@unique([mapResultId, team, heroName])
-  @@index([mapResultId])
   @@index([playerName])
 }
 
@@ -1220,7 +1297,6 @@ model ScoutingRoster {
   updatedAt    DateTime               @updatedAt
 
   @@unique([tournamentId, teamName])
-  @@index([tournamentId])
   @@index([teamName])
 }
 
@@ -1284,22 +1360,23 @@ model ChatReport {
 }
 
 model MapCalibration {
-  id          Int                    @id @default(autoincrement())
-  mapName     String                 @unique
-  imageUrl    String
-  imageWidth  Int
+  id              Int                    @id @default(autoincrement())
+  mapName         String                 @unique
+  imageUrl        String
+  imageWidth      Int
   imageHeight     Int
   displayImageKey String?
   affineA         Float?
-  affineB     Float?
-  affineC     Float?
-  affineD     Float?
-  affineTx    Float?
-  affineTy    Float?
-  createdBy   String
-  createdAt   DateTime               @default(now())
-  updatedAt   DateTime               @updatedAt
-  anchors     MapCalibrationAnchor[]
+  affineB         Float?
+  affineC         Float?
+  affineD         Float?
+  affineTx        Float?
+  affineTy        Float?
+  createdBy       String
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  anchors         MapCalibrationAnchor[]
+  zones           MapZone[]
 }
 
 model MapCalibrationAnchor {
@@ -1317,26 +1394,63 @@ model MapCalibrationAnchor {
   @@index([calibrationId])
 }
 
+enum MapZoneCategory {
+  POINT
+  LANE
+}
+
+enum MapZoneStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum MapZoneSource {
+  AUTO
+  MANUAL
+}
+
+enum LaneRole {
+  MAIN
+  FLANK
+}
+
+model MapZone {
+  id            Int             @id @default(autoincrement())
+  calibrationId Int
+  name          String
+  category      MapZoneCategory
+  status        MapZoneStatus   @default(DRAFT)
+  source        MapZoneSource   @default(MANUAL)
+  laneRole      LaneRole?
+  vertices      Json
+  createdBy     String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  calibration   MapCalibration  @relation(fields: [calibrationId], references: [id], onDelete: Cascade)
+
+  @@index([calibrationId, status])
+}
+
 // Tournament Models
 
 model Tournament {
-  id        Int              @id @default(autoincrement())
-  name      String
-  format    TournamentFormat
-  bestOf    Int              @default(3)
-  playoffBestOf       Int?
-  teamSlots Int              @default(8)
-  status    TournamentStatus @default(DRAFT)
-  startDate DateTime?
-  endDate             DateTime?
-  grandFinalReset     Boolean          @default(true)
-  advancingTeams      Int?
-  creatorId String
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-  teams     TournamentTeam[]
-  rounds    TournamentRound[]
-  matches   TournamentMatch[]
+  id              Int               @id @default(autoincrement())
+  name            String
+  format          TournamentFormat
+  bestOf          Int               @default(3)
+  playoffBestOf   Int?
+  teamSlots       Int               @default(8)
+  status          TournamentStatus  @default(DRAFT)
+  startDate       DateTime?
+  endDate         DateTime?
+  grandFinalReset Boolean           @default(true)
+  advancingTeams  Int?
+  creatorId       String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  teams           TournamentTeam[]
+  rounds          TournamentRound[]
+  matches         TournamentMatch[]
 
   @@index([creatorId])
 }
@@ -1357,7 +1471,6 @@ model TournamentTeam {
   matchesWon     TournamentMatch[] @relation("MatchWinner")
 
   @@unique([tournamentId, seed])
-  @@index([tournamentId])
   @@index([teamId])
 }
 
@@ -1372,7 +1485,6 @@ model TournamentRound {
   matches      TournamentMatch[]
 
   @@unique([tournamentId, bracket, roundNumber])
-  @@index([tournamentId])
 }
 
 model TournamentMatch {
@@ -1416,7 +1528,6 @@ model TournamentMap {
   map            Map?            @relation(fields: [mapId], references: [id])
 
   @@unique([matchId, gameNumber])
-  @@index([matchId])
   @@index([mapId])
 }
 
@@ -1432,7 +1543,6 @@ model TeamAvailabilitySettings {
   hoursStart          Int                      @default(12)
   hoursEnd            Int                      @default(24)
   timezone            String                   @default("America/New_York")
-  weekStartsOn        Int                      @default(0)
   reminderEnabled     Boolean                  @default(true)
   reminderDayOfWeek   Int                      @default(0)
   reminderHour        Int                      @default(12)
@@ -1458,7 +1568,6 @@ model AvailabilitySchedule {
   responses AvailabilityResponse[]
 
   @@unique([teamId, weekStart])
-  @@index([teamId])
 }
 
 model AvailabilityResponse {
@@ -1477,6 +1586,619 @@ model AvailabilityResponse {
   user     User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@unique([scheduleId, nameKey])
-  @@index([scheduleId])
   @@index([userId])
+}
+
+model UserCredits {
+  userId                   String   @id
+  balanceCents             Int      @default(0)
+  autoRefillEnabled        Boolean  @default(false)
+  autoRefillThresholdCents Int      @default(200)
+  autoRefillAmountCents    Int      @default(1000)
+  stripePaymentMethodId    String?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum CreditTransactionType {
+  TOPUP
+  AUTO_REFILL
+  CHARGE
+  REFUND
+  ADJUSTMENT
+}
+
+model CreditTransaction {
+  id                Int                   @id @default(autoincrement())
+  userId            String
+  type              CreditTransactionType
+  amountCents       Int
+  balanceAfterCents Int
+  description       String
+  stripeEventId     String?               @unique
+  metadata          Json?
+  createdAt         DateTime              @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model PendingAutoRefill {
+  userId               String   @id
+  stripeIdempotencyKey String   @unique
+  paymentIntentId      String?
+  createdAt            DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum FaceitTier {
+  UNCLASSIFIED
+  OPEN
+  CAH
+  ADVANCED
+  EXPERT
+  MASTERS
+  OWCS
+}
+
+enum TeamTsrSource {
+  TSR
+  PREDICTED
+  CSR_FALLBACK
+}
+
+enum TeamTsrConfidence {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum TsrRegion {
+  NA
+  EMEA
+  OTHER
+}
+
+enum FaceitMatchStatus {
+  FINISHED
+  CANCELLED
+  ABORTED
+}
+
+enum FaceitRole {
+  TANK
+  DAMAGE
+  SUPPORT
+}
+
+enum TsrRosterOverrideAction {
+  INCLUDE
+  EXCLUDE
+}
+
+model FaceitPlayer {
+  faceitPlayerId String    @id
+  battletag      String?
+  faceitNickname String
+  region         TsrRegion @default(OTHER)
+  verified       Boolean   @default(false)
+  ow2SkillLevel  Int?
+  firstSeenAt    DateTime  @default(now())
+  lastSyncedAt   DateTime  @default(now())
+
+  rosterEntries   FaceitMatchRoster[]
+  rosterOverrides TsrRosterOverride[]
+  aliases         BattletagAlias[]
+  mapStats        FaceitMapPlayerStats[]
+  tsr             PlayerTsr?
+  fsr             PlayerFsr[]
+  fsrTiers        PlayerFsrTier[]
+
+  @@index([battletag])
+  @@index([region])
+}
+
+model FaceitTeam {
+  faceitTeamId String   @id
+  name         String
+  avatar       String?
+  type         String?
+  firstSeenAt  DateTime @default(now())
+  lastSyncedAt DateTime @default(now())
+
+  matchSides FaceitMatchTeam[]
+  mapStats   FaceitMapTeamStats[]
+
+  @@index([name])
+}
+
+model FaceitChampionship {
+  championshipId String     @id
+  name           String
+  organizerId    String
+  tier           FaceitTier @default(UNCLASSIFIED)
+  region         TsrRegion  @default(OTHER)
+  startDate      DateTime?
+  classifiedBy   String?
+  classifiedAt   DateTime?
+  ingestedAt     DateTime   @default(now())
+
+  matches FaceitMatch[]
+
+  @@index([tier])
+  @@index([organizerId, tier])
+}
+
+model FaceitMatch {
+  faceitMatchId     String            @id
+  championshipId    String
+  organizerId       String
+  bestOf            Int
+  team1FaceitTeamId String?
+  team2FaceitTeamId String?
+  team1Name         String?
+  team2Name         String?
+  team1Score        Int
+  team2Score        Int
+  winnerFaction     Int
+  status            FaceitMatchStatus
+  finishedAt        DateTime
+  rawRegion         String
+  rawDetails        Json?
+  rawVoting         Json?
+  ingestedAt        DateTime          @default(now())
+
+  championship    FaceitChampionship  @relation(fields: [championshipId], references: [championshipId], onDelete: Cascade)
+  matchTeams      FaceitMatchTeam[]
+  maps            FaceitMatchMap[]
+  rosters         FaceitMatchRoster[]
+  rosterOverrides TsrRosterOverride[]
+
+  @@index([championshipId])
+  @@index([finishedAt])
+  @@index([team1FaceitTeamId])
+  @@index([team2FaceitTeamId])
+  @@index([organizerId, finishedAt])
+}
+
+model FaceitMatchTeam {
+  id           Int     @id @default(autoincrement())
+  matchId      String
+  teamSide     Int
+  faceitTeamId String?
+  teamName     String
+  score        Int
+  winner       Boolean @default(false)
+  rawStats     Json?
+
+  match FaceitMatch @relation(fields: [matchId], references: [faceitMatchId], onDelete: Cascade)
+  team  FaceitTeam? @relation(fields: [faceitTeamId], references: [faceitTeamId], onDelete: SetNull)
+
+  @@unique([matchId, teamSide])
+  @@index([faceitTeamId])
+  @@index([teamName])
+}
+
+model FaceitMatchRoster {
+  id             Int    @id @default(autoincrement())
+  matchId        String
+  teamSide       Int
+  faceitPlayerId String
+
+  match  FaceitMatch  @relation(fields: [matchId], references: [faceitMatchId], onDelete: Cascade)
+  player FaceitPlayer @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@unique([matchId, faceitPlayerId])
+  @@index([faceitPlayerId])
+}
+
+model FaceitMatchMap {
+  id                    Int      @id @default(autoincrement())
+  matchId               String
+  gameNumber            Int
+  mapGuid               String?
+  mapName               String?
+  mapType               MapType?
+  attackingFirstFaction String?
+  winnerFaction         Int?
+  winnerFaceitTeamId    String?
+  team1Score            Int?
+  team2Score            Int?
+  scoreSummary          String?
+  played                Boolean?
+  rawRoundStats         Json?
+  rawDetailedResult     Json?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  match       FaceitMatch            @relation(fields: [matchId], references: [faceitMatchId], onDelete: Cascade)
+  heroBans    FaceitHeroBan[]
+  playerStats FaceitMapPlayerStats[]
+  teamStats   FaceitMapTeamStats[]
+
+  @@unique([matchId, gameNumber])
+  @@index([mapGuid])
+  @@index([mapName])
+  @@index([mapType])
+}
+
+model FaceitHeroBan {
+  id              Int      @id @default(autoincrement())
+  faceitMapId     Int
+  heroGuid        String?
+  heroName        String
+  role            String?
+  banOrder        Int
+  bannedByFaction Int?
+  source          String
+  rawEntity       Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  map FaceitMatchMap @relation(fields: [faceitMapId], references: [id], onDelete: Cascade)
+
+  @@index([faceitMapId])
+  @@index([heroName])
+}
+
+model FaceitMapTeamStats {
+  id            Int      @id @default(autoincrement())
+  faceitMapId   Int
+  teamSide      Int
+  faceitTeamId  String?
+  teamName      String
+  score         Int?
+  won           Boolean?
+  eliminations  Int?
+  deaths        Int?
+  finalBlows    Int?
+  objectiveTime Float?
+  timePlayed    Float?
+  rawStats      Json
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  map  FaceitMatchMap @relation(fields: [faceitMapId], references: [id], onDelete: Cascade)
+  team FaceitTeam?    @relation(fields: [faceitTeamId], references: [faceitTeamId], onDelete: SetNull)
+
+  @@unique([faceitMapId, teamSide])
+  @@index([faceitTeamId])
+  @@index([teamName])
+}
+
+model FaceitMapPlayerStats {
+  id                 Int      @id @default(autoincrement())
+  faceitMapId        Int
+  teamSide           Int
+  faceitPlayerId     String
+  nickname           String
+  role               String?
+  result             Int?
+  eliminations       Int?
+  assists            Int?
+  deaths             Int?
+  finalBlows         Int?
+  soloKills          Int?
+  multiKills         Int?
+  environmentalKills Int?
+  damageDealt        Float?
+  healingDone        Float?
+  damageMitigated    Float?
+  objectiveTime      Float?
+  timePlayed         Float?
+  rawStats           Json
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  map    FaceitMatchMap @relation(fields: [faceitMapId], references: [id], onDelete: Cascade)
+  player FaceitPlayer   @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@unique([faceitMapId, faceitPlayerId])
+  @@index([faceitPlayerId])
+  @@index([nickname])
+  @@index([role])
+}
+
+model TsrRosterOverride {
+  id             Int                     @id @default(autoincrement())
+  matchId        String
+  faceitPlayerId String
+  action         TsrRosterOverrideAction
+  // Only meaningful for INCLUDE (which team the sub played for, 1 or 2).
+  // Null for EXCLUDE.
+  teamSide       Int?
+  createdBy      String?
+  createdAt      DateTime                @default(now())
+
+  match  FaceitMatch  @relation(fields: [matchId], references: [faceitMatchId], onDelete: Cascade)
+  player FaceitPlayer @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@unique([matchId, faceitPlayerId])
+}
+
+model BattletagAlias {
+  battletag      String @id
+  faceitPlayerId String
+
+  player FaceitPlayer @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@index([faceitPlayerId])
+}
+
+model PlayerTsr {
+  faceitPlayerId       String     @id
+  region               TsrRegion
+  rating               Int
+  matchCount           Int
+  recentMatchCount365d Int
+  maxTierReached       FaceitTier
+  computedAt           DateTime
+
+  player FaceitPlayer @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@index([region, rating(sort: Desc)])
+  @@index([recentMatchCount365d])
+}
+
+model PlayerFsr {
+  faceitPlayerId     String
+  role               FaceitRole
+  fsr                Int
+  compositeZ         Float
+  effectiveAnchor    Int
+  mapCount           Int
+  recentMapCount365d Int
+  tiersPlayed        FaceitTier[]
+  computedAt         DateTime
+
+  player FaceitPlayer @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@id([faceitPlayerId, role])
+  @@index([role, fsr])
+}
+
+model PlayerFsrTier {
+  faceitPlayerId String
+  role           FaceitRole
+  tier           FaceitTier
+  fsr            Int
+  compositeZ     Float
+  mapCount       Int
+  minutesPlayed  Float
+  peerCount      Int
+  statZ          Json
+  computedAt     DateTime
+
+  player FaceitPlayer @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@id([faceitPlayerId, role, tier])
+  @@index([tier, role, fsr])
+}
+
+model FsrBaseline {
+  tier       FaceitTier
+  role       FaceitRole
+  sampleN    Int
+  stats      Json
+  computedAt DateTime
+
+  @@id([tier, role])
+}
+
+enum TempoMetric {
+  FIGHT_DURATION
+  ULT_CHARGE_TIME
+  ULT_HOLD_TIME
+}
+
+model TempoBaseline {
+  metric     TempoMetric @id
+  mean       Float
+  stdDev     Float
+  sampleN    Int
+  computedAt DateTime    @default(now())
+}
+
+model TeamTsrSnapshot {
+  teamId              Int               @id
+  rating              Int
+  source              TeamTsrSource
+  confidence          TeamTsrConfidence
+  bracketTier         FaceitTier
+  bracketBand         String?
+  region              TsrRegion
+  rosterSize          Int
+  ratedCount          Int
+  playtimeBackedShare Float
+  computedAt          DateTime          @default(now())
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([region, rating])
+  @@index([bracketTier, bracketBand])
+}
+
+model ScrimRequest {
+  id           String   @id @default(cuid())
+  fromTeamId   Int
+  toTeamId     Int
+  sentByUserId String
+  fromTsr      Int
+  toTsr        Int
+  message      String
+  createdAt    DateTime @default(now())
+
+  fromTeam     Team    @relation("ScrimRequestFrom", fields: [fromTeamId], references: [id], onDelete: Cascade)
+  toTeam       Team    @relation("ScrimRequestTo", fields: [toTeamId], references: [id], onDelete: Cascade)
+  sentBy       User    @relation(fields: [sentByUserId], references: [id], onDelete: Cascade)
+  linkedScrims Scrim[]
+
+  @@index([fromTeamId, createdAt])
+  @@index([toTeamId, createdAt])
+  @@index([fromTeamId, toTeamId, createdAt])
+}
+
+model TeamBlacklist {
+  id              String              @id @default(cuid())
+  ownerTeamId     Int
+  blockedTeamId   Int?
+  blockedTeamName String
+  blockedKey      String
+  reason          String?
+  source          TeamBlacklistSource @default(MANUAL)
+  createdBy       String
+  createdAt       DateTime            @default(now())
+
+  ownerTeam   Team  @relation("BlacklistOwner", fields: [ownerTeamId], references: [id], onDelete: Cascade)
+  blockedTeam Team? @relation("BlacklistBlocked", fields: [blockedTeamId], references: [id], onDelete: SetNull)
+  creator     User  @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@unique([ownerTeamId, blockedKey])
+  @@index([blockedTeamId])
+  @@index([createdBy])
+}
+
+model ScrimFeedback {
+  id        String               @id @default(cuid())
+  scrimId   Int                  @unique
+  verdict   ScrimFeedbackVerdict
+  createdBy String
+  createdAt DateTime             @default(now())
+
+  scrim   Scrim @relation(fields: [scrimId], references: [id], onDelete: Cascade)
+  creator User  @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@index([createdBy])
+}
+
+enum OverwatchPatchType {
+  SEASON
+  MID_SEASON
+  HOTFIX
+}
+
+enum OverwatchPatchSource {
+  MANUAL
+  SCRAPED
+}
+
+model OverwatchPatch {
+  id          String               @id @default(cuid())
+  date        DateTime             @db.Date
+  type        OverwatchPatchType
+  name        String
+  rawTitle    String?
+  sourceUrl   String?
+  bodyExcerpt String?
+  source      OverwatchPatchSource @default(SCRAPED)
+  needsReview Boolean              @default(false)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@unique([date])
+}
+
+// ---------------------------------------------------------------------------
+// Usage-analytics models — raw events + per-day rollups
+// ---------------------------------------------------------------------------
+
+enum UsageSource {
+  SERVER
+  CLIENT
+}
+
+enum UsageEnv {
+  PRODUCTION
+  PREVIEW
+  DEVELOPMENT
+}
+
+model UsageEvent {
+  id          BigInt      @id @default(autoincrement())
+  ts          DateTime    @default(now())
+  name        String
+  source      UsageSource
+  environment UsageEnv
+  userId      String?
+  teamId      Int?
+  path        String?
+  sessionId   String?
+  props       Json?
+
+  @@index([ts])
+  @@index([environment, name, ts])
+  @@index([userId, ts])
+  @@index([environment, path, ts])
+}
+
+model DailyFeatureRollup {
+  environment UsageEnv
+  day         String
+  name        String
+  uniqueUsers Int
+  uniqueTeams Int
+  totalEvents Int
+
+  @@id([environment, day, name])
+}
+
+model DailyPageRollup {
+  environment UsageEnv
+  day         String
+  path        String
+  views       Int
+  uniqueUsers Int
+
+  @@id([environment, day, path])
+}
+
+model UserActiveDay {
+  environment UsageEnv
+  day         String
+  userId      String
+
+  @@id([environment, day, userId])
+}
+
+model RankedMatch {
+  id        String            @id @default(cuid())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  map       String
+  mapType   String
+  result    String // win | loss | draw
+  groupSize Int
+  playedAt  DateTime
+  sourceId  String? // original winrate-tracker Match.id, for idempotent import
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  heroes    RankedMatchHero[]
+
+  @@unique([userId, sourceId])
+}
+
+model RankedMatchHero {
+  id         String      @id @default(cuid())
+  matchId    String
+  match      RankedMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  hero       String
+  role       String
+  percentage Int
+
+  @@index([matchId])
+}
+
+model RankedImportClaim {
+  id        String    @id @default(cuid())
+  email     String
+  oauthKey  String? // "provider:providerAccountId" fallback identity
+  payload   Json // RankedExportBundle
+  claimedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([email])
 }

@@ -3,6 +3,7 @@ import { DangerZone } from "@/components/team/danger-zone";
 import { TeamMemberCard } from "@/components/team/team-member-card";
 import { TeamMemberUsage } from "@/components/team/team-member-usage";
 import { TeamSettingsForm } from "@/components/team/team-settings-form";
+import { TeamTsrCard } from "@/components/team/team-tsr-card";
 import { UserCardButtons } from "@/components/team/user-card-buttons";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -14,11 +15,12 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { ScoutingService } from "@/data/scouting";
 import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { auth, isAuthedToViewTeam } from "@/lib/auth";
 import { scoutingTool } from "@/lib/flags";
 import prisma from "@/lib/prisma";
+import { computeTeamTsr } from "@/lib/tsr/team";
 import type { PagePropsWithLocale } from "@/types/next";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import { Lock } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -28,12 +30,18 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const params = await props.params;
   const t = await getTranslations("teamPage.teamMetadata");
-  const teamId = decodeURIComponent(params.teamId);
+  const teamId = Number(params.teamId);
+  const canViewTeam =
+    Number.isSafeInteger(teamId) &&
+    teamId > 0 &&
+    (await isAuthedToViewTeam(teamId));
 
-  const team = await prisma.team.findFirst({
-    where: { id: parseInt(teamId) },
-    select: { name: true },
-  });
+  const team = canViewTeam
+    ? await prisma.team.findFirst({
+        where: { id: teamId },
+        select: { name: true },
+      })
+    : null;
 
   const teamName = team?.name ?? t("defaultTeam");
 
@@ -48,7 +56,7 @@ export async function generateMetadata(
       siteName: "Parsertime",
       images: [
         {
-          url: `https://parsertime.app/api/og?title=${t("ogImage", { teamName })}`,
+          url: `https://parsertime.app/api/og?title=${encodeURIComponent(t("ogImage", { teamName }))}`,
           width: 1200,
           height: 630,
         },
@@ -73,6 +81,7 @@ export default async function Team(
     teamManagers,
     scoutingEnabled,
     scoutingTeams,
+    teamScrims,
   ] = await Promise.all([
     prisma.team.findFirst({ where: { id: teamId } }),
     prisma.team.findFirst({
@@ -101,9 +110,20 @@ export default async function Team(
     AppRuntime.runPromise(
       ScoutingService.pipe(Effect.flatMap((svc) => svc.getScoutingTeams()))
     ),
+    prisma.scrim.findMany({ where: { teamId }, select: { id: true } }),
   ]);
 
   const teamMembers = teamMembersData ?? { users: [] };
+  const teamScrimIds = teamScrims.map((s) => s.id);
+
+  const teamTsr = await computeTeamTsr(
+    teamMembers.users.map((u) => ({
+      id: u.id,
+      name: u.name,
+      battletag: u.battletag,
+    })),
+    teamScrimIds
+  );
 
   const user = await AppRuntime.runPromise(
     UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
@@ -114,10 +134,11 @@ export default async function Team(
   }
 
   const hasPerms =
-    userIsManager(user!) ||
-    user?.id === teamData?.ownerId ||
-    user?.role === $Enums.UserRole.MANAGER ||
-    user?.role === $Enums.UserRole.ADMIN;
+    !!user &&
+    (userIsManager(user) ||
+      user.id === teamData?.ownerId ||
+      user.role === $Enums.UserRole.MANAGER ||
+      user.role === $Enums.UserRole.ADMIN);
 
   const teamOwner = await prisma.user.findFirst({
     where: { id: teamData?.ownerId },
@@ -147,6 +168,8 @@ export default async function Team(
           </TabsList>
         )}
         <TabsContent value="members" className="space-y-4">
+          <TeamTsrCard result={teamTsr} teamId={teamId} />
+
           <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
             {t("members")}
           </h3>
@@ -183,15 +206,17 @@ export default async function Team(
             />
           </div>
         </TabsContent>
-        <TabsContent value="settings" className="space-y-4">
-          <TeamSettingsForm
-            team={teamData!}
-            scoutingTeams={scoutingTeams}
-            scoutingEnabled={scoutingEnabled}
-          />
-          <div className="p-4" />
-          <DangerZone team={teamData!} />
-        </TabsContent>
+        {hasPerms && (
+          <TabsContent value="settings" className="space-y-4">
+            <TeamSettingsForm
+              team={teamData!}
+              scoutingTeams={scoutingTeams}
+              scoutingEnabled={scoutingEnabled}
+            />
+            <div className="p-4" />
+            <DangerZone team={teamData!} />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

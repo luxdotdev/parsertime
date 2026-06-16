@@ -1,215 +1,360 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import type { TeamFightStats } from "@/data/team/types";
-import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
+import { useFormatter, useTranslations } from "next-intl";
+import {
+  Bar,
+  BarChart,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  type TooltipProps,
+} from "recharts";
+import type {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 
 type WinProbabilityInsightsProps = {
   fightStats: TeamFightStats;
 };
 
+type InsightTone = "positive" | "negative" | "neutral";
+
+type Insight = {
+  eyebrow: string;
+  headline: string;
+  detail: string;
+  tone: InsightTone;
+};
+
+type FightTypeRow = {
+  label: string;
+  winrate: number;
+  fights: number;
+  color: string;
+};
+
+type ChartTooltipProps = TooltipProps<ValueType, NameType> & {
+  formatPercent: (value: number) => string;
+  summary: (values: { winrate: string; fights: number }) => string;
+};
+
+function toneFromDelta(delta: number, threshold = 5): InsightTone {
+  if (delta >= threshold) return "positive";
+  if (delta <= -threshold) return "negative";
+  return "neutral";
+}
+
+function ChartTooltip({
+  active,
+  payload,
+  formatPercent,
+  summary,
+}: ChartTooltipProps) {
+  if (!active || !payload?.length) return null;
+  const row = payload[0]?.payload as FightTypeRow | undefined;
+  if (!row) return null;
+  return (
+    <div className="bg-popover text-popover-foreground border-border z-50 overflow-hidden rounded-md border px-3 py-2 shadow-xl">
+      <p className="text-xs font-semibold">{row.label}</p>
+      <p className="text-foreground font-mono text-xs tabular-nums">
+        {summary({
+          winrate: formatPercent(row.winrate),
+          fights: row.fights,
+        })}
+      </p>
+    </div>
+  );
+}
+
 export function WinProbabilityInsights({
   fightStats,
 }: WinProbabilityInsightsProps) {
   const t = useTranslations("teamStatsPage.winProbabilityInsights");
+  const format = useFormatter();
 
-  if (fightStats.totalFights === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground text-sm">{t("noData")}</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const insights = [
-    {
-      title: t("firstPickImpact"),
-      value: `${fightStats.firstPickWinrate.toFixed(1)}%`,
-      description: t("firstPickImpactDescription", {
-        winrate: fightStats.firstPickWinrate.toFixed(1),
-      }),
-      impact:
-        fightStats.firstPickWinrate > 65
-          ? "high-positive"
-          : fightStats.firstPickWinrate < 45
-            ? "negative"
-            : "moderate",
-      detail: t("firstPickCount", {
-        wins: fightStats.firstPickWins,
-        fights: fightStats.firstPickFights,
-      }),
-    },
-    {
-      title: t("firstDeathComeback"),
-      value: `${fightStats.firstDeathWinrate.toFixed(1)}%`,
-      description: t("firstDeathComebackDescription", {
-        winrate: fightStats.firstDeathWinrate.toFixed(1),
-      }),
-      impact:
-        fightStats.firstDeathWinrate > 35
-          ? "high-positive"
-          : fightStats.firstDeathWinrate < 20
-            ? "negative"
-            : "moderate",
-      detail: t("firstDeathCount", {
-        wins: fightStats.firstDeathWins,
-        fights: fightStats.firstDeathFights,
-      }),
-    },
-    {
-      title: t("ultimateAdvantage"),
-      value: `${fightStats.firstUltWinrate.toFixed(1)}%`,
-      description: t("ultimateAdvantageDescription", {
-        winrate: fightStats.firstUltWinrate.toFixed(1),
-      }),
-      impact:
-        fightStats.firstUltWinrate > 60
-          ? "high-positive"
-          : fightStats.firstUltWinrate < 45
-            ? "negative"
-            : "moderate",
-      detail: t("ultimateCount", {
-        wins: fightStats.firstUltWins,
-        fights: fightStats.firstUltFights,
-      }),
-    },
-    {
-      title: t("dryFightSuccess"),
-      value: `${fightStats.dryFightWinrate.toFixed(1)}%`,
-      description: t("dryFightSuccessDescription", {
-        winrate: fightStats.dryFightWinrate.toFixed(1),
-      }),
-      impact:
-        fightStats.dryFightWinrate > 55
-          ? "high-positive"
-          : fightStats.dryFightWinrate < 40
-            ? "negative"
-            : "moderate",
-      detail: t("dryFightCount", {
-        wins: fightStats.dryFightWins,
-        fights: fightStats.dryFights,
-      }),
-    },
-  ];
-
-  const higherReversalRate = Math.max(
-    fightStats.dryFightReversalRate,
-    fightStats.nonDryFightReversalRate
-  );
-  if (fightStats.dryFights > 0 || fightStats.nonDryFights > 0) {
-    insights.push({
-      title: t("fightReversalComparison"),
-      value: `${fightStats.dryFightReversalRate.toFixed(1)}% / ${fightStats.nonDryFightReversalRate.toFixed(1)}%`,
-      description: t("fightReversalComparisonDescription", {
-        dryRate: fightStats.dryFightReversalRate.toFixed(1),
-        nonDryRate: fightStats.nonDryFightReversalRate.toFixed(1),
-      }),
-      impact:
-        higherReversalRate > 15
-          ? "high-positive"
-          : higherReversalRate < 5
-            ? "negative"
-            : "moderate",
-      detail: t("fightReversalComparisonDetail", {
-        dryReversals: fightStats.dryFightReversals,
-        nonDryReversals: fightStats.nonDryFightReversals,
-      }),
+  function formatPercent(value: number, maximumFractionDigits = 1): string {
+    return format.number(value / 100, {
+      style: "percent",
+      minimumFractionDigits: maximumFractionDigits,
+      maximumFractionDigits,
     });
   }
 
-  function getImpactColor(impact: string): string {
-    if (impact === "high-positive")
-      return "border-green-500 bg-green-50 dark:bg-green-950/30";
-    if (impact === "negative")
-      return "border-red-500 bg-red-50 dark:bg-red-950/30";
-    return "border-yellow-500 bg-yellow-50 dark:bg-yellow-950/30";
+  function formatDelta(value: number): string {
+    return format.number(value, {
+      signDisplay: "exceptZero",
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
   }
 
-  function getImpactBadge(impact: string): string {
-    if (impact === "high-positive") return t("strongAdvantage");
-    if (impact === "negative") return t("needsImprovement");
-    return t("average");
+  if (fightStats.totalFights === 0) {
+    return (
+      <section className="space-y-4">
+        <SectionHeader eyebrow={t("eyebrow")} title={t("title")} />
+        <p className="text-muted-foreground text-sm">{t("noData")}</p>
+      </section>
+    );
   }
+
+  const overall = fightStats.overallWinrate;
+  const insights: Insight[] = [];
+
+  if (fightStats.firstPickFights > 0) {
+    const delta = fightStats.firstPickWinrate - overall;
+    insights.push({
+      eyebrow: t("firstPickImpact"),
+      headline: t("firstPickHeadline", {
+        winrate: formatPercent(fightStats.firstPickWinrate),
+      }),
+      detail: t("firstPickDetail", {
+        wins: fightStats.firstPickWins,
+        fights: fightStats.firstPickFights,
+        delta: formatDelta(delta),
+      }),
+      tone: toneFromDelta(delta),
+    });
+  }
+
+  if (fightStats.firstDeathFights > 0) {
+    const delta = fightStats.firstDeathWinrate - overall;
+    insights.push({
+      eyebrow: t("firstDeathComeback"),
+      headline: t("firstDeathHeadline", {
+        winrate: formatPercent(fightStats.firstDeathWinrate),
+      }),
+      detail: t("firstDeathDetail", {
+        wins: fightStats.firstDeathWins,
+        fights: fightStats.firstDeathFights,
+        delta: formatDelta(delta),
+      }),
+      tone: toneFromDelta(delta),
+    });
+  }
+
+  if (fightStats.firstUltFights > 0) {
+    const delta = fightStats.firstUltWinrate - overall;
+    insights.push({
+      eyebrow: t("ultimateAdvantage"),
+      headline: t("firstUltHeadline", {
+        winrate: formatPercent(fightStats.firstUltWinrate),
+      }),
+      detail: t("firstUltDetail", {
+        wins: fightStats.firstUltWins,
+        fights: fightStats.firstUltFights,
+        delta: formatDelta(delta),
+      }),
+      tone: toneFromDelta(delta),
+    });
+  }
+
+  if (fightStats.dryFights > 0) {
+    const delta = fightStats.dryFightWinrate - overall;
+    insights.push({
+      eyebrow: t("dryFightSuccess"),
+      headline: t("dryFightHeadline", {
+        winrate: formatPercent(fightStats.dryFightWinrate),
+      }),
+      detail: t("dryFightDetail", {
+        wins: fightStats.dryFightWins,
+        fights: fightStats.dryFights,
+        delta: formatDelta(delta),
+      }),
+      tone: toneFromDelta(delta),
+    });
+  }
+
+  if (fightStats.avgUltsInWonFights > 0 || fightStats.avgUltsInLostFights > 0) {
+    const diff = fightStats.avgUltsInWonFights - fightStats.avgUltsInLostFights;
+    insights.push({
+      eyebrow: t("ultEconomy"),
+      headline: t("ultEconomyHeadline", {
+        count: format.number(fightStats.avgUltsInWonFights, {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        }),
+      }),
+      detail: t("ultEconomyDetail", {
+        count: format.number(fightStats.avgUltsInLostFights, {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        }),
+        delta: formatDelta(diff),
+      }),
+      tone: toneFromDelta(diff, 0.5),
+    });
+  }
+
+  if (fightStats.dryFights > 0 && fightStats.nonDryFights > 0) {
+    const dry = fightStats.dryFightReversalRate;
+    const wet = fightStats.nonDryFightReversalRate;
+    const higher = Math.max(dry, wet);
+    insights.push({
+      eyebrow: t("fightReversalComparison"),
+      headline: t("fightReversalHeadline", {
+        dryRate: formatPercent(dry, 0),
+        ultRate: formatPercent(wet, 0),
+      }),
+      detail: t("fightReversalDetail", {
+        dryReversals: fightStats.dryFightReversals,
+        ultReversals: fightStats.nonDryFightReversals,
+      }),
+      tone: higher > 15 ? "positive" : higher < 5 ? "negative" : "neutral",
+    });
+  }
+
+  const fightTypeRows: FightTypeRow[] = [
+    {
+      label: t("rows.overall"),
+      winrate: overall,
+      fights: fightStats.totalFights,
+      color: "var(--chart-1)",
+    },
+  ];
+  if (fightStats.firstPickFights > 0) {
+    fightTypeRows.push({
+      label: t("rows.firstPick"),
+      winrate: fightStats.firstPickWinrate,
+      fights: fightStats.firstPickFights,
+      color: "var(--chart-2)",
+    });
+  }
+  if (fightStats.firstDeathFights > 0) {
+    fightTypeRows.push({
+      label: t("rows.firstDeath"),
+      winrate: fightStats.firstDeathWinrate,
+      fights: fightStats.firstDeathFights,
+      color: "var(--chart-3)",
+    });
+  }
+  if (fightStats.firstUltFights > 0) {
+    fightTypeRows.push({
+      label: t("rows.firstUlt"),
+      winrate: fightStats.firstUltWinrate,
+      fights: fightStats.firstUltFights,
+      color: "var(--chart-4)",
+    });
+  }
+  if (fightStats.dryFights > 0) {
+    fightTypeRows.push({
+      label: t("rows.dry"),
+      winrate: fightStats.dryFightWinrate,
+      fights: fightStats.dryFights,
+      color: "var(--chart-5)",
+    });
+  }
+  if (fightStats.nonDryFights > 0) {
+    const wins =
+      fightStats.fightsWon -
+      (fightStats.dryFights > 0 ? fightStats.dryFightWins : 0);
+    const wr =
+      fightStats.nonDryFights > 0 ? (wins / fightStats.nonDryFights) * 100 : 0;
+    fightTypeRows.push({
+      label: t("rows.withUlts"),
+      winrate: wr,
+      fights: fightStats.nonDryFights,
+      color: "var(--chart-2)",
+    });
+  }
+
+  const chartHeight = Math.max(220, fightTypeRows.length * 36);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">{t("title")}</CardTitle>
-        <p className="text-muted-foreground text-sm">{t("description")}</p>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-4 md:grid-cols-2">
-          {insights.map((insight) => (
-            <div
-              key={insight.title}
-              className={`rounded-lg border p-4 ${getImpactColor(insight.impact)}`}
+    <section className="space-y-4">
+      <SectionHeader
+        eyebrow={t("eyebrow")}
+        title={t("title")}
+        description={t("description")}
+      />
+      <div className="grid gap-x-10 gap-y-8 lg:grid-cols-12">
+        <div className="lg:col-span-7">
+          {insights.length === 0 ? (
+            <p className="text-muted-foreground text-sm">{t("noData")}</p>
+          ) : (
+            <dl className="grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-2">
+              {insights.map((ins) => (
+                <div key={ins.eyebrow} className="space-y-1">
+                  <dt
+                    className={cn(
+                      "font-mono text-[10px] tracking-[0.18em] uppercase",
+                      ins.tone === "positive"
+                        ? "text-primary"
+                        : ins.tone === "negative"
+                          ? "text-destructive"
+                          : "text-muted-foreground"
+                    )}
+                  >
+                    {ins.eyebrow}
+                  </dt>
+                  <dd className="text-foreground text-base leading-tight font-medium">
+                    {ins.headline}
+                  </dd>
+                  <dd className="text-muted-foreground font-mono text-xs tabular-nums">
+                    {ins.detail}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          )}
+        </div>
+        <div className="lg:col-span-5">
+          <p className="text-muted-foreground mb-3 font-mono text-[10px] tracking-[0.18em] uppercase">
+            {t("chartTitle")}
+          </p>
+          <ResponsiveContainer width="100%" height={chartHeight}>
+            <BarChart
+              data={fightTypeRows}
+              layout="vertical"
+              margin={{ top: 0, right: 24, bottom: 0, left: 0 }}
             >
-              <div className="mb-2 flex items-start justify-between">
-                <h4 className="font-semibold">{insight.title}</h4>
-                <span
-                  className={`rounded px-2 py-1 text-xs ${
-                    insight.impact === "high-positive"
-                      ? "bg-green-600 text-white"
-                      : insight.impact === "negative"
-                        ? "bg-red-600 text-white"
-                        : "bg-yellow-600 text-white"
-                  }`}
-                >
-                  {getImpactBadge(insight.impact)}
-                </span>
-              </div>
-              <div className="mb-2 text-3xl font-bold">{insight.value}</div>
-              <p className="text-muted-foreground mb-1 text-sm">
-                {insight.description}
-              </p>
-              <p className="text-muted-foreground text-xs">{insight.detail}</p>
-            </div>
-          ))}
+              <XAxis
+                type="number"
+                domain={[0, 100]}
+                tick={{
+                  fontSize: 10,
+                  fill: "var(--muted-foreground)",
+                  fontFamily: "var(--font-mono)",
+                }}
+                tickFormatter={(v) => formatPercent(Number(v), 0)}
+                axisLine={{ stroke: "var(--border)" }}
+                tickLine={{ stroke: "var(--border)" }}
+              />
+              <YAxis
+                type="category"
+                dataKey="label"
+                width={80}
+                tick={{
+                  fontSize: 10,
+                  fill: "var(--muted-foreground)",
+                  fontFamily: "var(--font-mono)",
+                }}
+                axisLine={{ stroke: "var(--border)" }}
+                tickLine={false}
+              />
+              <Tooltip
+                content={
+                  <ChartTooltip
+                    formatPercent={formatPercent}
+                    summary={(values) => t("tooltipSummary", values)}
+                  />
+                }
+                cursor={{ fill: "var(--muted)", fillOpacity: 0.4 }}
+              />
+              <Bar dataKey="winrate" radius={[0, 2, 2, 0]}>
+                {fightTypeRows.map((row) => (
+                  <Cell key={row.label} fill={row.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
         </div>
-
-        <div className="bg-muted mt-6 rounded-lg p-4">
-          <h4 className="mb-2 text-sm font-semibold">
-            {t("overallFightPerformance")}
-          </h4>
-          <div className="grid gap-4 md:grid-cols-3">
-            <div>
-              <div className="text-muted-foreground text-xs">
-                {t("totalFights")}
-              </div>
-              <div className="text-2xl font-bold">{fightStats.totalFights}</div>
-            </div>
-            <div>
-              <div className="text-muted-foreground text-xs">
-                {t("fightsWon")}
-              </div>
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                {fightStats.fightsWon}
-              </div>
-            </div>
-            <div>
-              <div className="text-muted-foreground text-xs">
-                {t("overallWinrate")}
-              </div>
-              <div
-                className={`text-2xl font-bold ${
-                  fightStats.overallWinrate >= 55
-                    ? "text-green-600 dark:text-green-400"
-                    : fightStats.overallWinrate >= 45
-                      ? "text-yellow-600 dark:text-yellow-400"
-                      : "text-red-600 dark:text-red-400"
-                }`}
-              >
-                {fightStats.overallWinrate.toFixed(1)}%
-              </div>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

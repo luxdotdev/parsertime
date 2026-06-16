@@ -88,6 +88,10 @@ export const botNotificationCounter = lazyCounter(
   "bot.notifications",
   "Bot notification delivery attempts"
 );
+export const matchmakerCounter = lazyCounter(
+  "matchmaker.requests",
+  "Scrim requests sent via the matchmaker"
+);
 
 // --- Cron jobs ---
 export const cronJobCounter = lazyCounter("cron.runs", "Cron job executions");

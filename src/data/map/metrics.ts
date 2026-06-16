@@ -129,6 +129,50 @@ export const rotationDeathQueryDuration = Metric.histogram(
   "Distribution of rotation death analysis query duration in milliseconds"
 );
 
+export const fightUltQualityQuerySuccessTotal = Metric.counter(
+  "map.fight_ult_quality.query.success",
+  {
+    description: "Total successful fight ult quality queries",
+    incremental: true,
+  }
+);
+
+export const fightUltQualityQueryErrorTotal = Metric.counter(
+  "map.fight_ult_quality.query.error",
+  {
+    description: "Total fight ult quality query failures",
+    incremental: true,
+  }
+);
+
+export const fightUltQualityQueryDuration = Metric.histogram(
+  "map.fight_ult_quality.query.duration_ms",
+  MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
+  "Distribution of fight ult quality query duration in milliseconds"
+);
+
+export const routeMiningQuerySuccessTotal = Metric.counter(
+  "map.route_mining.query.success",
+  {
+    description: "Total successful route mining analysis queries",
+    incremental: true,
+  }
+);
+
+export const routeMiningQueryErrorTotal = Metric.counter(
+  "map.route_mining.query.error",
+  {
+    description: "Total route mining analysis query failures",
+    incremental: true,
+  }
+);
+
+export const routeMiningQueryDuration = Metric.histogram(
+  "map.route_mining.query.duration_ms",
+  MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
+  "Distribution of route mining analysis query duration in milliseconds"
+);
+
 export const mapGroupQuerySuccessTotal = Metric.counter(
   "map.group.query.success",
   {
@@ -168,6 +212,28 @@ export const mapGroupMutationDuration = Metric.histogram(
   "map.group.mutation.duration_ms",
   MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
   "Distribution of map group mutation duration in milliseconds"
+);
+
+export const mapHeroTrendsQuerySuccessTotal = Metric.counter(
+  "map.hero_trends.query.success",
+  {
+    description: "Total successful map hero trends queries",
+    incremental: true,
+  }
+);
+
+export const mapHeroTrendsQueryErrorTotal = Metric.counter(
+  "map.hero_trends.query.error",
+  {
+    description: "Total map hero trends query failures",
+    incremental: true,
+  }
+);
+
+export const mapHeroTrendsQueryDuration = Metric.histogram(
+  "map.hero_trends.query.duration_ms",
+  MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
+  "Distribution of map hero trends query duration in milliseconds"
 );
 
 export const mapCacheRequestTotal = Metric.counter("map.cache.request", {

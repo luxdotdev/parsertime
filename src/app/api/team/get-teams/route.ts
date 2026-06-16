@@ -4,7 +4,7 @@ import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import type { Team } from "@prisma/client";
+import type { Team } from "@/generated/prisma/client";
 import { unauthorized } from "next/navigation";
 
 export type GetTeamsResponse = {
@@ -22,6 +22,7 @@ export async function GET() {
   const userId = await AppRuntime.runPromise(
     UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
   );
+  if (!userId) unauthorized();
 
   const teams = await prisma.team.findMany({
     where: {

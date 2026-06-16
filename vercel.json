@@ -19,7 +19,40 @@
     {
       "path": "/api/reports/send-usage-report",
       "schedule": "0 1 * * 6"
+    },
+    {
+      "path": "/api/cron/tsr-recompute",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/fsr-recompute",
+      "schedule": "30 6 * * *"
+    },
+    {
+      "path": "/api/cron/scrape-patch-notes",
+      "schedule": "10 18 * * *"
+    },
+    {
+      "path": "/api/cron/scrape-patch-notes",
+      "schedule": "10 19 * * *"
+    },
+    {
+      "path": "/api/cron/usage-rollup",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/wp-retrain",
+      "schedule": "0 7 * * 1"
+    },
+    {
+      "path": "/api/cron/tempo-baseline",
+      "schedule": "0 8 * * 1"
     }
   ],
+  "functions": {
+    "api/wp-train/index.py": {
+      "maxDuration": 800
+    }
+  },
   "regions": ["iad1"]
 }

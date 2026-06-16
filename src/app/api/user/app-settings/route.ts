@@ -4,7 +4,7 @@ import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import { unauthorized } from "next/navigation";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
@@ -27,31 +27,22 @@ export async function GET() {
   }
 
   try {
-    let appSettings = await AppRuntime.runPromise(
-      UserService.pipe(
-        Effect.flatMap((svc) => svc.getAppSettings(session.user.email))
-      )
+    const user = await AppRuntime.runPromise(
+      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
     );
-
-    // If no app settings exist, create default ones
-    if (!appSettings) {
-      const user = await AppRuntime.runPromise(
-        UserService.pipe(
-          Effect.flatMap((svc) => svc.getUser(session.user.email))
-        )
-      );
-      if (!user) {
-        Logger.error("User not found when creating app settings");
-        return new Response("User not found", { status: 404 });
-      }
-
-      appSettings = await prisma.appSettings.create({
-        data: {
-          userId: user.id,
-          colorblindMode: $Enums.ColorblindMode.OFF,
-        },
-      });
+    if (!user) {
+      Logger.error("User not found when creating app settings");
+      return new Response("User not found", { status: 404 });
     }
+
+    const appSettings = await prisma.appSettings.upsert({
+      where: { userId: user.id },
+      update: {},
+      create: {
+        userId: user.id,
+        colorblindMode: $Enums.ColorblindMode.OFF,
+      },
+    });
 
     const response: GetAppSettingsResponse = {
       id: appSettings.id,
@@ -100,33 +91,20 @@ export async function PUT(request: NextRequest) {
       return new Response("User not found", { status: 404 });
     }
 
-    // Try to find existing settings first
-    const existingSettings = await prisma.appSettings.findFirst({
+    const appSettings = await prisma.appSettings.upsert({
       where: { userId: user.id },
+      update: {
+        colorblindMode: validatedData.colorblindMode,
+        customTeam1Color: validatedData.customTeam1Color,
+        customTeam2Color: validatedData.customTeam2Color,
+      },
+      create: {
+        userId: user.id,
+        colorblindMode: validatedData.colorblindMode,
+        customTeam1Color: validatedData.customTeam1Color,
+        customTeam2Color: validatedData.customTeam2Color,
+      },
     });
-
-    let appSettings;
-    if (existingSettings) {
-      // Update existing settings
-      appSettings = await prisma.appSettings.update({
-        where: { id: existingSettings.id },
-        data: {
-          colorblindMode: validatedData.colorblindMode,
-          customTeam1Color: validatedData.customTeam1Color,
-          customTeam2Color: validatedData.customTeam2Color,
-        },
-      });
-    } else {
-      // Create new settings
-      appSettings = await prisma.appSettings.create({
-        data: {
-          userId: user.id,
-          colorblindMode: validatedData.colorblindMode,
-          customTeam1Color: validatedData.customTeam1Color,
-          customTeam2Color: validatedData.customTeam2Color,
-        },
-      });
-    }
 
     const response: GetAppSettingsResponse = {
       id: appSettings.id,

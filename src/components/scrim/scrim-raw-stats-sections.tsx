@@ -9,6 +9,8 @@ import type {
   ScrimUltAnalysis,
 } from "@/data/scrim/types";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 
 export function HighlightedPct({
   value,
@@ -36,69 +38,82 @@ export function FightAnalysisSection({
 }: {
   analysis: ScrimFightAnalysis;
 }) {
+  const t = useTranslations("scrimPage.rawStatsSections.fights");
   if (analysis.totalFights === 0) return null;
 
   const fightsLost = analysis.totalFights - analysis.fightsWon;
+  function rate(value: number, favorable: boolean) {
+    function Rate(_chunks: ReactNode) {
+      return <HighlightedPct value={value} favorable={favorable} />;
+    }
+    return Rate;
+  }
+
+  function muted(chunks: ReactNode) {
+    return <span className="text-muted-foreground">{chunks}</span>;
+  }
 
   return (
     <>
       <Separator />
-      <section aria-label="Fight analysis">
+      <section aria-label={t("label")}>
         <h4 className="text-muted-foreground mb-3 text-xs font-medium tracking-wide uppercase">
-          Fight Analysis
+          {t("title")}
         </h4>
         <ul className="text-foreground space-y-2 text-sm leading-relaxed">
           <li>
-            Overall fight win rate:{" "}
-            <HighlightedPct
-              value={analysis.fightWinrate}
-              favorable={analysis.fightWinrate >= 50}
-            />{" "}
-            <span className="text-muted-foreground">
-              ({analysis.fightsWon}W / {fightsLost}L across{" "}
-              {analysis.totalFights} fights)
-            </span>
+            {t.rich("overallWinRate", {
+              winrate: Math.round(analysis.fightWinrate),
+              won: analysis.fightsWon,
+              lost: fightsLost,
+              total: analysis.totalFights,
+              rate: rate(analysis.fightWinrate, analysis.fightWinrate >= 50),
+              muted,
+            })}
           </li>
 
           <li>
-            Your team died first in{" "}
-            <HighlightedPct
-              value={analysis.teamFirstDeathRate}
-              favorable={analysis.teamFirstDeathRate < 50}
-            />{" "}
-            of fights.
+            {t.rich("teamFirstDeath", {
+              rateValue: Math.round(analysis.teamFirstDeathRate),
+              rate: rate(
+                analysis.teamFirstDeathRate,
+                analysis.teamFirstDeathRate < 50
+              ),
+            })}
             {analysis.teamFirstDeathCount > 0 &&
               analysis.firstPickCount > 0 && (
                 <>
                   {" "}
-                  When you died first, you still won{" "}
-                  <HighlightedPct
-                    value={analysis.firstDeathWinrate}
-                    favorable={analysis.firstDeathWinrate >= 50}
-                  />{" "}
-                  of those fights vs{" "}
-                  <HighlightedPct
-                    value={analysis.firstPickWinrate}
-                    favorable={analysis.firstPickWinrate >= 50}
-                  />{" "}
-                  when you got first pick.
+                  {t.rich("teamFirstDeathComparison", {
+                    firstDeathWinrate: Math.round(analysis.firstDeathWinrate),
+                    firstPickWinrate: Math.round(analysis.firstPickWinrate),
+                    firstDeathRate: rate(
+                      analysis.firstDeathWinrate,
+                      analysis.firstDeathWinrate >= 50
+                    ),
+                    firstPickRate: rate(
+                      analysis.firstPickWinrate,
+                      analysis.firstPickWinrate >= 50
+                    ),
+                  })}
                 </>
               )}
           </li>
 
           {analysis.firstPickCount > 0 && (
             <li>
-              Your team got first pick in{" "}
-              <HighlightedPct
-                value={analysis.firstPickRate}
-                favorable={analysis.firstPickRate >= 50}
-              />{" "}
-              of fights, winning{" "}
-              <HighlightedPct
-                value={analysis.firstPickWinrate}
-                favorable={analysis.firstPickWinrate >= 50}
-              />{" "}
-              of them.
+              {t.rich("firstPick", {
+                firstPickRate: Math.round(analysis.firstPickRate),
+                firstPickWinrate: Math.round(analysis.firstPickWinrate),
+                pickRate: rate(
+                  analysis.firstPickRate,
+                  analysis.firstPickRate >= 50
+                ),
+                winRate: rate(
+                  analysis.firstPickWinrate,
+                  analysis.firstPickWinrate >= 50
+                ),
+              })}
             </li>
           )}
 
@@ -107,12 +122,13 @@ export function FightAnalysisSection({
             <li>
               {analysis.firstUltCount > 0 ? (
                 <>
-                  When your team used ultimates first, you won{" "}
-                  <HighlightedPct
-                    value={analysis.firstUltWinrate}
-                    favorable={analysis.firstUltWinrate >= 50}
-                  />{" "}
-                  of those fights.
+                  {t.rich("firstUlt", {
+                    winrate: Math.round(analysis.firstUltWinrate),
+                    rate: rate(
+                      analysis.firstUltWinrate,
+                      analysis.firstUltWinrate >= 50
+                    ),
+                  })}
                 </>
               ) : null}
               {analysis.firstUltCount > 0 && analysis.opponentFirstUltCount > 0
@@ -120,13 +136,14 @@ export function FightAnalysisSection({
                 : null}
               {analysis.opponentFirstUltCount > 0 ? (
                 <>
-                  When the opponent used ultimates first, your win rate
-                  {analysis.firstUltCount > 0 ? " dropped to " : " was "}
-                  <HighlightedPct
-                    value={analysis.opponentFirstUltWinrate}
-                    favorable={analysis.opponentFirstUltWinrate >= 50}
-                  />
-                  .
+                  {t.rich("opponentFirstUlt", {
+                    hasFirstUlt: analysis.firstUltCount > 0 ? "yes" : "no",
+                    winrate: Math.round(analysis.opponentFirstUltWinrate),
+                    rate: rate(
+                      analysis.opponentFirstUltWinrate,
+                      analysis.opponentFirstUltWinrate >= 50
+                    ),
+                  })}
                 </>
               ) : null}
             </li>
@@ -144,6 +161,13 @@ export function UltAnalysisSection({
   analysis: ScrimUltAnalysis;
   teamNames: readonly [string, string];
 }) {
+  const t = useTranslations("scrimPage.rawStatsSections.ultimates");
+  const tRatings = useTranslations(
+    "scrimPage.overviewSections.ultimates.ratings"
+  );
+  const tHeadings = useTranslations(
+    "scrimPage.overviewSections.ultimates.headings"
+  );
   if (analysis.ourUltsUsed === 0 && analysis.opponentUltsUsed === 0) {
     return null;
   }
@@ -158,12 +182,50 @@ export function UltAnalysisSection({
     allOurTimings.length > 0 || allOpponentTimings.length > 0;
   const hasCharts = hasComparisons || hasTimingData;
 
+  function strong(chunks: ReactNode) {
+    return <span className="font-semibold">{chunks}</span>;
+  }
+
+  function number(chunks: ReactNode) {
+    return <span className="font-semibold tabular-nums">{chunks}</span>;
+  }
+
+  function greenNumber(chunks: ReactNode) {
+    return (
+      <span className="font-semibold text-green-600 tabular-nums dark:text-green-400">
+        {chunks}
+      </span>
+    );
+  }
+
+  function redNumber(chunks: ReactNode) {
+    return (
+      <span className="font-semibold text-red-600 tabular-nums dark:text-red-400">
+        {chunks}
+      </span>
+    );
+  }
+
+  function colored(className: string) {
+    function Colored(chunks: ReactNode) {
+      return <span className={className}>{chunks}</span>;
+    }
+    return Colored;
+  }
+
+  function rate(value: number, favorable: boolean) {
+    function Rate(_chunks: ReactNode) {
+      return <HighlightedPct value={value} favorable={favorable} />;
+    }
+    return Rate;
+  }
+
   return (
     <>
       <Separator />
-      <section aria-label="Ultimate analysis">
+      <section aria-label={t("label")}>
         <h4 className="text-muted-foreground mb-3 text-xs font-medium tracking-wide uppercase">
-          Ultimate Analysis
+          {t("title")}
         </h4>
         <div
           className={cn(
@@ -173,15 +235,11 @@ export function UltAnalysisSection({
         >
           <ul className="text-foreground space-y-2 text-sm leading-relaxed">
             <li>
-              Your team used{" "}
-              <span className="font-semibold tabular-nums">
-                {analysis.ourUltsUsed}
-              </span>{" "}
-              ultimates vs opponent&apos;s{" "}
-              <span className="font-semibold tabular-nums">
-                {analysis.opponentUltsUsed}
-              </span>
-              .
+              {t.rich("ultUsage", {
+                ourCount: analysis.ourUltsUsed,
+                opponentCount: analysis.opponentUltsUsed,
+                n: number,
+              })}
             </li>
 
             {analysis.ultsByRole
@@ -193,48 +251,46 @@ export function UltAnalysisSection({
                 );
                 return (
                   <li key={r.role}>
-                    {r.role} ultimates: your team used{" "}
-                    <span className="font-semibold tabular-nums">
-                      {r.ourCount}
-                    </span>{" "}
-                    vs opponent&apos;s{" "}
-                    <span className="font-semibold tabular-nums">
-                      {r.opponentCount}
-                    </span>
-                    .
+                    {t.rich("roleUltUsage", {
+                      role: r.role,
+                      ourCount: r.ourCount,
+                      opponentCount: r.opponentCount,
+                      n: number,
+                    })}
                     {r.ourFirstRate > 0 && (
                       <>
                         {" "}
-                        You used {r.role.toLowerCase()} ultimates first in{" "}
-                        <HighlightedPct
-                          value={r.ourFirstRate}
-                          favorable={r.ourFirstRate >= 50}
-                        />{" "}
-                        of fights.
+                        {t.rich("roleFirstUlt", {
+                          role: r.role.toLowerCase(),
+                          rateValue: Math.round(r.ourFirstRate),
+                          rate: rate(r.ourFirstRate, r.ourFirstRate >= 50),
+                        })}
                       </>
                     )}
                     {r.ourSubroleTimings.length > 0 && (
                       <ul className="text-muted-foreground mt-1 ml-4 space-y-0.5 text-xs">
                         {r.ourSubroleTimings.map((sr) => (
                           <li key={sr.subrole}>
-                            {sr.subrole}:{" "}
-                            <span className="text-foreground font-semibold tabular-nums">
-                              {sr.count}
-                            </span>{" "}
-                            {sr.count === 1 ? "ultimate" : "ultimates"} (
-                            {totalSubroleUlts > 0
-                              ? ((sr.count / totalSubroleUlts) * 100).toFixed(0)
-                              : 0}
-                            %) &mdash;{" "}
-                            <span className="text-green-500">
-                              {sr.initiation} initiation
-                            </span>
-                            ,{" "}
-                            <span className="text-yellow-500">
-                              {sr.midfight} midfight
-                            </span>
-                            ,{" "}
-                            <span className="text-red-500">{sr.late} late</span>
+                            {t.rich("subroleTiming", {
+                              subrole: sr.subrole,
+                              count: sr.count,
+                              pct:
+                                totalSubroleUlts > 0
+                                  ? (
+                                      (sr.count / totalSubroleUlts) *
+                                      100
+                                    ).toFixed(0)
+                                  : 0,
+                              initiation: sr.initiation,
+                              midfight: sr.midfight,
+                              late: sr.late,
+                              n: colored(
+                                "text-foreground font-semibold tabular-nums"
+                              ),
+                              init: colored("text-green-500"),
+                              mid: colored("text-yellow-500"),
+                              lateText: colored("text-red-500"),
+                            })}
                           </li>
                         ))}
                       </ul>
@@ -246,57 +302,40 @@ export function UltAnalysisSection({
             {analysis.fightsWithUlts > 0 && (
               <>
                 <li>
-                  Your team initiated fights with ultimates in{" "}
-                  <HighlightedPct
-                    value={
+                  {t.rich("fightInitiations", {
+                    rateValue: Math.round(
                       (analysis.ourFightInitiations / analysis.fightsWithUlts) *
-                      100
-                    }
-                    favorable={
+                        100
+                    ),
+                    initiations: analysis.ourFightInitiations,
+                    total: analysis.fightsWithUlts,
+                    rate: rate(
+                      (analysis.ourFightInitiations / analysis.fightsWithUlts) *
+                        100,
                       analysis.ourFightInitiations >=
-                      analysis.opponentFightInitiations
-                    }
-                  />{" "}
-                  of ultimate-involved fights (
-                  <span className="font-semibold tabular-nums">
-                    {analysis.ourFightInitiations}
-                  </span>{" "}
-                  of{" "}
-                  <span className="font-semibold tabular-nums">
-                    {analysis.fightsWithUlts}
-                  </span>
-                  ).
+                        analysis.opponentFightInitiations
+                    ),
+                    n: number,
+                  })}
                 </li>
                 {analysis.ourTopFightInitiator && (
                   <li>
-                    Your most common fight-opening ultimate:{" "}
-                    <span className="font-semibold">
-                      {analysis.ourTopFightInitiator.hero}
-                    </span>{" "}
-                    (
-                    <span className="font-semibold tabular-nums">
-                      {analysis.ourTopFightInitiator.count}
-                    </span>{" "}
-                    {analysis.ourTopFightInitiator.count === 1
-                      ? "fight"
-                      : "fights"}
-                    ).
+                    {t.rich("ourTopFightInitiator", {
+                      hero: analysis.ourTopFightInitiator.hero,
+                      count: analysis.ourTopFightInitiator.count,
+                      strong,
+                      n: number,
+                    })}
                   </li>
                 )}
                 {analysis.opponentTopFightInitiator && (
                   <li>
-                    Opponent&apos;s most common fight-opening ultimate:{" "}
-                    <span className="font-semibold">
-                      {analysis.opponentTopFightInitiator.hero}
-                    </span>{" "}
-                    (
-                    <span className="font-semibold tabular-nums">
-                      {analysis.opponentTopFightInitiator.count}
-                    </span>{" "}
-                    {analysis.opponentTopFightInitiator.count === 1
-                      ? "fight"
-                      : "fights"}
-                    ).
+                    {t.rich("opponentTopFightInitiator", {
+                      hero: analysis.opponentTopFightInitiator.hero,
+                      count: analysis.opponentTopFightInitiator.count,
+                      strong,
+                      n: number,
+                    })}
                   </li>
                 )}
               </>
@@ -304,148 +343,114 @@ export function UltAnalysisSection({
 
             {analysis.topUltUser && (
               <li>
-                Top ultimate user:{" "}
-                <span className="font-semibold">
-                  {analysis.topUltUser.playerName}
-                </span>{" "}
-                ({analysis.topUltUser.hero}) with{" "}
-                <span className="font-semibold tabular-nums">
-                  {analysis.topUltUser.count}
-                </span>{" "}
-                ultimates used.
+                {t.rich("topUltUser", {
+                  playerName: analysis.topUltUser.playerName,
+                  hero: analysis.topUltUser.hero,
+                  count: analysis.topUltUser.count,
+                  strong,
+                  n: number,
+                })}
               </li>
             )}
 
             {(analysis.avgChargeTime > 0 || analysis.avgHoldTime > 0) && (
               <li>
-                {analysis.avgChargeTime > 0 && (
-                  <>
-                    Your team charged ultimates in an average of{" "}
-                    <span className="font-semibold tabular-nums">
-                      {analysis.avgChargeTime.toFixed(1)}s
-                    </span>
-                  </>
-                )}
-                {analysis.avgChargeTime > 0 &&
-                  analysis.avgHoldTime > 0 &&
-                  " and "}
-                {analysis.avgHoldTime > 0 && (
-                  <>
-                    held them for an average of{" "}
-                    <span className="font-semibold tabular-nums">
-                      {analysis.avgHoldTime.toFixed(1)}s
-                    </span>{" "}
-                    before using
-                  </>
-                )}
-                .
+                {analysis.avgChargeTime > 0 && analysis.avgHoldTime > 0
+                  ? t.rich("avgChargeAndHold", {
+                      chargeTime: analysis.avgChargeTime.toFixed(1),
+                      holdTime: analysis.avgHoldTime.toFixed(1),
+                      n: number,
+                    })
+                  : analysis.avgChargeTime > 0
+                    ? t.rich("avgCharge", {
+                        chargeTime: analysis.avgChargeTime.toFixed(1),
+                        n: number,
+                      })
+                    : t.rich("avgHold", {
+                        holdTime: analysis.avgHoldTime.toFixed(1),
+                        n: number,
+                      })}
               </li>
             )}
 
             {analysis.ultEfficiency.totalUltsUsedInFights > 0 && (
               <>
                 <li>
-                  Ultimate Efficiency:{" "}
-                  <span className="font-semibold tabular-nums">
-                    {analysis.ultEfficiency.ultimateEfficiency.toFixed(2)}
-                  </span>{" "}
-                  fights won per ultimate used (
-                  {analysis.ultEfficiency.ultimateEfficiency >= 0.4
-                    ? "Excellent"
-                    : analysis.ultEfficiency.ultimateEfficiency >= 0.25
-                      ? "Good"
-                      : analysis.ultEfficiency.ultimateEfficiency >= 0.15
-                        ? "Average"
-                        : "Poor"}
-                  ).
+                  {t.rich("ultimateEfficiency", {
+                    value: analysis.ultEfficiency.ultimateEfficiency.toFixed(2),
+                    rating:
+                      analysis.ultEfficiency.ultimateEfficiency >= 0.4
+                        ? tRatings("excellent")
+                        : analysis.ultEfficiency.ultimateEfficiency >= 0.25
+                          ? tRatings("good")
+                          : analysis.ultEfficiency.ultimateEfficiency >= 0.15
+                            ? tRatings("average")
+                            : tRatings("poor"),
+                    n: number,
+                  })}
                 </li>
                 <li>
-                  Used an average of{" "}
-                  <span className="font-semibold text-green-600 tabular-nums dark:text-green-400">
-                    {analysis.ultEfficiency.avgUltsInWonFights.toFixed(1)}
-                  </span>{" "}
-                  ultimates per won fight vs{" "}
-                  <span className="font-semibold text-red-600 tabular-nums dark:text-red-400">
-                    {analysis.ultEfficiency.avgUltsInLostFights.toFixed(1)}
-                  </span>{" "}
-                  per lost fight.{" "}
-                  {analysis.ultEfficiency.avgUltsInWonFights >
-                  analysis.ultEfficiency.avgUltsInLostFights
-                    ? "Good ultimate discipline \u2014 more ultimates used in wins than losses."
-                    : "Room for improvement \u2014 more ultimates used in losses than wins."}
+                  {t.rich("averageUltsPerFight", {
+                    won: analysis.ultEfficiency.avgUltsInWonFights.toFixed(1),
+                    lost: analysis.ultEfficiency.avgUltsInLostFights.toFixed(1),
+                    discipline:
+                      analysis.ultEfficiency.avgUltsInWonFights >
+                      analysis.ultEfficiency.avgUltsInLostFights
+                        ? t("goodDiscipline")
+                        : t("roomForImprovement"),
+                    wonValue: greenNumber,
+                    lostValue: redNumber,
+                  })}
                 </li>
                 {analysis.ultEfficiency.wastedUltimates > 0 && (
                   <li>
-                    <span className="font-semibold tabular-nums">
-                      {analysis.ultEfficiency.wastedUltimates}
-                    </span>{" "}
-                    wasted{" "}
-                    {analysis.ultEfficiency.wastedUltimates === 1
-                      ? "ultimate"
-                      : "ultimates"}{" "}
-                    (
-                    <span className="font-semibold tabular-nums">
-                      {(
+                    {t.rich("wastedUltimates", {
+                      count: analysis.ultEfficiency.wastedUltimates,
+                      percent: (
                         (analysis.ultEfficiency.wastedUltimates /
                           analysis.ultEfficiency.totalUltsUsedInFights) *
                         100
-                      ).toFixed(1)}
-                      %
-                    </span>{" "}
-                    of total) used in lost situations (3+ player disadvantage).
+                      ).toFixed(1),
+                      n: number,
+                    })}
                   </li>
                 )}
                 <li>
-                  <span className="font-semibold tabular-nums">
-                    {analysis.ultEfficiency.dryFights}
-                  </span>{" "}
-                  dry{" "}
-                  {analysis.ultEfficiency.dryFights === 1 ? "fight" : "fights"}{" "}
-                  (no ultimates used) with a{" "}
-                  <span className="font-semibold tabular-nums">
-                    {analysis.ultEfficiency.dryFightWinrate.toFixed(1)}%
-                  </span>{" "}
-                  win rate, plus{" "}
-                  <span className="font-semibold tabular-nums">
-                    {analysis.ultEfficiency.nonDryFights}
-                  </span>{" "}
-                  {analysis.ultEfficiency.nonDryFights === 1
-                    ? "fight"
-                    : "fights"}{" "}
-                  where ultimates were used (
-                  <span className="font-semibold tabular-nums">
-                    {analysis.ultEfficiency.nonDryFights > 0
-                      ? (
-                          (analysis.ultEfficiency.fightsWon /
-                            analysis.ultEfficiency.nonDryFights) *
-                          100
-                        ).toFixed(1)
-                      : "0.0"}
-                    %
-                  </span>{" "}
-                  WR).
+                  {t.rich("dryNonDryFights", {
+                    dryCount: analysis.ultEfficiency.dryFights,
+                    dryRate: analysis.ultEfficiency.dryFightWinrate.toFixed(1),
+                    nonDryCount: analysis.ultEfficiency.nonDryFights,
+                    nonDryRate:
+                      analysis.ultEfficiency.nonDryFights > 0
+                        ? (
+                            (analysis.ultEfficiency.fightsWon /
+                              analysis.ultEfficiency.nonDryFights) *
+                            100
+                          ).toFixed(1)
+                        : "0.0",
+                    n: number,
+                  })}
                 </li>
                 {(analysis.ultEfficiency.dryFights > 0 ||
                   analysis.ultEfficiency.nonDryFights > 0) && (
                   <li>
-                    Fight reversal rate (won after being down 2+ kills):{" "}
-                    <span className="font-semibold tabular-nums">
-                      {analysis.ultEfficiency.dryFightReversalRate.toFixed(1)}%
-                    </span>{" "}
-                    in dry fights vs{" "}
-                    <span className="font-semibold tabular-nums">
-                      {analysis.ultEfficiency.nonDryFightReversalRate.toFixed(
-                        1
-                      )}
-                      %
-                    </span>{" "}
-                    when ultimates were used.
-                    {analysis.ultEfficiency.dryFights > 0 &&
-                      analysis.ultEfficiency.nonDryFights > 0 &&
-                      (analysis.ultEfficiency.nonDryFightReversalRate >
-                      analysis.ultEfficiency.dryFightReversalRate
-                        ? " Ultimates are a key comeback tool for this team."
-                        : " This team can reverse fights through raw mechanics.")}
+                    {t.rich("fightReversal", {
+                      dryRate:
+                        analysis.ultEfficiency.dryFightReversalRate.toFixed(1),
+                      nonDryRate:
+                        analysis.ultEfficiency.nonDryFightReversalRate.toFixed(
+                          1
+                        ),
+                      insight:
+                        analysis.ultEfficiency.dryFights > 0 &&
+                        analysis.ultEfficiency.nonDryFights > 0
+                          ? analysis.ultEfficiency.nonDryFightReversalRate >
+                            analysis.ultEfficiency.dryFightReversalRate
+                            ? "comeback"
+                            : "mechanics"
+                          : "none",
+                      n: number,
+                    })}
                   </li>
                 )}
               </>
@@ -457,7 +462,7 @@ export function UltAnalysisSection({
               {hasComparisons && (
                 <div className="min-h-[300px]">
                   <h5 className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                    Ultimate Usage by Subrole
+                    {tHeadings("usageBySubrole")}
                   </h5>
                   <UltComparisonChart
                     comparisons={analysis.playerComparisons}
@@ -468,7 +473,7 @@ export function UltAnalysisSection({
               {hasTimingData && (
                 <div className="min-h-[300px]">
                   <h5 className="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
-                    Ultimate Timing Breakdown
+                    {tHeadings("timingBreakdown")}
                   </h5>
                   <UltTimingChart
                     team1Timings={allOurTimings}
@@ -490,6 +495,7 @@ export function HeroSwapAnalysisSection({
 }: {
   analysis: ScrimSwapAnalysis;
 }) {
+  const t = useTranslations("scrimPage.rawStatsSections.swaps");
   if (analysis.ourSwaps === 0 && analysis.opponentSwaps === 0) return null;
 
   const winrateDelta = analysis.swapWinrate - analysis.noSwapWinrate;
@@ -502,70 +508,84 @@ export function HeroSwapAnalysisSection({
     (b) => b.totalMaps > 0
   );
 
+  function strong(chunks: ReactNode) {
+    return <span className="font-semibold">{chunks}</span>;
+  }
+
+  function number(chunks: ReactNode) {
+    return <span className="font-semibold tabular-nums">{chunks}</span>;
+  }
+
+  function muted(chunks: ReactNode) {
+    return <span className="text-muted-foreground">{chunks}</span>;
+  }
+
+  function rate(value: number, favorable: boolean) {
+    function Rate(_chunks: ReactNode) {
+      return <HighlightedPct value={value} favorable={favorable} />;
+    }
+    return Rate;
+  }
+
+  function delta(chunks: ReactNode) {
+    return (
+      <span
+        className={cn(
+          "font-semibold tabular-nums",
+          winrateDelta > 0
+            ? "text-emerald-600 dark:text-emerald-400"
+            : "text-rose-600 dark:text-rose-400"
+        )}
+      >
+        {chunks}
+      </span>
+    );
+  }
+
   return (
     <>
       <Separator />
-      <section aria-label="Hero swap analysis">
+      <section aria-label={t("label")}>
         <h4 className="text-muted-foreground mb-3 text-xs font-medium tracking-wide uppercase">
-          Hero Swap Analysis
+          {t("title")}
         </h4>
         <ul className="text-foreground space-y-2 text-sm leading-relaxed">
           <li>
-            Your team made{" "}
-            <span className="font-semibold tabular-nums">
-              {analysis.ourSwaps}
-            </span>{" "}
-            hero swaps across all maps (
-            <span className="font-semibold tabular-nums">
-              {analysis.ourSwapsPerMap.toFixed(1)}
-            </span>{" "}
-            per map) vs opponent&apos;s{" "}
-            <span className="font-semibold tabular-nums">
-              {analysis.opponentSwaps}
-            </span>{" "}
-            (
-            <span className="font-semibold tabular-nums">
-              {analysis.opponentSwapsPerMap.toFixed(1)}
-            </span>{" "}
-            per map).
+            {t.rich("summary", {
+              ourSwaps: analysis.ourSwaps,
+              ourPerMap: analysis.ourSwapsPerMap.toFixed(1),
+              opponentSwaps: analysis.opponentSwaps,
+              opponentPerMap: analysis.opponentSwapsPerMap.toFixed(1),
+              n: number,
+            })}
           </li>
 
           {swapTotal > 0 && noSwapTotal > 0 && (
             <li>
-              Win rate on maps with swaps:{" "}
-              <HighlightedPct
-                value={analysis.swapWinrate}
-                favorable={analysis.swapWinrate >= 50}
-              />{" "}
-              <span className="text-muted-foreground">
-                ({analysis.swapWins}W / {analysis.swapLosses}L)
-              </span>{" "}
-              vs{" "}
-              <HighlightedPct
-                value={analysis.noSwapWinrate}
-                favorable={analysis.noSwapWinrate >= 50}
-              />{" "}
-              without swaps{" "}
-              <span className="text-muted-foreground">
-                ({analysis.noSwapWins}W / {analysis.noSwapLosses}L)
-              </span>
-              .
+              {t.rich("winrateComparison", {
+                swapWinrate: Math.round(analysis.swapWinrate),
+                swapWins: analysis.swapWins,
+                swapLosses: analysis.swapLosses,
+                noSwapWinrate: Math.round(analysis.noSwapWinrate),
+                noSwapWins: analysis.noSwapWins,
+                noSwapLosses: analysis.noSwapLosses,
+                swapRate: rate(
+                  analysis.swapWinrate,
+                  analysis.swapWinrate >= 50
+                ),
+                noSwapRate: rate(
+                  analysis.noSwapWinrate,
+                  analysis.noSwapWinrate >= 50
+                ),
+                muted,
+              })}
               {Math.abs(winrateDelta) >= 5 && (
                 <>
                   {" "}
-                  That&apos;s a{" "}
-                  <span
-                    className={cn(
-                      "font-semibold tabular-nums",
-                      winrateDelta > 0
-                        ? "text-emerald-600 dark:text-emerald-400"
-                        : "text-rose-600 dark:text-rose-400"
-                    )}
-                  >
-                    {winrateDelta > 0 ? "+" : ""}
-                    {winrateDelta.toFixed(0)}%
-                  </span>{" "}
-                  difference when swapping.
+                  {t.rich("winrateDelta", {
+                    delta: `${winrateDelta > 0 ? "+" : ""}${winrateDelta.toFixed(0)}`,
+                    deltaValue: delta,
+                  })}
                 </>
               )}
             </li>
@@ -573,77 +593,63 @@ export function HeroSwapAnalysisSection({
 
           {analysis.avgHeroTimeBeforeSwap > 0 && (
             <li>
-              Average time on a hero before swapping:{" "}
-              <span className="font-semibold tabular-nums">
-                {analysis.avgHeroTimeBeforeSwap.toFixed(0)}s
-              </span>
-              .
+              {t.rich("avgHeroTimeBeforeSwap", {
+                seconds: analysis.avgHeroTimeBeforeSwap.toFixed(0),
+                n: number,
+              })}
             </li>
           )}
 
           {analysis.ourTopSwap && (
             <li>
-              Your most common swap:{" "}
-              <span className="font-semibold">{analysis.ourTopSwap.from}</span>{" "}
-              &rarr;{" "}
-              <span className="font-semibold">{analysis.ourTopSwap.to}</span> (
-              <span className="font-semibold tabular-nums">
-                {analysis.ourTopSwap.count}
-              </span>{" "}
-              {analysis.ourTopSwap.count === 1 ? "time" : "times"}).
+              {t.rich("ourTopSwap", {
+                fromHero: analysis.ourTopSwap.from,
+                toHero: analysis.ourTopSwap.to,
+                count: analysis.ourTopSwap.count,
+                strong,
+                n: number,
+              })}
             </li>
           )}
 
           {analysis.opponentTopSwap && (
             <li>
-              Opponent&apos;s most common swap:{" "}
-              <span className="font-semibold">
-                {analysis.opponentTopSwap.from}
-              </span>{" "}
-              &rarr;{" "}
-              <span className="font-semibold">
-                {analysis.opponentTopSwap.to}
-              </span>{" "}
-              (
-              <span className="font-semibold tabular-nums">
-                {analysis.opponentTopSwap.count}
-              </span>{" "}
-              {analysis.opponentTopSwap.count === 1 ? "time" : "times"}).
+              {t.rich("opponentTopSwap", {
+                fromHero: analysis.opponentTopSwap.from,
+                toHero: analysis.opponentTopSwap.to,
+                count: analysis.opponentTopSwap.count,
+                strong,
+                n: number,
+              })}
             </li>
           )}
 
           {analysis.topSwapper && (
             <li>
-              Most active swapper:{" "}
-              <span className="font-semibold">
-                {analysis.topSwapper.playerName}
-              </span>{" "}
-              with{" "}
-              <span className="font-semibold tabular-nums">
-                {analysis.topSwapper.count}
-              </span>{" "}
-              swaps across{" "}
-              <span className="font-semibold tabular-nums">
-                {analysis.topSwapper.mapsCount}
-              </span>{" "}
-              {analysis.topSwapper.mapsCount === 1 ? "map" : "maps"}.
+              {t.rich("topSwapper", {
+                playerName: analysis.topSwapper.playerName,
+                swaps: analysis.topSwapper.count,
+                maps: analysis.topSwapper.mapsCount,
+                strong,
+                n: number,
+              })}
             </li>
           )}
 
           {countBucketsWithData.length > 0 && (
             <li>
-              Win rate by swap count:{" "}
+              {t("winrateBySwapCount")}{" "}
               {countBucketsWithData.map((bucket, i) => (
                 <span key={bucket.label}>
                   {i > 0 && ", "}
-                  {bucket.label}:{" "}
-                  <HighlightedPct
-                    value={bucket.winrate}
-                    favorable={bucket.winrate >= 50}
-                  />{" "}
-                  <span className="text-muted-foreground">
-                    ({bucket.wins}W-{bucket.losses}L)
-                  </span>
+                  {t.rich("swapCountBucket", {
+                    label: bucket.label,
+                    winrate: Math.round(bucket.winrate),
+                    wins: bucket.wins,
+                    losses: bucket.losses,
+                    rate: rate(bucket.winrate, bucket.winrate >= 50),
+                    muted,
+                  })}
                 </span>
               ))}
               .
@@ -652,19 +658,17 @@ export function HeroSwapAnalysisSection({
 
           {timingBucketsWithData.length > 0 && (
             <li>
-              Win rate by swap timing:{" "}
+              {t("winrateBySwapTiming")}{" "}
               {timingBucketsWithData.map((bucket, i) => (
                 <span key={bucket.label}>
                   {i > 0 && ", "}
-                  {bucket.label}:{" "}
-                  <HighlightedPct
-                    value={bucket.winrate}
-                    favorable={bucket.winrate >= 50}
-                  />{" "}
-                  <span className="text-muted-foreground">
-                    ({bucket.totalMaps}{" "}
-                    {bucket.totalMaps === 1 ? "map" : "maps"})
-                  </span>
+                  {t.rich("swapTimingBucket", {
+                    label: bucket.label,
+                    winrate: Math.round(bucket.winrate),
+                    maps: bucket.totalMaps,
+                    rate: rate(bucket.winrate, bucket.winrate >= 50),
+                    muted,
+                  })}
                 </span>
               ))}
               .

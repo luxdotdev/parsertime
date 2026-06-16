@@ -1,5 +1,5 @@
 import type { Prettify } from "@/types/utils";
-import type { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@/generated/prisma/client";
 
 // Base properties required for stat calculations.
 type RequiredStats = {

@@ -9,9 +9,10 @@ import {
 } from "@/components/ui/card";
 import type { ScrimStatPoint } from "@/data/player/types";
 import { getStatConfig } from "@/lib/target-stats";
-import { format, round } from "@/lib/utils";
-import type { PlayerTarget } from "@prisma/client";
+import { round } from "@/lib/utils";
+import type { PlayerTarget } from "@/generated/prisma/browser";
 import { TrendingDownIcon, TrendingUpIcon } from "lucide-react";
+import { useFormatter, useTranslations } from "next-intl";
 import { useState } from "react";
 import {
   CartesianGrid,
@@ -69,14 +70,25 @@ function ChartTooltip({
   active,
   payload,
   label,
-}: TooltipProps<ValueType, NameType>) {
+  localeFormatter,
+}: TooltipProps<ValueType, NameType> & {
+  localeFormatter: ReturnType<typeof useFormatter>;
+}) {
   if (active && payload?.length) {
     return (
-      <div className="bg-primary text-primary-foreground z-50 rounded-md px-3 py-1.5 text-xs">
+      <div className="bg-popover text-popover-foreground border-border z-50 rounded-md border px-3 py-1.5 text-xs shadow-md">
         <p className="text-sm font-bold">
-          {new Date(label as string).toLocaleDateString()}
+          {localeFormatter.dateTime(new Date(label as string), {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
         </p>
-        <p className="text-sm">{(payload[0].value as number).toFixed(2)}</p>
+        <p className="text-sm">
+          {localeFormatter.number(payload[0].value as number, {
+            maximumFractionDigits: 2,
+          })}
+        </p>
       </div>
     );
   }
@@ -91,6 +103,8 @@ export function StatTrendChart({
   currentValue,
   trending = "neutral",
 }: Props) {
+  const t = useTranslations("targets");
+  const formatter = useFormatter();
   const [focused, setFocused] = useState<string | null>(null);
 
   function getOpacity(key: string) {
@@ -99,9 +113,10 @@ export function StatTrendChart({
 
   const config = getStatConfig(stat);
   if (!config) return null;
+  const statLabel = t(`stats.${stat}`);
 
   const rawChartData = scrimStats.map((s) => ({
-    date: new Date(s.scrimDate).toLocaleDateString(),
+    date: new Date(s.scrimDate).toISOString(),
     value: round(s.stats[stat] ?? 0),
   }));
   const { data: chartData, slope } = computeTrendLine(rawChartData);
@@ -145,14 +160,14 @@ export function StatTrendChart({
     <Card>
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base">{config.displayName}</CardTitle>
+          <CardTitle className="text-base">{statLabel}</CardTitle>
           <div className="flex items-center gap-2 text-sm">
             {currentValue !== undefined && (
               <span
                 className="font-mono"
                 style={{ fontVariantNumeric: "tabular-nums" }}
               >
-                {round(currentValue)}
+                {formatter.number(round(currentValue))}
               </span>
             )}
             {trending === "toward" ? (
@@ -180,13 +195,22 @@ export function StatTrendChart({
             margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" tick={{ fontSize: 11 }} />
+            <XAxis
+              dataKey="date"
+              tick={{ fontSize: 11 }}
+              tickFormatter={(value: string) =>
+                formatter.dateTime(new Date(value), {
+                  month: "short",
+                  day: "numeric",
+                })
+              }
+            />
             <YAxis
               domain={[yMin, yMax]}
               tick={{ fontSize: 11 }}
-              tickFormatter={(v: number) => round(v).toString()}
+              tickFormatter={(v: number) => formatter.number(round(v))}
             />
-            <Tooltip content={<ChartTooltip />} />
+            <Tooltip content={<ChartTooltip localeFormatter={formatter} />} />
             <Line
               type="monotone"
               dataKey="value"
@@ -199,7 +223,7 @@ export function StatTrendChart({
                 strokeOpacity: getOpacity("value"),
               }}
               activeDot={{ r: 5 }}
-              name={config.displayName}
+              name={statLabel}
             />
             {chartData.length >= 2 && (
               <Line
@@ -211,7 +235,7 @@ export function StatTrendChart({
                 strokeOpacity={getOpacity("trend")}
                 dot={false}
                 activeDot={false}
-                name="Trend"
+                name={t("trend")}
                 connectNulls
               />
             )}
@@ -221,7 +245,9 @@ export function StatTrendChart({
                 stroke="var(--color-muted-foreground)"
                 strokeDasharray="4 4"
                 label={{
-                  value: `Baseline: ${round(target.baselineValue)}`,
+                  value: t("baselineValue", {
+                    value: formatter.number(round(target.baselineValue)),
+                  }),
                   position: "insideTopRight",
                   fontSize: 10,
                   fill: "var(--color-muted-foreground)",
@@ -238,7 +264,9 @@ export function StatTrendChart({
                 }
                 strokeDasharray="6 3"
                 label={{
-                  value: `Target: ${round(targetValue)}`,
+                  value: t("targetValue", {
+                    value: formatter.number(round(targetValue)),
+                  }),
                   position: "insideBottomRight",
                   fontSize: 10,
                   fill:
@@ -253,9 +281,9 @@ export function StatTrendChart({
         <div className="flex flex-col items-center gap-0.5 pt-1">
           <div className="flex items-center gap-3">
             {[
-              { key: "value", label: config.displayName, color: trendColor },
+              { key: "value", label: statLabel, color: trendColor },
               ...(chartData.length >= 2
-                ? [{ key: "trend", label: "Trend", color: trendLineColor }]
+                ? [{ key: "trend", label: t("trend"), color: trendLineColor }]
                 : []),
             ].map((item) => (
               <button
@@ -283,13 +311,13 @@ export function StatTrendChart({
             ))}
           </div>
           <span className="text-muted-foreground/60 text-[9px]">
-            Click to isolate
+            {t("clickToIsolate")}
           </span>
         </div>
         {target && (
           <div className="mt-2 flex items-center justify-between text-sm">
             <span className="text-muted-foreground">
-              Progress:{" "}
+              {t("progress")}:{" "}
               <span
                 className={
                   progressPercent >= 75
@@ -300,12 +328,17 @@ export function StatTrendChart({
                 }
                 style={{ fontVariantNumeric: "tabular-nums" }}
               >
-                {round(progressPercent)}%
+                {formatter.number(round(progressPercent) / 100, {
+                  style: "percent",
+                  maximumFractionDigits: 0,
+                })}
               </span>
             </span>
             <span className="text-muted-foreground">
-              Baseline: {round(target.baselineValue)} | Target:{" "}
-              {round(targetValue!)}
+              {t("baselineTargetSummary", {
+                baseline: formatter.number(round(target.baselineValue)),
+                target: formatter.number(round(targetValue!)),
+              })}
             </span>
           </div>
         )}
@@ -316,22 +349,22 @@ export function StatTrendChart({
             className="text-muted-foreground text-sm"
             style={{ fontVariantNumeric: "tabular-nums" }}
           >
-            Average:{" "}
-            <span className="text-foreground">
-              {format(
+            {t.rich("chartSummary", {
+              average: formatter.number(
                 round(
                   chartData.reduce((s, d) => s + d.value, 0) / chartData.length
                 )
-              )}
-            </span>{" "}
-            | Max:{" "}
-            <span className="text-foreground">
-              {format(round(Math.max(...chartData.map((d) => d.value))))}
-            </span>{" "}
-            | Min:{" "}
-            <span className="text-foreground">
-              {format(round(Math.min(...chartData.map((d) => d.value))))}
-            </span>
+              ),
+              max: formatter.number(
+                round(Math.max(...chartData.map((d) => d.value)))
+              ),
+              min: formatter.number(
+                round(Math.min(...chartData.map((d) => d.value)))
+              ),
+              value: (chunks) => (
+                <span className="text-foreground">{chunks}</span>
+              ),
+            })}
           </p>
         </CardFooter>
       )}

@@ -4,8 +4,8 @@ import { calculateWinner } from "@/lib/winrate";
 import { mapNameToMapTypeMapping } from "@/types/map";
 import type { HeroName } from "@/types/heroes";
 import { roleHeroMapping } from "@/types/heroes";
-import { $Enums } from "@prisma/client";
-import { getTranslations } from "next-intl/server";
+import { $Enums } from "@/generated/prisma/browser";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { TournamentTeamQueryError } from "./errors";
 import {
@@ -349,7 +349,8 @@ export const make = Effect.gen(function* () {
 
   function getRoleBalanceAnalysis(
     tournamentId: number,
-    tournamentTeamId: number
+    tournamentTeamId: number,
+    locale?: string
   ): Effect.Effect<RoleBalanceAnalysis, TournamentTeamQueryError> {
     return wrapMethod(
       "getRoleBalanceAnalysis",
@@ -358,7 +359,13 @@ export const make = Effect.gen(function* () {
       (wideEvent) =>
         Effect.gen(function* () {
           const t = yield* Effect.tryPromise({
-            try: () => getTranslations("teamStatsPage.roleBalanceRadar"),
+            try: () =>
+              locale
+                ? getTranslations({
+                    locale,
+                    namespace: "teamStatsPage.roleBalanceRadar",
+                  })
+                : getTranslations("teamStatsPage.roleBalanceRadar"),
             catch: (error) =>
               new TournamentTeamQueryError({
                 operation: "get translations for role balance",
@@ -376,6 +383,11 @@ export const make = Effect.gen(function* () {
             "Damage",
             "Support",
           ];
+
+          function formatRole(role: (typeof roles)[number]): string {
+            return t(`roles.${role}`);
+          }
+
           const totalPlaytime = roles.reduce(
             (sum, role) => sum + roleStats[role].totalPlaytime,
             0
@@ -421,14 +433,17 @@ export const make = Effect.gen(function* () {
           const insights: string[] = [];
           if (balanceScore >= 0.8) insights.push(t("excellentBalance"));
           else if (balanceScore >= 0.6) insights.push(t("fairlyBalanced"));
-          else insights.push(t("considerStrengthening", { role: weakestRole }));
+          else
+            insights.push(
+              t("considerStrengthening", { role: formatRole(weakestRole) })
+            );
 
           roles.forEach((role) => {
             const stats = roleStats[role];
             if (stats.kd < 1.0 && stats.totalPlaytime > 600)
-              insights.push(t("negativeKD", { role }));
+              insights.push(t("negativeKD", { role: formatRole(role) }));
             if (stats.deathsPer10Min > 7 && stats.totalPlaytime > 600)
-              insights.push(t("dyingFrequently", { role }));
+              insights.push(t("dyingFrequently", { role: formatRole(role) }));
           });
 
           wideEvent.balance_score = balanceScore;
@@ -729,6 +744,8 @@ export const make = Effect.gen(function* () {
               ultsPerMap: 0,
               avgChargeTime: 0,
               avgHoldTime: 0,
+              chargeTimeVsOpponents: null,
+              holdTimeVsOpponents: null,
               fightInitiationRate: 0,
               fightInitiationCount: 0,
               totalFightsWithUlts: 0,
@@ -963,7 +980,7 @@ export const make = Effect.gen(function* () {
           const results = processTeamMatchResults(
             baseData,
             baseData.mapDataRecords
-          );
+          ).sort((a, b) => b.date.getTime() - a.date.getTime());
           wideEvent.match_count = results.length;
           return results;
         })
@@ -1793,10 +1810,16 @@ export const make = Effect.gen(function* () {
     capacity: CACHE_CAPACITY,
     timeToLive: CACHE_TTL,
     lookup: (key: string) => {
-      const [tId, ttId] = key.split(":");
-      return getRoleBalanceAnalysis(Number(tId), Number(ttId)).pipe(
-        Effect.tap(() => Metric.increment(ttCacheMissTotal))
-      );
+      const parsed = JSON.parse(key) as {
+        tournamentId: number;
+        tournamentTeamId: number;
+        locale: string;
+      };
+      return getRoleBalanceAnalysis(
+        parsed.tournamentId,
+        parsed.tournamentTeamId,
+        parsed.locale
+      ).pipe(Effect.tap(() => Metric.increment(ttCacheMissTotal)));
     },
   });
 
@@ -2076,9 +2099,25 @@ export const make = Effect.gen(function* () {
         .get(cacheKey(tId, ttId))
         .pipe(Effect.tap(() => Metric.increment(ttCacheRequestTotal))),
     getRoleBalanceAnalysis: (tId: number, ttId: number) =>
-      roleBalanceCache
-        .get(cacheKey(tId, ttId))
-        .pipe(Effect.tap(() => Metric.increment(ttCacheRequestTotal))),
+      Effect.tryPromise({
+        try: () => getLocale(),
+        catch: (error) =>
+          new TournamentTeamQueryError({
+            operation: "get locale for role balance cache",
+            cause: error,
+          }),
+      }).pipe(
+        Effect.flatMap((locale) =>
+          roleBalanceCache.get(
+            JSON.stringify({
+              tournamentId: tId,
+              tournamentTeamId: ttId,
+              locale,
+            })
+          )
+        ),
+        Effect.tap(() => Metric.increment(ttCacheRequestTotal))
+      ),
     getBestRoleTrios: (tId: number, ttId: number) =>
       roleTriosCache
         .get(cacheKey(tId, ttId))

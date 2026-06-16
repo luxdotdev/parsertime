@@ -1,4 +1,5 @@
 import { AnalysisCardAccordion as AnalysisCard } from "@/components/map/analysis/analysis-card-accordion";
+import { MapStatCell } from "@/components/map/map-stat-cell";
 import { OverviewTable } from "@/components/map/overview-table";
 import {
   KillfeedCalibrationService,
@@ -14,14 +15,7 @@ import {
 } from "@/data/scrim/ult-helpers";
 import type { PlayerUltSummary, UltEfficiency } from "@/data/scrim/types";
 import { positionalData } from "@/lib/flags";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { CardIcon } from "@/components/ui/card-icon";
+import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { filterUtilityRoundStartSwaps } from "@/data/team/hero-swap-service";
 import { getAjaxes } from "@/lib/analytics";
@@ -30,14 +24,14 @@ import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import {
   groupEventsIntoFights,
-  groupKillsIntoFights,
   range,
   removeDuplicateRows,
   round,
   toTimestamp,
   ultimateStartToKillEvent,
 } from "@/lib/utils";
-import { calculatePayloadMapScore, calculateWinner } from "@/lib/winrate";
+import { groupKillsIntoFights } from "@/lib/server-utils";
+import { calculatePayloadMapScore, resolveMapWinner } from "@/lib/winrate";
 import {
   getHeroRole,
   heroPriority,
@@ -48,7 +42,7 @@ import {
   type RoleName,
   type SubroleName,
 } from "@/types/heroes";
-import { $Enums, type Kill } from "@prisma/client";
+import { $Enums, type Kill } from "@/generated/prisma/browser";
 import { getTranslations } from "next-intl/server";
 
 export async function DefaultOverview({
@@ -153,6 +147,22 @@ export async function DefaultOverview({
     team2Captures,
   });
 
+  const mapRow = await prisma.map.findFirst({
+    where: { mapData: { some: { id: mapDataId } } },
+    select: { winner: true },
+  });
+
+  const winner = resolveMapWinner(mapRow?.winner, {
+    matchDetails,
+    finalRound,
+    team1Captures,
+    team2Captures,
+    team1PayloadProgress,
+    team2PayloadProgress,
+    team1PointProgress,
+    team2PointProgress,
+  });
+
   const team1Damage = finalRoundStats
     .filter((player) => player.player_team === matchDetails?.team_1_name)
     .reduce((acc, player) => acc + player.hero_damage_dealt, 0);
@@ -180,22 +190,13 @@ export async function DefaultOverview({
       case $Enums.MapType.Hybrid:
         return `${payloadMapScore.team1} - ${payloadMapScore.team2}`;
       case $Enums.MapType.Push:
-        return "N/A";
+        if (winner === matchDetails?.team_1_name) return "1 - 0";
+        if (winner === matchDetails?.team_2_name) return "0 - 1";
+        return t("notAvailable");
       default:
-        return "N/A";
+        return t("notAvailable");
     }
   }
-
-  const winner = calculateWinner({
-    matchDetails,
-    finalRound,
-    team1Captures,
-    team2Captures,
-    team1PayloadProgress,
-    team2PayloadProgress,
-    team1PointProgress,
-    team2PointProgress,
-  });
 
   const numberOfRounds =
     // prettier-ignore
@@ -250,8 +251,8 @@ export async function DefaultOverview({
     (kill) => kill.attacker_team === matchDetails?.team_2_name
   ).length;
 
-  const team1Name = matchDetails?.team_1_name ?? "Team 1";
-  const team2Name = matchDetails?.team_2_name ?? "Team 2";
+  const team1Name = matchDetails?.team_1_name ?? t("team1");
+  const team2Name = matchDetails?.team_2_name ?? t("team2");
 
   const positionalEnabled = positionalDataOverride ?? (await positionalData());
 
@@ -274,7 +275,7 @@ export async function DefaultOverview({
       positionalEnabled
         ? AppRuntime.runPromise(
             KillfeedCalibrationService.pipe(
-              Effect.flatMap((svc) => svc.getKillfeedCalibration(id))
+              Effect.flatMap((svc) => svc.getKillfeedCalibration(mapDataId))
             )
           )
         : null,
@@ -761,153 +762,115 @@ export async function DefaultOverview({
   const team1TopPair = findTopSwapPair(team1Swaps);
   const team2TopPair = findTopSwapPair(team2Swaps);
 
+  const damageLeader =
+    team1Damage === team2Damage
+      ? null
+      : team1Damage > team2Damage
+        ? { name: matchDetails?.team_1_name ?? "", color: team1 }
+        : { name: matchDetails?.team_2_name ?? "", color: team2 };
+
+  const healingLeader =
+    team1Healing === team2Healing
+      ? null
+      : team1Healing > team2Healing
+        ? { name: matchDetails?.team_1_name ?? "", color: team1 }
+        : { name: matchDetails?.team_2_name ?? "", color: team2 };
+
   return (
-    <>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {t("matchTime")}
-            </CardTitle>
-            <CardIcon>
-              <circle cx="12" cy="12" r="10" />
-              <polyline points="12 6 12 12 16 14" />
-            </CardIcon>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {toTimestamp(finalRound?.match_time ?? 0)}
-            </div>
-          </CardContent>
-          <CardFooter>
-            <p className="text-muted-foreground text-xs">
-              {t("minutes", {
-                time: ((finalRound?.match_time ?? 0) / 60).toFixed(2),
-              })}
-            </p>
-          </CardFooter>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t("score")}</CardTitle>
-            <CardIcon>
-              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-              <path d="M4 22h16" />
-              <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-              <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-              <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-            </CardIcon>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{calculateScore()}</div>
-          </CardContent>
-          <CardFooter>
-            <p className="text-muted-foreground text-xs">
-              {mapType !== $Enums.MapType.Push ? (
-                <>
-                  {t("winner")}{" "}
-                  <span
-                    style={{
-                      color:
-                        winner === matchDetails?.team_1_name ? team1 : team2,
-                    }}
-                  >
-                    {winner}
-                  </span>
-                </>
-              ) : (
-                t("pushLimitations")
-              )}
-            </p>
-          </CardFooter>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {t("heroDamageDealt")}
-            </CardTitle>
-            <CardIcon>
-              <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
-            </CardIcon>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {round(team1Damage).toLocaleString()} -{" "}
-              {round(team2Damage).toLocaleString()}
-            </div>
-          </CardContent>
-          <CardFooter>
-            <p className="text-muted-foreground text-xs">
-              {team1Damage > team2Damage
-                ? t.rich("dealtMore", {
-                    color: (chunks) => (
-                      <span style={{ color: team1 }}>{chunks}</span>
-                    ),
-                    teamName: matchDetails?.team_1_name ?? "",
-                  })
-                : t.rich("dealtMore", {
-                    color: (chunks) => (
-                      <span style={{ color: team2 }}>{chunks}</span>
-                    ),
-                    teamName: matchDetails?.team_2_name ?? "",
-                  })}
-            </p>
-          </CardFooter>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              {t("teamHealingDealt")}
-            </CardTitle>
-            <CardIcon>
-              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-              <path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27" />
-            </CardIcon>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {round(team1Healing).toLocaleString()} -{" "}
-              {round(team2Healing).toLocaleString()}
-            </div>
-          </CardContent>
-          <CardFooter>
-            <p className="text-muted-foreground text-xs">
-              {team1Healing > team2Healing
-                ? t.rich("healedMore", {
-                    color: (chunks) => (
-                      <span style={{ color: team1 }}>{chunks}</span>
-                    ),
-                    teamName: matchDetails?.team_1_name ?? "",
-                  })
-                : t.rich("healedMore", {
-                    color: (chunks) => (
-                      <span style={{ color: team2 }}>{chunks}</span>
-                    ),
-                    teamName: matchDetails?.team_2_name ?? "",
-                  })}
-            </p>
-          </CardFooter>
-        </Card>
+    <section aria-label={t("title")} className="space-y-5">
+      <div className="grid grid-cols-2 gap-x-6 gap-y-5 lg:grid-cols-4">
+        <MapStatCell
+          label={t("matchTime")}
+          value={toTimestamp(finalRound?.match_time ?? 0)}
+          sub={t("minutes", {
+            time: ((finalRound?.match_time ?? 0) / 60).toFixed(2),
+          })}
+        />
+        <MapStatCell
+          label={t("score")}
+          value={calculateScore()}
+          sub={
+            winner !== "N/A" ? (
+              <>
+                {t("winner")}{" "}
+                <span
+                  style={{
+                    color: winner === matchDetails?.team_1_name ? team1 : team2,
+                  }}
+                >
+                  {winner}
+                </span>
+              </>
+            ) : mapType === $Enums.MapType.Push ? (
+              t("pushLimitations")
+            ) : null
+          }
+        />
+        <MapStatCell
+          label={t("heroDamageDealt")}
+          value={`${round(team1Damage).toLocaleString()} – ${round(team2Damage).toLocaleString()}`}
+          sub={
+            damageLeader
+              ? t.rich("dealtMore", {
+                  color: (chunks) => (
+                    <span style={{ color: damageLeader.color }}>{chunks}</span>
+                  ),
+                  teamName: damageLeader.name,
+                })
+              : null
+          }
+        />
+        <MapStatCell
+          label={t("teamHealingDealt")}
+          value={`${round(team1Healing).toLocaleString()} – ${round(team2Healing).toLocaleString()}`}
+          sub={
+            healingLeader
+              ? t.rich("healedMore", {
+                  color: (chunks) => (
+                    <span style={{ color: healingLeader.color }}>{chunks}</span>
+                  ),
+                  teamName: healingLeader.name,
+                })
+              : null
+          }
+        />
       </div>
-      <div className="flex gap-4 md:grid md:grid-cols-2 lg:grid-cols-7">
-        <Card className="max-w-full md:col-span-full">
-          <CardHeader>
-            <CardTitle>{t("title")}</CardTitle>
-          </CardHeader>
-          <CardContent className="flex md:hidden">
-            <OverviewTable
-              playerStats={finalRoundStats}
-              team1Name={matchDetails?.team_1_name ?? ""}
-              team2Name={matchDetails?.team_2_name ?? ""}
-              team1MVP={team1MVP}
-              team2MVP={team2MVP}
-              mvpScores={mvpScores}
-              firstDeathStats={playerFirstDeathStats}
-            />
-          </CardContent>
-          <CardContent className="hidden md:flex">
-            {numberOfRounds === 1 ? (
+
+      <Separator />
+
+      <div className="md:hidden">
+        <OverviewTable
+          playerStats={finalRoundStats}
+          team1Name={matchDetails?.team_1_name ?? ""}
+          team2Name={matchDetails?.team_2_name ?? ""}
+          team1MVP={team1MVP}
+          team2MVP={team2MVP}
+          mvpScores={mvpScores}
+          firstDeathStats={playerFirstDeathStats}
+        />
+      </div>
+      <div className="hidden md:block">
+        {numberOfRounds === 1 ? (
+          <OverviewTable
+            playerStats={finalRoundStats}
+            team1Name={matchDetails?.team_1_name ?? ""}
+            team2Name={matchDetails?.team_2_name ?? ""}
+            team1MVP={team1MVP}
+            team2MVP={team2MVP}
+            mvpScores={mvpScores}
+            firstDeathStats={playerFirstDeathStats}
+          />
+        ) : (
+          <Tabs defaultValue="final" className="space-y-4">
+            <TabsList>
+              <TabsTrigger value="final">{t("title")}</TabsTrigger>
+              {range(numberOfRounds).map((round) => (
+                <TabsTrigger key={round} value={round.toString()}>
+                  {t("round", { number: round + 1 })}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            <TabsContent value="final" className="space-y-4">
               <OverviewTable
                 playerStats={finalRoundStats}
                 team1Name={matchDetails?.team_1_name ?? ""}
@@ -917,74 +880,44 @@ export async function DefaultOverview({
                 mvpScores={mvpScores}
                 firstDeathStats={playerFirstDeathStats}
               />
-            ) : (
-              <Tabs
-                defaultValue="final"
-                className="max-w-fit space-y-4 overflow-x-auto"
+            </TabsContent>
+            {range(numberOfRounds).map((round) => (
+              <TabsContent
+                key={round}
+                value={round.toString()}
+                className="space-y-4"
               >
-                <TabsList>
-                  <TabsTrigger value="final">{t("title")}</TabsTrigger>
-                  {range(numberOfRounds).map((round) => (
-                    <TabsTrigger key={round} value={round.toString()}>
-                      {t("round", { number: round + 1 })}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-                <TabsContent value="final" className="space-y-4">
-                  <OverviewTable
-                    playerStats={finalRoundStats}
-                    team1Name={matchDetails?.team_1_name ?? ""}
-                    team2Name={matchDetails?.team_2_name ?? ""}
-                    team1MVP={team1MVP}
-                    team2MVP={team2MVP}
-                    mvpScores={mvpScores}
-                    firstDeathStats={playerFirstDeathStats}
-                  />
-                </TabsContent>
-                {range(numberOfRounds).map((round) => (
-                  <TabsContent
-                    key={round}
-                    value={round.toString()}
-                    className="space-y-4"
-                  >
-                    <OverviewTable
-                      key={round + 1}
-                      team1Name={matchDetails?.team_1_name ?? ""}
-                      team2Name={matchDetails?.team_2_name ?? ""}
-                      team1MVP={team1MVP}
-                      team2MVP={team2MVP}
-                      mvpScores={mvpScores}
-                      firstDeathStats={playerFirstDeathStats}
-                      playerStats={removeDuplicateRows(playerStats)
-                        .filter(
-                          (stat) =>
-                            stat.round_number ===
-                            round +
-                              (mapType === $Enums.MapType.Flashpoint ? 2 : 1)
-                        )
-                        .sort((a, b) =>
-                          a.player_name.localeCompare(b.player_name)
-                        )
-                        .sort(
-                          (a, b) =>
-                            heroPriority[
-                              heroRoleMapping[a.player_hero as HeroName]
-                            ] -
-                            heroPriority[
-                              heroRoleMapping[b.player_hero as HeroName]
-                            ]
-                        )
-                        .sort((a, b) =>
-                          a.player_team.localeCompare(b.player_team)
-                        )}
-                    />
-                  </TabsContent>
-                ))}
-              </Tabs>
-            )}
-          </CardContent>
-        </Card>
+                <OverviewTable
+                  key={round + 1}
+                  team1Name={matchDetails?.team_1_name ?? ""}
+                  team2Name={matchDetails?.team_2_name ?? ""}
+                  team1MVP={team1MVP}
+                  team2MVP={team2MVP}
+                  mvpScores={mvpScores}
+                  firstDeathStats={playerFirstDeathStats}
+                  playerStats={removeDuplicateRows(playerStats)
+                    .filter(
+                      (stat) =>
+                        stat.round_number ===
+                        round + (mapType === $Enums.MapType.Flashpoint ? 2 : 1)
+                    )
+                    .sort((a, b) => a.player_name.localeCompare(b.player_name))
+                    .sort(
+                      (a, b) =>
+                        heroPriority[
+                          heroRoleMapping[a.player_hero as HeroName]
+                        ] -
+                        heroPriority[heroRoleMapping[b.player_hero as HeroName]]
+                    )
+                    .sort((a, b) => a.player_team.localeCompare(b.player_team))}
+                />
+              </TabsContent>
+            ))}
+          </Tabs>
+        )}
       </div>
+      <Separator />
+
       <AnalysisCard
         team1={{ name: team1Name, color: team1 }}
         team2={{ name: team2Name, color: team2 }}
@@ -1088,8 +1021,10 @@ export async function DefaultOverview({
           footerEfficiency: t("analysis.footerEfficiency"),
           footerSwaps: t("analysis.footerSwaps"),
           footerRotationDeaths: t("analysis.footerRotationDeaths"),
+          tabAbilityTiming: t("analysis.tabAbilityTiming"),
+          footerAbilityTiming: t("analysis.footerAbilityTiming"),
         }}
       />
-    </>
+    </section>
   );
 }

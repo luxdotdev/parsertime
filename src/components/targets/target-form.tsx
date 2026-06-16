@@ -26,8 +26,9 @@ import {
   getDefaultDirection,
   getStatsForRole,
 } from "@/lib/target-stats";
-import type { PlayerTarget } from "@prisma/client";
+import type { PlayerTarget } from "@/generated/prisma/browser";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 type Props = {
@@ -47,6 +48,7 @@ export function TargetForm({
   preselectedStat,
   trigger,
 }: Props) {
+  const t = useTranslations("targets");
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -114,7 +116,7 @@ export function TargetForm({
       <DialogTrigger asChild>
         {trigger ?? (
           <Button variant="outline" size="sm">
-            {existingTarget ? "Edit Target" : "Set Target"}
+            {existingTarget ? t("editTarget") : t("setTarget")}
           </Button>
         )}
       </DialogTrigger>
@@ -122,15 +124,15 @@ export function TargetForm({
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>
-              {existingTarget ? "Edit Target" : "Set Target"} for {playerName}
+              {existingTarget
+                ? t("form.editTitle", { playerName })
+                : t("form.title", { playerName })}
             </DialogTitle>
-            <DialogDescription>
-              Set a measurable improvement goal for this player.
-            </DialogDescription>
+            <DialogDescription>{t("form.description")}</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="stat">Stat</Label>
+              <Label htmlFor="stat">{t("form.stat")}</Label>
               <Select
                 value={stat}
                 onValueChange={(val) => {
@@ -145,7 +147,7 @@ export function TargetForm({
                 <SelectContent>
                   {availableStats.map((s) => (
                     <SelectItem key={s.key} value={s.key}>
-                      {s.displayName}
+                      {t(`stats.${s.key}`)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -153,7 +155,7 @@ export function TargetForm({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="direction">Direction</Label>
+              <Label htmlFor="direction">{t("form.direction")}</Label>
               <Select
                 value={direction}
                 onValueChange={(val) =>
@@ -164,14 +166,14 @@ export function TargetForm({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="increase">Increase</SelectItem>
-                  <SelectItem value="decrease">Decrease</SelectItem>
+                  <SelectItem value="increase">{t("form.increase")}</SelectItem>
+                  <SelectItem value="decrease">{t("form.decrease")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="percent">Target Percentage (%)</Label>
+              <Label htmlFor="percent">{t("form.targetPercent")}</Label>
               <Input
                 id="percent"
                 type="number"
@@ -185,27 +187,27 @@ export function TargetForm({
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="scrimWindow">Scrim Window</Label>
+              <Label htmlFor="scrimWindow">{t("form.scrimWindow")}</Label>
               <Select value={scrimWindow} onValueChange={setScrimWindow}>
                 <SelectTrigger id="scrimWindow" className="text-base">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="5">Last 5 scrims</SelectItem>
-                  <SelectItem value="10">Last 10 scrims</SelectItem>
-                  <SelectItem value="15">Last 15 scrims</SelectItem>
-                  <SelectItem value="20">Last 20 scrims</SelectItem>
+                  <SelectItem value="5">{t("form.last5")}</SelectItem>
+                  <SelectItem value="10">{t("form.last10")}</SelectItem>
+                  <SelectItem value="15">{t("form.last15")}</SelectItem>
+                  <SelectItem value="20">{t("form.last20")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="note">Coach Note (optional)</Label>
+              <Label htmlFor="note">{t("form.note")}</Label>
               <Textarea
                 id="note"
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
-                placeholder="Any notes or context for this target..."
+                placeholder={t("form.notePlaceholder")}
                 className="text-base"
               />
             </div>
@@ -213,10 +215,10 @@ export function TargetForm({
           <DialogFooter>
             <Button type="submit" disabled={loading}>
               {loading
-                ? "Saving..."
+                ? t("saving")
                 : existingTarget
-                  ? "Update Target"
-                  : "Create Target"}
+                  ? t("updateTarget")
+                  : t("createTarget")}
             </Button>
           </DialogFooter>
         </form>

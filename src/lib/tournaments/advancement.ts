@@ -1,7 +1,7 @@
 import { getAdvancement, getNextMatch } from "@/lib/tournaments/bracket";
 import { transitionToPlayoffs } from "@/lib/tournaments/round-robin";
 import prisma from "@/lib/prisma";
-import type { BracketSide } from "@prisma/client";
+import type { BracketSide } from "@/generated/prisma/client";
 
 type MatchWithContext = {
   id: number;
@@ -84,29 +84,37 @@ export async function advanceMatch(
   const bracket = match.round.bracket;
 
   if (bracket === "GRAND_FINAL") {
-    const gfMatches = await prisma.tournamentMatch.findMany({
-      where: {
-        tournamentId: match.tournamentId,
-        round: { bracket: "GRAND_FINAL" },
-      },
-    });
-
     if (
-      gfMatches.length === 1 &&
+      match.bracketPosition === 0 &&
       match.team1Id !== winnerId &&
       match.tournament.grandFinalReset
     ) {
-      const gfRound = await prisma.tournamentRound.findFirst({
-        where: { tournamentId: match.tournamentId, bracket: "GRAND_FINAL" },
-      });
+      await prisma.$transaction(async (tx) => {
+        await tx.$executeRaw`
+          SELECT pg_advisory_xact_lock(753201::integer, ${match.tournamentId}::integer)
+        `;
 
-      if (gfRound) {
-        const tournament = await prisma.tournament.findUnique({
+        const gfRound = await tx.tournamentRound.findFirst({
+          where: { tournamentId: match.tournamentId, bracket: "GRAND_FINAL" },
+        });
+        if (!gfRound) return;
+
+        const existingReset = await tx.tournamentMatch.findFirst({
+          where: {
+            tournamentId: match.tournamentId,
+            roundId: gfRound.id,
+            bracketPosition: 1,
+          },
+          select: { id: true },
+        });
+        if (existingReset) return;
+
+        const tournament = await tx.tournament.findUnique({
           where: { id: match.tournamentId },
           select: { creatorId: true, name: true },
         });
 
-        const scrim = await prisma.scrim.create({
+        const scrim = await tx.scrim.create({
           data: {
             name: `[Tournament] ${tournament?.name ?? "Unknown"} - Grand Final Reset`,
             date: new Date(),
@@ -115,7 +123,7 @@ export async function advanceMatch(
           },
         });
 
-        await prisma.tournamentMatch.create({
+        await tx.tournamentMatch.create({
           data: {
             tournamentId: match.tournamentId,
             roundId: gfRound.id,
@@ -126,7 +134,7 @@ export async function advanceMatch(
             status: "UPCOMING",
           },
         });
-      }
+      });
     } else {
       await prisma.tournament.update({
         where: { id: match.tournamentId },

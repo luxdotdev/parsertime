@@ -1,3 +1,4 @@
+import { DirectionalTransition } from "@/components/directional-transition";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
@@ -21,5 +22,9 @@ export default async function ReportsPage() {
     include: { user: { select: { name: true } } },
   });
 
-  return <ReportsList reports={reports} />;
+  return (
+    <DirectionalTransition>
+      <ReportsList reports={reports} />
+    </DirectionalTransition>
+  );
 }

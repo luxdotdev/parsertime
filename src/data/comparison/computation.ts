@@ -6,7 +6,7 @@ import {
   type CalculatedStat,
   CalculatedStatType,
   type PlayerStat,
-} from "@prisma/client";
+} from "@/generated/prisma/browser";
 import type { AggregatedStats, TrendsAnalysis } from "./types";
 
 export function calculatePer10(value: number, timePlayed: number): number {

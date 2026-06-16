@@ -1,68 +1,69 @@
+import { AppHeader } from "@/components/app-header";
 import { MapCharts } from "@/components/charts/map/map-charts";
-import { MainNav } from "@/components/dashboard/main-nav";
-import { Search } from "@/components/dashboard/search";
 import { DirectionalTransition } from "@/components/directional-transition";
-import { GuestNav } from "@/components/guest-nav";
-import { LocaleSwitcher } from "@/components/locale-switcher";
 import { ComparePlayers } from "@/components/map/compare-players";
 import { DefaultOverview } from "@/components/map/default-overview";
+import { FightInitiationInspector } from "@/components/map/fight-initiation-inspector";
 import { HeatmapTab } from "@/components/map/heatmap/heatmap-tab";
-import { ReplayTab } from "@/components/map/replay/replay-tab";
 import { HeroBans } from "@/components/map/hero-bans";
 import { Killfeed } from "@/components/map/killfeed";
 import { MapEvents } from "@/components/map/map-events";
 import { MapTabs } from "@/components/map/map-tabs";
-import { PlayerSwitcher } from "@/components/map/player-switcher";
-import { MobileNav } from "@/components/mobile-nav";
-import { Notifications } from "@/components/notifications";
-import { ReplayCode } from "@/components/scrim/replay-code";
-import { ModeToggle } from "@/components/theme-switcher";
-import { TipTap } from "@/components/tiptap/tiptap";
 import { MapTabsSkeleton } from "@/components/map/map-tabs-skeleton";
-import { Suspense, ViewTransition } from "react";
-import { UserNav } from "@/components/user-nav";
+import { MatchStoryTab } from "@/components/map/match-story/match-story-tab";
+import { PlayerSwitcher } from "@/components/map/player-switcher";
+import { ReplayTab } from "@/components/map/replay/replay-tab";
+import { RoutesTab } from "@/components/map/routes/routes-tab";
+import { ReplayCode } from "@/components/scrim/replay-code";
+import { TipTap } from "@/components/tiptap/tiptap";
+import { StatsViewBeacon } from "@/components/usage/stats-view-beacon";
 import { VodOverview } from "@/components/vods/vod-overview";
+import { MatchStoryService } from "@/data/map/match-story-service";
 import { PlayerService } from "@/data/player";
-import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { auth, isAuthedToViewMap } from "@/lib/auth";
 import {
-  aiChat,
-  coachingCanvas,
-  dataLabeling,
-  positionalData,
-  scoutingTool,
-  tempoChart,
-  tournament,
-} from "@/lib/flags";
-import { resolveMapDataId } from "@/lib/map-data-resolver";
+  getFightInitiationForMapData,
+  type MapInitiationResult,
+} from "@/lib/fight-initiation";
+import { positionalData, tempoChart } from "@/lib/flags";
+import { resolveScrimMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
-import { getColorblindMode, translateMapName } from "@/lib/utils";
+import { getColorblindMode } from "@/lib/server-utils";
+import { translateMapName } from "@/lib/utils";
 import type { PagePropsWithLocale, SearchParams } from "@/types/next";
+import { Effect } from "effect";
 import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import { Suspense, ViewTransition } from "react";
 
 export async function generateMetadata(
   props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]">
 ): Promise<Metadata> {
   const params = await props.params;
-  const mapId = decodeURIComponent(params.mapId);
-  const metadataMapDataId = await resolveMapDataId(parseInt(mapId));
+  const scrimId = parseInt(params.scrimId);
+  const mapId = parseInt(decodeURIComponent(params.mapId));
+  const canViewMap =
+    Number.isSafeInteger(scrimId) &&
+    Number.isSafeInteger(mapId) &&
+    (await isAuthedToViewMap(scrimId, mapId));
   const t = await getTranslations({
     locale: params.locale,
     namespace: "mapPage.mapMetadata",
   });
 
-  const mapName = await prisma.matchStart.findFirst({
-    where: {
-      MapDataId: metadataMapDataId,
-    },
-    select: {
-      map_name: true,
-    },
-  });
+  const mapName = canViewMap
+    ? await prisma.matchStart.findFirst({
+        where: {
+          MapDataId: await resolveScrimMapDataId(scrimId, mapId),
+        },
+        select: {
+          map_name: true,
+        },
+      })
+    : null;
 
   const translatedMapName = await translateMapName(mapName?.map_name ?? "Map");
 
@@ -95,7 +96,7 @@ export default async function MapDashboardPage(
   const params = await props.params;
   const searchParams = await props.searchParams;
   const id = parseInt(params.mapId);
-  const mapDataId = await resolveMapDataId(id);
+  const mapDataId = await resolveScrimMapDataId(parseInt(params.scrimId), id);
   const session = await auth();
   const user = await AppRuntime.runPromise(
     UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
@@ -116,13 +117,10 @@ export default async function MapDashboardPage(
     visibility,
     heroBans,
     noteContent,
-    scoutingEnabled,
     tempoChartEnabled,
     positionalDataEnabled,
-    aiChatEnabled,
-    dataToolsEnabled,
-    tournamentEnabled,
-    coachingCanvasEnabled,
+    matchStory,
+    fightInitiation,
   ] = await Promise.all([
     AppRuntime.runPromise(
       PlayerService.pipe(Effect.flatMap((svc) => svc.getMostPlayedHeroes(id)))
@@ -149,13 +147,24 @@ export default async function MapDashboardPage(
       },
       select: { content: true },
     }),
-    scoutingTool(),
     tempoChart(),
     positionalData(),
-    aiChat(),
-    dataLabeling(),
-    tournament(),
-    coachingCanvas(),
+    // A story failure must never break the map page — the tab just hides.
+    AppRuntime.runPromise(
+      MatchStoryService.pipe(
+        Effect.flatMap((svc) => svc.getMatchStory(mapDataId)),
+        Effect.catchAll(() => Effect.succeed(null))
+      )
+    ),
+    getFightInitiationForMapData(mapDataId).catch(
+      () =>
+        ({
+          available: false,
+          labels: [],
+          summary: null,
+          rounds: [],
+        }) satisfies MapInitiationResult
+    ),
   ]);
 
   const translatedMapName = await translateMapName(
@@ -164,88 +173,38 @@ export default async function MapDashboardPage(
 
   return (
     <DirectionalTransition>
+      <StatsViewBeacon />
       <div className="flex-col md:flex">
-        <div
-          className="shadow-sm"
-          style={{ viewTransitionName: "site-header" }}
-        >
-          <div className="hidden min-h-16 items-center px-4 py-2 md:flex">
-            <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
-            <MainNav
-              className="mx-6 hidden lg:block"
-              scoutingEnabled={scoutingEnabled}
-              aiChatEnabled={aiChatEnabled}
-              dataToolsEnabled={dataToolsEnabled}
-              tournamentEnabled={tournamentEnabled}
-              coachingCanvasEnabled={coachingCanvasEnabled}
-            />
-            <MobileNav
-              className="block pl-2 lg:hidden"
-              session={session}
-              aiChatEnabled={aiChatEnabled}
-              dataToolsEnabled={dataToolsEnabled}
-              coachingCanvasEnabled={coachingCanvasEnabled}
-            />
-            <div className="ml-auto flex items-center space-x-4">
-              <Search user={user} />
-              <ModeToggle />
-              <LocaleSwitcher />
-              {session ? (
-                <>
-                  <Notifications />
-                  <UserNav />
-                </>
-              ) : (
-                <GuestNav guestMode={visibility?.guestMode ?? false} />
-              )}
-            </div>
-          </div>
-          <div className="flex h-16 items-center px-4 md:hidden">
-            <MobileNav
-              session={session}
-              aiChatEnabled={aiChatEnabled}
-              dataToolsEnabled={dataToolsEnabled}
-              coachingCanvasEnabled={coachingCanvasEnabled}
-            />
-            <div className="ml-auto flex items-center space-x-4">
-              <ModeToggle />
-              <LocaleSwitcher />
-              {session ? (
-                <>
-                  <Notifications />
-                  <UserNav />
-                </>
-              ) : (
-                <GuestNav guestMode={visibility?.guestMode ?? false} />
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="flex-1 space-y-4 p-8 pt-6">
-          <div>
-            <h4 className="text-gray-600 dark:text-gray-400">
-              <Link
-                href={
-                  (fromTournament && tournamentId && matchId
-                    ? `/tournaments/${tournamentId}/match/${matchId}`
-                    : `/${params.team}/scrim/${params.scrimId}`) as Route
-                }
-                transitionTypes={["contract-map"]}
-              >
-                &larr; {t("back")}
-              </Link>
-            </h4>
-          </div>
+        <AppHeader
+          switcher={<PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />}
+          session={session}
+          user={user}
+          guestMode={visibility?.guestMode ?? false}
+        />
+        <div className="flex-1 space-y-4 px-6 pt-6 pb-12 md:px-8">
+          <nav className="text-muted-foreground text-sm">
+            <Link
+              href={
+                (fromTournament && tournamentId && matchId
+                  ? `/tournaments/${tournamentId}/match/${matchId}`
+                  : `/${params.team}/scrim/${params.scrimId}`) as Route
+              }
+              transitionTypes={["contract-map"]}
+              className="hover:text-foreground"
+            >
+              &larr; {t("back")}
+            </Link>
+          </nav>
           <div className="flex items-center justify-between space-y-2">
-            <h2 className="text-3xl font-bold tracking-tight">
+            <h1 className="text-2xl font-bold tracking-tight">
               {translatedMapName}
-            </h2>
+            </h1>
             <HeroBans
               heroBans={heroBans}
               team1Name={mapDetails?.team_1_name ?? "Team 1"}
             />
           </div>
-          <div className="font-semibold tracking-tight text-white">
+          <div className="font-semibold tracking-tight">
             {map?.replayCode && (
               <ReplayCode replayCode={map?.replayCode ?? ""} subtitle={true} />
             )}
@@ -281,8 +240,30 @@ export default async function MapDashboardPage(
                   {
                     value: "charts",
                     label: t("tabs.charts"),
-                    content: <MapCharts id={id} />,
+                    content: (
+                      <MapCharts
+                        id={id}
+                        team1Color={team1}
+                        team2Color={team2}
+                        tempoChartEnabled={tempoChartEnabled}
+                      />
+                    ),
                   },
+                  ...(matchStory !== null
+                    ? [
+                        {
+                          value: "story",
+                          label: t("tabs.story"),
+                          content: (
+                            <MatchStoryTab
+                              result={matchStory}
+                              team1Color={team1}
+                              team2Color={team2}
+                            />
+                          ),
+                        },
+                      ]
+                    : []),
                   ...(positionalDataEnabled
                     ? [
                         {
@@ -295,6 +276,11 @@ export default async function MapDashboardPage(
                           label: t("tabs.replay"),
                           content: <ReplayTab id={mapDataId} />,
                         },
+                        {
+                          value: "routes",
+                          label: t("tabs.routes"),
+                          content: <RoutesTab id={mapDataId} />,
+                        },
                       ]
                     : []),
                   {
@@ -306,8 +292,15 @@ export default async function MapDashboardPage(
                         id={id}
                         team1Color={team1}
                         team2Color={team2}
-                        tempoChartEnabled={tempoChartEnabled}
+                        includePositional={positionalDataEnabled}
                       />
+                    ),
+                  },
+                  {
+                    value: "initiation",
+                    label: t("tabs.initiation"),
+                    content: (
+                      <FightInitiationInspector result={fightInitiation} />
                     ),
                   },
                   {
@@ -319,13 +312,11 @@ export default async function MapDashboardPage(
                     value: "notes",
                     label: t("tabs.notes"),
                     content: (
-                      <div className="mx-auto py-8">
-                        <TipTap
-                          noteContent={noteContent?.content ?? ""}
-                          mapDataId={mapDataId}
-                          scrimId={parseInt(params.scrimId)}
-                        />
-                      </div>
+                      <TipTap
+                        noteContent={noteContent?.content ?? ""}
+                        mapDataId={mapDataId}
+                        scrimId={parseInt(params.scrimId)}
+                      />
                     ),
                   },
                   {

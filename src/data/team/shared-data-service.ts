@@ -1,7 +1,7 @@
 import { EffectObservabilityLive } from "@/instrumentation";
 import prisma from "@/lib/prisma";
 import { mapNameToMapTypeMapping } from "@/types/map";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { TeamQueryError } from "./errors";
 import {
@@ -22,6 +22,8 @@ import type {
   ExtendedTeamData,
   TeamDateRange,
 } from "./shared-core";
+import { findSubstituteMapIds } from "./shared-core";
+import { getTeamSubstituteNames } from "./substitutes";
 
 export type BaseTeamDataOptions = {
   excludePush?: boolean;
@@ -49,6 +51,45 @@ export type TeamSharedDataServiceInterface = {
 export class TeamSharedDataService extends Context.Tag(
   "@app/data/team/TeamSharedDataService"
 )<TeamSharedDataService, TeamSharedDataServiceInterface>() {}
+
+/** Derives an option-filtered view from the superset without refetching.
+ * The team page requests up to five exclude/dateInfo variants concurrently;
+ * fetching each independently quintupled the heaviest read on the page and
+ * exhausted the connection pool. Excludes are a pure in-memory filter. */
+function deriveBaseTeamData(
+  superset: BaseTeamData,
+  options: BaseTeamDataOptions
+): BaseTeamData {
+  const { excludePush = false, excludeClash = false } = options;
+  if (!excludePush && !excludeClash) return superset;
+  const mapDataRecords = superset.mapDataRecords.filter((record) => {
+    if (!record.name) return false;
+    const mapType =
+      mapNameToMapTypeMapping[
+        record.name as keyof typeof mapNameToMapTypeMapping
+      ];
+    if (excludePush && mapType === $Enums.MapType.Push) return false;
+    if (excludeClash && mapType === $Enums.MapType.Clash) return false;
+    return true;
+  });
+  const allowed = new Set(mapDataRecords.map((record) => record.id));
+  function keep<T extends { MapDataId: number | null }>(rows: T[]): T[] {
+    return rows.filter(
+      (row) => row.MapDataId !== null && allowed.has(row.MapDataId)
+    );
+  }
+  return {
+    ...superset,
+    mapDataRecords,
+    mapDataIds: mapDataRecords.map((record) => record.id),
+    allPlayerStats: keep(superset.allPlayerStats),
+    matchStarts: keep(superset.matchStarts),
+    finalRounds: keep(superset.finalRounds),
+    captures: keep(superset.captures),
+    payloadProgresses: keep(superset.payloadProgresses),
+    pointProgresses: keep(superset.pointProgresses),
+  };
+}
 
 const CACHE_TTL = Duration.seconds(30);
 const CACHE_CAPACITY = 64;
@@ -254,6 +295,19 @@ export const make: Effect.Effect<TeamSharedDataServiceInterface> = Effect.gen(
         const teamRoster = yield* getTeamRoster(teamId);
         const teamRosterSet = new Set(teamRoster);
 
+        // Substitutes stay on the identity roster above, but games they played
+        // in are dropped from every aggregate built on this data (see
+        // findSubstituteMapIds). Fetched once here so the exclusion is uniform
+        // across all derived option-variants.
+        const substituteNames = yield* Effect.tryPromise({
+          try: () => getTeamSubstituteNames(teamId),
+          catch: (error) =>
+            new TeamQueryError({
+              operation: "fetch substitutes for base data",
+              cause: error,
+            }),
+        });
+
         const scrimWhereClause: Record<string, unknown> = {
           Team: { id: teamId },
         };
@@ -371,6 +425,11 @@ export const make: Effect.Effect<TeamSharedDataServiceInterface> = Effect.gen(
                   healing_dealt: true,
                   ultimates_earned: true,
                   ultimates_used: true,
+                  healing_received: true,
+                  self_healing: true,
+                  damage_blocked: true,
+                  solo_kills: true,
+                  environmental_kills: true,
                 },
               }),
               prisma.matchStart.findMany({
@@ -412,8 +471,39 @@ export const make: Effect.Effect<TeamSharedDataServiceInterface> = Effect.gen(
           })
         );
 
-        wideEvent.map_count = mapDataIds.length;
-        wideEvent.player_stat_count = allPlayerStats.length;
+        // Drop every map a substitute played in for this team, across all
+        // downstream tables. Each table keys on MapDataId, so the same excluded
+        // set filters them uniformly.
+        const excludedMapIds = findSubstituteMapIds(
+          mapDataIds,
+          allPlayerStats,
+          teamRosterSet,
+          substituteNames
+        );
+
+        function dropExcludedMaps<T extends { MapDataId: number | null }>(
+          rows: T[]
+        ): T[] {
+          if (excludedMapIds.size === 0) return rows;
+          return rows.filter(
+            (row) =>
+              row.MapDataId !== null && !excludedMapIds.has(row.MapDataId)
+          );
+        }
+
+        const keptMapDataRecords =
+          excludedMapIds.size === 0
+            ? mapDataRecords
+            : mapDataRecords.filter((record) => !excludedMapIds.has(record.id));
+        const keptMapDataIds =
+          excludedMapIds.size === 0
+            ? mapDataIds
+            : mapDataIds.filter((id) => !excludedMapIds.has(id));
+        const keptPlayerStats = dropExcludedMaps(allPlayerStats);
+
+        wideEvent.map_count = keptMapDataIds.length;
+        wideEvent.excluded_map_count = excludedMapIds.size;
+        wideEvent.player_stat_count = keptPlayerStats.length;
         wideEvent.outcome = "success";
         yield* Metric.increment(teamBaseDataQuerySuccessTotal);
 
@@ -421,14 +511,14 @@ export const make: Effect.Effect<TeamSharedDataServiceInterface> = Effect.gen(
           teamId,
           teamRoster,
           teamRosterSet,
-          mapDataRecords: mapDataRecords as BaseTeamData["mapDataRecords"],
-          mapDataIds,
-          allPlayerStats,
-          matchStarts,
-          finalRounds,
-          captures,
-          payloadProgresses,
-          pointProgresses,
+          mapDataRecords: keptMapDataRecords as BaseTeamData["mapDataRecords"],
+          mapDataIds: keptMapDataIds,
+          allPlayerStats: keptPlayerStats,
+          matchStarts: dropExcludedMaps(matchStarts),
+          finalRounds: dropExcludedMaps(finalRounds),
+          captures: dropExcludedMaps(captures),
+          payloadProgresses: dropExcludedMaps(payloadProgresses),
+          pointProgresses: dropExcludedMaps(pointProgresses),
         } satisfies BaseTeamData;
       }).pipe(
         Effect.tapError((error) =>
@@ -468,8 +558,9 @@ export const make: Effect.Effect<TeamSharedDataServiceInterface> = Effect.gen(
 
       return Effect.gen(function* () {
         yield* Effect.annotateCurrentSpan("teamId", teamId);
-        // Call the local closure directly — no context dependency
-        const baseData = yield* getBaseTeamData(teamId, options);
+        // Goes through the superset cache so extended variants never
+        // re-trigger the heavy base fetch.
+        const baseData = yield* getBaseTeamDataDerived(teamId, options);
 
         if (baseData.mapDataIds.length === 0) {
           wideEvent.map_count = 0;
@@ -566,27 +657,45 @@ export const make: Effect.Effect<TeamSharedDataServiceInterface> = Effect.gen(
         ),
     });
 
-    function baseDataCacheKeyOf(teamId: number, options?: BaseTeamDataOptions) {
-      return `${teamId}:${JSON.stringify(options ?? {})}`;
+    // One superset fetch per (team, dateRange); every exclude/dateInfo
+    // variant derives from it in memory. includeDateInfo is always fetched —
+    // the extra Scrim fields are additive and cheap next to the stat tables.
+    function supersetCacheKeyOf(teamId: number, dateRange?: TeamDateRange) {
+      return `${teamId}:${JSON.stringify(dateRange ?? null)}`;
     }
 
-    const baseDataCache = yield* Cache.make({
+    const baseDataSupersetCache = yield* Cache.make({
       capacity: CACHE_CAPACITY,
       timeToLive: CACHE_TTL,
       lookup: (key: string) => {
-        const [teamIdStr, optionsJson] = [
-          key.slice(0, key.indexOf(":")),
-          key.slice(key.indexOf(":") + 1),
-        ];
-        const teamId = Number(teamIdStr);
-        const options = JSON.parse(optionsJson) as BaseTeamDataOptions;
-        return getBaseTeamData(teamId, options).pipe(
-          Effect.tap(() => Metric.increment(teamCacheMissTotal))
-        );
+        const teamId = Number(key.slice(0, key.indexOf(":")));
+        const dateRange = JSON.parse(
+          key.slice(key.indexOf(":") + 1)
+        ) as TeamDateRange | null;
+        return getBaseTeamData(teamId, {
+          includeDateInfo: true,
+          ...(dateRange === null ? {} : { dateRange }),
+        }).pipe(Effect.tap(() => Metric.increment(teamCacheMissTotal)));
       },
     });
 
-    const extendedDataCacheKeyOf = baseDataCacheKeyOf;
+    function getBaseTeamDataDerived(
+      teamId: number,
+      options?: BaseTeamDataOptions
+    ): Effect.Effect<BaseTeamData, TeamQueryError> {
+      return baseDataSupersetCache
+        .get(supersetCacheKeyOf(teamId, options?.dateRange))
+        .pipe(
+          Effect.map((superset) => deriveBaseTeamData(superset, options ?? {}))
+        );
+    }
+
+    function extendedDataCacheKeyOf(
+      teamId: number,
+      options?: BaseTeamDataOptions
+    ) {
+      return `${teamId}:${JSON.stringify(options ?? {})}`;
+    }
 
     const extendedDataCache = yield* Cache.make({
       capacity: CACHE_CAPACITY,
@@ -610,9 +719,9 @@ export const make: Effect.Effect<TeamSharedDataServiceInterface> = Effect.gen(
           .get(teamId)
           .pipe(Effect.tap(() => Metric.increment(teamCacheRequestTotal))),
       getBaseTeamData: (teamId: number, options?: BaseTeamDataOptions) =>
-        baseDataCache
-          .get(baseDataCacheKeyOf(teamId, options))
-          .pipe(Effect.tap(() => Metric.increment(teamCacheRequestTotal))),
+        getBaseTeamDataDerived(teamId, options).pipe(
+          Effect.tap(() => Metric.increment(teamCacheRequestTotal))
+        ),
       getExtendedTeamData: (teamId: number, options?: BaseTeamDataOptions) =>
         extendedDataCache
           .get(extendedDataCacheKeyOf(teamId, options))

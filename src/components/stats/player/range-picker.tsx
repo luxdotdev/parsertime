@@ -1,7 +1,7 @@
 "use client";
 
 import { HeroFilter } from "@/components/stats/player/hero-filter";
-import { Statistics } from "@/components/stats/player/statistics";
+import { PlayerProfile } from "@/components/stats/player/profile";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Link } from "@/components/ui/link";
@@ -22,12 +22,12 @@ import {
 import type { Winrate } from "@/data/scrim/types";
 import { cn } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
-import type { Kill, PlayerStat, Scrim } from "@prisma/client";
+import type { Kill, PlayerStat, Scrim } from "@/generated/prisma/browser";
 import { SelectGroup } from "@radix-ui/react-select";
-import { addMonths, addWeeks, addYears, format } from "date-fns";
+import { addMonths, addWeeks, addYears } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useFormatter, useTranslations } from "next-intl";
+import { useCallback, useState } from "react";
 import type { DateRange } from "react-day-picker";
 
 export type Timeframe =
@@ -41,6 +41,7 @@ export type Timeframe =
   | "custom";
 
 export function RangePicker({
+  playerName,
   permissions,
   data,
   stats,
@@ -48,6 +49,7 @@ export function RangePicker({
   mapWinrates,
   deaths,
 }: {
+  playerName: string;
   permissions: { [key: string]: boolean };
   data: Record<Timeframe, Scrim[]>;
   stats: PlayerStat[];
@@ -56,6 +58,7 @@ export function RangePicker({
   deaths: Kill[];
 }) {
   const t = useTranslations("statsPage.playerStats.rangePicker");
+  const formatter = useFormatter();
 
   const TODAY = new Date();
   const LAST_WEEK = addWeeks(TODAY, -1);
@@ -81,9 +84,15 @@ export function RangePicker({
     if (val === "all-time") setDate({ from: undefined, to: undefined });
   }
 
+  const toggleHero = useCallback((hero: HeroName) => {
+    setSelectedHeroes((prev) =>
+      prev.includes(hero) ? prev.filter((h) => h !== hero) : [...prev, hero]
+    );
+  }, []);
+
   return (
-    <main className="space-y-2">
-      <div className="items-center gap-2 space-y-2 md:flex md:space-y-0">
+    <main className="space-y-6">
+      <div className="flex flex-wrap items-center gap-2">
         <Select onValueChange={onTimeframeChange} defaultValue="one-week">
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder={t("selectTime")} />
@@ -156,53 +165,65 @@ export function RangePicker({
         </Select>
 
         {timeframe === "custom" && (
-          <div className="grid gap-2">
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  id="date"
-                  variant="outline"
-                  className={cn(
-                    "w-[300px] justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date?.from ? (
-                    date.to ? (
-                      <>
-                        {format(date.from, "LLL dd, y")} -{" "}
-                        {format(date.to, "LLL dd, y")}
-                      </>
-                    ) : (
-                      format(date.from, "LLL dd, y")
-                    )
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                id="date"
+                variant="outline"
+                className={cn(
+                  "w-[280px] justify-start text-left font-normal",
+                  !date && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date?.from ? (
+                  date.to ? (
+                    <>
+                      {formatter.dateTime(date.from, {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}{" "}
+                      -{" "}
+                      {formatter.dateTime(date.to, {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </>
                   ) : (
-                    <span>{t("pickDate")}</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  initialFocus
-                  mode="range"
-                  defaultMonth={date?.from}
-                  selected={date}
-                  onSelect={setDate}
-                  numberOfMonths={2}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
+                    formatter.dateTime(date.from, {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })
+                  )
+                ) : (
+                  <span>{t("pickDate")}</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={date?.from}
+                selected={date}
+                onSelect={setDate}
+                numberOfMonths={2}
+              />
+            </PopoverContent>
+          </Popover>
         )}
+
+        <HeroFilter
+          selectedHeroes={selectedHeroes}
+          onSelectionChange={setSelectedHeroes}
+        />
       </div>
 
-      <HeroFilter
-        selectedHeroes={selectedHeroes}
-        onSelectionChange={setSelectedHeroes}
-      />
-
-      <Statistics
+      <PlayerProfile
+        playerName={playerName}
         timeframe={timeframe}
         date={date}
         scrims={data}
@@ -211,6 +232,7 @@ export function RangePicker({
         kills={kills}
         mapWinrates={mapWinrates}
         deaths={deaths}
+        onToggleHero={toggleHero}
       />
     </main>
   );

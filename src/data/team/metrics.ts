@@ -66,6 +66,50 @@ export const teamExtendedDataQueryDuration = Metric.histogram(
   "Distribution of extended team data query duration in milliseconds"
 );
 
+export const positionalStatsQuerySuccessTotal = Metric.counter(
+  "team.positional_stats.query.success",
+  {
+    description: "Total successful team positional stats queries",
+    incremental: true,
+  }
+);
+
+export const positionalStatsQueryErrorTotal = Metric.counter(
+  "team.positional_stats.query.error",
+  {
+    description: "Total team positional stats query failures",
+    incremental: true,
+  }
+);
+
+export const positionalStatsQueryDuration = Metric.histogram(
+  "team.positional_stats.query.duration_ms",
+  MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
+  "Distribution of team positional stats query duration in milliseconds"
+);
+
+export const positionalArtifactsQuerySuccessTotal = Metric.counter(
+  "team.positional_artifacts.query.success",
+  {
+    description: "Total successful team positional artifacts queries",
+    incremental: true,
+  }
+);
+
+export const positionalArtifactsQueryErrorTotal = Metric.counter(
+  "team.positional_artifacts.query.error",
+  {
+    description: "Total team positional artifacts query failures",
+    incremental: true,
+  }
+);
+
+export const positionalArtifactsQueryDuration = Metric.histogram(
+  "team.positional_artifacts.query.duration_ms",
+  MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
+  "Distribution of team positional artifacts query duration in milliseconds"
+);
+
 export const teamCacheRequestTotal = Metric.counter("team.cache.request", {
   description: "Total team data cache requests",
   incremental: true,
@@ -75,3 +119,25 @@ export const teamCacheMissTotal = Metric.counter("team.cache.miss", {
   description: "Total team data cache misses (triggered lookup)",
   incremental: true,
 });
+
+export const fightFieldQuerySuccessTotal = Metric.counter(
+  "team.fight_field.query.success",
+  {
+    description: "Total successful team fight field queries",
+    incremental: true,
+  }
+);
+
+export const fightFieldQueryErrorTotal = Metric.counter(
+  "team.fight_field.query.error",
+  {
+    description: "Total failed team fight field queries",
+    incremental: true,
+  }
+);
+
+export const fightFieldQueryDuration = Metric.histogram(
+  "team.fight_field.query.duration_ms",
+  MetricBoundaries.exponential({ start: 10, factor: 2, count: 10 }),
+  "Distribution of team fight field query duration in milliseconds"
+);

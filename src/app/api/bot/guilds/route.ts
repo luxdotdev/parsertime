@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
+import prisma from "@/lib/prisma";
 import { context, propagation } from "@opentelemetry/api";
 
 export async function GET() {
@@ -21,6 +22,27 @@ export async function GET() {
       );
     }
 
+    const discordAccount = await prisma.account.findFirst({
+      where: {
+        provider: "discord",
+        user: { email: session.user.email },
+      },
+      select: { providerAccountId: true },
+    });
+
+    if (!discordAccount) {
+      wideEvent.outcome = "discord_not_linked";
+      wideEvent.status_code = 403;
+      return Response.json(
+        {
+          success: false,
+          error: "Discord account not linked",
+          code: "discord_not_linked",
+        },
+        { status: 403 }
+      );
+    }
+
     const botApiUrl = process.env.BOT_API_URL;
     const botSecret = process.env.BOT_SECRET;
 
@@ -36,12 +58,15 @@ export async function GET() {
     const traceHeaders: Record<string, string> = {};
     propagation.inject(context.active(), traceHeaders);
 
-    const response = await fetch(`${botApiUrl}/api/guilds`, {
-      headers: {
-        Authorization: `Bearer ${botSecret}`,
-        ...traceHeaders,
-      },
-    });
+    const response = await fetch(
+      `${botApiUrl}/api/guilds?userId=${encodeURIComponent(discordAccount.providerAccountId)}`,
+      {
+        headers: {
+          Authorization: `Bearer ${botSecret}`,
+          ...traceHeaders,
+        },
+      }
+    );
 
     if (!response.ok) {
       wideEvent.outcome = "upstream_error";

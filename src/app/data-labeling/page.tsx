@@ -1,11 +1,15 @@
 import { UnlabeledMatchList } from "@/components/data-labeling/unlabeled-match-list";
+import { getCurrentUser, isAdminUser } from "@/lib/auth";
 import { dataLabeling } from "@/lib/flags";
 import { getTranslations } from "next-intl/server";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 export default async function DataLabelingPage() {
   const enabled = await dataLabeling();
   if (!enabled) notFound();
+  const user = await getCurrentUser();
+  if (!user) redirect("/sign-in");
+  if (!isAdminUser(user)) notFound();
 
   const t = await getTranslations("dataLabeling");
 

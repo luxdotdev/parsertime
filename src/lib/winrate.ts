@@ -5,7 +5,7 @@ import {
   type PayloadProgress,
   type PointProgress,
   type RoundEnd,
-} from "@prisma/client";
+} from "@/generated/prisma/browser";
 
 const PROGRESS_COMPARISON_EPSILON = 0.05;
 
@@ -320,4 +320,18 @@ export function calculateWinner({
     default:
       return "N/A";
   }
+}
+
+/**
+ * The effective winner for a stored map: prefer an explicitly set/confirmed
+ * winner (manual override or coordinate-derived Push result), otherwise fall
+ * back to the on-demand objective/score calculation. Centralizes the rule so
+ * every read path resolves winners identically.
+ */
+export function resolveMapWinner(
+  storedWinner: string | null | undefined,
+  args: Parameters<typeof calculateWinner>[0]
+): string {
+  if (storedWinner) return storedWinner;
+  return calculateWinner(args);
 }

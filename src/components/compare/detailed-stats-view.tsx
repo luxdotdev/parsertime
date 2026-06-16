@@ -16,6 +16,7 @@ import type {
   ComparisonStats,
   TrendsAnalysis,
 } from "@/data/comparison/types";
+import { serializeCsv } from "@/lib/csv";
 import {
   Activity,
   Award,
@@ -412,13 +413,13 @@ export function DetailedStatsView({ stats }: DetailedStatsViewProps) {
     : filteredStats;
 
   function handleExportCSV() {
-    const headers = ["Stat", ...stats.map((s) => s.playerName)];
+    const headers = [t("statName"), ...stats.map((s) => s.playerName)];
     const rows = filteredStats.map((stat) => [
       stat.label,
       ...stats.map((s) => formatStatValue(s.aggregated[stat.key], stat.format)),
     ]);
 
-    const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
+    const csv = serializeCsv([headers, ...rows]);
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -525,7 +526,7 @@ export function DetailedStatsView({ stats }: DetailedStatsViewProps) {
                         )}
                       </div>
                       <div className="text-muted-foreground text-xs font-normal">
-                        {stat.mapCount} {t("maps")}
+                        {t("mapCount", { count: stat.mapCount })}
                       </div>
                     </TableHead>
                   ))}

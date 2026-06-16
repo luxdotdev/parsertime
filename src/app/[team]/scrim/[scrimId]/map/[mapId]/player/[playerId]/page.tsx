@@ -1,30 +1,24 @@
+import { AppHeader } from "@/components/app-header";
 import { PlayerCharts } from "@/components/charts/player/player-charts";
-import { MainNav } from "@/components/dashboard/main-nav";
-import { Search } from "@/components/dashboard/search";
 import { DirectionalTransition } from "@/components/directional-transition";
-import { GuestNav } from "@/components/guest-nav";
-import { LocaleSwitcher } from "@/components/locale-switcher";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
-import { MobileNav } from "@/components/mobile-nav";
-import { Notifications } from "@/components/notifications";
 import { PlayerAnalytics } from "@/components/player/analytics";
 import { DefaultOverview } from "@/components/player/default-overview";
-import { ModeToggle } from "@/components/theme-switcher";
+import { PlayerTelemetry } from "@/components/player/player-telemetry";
+import { Link } from "@/components/ui/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserNav } from "@/components/user-nav";
 import { PlayerService } from "@/data/player";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
-import { aiChat, dataLabeling, scoutingTool } from "@/lib/flags";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
-import { toTitleCase } from "@/lib/utils";
+import { translateHeroName, translateMapName } from "@/lib/utils";
+import { heroRoleMapping, type HeroName } from "@/types/heroes";
 import type { PagePropsWithLocale } from "@/types/next";
 import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
 
 export async function generateMetadata(
   props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]/player/[playerId]">
@@ -81,6 +75,16 @@ export default async function PlayerDashboardPage(
     },
   });
 
+  const playerEntry = mostPlayedHeroes.find(
+    (entry) => entry.player_name === playerName
+  );
+  const topHero = playerEntry?.player_hero as HeroName | undefined;
+  const role = topHero ? heroRoleMapping[topHero] : null;
+  const heroDisplayName = topHero ? await translateHeroName(topHero) : null;
+  const translatedMapName = await translateMapName(
+    mapName?.map_name ?? t("dashboard")
+  );
+
   const session = await auth();
   const user = await AppRuntime.runPromise(
     UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
@@ -95,94 +99,81 @@ export default async function PlayerDashboardPage(
     },
   })) ?? { guestMode: false };
 
-  const [scoutingEnabled, aiChatEnabled, dataToolsEnabled] = await Promise.all([
-    scoutingTool(),
-    aiChat(),
-    dataLabeling(),
-  ]);
-
   return (
     <DirectionalTransition>
       <div className="flex-col md:flex">
-        <div className="border-b" style={{ viewTransitionName: "site-header" }}>
-          <div className="hidden h-16 items-center px-4 md:flex">
-            <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
-            <MainNav
-              className="mx-6 hidden lg:block"
-              scoutingEnabled={scoutingEnabled}
-              aiChatEnabled={aiChatEnabled}
-              dataToolsEnabled={dataToolsEnabled}
-            />
-            <MobileNav
-              className="block pl-2 lg:hidden"
-              session={session}
-              aiChatEnabled={aiChatEnabled}
-              dataToolsEnabled={dataToolsEnabled}
-            />
-            <div className="ml-auto flex items-center space-x-4">
-              <Search user={user} />
-              <ModeToggle />
-              <LocaleSwitcher />
-              {session ? (
-                <>
-                  <Notifications />
-                  <UserNav />
-                </>
-              ) : (
-                <GuestNav guestMode={visibility.guestMode} />
-              )}
-            </div>
+        <AppHeader
+          switcher={<PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />}
+          session={session}
+          user={user}
+          guestMode={visibility.guestMode}
+        />
+        <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+          <nav className="text-muted-foreground flex items-center gap-3 text-sm">
+            <Link
+              href={
+                `/${params.team}/scrim/${params.scrimId}/map/${params.mapId}` as Route
+              }
+              transitionTypes={["nav-back"]}
+              className="hover:text-foreground"
+            >
+              &larr; {t("back")}
+            </Link>
+            <span className="text-muted-foreground/40" aria-hidden="true">
+              |
+            </span>
+            <Link
+              href={`/stats/${params.playerId}` as Route}
+              transitionTypes={["nav-forward"]}
+              className="hover:text-foreground"
+            >
+              {t("viewStats")} &rarr;
+            </Link>
+          </nav>
+
+          <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <h1 className="text-2xl font-bold tracking-tight break-words">
+              {playerName}
+            </h1>
           </div>
-          <div className="flex h-16 items-center px-4 md:hidden">
-            <MobileNav
-              session={session}
-              aiChatEnabled={aiChatEnabled}
-              dataToolsEnabled={dataToolsEnabled}
-            />
-            <div className="ml-auto flex items-center space-x-4">
-              <ModeToggle />
-              <LocaleSwitcher />
-              {session ? (
-                <>
-                  <Notifications />
-                  <UserNav />
-                </>
-              ) : (
-                <GuestNav guestMode={visibility.guestMode} />
-              )}
-            </div>
+
+          <div
+            className="text-muted-foreground mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[0.6875rem] tracking-[0.06em] uppercase tabular-nums"
+            aria-label="Player metadata"
+          >
+            <span>{translatedMapName}</span>
+            {role && (
+              <>
+                <span className="text-muted-foreground/40" aria-hidden="true">
+                  ·
+                </span>
+                <span>{role}</span>
+              </>
+            )}
+            {heroDisplayName && (
+              <>
+                <span className="text-muted-foreground/40" aria-hidden="true">
+                  ·
+                </span>
+                <span>{heroDisplayName}</span>
+              </>
+            )}
+            {playerEntry?.player_team && (
+              <>
+                <span className="text-muted-foreground/40" aria-hidden="true">
+                  ·
+                </span>
+                <span>{playerEntry.player_team}</span>
+              </>
+            )}
           </div>
-        </div>
-        <div className="flex-1 space-y-4 p-8 pt-6">
-          <div>
-            <h4 className="text-gray-600 dark:text-gray-400">
-              <Link
-                href={
-                  `/${params.team}/scrim/${params.scrimId}/map/${params.mapId}` as Route
-                }
-                transitionTypes={["nav-back"]}
-              >
-                &larr; {t("back")}
-              </Link>
-              {" | "}
-              <Link
-                href={`/stats/${params.playerId}`}
-                transitionTypes={["nav-forward"]}
-              >
-                {t("viewStats")} &rarr;
-              </Link>
-            </h4>
-          </div>
-          <div className="flex items-center justify-between space-y-2">
-            <h2 className="text-3xl font-bold tracking-tight">
-              {toTitleCase(mapName?.map_name ?? t("dashboard"))}
-            </h2>
-          </div>
-          <Tabs defaultValue="overview" className="space-y-4">
-            <TabsList>
+
+          <Tabs defaultValue="overview" className="mt-6 space-y-4">
+            <TabsList aria-label="Player sections">
               <TabsTrigger value="overview">{t("overview")}</TabsTrigger>
               <TabsTrigger value="analytics">{t("analytics")}</TabsTrigger>
               <TabsTrigger value="charts">{t("charts")}</TabsTrigger>
+              <TabsTrigger value="telemetry">{t("telemetry")}</TabsTrigger>
             </TabsList>
             <TabsContent value="overview" className="space-y-4">
               <DefaultOverview id={id} playerName={playerName} />
@@ -192,6 +183,9 @@ export default async function PlayerDashboardPage(
             </TabsContent>
             <TabsContent value="charts" className="space-y-4">
               <PlayerCharts id={id} playerName={playerName} />
+            </TabsContent>
+            <TabsContent value="telemetry" className="space-y-4">
+              <PlayerTelemetry id={id} playerName={playerName} />
             </TabsContent>
           </Tabs>
         </div>

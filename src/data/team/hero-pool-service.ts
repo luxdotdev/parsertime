@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import { calculateWinner } from "@/lib/winrate";
 import type { HeroName } from "@/types/heroes";
 import { mapNameToMapTypeMapping } from "@/types/map";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import {
   Cache,
   Context,
@@ -384,6 +384,11 @@ export const make = Effect.gen(function* () {
                   healing_dealt: true,
                   ultimates_earned: true,
                   ultimates_used: true,
+                  healing_received: true,
+                  self_healing: true,
+                  damage_blocked: true,
+                  solo_kills: true,
+                  environmental_kills: true,
                 },
               }),
               prisma.matchStart.findMany({

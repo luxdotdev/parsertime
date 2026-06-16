@@ -1,8 +1,8 @@
 import { EffectObservabilityLive } from "@/instrumentation";
 import prisma from "@/lib/prisma";
 import { removeDuplicateRows } from "@/lib/utils";
-import type { Kill, PlayerStat } from "@prisma/client";
-import { Prisma } from "@prisma/client";
+import type { Kill, PlayerStat } from "@/generated/prisma/client";
+import { Prisma } from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { HeroQueryError } from "./errors";
 import {
@@ -49,9 +49,9 @@ export const make: Effect.Effect<HeroServiceInterface> = Effect.gen(
       return Effect.gen(function* () {
         const mapDataIds = yield* Effect.tryPromise({
           try: () =>
-            prisma.scrim.findMany({
-              where: { id: { in: scrimIds } },
-              select: { maps: true },
+            prisma.mapData.findMany({
+              where: { scrimId: { in: scrimIds } },
+              select: { id: true },
             }),
           catch: (error) =>
             new HeroQueryError({
@@ -61,10 +61,8 @@ export const make: Effect.Effect<HeroServiceInterface> = Effect.gen(
         });
 
         const mapDataIdSet = new Set<number>();
-        mapDataIds.forEach((scrim) => {
-          scrim.maps.forEach((map) => {
-            mapDataIdSet.add(map.id);
-          });
+        mapDataIds.forEach((mapData) => {
+          mapDataIdSet.add(mapData.id);
         });
 
         return Array.from(mapDataIdSet);
@@ -122,7 +120,7 @@ export const make: Effect.Effect<HeroServiceInterface> = Effect.gen(
                 INNER JOIN maxTime m ON ps."match_time" = m.max_time AND ps."MapDataId" = m."MapDataId"
             WHERE
                 ps."MapDataId" IN (${Prisma.join(mapDataIdArray)})
-                AND ps."player_hero" ILIKE ${hero}`,
+                AND lower(ps."player_hero") = lower(${hero})`,
           catch: (error) =>
             new HeroQueryError({
               operation: `fetch all stats for hero: ${hero}`,
@@ -334,16 +332,19 @@ export const make: Effect.Effect<HeroServiceInterface> = Effect.gen(
     }
 
     function heroCacheKeyOf(scrimIds: number[], hero: string) {
-      return `${JSON.stringify(scrimIds)}:${hero}`;
+      return JSON.stringify([scrimIds, hero]);
+    }
+
+    function parseHeroCacheKey(key: string) {
+      const [scrimIds, hero] = JSON.parse(key) as [number[], string];
+      return { scrimIds, hero };
     }
 
     const statsCache = yield* Cache.make({
       capacity: 64,
       timeToLive: Duration.seconds(30),
       lookup: (key: string) => {
-        const colonIdx = key.lastIndexOf(":");
-        const scrimIds = JSON.parse(key.slice(0, colonIdx)) as number[];
-        const hero = key.slice(colonIdx + 1);
+        const { scrimIds, hero } = parseHeroCacheKey(key);
         return getAllStatsForHero(scrimIds, hero).pipe(
           Effect.tap(() => Metric.increment(heroCacheMissTotal))
         );
@@ -354,9 +355,7 @@ export const make: Effect.Effect<HeroServiceInterface> = Effect.gen(
       capacity: 64,
       timeToLive: Duration.seconds(30),
       lookup: (key: string) => {
-        const colonIdx = key.lastIndexOf(":");
-        const scrimIds = JSON.parse(key.slice(0, colonIdx)) as number[];
-        const hero = key.slice(colonIdx + 1);
+        const { scrimIds, hero } = parseHeroCacheKey(key);
         return getAllKillsForHero(scrimIds, hero).pipe(
           Effect.tap(() => Metric.increment(heroCacheMissTotal))
         );
@@ -367,9 +366,7 @@ export const make: Effect.Effect<HeroServiceInterface> = Effect.gen(
       capacity: 64,
       timeToLive: Duration.seconds(30),
       lookup: (key: string) => {
-        const colonIdx = key.lastIndexOf(":");
-        const scrimIds = JSON.parse(key.slice(0, colonIdx)) as number[];
-        const hero = key.slice(colonIdx + 1);
+        const { scrimIds, hero } = parseHeroCacheKey(key);
         return getAllDeathsForHero(scrimIds, hero).pipe(
           Effect.tap(() => Metric.increment(heroCacheMissTotal))
         );

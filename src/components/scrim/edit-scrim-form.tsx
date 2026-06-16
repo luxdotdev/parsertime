@@ -65,11 +65,10 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { HeroBan, Map, Scrim, Team } from "@prisma/client";
+import type { HeroBan, Map, Scrim, Team } from "@/generated/prisma/browser";
 import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -104,6 +103,7 @@ export function EditScrimForm({
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const t = useTranslations("scrimPage.editScrim");
+  const formatter = useFormatter();
   const mapNames = useMapNames();
   const queryClient = useQueryClient();
 
@@ -280,7 +280,7 @@ export function EditScrimForm({
               name="opponentTeamAbbr"
               render={({ field }) => (
                 <FormItem className="max-w-lg">
-                  <FormLabel>Opponent (OWCS)</FormLabel>
+                  <FormLabel>{t("opponent.title")}</FormLabel>
                   <FormControl>
                     <OpponentSearchField
                       options={scoutingTeams}
@@ -288,10 +288,7 @@ export function EditScrimForm({
                       onChange={field.onChange}
                     />
                   </FormControl>
-                  <FormDescription>
-                    Link this scrim to an OWCS opponent to enable
-                    cross-referenced scouting analytics.
-                  </FormDescription>
+                  <FormDescription>{t("opponent.description")}</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -353,7 +350,9 @@ export function EditScrimForm({
                         )}
                       >
                         {field.value ? (
-                          format(new Date(field.value), "PPP")
+                          formatter.dateTime(new Date(field.value), {
+                            dateStyle: "long",
+                          })
                         ) : (
                           <span>{t("date.edit")}</span>
                         )}
@@ -470,7 +469,7 @@ export function EditScrimForm({
 
                           return (
                             <FormItem>
-                              <FormLabel>Hero Bans</FormLabel>
+                              <FormLabel>{t("maps.heroBans")}</FormLabel>
                               <div className="space-y-2">
                                 <DndContext
                                   sensors={sensors}

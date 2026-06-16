@@ -10,6 +10,7 @@ import {
 import { Users } from "lucide-react";
 import type { Route } from "next";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useCallback } from "react";
 
 type ScoutForTeamPickerProps = {
@@ -21,6 +22,7 @@ export function ScoutForTeamPicker({
   userTeams,
   currentTeamId,
 }: ScoutForTeamPickerProps) {
+  const t = useTranslations("scoutingPage.team.picker");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -51,17 +53,17 @@ export function ScoutForTeamPicker({
         htmlFor="scout-for-team"
         className="text-muted-foreground shrink-0 text-sm"
       >
-        Scouting for:
+        {t("label")}
       </label>
       <Select
         value={currentTeamId?.toString() ?? "none"}
         onValueChange={handleChange}
       >
         <SelectTrigger size="sm" id="scout-for-team">
-          <SelectValue placeholder="Select your team" />
+          <SelectValue placeholder={t("placeholder")} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="none">No team selected</SelectItem>
+          <SelectItem value="none">{t("noTeam")}</SelectItem>
           {userTeams.map((team) => (
             <SelectItem key={team.id} value={team.id.toString()}>
               {team.name}

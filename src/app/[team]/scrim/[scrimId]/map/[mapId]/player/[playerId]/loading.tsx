@@ -1,23 +1,23 @@
 import { DirectionalTransition } from "@/components/directional-transition";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { CardIcon } from "@/components/ui/card-icon";
+import { StatPanel } from "@/components/player/stat-panel";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getTranslations } from "next-intl/server";
 
+const STAT_BLOCK_SLOTS = ["a", "b", "c", "d"] as const;
+const HERO_STAT_SLOTS = ["a", "b", "c", "d", "e", "f"] as const;
+
 export default async function PlayerDashboardLoading() {
-  const t = await getTranslations("mapPage.player.overview");
+  const t = await getTranslations("mapPage.player");
 
   return (
     <DirectionalTransition>
       <div className="flex-col md:flex">
-        <div className="border-b" style={{ viewTransitionName: "site-header" }}>
-          <div className="hidden h-16 items-center px-4 md:flex">
+        <header
+          className="shadow-xs"
+          style={{ viewTransitionName: "site-header" }}
+        >
+          <div className="hidden min-h-16 items-center px-4 py-2 md:flex">
             <Skeleton className="h-6 w-24" />
             <div className="ml-auto flex items-center space-x-4">
               <Skeleton className="border-input hidden h-9 w-full rounded-md border px-3 py-1 md:flex md:w-[100px] lg:w-[300px]" />
@@ -32,154 +32,84 @@ export default async function PlayerDashboardLoading() {
               <Skeleton className="h-8 w-8 rounded-full" />
             </div>
           </div>
-        </div>
-        <div className="flex-1 space-y-4 p-8 pt-6">
-          <div>
-            <h4 className="text-gray-600 dark:text-gray-400">
-              <Skeleton className="h-6 w-48" />
-            </h4>
+        </header>
+        <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+          <div className="text-muted-foreground flex items-center gap-3 text-sm">
+            <Skeleton className="h-4 w-32" />
+            <span className="text-muted-foreground/40" aria-hidden="true">
+              |
+            </span>
+            <Skeleton className="h-4 w-32" />
           </div>
-          <div className="flex items-center justify-between space-y-2">
-            <h2 className="text-3xl font-bold tracking-tight">
-              <Skeleton className="h-10 w-40" />
-            </h2>
+
+          <div className="mt-3">
+            <Skeleton className="h-8 w-48" />
           </div>
-          <div className="space-y-4">
-            <Skeleton className="h-8 w-32" />
+
+          <div className="mt-2 flex items-center gap-3">
+            <Skeleton className="h-3 w-20" />
+            <span className="text-muted-foreground/40" aria-hidden="true">
+              ·
+            </span>
+            <Skeleton className="h-3 w-16" />
+            <span className="text-muted-foreground/40" aria-hidden="true">
+              ·
+            </span>
+            <Skeleton className="h-3 w-24" />
           </div>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {t("matchTime")}
-                </CardTitle>
-                <CardIcon>
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </CardIcon>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  <Skeleton className="h-6 w-24" />
+
+          <Tabs defaultValue="overview" className="mt-6 space-y-4">
+            <TabsList aria-label="Player sections">
+              <TabsTrigger value="overview">
+                {t("dashboard.overview")}
+              </TabsTrigger>
+              <TabsTrigger value="analytics">
+                {t("dashboard.analytics")}
+              </TabsTrigger>
+              <TabsTrigger value="charts">{t("dashboard.charts")}</TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          <StatPanel className="mt-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4">
+              {STAT_BLOCK_SLOTS.map((slot) => (
+                <div key={slot} className="flex flex-col px-5 py-4">
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="mt-3 h-7 w-20" />
+                  <Skeleton className="mt-2 h-3 w-32" />
                 </div>
-              </CardContent>
-              <CardFooter>
-                <Skeleton className="h-4 w-32" />
-              </CardFooter>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="align-baseline text-sm font-medium">
-                  {t("fletaTitle")}
-                </CardTitle>
-                <CardIcon>
-                  <path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15" />
-                  <path d="M11 12 5.12 2.2" />
-                  <path d="m13 12 5.88-9.8" />
-                  <path d="M8 7h8" />
-                  <circle cx="12" cy="17" r="5" />
-                  <path d="M12 18v-2h-.5" />
-                </CardIcon>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  <Skeleton className="h-6 w-24" />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Skeleton className="h-8 w-full" />
-              </CardFooter>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {t("firstPickTitle")}
-                </CardTitle>
-                <CardIcon>
-                  <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5" />
-                  <line x1="13" x2="19" y1="19" y2="13" />
-                  <line x1="16" x2="20" y1="16" y2="20" />
-                  <line x1="19" x2="21" y1="21" y2="19" />
-                </CardIcon>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  <Skeleton className="h-6 w-24" />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Skeleton className="h-8 w-full" />
-              </CardFooter>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {t("firstDeathTitle")}
-                </CardTitle>
-                <CardIcon>
-                  <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                </CardIcon>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  <Skeleton className="h-6 w-24" />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Skeleton className="h-8 w-full" />
-              </CardFooter>
-            </Card>
-          </div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-full">
-              <CardHeader>
-                <CardTitle>{t("playerStats")}</CardTitle>
-              </CardHeader>
-              <CardContent className="pl-4">
-                <main>
-                  <h1 className="scroll-m-20 pb-2 pl-2 text-3xl font-semibold tracking-tight first:mt-0">
-                    <Skeleton className="h-10 w-32" />
-                  </h1>
-                  <div className="flex flex-1 flex-col 2xl:flex-row">
-                    <div className="w-full p-2 2xl:w-1/2">
-                      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                        <Card>
-                          <Skeleton className="h-56 w-full" />
-                        </Card>
-                        <Card>
-                          <Skeleton className="h-56 w-full" />
-                        </Card>
-                        <Card>
-                          <Skeleton className="h-56 w-full" />
-                        </Card>
-                        <Card>
-                          <Skeleton className="h-56 w-full" />
-                        </Card>
-                        <Card>
-                          <Skeleton className="h-56 w-full" />
-                        </Card>
-                        <Card>
-                          <Skeleton className="h-56 w-full" />
-                        </Card>
-                        <Card>
-                          <Skeleton className="h-56 w-full" />
-                        </Card>
-                        <Card>
-                          <Skeleton className="h-56 w-full" />
-                        </Card>
-                      </div>
+              ))}
+            </div>
+          </StatPanel>
+
+          <div className="mt-6">
+            <Skeleton className="h-6 w-40" />
+            <div className="mt-3 flex flex-col gap-4 2xl:flex-row">
+              <div className="2xl:flex-1">
+                <StatPanel>
+                  <div className="flex flex-col lg:flex-row">
+                    <div className="border-border flex flex-col items-center justify-center gap-3 px-5 py-5 lg:w-[200px] lg:shrink-0 lg:border-r">
+                      <Skeleton className="aspect-square w-full max-w-[160px] rounded-lg" />
+                      <Skeleton className="h-3 w-12" />
                     </div>
-                    <div className="w-full p-2 2xl:w-1/2">
-                      <div className="space-y-4">
-                        <div className="max-h-[29.5rem] rounded-xl border">
-                          <Skeleton className="h-[29.5rem] w-full" />
+                    <div className="grid flex-1 grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-3">
+                      {HERO_STAT_SLOTS.map((slot) => (
+                        <div key={slot} className="flex flex-col px-5 py-4">
+                          <Skeleton className="h-3 w-20" />
+                          <Skeleton className="mt-3 h-7 w-20" />
+                          <Skeleton className="mt-2 h-3 w-24" />
                         </div>
-                      </div>
+                      ))}
                     </div>
                   </div>
-                </main>
-              </CardContent>
-            </Card>
+                </StatPanel>
+              </div>
+              <div className="2xl:w-[480px] 2xl:shrink-0">
+                <div className="ring-foreground/10 max-h-[29.5rem] overflow-hidden rounded-xl ring-1">
+                  <Skeleton className="h-[29.5rem] w-full" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

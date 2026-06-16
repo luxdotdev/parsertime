@@ -8,11 +8,11 @@ import { ScrimService } from "@/data/scrim";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { auth, getViewableScrimIds } from "@/lib/auth";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
-import type { Kill, PlayerStat, Scrim } from "@prisma/client";
+import type { Kill, PlayerStat, Scrim } from "@/generated/prisma/client";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -82,7 +82,10 @@ export default async function PlayerStats(
     distinct: ["scrimId"],
   });
 
-  const scrimIds = playerScrims.map((scrim) => scrim.scrimId);
+  const scrimIds = await getViewableScrimIds(
+    playerScrims.map((scrim) => scrim.scrimId),
+    user
+  );
 
   const allScrims = await prisma.scrim.findMany({
     where: { id: { in: scrimIds } },
@@ -121,13 +124,13 @@ export default async function PlayerStats(
   const yearScrims = allScrims.filter((scrim) => scrim.date >= year);
 
   const data: Record<Timeframe, Scrim[]> = {
-    "one-week": oneWeekScrims,
-    "two-weeks": twoWeeksScrims,
-    "one-month": monthScrims,
-    "three-months": threeMonthsScrims,
-    "six-months": sixMonthsScrims,
-    "one-year": yearScrims,
-    "all-time": allScrims,
+    "one-week": timeframe1 ? oneWeekScrims : [],
+    "two-weeks": timeframe1 ? twoWeeksScrims : [],
+    "one-month": timeframe1 ? monthScrims : [],
+    "three-months": timeframe2 ? threeMonthsScrims : [],
+    "six-months": timeframe2 ? sixMonthsScrims : [],
+    "one-year": timeframe3 ? yearScrims : [],
+    "all-time": timeframe3 ? allScrims : [],
     custom: [],
   };
 
@@ -178,26 +181,25 @@ export default async function PlayerStats(
     allPlayerDeaths = result.allPlayerDeaths;
   } catch {
     return (
-      <div className="flex-1 space-y-4 p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">
+      <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold tracking-tight">{name}</h1>
+          <p className="text-muted-foreground mt-1 text-sm">
             {t("title", { name, suffix: name.endsWith("s") ? "'" : "'s" })}
-          </h2>
+          </p>
         </div>
 
-        <Card className="h-[70vh] border-none">
-          <div className="flex h-full items-center justify-center">
-            <div className="text-center text-xl font-bold text-red-500">
+        <Card className="h-[60vh] border-none">
+          <div className="flex h-full flex-col items-center justify-center gap-2">
+            <p className="text-destructive text-base font-semibold">
               {t("statsFail", { name })}
-              <div className="text-center">
-                <Link
-                  href="/stats"
-                  className="text-muted-foreground text-base font-normal"
-                >
-                  &larr; {t("back")}
-                </Link>
-              </div>
-            </div>
+            </p>
+            <Link
+              href="/stats"
+              className="text-muted-foreground text-sm font-normal"
+            >
+              &larr; {t("back")}
+            </Link>
           </div>
         </Card>
       </div>
@@ -205,14 +207,13 @@ export default async function PlayerStats(
   }
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">
-          {t("title", { name, suffix: name.endsWith("s") ? "'" : "'s" })}
-        </h2>
+    <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold tracking-tight">{name}</h1>
       </div>
 
       <RangePicker
+        playerName={name}
         permissions={permissions}
         data={data}
         stats={allPlayerStats}

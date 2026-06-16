@@ -2,7 +2,12 @@ import { DeleteMapButton } from "@/components/tournament/match/delete-map-button
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import type { HeroBan, Map, MapData, MatchStart } from "@prisma/client";
+import type {
+  HeroBan,
+  Map,
+  MapData,
+  MatchStart,
+} from "@/generated/prisma/client";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";

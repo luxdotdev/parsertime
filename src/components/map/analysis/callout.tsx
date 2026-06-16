@@ -11,7 +11,7 @@ export function Callout({ icon, children, className }: CalloutProps) {
   return (
     <div
       className={cn(
-        "bg-muted/50 flex items-start gap-2 rounded-md border border-black/[0.04] px-3 py-2 text-sm dark:border-white/[0.04]",
+        "bg-muted/50 border-border flex items-start gap-2 rounded-md border px-3 py-2 text-sm",
         className
       )}
     >

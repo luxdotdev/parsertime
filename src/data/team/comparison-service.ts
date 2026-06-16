@@ -5,8 +5,12 @@ import type {
   TeamComparisonStats,
   TeamMapBreakdown,
 } from "@/types/team-comparison";
-import type { CalculatedStat, MapType, PlayerStat } from "@prisma/client";
-import { CalculatedStatType } from "@prisma/client";
+import type {
+  CalculatedStat,
+  MapType,
+  PlayerStat,
+} from "@/generated/prisma/client";
+import { CalculatedStatType } from "@/generated/prisma/browser";
 import {
   Cache,
   Context,

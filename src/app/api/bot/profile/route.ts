@@ -6,7 +6,7 @@ import { removeDuplicateRows } from "@/lib/utils";
 import { authenticateBotSecret } from "@/lib/bot-auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import { Prisma, type PlayerStat } from "@prisma/client";
+import { Prisma, type PlayerStat } from "@/generated/prisma/client";
 import { trace } from "@opentelemetry/api";
 import type { NextRequest } from "next/server";
 
@@ -99,7 +99,7 @@ export async function GET(request: NextRequest) {
             INNER JOIN maxTime m ON ps."match_time" = m.max_time AND ps."MapDataId" = m."MapDataId"
         WHERE
             ps."MapDataId" IN (${Prisma.join(mapDataIds)})
-            AND ps."player_name" ILIKE ${playerName}
+            AND lower(ps."player_name") = lower(${playerName})
       `
     );
 

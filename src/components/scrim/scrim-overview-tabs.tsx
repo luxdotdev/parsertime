@@ -13,6 +13,9 @@ import {
   ScrimUltimatesSection,
 } from "@/components/scrim/scrim-overview-sections";
 import { ScrimAbilityTimingSection } from "@/components/scrim/scrim-ability-timing-section";
+import { ScrimInitiationSection } from "@/components/scrim/scrim-initiation-section";
+import { PositionalStatsSection } from "@/components/scrim/positional-stats-section";
+import { UltEconomyCard } from "@/components/stats/team/ult-economy-card";
 import {
   Accordion,
   AccordionContent,
@@ -20,26 +23,60 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { ScrimOverviewData } from "@/data/scrim/types";
+import type { ScrimPositionalArtifacts } from "@/data/scrim/positional-artifacts-service";
+import type { ScrimPositionalStats } from "@/data/scrim/positional-stats-service";
+import type {
+  ScrimInitiationData,
+  ScrimOverviewData,
+} from "@/data/scrim/types";
 import { useColorblindMode } from "@/hooks/use-colorblind-mode";
 import {
   Activity,
   ArrowRightLeft,
   ChevronsDownUp,
   ChevronsUpDown,
+  Crosshair,
+  Gauge,
   Swords,
   Users,
   Zap,
 } from "lucide-react";
-import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { type ReactNode, useState } from "react";
 
-const BASE_SECTIONS = ["players", "fights", "ultimates", "swaps"];
-
-export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
+export function ScrimOverviewTabs({
+  data,
+  positionalStats = null,
+  positionalArtifacts = null,
+  initiation = null,
+  wpaSlot = null,
+}: {
+  data: ScrimOverviewData;
+  positionalStats?: ScrimPositionalStats | null;
+  positionalArtifacts?: ScrimPositionalArtifacts | null;
+  initiation?: ScrimInitiationData | null;
+  // Streamed in via Suspense from the server: aggregating WPA across a scrim's
+  // maps is the heaviest read on this page, so it must never block render. It
+  // renders its own <AccordionItem value="wpa"> (or null), and intentionally
+  // sits outside `allSections` — so expand/collapse-all skips it.
+  wpaSlot?: ReactNode;
+}) {
+  const t = useTranslations("scrimPage.overviewTabs");
   const hasAbilityData = data.abilityTimingAnalysis.rows.length > 0;
-  const allSections = hasAbilityData
-    ? ["players", "fights", "abilities", "ultimates", "swaps"]
-    : BASE_SECTIONS;
+  const hasUltEconomy = data.ultEconomy.totalFights > 0;
+  const hasPositional =
+    positionalStats !== null && positionalStats.players.length > 0;
+  const hasInitiation = initiation !== null && initiation.teams.length > 0;
+  const allSections = [
+    "players",
+    "fights",
+    ...(hasAbilityData ? ["abilities"] : []),
+    "ultimates",
+    ...(hasUltEconomy ? ["ult-advantage"] : []),
+    "swaps",
+    ...(hasPositional ? ["positional"] : []),
+    ...(hasInitiation ? ["initiation"] : []),
+  ];
 
   const [activeTab, setActiveTab] = useState("visualizations");
   const [openSections, setOpenSections] = useState<string[]>(["players"]);
@@ -52,11 +89,11 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
   }
 
   const team1 = {
-    name: data.ourTeamName || "Your Team",
+    name: data.ourTeamName || t("team.yourTeam"),
     color: team1Color,
   };
   const team2 = {
-    name: data.opponentTeamName || "Opponent",
+    name: data.opponentTeamName || t("team.opponent"),
     color: team2Color,
   };
   const teamNames = [team1.name, team2.name] as const;
@@ -65,8 +102,10 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
     <Tabs value={activeTab} onValueChange={setActiveTab}>
       <div className="flex items-center justify-between">
         <TabsList>
-          <TabsTrigger value="visualizations">Visualizations</TabsTrigger>
-          <TabsTrigger value="raw-stats">Raw Stats</TabsTrigger>
+          <TabsTrigger value="visualizations">
+            {t("tabs.visualizations")}
+          </TabsTrigger>
+          <TabsTrigger value="raw-stats">{t("tabs.rawStats")}</TabsTrigger>
         </TabsList>
         {activeTab === "visualizations" && (
           <button
@@ -77,12 +116,12 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
             {allExpanded ? (
               <>
                 <ChevronsDownUp className="size-3.5" aria-hidden="true" />
-                Collapse all
+                {t("actions.collapseAll")}
               </>
             ) : (
               <>
                 <ChevronsUpDown className="size-3.5" aria-hidden="true" />
-                Expand all
+                {t("actions.expandAll")}
               </>
             )}
           </button>
@@ -102,14 +141,11 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
                   className="text-muted-foreground size-4"
                   aria-hidden="true"
                 />
-                Player Performance
+                {t("sections.players")}
               </span>
             </AccordionTrigger>
             <AccordionContent className="h-auto">
-              <ScrimPlayersSection
-                players={data.teamPlayers}
-                insights={data.insights}
-              />
+              <ScrimPlayersSection players={data.teamPlayers} />
             </AccordionContent>
           </AccordionItem>
 
@@ -120,7 +156,7 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
                   className="text-muted-foreground size-4"
                   aria-hidden="true"
                 />
-                Fights
+                {t("sections.fights")}
               </span>
             </AccordionTrigger>
             <AccordionContent className="h-auto">
@@ -140,7 +176,7 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
                     className="text-muted-foreground size-4"
                     aria-hidden="true"
                   />
-                  Ability Timing
+                  {t("sections.abilities")}
                 </span>
               </AccordionTrigger>
               <AccordionContent className="h-auto">
@@ -158,7 +194,7 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
                   className="text-muted-foreground size-4"
                   aria-hidden="true"
                 />
-                Ultimates
+                {t("sections.ultimates")}
               </span>
             </AccordionTrigger>
             <AccordionContent className="h-auto">
@@ -170,6 +206,23 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
             </AccordionContent>
           </AccordionItem>
 
+          {hasUltEconomy && (
+            <AccordionItem value="ult-advantage">
+              <AccordionTrigger>
+                <span className="flex items-center gap-2">
+                  <Gauge
+                    className="text-muted-foreground size-4"
+                    aria-hidden="true"
+                  />
+                  {t("sections.ultAdvantage")}
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="h-auto">
+                <UltEconomyCard analysis={data.ultEconomy} />
+              </AccordionContent>
+            </AccordionItem>
+          )}
+
           <AccordionItem value="swaps">
             <AccordionTrigger>
               <span className="flex items-center gap-2">
@@ -177,7 +230,7 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
                   className="text-muted-foreground size-4"
                   aria-hidden="true"
                 />
-                Hero Swaps
+                {t("sections.swaps")}
               </span>
             </AccordionTrigger>
             <AccordionContent className="h-auto">
@@ -188,6 +241,45 @@ export function ScrimOverviewTabs({ data }: { data: ScrimOverviewData }) {
               />
             </AccordionContent>
           </AccordionItem>
+
+          {hasPositional && positionalStats && (
+            <AccordionItem value="positional">
+              <AccordionTrigger>
+                <span className="flex items-center gap-2">
+                  <Crosshair
+                    className="text-muted-foreground size-4"
+                    aria-hidden="true"
+                  />
+                  {t("sections.positional")}
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="h-auto">
+                <PositionalStatsSection
+                  data={positionalStats}
+                  artifacts={positionalArtifacts}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          )}
+
+          {hasInitiation && initiation && (
+            <AccordionItem value="initiation">
+              <AccordionTrigger>
+                <span className="flex items-center gap-2">
+                  <Swords
+                    className="text-muted-foreground size-4"
+                    aria-hidden="true"
+                  />
+                  {t("sections.initiation")}
+                </span>
+              </AccordionTrigger>
+              <AccordionContent className="h-auto">
+                <ScrimInitiationSection initiation={initiation} />
+              </AccordionContent>
+            </AccordionItem>
+          )}
+
+          {wpaSlot}
         </Accordion>
       </TabsContent>
 

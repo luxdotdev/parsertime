@@ -6,7 +6,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { AuditLog } from "@prisma/client";
+import { serializeCsv } from "@/lib/csv";
+import type { AuditLog } from "@/generated/prisma/browser";
 import { Download, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -21,7 +22,6 @@ export function DownloadAuditLogs({ logs }: DownloadAuditLogsProps) {
   const [isDownloading, setIsDownloading] = useState(false);
 
   function convertToCSV(logs: AuditLog[]) {
-    // Define CSV headers
     const headers = [
       "User Email",
       "Action",
@@ -30,21 +30,17 @@ export function DownloadAuditLogs({ logs }: DownloadAuditLogsProps) {
       "Timestamp (UTC)",
     ];
 
-    // Convert logs to CSV rows
     const rows = logs.map((log) => {
       return [
         log.userEmail,
         log.action,
         log.target,
-        // Escape quotes in details to prevent CSV formatting issues
-        `"${log.details.replace(/"/g, '""')}"`,
-        // Use ISO string for consistent UTC timestamp
-        new Date(log.createdAt).toISOString(),
+        log.details,
+        new Date(log.createdAt),
       ];
     });
 
-    // Combine headers and rows
-    return [headers, ...rows].map((row) => row.join(",")).join("\n");
+    return serializeCsv([headers, ...rows]);
   }
 
   function handleDownload() {

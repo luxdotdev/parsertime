@@ -50,6 +50,12 @@ export type {
 } from "./replay";
 
 export {
+  PlayerTelemetryService,
+  PlayerTelemetryServiceLive,
+} from "./player-telemetry-service";
+export type { PlayerTelemetryServiceInterface } from "./player-telemetry-service";
+
+export {
   TempoService,
   TempoServiceLive,
   computeTempoSeries,
@@ -73,6 +79,18 @@ export type { RotationDeathServiceInterface } from "./rotation-death-service";
 
 export { MapGroupService, MapGroupServiceLive } from "./group-service";
 export type { MapGroupServiceInterface } from "./group-service";
+
+export {
+  MapHeroTrendsService,
+  MapHeroTrendsServiceLive,
+} from "./hero-trends-service";
+export type {
+  MapHeroTrendsServiceInterface,
+  MapHeroTrendPoint,
+  MapHeroTrend,
+  MapHeroTrendGroup,
+  MapHeroTrendsResult,
+} from "./hero-trends-service";
 
 export {
   MapQueryError,

@@ -1,7 +1,4 @@
-import { Effect } from "effect";
-import { AppRuntime } from "@/data/runtime";
-import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { getCurrentUser, isAdminUser } from "@/lib/auth";
 import { computeMapTransform } from "@/lib/map-calibration/compute-transform";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
@@ -18,13 +15,9 @@ export async function POST(req: Request) {
   };
 
   try {
-    const session = await auth();
-    if (!session) unauthorized();
-
-    const user = await AppRuntime.runPromise(
-      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-    );
+    const user = await getCurrentUser();
     if (!user) unauthorized();
+    if (!isAdminUser(user)) forbidden();
 
     const enabled = await dataLabeling();
     if (!enabled) forbidden();

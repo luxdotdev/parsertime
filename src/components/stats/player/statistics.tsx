@@ -6,13 +6,7 @@ import { RolePieChart } from "@/components/stats/player/charts/role-pie-chart";
 import { StatPer10Chart } from "@/components/stats/player/charts/stat-per-10";
 import { WinsPerMapTypeChart } from "@/components/stats/player/charts/wins-per-map-type";
 import type { Timeframe } from "@/components/stats/player/range-picker";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { SectionHeader } from "@/components/stats/team/section-header";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -22,13 +16,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Table,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -37,8 +24,9 @@ import type { Winrate } from "@/data/scrim/types";
 import type { NonMappableStat, Stat } from "@/lib/player-charts";
 import { cn, toHero, useHeroNames } from "@/lib/utils";
 import type { HeroName } from "@/types/heroes";
-import type { Kill, PlayerStat, Scrim } from "@prisma/client";
+import type { Kill, PlayerStat, Scrim } from "@/generated/prisma/browser";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
+import type { Route } from "next";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -49,11 +37,21 @@ function ChartTooltip({ children }: { children: React.ReactNode }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <InfoCircledIcon className="h-4 w-4" />
+        <button
+          type="button"
+          aria-label="More info"
+          className="text-muted-foreground hover:text-foreground inline-flex h-7 w-7 items-center justify-center rounded-md transition-colors"
+        >
+          <InfoCircledIcon className="h-4 w-4" />
+        </button>
       </TooltipTrigger>
       <TooltipContent className="max-w-[280px]">{children}</TooltipContent>
     </Tooltip>
   );
+}
+
+function formatRank(idx: number) {
+  return String(idx + 1).padStart(2, "0");
 }
 
 export function Statistics({
@@ -88,19 +86,21 @@ export function Statistics({
   const [selectedStat, setSelectedStat] =
     useState<keyof Omit<Stat, NonMappableStat>>("eliminations");
 
-  useEffect(() => {
-    if (timeframe === "custom") {
-      const from = date?.from;
-      const to = date?.to;
+  const activeScrims =
+    timeframe === "custom" ? customScrims : scrims[timeframe];
 
-      if (from && to) {
-        setCustomScrims(
-          scrims["all-time"].filter(
-            (scrim) => scrim.date >= from && scrim.date <= to
-          )
-        );
-      }
+  useEffect(() => {
+    if (timeframe !== "custom" || !date?.from || !date.to) {
+      setCustomScrims([]);
+      return;
     }
+
+    const { from, to } = date;
+    setCustomScrims(
+      scrims["all-time"].filter(
+        (scrim) => scrim.date >= from && scrim.date <= to
+      )
+    );
   }, [timeframe, date, scrims]);
 
   useEffect(() => {
@@ -137,6 +137,8 @@ export function Statistics({
   useEffect(() => {
     if (timeframe === "all-time") {
       setFilteredWins(mapWinrates);
+    } else if (timeframe === "custom" && (!date?.from || !date.to)) {
+      setFilteredWins([]);
     } else {
       setFilteredWins(
         mapWinrates.filter((win) => {
@@ -152,12 +154,12 @@ export function Statistics({
   const top3FinalBlows = filteredStats
     .filter((stat) => stat.final_blows > 0)
     .sort((a, b) => b.final_blows - a.final_blows)
-    .map((stat) => [
-      stat.player_hero,
-      stat.final_blows,
-      stat.scrimId,
-      stat.MapDataId,
-    ])
+    .map((stat) => ({
+      hero: stat.player_hero,
+      finalBlows: stat.final_blows,
+      scrimId: stat.scrimId,
+      mapId: stat.MapDataId,
+    }))
     .slice(0, 3);
 
   const top3MostPlayedHeroes = filteredStats
@@ -224,631 +226,536 @@ export function Statistics({
 
   const top3MostKilledHeroesLength = top3MostKilledHeroesArray.length;
 
+  function buildScrimDescription(timeframeKey: string) {
+    if (timeframe !== "custom" && timeframe !== "all-time") {
+      return t(`${timeframeKey}.footer1`, {
+        scrims: scrims[timeframe].length,
+        timeframe: t(`timeframe.${timeframe}`),
+      });
+    }
+    return t(`${timeframeKey}.footer2`, {
+      timeframe1:
+        timeframe === "custom"
+          ? customScrims.length
+          : timeframe === "all-time"
+            ? scrims["all-time"].length
+            : 0,
+      timeframe2:
+        timeframe === "all-time"
+          ? t("timeframe.all-time-data")
+          : date?.from && date?.to
+            ? `${date.from.toLocaleDateString()} - ${date.to.toLocaleDateString()}`
+            : t("timeframe.all-time"),
+    });
+  }
+
+  function buildMapHref(scrimId: number | null, mapId: number | null) {
+    if (!scrimId || !mapId) return null;
+    const teamId = activeScrims.find((scrim) => scrim.id === scrimId)?.teamId;
+    if (!teamId) return null;
+    return `/${teamId}/scrim/${scrimId}/map/${mapId}` as Route;
+  }
+
   return (
-    <section
-      className={cn(
-        "grid gap-4 md:grid-cols-2 lg:grid-cols-4",
-        comparisonView &&
-          "grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4"
-      )}
-    >
-      <Card
+    <section className="grid gap-x-8 gap-y-12 lg:grid-cols-12">
+      <section
         className={cn(
-          "col-span-1 md:col-span-2 xl:col-span-1",
-          comparisonView &&
-            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+          "space-y-4 lg:col-span-6",
+          comparisonView && "min-h-[400px] lg:col-span-12"
         )}
       >
-        <CardHeader>
-          <CardTitle>{t("mostPlayed.title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("mostPlayed.rank")}</TableHead>
-                <TableHead>{t("mostPlayed.hero")}</TableHead>
-                <TableHead>{t("mostPlayed.games")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <tbody>
-              {top3MostPlayedHeroesArray.map(([hero, games], idx) => (
-                // oxlint-disable-next-line react/no-array-index-key
-                <TableRow key={`${hero}-${games}-${idx}`}>
-                  <TableCell>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      className={cn(
-                        "h-4 w-4",
-                        idx === 0
-                          ? "text-amber-400"
-                          : idx === 1
-                            ? "text-gray-400"
-                            : idx === 2
-                              ? "text-amber-900"
-                              : "text-muted-foreground"
-                      )}
-                    >
-                      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-                      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-                      <path d="M4 22h16" />
-                      <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-                      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-                      <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-                    </svg>
-                  </TableCell>
-                  <TableCell>
-                    <span className="flex items-center space-x-2">
-                      <div className="pr-2">
-                        <Image
-                          src={`/heroes/${toHero(hero)}.png`}
-                          alt=""
-                          width={256}
-                          height={256}
-                          className={cn(
-                            "h-8 w-8 rounded border-2",
-                            idx === 0
-                              ? "border-amber-400"
-                              : idx === 1
-                                ? "border-gray-400"
-                                : idx === 2
-                                  ? "border-amber-900"
-                                  : "border-muted-foreground"
-                          )}
-                        />{" "}
+        <SectionHeader
+          eyebrow="Player · Most played"
+          title={t("mostPlayed.title")}
+          description={buildScrimDescription("mostPlayed")}
+        />
+        <div className="border-border overflow-hidden rounded-md border">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/30">
+              <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
+                <th className="w-12 px-4 py-2 text-left font-medium">
+                  {t("mostPlayed.rank")}
+                </th>
+                <th className="px-4 py-2 text-left font-medium">
+                  {t("mostPlayed.hero")}
+                </th>
+                <th className="px-4 py-2 text-right font-medium">
+                  {t("mostPlayed.games")}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[var(--border)]">
+              {top3MostPlayedHeroesArray.map(([hero, games], idx) => {
+                const heroSlug = toHero(hero);
+                const displayName = heroNames.get(heroSlug) ?? hero;
+                return (
+                  <tr
+                    // oxlint-disable-next-line react/no-array-index-key
+                    key={`${hero}-${games}-${idx}`}
+                    className="hover:bg-muted/30 transition-colors"
+                  >
+                    <td className="text-muted-foreground px-4 py-3 font-mono tabular-nums">
+                      {formatRank(idx)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="border-border relative h-9 w-9 shrink-0 overflow-hidden rounded border">
+                          <Image
+                            src={`/heroes/${heroSlug}.png`}
+                            alt={displayName}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <span className="font-medium">{displayName}</span>
                       </div>
-                      {heroNames.get(toHero(hero)) ?? hero}
-                    </span>
-                  </TableCell>
-                  <TableCell>{games}</TableCell>
-                </TableRow>
-              ))}
+                    </td>
+                    <td className="px-4 py-3 text-right font-mono tabular-nums">
+                      {games}
+                    </td>
+                  </tr>
+                );
+              })}
               {top3Length < 3 &&
                 Array.from({ length: 3 - top3Length }).map((_, idx) => (
-                  // oxlint-disable-next-line react/no-array-index-key
-                  <TableRow key={idx}>
-                    <TableCell>-</TableCell>
-                    <TableCell>{t("mostPlayed.noData")}</TableCell>
-                    <TableCell>{t("mostPlayed.noData")}</TableCell>
-                  </TableRow>
+                  <tr
+                    // oxlint-disable-next-line react/no-array-index-key
+                    key={`mp-empty-${idx}`}
+                    className="hover:bg-muted/30 transition-colors"
+                  >
+                    <td className="text-muted-foreground px-4 py-3 font-mono tabular-nums">
+                      {formatRank(top3Length + idx)}
+                    </td>
+                    <td className="text-muted-foreground px-4 py-3">—</td>
+                    <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
+                      —
+                    </td>
+                  </tr>
                 ))}
             </tbody>
-          </Table>
-        </CardContent>
-        <CardFooter>
-          <p className="text-muted-foreground text-sm">
-            {timeframe !== "custom" && timeframe !== "all-time"
-              ? t("mostPlayed.footer1", {
-                  scrims: scrims[timeframe].length,
-                  timeframe: t(`timeframe.${timeframe}`),
-                })
-              : t("mostPlayed.footer2", {
-                  timeframe1:
-                    timeframe === "custom"
-                      ? customScrims.length
-                      : timeframe === "all-time"
-                        ? scrims["all-time"].length
-                        : 0,
-                  timeframe2:
-                    timeframe === "all-time"
-                      ? t("timeframe.all-time-data")
-                      : date?.from && date?.to
-                        ? `${date.from.toLocaleDateString()} - ${date.to.toLocaleDateString()}`
-                        : t("timeframe.all-time"),
-                })}
-          </p>
-        </CardFooter>
-      </Card>
-      <Card
+          </table>
+        </div>
+      </section>
+
+      <section
         className={cn(
-          "col-span-1 md:col-span-2 xl:col-span-1",
-          comparisonView &&
-            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+          "space-y-4 lg:col-span-6",
+          comparisonView && "min-h-[400px] lg:col-span-12"
         )}
       >
-        <CardHeader>
-          <CardTitle>{t("bestPerformance.title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("bestPerformance.rank")}</TableHead>
-                <TableHead>{t("bestPerformance.hero")}</TableHead>
-                <TableHead>{t("bestPerformance.finalBlows")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <tbody>
-              {top3FinalBlows.map(([hero, finalBlows, scrimId, mapId], idx) => (
-                <TableRow key={`${hero}-${mapId}`}>
-                  <TableCell>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      className={cn(
-                        "h-4 w-4",
-                        idx === 0
-                          ? "text-amber-400"
-                          : idx === 1
-                            ? "text-gray-400"
-                            : idx === 2
-                              ? "text-amber-900"
-                              : "text-muted-foreground"
-                      )}
+        <SectionHeader
+          eyebrow="Player · Best performance"
+          title={t("bestPerformance.title")}
+          description={buildScrimDescription("bestPerformance")}
+        />
+        <div className="border-border overflow-hidden rounded-md border">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/30">
+              <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
+                <th className="w-12 px-4 py-2 text-left font-medium">
+                  {t("bestPerformance.rank")}
+                </th>
+                <th className="px-4 py-2 text-left font-medium">
+                  {t("bestPerformance.hero")}
+                </th>
+                <th className="px-4 py-2 text-right font-medium">
+                  {t("bestPerformance.finalBlows")}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[var(--border)]">
+              {top3FinalBlows.map(
+                ({ hero, finalBlows, scrimId, mapId }, idx) => {
+                  const heroSlug = toHero(hero as HeroName);
+                  const displayName = heroNames.get(heroSlug) ?? hero;
+                  const mapHref = buildMapHref(scrimId, mapId);
+                  return (
+                    <tr
+                      key={`${hero}-${mapId}`}
+                      className="hover:bg-muted/30 transition-colors"
                     >
-                      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-                      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-                      <path d="M4 22h16" />
-                      <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-                      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-                      <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-                    </svg>
-                  </TableCell>
-                  <TableCell>
-                    <span className="flex items-center space-x-2">
-                      <div className="pr-2">
-                        <Image
-                          src={`/heroes/${toHero(hero as HeroName)}.png`}
-                          alt=""
-                          width={256}
-                          height={256}
-                          className={cn(
-                            "h-8 w-8 rounded border-2",
-                            idx === 0
-                              ? "border-amber-400"
-                              : idx === 1
-                                ? "border-gray-400"
-                                : idx === 2
-                                  ? "border-amber-900"
-                                  : "border-muted-foreground"
+                      <td className="text-muted-foreground px-4 py-3 font-mono tabular-nums">
+                        {formatRank(idx)}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="border-border relative h-9 w-9 shrink-0 overflow-hidden rounded border">
+                            <Image
+                              src={`/heroes/${heroSlug}.png`}
+                              alt={displayName}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          {mapHref ? (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Link
+                                  href={mapHref}
+                                  target="_blank"
+                                  className="hover:text-primary font-medium underline-offset-4 hover:underline"
+                                >
+                                  {displayName}
+                                </Link>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{t("bestPerformance.clickMap")}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : (
+                            <span className="font-medium">{displayName}</span>
                           )}
-                        />{" "}
-                      </div>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Link
-                            href={`/${
-                              scrims[timeframe].find(
-                                (scrim) => scrim.id === scrimId
-                              )?.teamId
-                            }/scrim/${scrimId}/map/${mapId}`}
-                            target="_blank"
-                          >
-                            {heroNames.get(toHero(hero as string)) ?? hero}
-                          </Link>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>{t("bestPerformance.clickMap")}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </span>
-                  </TableCell>
-                  <TableCell>{finalBlows}</TableCell>
-                </TableRow>
-              ))}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono tabular-nums">
+                        {finalBlows}
+                      </td>
+                    </tr>
+                  );
+                }
+              )}
               {top3FinalBlows.length < 3 &&
                 Array.from({ length: 3 - top3FinalBlows.length }).map(
                   (_, idx) => (
-                    // oxlint-disable-next-line react/no-array-index-key
-                    <TableRow key={idx}>
-                      <TableCell>-</TableCell>
-                      <TableCell>{t("bestPerformance.noData")}</TableCell>
-                      <TableCell>{t("bestPerformance.noData")}</TableCell>
-                    </TableRow>
+                    <tr
+                      // oxlint-disable-next-line react/no-array-index-key
+                      key={`bp-empty-${idx}`}
+                      className="hover:bg-muted/30 transition-colors"
+                    >
+                      <td className="text-muted-foreground px-4 py-3 font-mono tabular-nums">
+                        {formatRank(top3FinalBlows.length + idx)}
+                      </td>
+                      <td className="text-muted-foreground px-4 py-3">—</td>
+                      <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
+                        —
+                      </td>
+                    </tr>
                   )
                 )}
             </tbody>
-          </Table>
-        </CardContent>
-        <CardFooter>
-          <p className="text-muted-foreground text-sm">
-            {timeframe !== "custom" && timeframe !== "all-time"
-              ? t("bestPerformance.footer1", {
-                  scrims: scrims[timeframe].length,
-                  timeframe: t(`timeframe.${timeframe}`),
-                })
-              : t("bestPerformance.footer2", {
-                  timeframe1:
-                    timeframe === "custom"
-                      ? customScrims.length
-                      : timeframe === "all-time"
-                        ? scrims["all-time"].length
-                        : 0,
-                  timeframe2:
-                    timeframe === "all-time"
-                      ? t("timeframe.all-time-data")
-                      : date?.from && date?.to
-                        ? `${date.from.toLocaleDateString()} - ${date.to.toLocaleDateString()}`
-                        : t("timeframe.all-time"),
-                })}
-          </p>
-        </CardFooter>
-      </Card>
-      <Card
+          </table>
+        </div>
+      </section>
+
+      <section
         className={cn(
-          "col-span-1 md:col-span-2",
-          comparisonView &&
-            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+          "space-y-4 lg:col-span-6",
+          comparisonView && "min-h-[400px] lg:col-span-12"
         )}
       >
-        <CardHeader>
-          <CardTitle className="flex items-center gap-1">
-            {t("avgHeroDmgDealtPer10.title")}{" "}
+        <SectionHeader
+          eyebrow="Player · Hero damage"
+          title={t("avgHeroDmgDealtPer10.title")}
+          rightSlot={
             <ChartTooltip>
               <p>{t("avgHeroDmgDealtPer10.tooltip")}</p>
             </ChartTooltip>
-          </CardTitle>
-        </CardHeader>
+          }
+        />
         <StatPer10Chart
           stat="hero_damage_dealt"
           data={filteredStats}
           scrimData={timeframe === "custom" ? customScrims : scrims[timeframe]}
           better="higher"
         />
-      </Card>
-      <Card className="col-span-1 md:col-span-2">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-1">
-            {t("avgDeathPer10.title")}{" "}
+      </section>
+
+      <section
+        className={cn(
+          "space-y-4 lg:col-span-6",
+          comparisonView && "min-h-[400px] lg:col-span-12"
+        )}
+      >
+        <SectionHeader
+          eyebrow="Player · Death rate"
+          title={t("avgDeathPer10.title")}
+          rightSlot={
             <ChartTooltip>
               <p>{t("avgDeathPer10.tooltip")}</p>
             </ChartTooltip>
-          </CardTitle>
-        </CardHeader>
+          }
+        />
         <StatPer10Chart
           stat="deaths"
           data={filteredStats}
           scrimData={timeframe === "custom" ? customScrims : scrims[timeframe]}
           better="lower"
         />
-      </Card>
-      <Card
+      </section>
+
+      <section
         className={cn(
-          "col-span-1 md:col-span-2 xl:col-span-1",
-          comparisonView &&
-            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+          "space-y-4 lg:col-span-4",
+          comparisonView && "min-h-[400px] lg:col-span-12"
         )}
       >
-        <CardHeader>
-          <CardTitle>{t("timeSpent.title")}</CardTitle>
-        </CardHeader>
+        <SectionHeader
+          eyebrow="Player · Time on role"
+          title={t("timeSpent.title")}
+        />
         <RolePieChart data={filteredStats} />
-      </Card>
-      <Card
+      </section>
+
+      <section
         className={cn(
-          "col-span-1 md:col-span-2 xl:col-span-1",
-          comparisonView &&
-            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+          "space-y-4 lg:col-span-4",
+          comparisonView && "min-h-[400px] lg:col-span-12"
         )}
       >
-        <CardHeader>
-          <CardTitle>{t("finalBlowsByMethod.title")}</CardTitle>
-        </CardHeader>
+        <SectionHeader
+          eyebrow="Player · Final blow methods"
+          title={t("finalBlowsByMethod.title")}
+        />
         <KillMethodChart data={filteredKills} />
-      </Card>
-      <Card
+      </section>
+
+      <section
         className={cn(
-          "col-span-full xl:col-span-3",
-          comparisonView && "col-span-full lg:col-span-2 xl:col-span-full"
+          "space-y-4 lg:col-span-4",
+          comparisonView && "min-h-[400px] lg:col-span-12"
         )}
       >
-        <CardHeader>
-          <CardTitle>{t("mapWinrates.title")}</CardTitle>
-        </CardHeader>
-        <MapWinsChart data={filteredWins} />
-      </Card>
-      <Card
-        className={cn(
-          "col-span-1 md:col-span-2 xl:col-span-1",
-          comparisonView &&
-            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
-        )}
-      >
-        <CardHeader>
-          <CardTitle>{t("winrateMapType.title")}</CardTitle>
-        </CardHeader>
+        <SectionHeader
+          eyebrow="Player · Winrate by mode"
+          title={t("winrateMapType.title")}
+        />
         <WinsPerMapTypeChart data={filteredWins} />
-      </Card>
-      <Card
+      </section>
+
+      <section className="space-y-4 lg:col-span-12">
+        <SectionHeader
+          eyebrow="Player · Map winrates"
+          title={t("mapWinrates.title")}
+        />
+        <MapWinsChart data={filteredWins} />
+      </section>
+
+      <section
         className={cn(
-          "col-span-1 md:col-span-2 xl:col-span-1",
-          comparisonView &&
-            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
+          "space-y-4 lg:col-span-6",
+          comparisonView && "min-h-[400px] lg:col-span-12"
         )}
       >
-        <CardHeader>
-          <CardTitle>{t("heroesDiedToMost.title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("heroesDiedToMost.rank")}</TableHead>
-                <TableHead>{t("heroesDiedToMost.hero")}</TableHead>
-                <TableHead>{t("heroesDiedToMost.deaths")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <tbody>
-              {top3MostDiedToHeroesArray.map(([hero, deaths], idx) => (
-                // oxlint-disable-next-line react/no-array-index-key
-                <TableRow key={`${hero}-${deaths}-${idx}`}>
-                  <TableCell>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      className={cn(
-                        "h-4 w-4",
-                        idx === 0
-                          ? "text-amber-400"
-                          : idx === 1
-                            ? "text-gray-400"
-                            : idx === 2
-                              ? "text-amber-900"
-                              : "text-muted-foreground"
-                      )}
-                    >
-                      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-                      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-                      <path d="M4 22h16" />
-                      <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-                      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-                      <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-                    </svg>
-                  </TableCell>
-                  <TableCell>
-                    <span className="flex items-center space-x-2">
-                      <div className="pr-2">
-                        <Image
-                          src={`/heroes/${toHero(hero)}.png`}
-                          alt=""
-                          width={256}
-                          height={256}
-                          className={cn(
-                            "h-8 w-8 rounded border-2",
-                            idx === 0
-                              ? "border-amber-400"
-                              : idx === 1
-                                ? "border-gray-400"
-                                : idx === 2
-                                  ? "border-amber-900"
-                                  : "border-muted-foreground"
-                          )}
-                        />{" "}
+        <SectionHeader
+          eyebrow="Player · Most dangerous"
+          title={t("heroesDiedToMost.title")}
+          description={buildScrimDescription("heroesDiedToMost")}
+        />
+        <div className="border-border overflow-hidden rounded-md border">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/30">
+              <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
+                <th className="w-12 px-4 py-2 text-left font-medium">
+                  {t("heroesDiedToMost.rank")}
+                </th>
+                <th className="px-4 py-2 text-left font-medium">
+                  {t("heroesDiedToMost.hero")}
+                </th>
+                <th className="px-4 py-2 text-right font-medium">
+                  {t("heroesDiedToMost.deaths")}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[var(--border)]">
+              {top3MostDiedToHeroesArray.map(([hero, deathCount], idx) => {
+                const heroSlug = toHero(hero);
+                const displayName = heroNames.get(heroSlug) ?? hero;
+                return (
+                  <tr
+                    // oxlint-disable-next-line react/no-array-index-key
+                    key={`${hero}-${deathCount}-${idx}`}
+                    className="hover:bg-muted/30 transition-colors"
+                  >
+                    <td className="text-muted-foreground px-4 py-3 font-mono tabular-nums">
+                      {formatRank(idx)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="border-border relative h-9 w-9 shrink-0 overflow-hidden rounded border">
+                          <Image
+                            src={`/heroes/${heroSlug}.png`}
+                            alt={displayName}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <span className="font-medium">{displayName}</span>
                       </div>
-                      {heroNames.get(toHero(hero)) ?? hero}
-                    </span>
-                  </TableCell>
-                  <TableCell>{deaths}</TableCell>
-                </TableRow>
-              ))}
+                    </td>
+                    <td className="px-4 py-3 text-right font-mono tabular-nums">
+                      {deathCount}
+                    </td>
+                  </tr>
+                );
+              })}
               {top3MostDiedToHeroesLength < 3 &&
-                Array.from({ length: 3 - top3Length }).map((_, idx) => (
-                  // oxlint-disable-next-line react/no-array-index-key
-                  <TableRow key={idx}>
-                    <TableCell>-</TableCell>
-                    <TableCell>{t("heroesDiedToMost.noData")}</TableCell>
-                    <TableCell>{t("heroesDiedToMost.noData")}</TableCell>
-                  </TableRow>
-                ))}
-            </tbody>
-          </Table>
-        </CardContent>
-        <CardFooter>
-          <p className="text-muted-foreground text-sm">
-            {timeframe !== "custom" && timeframe !== "all-time"
-              ? t("heroesDiedToMost.footer1", {
-                  scrims: scrims[timeframe].length,
-                  timeframe: t(`timeframe.${timeframe}`),
-                })
-              : t("heroesDiedToMost.footer2", {
-                  timeframe1:
-                    timeframe === "custom"
-                      ? customScrims.length
-                      : timeframe === "all-time"
-                        ? scrims["all-time"].length
-                        : 0,
-                  timeframe2:
-                    timeframe === "all-time"
-                      ? t("timeframe.all-time-data")
-                      : date?.from && date?.to
-                        ? `${date.from.toLocaleDateString()} - ${date.to.toLocaleDateString()}`
-                        : t("timeframe.all-time"),
-                })}
-          </p>
-        </CardFooter>
-      </Card>
-      <Card
-        className={cn(
-          "col-span-1 md:col-span-2 xl:col-span-1",
-          comparisonView &&
-            "col-span-full md:col-span-1 lg:col-span-1 xl:col-span-2"
-        )}
-      >
-        <CardHeader>
-          <CardTitle>{t("heroesElimMost.title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("heroesElimMost.rank")}</TableHead>
-                <TableHead>{t("heroesElimMost.hero")}</TableHead>
-                <TableHead>{t("heroesElimMost.eliminations")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <tbody>
-              {top3MostKilledHeroesArray.map(([hero, elims], idx) => (
-                // oxlint-disable-next-line react/no-array-index-key
-                <TableRow key={`${hero}-${elims}-${idx}`}>
-                  <TableCell>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      className={cn(
-                        "h-4 w-4",
-                        idx === 0
-                          ? "text-amber-400"
-                          : idx === 1
-                            ? "text-gray-400"
-                            : idx === 2
-                              ? "text-amber-900"
-                              : "text-muted-foreground"
-                      )}
+                Array.from({ length: 3 - top3MostDiedToHeroesLength }).map(
+                  (_, idx) => (
+                    <tr
+                      // oxlint-disable-next-line react/no-array-index-key
+                      key={`dt-empty-${idx}`}
+                      className="hover:bg-muted/30 transition-colors"
                     >
-                      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-                      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-                      <path d="M4 22h16" />
-                      <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" />
-                      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" />
-                      <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-                    </svg>
-                  </TableCell>
-                  <TableCell>
-                    <span className="flex items-center space-x-2">
-                      <div className="pr-2">
-                        <Image
-                          src={`/heroes/${toHero(hero)}.png`}
-                          alt=""
-                          width={256}
-                          height={256}
-                          className={cn(
-                            "h-8 w-8 rounded border-2",
-                            idx === 0
-                              ? "border-amber-400"
-                              : idx === 1
-                                ? "border-gray-400"
-                                : idx === 2
-                                  ? "border-amber-900"
-                                  : "border-muted-foreground"
-                          )}
-                        />{" "}
-                      </div>
-                      {heroNames.get(toHero(hero)) ?? hero}
-                    </span>
-                  </TableCell>
-                  <TableCell>{elims}</TableCell>
-                </TableRow>
-              ))}
-              {top3MostKilledHeroesLength < 3 &&
-                Array.from({ length: 3 - top3Length }).map((_, idx) => (
-                  // oxlint-disable-next-line react/no-array-index-key
-                  <TableRow key={idx}>
-                    <TableCell>-</TableCell>
-                    <TableCell>{t("heroesElimMost.noData")}</TableCell>
-                    <TableCell>{t("heroesElimMost.noData")}</TableCell>
-                  </TableRow>
-                ))}
+                      <td className="text-muted-foreground px-4 py-3 font-mono tabular-nums">
+                        {formatRank(top3MostDiedToHeroesLength + idx)}
+                      </td>
+                      <td className="text-muted-foreground px-4 py-3">—</td>
+                      <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
+                        —
+                      </td>
+                    </tr>
+                  )
+                )}
             </tbody>
-          </Table>
-        </CardContent>
-        <CardFooter>
-          <p className="text-muted-foreground text-sm">
-            {timeframe !== "custom" && timeframe !== "all-time"
-              ? t("heroesElimMost.footer1", {
-                  scrims: scrims[timeframe].length,
-                  timeframe: t(`timeframe.${timeframe}`),
-                })
-              : t("heroesElimMost.footer2", {
-                  timeframe1:
-                    timeframe === "custom"
-                      ? customScrims.length
-                      : timeframe === "all-time"
-                        ? scrims["all-time"].length
-                        : 0,
-                  timeframe2:
-                    timeframe === "all-time"
-                      ? t("timeframe.all-time-data")
-                      : date?.from && date?.to
-                        ? `${date.from.toLocaleDateString()} - ${date.to.toLocaleDateString()}`
-                        : t("timeframe.all-time"),
-                })}
-          </p>
-        </CardFooter>
-      </Card>
-      <Card
+          </table>
+        </div>
+      </section>
+
+      <section
         className={cn(
-          "col-span-1 md:col-span-2",
-          comparisonView && "col-span-full lg:col-span-2"
+          "space-y-4 lg:col-span-6",
+          comparisonView && "min-h-[400px] lg:col-span-12"
         )}
       >
-        <CardHeader>
-          <Select
-            value={selectedStat}
-            onValueChange={(val: keyof Omit<Stat, NonMappableStat>) =>
-              setSelectedStat(val)
-            }
-          >
-            <div className="flex items-center gap-2">
-              <Label htmlFor="stat">{t("stats.title")}</Label>
-              <SelectTrigger className="w-[180px]" id="stat">
-                <SelectValue placeholder={t("stats.select")} />
-              </SelectTrigger>
-            </div>
-            <SelectContent>
-              <SelectItem value="eliminations">
-                {t("stats.eliminations")}
-              </SelectItem>
-              <SelectItem value="final_blows">
-                {t("stats.final_blows")}
-              </SelectItem>
-              <SelectItem value="healing_dealt">
-                {t("stats.healing_dealt")}
-              </SelectItem>
-              <SelectItem value="healing_received">
-                {t("stats.healing_received")}
-              </SelectItem>
-              <SelectItem value="self_healing">
-                {t("stats.self_healing")}
-              </SelectItem>
-              <SelectItem value="damage_taken">
-                {t("stats.damage_taken")}
-              </SelectItem>
-              <SelectItem value="damage_blocked">
-                {t("stats.damage_blocked")}
-              </SelectItem>
-              <SelectItem value="ultimates_earned">
-                {t("stats.ultimates_earned")}
-              </SelectItem>
-              <SelectItem value="ultimates_used">
-                {t("stats.ultimates_used")}
-              </SelectItem>
-              <SelectItem value="solo_kills">
-                {t("stats.solo_kills")}
-              </SelectItem>
-              <SelectItem value="environmental_kills">
-                {t("stats.environmental_kills")}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </CardHeader>
+        <SectionHeader
+          eyebrow="Player · Most-killed enemies"
+          title={t("heroesElimMost.title")}
+          description={buildScrimDescription("heroesElimMost")}
+        />
+        <div className="border-border overflow-hidden rounded-md border">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/30">
+              <tr className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
+                <th className="w-12 px-4 py-2 text-left font-medium">
+                  {t("heroesElimMost.rank")}
+                </th>
+                <th className="px-4 py-2 text-left font-medium">
+                  {t("heroesElimMost.hero")}
+                </th>
+                <th className="px-4 py-2 text-right font-medium">
+                  {t("heroesElimMost.eliminations")}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[var(--border)]">
+              {top3MostKilledHeroesArray.map(([hero, elims], idx) => {
+                const heroSlug = toHero(hero);
+                const displayName = heroNames.get(heroSlug) ?? hero;
+                return (
+                  <tr
+                    // oxlint-disable-next-line react/no-array-index-key
+                    key={`${hero}-${elims}-${idx}`}
+                    className="hover:bg-muted/30 transition-colors"
+                  >
+                    <td className="text-muted-foreground px-4 py-3 font-mono tabular-nums">
+                      {formatRank(idx)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="border-border relative h-9 w-9 shrink-0 overflow-hidden rounded border">
+                          <Image
+                            src={`/heroes/${heroSlug}.png`}
+                            alt={displayName}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <span className="font-medium">{displayName}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-right font-mono tabular-nums">
+                      {elims}
+                    </td>
+                  </tr>
+                );
+              })}
+              {top3MostKilledHeroesLength < 3 &&
+                Array.from({ length: 3 - top3MostKilledHeroesLength }).map(
+                  (_, idx) => (
+                    <tr
+                      // oxlint-disable-next-line react/no-array-index-key
+                      key={`em-empty-${idx}`}
+                      className="hover:bg-muted/30 transition-colors"
+                    >
+                      <td className="text-muted-foreground px-4 py-3 font-mono tabular-nums">
+                        {formatRank(top3MostKilledHeroesLength + idx)}
+                      </td>
+                      <td className="text-muted-foreground px-4 py-3">—</td>
+                      <td className="text-muted-foreground px-4 py-3 text-right font-mono tabular-nums">
+                        —
+                      </td>
+                    </tr>
+                  )
+                )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="space-y-4 lg:col-span-12">
+        <SectionHeader
+          eyebrow="Player · Stat trend"
+          title={t("stats.title")}
+          rightSlot={
+            <Select
+              value={selectedStat}
+              onValueChange={(val: keyof Omit<Stat, NonMappableStat>) =>
+                setSelectedStat(val)
+              }
+            >
+              <div className="flex items-center gap-2">
+                <Label htmlFor="stat" className="sr-only">
+                  {t("stats.title")}
+                </Label>
+                <SelectTrigger className="w-[200px]" id="stat">
+                  <SelectValue placeholder={t("stats.select")} />
+                </SelectTrigger>
+              </div>
+              <SelectContent>
+                <SelectItem value="eliminations">
+                  {t("stats.eliminations")}
+                </SelectItem>
+                <SelectItem value="final_blows">
+                  {t("stats.final_blows")}
+                </SelectItem>
+                <SelectItem value="healing_dealt">
+                  {t("stats.healing_dealt")}
+                </SelectItem>
+                <SelectItem value="healing_received">
+                  {t("stats.healing_received")}
+                </SelectItem>
+                <SelectItem value="self_healing">
+                  {t("stats.self_healing")}
+                </SelectItem>
+                <SelectItem value="damage_taken">
+                  {t("stats.damage_taken")}
+                </SelectItem>
+                <SelectItem value="damage_blocked">
+                  {t("stats.damage_blocked")}
+                </SelectItem>
+                <SelectItem value="ultimates_earned">
+                  {t("stats.ultimates_earned")}
+                </SelectItem>
+                <SelectItem value="ultimates_used">
+                  {t("stats.ultimates_used")}
+                </SelectItem>
+                <SelectItem value="solo_kills">
+                  {t("stats.solo_kills")}
+                </SelectItem>
+                <SelectItem value="environmental_kills">
+                  {t("stats.environmental_kills")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          }
+        />
         <StatPer10Chart
           stat={selectedStat}
           data={filteredStats}
           scrimData={timeframe === "custom" ? customScrims : scrims[timeframe]}
           better="higher"
         />
-      </Card>
+      </section>
     </section>
   );
 }

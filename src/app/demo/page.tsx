@@ -166,7 +166,12 @@ export default async function MapDashboardPage() {
             />
           </TabsContent>
           <TabsContent value="charts" className="space-y-4">
-            <MapCharts id={id} />
+            <MapCharts
+              id={id}
+              team1Color={team1}
+              team2Color={team2}
+              tempoChartEnabled
+            />
           </TabsContent>
           <TabsContent value="heatmap" className="space-y-4">
             <PremiumHighlight>
@@ -179,12 +184,7 @@ export default async function MapDashboardPage() {
             </PremiumHighlight>
           </TabsContent>
           <TabsContent value="events" className="space-y-4">
-            <MapEvents
-              id={id}
-              team1Color={team1}
-              team2Color={team2}
-              tempoChartEnabled
-            />
+            <MapEvents id={id} team1Color={team1} team2Color={team2} />
           </TabsContent>
           <TabsContent value="compare" className="space-y-4">
             <ComparePlayers id={id} />

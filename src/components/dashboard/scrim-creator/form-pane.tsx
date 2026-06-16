@@ -1,0 +1,318 @@
+"use client";
+
+import { MapUploadList } from "@/components/map/bulk-upload/map-upload-list";
+import type { BulkMapUpload } from "@/components/map/bulk-upload/use-bulk-map-upload";
+import { OpponentSearchField } from "@/components/scrim/opponent-search-field";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
+import { CalendarIcon } from "@radix-ui/react-icons";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { track } from "@vercel/analytics";
+import { format } from "date-fns";
+import { motion, useReducedMotion } from "framer-motion";
+import { FileText } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Controller, type UseFormReturn } from "react-hook-form";
+import type {
+  FormValues,
+  LinkableRequestOption,
+  ScoutingTeam,
+  TeamOption,
+} from "./types";
+
+type Props = {
+  form: UseFormReturn<FormValues>;
+  upload: BulkMapUpload;
+  busy: boolean;
+  teams: TeamOption[] | undefined;
+  scoutingTeams: ScoutingTeam[];
+  showOpponent: boolean;
+  linkableRequests: LinkableRequestOption[];
+  autoAssignTeamNames: boolean;
+  setAutoAssignTeamNames: (value: boolean) => void;
+  selectedTeam: string | undefined;
+  isIndividual: boolean;
+  submitLabel: string;
+  isSubmitDisabled: boolean;
+  onCancel: () => void;
+};
+
+export function FormPane({
+  form,
+  upload,
+  busy,
+  teams,
+  scoutingTeams,
+  showOpponent,
+  linkableRequests,
+  autoAssignTeamNames,
+  setAutoAssignTeamNames,
+  selectedTeam,
+  isIndividual,
+  submitLabel,
+  isSubmitDisabled,
+  onCancel,
+}: Props) {
+  const t = useTranslations("dashboard.scrimCreationForm");
+  const tb = useTranslations("bulkUpload");
+  const prefersReducedMotion = useReducedMotion();
+
+  return (
+    <motion.div
+      initial={prefersReducedMotion ? false : { opacity: 0, x: -16 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, x: -16 }}
+      transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+      className="flex min-h-0 flex-1 flex-col"
+    >
+      <div className="overflow-y-auto px-6 py-5">
+        <MapUploadList upload={upload} busy={busy} />
+
+        <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Controller
+            control={form.control}
+            name="name"
+            render={({ field, fieldState }) => (
+              <Field
+                data-invalid={fieldState.invalid}
+                className="sm:col-span-2"
+              >
+                <FieldLabel htmlFor={field.name}>{t("scrimName")}</FieldLabel>
+                <Input
+                  {...field}
+                  aria-invalid={fieldState.invalid}
+                  placeholder={t("scrimPlaceholder")}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+          <Controller
+            control={form.control}
+            name="team"
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>{t("teamName")}</FieldLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <SelectTrigger
+                    id={field.name}
+                    aria-invalid={fieldState.invalid}
+                    className="w-full pl-3 text-left font-normal"
+                  >
+                    <SelectValue placeholder={t("teamPlaceholder")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">{t("teamIndividual")}</SelectItem>
+                    {teams ? (
+                      teams.map((team) => (
+                        <SelectItem key={team.value} value={team.value}>
+                          {team.label}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="1">{t("teamLoading")}</SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+          <Controller
+            control={form.control}
+            name="date"
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={field.name}>{t("dateName")}</FieldLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      id={field.name}
+                      variant="outline"
+                      aria-invalid={fieldState.invalid}
+                      className={cn(
+                        "w-full pl-3 text-left font-normal",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value ? (
+                        format(field.value, "PP")
+                      ) : (
+                        <span>{t("datePlaceholder")}</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date: Date) =>
+                        date > new Date() || date < new Date("2016-01-01")
+                      }
+                    />
+                  </PopoverContent>
+                </Popover>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+        </div>
+
+        <div className="mt-4 flex items-center justify-between gap-4">
+          <Label
+            htmlFor="auto-assign-team-names"
+            className={cn(
+              "text-sm",
+              isIndividual || !selectedTeam
+                ? "text-muted-foreground"
+                : undefined
+            )}
+          >
+            {t("autoAssignTeamNames")}
+          </Label>
+          <Switch
+            id="auto-assign-team-names"
+            checked={autoAssignTeamNames}
+            onCheckedChange={setAutoAssignTeamNames}
+            disabled={isIndividual || !selectedTeam}
+            aria-label={t("autoAssignTeamNames")}
+          />
+        </div>
+        <p className="text-muted-foreground mt-1.5 text-xs">
+          {isIndividual || !selectedTeam
+            ? t("autoAssignDisabledDescription")
+            : t("autoAssignTeamNamesDescription")}
+        </p>
+
+        {showOpponent && (
+          <div className="mt-5">
+            <Controller
+              control={form.control}
+              name="opponentTeamAbbr"
+              render={({ field }) => (
+                <Field>
+                  <FieldLabel htmlFor={field.name}>
+                    {t("opponentName")}
+                  </FieldLabel>
+                  <OpponentSearchField
+                    id={field.name}
+                    options={scoutingTeams}
+                    value={field.value ?? null}
+                    onChange={field.onChange}
+                  />
+                  <FieldDescription>
+                    {t("opponentDescription")}
+                  </FieldDescription>
+                </Field>
+              )}
+            />
+          </div>
+        )}
+
+        {linkableRequests.length > 0 && (
+          <div className="mt-5">
+            <Controller
+              control={form.control}
+              name="scrimRequestId"
+              render={({ field }) => (
+                <Field>
+                  <FieldLabel htmlFor={field.name}>
+                    {t("linkedRequestLabel")}
+                  </FieldLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value ?? "none"}
+                  >
+                    <SelectTrigger id={field.name} className="w-full">
+                      <SelectValue placeholder={t("linkedRequestNone")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">
+                        {t("linkedRequestNone")}
+                      </SelectItem>
+                      {linkableRequests.map((r) => (
+                        <SelectItem
+                          key={r.scrimRequestId}
+                          value={r.scrimRequestId}
+                        >
+                          {r.opponentTeamName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FieldDescription>
+                    {t("linkedRequestDescription")}
+                  </FieldDescription>
+                </Field>
+              )}
+            />
+          </div>
+        )}
+      </div>
+
+      <div className="border-border/60 bg-background flex items-center justify-between gap-2 border-t px-6 py-3">
+        <div className="text-muted-foreground/70 hidden items-center gap-1.5 font-mono text-[0.6875rem] tracking-[0.04em] uppercase sm:flex">
+          <FileText className="size-3" aria-hidden="true" />
+          <span>.txt</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onCancel}
+            disabled={busy}
+          >
+            {t("cancel")}
+          </Button>
+          <Button
+            type="submit"
+            onClick={() => track("Create Scrim", { location: "Dashboard" })}
+            disabled={isSubmitDisabled}
+          >
+            {busy ? (
+              <>
+                <ReloadIcon className="mr-2 size-4 animate-spin" />
+                {tb("uploading")}
+              </>
+            ) : (
+              submitLabel
+            )}
+          </Button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}

@@ -10,14 +10,17 @@ export default async function CoachingCanvasPage() {
   const t = await getTranslations("coaching");
 
   return (
-    <div className="flex flex-1 flex-col">
-      <div className="flex items-center gap-4 px-4 pt-4 sm:px-8">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
-          <p className="text-muted-foreground text-sm">{t("subtitle")}</p>
-        </div>
-      </div>
-      <div className="flex-1 p-4 sm:px-8">
+    <div className="flex flex-1 flex-col px-6 pt-6 sm:px-10">
+      <header className="border-border border-b pb-4">
+        <p className="text-muted-foreground font-mono text-xs tracking-[0.18em] uppercase">
+          {t("eyebrow")}
+        </p>
+        <h1 className="mt-2 text-2xl leading-none font-semibold tracking-tight">
+          {t("title")}
+        </h1>
+        <p className="text-muted-foreground mt-2 text-sm">{t("subtitle")}</p>
+      </header>
+      <div className="flex-1 py-4">
         <CoachingCanvas />
       </div>
     </div>

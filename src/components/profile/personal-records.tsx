@@ -1,8 +1,7 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toTimestampWithHours } from "@/lib/utils";
-import type { PlayerStat } from "@prisma/client";
+import type { PlayerStat } from "@/generated/prisma/browser";
 import { Award, Crosshair, Heart, Shield, Zap } from "lucide-react";
 
 type PersonalRecordsProps = {
@@ -113,47 +112,37 @@ export function PersonalRecords({ stats, heroesData }: PersonalRecordsProps) {
 
   if (records.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Personal Records</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-muted-foreground py-8 text-center text-sm">
-            No records available yet
-          </div>
-        </CardContent>
-      </Card>
+      <div className="bg-card text-muted-foreground flex h-32 items-center justify-center px-5 text-sm">
+        No records available yet
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Personal Records</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {records.map((record) => (
-            <div
-              key={record.label}
-              className="hover:bg-accent flex items-center justify-between rounded-lg border p-3 transition-colors"
-            >
-              <div className="flex items-center gap-3">
-                {record.icon}
-                <div>
-                  <p className="text-sm font-medium">{record.label}</p>
-                  {record.subtext && (
-                    <p className="text-muted-foreground text-xs">
-                      {record.subtext}
-                    </p>
-                  )}
-                </div>
-              </div>
-              <div className="text-right font-bold">{record.value}</div>
+    <ul className="bg-border grid grid-cols-1 gap-px sm:grid-cols-2 lg:grid-cols-3">
+      {records.map((record) => (
+        <li
+          key={record.label}
+          className="bg-card flex items-start justify-between gap-3 px-5 py-4"
+        >
+          <div className="flex min-w-0 items-start gap-3">
+            <span className="mt-0.5 shrink-0">{record.icon}</span>
+            <div className="min-w-0">
+              <p className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
+                {record.label}
+              </p>
+              <p className="mt-1.5 truncate font-mono text-base font-semibold tabular-nums">
+                {record.value}
+              </p>
+              {record.subtext ? (
+                <p className="text-muted-foreground/80 mt-0.5 truncate text-xs">
+                  {record.subtext}
+                </p>
+              ) : null}
             </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+          </div>
+        </li>
+      ))}
+    </ul>
   );
 }

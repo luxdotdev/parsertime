@@ -4,7 +4,7 @@ import type { ScoutingTeam } from "@/data/scouting/types";
 import { cn } from "@/lib/utils";
 import Fuse from "fuse.js";
 import { Search } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import type { Route } from "next";
 import { useCallback, useMemo, useRef, useState } from "react";
@@ -15,6 +15,7 @@ type TeamSearchProps = {
 
 export function TeamSearch({ teams }: TeamSearchProps) {
   const t = useTranslations("scoutingPage.search");
+  const format = useFormatter();
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
@@ -92,8 +93,13 @@ export function TeamSearch({ teams }: TeamSearchProps) {
   }
 
   function formatWinRate(team: ScoutingTeam): string {
-    if (team.matchCount === 0) return "0%";
-    return `${Math.round((team.winCount / team.matchCount) * 100)}%`;
+    return format.number(
+      team.matchCount === 0 ? 0 : team.winCount / team.matchCount,
+      {
+        style: "percent",
+        maximumFractionDigits: 0,
+      }
+    );
   }
 
   const showResults = query.trim().length > 0;
@@ -183,7 +189,7 @@ export function TeamSearch({ teams }: TeamSearchProps) {
                 <div className="text-muted-foreground flex shrink-0 items-center gap-3 text-sm tabular-nums">
                   <span>{t("matchCount", { count: team.matchCount })}</span>
                   <span className="font-medium">
-                    {formatWinRate(team)} {t("winRate")}
+                    {t("winRate", { winRate: formatWinRate(team) })}
                   </span>
                 </div>
               </li>

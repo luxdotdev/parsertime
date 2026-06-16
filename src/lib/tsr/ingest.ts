@@ -1,0 +1,807 @@
+import { Logger } from "@/lib/logger";
+import prisma from "@/lib/prisma";
+import {
+  type FaceitClientOptions,
+  type FaceitMatchDetail,
+  type FaceitMatchRosterPlayer,
+  type FaceitMatchStats,
+  type FaceitPlayerLookupResult,
+  getMatch,
+  getMatchStats,
+  getPlayerById,
+  getPlayerHistory,
+  iterateChampionshipMatches,
+  listOrganizerChampionships,
+} from "@/lib/tsr/faceit-client";
+import { TRACKED_ORGANIZERS, isTrackedOrganizer } from "@/lib/tsr/organizers";
+import { buildFaceitScoutingSnapshot } from "@/lib/tsr/scouting-normalizer";
+import { classifyTier, inferRegion } from "@/lib/tsr/tiers";
+import {
+  FaceitMatchStatus,
+  FaceitTier,
+  Prisma,
+  TsrRegion,
+} from "@/generated/prisma/client";
+
+function normalizeStatus(raw: string): FaceitMatchStatus | null {
+  const s = raw.toUpperCase();
+  if (s === "FINISHED") return FaceitMatchStatus.FINISHED;
+  if (s === "CANCELLED" || s === "CANCELED") return FaceitMatchStatus.CANCELLED;
+  if (s === "ABORTED") return FaceitMatchStatus.ABORTED;
+  return null;
+}
+
+function regionFromOw2Field(faceitRegion: string | undefined): TsrRegion {
+  switch (faceitRegion?.toUpperCase()) {
+    case "NA":
+    case "US":
+      return TsrRegion.NA;
+    case "EMEA":
+    case "EU":
+      return TsrRegion.EMEA;
+    default:
+      return TsrRegion.OTHER;
+  }
+}
+
+// FACEIT's `game_player_id` is the numeric Battle.net account ID; the
+// human-readable BattleTag (e.g. "xomba") lives in `game_player_name`.
+function readableBattletag(
+  ow2: NonNullable<FaceitPlayerLookupResult["games"]>["ow2"] | undefined
+): string | null {
+  const name = ow2?.game_player_name?.trim();
+  if (!name) return null;
+  return name;
+}
+
+export async function upsertFullPlayer(
+  player: FaceitPlayerLookupResult
+): Promise<void> {
+  const ow2 = player.games?.ow2;
+  const region = regionFromOw2Field(ow2?.region);
+  const battletag = readableBattletag(ow2);
+  await prisma.faceitPlayer.upsert({
+    where: { faceitPlayerId: player.player_id },
+    create: {
+      faceitPlayerId: player.player_id,
+      faceitNickname: player.nickname,
+      battletag,
+      region,
+      verified: !!player.verified,
+      ow2SkillLevel:
+        ow2?.skill_level !== undefined ? Number(ow2.skill_level) : null,
+    },
+    update: {
+      faceitNickname: player.nickname,
+      battletag,
+      region,
+      verified: !!player.verified,
+      ow2SkillLevel:
+        ow2?.skill_level !== undefined ? Number(ow2.skill_level) : undefined,
+      lastSyncedAt: new Date(),
+    },
+  });
+}
+
+function toInputJson(value: unknown): Prisma.InputJsonValue {
+  return value as Prisma.InputJsonValue;
+}
+
+function toNullableJson(
+  value: unknown
+): Prisma.InputJsonValue | typeof Prisma.JsonNull {
+  return value == null ? Prisma.JsonNull : toInputJson(value);
+}
+
+async function upsertRosterPlayer(
+  tx: Prisma.TransactionClient,
+  player: FaceitMatchRosterPlayer
+): Promise<void> {
+  const trimmedName = player.game_player_name?.trim() ?? "";
+  const battletag = trimmedName.length > 0 ? trimmedName : null;
+  await tx.faceitPlayer.upsert({
+    where: { faceitPlayerId: player.player_id },
+    create: {
+      faceitPlayerId: player.player_id,
+      faceitNickname: player.nickname,
+      battletag,
+      ow2SkillLevel: player.game_skill_level ?? null,
+    },
+    update: {
+      faceitNickname: player.nickname,
+      battletag: battletag ?? undefined,
+      ow2SkillLevel: player.game_skill_level ?? undefined,
+    },
+  });
+}
+
+async function upsertChampionshipFromMatch(
+  tx: Prisma.TransactionClient,
+  match: FaceitMatchDetail
+): Promise<void> {
+  if (!match.competition_id || !match.organizer_id) return;
+  const tier = classifyTier(match.competition_name);
+  const region = inferRegion(match.competition_name, match.region);
+  await tx.faceitChampionship.upsert({
+    where: { championshipId: match.competition_id },
+    create: {
+      championshipId: match.competition_id,
+      name: match.competition_name ?? "(unknown)",
+      organizerId: match.organizer_id,
+      tier,
+      region,
+      classifiedBy: tier === FaceitTier.UNCLASSIFIED ? null : "auto",
+      classifiedAt: tier === FaceitTier.UNCLASSIFIED ? null : new Date(),
+    },
+    update: {
+      name: match.competition_name ?? undefined,
+      organizerId: match.organizer_id,
+    },
+  });
+}
+
+export type UpsertMatchResult = {
+  matchId: string;
+  ingested: boolean;
+  reason?: string;
+  affectedPlayerIds: string[];
+  mapsIngested?: number;
+};
+
+export async function upsertMatch(
+  match: FaceitMatchDetail,
+  stats?: FaceitMatchStats | null
+): Promise<UpsertMatchResult> {
+  const f1 = match.teams?.faction1?.roster ?? [];
+  const f2 = match.teams?.faction2?.roster ?? [];
+  const s1 = match.results?.score?.faction1;
+  const s2 = match.results?.score?.faction2;
+  const winner = match.results?.winner;
+  const status = normalizeStatus(match.status);
+  const finishedAt = match.finished_at;
+
+  if (!status) {
+    return {
+      matchId: match.match_id,
+      ingested: false,
+      reason: "unknown-status",
+      affectedPlayerIds: [],
+    };
+  }
+  if (!isTrackedOrganizer(match.organizer_id)) {
+    return {
+      matchId: match.match_id,
+      ingested: false,
+      reason: "untracked-org",
+      affectedPlayerIds: [],
+    };
+  }
+  if (match.competition_type !== "championship") {
+    return {
+      matchId: match.match_id,
+      ingested: false,
+      reason: "non-championship",
+      affectedPlayerIds: [],
+    };
+  }
+  if (!match.competition_id) {
+    return {
+      matchId: match.match_id,
+      ingested: false,
+      reason: "missing-competition-id",
+      affectedPlayerIds: [],
+    };
+  }
+  const competitionId = match.competition_id;
+
+  const allRoster = [...f1, ...f2];
+  const affected = allRoster.map((r) => r.player_id);
+
+  // Cancelled/aborted matches still get persisted (so we don't re-fetch them
+  // forever) but they contribute nothing to the rating because the replay
+  // filter only loads FINISHED matches.
+  const isFinished = status === FaceitMatchStatus.FINISHED;
+  if (isFinished) {
+    if (
+      f1.length === 0 ||
+      f2.length === 0 ||
+      s1 === undefined ||
+      s2 === undefined ||
+      !winner ||
+      !finishedAt
+    ) {
+      return {
+        matchId: match.match_id,
+        ingested: false,
+        reason: "missing-data",
+        affectedPlayerIds: affected,
+      };
+    }
+  }
+
+  const winnerFaction =
+    winner === "faction1" ? 1 : winner === "faction2" ? 2 : 0;
+  const bestOf = match.best_of ?? Math.max((s1 ?? 0) + (s2 ?? 0), 3);
+
+  await prisma.$transaction(async (tx) => {
+    await upsertChampionshipFromMatch(tx, match);
+
+    for (const r of allRoster) {
+      await upsertRosterPlayer(tx, r);
+    }
+
+    const team1 = match.teams?.faction1;
+    const team2 = match.teams?.faction2;
+    await tx.faceitMatch.upsert({
+      where: { faceitMatchId: match.match_id },
+      create: {
+        faceitMatchId: match.match_id,
+        championshipId: competitionId,
+        organizerId: match.organizer_id!,
+        bestOf,
+        team1FaceitTeamId: team1?.faction_id ?? null,
+        team2FaceitTeamId: team2?.faction_id ?? null,
+        team1Name: team1?.name ?? null,
+        team2Name: team2?.name ?? null,
+        team1Score: s1 ?? 0,
+        team2Score: s2 ?? 0,
+        winnerFaction,
+        status,
+        finishedAt: new Date(
+          (finishedAt ?? Math.floor(Date.now() / 1000)) * 1000
+        ),
+        rawRegion: match.region ?? "",
+        rawDetails: toInputJson(match),
+        rawVoting: toNullableJson(match.voting),
+      },
+      update: {
+        championshipId: competitionId,
+        organizerId: match.organizer_id!,
+        bestOf,
+        team1FaceitTeamId: team1?.faction_id ?? null,
+        team2FaceitTeamId: team2?.faction_id ?? null,
+        team1Name: team1?.name ?? null,
+        team2Name: team2?.name ?? null,
+        team1Score: s1 ?? 0,
+        team2Score: s2 ?? 0,
+        winnerFaction,
+        status,
+        finishedAt: new Date(
+          (finishedAt ?? Math.floor(Date.now() / 1000)) * 1000
+        ),
+        rawRegion: match.region ?? "",
+        rawDetails: toInputJson(match),
+        rawVoting: toNullableJson(match.voting),
+      },
+    });
+
+    await upsertScoutingData(tx, match, stats ?? null);
+
+    await tx.faceitMatchRoster.deleteMany({
+      where: { matchId: match.match_id },
+    });
+    if (allRoster.length > 0) {
+      await tx.faceitMatchRoster.createMany({
+        data: [
+          ...f1.map((r) => ({
+            matchId: match.match_id,
+            teamSide: 1,
+            faceitPlayerId: r.player_id,
+          })),
+          ...f2.map((r) => ({
+            matchId: match.match_id,
+            teamSide: 2,
+            faceitPlayerId: r.player_id,
+          })),
+        ],
+        skipDuplicates: true,
+      });
+    }
+  });
+
+  return {
+    matchId: match.match_id,
+    ingested: true,
+    affectedPlayerIds: affected,
+    mapsIngested: buildFaceitScoutingSnapshot(match, stats ?? null).maps.length,
+  };
+}
+
+async function upsertScoutingData(
+  tx: Prisma.TransactionClient,
+  match: FaceitMatchDetail,
+  stats: FaceitMatchStats | null
+): Promise<void> {
+  const snapshot = buildFaceitScoutingSnapshot(match, stats);
+
+  for (const team of snapshot.teams) {
+    if (!team.faceitTeamId) continue;
+    await tx.faceitTeam.upsert({
+      where: { faceitTeamId: team.faceitTeamId },
+      create: {
+        faceitTeamId: team.faceitTeamId,
+        name: team.name,
+        avatar: team.avatar,
+        type: team.type,
+      },
+      update: {
+        name: team.name,
+        avatar: team.avatar,
+        type: team.type,
+        lastSyncedAt: new Date(),
+      },
+    });
+  }
+
+  await tx.faceitMatchTeam.deleteMany({
+    where: { matchId: match.match_id },
+  });
+  await tx.faceitMatchTeam.createMany({
+    data: snapshot.teams.map((team) => ({
+      matchId: match.match_id,
+      teamSide: team.side,
+      faceitTeamId: team.faceitTeamId,
+      teamName: team.name,
+      score: team.score,
+      winner: team.winner,
+    })),
+  });
+
+  for (const playerStats of snapshot.maps.flatMap((map) => map.playerStats)) {
+    await tx.faceitPlayer.upsert({
+      where: { faceitPlayerId: playerStats.faceitPlayerId },
+      create: {
+        faceitPlayerId: playerStats.faceitPlayerId,
+        faceitNickname: playerStats.nickname,
+      },
+      update: {
+        faceitNickname: playerStats.nickname,
+      },
+    });
+  }
+
+  const gameNumbers = snapshot.maps.map((map) => map.gameNumber);
+  await tx.faceitMatchMap.deleteMany({
+    where: gameNumbers.length
+      ? { matchId: match.match_id, gameNumber: { notIn: gameNumbers } }
+      : { matchId: match.match_id },
+  });
+
+  for (const map of snapshot.maps) {
+    const mapRow = await tx.faceitMatchMap.upsert({
+      where: {
+        matchId_gameNumber: {
+          matchId: match.match_id,
+          gameNumber: map.gameNumber,
+        },
+      },
+      create: {
+        matchId: match.match_id,
+        gameNumber: map.gameNumber,
+        mapGuid: map.mapGuid,
+        mapName: map.mapName,
+        mapType: map.mapType,
+        attackingFirstFaction: map.attackingFirstFaction,
+        winnerFaction: map.winnerFaction,
+        winnerFaceitTeamId: map.winnerFaceitTeamId,
+        team1Score: map.team1Score,
+        team2Score: map.team2Score,
+        scoreSummary: map.scoreSummary,
+        played: map.played,
+        rawRoundStats: toNullableJson(map.rawRoundStats),
+        rawDetailedResult: toNullableJson(map.rawDetailedResult),
+      },
+      update: {
+        mapGuid: map.mapGuid,
+        mapName: map.mapName,
+        mapType: map.mapType,
+        attackingFirstFaction: map.attackingFirstFaction,
+        winnerFaction: map.winnerFaction,
+        winnerFaceitTeamId: map.winnerFaceitTeamId,
+        team1Score: map.team1Score,
+        team2Score: map.team2Score,
+        scoreSummary: map.scoreSummary,
+        played: map.played,
+        rawRoundStats: toNullableJson(map.rawRoundStats),
+        rawDetailedResult: toNullableJson(map.rawDetailedResult),
+      },
+    });
+
+    await tx.faceitHeroBan.deleteMany({ where: { faceitMapId: mapRow.id } });
+    await tx.faceitMapTeamStats.deleteMany({
+      where: { faceitMapId: mapRow.id },
+    });
+    await tx.faceitMapPlayerStats.deleteMany({
+      where: { faceitMapId: mapRow.id },
+    });
+
+    if (map.heroBans.length > 0) {
+      await tx.faceitHeroBan.createMany({
+        data: map.heroBans.map((ban) => ({
+          faceitMapId: mapRow.id,
+          heroGuid: ban.heroGuid,
+          heroName: ban.heroName,
+          role: ban.role,
+          banOrder: ban.banOrder,
+          bannedByFaction: ban.bannedByFaction,
+          source: ban.source,
+          rawEntity: ban.rawEntity ? toInputJson(ban.rawEntity) : undefined,
+        })),
+      });
+    }
+
+    if (map.teamStats.length > 0) {
+      await tx.faceitMapTeamStats.createMany({
+        data: map.teamStats.map((teamStats) => ({
+          faceitMapId: mapRow.id,
+          teamSide: teamStats.teamSide,
+          faceitTeamId: teamStats.faceitTeamId,
+          teamName: teamStats.teamName,
+          score: teamStats.score,
+          won: teamStats.won,
+          eliminations: teamStats.eliminations,
+          deaths: teamStats.deaths,
+          finalBlows: teamStats.finalBlows,
+          objectiveTime: teamStats.objectiveTime,
+          timePlayed: teamStats.timePlayed,
+          rawStats: toInputJson(teamStats.rawStats),
+        })),
+      });
+    }
+
+    if (map.playerStats.length > 0) {
+      await tx.faceitMapPlayerStats.createMany({
+        data: map.playerStats.map((playerStats) => ({
+          faceitMapId: mapRow.id,
+          teamSide: playerStats.teamSide,
+          faceitPlayerId: playerStats.faceitPlayerId,
+          nickname: playerStats.nickname,
+          role: playerStats.role,
+          result: playerStats.result,
+          eliminations: playerStats.eliminations,
+          assists: playerStats.assists,
+          deaths: playerStats.deaths,
+          finalBlows: playerStats.finalBlows,
+          soloKills: playerStats.soloKills,
+          multiKills: playerStats.multiKills,
+          environmentalKills: playerStats.environmentalKills,
+          damageDealt: playerStats.damageDealt,
+          healingDone: playerStats.healingDone,
+          damageMitigated: playerStats.damageMitigated,
+          objectiveTime: playerStats.objectiveTime,
+          timePlayed: playerStats.timePlayed,
+          rawStats: toInputJson(playerStats.rawStats),
+        })),
+      });
+    }
+  }
+}
+
+async function getMatchStatsForIngest(
+  matchId: string,
+  opts?: FaceitClientOptions
+): Promise<FaceitMatchStats | null> {
+  try {
+    return await getMatchStats(matchId, opts);
+  } catch (err) {
+    Logger.warn({
+      event: "tsr.ingest.match_stats_failed",
+      faceit_match_id: matchId,
+      error_message: err instanceof Error ? err.message : "unknown",
+    });
+    return null;
+  }
+}
+
+export async function ingestMatchById(
+  matchId: string,
+  opts?: FaceitClientOptions
+): Promise<UpsertMatchResult> {
+  const md = await getMatch(matchId, opts);
+  const stats = await getMatchStatsForIngest(matchId, opts);
+  return upsertMatch(md, stats);
+}
+
+export type IngestPlayerHistoryResult = {
+  playerId: string;
+  scanned: number;
+  ingested: number;
+  skipped: number;
+  affectedPlayerIds: Set<string>;
+};
+
+export async function ingestPlayerHistory(
+  playerId: string,
+  opts?: FaceitClientOptions & { maxPages?: number }
+): Promise<IngestPlayerHistoryResult> {
+  const history = await getPlayerHistory(playerId, opts);
+  const champOnly = history.filter(
+    (m) => m.competition_type === "championship"
+  );
+
+  const affected = new Set<string>();
+  let ingested = 0;
+  let skipped = 0;
+  for (const item of champOnly) {
+    try {
+      const res = await ingestMatchById(item.match_id, opts);
+      if (res.ingested) {
+        ingested += 1;
+        for (const pid of res.affectedPlayerIds) affected.add(pid);
+      } else {
+        skipped += 1;
+      }
+    } catch (err) {
+      Logger.warn({
+        event: "tsr.ingest.match_failed",
+        faceit_match_id: item.match_id,
+        for_player_id: playerId,
+        error_message: err instanceof Error ? err.message : "unknown",
+      });
+      skipped += 1;
+    }
+  }
+  return {
+    playerId,
+    scanned: champOnly.length,
+    ingested,
+    skipped,
+    affectedPlayerIds: affected,
+  };
+}
+
+export type DiscoverChampionshipsResult = {
+  organizer: string;
+  inserted: number;
+  updated: number;
+  unclassified: number;
+};
+
+export async function discoverChampionshipsForOrganizer(
+  organizerId: string,
+  opts?: FaceitClientOptions
+): Promise<DiscoverChampionshipsResult> {
+  const items = await listOrganizerChampionships(organizerId, opts);
+  let inserted = 0;
+  let updated = 0;
+  let unclassified = 0;
+  for (const c of items) {
+    const tier = classifyTier(c.name);
+    const region = inferRegion(c.name, c.region);
+    if (tier === FaceitTier.UNCLASSIFIED) unclassified += 1;
+    const existing = await prisma.faceitChampionship.findUnique({
+      where: { championshipId: c.championship_id },
+    });
+    if (existing) {
+      await prisma.faceitChampionship.update({
+        where: { championshipId: c.championship_id },
+        data: {
+          name: c.name,
+          organizerId: c.organizer_id,
+          // Don't overwrite admin-classified tiers
+          tier: existing.classifiedBy === "auto" ? tier : existing.tier,
+          region: existing.classifiedBy === "auto" ? region : existing.region,
+        },
+      });
+      updated += 1;
+    } else {
+      await prisma.faceitChampionship.create({
+        data: {
+          championshipId: c.championship_id,
+          name: c.name,
+          organizerId: c.organizer_id,
+          tier,
+          region,
+          startDate: c.start_date ? new Date(c.start_date * 1000) : null,
+          classifiedBy: tier === FaceitTier.UNCLASSIFIED ? null : "auto",
+          classifiedAt: tier === FaceitTier.UNCLASSIFIED ? null : new Date(),
+        },
+      });
+      inserted += 1;
+    }
+  }
+  return { organizer: organizerId, inserted, updated, unclassified };
+}
+
+export async function discoverAllTrackedChampionships(
+  opts?: FaceitClientOptions
+): Promise<DiscoverChampionshipsResult[]> {
+  const out: DiscoverChampionshipsResult[] = [];
+  for (const org of TRACKED_ORGANIZERS) {
+    try {
+      out.push(await discoverChampionshipsForOrganizer(org.id, opts));
+    } catch (err) {
+      Logger.warn({
+        event: "tsr.discover.organizer_failed",
+        organizer_id: org.id,
+        organizer_label: org.label,
+        error_message: err instanceof Error ? err.message : "unknown",
+      });
+      out.push({ organizer: org.id, inserted: 0, updated: 0, unclassified: 0 });
+    }
+  }
+  return out;
+}
+
+export type EnrichPlayersResult = {
+  scanned: number;
+  enriched: number;
+  failed: number;
+};
+
+// Walks every FaceitPlayer (or just those with a missing battletag if
+// onlyMissing) and replaces the row with the full profile from FACEIT, so
+// roster-only players — who arrive with just nickname + ID — get their
+// readable BattleTag, region, verified flag, and skill level.
+export async function enrichKnownPlayers(
+  opts?: FaceitClientOptions & { onlyMissing?: boolean; pacingMs?: number }
+): Promise<EnrichPlayersResult> {
+  const players = await prisma.faceitPlayer.findMany({
+    where: opts?.onlyMissing ? { battletag: null } : undefined,
+    select: { faceitPlayerId: true },
+  });
+  let enriched = 0;
+  let failed = 0;
+  const pacing = opts?.pacingMs ?? 60;
+  for (const p of players) {
+    try {
+      const profile = await getPlayerById(p.faceitPlayerId, opts);
+      await upsertFullPlayer(profile);
+      enriched += 1;
+    } catch (err) {
+      Logger.warn({
+        event: "tsr.enrich.player_failed",
+        faceit_player_id: p.faceitPlayerId,
+        error_message: err instanceof Error ? err.message : "unknown",
+      });
+      failed += 1;
+    }
+    if (pacing > 0) await new Promise((r) => setTimeout(r, pacing));
+  }
+  return { scanned: players.length, enriched, failed };
+}
+
+export type IngestKnownPlayersHistoryResult = {
+  scanned: number;
+  ingested: number;
+  skipped: number;
+  failed: number;
+  newChampionships: number;
+};
+
+// Walks every FaceitPlayer in the DB and pulls their full championship-type
+// match history. Cascades into upsertMatch which creates any missing
+// FaceitChampionship rows from the match payload — this is the only way to
+// discover regular-season / playoffs championships, since the organizer's
+// /championships endpoint omits them and only lists qualifiers and special
+// events. After this runs, backfillTrackedChampionships() will be able to
+// fill in matches for the newly-discovered championships.
+export async function ingestKnownPlayersHistory(
+  opts?: FaceitClientOptions & { pacingMs?: number; maxPages?: number }
+): Promise<IngestKnownPlayersHistoryResult> {
+  const players = await prisma.faceitPlayer.findMany({
+    select: { faceitPlayerId: true },
+  });
+  const before = await prisma.faceitChampionship.count();
+  const pacing = opts?.pacingMs ?? 60;
+  let ingested = 0;
+  let skipped = 0;
+  let failed = 0;
+  for (const p of players) {
+    try {
+      const r = await ingestPlayerHistory(p.faceitPlayerId, opts);
+      ingested += r.ingested;
+      skipped += r.skipped;
+    } catch (err) {
+      failed += 1;
+      Logger.warn({
+        event: "tsr.ingest.deep_history_failed",
+        faceit_player_id: p.faceitPlayerId,
+        error_message: err instanceof Error ? err.message : "unknown",
+      });
+    }
+    if (pacing > 0) await new Promise((r) => setTimeout(r, pacing));
+  }
+  const after = await prisma.faceitChampionship.count();
+  return {
+    scanned: players.length,
+    ingested,
+    skipped,
+    failed,
+    newChampionships: after - before,
+  };
+}
+
+export type IngestChampionshipResult = {
+  championshipId: string;
+  scanned: number;
+  ingested: number;
+  skipped: number;
+};
+
+// Pulls every match in a championship and upserts each. Cascades to all
+// roster co-players via upsertMatch's roster handling. This is the path
+// that fills in seasons we don't have a seed player for.
+export async function ingestChampionshipMatches(
+  championshipId: string,
+  opts?: FaceitClientOptions & {
+    type?: "past" | "ongoing";
+    pacingMs?: number;
+  }
+): Promise<IngestChampionshipResult> {
+  const pacing = opts?.pacingMs ?? 60;
+  let scanned = 0;
+  let ingested = 0;
+  let skipped = 0;
+  for await (const item of iterateChampionshipMatches(championshipId, opts)) {
+    scanned += 1;
+    try {
+      const res = await ingestMatchById(item.match_id, opts);
+      if (res.ingested) ingested += 1;
+      else skipped += 1;
+    } catch (err) {
+      Logger.warn({
+        event: "tsr.ingest.championship_match_failed",
+        championship_id: championshipId,
+        faceit_match_id: item.match_id,
+        error_message: err instanceof Error ? err.message : "unknown",
+      });
+      skipped += 1;
+    }
+    if (pacing > 0) await new Promise((r) => setTimeout(r, pacing));
+  }
+  return { championshipId, scanned, ingested, skipped };
+}
+
+export type BackfillChampionshipsResult = {
+  championships: number;
+  totalIngested: number;
+  totalSkipped: number;
+  perChampionship: IngestChampionshipResult[];
+};
+
+// Walks every tracked, classified championship in the DB and ingests both
+// past and ongoing matches. Use this once after discovery to backfill
+// historical seasons (S5 OWCS Central, S8 Master regular season, etc.)
+// that no seed player has covered. Idempotent — re-running just refreshes
+// existing matches.
+export async function backfillTrackedChampionships(
+  opts?: FaceitClientOptions & { pacingMs?: number; includeOngoing?: boolean }
+): Promise<BackfillChampionshipsResult> {
+  const championships = await prisma.faceitChampionship.findMany({
+    where: { tier: { not: FaceitTier.UNCLASSIFIED } },
+    select: { championshipId: true, name: true },
+    orderBy: { name: "asc" },
+  });
+  const includeOngoing = opts?.includeOngoing ?? true;
+  const perChampionship: IngestChampionshipResult[] = [];
+  let totalIngested = 0;
+  let totalSkipped = 0;
+  for (const c of championships) {
+    const past = await ingestChampionshipMatches(c.championshipId, {
+      ...opts,
+      type: "past",
+    });
+    perChampionship.push(past);
+    totalIngested += past.ingested;
+    totalSkipped += past.skipped;
+    if (includeOngoing) {
+      const ongoing = await ingestChampionshipMatches(c.championshipId, {
+        ...opts,
+        type: "ongoing",
+      });
+      perChampionship.push({
+        ...ongoing,
+        championshipId: `${c.championshipId} (ongoing)`,
+      });
+      totalIngested += ongoing.ingested;
+      totalSkipped += ongoing.skipped;
+    }
+  }
+  return {
+    championships: championships.length,
+    totalIngested,
+    totalSkipped,
+    perChampionship,
+  };
+}

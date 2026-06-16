@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import { calculateWinner } from "@/lib/winrate";
 import { mapNameToMapTypeMapping } from "@/types/map";
-import { $Enums } from "@prisma/client";
+import { $Enums } from "@/generated/prisma/browser";
 import {
   Cache,
   Context,
@@ -184,6 +184,8 @@ export function processMapModePerformance(
       team1PointProgress: team1PointProgressMap.get(mapDataId) ?? [],
       team2PointProgress: team2PointProgressMap.get(mapDataId) ?? [],
     });
+
+    if (winner === "N/A") continue;
 
     const isWin = winner === teamName;
     const playtime = matchEndMap.get(mapDataId) ?? 0;
