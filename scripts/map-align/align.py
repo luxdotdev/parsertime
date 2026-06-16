@@ -183,3 +183,29 @@ def align_bounded(old_bytes, new_bytes, target=ALIGN_TARGET_PX):
     transform, inliers, residual = align_images(old_img, new_img)
     full = rescale_transform(transform, scale_old, scale_new)
     return full, inliers, residual / scale_new
+
+
+def edge_overlay(old_small, new_small, transform_small):
+    """Build an alignment-QA image: new-render edges in green, warped-old edges
+    in magenta, over a dim copy of the new render. Where the alignment is good
+    the two edge sets coincide and read white; misalignment shows as separated
+    green/magenta fringes.
+
+    `transform_small` is the 2x3 affine in the SMALL (decoded) pixel space that
+    maps old_small -> new_small (i.e. `align_images`' raw output, before any
+    rescale). All three inputs are in that same downscaled space.
+    """
+    height, width = new_small.shape[:2]
+    matrix = np.asarray(transform_small, dtype=np.float32)
+    warped_old = cv2.warpAffine(old_small, matrix, (width, height))
+
+    new_edges = _to_edges(new_small)
+    old_edges = _to_edges(warped_old)
+
+    gray_new = cv2.cvtColor(new_small, cv2.COLOR_BGR2GRAY)
+    overlay = cv2.cvtColor((gray_new * 0.3).astype(np.uint8), cv2.COLOR_GRAY2BGR)
+    # BGR channels: green = new edges; blue+red = old edges -> magenta; both -> white.
+    overlay[:, :, 1] = np.maximum(overlay[:, :, 1], new_edges)
+    overlay[:, :, 0] = np.maximum(overlay[:, :, 0], old_edges)
+    overlay[:, :, 2] = np.maximum(overlay[:, :, 2], old_edges)
+    return overlay

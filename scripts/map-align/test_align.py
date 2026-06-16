@@ -2,7 +2,14 @@ import numpy as np
 import cv2
 import pytest
 
-from align import align_images, AlignError, decode_bounded, rescale_transform, align_bounded
+from align import (
+    align_images,
+    AlignError,
+    decode_bounded,
+    rescale_transform,
+    align_bounded,
+    edge_overlay,
+)
 
 
 def _synthetic_map(seed=0):
@@ -20,6 +27,28 @@ def _synthetic_map(seed=0):
         color = tuple(int(c) for c in rng.integers(0, 200, size=3))
         cv2.circle(img, (x, y), r, color, -1)
     return img
+
+
+def test_edge_overlay_shape_and_colors():
+    base = _synthetic_map(seed=9)
+    M = cv2.getRotationMatrix2D((200, 200), 2.0, 1.0)
+    new = cv2.warpAffine(base, M, (400, 400), borderValue=(0, 0, 0))
+
+    # identity small-transform: warped-old == base; new is the rotated render.
+    overlay = edge_overlay(base, new, [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]])
+
+    assert overlay.shape == new.shape
+    assert overlay.dtype == np.uint8
+    # green channel carries the new-render edges; some must be present.
+    green_only = (
+        (overlay[:, :, 1] > 100)
+        & (overlay[:, :, 0] < 60)
+        & (overlay[:, :, 2] < 60)
+    )
+    assert green_only.sum() > 0
+    # blue+red (magenta) carries the warped-old edges; present and symmetric.
+    assert overlay[:, :, 0].max() > 100
+    assert int((overlay[:, :, 0] != overlay[:, :, 2]).sum()) == 0
 
 
 def test_recovers_known_affine_despite_photometric_change():

@@ -38,6 +38,43 @@ Output (stdout):
 }
 ```
 
+## Batch (many maps at once)
+
+`batch.py` aligns every map that has both a reference image and a new render,
+so you don't run the CLI 40 times. It writes a manifest + review overlays and
+prints a summary table. It does NOT touch the database or R2 — you still apply
+each map in the dialog by pasting its transform.
+
+```bash
+cd scripts/map-align
+uv run batch.py <reference_dir> <final_dir> [--out ./map-align-out]
+```
+
+Example:
+
+```bash
+uv run batch.py ~/code/map-models/reference-images ~/code/map-models/final-renders
+```
+
+Outputs (under `--out`, default `./map-align-out`):
+
+- `transforms.json` — keyed by map name; each value is the
+  `{ pixelAffine, inliers, residual, lowConfidence }` object the dialog parses.
+  Maps that fail to align are omitted. To apply one map: open it in the dialog,
+  upload its render, and paste `transforms["<map>"]`.
+- `overlays/<map>.png` — alignment-QA image: new-render edges in **green**,
+  warped-old edges in **magenta**, over a dim copy of the new render. Where the
+  alignment is good the strong structural edges coincide and read **white**;
+  real misalignment shows as parallel green/magenta fringes on those structures.
+  (Green/magenta in areas where the two render passes simply have different
+  content/detail is expected and not a misalignment.)
+- A stdout summary table: `map | status | inliers | residual | flag`.
+
+**Read the flags.** `LOW CONFIDENCE` (residual > 5px or inliers < 25) and
+`failed` maps are still surfaced but warrant a careful overlay check — or just
+re-anchor those maps manually in the editor. Maps present only in one directory
+are reported as skipped.
+
 ## Then, in the app
 
 1. Open the map's calibration editor (`/map-calibration/<mapName>`) and click
