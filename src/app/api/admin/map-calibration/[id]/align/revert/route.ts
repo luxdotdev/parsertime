@@ -90,10 +90,18 @@ export async function POST(_request: Request, props: Params) {
         r2.download(backupSnapshot),
         r2.download(backupOriginal),
       ]);
-    } catch {
+    } catch (downloadError) {
+      // r2.download wraps all S3 errors (not just NoSuchKey) into one type, so
+      // this also fires on a real R2 outage — log the underlying cause so the
+      // wide event can distinguish "no backup" from "R2 unavailable".
       wideEvent.status_code = 404;
       wideEvent.outcome = "no_backup";
-      wideEvent.error = { message: "No backup available to revert" };
+      wideEvent.error = {
+        message:
+          downloadError instanceof Error
+            ? downloadError.message
+            : "No backup available to revert",
+      };
       return NextResponse.json(
         { error: "No backup available to revert" },
         { status: 404 }
@@ -147,6 +155,7 @@ export async function POST(_request: Request, props: Params) {
     wideEvent.status_code = 200;
     wideEvent.outcome = "success";
     wideEvent.map_name = calibration.mapName;
+    wideEvent.anchors_restored = snapshot.anchors.length;
     return NextResponse.json({ ok: true });
   } catch (error) {
     if (
