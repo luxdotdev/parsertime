@@ -41,6 +41,9 @@ type ReplaceRenderDialogProps = {
   onApplied: () => void;
 };
 
+// Heuristics for the "verify carefully" banner (informational only — never gates
+// Confirm). Residual is mean reprojection error in original-image pixels; inliers
+// is the RANSAC inlier match count from the alignment engine.
 const LOW_CONFIDENCE_RESIDUAL = 5;
 const LOW_CONFIDENCE_INLIERS = 25;
 
@@ -139,6 +142,7 @@ export function ReplaceRenderDialog({
       );
       if (!res.ok) throw new Error("apply");
       toast.success(t("applied"));
+      setResult(null);
       setOpen(false);
       reset();
       onApplied();
@@ -198,11 +202,13 @@ export function ReplaceRenderDialog({
           <div className="space-y-4">
             <input
               type="file"
+              name="newRender"
               accept="image/png,image/jpeg"
               aria-label={t("selectFile")}
               className="file:bg-primary file:text-primary-foreground block w-full text-sm file:mr-4 file:rounded file:border-0 file:px-4 file:py-2 file:text-sm"
               onChange={(e) => {
                 const file = e.target.files?.[0];
+                e.target.value = "";
                 if (file) void handleFile(file);
               }}
               disabled={busy}
