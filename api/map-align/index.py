@@ -14,6 +14,7 @@ Response (422, JSON):  { "error": "<reason>" }   # unalignable
 import hmac
 import json
 import os
+import traceback
 import urllib.request
 from http.server import BaseHTTPRequestHandler
 
@@ -46,7 +47,7 @@ def _authorized(headers):
 
 def _download_image(url):
     """Fetch a presigned URL, decode it as a BGR image, enforce size limit."""
-    with urllib.request.urlopen(url, timeout=60) as resp:  # noqa: S310 (trusted presigned URL)
+    with urllib.request.urlopen(url, timeout=60) as resp:  # noqa: S310 (trusted presigned URL) — 60s per-image download budget (function maxDuration is 60s)
         data = resp.read(MAX_IMAGE_BYTES + 1)
     if len(data) > MAX_IMAGE_BYTES:
         raise AlignError("image exceeds size limit")
@@ -72,13 +73,19 @@ class handler(BaseHTTPRequestHandler):  # noqa: N801 — Vercel requires this na
             return
         try:
             length = int(self.headers.get("Content-Length") or 0)
-            body = json.loads(self.rfile.read(length) or b"{}")
-            old_url = body.get("oldUrl")
-            new_url = body.get("newUrl")
-            if not old_url or not new_url:
-                self._send(400, {"error": "oldUrl and newUrl are required"})
-                return
+            raw = self.rfile.read(length) if length else b"{}"
+            body = json.loads(raw)
+        except (ValueError, json.JSONDecodeError):
+            self._send(400, {"error": "invalid JSON body"})
+            return
 
+        old_url = body.get("oldUrl")
+        new_url = body.get("newUrl")
+        if not old_url or not new_url:
+            self._send(400, {"error": "oldUrl and newUrl are required"})
+            return
+
+        try:
             old_img = _download_image(old_url)
             new_img = _download_image(new_url)
             P, inliers, residual = align_images(old_img, new_img)
@@ -89,5 +96,6 @@ class handler(BaseHTTPRequestHandler):  # noqa: N801 — Vercel requires this na
             })
         except AlignError as e:
             self._send(422, {"error": str(e)})
-        except Exception as e:  # noqa: BLE001
-            self._send(500, {"error": "internal error: %s" % e})
+        except Exception:  # noqa: BLE001
+            traceback.print_exc()
+            self._send(500, {"error": "alignment failed"})
