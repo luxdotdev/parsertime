@@ -1,4 +1,4 @@
-"""Pure image-registration helpers for the map-align serverless function.
+"""Pure image-registration helpers for the map-align local CLI.
 
 Computes a 2x3 affine P mapping OLD-image pixels -> NEW-image pixels via ORB
 feature matching + RANSAC on Canny edge maps.

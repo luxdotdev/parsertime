@@ -1,7 +1,7 @@
 [project]
 name = "map-align"
 version = "0.1.0"
-description = "Vercel Python serverless function: align a new map render to the calibrated image"
+description = "Local CLI: align a new map render to the calibrated image and print the pixel transform"
 requires-python = ">=3.9"
 dependencies = [
   # numpy<2: opencv wheels are compiled against numpy 1.x.

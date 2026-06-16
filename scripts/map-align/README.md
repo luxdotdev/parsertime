@@ -1,0 +1,67 @@
+# Map render re-alignment
+
+Local CLI that aligns a **new** map render to the **currently-calibrated** image,
+so an updated render (e.g. a new seasonal pass) can replace the old one without
+losing calibration. It computes the old→new pixel transform via OpenCV feature
+matching and prints it as JSON to paste into the admin **Replace render** dialog.
+
+This runs locally rather than as a Vercel function: OpenCV is a ~98MB native
+dependency that exceeds the Vercel Python bundle size limit. Everything else
+(staging, the anchor-overlay review, backup, remap, promote, revert) stays in the
+app — the CLI only produces the transform.
+
+## Run
+
+```bash
+cd scripts/map-align
+uv run cli.py <old_image> <new_image>
+```
+
+- `old_image` — the exact image the map was calibrated on (its pixel space is
+  where the stored anchors live).
+- `new_image` — the new render you're swapping in.
+
+Example:
+
+```bash
+uv run cli.py ~/code/map-models/reference-images/aatlis.png \
+              ~/code/map-models/final-renders/aatlis.png
+```
+
+Output (stdout):
+
+```json
+{
+  "pixelAffine": { "a": ..., "b": ..., "c": ..., "d": ..., "tx": ..., "ty": ... },
+  "inliers": 51,
+  "residual": 0.232
+}
+```
+
+## Then, in the app
+
+1. Open the map's calibration editor (`/map-calibration/<mapName>`) and click
+   **Replace render**.
+2. Upload the same new render.
+3. Paste the JSON above.
+4. Review the old anchors re-projected onto the new render (and the blink/swipe
+   compare). `inliers` (higher is better) and `residual` (lower is better, in
+   original pixels) are shown to inform — they never gate the decision.
+5. **Confirm** to back up the prior state, remap the anchors, re-derive the
+   affine, and promote the new image. **Revert last swap** undoes it.
+
+## How it works
+
+Both images are decoded **memory-bounded** to a common 2048px working size
+(OpenCV reduced-resolution decode), aligned with ORB feature matching on Canny
+edge maps + RANSAC (robust to the heavy color/background differences between
+render passes), and the resulting affine is rescaled back to the original pixel
+space. This handles high-resolution renders (8K/4K) that would otherwise blow
+memory and break feature matching across a scale gap.
+
+## Tests
+
+```bash
+cd scripts/map-align
+uv run --no-project --with opencv-python-headless --with numpy --with pytest python -m pytest -v
+```
