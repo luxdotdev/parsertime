@@ -18,10 +18,9 @@ export function SearcherSummary({ summary }: Props) {
           <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
           <p className="text-muted-foreground mt-1 text-sm">
             {t.rich("searchingAs", {
-              team: () => (
-                <span className="text-foreground font-medium">
-                  {summary.teamName}
-                </span>
+              teamName: summary.teamName,
+              team: (chunks) => (
+                <span className="text-foreground font-medium">{chunks}</span>
               ),
             })}
           </p>
