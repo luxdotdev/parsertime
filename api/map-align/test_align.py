@@ -26,7 +26,7 @@ def test_recovers_known_affine_despite_photometric_change():
     old = _synthetic_map(seed=1)
 
     # Known affine: small rotation + scale + translation.
-    M = cv2.getRotationMatrix2D((200, 200), 4.0, 1.06).astype(np.float64)
+    M = cv2.getRotationMatrix2D((200, 200), 4.0, 1.06)
     M[0, 2] += 9.0
     M[1, 2] += -6.0
     warped = cv2.warpAffine(old, M, (400, 400), borderValue=(0, 0, 0))
