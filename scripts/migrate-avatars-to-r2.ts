@@ -8,7 +8,11 @@ import prisma from "@/lib/prisma";
 import { r2 } from "@/lib/r2";
 
 const APPLY = process.argv.includes("--apply");
-const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+// Existing Blob images predate the 5 MB upload cap, so the backfill uses a much
+// higher ceiling — it must migrate whatever is already referenced. This is only
+// a sanity bound against a pathologically huge object; real avatars/banners are
+// well under it.
+const MAX_IMAGE_BYTES = 64 * 1024 * 1024;
 
 type Job =
   | { kind: "avatar"; id: string; url: string }
@@ -46,12 +50,16 @@ async function migrateOne(job: Job): Promise<void> {
 
   const contentLength = res.headers.get("content-length");
   if (contentLength && Number(contentLength) > MAX_IMAGE_BYTES) {
-    throw new Error(`image larger than ${MAX_IMAGE_BYTES} bytes`);
+    throw new Error(
+      `image is ${contentLength} bytes, over the ${MAX_IMAGE_BYTES} byte ceiling`
+    );
   }
 
   const body = Buffer.from(await res.arrayBuffer());
   if (body.byteLength > MAX_IMAGE_BYTES) {
-    throw new Error(`image larger than ${MAX_IMAGE_BYTES} bytes`);
+    throw new Error(
+      `image is ${body.byteLength} bytes, over the ${MAX_IMAGE_BYTES} byte ceiling`
+    );
   }
 
   await r2.upload({
