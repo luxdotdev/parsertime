@@ -37,4 +37,4 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL_PROD }}
           DIRECT_URL: ${{ secrets.DIRECT_URL_PROD }}
-        run: pnpm db:deploy
+        run: pnpm --filter parsertime db:deploy
