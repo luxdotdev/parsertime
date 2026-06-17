@@ -30,7 +30,9 @@ async function main() {
     }
   }
 
-  const teams = await prisma.team.findMany({ select: { id: true, image: true } });
+  const teams = await prisma.team.findMany({
+    select: { id: true, image: true },
+  });
   for (const t of teams) {
     if (isVercelBlobUrl(t.image)) {
       problems.push(`team ${t.id} image still on Blob`);
