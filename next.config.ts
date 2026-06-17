@@ -38,6 +38,15 @@ const nextConfig: NextConfig = {
     proxyClientMaxBodySize: "150mb",
   },
   images: {
+    localPatterns: [
+      // Avatar/banner/team images are served from the R2 proxy with a
+      // cache-busting `?v=<timestamp>`. Omitting `search` allows any query
+      // string, but scoped to this path only.
+      { pathname: "/api/image/**" },
+      // Defining localPatterns switches local images to allow-list mode, so keep
+      // every other local image (e.g. /ranks/*.png) working — without a query.
+      { pathname: "/**", search: "" },
+    ],
     remotePatterns: [
       {
         protocol: "https",
