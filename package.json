@@ -20,7 +20,9 @@
     "db:migrate": "prisma migrate dev && prisma generate",
     "db:deploy": "prisma migrate deploy",
     "wp:export": "bun scripts/wp/export-dataset.ts",
-    "wp:train": "bun scripts/wp/train.ts"
+    "wp:train": "bun scripts/wp/train.ts",
+    "migrate:avatars": "bun scripts/migrate-avatars-to-r2.ts",
+    "verify:avatars": "bun scripts/verify-avatars-r2.ts"
   },
   "dependencies": {
     "@ai-sdk/react": "^3.0.136",
