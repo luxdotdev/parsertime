@@ -27,7 +27,7 @@ export async function getGuildsForUser(client: Client, userId: string) {
     guilds.map(async (g) => ({
       guild: g,
       isMember: await isUserInGuild(g, userId),
-    })),
+    }))
   );
   return checks
     .filter((c) => c.isMember)
@@ -41,7 +41,7 @@ export async function getGuildsForUser(client: Client, userId: string) {
 export async function getGuildChannelsForUser(
   client: Client,
   guildId: string,
-  userId: string,
+  userId: string
 ) {
   const guild = client.guilds.cache.get(guildId);
   if (!guild) return null;
@@ -54,7 +54,7 @@ export async function getGuildChannelsForUser(
 export async function isUserGuildMember(
   client: Client,
   guildId: string,
-  userId: string,
+  userId: string
 ): Promise<boolean> {
   const guild = client.guilds.cache.get(guildId);
   if (!guild) return false;

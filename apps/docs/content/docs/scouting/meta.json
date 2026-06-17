@@ -1,8 +1,4 @@
 {
   "title": "Scouting",
-  "pages": [
-    "overview",
-    "team-scouting",
-    "player-scouting"
-  ]
+  "pages": ["overview", "team-scouting", "player-scouting"]
 }

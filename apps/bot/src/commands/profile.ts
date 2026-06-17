@@ -52,7 +52,7 @@ export const data = new SlashCommandBuilder()
     opt
       .setName("player")
       .setDescription("In-game player name")
-      .setRequired(true),
+      .setRequired(true)
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -62,7 +62,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   try {
     const result = await apiGet<ProfileData>(
-      `/api/bot/profile?playerName=${encodeURIComponent(playerName)}`,
+      `/api/bot/profile?playerName=${encodeURIComponent(playerName)}`
     );
 
     if (!result.success) {
@@ -123,7 +123,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
     // Damage & Healing field
     const dmgHealLines = DAMAGE_HEALING_STATS.filter(
-      (k) => stats[k] != null,
+      (k) => stats[k] != null
     ).map((k) => `${formatStatName(k)} **${formatNumber(stats[k])}**`);
     if (dmgHealLines.length > 0) {
       // Split into two rows of two for readability
@@ -154,14 +154,14 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     if (trends?.improvingMetrics) {
       for (const m of trends.improvingMetrics.slice(0, 3)) {
         trendLines.push(
-          `${trendArrow(m.changePercentage)} ${m.metric} (${m.changePercentage >= 0 ? "+" : ""}${m.changePercentage.toFixed(1)}%)`,
+          `${trendArrow(m.changePercentage)} ${m.metric} (${m.changePercentage >= 0 ? "+" : ""}${m.changePercentage.toFixed(1)}%)`
         );
       }
     }
     if (trends?.decliningMetrics) {
       for (const m of trends.decliningMetrics.slice(0, 3)) {
         trendLines.push(
-          `${trendArrow(-1)} ${m.metric} (+${Math.abs(m.changePercentage).toFixed(1)}%)`,
+          `${trendArrow(-1)} ${m.metric} (+${Math.abs(m.changePercentage).toFixed(1)}%)`
         );
       }
     }

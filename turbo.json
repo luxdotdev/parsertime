@@ -10,7 +10,9 @@
       "cache": false,
       "persistent": true
     },
-    "lint": {},
+    "lint": {
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/packages/lint-config/oxlint.json"]
+    },
     "typecheck": {},
     "test": {
       "dependsOn": ["^build"]
@@ -18,6 +20,8 @@
     "format": {
       "cache": false
     },
-    "format:check": {}
+    "format:check": {
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/packages/lint-config/oxfmt.json"]
+    }
   }
 }

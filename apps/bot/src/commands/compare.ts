@@ -42,16 +42,13 @@ export const data = new SlashCommandBuilder()
   .setName("compare")
   .setDescription("Compare two players")
   .addStringOption((opt) =>
-    opt
-      .setName("player1")
-      .setDescription("First player name")
-      .setRequired(true),
+    opt.setName("player1").setDescription("First player name").setRequired(true)
   )
   .addStringOption((opt) =>
     opt
       .setName("player2")
       .setDescription("Second player name")
-      .setRequired(true),
+      .setRequired(true)
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -62,7 +59,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   try {
     const result = await apiGet<CompareData>(
-      `/api/bot/compare?player1=${encodeURIComponent(player1)}&player2=${encodeURIComponent(player2)}`,
+      `/api/bot/compare?player1=${encodeURIComponent(player1)}&player2=${encodeURIComponent(player2)}`
     );
 
     if (!result.success) {
@@ -129,7 +126,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
           "  " +
           padLeft(s2, colWidth) +
           "  " +
-          arrow,
+          arrow
       );
     }
 

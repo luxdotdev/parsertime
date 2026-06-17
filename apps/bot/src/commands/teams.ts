@@ -29,7 +29,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   const result = await apiGet<TeamsResponse>(
     "/api/bot/teams",
-    interaction.user.id,
+    interaction.user.id
   );
 
   if (!result.success) {
@@ -45,25 +45,19 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     await tracedEditReply(interaction, {
       embeds: [
         brandEmbed("Your teams").setDescription(
-          "You're not a member of any teams yet.",
+          "You're not a member of any teams yet."
         ),
       ],
     });
     return;
   }
 
-  const idWidth = Math.max(
-    2,
-    ...teams.map((t) => String(t.id).length),
-  );
+  const idWidth = Math.max(2, ...teams.map((t) => String(t.id).length));
   const nameWidth = Math.min(
     NAME_COL_MAX,
-    Math.max(4, ...teams.map((t) => t.name.length)),
+    Math.max(4, ...teams.map((t) => t.name.length))
   );
-  const roleWidth = Math.max(
-    4,
-    ...teams.map((t) => t.role.length),
-  );
+  const roleWidth = Math.max(4, ...teams.map((t) => t.role.length));
 
   const header =
     padLeft("ID", idWidth) +
@@ -78,14 +72,12 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       "  " +
       padRight(t.name, nameWidth) +
       "  " +
-      padRight(t.role, roleWidth),
+      padRight(t.role, roleWidth)
   );
   const table = "```\n" + [header, separator, ...rows].join("\n") + "\n```";
 
   const embed = brandEmbed("Your teams")
-    .setDescription(
-      `${teams.length} team${teams.length === 1 ? "" : "s"}`,
-    )
+    .setDescription(`${teams.length} team${teams.length === 1 ? "" : "s"}`)
     .addFields({ name: "Teams", value: table, inline: false });
 
   await tracedEditReply(interaction, { embeds: [embed] });

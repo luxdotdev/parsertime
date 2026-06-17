@@ -73,12 +73,12 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   const embed = brandEmbed("Parsertime bot — commands").setDescription(
-    "Bot-linked actions require linking your Discord account at parsertime.app/settings.",
+    "Bot-linked actions require linking your Discord account at parsertime.app/settings."
   );
 
   for (const category of CATEGORIES) {
     const lines = category.commands.map(
-      (cmd) => `\`${cmd.usage}\`\n${cmd.description}`,
+      (cmd) => `\`${cmd.usage}\`\n${cmd.description}`
     );
     embed.addFields({
       name: category.name,

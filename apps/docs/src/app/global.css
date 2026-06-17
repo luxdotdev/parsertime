@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-@import 'fumadocs-ui/css/preset.css';
+@import "tailwindcss";
+@import "fumadocs-ui/css/preset.css";
 
 /*
  * Parsertime docs v3 — mirrors src/app/globals.css in the main parsertime repo.
@@ -25,8 +25,10 @@
   --color-fd-ring: oklch(0.55 0.17 68);
   --color-fd-overlay: oklch(0.14 0.003 250 / 0.4);
 
-  --font-sans: var(--font-switzer), ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-sans:
+    var(--font-switzer), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono:
+    var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
 }
 
 /* Semantic palette for callouts, diff blocks, and shiki tokens. Warning
@@ -83,7 +85,7 @@ aside[data-collapsible] {
 
 html {
   scrollbar-gutter: stable;
-  font-feature-settings: 'ss01', 'cv11';
+  font-feature-settings: "ss01", "cv11";
 }
 
 html > body[data-scroll-locked] {
@@ -98,9 +100,9 @@ kbd,
 samp,
 pre,
 .font-mono,
-[class*='tabular'] {
+[class*="tabular"] {
   font-variant-numeric: tabular-nums;
-  font-feature-settings: 'tnum';
+  font-feature-settings: "tnum";
 }
 
 /* The metadata layer — caps + mono + tracked-out. Only label text uses this;
@@ -149,7 +151,7 @@ pre,
 
 #nd-sidebar p::before,
 #nd-sidebar-mobile p::before {
-  content: '';
+  content: "";
   flex-shrink: 0;
   display: block;
   height: 1px;
@@ -174,17 +176,17 @@ pre,
 
 /* Active state: amber-as-signal via a 2px left bar. Drop the default tinted
  * background so the indicator stays the clear "selected" marker. */
-#nd-sidebar a[data-active='true'],
-#nd-sidebar-mobile a[data-active='true'] {
+#nd-sidebar a[data-active="true"],
+#nd-sidebar-mobile a[data-active="true"] {
   background-color: transparent !important;
   color: var(--color-fd-primary) !important;
   font-weight: 500;
   position: relative;
 }
 
-#nd-sidebar a[data-active='true']::before,
-#nd-sidebar-mobile a[data-active='true']::before {
-  content: '';
+#nd-sidebar a[data-active="true"]::before,
+#nd-sidebar-mobile a[data-active="true"]::before {
+  content: "";
   position: absolute;
   left: 0;
   top: 6px;
@@ -195,9 +197,13 @@ pre,
 }
 
 /* Hover: surface lift, no amber (per the Amber-as-Signal Rule) */
-#nd-sidebar a:not([data-active='true']):hover,
-#nd-sidebar-mobile a:not([data-active='true']):hover {
-  background-color: color-mix(in oklch, var(--color-fd-foreground) 5%, transparent);
+#nd-sidebar a:not([data-active="true"]):hover,
+#nd-sidebar-mobile a:not([data-active="true"]):hover {
+  background-color: color-mix(
+    in oklch,
+    var(--color-fd-foreground) 5%,
+    transparent
+  );
   color: var(--color-fd-foreground);
 }
 

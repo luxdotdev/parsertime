@@ -6,7 +6,7 @@ const tracer = trace.getTracer("discord-bot");
 
 export async function tracedDeferReply(
   interaction: ChatInputCommandInteraction,
-  options?: Parameters<typeof interaction.deferReply>[0],
+  options?: Parameters<typeof interaction.deferReply>[0]
 ) {
   return tracer.startActiveSpan("discord.deferReply", async (span) => {
     try {
@@ -40,7 +40,7 @@ export async function tracedDeferReply(
 
 export async function tracedEditReply(
   interaction: ChatInputCommandInteraction,
-  options: Parameters<typeof interaction.editReply>[0],
+  options: Parameters<typeof interaction.editReply>[0]
 ) {
   return tracer.startActiveSpan("discord.editReply", async (span) => {
     try {

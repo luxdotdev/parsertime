@@ -1,7 +1,3 @@
 {
-  "pages": [
-    "leaderboard",
-    "player-stats",
-    "hero-stats"
-  ]
+  "pages": ["leaderboard", "player-stats", "hero-stats"]
 }

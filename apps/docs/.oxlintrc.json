@@ -3,12 +3,17 @@
   "extends": ["./node_modules/@parsertime/lint-config/oxlint.json"],
   "ignorePatterns": [
     ".next/**",
+    ".source/**",
     "out/**",
     "build/**",
-    "next-env.d.ts",
-    "**/components/ui/**",
-    "**/components/ai-elements/**",
-    "scripts/**",
-    "src/generated/**"
+    "next-env.d.ts"
+  ],
+  "overrides": [
+    {
+      "files": ["**/*.tsx"],
+      "rules": {
+        "react/no-unknown-property": "off"
+      }
+    }
   ]
 }

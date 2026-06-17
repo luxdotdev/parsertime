@@ -31,7 +31,7 @@ export const data = new SlashCommandBuilder()
   .setName("team")
   .setDescription("View team winrates and stats")
   .addIntegerOption((opt) =>
-    opt.setName("team_id").setDescription("Team ID").setRequired(true),
+    opt.setName("team_id").setDescription("Team ID").setRequired(true)
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -42,7 +42,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   try {
     const result = await apiGet<TeamData>(
       `/api/bot/team?teamId=${teamId}`,
-      interaction.user.id,
+      interaction.user.id
     );
 
     if (!result.success) {
@@ -92,7 +92,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     const mapEntries = Object.entries(winrates.byMap);
     if (mapEntries.length > 0) {
       const sorted = mapEntries.sort(
-        (a, b) => b[1].totalWinrate - a[1].totalWinrate,
+        (a, b) => b[1].totalWinrate - a[1].totalWinrate
       );
 
       const mapNameWidth = Math.max(...sorted.map(([name]) => name.length), 3);
@@ -108,7 +108,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
           padRight(map, mapNameWidth + 1) +
           padLeft(String(data.totalWins), 4) +
           padLeft(String(data.totalLosses), 4) +
-          padLeft(`${data.totalWinrate.toFixed(1)}%`, 7),
+          padLeft(`${data.totalWinrate.toFixed(1)}%`, 7)
       );
 
       const table = "```\n" + [header, separator, ...rows].join("\n") + "\n```";

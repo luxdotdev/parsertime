@@ -1,7 +1,4 @@
 {
   "title": "CSR",
-  "pages": [
-    "overview",
-    "leaderboard"
-  ]
+  "pages": ["overview", "leaderboard"]
 }

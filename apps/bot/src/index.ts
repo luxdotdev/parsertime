@@ -12,11 +12,11 @@ const client = new Client({
 // Register event handlers
 client.once(ready.name, (...args) => ready.execute(...(args as [any])));
 client.on(interactionCreate.name, (...args) =>
-  interactionCreate.execute(...(args as [any])),
+  interactionCreate.execute(...(args as [any]))
 );
 
 // Login to Discord
-client.login(process.env.DISCORD_TOKEN);
+void client.login(process.env.DISCORD_TOKEN);
 
 // Start HTTP server for Parsertime -> Bot communication
 const port = Number(process.env.PORT) || 8080;

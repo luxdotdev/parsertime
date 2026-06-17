@@ -1,4 +1,9 @@
-import { SpanStatusCode, context, propagation, trace } from "@opentelemetry/api";
+import {
+  SpanStatusCode,
+  context,
+  propagation,
+  trace,
+} from "@opentelemetry/api";
 
 const API_BASE = process.env.PARSERTIME_API_URL;
 const BOT_SECRET = process.env.BOT_SECRET;
@@ -10,7 +15,7 @@ type ApiResponse<T> = ApiSuccess<T> | ApiError;
 
 export async function apiGet<T>(
   path: string,
-  discordUserId?: string,
+  discordUserId?: string
 ): Promise<ApiResponse<T>> {
   return tracer.startActiveSpan(`fetch GET ${path}`, async (span) => {
     span.setAttributes({
@@ -53,7 +58,7 @@ export async function apiGet<T>(
 export async function apiPost<T>(
   path: string,
   payload: unknown,
-  discordUserId?: string,
+  discordUserId?: string
 ): Promise<ApiResponse<T>> {
   return tracer.startActiveSpan(`fetch POST ${path}`, async (span) => {
     span.setAttributes({

@@ -33,7 +33,7 @@ function emit(level: LogLevel, event: Record<string, unknown>) {
           Object.entries(rest)
             .map(
               ([k, v]) =>
-                `\x1b[2m${k}=\x1b[0m${typeof v === "object" ? JSON.stringify(v) : v}`,
+                `\x1b[2m${k}=\x1b[0m${typeof v === "object" ? JSON.stringify(v) : v}`
             )
             .join(" ")
         : "";

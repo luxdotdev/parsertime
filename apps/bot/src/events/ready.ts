@@ -29,7 +29,7 @@ export async function execute(client: Client<true>) {
   if (devGuildId) {
     await rest.put(
       Routes.applicationGuildCommands(client.user.id, devGuildId),
-      { body },
+      { body }
     );
   } else {
     await rest.put(Routes.applicationCommands(client.user.id), { body });

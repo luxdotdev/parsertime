@@ -117,15 +117,15 @@ const quickstart = [
     body: (
       <>
         In Overwatch 2, enable{" "}
-        <em className="not-italic text-fd-foreground">
+        <em className="text-fd-foreground not-italic">
           Gameplay &rarr; Workshop Inspector Log File
         </em>
         . Host a custom lobby with workshop code{" "}
-        <code className="rounded-sm bg-fd-muted px-1.5 py-0.5 font-mono text-[12px] text-fd-foreground">
+        <code className="bg-fd-muted text-fd-foreground rounded-sm px-1.5 py-0.5 font-mono text-[12px]">
           Z0ASA
         </code>
         . Logs land in your{" "}
-        <code className="rounded-sm bg-fd-muted px-1.5 py-0.5 font-mono text-[12px] text-fd-foreground">
+        <code className="bg-fd-muted text-fd-foreground rounded-sm px-1.5 py-0.5 font-mono text-[12px]">
           Documents/Overwatch/Workshop
         </code>{" "}
         folder.
@@ -139,7 +139,7 @@ const quickstart = [
     body: (
       <>
         From the dashboard, click{" "}
-        <em className="not-italic text-fd-foreground">Create Scrim</em>, name
+        <em className="text-fd-foreground not-italic">Create Scrim</em>, name
         it, assign a team, and drop in the logs for the first map. The rest of
         the maps can be added incrementally. Delete any log under 1KB before
         uploading; those are partial captures.
@@ -233,9 +233,9 @@ export async function LandingHero() {
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 lg:h-[calc(100vh-3rem)] lg:grid-cols-[minmax(0,520px)_minmax(0,1fr)]">
         <div className="flex flex-col justify-between gap-10 px-6 pt-12 pb-8 lg:gap-12 lg:px-10 lg:pt-20 lg:pb-16">
           {/* Top bracket: doc register + version */}
-          <div className="flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-fd-muted-foreground">
+          <div className="text-fd-muted-foreground flex items-center gap-2.5 font-mono text-[11px] tracking-[0.22em] uppercase">
             <span>[01]</span>
-            <span aria-hidden className="block h-px w-6 bg-fd-border" />
+            <span aria-hidden className="bg-fd-border block h-px w-6" />
             <span>docs</span>
             <span aria-hidden className="text-fd-border">
               ·
@@ -247,12 +247,12 @@ export async function LandingHero() {
           <div className="flex flex-col">
             <Link
               href={latestUpdate.url}
-              className="group mb-6 inline-flex items-center gap-2.5 self-start rounded-full border border-fd-border bg-fd-card/60 py-1 pl-1 pr-3.5 text-[12px] backdrop-blur-sm transition-colors hover:border-fd-foreground/25 hover:bg-fd-muted/70"
+              className="group border-fd-border bg-fd-card/60 hover:border-fd-foreground/25 hover:bg-fd-muted/70 mb-6 inline-flex items-center gap-2.5 self-start rounded-full border py-1 pr-3.5 pl-1 text-[12px] backdrop-blur-sm transition-colors"
             >
-              <span className="rounded-full bg-fd-primary px-2.5 py-0.5 text-[11px] font-medium text-fd-primary-foreground">
+              <span className="bg-fd-primary text-fd-primary-foreground rounded-full px-2.5 py-0.5 text-[11px] font-medium">
                 Latest updates
               </span>
-              <span className="text-fd-muted-foreground transition-colors group-hover:text-fd-foreground">
+              <span className="text-fd-muted-foreground group-hover:text-fd-foreground transition-colors">
                 {latestUpdate.title}
               </span>
               <span
@@ -265,12 +265,12 @@ export async function LandingHero() {
 
             <h1
               id="parsertime-docs-hero-title"
-              className="max-w-[14ch] text-[clamp(2.4rem,4.2vw,3.6rem)] font-bold leading-[1.02] tracking-[-0.025em] text-fd-foreground"
+              className="text-fd-foreground max-w-[14ch] text-[clamp(2.4rem,4.2vw,3.6rem)] leading-[1.02] font-bold tracking-[-0.025em]"
             >
               The reference for v3.
             </h1>
 
-            <p className="mt-6 max-w-[42ch] text-[15px] leading-relaxed text-fd-muted-foreground">
+            <p className="text-fd-muted-foreground mt-6 max-w-[42ch] text-[15px] leading-relaxed">
               Every Parsertime surface, written in plain language. From your
               first Workshop log upload to the TSR ladder, the Matchmaker, Match
               Story, and the Ranked tracker. Updated alongside the product.
@@ -279,19 +279,19 @@ export async function LandingHero() {
             <div className="mt-7 flex flex-wrap items-center gap-3">
               <Link
                 href="/docs"
-                className="inline-flex h-10 items-center rounded-md bg-fd-primary px-4 text-[13px] font-medium text-fd-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-fd-ring/50"
+                className="bg-fd-primary text-fd-primary-foreground focus-visible:ring-fd-ring/50 inline-flex h-10 items-center rounded-md px-4 text-[13px] font-medium transition-opacity hover:opacity-90 focus-visible:ring-[3px] focus-visible:outline-none"
               >
                 Open docs
               </Link>
               <Link
                 href="/docs/tsr/overview"
-                className="inline-flex h-10 items-center rounded-md border border-fd-border px-4 text-[13px] font-medium text-fd-foreground transition-colors hover:bg-fd-muted focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-fd-ring/50"
+                className="border-fd-border text-fd-foreground hover:bg-fd-muted focus-visible:ring-fd-ring/50 inline-flex h-10 items-center rounded-md border px-4 text-[13px] font-medium transition-colors focus-visible:ring-[3px] focus-visible:outline-none"
               >
                 What&rsquo;s new in v3
               </Link>
               <Link
                 href="https://parsertime.app"
-                className="inline-flex h-10 items-center text-[13px] font-medium text-fd-muted-foreground transition-colors hover:text-fd-foreground"
+                className="text-fd-muted-foreground hover:text-fd-foreground inline-flex h-10 items-center text-[13px] font-medium transition-colors"
               >
                 parsertime.app &rarr;
               </Link>
@@ -299,20 +299,20 @@ export async function LandingHero() {
           </div>
 
           {/* Sector ribbon: live-looking telemetry instead of platitudes */}
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-[10px] uppercase tracking-[0.22em] text-fd-muted-foreground">
+          <div className="text-fd-muted-foreground flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-[10px] tracking-[0.22em] uppercase">
             <div className="flex items-center gap-2">
               <span
                 aria-hidden
-                className="inline-block size-1.5 animate-pulse rounded-full bg-fd-primary"
+                className="bg-fd-primary inline-block size-1.5 animate-pulse rounded-full"
               />
               <span>rec · live</span>
             </div>
             <div className="flex items-center gap-2">
-              <span aria-hidden className="h-px w-6 bg-fd-border" />
+              <span aria-hidden className="bg-fd-border h-px w-6" />
               <span className="tabular-nums">65 pages</span>
             </div>
             <div className="flex items-center gap-2">
-              <span aria-hidden className="h-px w-6 bg-fd-border" />
+              <span aria-hidden className="bg-fd-border h-px w-6" />
               <span className="tabular-nums">v3.0 · 2026.06</span>
             </div>
           </div>
@@ -342,23 +342,23 @@ function SectionHeader({
   description?: React.ReactNode;
 }) {
   return (
-    <div className="mb-12 border-b border-fd-border pb-6">
+    <div className="border-fd-border mb-12 border-b pb-6">
       <div className="flex items-end justify-between gap-6">
-        <div className="flex items-center gap-2.5 font-mono text-[11px] uppercase tracking-[0.22em] text-fd-muted-foreground">
-          <span aria-hidden className="block h-px w-6 bg-fd-border" />
+        <div className="text-fd-muted-foreground flex items-center gap-2.5 font-mono text-[11px] tracking-[0.22em] uppercase">
+          <span aria-hidden className="bg-fd-border block h-px w-6" />
           <span>{eyebrow}</span>
         </div>
         {meta && (
-          <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-fd-muted-foreground tabular-nums">
+          <span className="text-fd-muted-foreground font-mono text-[10px] tracking-[0.22em] uppercase tabular-nums">
             {meta}
           </span>
         )}
       </div>
-      <h2 className="mt-5 max-w-[28ch] text-[clamp(1.6rem,2.4vw,2.1rem)] font-bold leading-[1.1] tracking-[-0.02em] text-fd-foreground">
+      <h2 className="text-fd-foreground mt-5 max-w-[28ch] text-[clamp(1.6rem,2.4vw,2.1rem)] leading-[1.1] font-bold tracking-[-0.02em]">
         {title}
       </h2>
       {description && (
-        <p className="mt-3 max-w-[58ch] text-[14px] leading-relaxed text-fd-muted-foreground">
+        <p className="text-fd-muted-foreground mt-3 max-w-[58ch] text-[14px] leading-relaxed">
           {description}
         </p>
       )}
@@ -372,7 +372,7 @@ export function LandingChangelog() {
   return (
     <section
       aria-labelledby="landing-changelog"
-      className="border-t border-fd-border bg-fd-background"
+      className="border-fd-border bg-fd-background border-t"
     >
       <div className="mx-auto w-full max-w-7xl px-6 py-16 lg:px-10 lg:py-24">
         <div id="landing-changelog">
@@ -384,28 +384,28 @@ export function LandingChangelog() {
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-px bg-fd-border lg:grid-cols-2">
+        <div className="bg-fd-border grid grid-cols-1 gap-px lg:grid-cols-2">
           {changelog.map((item) => (
             <Link
               key={item.tag}
               href={item.href}
-              className="group relative flex flex-col gap-5 bg-fd-background p-7 transition-colors hover:bg-fd-muted/30 lg:p-9"
+              className="group bg-fd-background hover:bg-fd-muted/30 relative flex flex-col gap-5 p-7 transition-colors lg:p-9"
             >
               <div className="flex items-start justify-between gap-4">
-                <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-fd-primary">
+                <span className="text-fd-primary font-mono text-[11px] tracking-[0.18em] uppercase">
                   {item.tag}
                 </span>
-                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-fd-muted-foreground tabular-nums">
+                <span className="text-fd-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase tabular-nums">
                   {item.meta}
                 </span>
               </div>
-              <h3 className="text-[20px] font-semibold leading-[1.2] tracking-[-0.01em] text-fd-foreground">
+              <h3 className="text-fd-foreground text-[20px] leading-[1.2] font-semibold tracking-[-0.01em]">
                 {item.title}
               </h3>
-              <p className="text-[14px] leading-relaxed text-fd-muted-foreground">
+              <p className="text-fd-muted-foreground text-[14px] leading-relaxed">
                 {item.body}
               </p>
-              <span className="mt-auto inline-flex items-center gap-1.5 text-[13px] font-medium text-fd-foreground transition-colors group-hover:text-fd-primary">
+              <span className="text-fd-foreground group-hover:text-fd-primary mt-auto inline-flex items-center gap-1.5 text-[13px] font-medium transition-colors">
                 Read more
                 <span
                   aria-hidden
@@ -428,7 +428,7 @@ export function LandingQuickstart() {
   return (
     <section
       aria-labelledby="landing-quickstart"
-      className="border-t border-fd-border bg-fd-muted/30"
+      className="border-fd-border bg-fd-muted/30 border-t"
     >
       <div className="mx-auto w-full max-w-7xl px-6 py-16 lg:px-10 lg:py-24">
         <div id="landing-quickstart">
@@ -440,29 +440,29 @@ export function LandingQuickstart() {
           />
         </div>
 
-        <ol className="grid grid-cols-1 gap-px bg-fd-border lg:grid-cols-3">
+        <ol className="bg-fd-border grid grid-cols-1 gap-px lg:grid-cols-3">
           {quickstart.map((step) => (
             <li
               key={step.n}
-              className="flex flex-col gap-5 bg-fd-background p-7 lg:p-8"
+              className="bg-fd-background flex flex-col gap-5 p-7 lg:p-8"
             >
               <div className="flex items-baseline gap-4">
-                <span className="font-mono text-[32px] font-medium leading-none text-fd-primary tabular-nums">
+                <span className="text-fd-primary font-mono text-[32px] leading-none font-medium tabular-nums">
                   {step.n}
                 </span>
-                <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-fd-muted-foreground">
+                <span className="text-fd-muted-foreground font-mono text-[10px] tracking-[0.18em] uppercase">
                   step
                 </span>
               </div>
-              <h3 className="text-[18px] font-semibold leading-[1.25] tracking-[-0.01em] text-fd-foreground">
+              <h3 className="text-fd-foreground text-[18px] leading-[1.25] font-semibold tracking-[-0.01em]">
                 {step.title}
               </h3>
-              <p className="text-[14px] leading-[1.65] text-fd-muted-foreground">
+              <p className="text-fd-muted-foreground text-[14px] leading-[1.65]">
                 {step.body}
               </p>
               <Link
                 href={step.href}
-                className="mt-auto inline-flex items-center gap-1.5 text-[13px] font-medium text-fd-foreground transition-colors hover:text-fd-primary"
+                className="text-fd-foreground hover:text-fd-primary mt-auto inline-flex items-center gap-1.5 text-[13px] font-medium transition-colors"
               >
                 Read the full guide
                 <span aria-hidden>&rarr;</span>
@@ -481,7 +481,7 @@ export function LandingBrowse() {
   return (
     <section
       aria-labelledby="landing-browse"
-      className="border-t border-fd-border bg-fd-background"
+      className="border-fd-border bg-fd-background border-t"
     >
       <div className="mx-auto w-full max-w-7xl px-6 py-16 lg:px-10 lg:py-24">
         <div id="landing-browse">
@@ -497,7 +497,7 @@ export function LandingBrowse() {
           {indexGroups.flatMap((group) => [
             <h3
               key={`h-${group.label}`}
-              className="font-mono text-[11px] uppercase tracking-[0.22em] text-fd-muted-foreground lg:pt-1"
+              className="text-fd-muted-foreground font-mono text-[11px] tracking-[0.22em] uppercase lg:pt-1"
             >
               {group.label}
             </h3>,
@@ -509,12 +509,12 @@ export function LandingBrowse() {
                 <li key={p.href}>
                   <Link
                     href={p.href}
-                    className="group flex items-baseline justify-between gap-3 border-b border-fd-border/60 py-2.5 text-[14px] text-fd-foreground transition-colors hover:text-fd-primary"
+                    className="group border-fd-border/60 text-fd-foreground hover:text-fd-primary flex items-baseline justify-between gap-3 border-b py-2.5 text-[14px] transition-colors"
                   >
                     <span>{p.title}</span>
                     <span
                       aria-hidden
-                      className="font-mono text-[11px] text-fd-muted-foreground transition-all group-hover:translate-x-0.5 group-hover:text-fd-primary"
+                      className="text-fd-muted-foreground group-hover:text-fd-primary font-mono text-[11px] transition-all group-hover:translate-x-0.5"
                     >
                       &rarr;
                     </span>
@@ -525,24 +525,24 @@ export function LandingBrowse() {
           ])}
         </div>
 
-        <div className="mt-16 flex flex-wrap items-center justify-between gap-y-3 border-t border-fd-border pt-6 font-mono text-[11px] uppercase tracking-[0.18em] text-fd-muted-foreground">
+        <div className="border-fd-border text-fd-muted-foreground mt-16 flex flex-wrap items-center justify-between gap-y-3 border-t pt-6 font-mono text-[11px] tracking-[0.18em] uppercase">
           <span>parsertime docs · v3.0</span>
           <div className="flex items-center gap-4">
             <Link
               href="https://parsertime.app"
-              className="transition-colors hover:text-fd-foreground"
+              className="hover:text-fd-foreground transition-colors"
             >
               parsertime.app &rarr;
             </Link>
             <Link
               href="https://discord.gg/svz3qhVDXM"
-              className="transition-colors hover:text-fd-foreground"
+              className="hover:text-fd-foreground transition-colors"
             >
               discord &rarr;
             </Link>
             <Link
               href="https://github.com/lucasdoell/parsertime-docs"
-              className="transition-colors hover:text-fd-foreground"
+              className="hover:text-fd-foreground transition-colors"
             >
               github &rarr;
             </Link>

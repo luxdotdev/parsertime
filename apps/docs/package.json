@@ -8,6 +8,9 @@
     "start": "next start",
     "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
     "typecheck": "fumadocs-mdx && next typegen && tsc --noEmit",
+    "lint": "next typegen && oxlint",
+    "format": "oxfmt --config ./node_modules/@parsertime/lint-config/oxfmt.json",
+    "format:check": "oxfmt --config ./node_modules/@parsertime/lint-config/oxfmt.json --check",
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
@@ -26,12 +29,15 @@
     "three": "^0.184.0"
   },
   "devDependencies": {
+    "@parsertime/lint-config": "workspace:*",
     "@tailwindcss/postcss": "^4.3.0",
     "@types/mdx": "^2.0.13",
     "@types/node": "^25.9.1",
     "@types/react": "^19.2.15",
     "@types/react-dom": "^19.2.3",
     "@types/three": "^0.184.1",
+    "oxfmt": "^0.40.0",
+    "oxlint": "^1.58.0",
     "postcss": "^8.5.15",
     "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3"

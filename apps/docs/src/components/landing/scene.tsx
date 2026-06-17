@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { Canvas, useFrame, useLoader } from '@react-three/fiber';
-import { Float } from '@react-three/drei';
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
-import type { MutableRefObject } from 'react';
-import * as THREE from 'three';
+import { Canvas, useFrame, useLoader } from "@react-three/fiber";
+import { Float } from "@react-three/drei";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import type { MutableRefObject } from "react";
+import * as THREE from "three";
 
 /**
  * Read the active theme from the `.dark` class on <html> that next-themes
@@ -16,23 +16,25 @@ function useIsDark(): boolean {
   const [isDark, setIsDark] = useState(true);
   useEffect(() => {
     const root = document.documentElement;
-    const read = () => setIsDark(root.classList.contains('dark'));
+    function read() {
+      setIsDark(root.classList.contains("dark"));
+    }
     read();
     const obs = new MutationObserver(read);
-    obs.observe(root, { attributes: true, attributeFilter: ['class'] });
+    obs.observe(root, { attributes: true, attributeFilter: ["class"] });
     return () => obs.disconnect();
   }, []);
   return isDark;
 }
 
-const AMBER = '#e8a23a';
+const AMBER = "#e8a23a";
 const BASE_SPIN = 0.5; // rad/s, the resting auto-rotation speed
 
 // Per DESIGN.md, the foreground hue in each mode. We mirror those for the
 // silhouette so it always reads as the page's content color.
 const SILHOUETTE = {
-  dark: '#ffffff',
-  light: '#1f2024', // near-black with the cool tint of foreground-light
+  dark: "#ffffff",
+  light: "#1f2024", // near-black with the cool tint of foreground-light
 } as const;
 
 type VelocityRef = MutableRefObject<number>;
@@ -43,7 +45,7 @@ type VelocityRef = MutableRefObject<number>;
  * edges so the material's alphaToCoverage can hand the AA work to MSAA.
  */
 function hexToRgb(hex: string): [number, number, number] {
-  const clean = hex.replace('#', '');
+  const clean = hex.replace("#", "");
   const n = parseInt(clean, 16);
   return [(n >> 16) & 0xff, (n >> 8) & 0xff, n & 0xff];
 }
@@ -57,10 +59,10 @@ function useSilhouetteTexture(src: string, colorHex: string): THREE.Texture {
 
     const w = img.naturalWidth || img.width;
     const h = img.naturalHeight || img.height;
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     canvas.width = w;
     canvas.height = h;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return raw;
 
     ctx.drawImage(img, 0, 0, w, h);
@@ -100,7 +102,7 @@ function LogoSlab({
   velocityRef: VelocityRef;
   silhouette: string;
 }) {
-  const tex = useSilhouetteTexture('/parsertime-logo.png', silhouette);
+  const tex = useSilhouetteTexture("/parsertime-logo.png", silhouette);
   const group = useRef<THREE.Group>(null);
 
   useFrame((_, dt) => {
@@ -117,10 +119,11 @@ function LogoSlab({
 
   const offsets = useMemo(
     () =>
-      Array.from({ length: LAYERS }, (_, i) =>
-        (i / (LAYERS - 1) - 0.5) * THICKNESS,
+      Array.from(
+        { length: LAYERS },
+        (_, i) => (i / (LAYERS - 1) - 0.5) * THICKNESS
       ),
-    [],
+    []
   );
 
   return (
@@ -129,7 +132,7 @@ function LogoSlab({
         const t = Math.abs(i - (LAYERS - 1) / 2) / ((LAYERS - 1) / 2);
         const isFace = t > 0.95;
         return (
-          <mesh key={i} position={[0, 0, z]}>
+          <mesh key={z} position={[0, 0, z]}>
             <planeGeometry args={[SIZE, SIZE]} />
             <meshStandardMaterial
               map={tex}
@@ -158,10 +161,10 @@ function Particles() {
     const COUNT = 64;
     const arr = new Float32Array(COUNT * 3);
     let s = 0x5f70ce82;
-    const rand = () => {
+    function rand() {
       s = (s * 1664525 + 1013904223) >>> 0;
       return s / 0xffffffff;
-    };
+    }
     for (let i = 0; i < COUNT; i++) {
       const r = 2.2 + rand() * 1.6;
       const theta = rand() * Math.PI * 2;
@@ -225,39 +228,39 @@ export function LandingScene() {
   // React synthetic onPointerDown to start the drag (always fires regardless
   // of what R3F is doing internally), then window-level move/up so the gesture
   // keeps working even if the pointer leaves the canvas region.
-  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+  function onPointerDown(e: React.PointerEvent<HTMLDivElement>) {
     if (e.button !== 0) return;
     draggingRef.current = true;
     lastXRef.current = e.clientX;
-    if (wrapperRef.current) wrapperRef.current.style.cursor = 'grabbing';
+    if (wrapperRef.current) wrapperRef.current.style.cursor = "grabbing";
 
-    const onMove = (ev: PointerEvent) => {
+    function onMove(ev: PointerEvent) {
       if (!draggingRef.current) return;
       const dx = ev.clientX - lastXRef.current;
       lastXRef.current = ev.clientX;
       velocityRef.current = THREE.MathUtils.clamp(
         velocityRef.current + dx * 0.03,
         -15,
-        15,
+        15
       );
-    };
-    const onUp = () => {
+    }
+    function onUp() {
       draggingRef.current = false;
-      if (wrapperRef.current) wrapperRef.current.style.cursor = 'grab';
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-      window.removeEventListener('pointercancel', onUp);
-    };
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-    window.addEventListener('pointercancel', onUp);
-  };
+      if (wrapperRef.current) wrapperRef.current.style.cursor = "grab";
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+    }
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+  }
 
   return (
     <div
       ref={wrapperRef}
       className="h-full w-full cursor-grab select-none"
-      style={{ touchAction: 'none' }}
+      style={{ touchAction: "none" }}
       onPointerDown={onPointerDown}
     >
       <Canvas

@@ -1,9 +1,9 @@
-import { Callout as FumaCallout } from 'fumadocs-ui/components/callout';
-import type { ComponentProps, ReactNode } from 'react';
+import { Callout as FumaCallout } from "fumadocs-ui/components/callout";
+import type { ComponentProps, ReactNode } from "react";
 
-type LegacyType = 'info' | 'warning' | 'error' | 'success' | 'idea';
+type LegacyType = "info" | "warning" | "error" | "success" | "idea";
 
-type Props = Omit<ComponentProps<typeof FumaCallout>, 'type' | 'title'> & {
+type Props = Omit<ComponentProps<typeof FumaCallout>, "type" | "title"> & {
   type?: LegacyType;
   /** Mono caps label rendered above the body. */
   eyebrow?: ReactNode;
@@ -12,16 +12,17 @@ type Props = Omit<ComponentProps<typeof FumaCallout>, 'type' | 'title'> & {
   children: ReactNode;
 };
 
-const typeMap: Record<LegacyType, ComponentProps<typeof FumaCallout>['type']> = {
-  info: 'info',
-  warning: 'warn',
-  error: 'error',
-  success: 'success',
-  idea: 'idea',
-};
+const typeMap: Record<LegacyType, ComponentProps<typeof FumaCallout>["type"]> =
+  {
+    info: "info",
+    warning: "warn",
+    error: "error",
+    success: "success",
+    idea: "idea",
+  };
 
 export function Callout({
-  type = 'info',
+  type = "info",
   eyebrow,
   emoji: _emoji,
   children,
@@ -32,7 +33,7 @@ export function Callout({
       type={typeMap[type]}
       title={
         eyebrow ? (
-          <span className="font-mono text-[0.7rem] font-medium uppercase tracking-[0.06em] text-fd-muted-foreground">
+          <span className="text-fd-muted-foreground font-mono text-[0.7rem] font-medium tracking-[0.06em] uppercase">
             {eyebrow}
           </span>
         ) : undefined

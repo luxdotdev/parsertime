@@ -1,8 +1,4 @@
 {
   "title": "Settings",
-  "pages": [
-    "overview",
-    "billing",
-    "linked-accounts"
-  ]
+  "pages": ["overview", "billing", "linked-accounts"]
 }

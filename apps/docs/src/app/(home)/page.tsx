@@ -1,12 +1,12 @@
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
 import {
   LandingBrowse,
   LandingChangelog,
   LandingHero,
   LandingQuickstart,
-} from '@/components/landing/hero';
-import { LandingStructuredData } from '@/components/landing/structured-data';
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/lib/site';
+} from "@/components/landing/hero";
+import { LandingStructuredData } from "@/components/landing/structured-data";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 const TITLE = `${SITE_NAME} — Overwatch 2 scrim analytics reference`;
 
@@ -20,11 +20,11 @@ export const metadata: Metadata = {
     title: TITLE,
     description: SITE_DESCRIPTION,
     url: SITE_URL,
-    type: 'website',
+    type: "website",
     siteName: SITE_NAME,
   },
   twitter: {
-    card: 'summary_large_image',
+    card: "summary_large_image",
     title: TITLE,
     description: SITE_DESCRIPTION,
   },

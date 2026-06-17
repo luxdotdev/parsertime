@@ -12,8 +12,8 @@
     "lint": "next typegen && oxlint",
     "lint:json": "next typegen && oxlint --format=json --output-file=reports/lint.json",
     "test": "vitest",
-    "format": "oxfmt",
-    "format:check": "oxfmt --check",
+    "format": "oxfmt --config ./node_modules/@parsertime/lint-config/oxfmt.json",
+    "format:check": "oxfmt --config ./node_modules/@parsertime/lint-config/oxfmt.json --check",
     "typecheck": "next typegen && tsc --noEmit",
     "db:push": "prisma db push && prisma generate",
     "db:generate": "prisma generate",
@@ -175,6 +175,7 @@
     "zod": "^4.1.8"
   },
   "devDependencies": {
+    "@parsertime/lint-config": "workspace:*",
     "@tanstack/react-query-devtools": "^5.89.0",
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/color": "^4.2.0",

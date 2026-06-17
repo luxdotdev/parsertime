@@ -33,13 +33,13 @@ export const data = new SlashCommandBuilder()
   .setName("leaderboard")
   .setDescription("View hero leaderboard")
   .addStringOption((opt) =>
-    opt.setName("hero").setDescription("Hero name").setRequired(true),
+    opt.setName("hero").setDescription("Hero name").setRequired(true)
   )
   .addIntegerOption((opt) =>
     opt
       .setName("limit")
       .setDescription("Number of entries (default 10)")
-      .setRequired(false),
+      .setRequired(false)
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -50,7 +50,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   try {
     const result = await apiGet<LeaderboardData>(
-      `/api/bot/leaderboard?hero=${encodeURIComponent(hero)}&limit=${limit}`,
+      `/api/bot/leaderboard?hero=${encodeURIComponent(hero)}&limit=${limit}`
     );
 
     if (!result.success) {
@@ -85,7 +85,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     // Build monospace table
     const nameWidth = Math.max(
       ...lb.leaderboard.map((e) => e.player_name.length),
-      6,
+      6
     );
     const header =
       padRight("#", 3) +
@@ -115,7 +115,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       const highlights = top3
         .map(
           (e) =>
-            `${medalEmoji(e.rank)} ${e.player_name} · ${formatNumber(e.composite_sr)} CSR · Top ${e.percentile}%`,
+            `${medalEmoji(e.rank)} ${e.player_name} · ${formatNumber(e.composite_sr)} CSR · Top ${e.percentile}%`
         )
         .join("\n");
       embed.addFields({

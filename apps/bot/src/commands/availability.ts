@@ -30,21 +30,21 @@ export const data = new SlashCommandBuilder()
     sub
       .setName("setup")
       .setDescription(
-        "Get a private link to the team's availability settings page",
+        "Get a private link to the team's availability settings page"
       )
       .addIntegerOption((opt) =>
-        opt.setName("team_id").setDescription("Team ID").setRequired(true),
-      ),
+        opt.setName("team_id").setDescription("Team ID").setRequired(true)
+      )
   )
   .addSubcommand((sub) =>
     sub
       .setName("trigger")
       .setDescription(
-        "Post the weekly availability reminder for a team right now",
+        "Post the weekly availability reminder for a team right now"
       )
       .addIntegerOption((opt) =>
-        opt.setName("team_id").setDescription("Team ID").setRequired(true),
-      ),
+        opt.setName("team_id").setDescription("Team ID").setRequired(true)
+      )
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
@@ -54,7 +54,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (sub === "setup") {
     const url = `${PARSERTIME_BASE}/team/${teamId}/availability/settings`;
     const embed = brandEmbed("Availability settings").setDescription(
-      `Configure the availability calendar for team **${teamId}**:\n${url}\n\nYou'll need to sign in as the team owner or a manager to change settings.`,
+      `Configure the availability calendar for team **${teamId}**:\n${url}\n\nYou'll need to sign in as the team owner or a manager to change settings.`
     );
     await interaction.reply({
       embeds: [embed],
@@ -69,7 +69,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     const result = await apiPost<ReminderJob>(
       "/api/internal/availability/reminders/trigger",
       { teamId },
-      interaction.user.id,
+      interaction.user.id
     );
 
     if (!result.success) {
@@ -102,7 +102,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     }
 
     const embed = brandEmbed("Reminder posted").setDescription(
-      `Posted the weekly availability reminder for **${job.teamName}** in <#${job.channelId}>.\n\nThis does NOT consume the weekly reminder slot — the next scheduled reminder will still fire normally.`,
+      `Posted the weekly availability reminder for **${job.teamName}** in <#${job.channelId}>.\n\nThis does NOT consume the weekly reminder slot — the next scheduled reminder will still fire normally.`
     );
     await interaction.editReply({ embeds: [embed] });
     return;

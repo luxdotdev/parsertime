@@ -107,6 +107,6 @@ export async function execute(interaction: Interaction) {
         }
         span.end();
       }
-    },
+    }
   );
 }

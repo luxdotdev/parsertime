@@ -1,5 +1,5 @@
-import 'server-only';
-import { get } from '@vercel/edge-config';
+import "server-only";
+import { get } from "@vercel/edge-config";
 
 /**
  * Shape of the `latestUpdates` key in the shared Vercel Edge Config store.
@@ -12,8 +12,8 @@ export type LatestUpdate = {
 };
 
 const FALLBACK: LatestUpdate = {
-  title: 'v3.0 · TSR, Matchmaker, Telemetry',
-  url: '#landing-changelog',
+  title: "v3.0 · TSR, Matchmaker, Telemetry",
+  url: "#landing-changelog",
 };
 
 export async function getLatestUpdate(): Promise<LatestUpdate> {
@@ -22,11 +22,11 @@ export async function getLatestUpdate(): Promise<LatestUpdate> {
   if (!process.env.EDGE_CONFIG) return FALLBACK;
 
   try {
-    const result = await get<LatestUpdate>('latestUpdates');
+    const result = await get<LatestUpdate>("latestUpdates");
     if (
       !result ||
-      typeof result.title !== 'string' ||
-      typeof result.url !== 'string'
+      typeof result.title !== "string" ||
+      typeof result.url !== "string"
     ) {
       return FALLBACK;
     }

@@ -1,6 +1,6 @@
-import defaultMdxComponents from 'fumadocs-ui/mdx';
-import type { MDXComponents } from 'mdx/types';
-import { Callout } from './callout';
+import defaultMdxComponents from "fumadocs-ui/mdx";
+import type { MDXComponents } from "mdx/types";
+import { Callout } from "./callout";
 
 // R3F augments JSX.IntrinsicElements globally with strict-typed three.js
 // primitives, which breaks the `satisfies MDXComponents` check. The

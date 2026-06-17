@@ -29,7 +29,7 @@ const provider = new NodeTracerProvider({
     },
     {
       schemaUrl: "https://opentelemetry.io/schemas/1.37.0",
-    },
+    }
   ),
   spanProcessors: [
     ENVIRONMENT === "production"

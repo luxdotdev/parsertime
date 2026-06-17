@@ -21,19 +21,19 @@ async function fetchPending(apiUrl: string, secret: string) {
     `${apiUrl}/api/internal/availability/pending-reminders`,
     {
       headers: { Authorization: `Bearer ${secret}` },
-    },
+    }
   );
   if (!res.ok) {
     const body = await res.text().catch(() => "");
     throw new Error(
-      `pending-reminders ${res.status}${body ? `: ${body.slice(0, 120)}` : ""}`,
+      `pending-reminders ${res.status}${body ? `: ${body.slice(0, 120)}` : ""}`
     );
   }
   const contentType = res.headers.get("content-type") ?? "";
   if (!contentType.includes("application/json")) {
     const body = await res.text().catch(() => "");
     throw new Error(
-      `pending-reminders returned non-JSON (${contentType || "no content-type"})${body ? `: ${body.slice(0, 120)}` : ""}`,
+      `pending-reminders returned non-JSON (${contentType || "no content-type"})${body ? `: ${body.slice(0, 120)}` : ""}`
     );
   }
   const json = (await res.json()) as { pending: PendingReminder[] };
@@ -67,7 +67,10 @@ async function tick(client: Client, apiUrl: string, secret: string) {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     if (message !== lastFetchErrorMessage) {
-      logger.error({ type: "availability_reminder_fetch_failed", error: message });
+      logger.error({
+        type: "availability_reminder_fetch_failed",
+        error: message,
+      });
       lastFetchErrorMessage = message;
     }
     return;
@@ -123,6 +126,9 @@ export function startAvailabilityReminderScheduler(client: Client) {
     interval_ms: TICK_INTERVAL_MS,
   });
 
+  // Arrow keeps the post-guard narrowing of apiUrl/secret to `string`; a hoisted
+  // function declaration would widen them back to `string | undefined`.
+  // oxlint-disable-next-line func-style
   const run = () => {
     void tick(client, apiUrl, secret);
   };

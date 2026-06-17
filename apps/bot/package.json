@@ -8,6 +8,9 @@
     "start": "bun run index.ts",
     "dev": "bun --watch index.ts",
     "typecheck": "tsc --noEmit",
+    "lint": "oxlint",
+    "format": "oxfmt --config ./node_modules/@parsertime/lint-config/oxfmt.json",
+    "format:check": "oxfmt --config ./node_modules/@parsertime/lint-config/oxfmt.json --check",
     "db:generate": "prisma generate",
     "postinstall": "prisma generate"
   },
@@ -26,8 +29,11 @@
     "pg": "^8.20.0"
   },
   "devDependencies": {
+    "@parsertime/lint-config": "workspace:*",
     "@types/bun": "latest",
     "@types/pg": "^8.18.0",
+    "oxfmt": "^0.40.0",
+    "oxlint": "^1.58.0",
     "prisma": "^7.5.0",
     "typescript": "^5.7.3"
   }
