@@ -15,7 +15,21 @@ This is the repository for Parsertime, a web app written to help collegiate Over
 
 ## What's inside?
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app). It uses [Tailwind CSS](https://tailwindcss.com/) for styling, [Prisma](https://prisma.io) for the ORM, and [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres) for the database. It is deployed on [Vercel](https://vercel.com/).
+This is a [Turborepo](https://turborepo.com/) monorepo managed with [pnpm](https://pnpm.io/) workspaces. It contains three deployable services:
+
+| Path        | Package            | Description                                                                 | Deploy  |
+| ----------- | ------------------ | --------------------------------------------------------------------------- | ------- |
+| `apps/web`  | `parsertime`       | The web platform — Next.js, Tailwind CSS, Prisma, Postgres.                 | Vercel  |
+| `apps/docs` | `parsertime-docs`  | The documentation site — Next.js + [fumadocs](https://fumadocs.dev/).       | Vercel  |
+| `apps/bot`  | `parsertime-bot`   | The Discord bot — [discord.js](https://discord.js.org/), runs on Bun.       | Railway |
+
+Shared configuration lives under `packages/`:
+
+| Path                    | Package                   | Description                                  |
+| ----------------------- | ------------------------- | -------------------------------------------- |
+| `packages/lint-config`  | `@parsertime/lint-config` | Shared oxlint + oxfmt config for every app.  |
+
+The web app is deployed on [Vercel](https://vercel.com/) and uses [Prisma](https://prisma.io) as the ORM over Postgres.
 
 ## Features
 
@@ -28,7 +42,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 - **Frontend**: Next.js, Tailwind CSS, React Query, shadcn UI
 - **Backend**: Serverless Functions, Vercel Edge
-- **Tools**: Prisma ORM, Vitest, ESLint, Prettier
+- **Tools**: Turborepo, Prisma ORM, Vitest, oxlint, oxfmt
 - **Database**: Vercel Postgres (Neon), Upstash Redis, Vercel Blob, Vercel Edge Config
 - **Deployment**: Vercel
 
@@ -38,20 +52,21 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
    ```sh
    git clone https://github.com/luxdotdev/parsertime.git
    ```
-2. Install NPM packages:
+2. Install dependencies for every workspace from the repo root:
    ```sh
    pnpm install
    ```
-3. Set up your environment variables in a `.env` file based on the `.env.example` provided.
+3. Set up your environment variables. Each app reads its own env file (e.g. `apps/web/.env` based on `apps/web/.env.example`).
 
-4. Run the development server:
+4. Run the dev servers (Turborepo runs each app's `dev` task):
    ```bash
    pnpm dev
    ```
+   To run a single app: `pnpm --filter parsertime dev` (web), `--filter parsertime-docs`, or `--filter parsertime-bot`.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the web app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Common root scripts delegate to Turborepo across all packages: `pnpm build`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm format`.
 
 ## Useful Links
 
