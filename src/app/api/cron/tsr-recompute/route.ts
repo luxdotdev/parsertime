@@ -1,17 +1,10 @@
 import { Logger } from "@/lib/logger";
 import { recomputeAllTeamTsrSnapshots } from "@/lib/matchmaker/snapshot";
-import {
-  discoverAllTrackedChampionships,
-  ingestPlayerHistory,
-} from "@/lib/tsr/ingest";
 import { recomputeAllTsrs } from "@/lib/tsr/replay";
-import prisma from "@/lib/prisma";
 import { timingSafeEqual } from "node:crypto";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
-
-const REINGEST_BATCH_SIZE = 50;
 
 type AuthResult =
   | { ok: true }
@@ -39,6 +32,13 @@ function authorizeCron(req: Request): AuthResult {
   return { ok: true };
 }
 
+// This cron does ONLY the fast, network-free recalculation: replay every
+// already-ingested match into player ratings, then rebuild team snapshots.
+// Both run off the local DB and finish in seconds, so this stays well inside
+// the function budget and is safe to run frequently. The network-bound work
+// (championship discovery + stale-player history re-ingest) lives in the
+// separate /api/cron/tsr-enrich cron so a slow FACEIT API can never starve
+// the rating recalculation.
 export async function GET(req: Request): Promise<Response> {
   const startTime = Date.now();
   const wideEvent: Record<string, unknown> = {
@@ -62,48 +62,6 @@ export async function GET(req: Request): Promise<Response> {
     }
     wideEvent.auth_reason = "ok";
 
-    const discovery = await discoverAllTrackedChampionships();
-    wideEvent.discovery = {
-      organizers: discovery.length,
-      inserted: discovery.reduce((s, d) => s + d.inserted, 0),
-      updated: discovery.reduce((s, d) => s + d.updated, 0),
-      unclassified: discovery.reduce((s, d) => s + d.unclassified, 0),
-    };
-
-    const stalePlayers = await prisma.faceitPlayer.findMany({
-      where: { rosterEntries: { some: {} } },
-      orderBy: { lastSyncedAt: "asc" },
-      take: REINGEST_BATCH_SIZE,
-      select: { faceitPlayerId: true },
-    });
-    let reingestIngested = 0;
-    let reingestSkipped = 0;
-    let reingestFailures = 0;
-    for (const p of stalePlayers) {
-      try {
-        const r = await ingestPlayerHistory(p.faceitPlayerId, { maxPages: 5 });
-        reingestIngested += r.ingested;
-        reingestSkipped += r.skipped;
-        await prisma.faceitPlayer.update({
-          where: { faceitPlayerId: p.faceitPlayerId },
-          data: { lastSyncedAt: new Date() },
-        });
-      } catch (err) {
-        reingestFailures += 1;
-        Logger.warn({
-          event: "tsr.cron.reingest_failed",
-          faceit_player_id: p.faceitPlayerId,
-          error_message: err instanceof Error ? err.message : "unknown",
-        });
-      }
-    }
-    wideEvent.reingest = {
-      players_attempted: stalePlayers.length,
-      matches_ingested: reingestIngested,
-      matches_skipped: reingestSkipped,
-      failures: reingestFailures,
-    };
-
     const replay = await recomputeAllTsrs();
     wideEvent.replay = {
       matches_replayed: replay.matchesReplayed,
@@ -120,8 +78,6 @@ export async function GET(req: Request): Promise<Response> {
 
     return Response.json({
       ok: true,
-      discovery: wideEvent.discovery,
-      reingest: wideEvent.reingest,
       replay: wideEvent.replay,
       team_snapshots: wideEvent.team_snapshots,
     });

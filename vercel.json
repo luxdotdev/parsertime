@@ -25,6 +25,10 @@
       "schedule": "0 6 * * *"
     },
     {
+      "path": "/api/cron/tsr-enrich",
+      "schedule": "30 */6 * * *"
+    },
+    {
       "path": "/api/cron/fsr-recompute",
       "schedule": "30 6 * * *"
     },
