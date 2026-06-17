@@ -3,16 +3,19 @@
 // Usage:
 //   bun scripts/migrate-avatars-to-r2.ts            # dry-run (no writes)
 //   bun scripts/migrate-avatars-to-r2.ts --apply    # perform the migration
+//
+// Images at or under OVERSIZE_LIMIT are copied into R2 and the DB row is
+// rewritten to the proxy path. Anything larger is treated as junk (a legacy
+// pre-cap upload — e.g. one ~72 MB team image) and is NOT migrated; its DB row
+// is instead cleared to null so it falls back to the default generated avatar.
+// Either way the row stops pointing at Vercel Blob, so the verification gate can
+// pass and Blob read access can be removed safely.
 import { imageKey, imageProxyPath, isVercelBlobUrl } from "@/lib/avatar";
 import prisma from "@/lib/prisma";
 import { r2 } from "@/lib/r2";
 
 const APPLY = process.argv.includes("--apply");
-// Existing Blob images predate the 5 MB upload cap, so the backfill uses a much
-// higher ceiling — it must migrate whatever is already referenced. This is only
-// a sanity bound against a pathologically huge object; real avatars/banners are
-// well under it.
-const MAX_IMAGE_BYTES = 64 * 1024 * 1024;
+const OVERSIZE_LIMIT = 64 * 1024 * 1024;
 
 type Job =
   | { kind: "avatar"; id: string; url: string }
@@ -44,22 +47,42 @@ async function collectJobs(): Promise<Job[]> {
   return jobs;
 }
 
-async function migrateOne(job: Job): Promise<void> {
+async function writeField(job: Job, value: string | null): Promise<void> {
+  if (job.kind === "team") {
+    await prisma.team.update({
+      where: { id: Number(job.id) },
+      data: { image: value },
+    });
+  } else if (job.kind === "avatar") {
+    await prisma.user.update({ where: { id: job.id }, data: { image: value } });
+  } else {
+    await prisma.user.update({
+      where: { id: job.id },
+      data: { bannerImage: value },
+    });
+  }
+}
+
+type Outcome = "migrated" | "reset";
+
+async function processOne(job: Job): Promise<Outcome> {
   const res = await fetch(job.url);
   if (!res.ok) throw new Error(`fetch ${job.url} -> ${res.status}`);
 
-  const contentLength = res.headers.get("content-length");
-  if (contentLength && Number(contentLength) > MAX_IMAGE_BYTES) {
-    throw new Error(
-      `image is ${contentLength} bytes, over the ${MAX_IMAGE_BYTES} byte ceiling`
-    );
+  const declared = Number(res.headers.get("content-length") ?? "0");
+  if (declared > OVERSIZE_LIMIT) {
+    await writeField(job, null);
+    console.log(`reset ${job.kind} ${job.id} (${declared} bytes, too large)`);
+    return "reset";
   }
 
   const body = Buffer.from(await res.arrayBuffer());
-  if (body.byteLength > MAX_IMAGE_BYTES) {
-    throw new Error(
-      `image is ${body.byteLength} bytes, over the ${MAX_IMAGE_BYTES} byte ceiling`
+  if (body.byteLength > OVERSIZE_LIMIT) {
+    await writeField(job, null);
+    console.log(
+      `reset ${job.kind} ${job.id} (${body.byteLength} bytes, too large)`
     );
+    return "reset";
   }
 
   await r2.upload({
@@ -67,21 +90,9 @@ async function migrateOne(job: Job): Promise<void> {
     body,
     contentType: "image/png",
   });
-
-  const path = imageProxyPath(job.kind, job.id, Date.now());
-  if (job.kind === "team") {
-    await prisma.team.update({
-      where: { id: Number(job.id) },
-      data: { image: path },
-    });
-  } else if (job.kind === "avatar") {
-    await prisma.user.update({ where: { id: job.id }, data: { image: path } });
-  } else {
-    await prisma.user.update({
-      where: { id: job.id },
-      data: { bannerImage: path },
-    });
-  }
+  await writeField(job, imageProxyPath(job.kind, job.id, Date.now()));
+  console.log(`migrated ${job.kind} ${job.id}`);
+  return "migrated";
 }
 
 async function main() {
@@ -89,25 +100,28 @@ async function main() {
   console.log(`${jobs.length} image(s) still on Vercel Blob.`);
 
   if (!APPLY) {
-    for (const j of jobs) console.log(`  would migrate ${j.kind} ${j.id}`);
+    for (const j of jobs) console.log(`  would process ${j.kind} ${j.id}`);
     console.log("Dry-run only. Re-run with --apply to migrate.");
     return;
   }
 
-  let ok = 0;
+  let migrated = 0;
+  let reset = 0;
   const failures: { job: Job; error: string }[] = [];
   for (const job of jobs) {
     try {
-      await migrateOne(job);
-      ok += 1;
-      console.log(`migrated ${job.kind} ${job.id}`);
+      const outcome = await processOne(job);
+      if (outcome === "migrated") migrated += 1;
+      else reset += 1;
     } catch (error) {
       failures.push({ job, error: String(error) });
       console.error(`FAILED ${job.kind} ${job.id}: ${String(error)}`);
     }
   }
 
-  console.log(`Done. ${ok} migrated, ${failures.length} failed.`);
+  console.log(
+    `Done. ${migrated} migrated, ${reset} reset to default, ${failures.length} failed.`
+  );
   if (failures.length > 0) process.exitCode = 1;
 }
 
