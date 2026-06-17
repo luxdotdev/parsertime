@@ -73,16 +73,24 @@ export async function POST(req: NextRequest) {
     `${baseUrl}/team/join/${inviteToken}`
   );
 
+  // Avatar/team images are stored as relative proxy paths; email clients need
+  // absolute URLs, so prefix the site origin when the value is a local path.
+  function toAbsolute(value: string): string {
+    return value.startsWith("/") ? `${baseUrl}${value}` : value;
+  }
+
   const emailHtml = await render(
     TeamInviteUserEmail({
       username: inviteeEmail,
-      userImage:
-        invitee?.image ??
-        `https://avatar.vercel.sh/${normalizedInviteeEmail}.png`,
+      userImage: invitee?.image
+        ? toAbsolute(invitee.image)
+        : `https://avatar.vercel.sh/${normalizedInviteeEmail}.png`,
       invitedByUsername: user.name ?? "Unknown",
       invitedByEmail: user.email ?? "Unknown",
       teamName: team.name ?? "Unknown",
-      teamImage: team.image ?? `https://avatar.vercel.sh/${team.name}.png`,
+      teamImage: team.image
+        ? toAbsolute(team.image)
+        : `https://avatar.vercel.sh/${team.name}.png`,
       inviteLink: shortLink,
     })
   );
