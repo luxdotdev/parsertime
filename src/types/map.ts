@@ -26,6 +26,7 @@ export const mapNameToMapTypeMapping = {
   "Lijiang Tower": $Enums.MapType.Control,
   "Lijiang Tower (Lunar New Year)": $Enums.MapType.Control,
   Midtown: $Enums.MapType.Hybrid,
+  "Neon Junction": $Enums.MapType.Hybrid,
   Nepal: $Enums.MapType.Control,
   "New Junk City": $Enums.MapType.Flashpoint,
   "New Queen Street": $Enums.MapType.Push,

@@ -8,7 +8,11 @@ import {
   isVercelBlobUrl,
 } from "@/lib/avatar";
 import { $Enums } from "@/generated/prisma/browser";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
 
 describe("avatar helpers", () => {
   it("builds R2 keys per kind", () => {
@@ -17,14 +21,21 @@ describe("avatar helpers", () => {
     expect(imageKey("team", "42")).toBe("team-avatars/42.png");
   });
 
-  it("builds a relative, cache-busted proxy path", () => {
+  it("builds a relative, cache-busted proxy path for every kind", () => {
     expect(imageProxyPath("avatar", "user_123", 1700000000000)).toBe(
       "/api/image/avatar/user_123?v=1700000000000"
+    );
+    expect(imageProxyPath("banner", "user_123", 1700000000000)).toBe(
+      "/api/image/banner/user_123?v=1700000000000"
+    );
+    expect(imageProxyPath("team", "42", 1700000000000)).toBe(
+      "/api/image/team/42?v=1700000000000"
     );
   });
 
   it("validates image kinds against the whitelist", () => {
     expect(isImageKind("avatar")).toBe(true);
+    expect(isImageKind("banner")).toBe(true);
     expect(isImageKind("team")).toBe(true);
     expect(isImageKind("map-images")).toBe(false);
     expect(isImageKind("../secrets")).toBe(false);
@@ -37,6 +48,12 @@ describe("avatar helpers", () => {
         "https://s2qw9udutrlis7qk.public.blob.vercel-storage.com/avatars/x.png"
       )
     ).toBe(true);
+    // Non-https blob host is rejected (defensive parity with the cleanup cron).
+    expect(
+      isVercelBlobUrl(
+        "http://s2qw9udutrlis7qk.public.blob.vercel-storage.com/avatars/x.png"
+      )
+    ).toBe(false);
     expect(isVercelBlobUrl("/api/image/avatar/x?v=1")).toBe(false);
     expect(isVercelBlobUrl(null)).toBe(false);
     expect(isVercelBlobUrl("not a url")).toBe(false);
@@ -64,12 +81,9 @@ describe("avatar helpers", () => {
   });
 
   it("falls back to the production base URL", () => {
-    const env = process.env as Record<string, string | undefined>;
-    const prev = env.NEXTAUTH_URL;
-    delete env.NEXTAUTH_URL;
+    vi.stubEnv("NEXTAUTH_URL", undefined);
     expect(getBaseUrl()).toBe("https://parsertime.app");
-    env.NEXTAUTH_URL = "https://example.com/";
+    vi.stubEnv("NEXTAUTH_URL", "https://example.com/");
     expect(getBaseUrl()).toBe("https://example.com");
-    env.NEXTAUTH_URL = prev;
   });
 });

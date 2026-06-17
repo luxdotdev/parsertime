@@ -37,7 +37,11 @@ export function getBaseUrl(): string {
 export function isVercelBlobUrl(url: string | null | undefined): boolean {
   if (!url) return false;
   try {
-    return new URL(url).hostname.endsWith(".public.blob.vercel-storage.com");
+    const parsed = new URL(url);
+    return (
+      parsed.protocol === "https:" &&
+      parsed.hostname.endsWith(".public.blob.vercel-storage.com")
+    );
   } catch {
     return false;
   }
