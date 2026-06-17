@@ -1,0 +1,111 @@
+---
+title: "Routes"
+---
+
+The Routes tab shows where teams actually moved. Parsertime mines player
+positions out of the map and groups them into the **paths teams took** —
+from spawn until they made contact — then draws those paths over the map
+image. Instead of guessing how a team set up or rotated, you can see the
+routes themselves. It sits on the **Routes** tab of a scrim's map page.
+
+The goal is to answer two questions a coach usually has to infer from
+memory: *how does our team move from spawn to first contact*, and *do
+winning rounds take different routes than losing ones?* Routes is built
+for studying setups, rotations, and flank timings — the off-spawn
+movement that the killfeed and stat tables never show.
+
+## What It Shows
+
+Each route is a line traced across the map following a player's movement
+from a spawn up to their **first contact** of that life — the first time
+they deal or take damage, or get a kill. A new route begins at the round
+start and again every time a player respawns, so a single round produces
+one route per life rather than one long path. This "spawn to first
+contact" window is deliberate: it isolates the approach, before the fight
+scrambles everyone's positioning.
+
+Routes are drawn with direction markers so you can read them at a glance:
+
+- A **dot** marks where the route started, at spawn.
+- An **arrowhead** marks where it ended, pointing in the direction the
+  player was heading when they made contact.
+
+Routes are colored by how the round turned out — won, lost, or unknown —
+so you can compare the paths that led to wins against the ones that led
+to losses. The outcome is just the round's result, shown as a record
+(for example, "4 won / 1 lost") next to each group; it is not a claim
+that the route *caused* the win. Read it as correlation to investigate,
+not proof.
+
+Because many players run similar paths, Routes groups similar movement
+together and draws a representative path for each group by default,
+keeping the picture readable. You can switch to showing every individual
+route when you want the full detail.
+
+## Controls
+
+The viewer behaves like the other positional views:
+
+- **Zoom and pan**: scroll to zoom, drag to pan.
+- **Fit to routes**: the view opens framed to the routes that are
+  actually drawn, rather than the whole map image, so the playable area
+  fills the screen instead of empty corners. You can freely zoom and pan
+  from there.
+- **Filters**: narrow the routes by team, player, round, and round
+  outcome, and toggle whether to show every route or just the
+  representative paths.
+
+## Control Maps
+
+On Control maps, the fight moves between capture points, so routes are
+**split per capture point into tabs**. Each tab is labeled with that
+point's name and shows only the routes from spawns that were active for
+that arena. The split is necessary, not just tidy: each capture point is
+a separate arena that occupies different (and overlapping) space, so
+layering them all on one image would draw routes on top of the wrong
+geometry. Splitting per point lets you study each point's setups
+separately and keeps every route on the image it belongs to. If a point
+never came up in the scrim, its tab shows an empty state.
+
+<Callout type="info">
+    The Routes tab is available on paid plans (Basic and Premium), and
+    like the heatmap and replay viewer it needs two things to work:
+    positional data on the scrim, and a calibrated map. Both are
+    required for a reason: routes are drawn from recorded world
+    coordinates, and a calibrated map is what lets those coordinates be
+    placed correctly on the image. Without positional data there are no
+    paths to draw; without calibration the paths can't be trusted to land
+    in the right place. If either is missing, the tab will not appear or
+    will show an empty state. Map calibration is handled by Parsertime
+    admins for supported maps.
+</Callout>
+
+<Callout type="warning">
+    If a map's calibration is off, recorded positions can land outside
+    the map image and routes can't be drawn meaningfully. When that
+    happens the tab shows a notice asking for the map to be recalibrated.
+    If you run into this on a supported map, let us know via
+    [Discord](https://parserti.me/discord) or at
+    [help@parsertime.app](mailto:help@parsertime.app).
+</Callout>
+
+## How to Use It
+
+Routes are best for studying movement away from the killfeed. Filter to
+one team and one round to see how they set up off spawn, or compare won
+rounds against lost rounds to see whether a different path correlates
+with a different result. Watch where routes fan out versus group up to
+read rotations and regroups, and look at the timing and angle of the
+arrowheads to study flank timings and where teams committed to contact.
+When a route raises a question, jump into the
+[Replay Viewer](/docs/maps/replay) to watch that moment play out in full.
+
+<Callout type="info">
+    Routes are reconstructed from the positions recorded as events happen
+    during a life, so out-of-combat travel is sampled less densely than a
+    continuous walk would be. Parsertime only draws the part of a path it
+    can actually support from the data and breaks the line where there's a
+    long gap, rather than inventing a straight shortcut across space the
+    player didn't visibly travel. Read routes as a faithful trace of the
+    approach into a fight, not a frame-by-frame footprint of every step.
+</Callout>

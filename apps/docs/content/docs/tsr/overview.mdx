@@ -1,0 +1,160 @@
+---
+title: "Tournament Skill Rating (TSR)"
+description: "How TSR is computed, where the tier anchors sit, and what makes it different from CSR."
+---
+
+TSR is a per-player rating grounded in **FACEIT-hosted Overwatch 2 tournament
+results**. Where [CSR](/docs/csr/overview) measures hero performance against
+the broader player pool, TSR measures tournament outcomes against the
+specific people you actually played. The two ratings live side by side and
+are deliberately not coupled.
+
+TSR is the rating that powers [Team TSR](/docs/tsr/team-tsr) and the
+[Matchmaker](/docs/matchmaker) bracket calls.
+
+## The scale
+
+- Range: **1 to 5000**, integer
+- Population mean: **2500**
+- Target standard deviation: roughly **750**
+- A rating of **4000** is roughly top 2.5%, **4250** is roughly top 1%
+- Gain is softly dampened above 4000 so the top of the ladder stays meaningful
+
+## Tier anchors
+
+Every player is anchored at the prior of the **highest tier they have ever
+played** in tracked tournaments, not the tier of their first observed match.
+
+| Highest tier reached | Prior |
+| -------------------- | ----- |
+| No tracked history   | 2500  |
+| Open                 | 2500  |
+| Calling All Heroes   | 2500  |
+| Advanced             | 2800  |
+| Expert               | 3100  |
+| Masters              | 3450  |
+| OWCS                 | 3850  |
+
+A player who once reached OWCS Main Event is anchored at 3850 from the start
+of their match history. Subsequent results move them organically.
+
+<Callout type="info" eyebrow="Why max-tier and not first-tier">
+  The first version of the system anchored on first observed tier. Players who
+  started in Open Qualifiers and later reached OWCS could not climb out;
+  inactive ex-OWCS players hovered at inflated ratings. Max-tier-prior fixes
+  both: active players start near where they belong, and the activity floor
+  handles surfacing.
+</Callout>
+
+## The match update
+
+For each completed, non-forfeit match in chronological order:
+
+```
+expected      = 1 / (1 + 10^((opp_rating - own_rating) / 400))
+delta         = K_base * mov_multiplier * recency_weight * (actual - expected)
+delta         = delta * gain_dampener
+new_rating    = clamp(own_rating + delta, 1, 5000)
+```
+
+The opposing-team rating is the **mean of the opposing roster's current TSRs**.
+
+### K factor
+
+| Matches played | K   |
+| -------------- | --- |
+| Under 5        | 48  |
+| 5 to 14        | 32  |
+| 15 to 29       | 24  |
+| 30 or more     | 16  |
+
+New players move fast; veterans move slow.
+
+### Margin of victory
+
+A 2-0 in a bo3 weighs more than a 2-1.
+
+| Format | Score | Multiplier |
+| ------ | ----- | ---------- |
+| bo3    | 2-0   | 1.50x      |
+| bo3    | 2-1   | 1.00x      |
+| bo5    | 3-0   | 1.50x      |
+| bo5    | 3-1   | 1.17x      |
+| bo5    | 3-2   | 0.83x      |
+| bo7    | 4-0   | 1.50x      |
+| bo7    | 4-1   | 1.25x      |
+| bo7    | 4-2   | 1.00x      |
+| bo7    | 4-3   | 0.875x     |
+
+### Recency weight
+
+Older matches count less, on a **365-day half-life**.
+
+| Match age   | Weight |
+| ----------- | ------ |
+| Today       | 1.00   |
+| 90 days     | 0.84   |
+| 180 days    | 0.71   |
+| 365 days    | 0.50   |
+| 730 days    | 0.25   |
+| 1095 days   | 0.125  |
+
+### Soft cap above 4000
+
+Gains are dampened as a player approaches the ceiling. Losses are **never**
+dampened, so a top-rated player upset by a much weaker opponent drops at full
+force.
+
+| Rating | Gain multiplier |
+| ------ | --------------- |
+| 4000   | 1.00            |
+| 4250   | 0.94            |
+| 4500   | 0.75            |
+| 4750   | 0.44            |
+| 4900   | 0.19            |
+| 5000   | 0.00            |
+
+## Forfeits and roster credit
+
+Matches with FACEIT status `cancelled` or `aborted`, or where a team
+forfeited, are **skipped entirely**. Neither side's rating moves.
+
+By default, every player on the registered FACEIT roster receives credit for
+the match. A sub-override table lets admins exclude a rostered player who did
+not actually compete, or include a substitute who did. Override is per match.
+
+## Regions
+
+There are two ladders: **NA** and **EMEA**. Each player has one regional TSR,
+assigned by their first observed FACEIT region. Cross-region matches (LAN
+events, OWWC inter-conference) update each side's regional rating against the
+opponent's regional rating, which keeps the ladders calibrated over time.
+
+APAC and China play is not on FACEIT, and is out of scope.
+
+## Activity floor
+
+Every player has a computed TSR. To appear on the public leaderboard, a
+player must have at least **3 matches in the last 365 days**. Inactive
+players still have a rating; it just is not surfaced publicly.
+
+## How often it updates
+
+- A **daily** scheduled job recomputes the full population.
+- FACEIT `match_status_finished` webhooks trigger an **on-demand recompute**
+  for the affected players.
+
+A full recompute is fast: a few thousand players against a few hundred
+matches each replays in seconds.
+
+## Linking FACEIT to your account
+
+Connect your FACEIT account from
+[Settings &rarr; Linked Accounts](/docs/settings/linked-accounts). Once
+linked, your tournament history is replayed into the system on the next
+daily cron, and you appear on the [TSR leaderboard](/docs/tsr/leaderboard)
+if you clear the activity floor.
+
+Players who have not linked FACEIT but show up on a registered roster are
+still tracked. They appear under their BattleTag in the leaderboard and on
+team pages.

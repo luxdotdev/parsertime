@@ -1,0 +1,91 @@
+---
+title: "Logging & Importing Games"
+---
+
+The Ranked tracker is only as useful as the data behind it. There are two ways
+to get your games in, and both exist on purpose: log them one at a time with
+the match form, or import a whole batch at once from a JSON bundle. The match
+form is for keeping up game-to-game as you climb; the bulk importer is for
+seeding your history in one go — for example bringing over data you tracked
+elsewhere — so you do not have to retype hundreds of games to get a meaningful
+dashboard.
+
+## Logging a game
+
+On the `/ranked` page, use the match form to record a single ranked game. For
+each game you provide:
+
+- **Map** — chosen from the ranked map pool.
+- **Result** — win, loss, or draw.
+- **Group size** — whether you queued solo (1) or in a group of up to five.
+- **Date and time** — when the game was played.
+- **Heroes** — the heroes you played and roughly what share of the game you
+  spent on each, entered as percentages. The role for each hero is filled in
+  automatically.
+
+The maps and heroes you can choose come from the same Overwatch data the rest
+of Parsertime uses, so your Ranked games stay consistent with everything else
+in the app. This is also why imports that reference a map or hero Parsertime
+does not recognize are skipped (see below) — the tracker only stores games it
+can line up against known maps and heroes.
+
+<Callout type="info">
+  Your hero percentages must add up to 100. If you played a single hero the
+  whole game, that hero is 100%. If you swapped, split the time across the
+  heroes you played so the total comes to exactly 100.
+</Callout>
+
+You can add more than one game in a single sitting before saving, which makes
+catching up on a session quick.
+
+## Bulk import
+
+If you already have a history of games recorded elsewhere, you can bring them
+all in at once. On the `/ranked` page, use the import option to select a JSON
+bundle from your computer. The file is read in your browser and sent to
+Parsertime, which validates it and adds your games.
+
+The importer is **idempotent**, which means importing the same bundle twice is
+safe. Each game in a bundle carries its own identifier, and Parsertime tracks
+which games it has already seen for your account. When you import, you get a
+clear count back:
+
+- **Imported** — new games that were added.
+- **Skipped** — games that were already present, so they were left untouched.
+- **Invalid** — games that did not pass validation and were ignored.
+
+Because of this, you can re-import an updated bundle at any time and only the
+new games will be added.
+
+<Callout type="warning">
+  The bundle must be valid JSON in the expected ranked export format. Each game
+  needs a known map, a result of win, loss, or draw, a group size, a played-at
+  timestamp, and a list of heroes whose percentages add up to 100. Games that
+  reference an unknown map or hero, or whose percentages do not total 100, are
+  counted as invalid and skipped rather than blocking the rest of the import.
+</Callout>
+
+## Auto-claim on sign-in
+
+You do not always have to be signed in for a bundle to reach your account.
+Ranked import data can be parked ahead of time and matched to you when you next
+sign in. Parsertime looks for parked data that belongs to you first by your
+email address, and if that does not match, by a linked sign-in account (for
+example the Google, Discord, or GitHub account you log in with). When it finds
+a match, it claims that data and imports it into your Ranked tracker
+automatically. The same idempotent rules apply, so nothing gets duplicated.
+
+This matters most if you used the standalone winrate tracker before it became
+part of Parsertime. Your old games were set aside and tied to the identity you
+used there, so the first time you sign in to Parsertime with the same email or
+linked account, they simply appear in your dashboard — no manual step required.
+If your data was prepared for you for any other reason, it works the same way.
+
+## Removing a game
+
+If you log something by mistake, you can delete individual games from your match
+list on the `/ranked` page. Removing a game updates your stats immediately.
+
+If you run into trouble importing, reach out on
+[Discord](https://parserti.me/discord) or email
+[help@parsertime.app](mailto:help@parsertime.app).

@@ -1,0 +1,92 @@
+---
+title: "Positional"
+---
+
+The Positional tab rolls up your team's positioning data across every map that
+has it, giving a team-level read on how your players engage, hold space, and use
+ultimates. It aggregates the same positional measures you see per scrim into a
+single picture of the roster's spatial tendencies.
+
+Every positional measure is defined identically at the map, scrim, and team
+level — the team number is just the per-map values averaged up, never a
+separately calculated stat. That's what makes the comparison trustworthy: a
+player's reading on one map, their own scrim, and the team's average are all the
+same metric, so an outlier really is an outlier and not an artifact of two
+numbers that share a label. See the per-player
+[Positioning](/docs/profile/positioning) card for the same metrics at the
+individual level.
+
+<Callout type="warning">
+    The Positional tab is gated. It requires positional data on your scrims and a
+    paid plan (Basic or Premium). Older scrims parsed before positional data
+    support was added, and maps that have not been calibrated, do not contribute.
+    If your team has no positional data yet, the tab shows an empty state. Map
+    calibration is handled by Parsertime admins for supported maps.
+</Callout>
+
+## What It Aggregates
+
+The tab pools positional measures over a recent window of scrims and presents
+them at the team level. The headline section is a ribbon of team averages across
+the core positional stats, including:
+
+- **Average engagement distance** — the average 3D distance, in meters, between
+  attacker and victim on your team's final blows.
+- **High-ground kill percentage** — share of kills taken while at least 5 meters
+  above the victim (a deliberately conservative floor that ignores stairs and
+  slopes).
+- **Isolation death percentage** — share of deaths with no teammate within 15
+  meters to peel.
+- **Average fight-start spread** — average distance, in meters, between players
+  at the start of each fight, a read on how grouped or spread the team is.
+- **Ultimate conversion, displacement, and on-objective rates** — how
+  effectively and where ultimates land: conversion kills count team kills within
+  8 seconds and 20 meters of an ult's start, and on-objective rate needs the
+  map's objective zones to be published.
+
+Each value is a team average over a recent window of scrims (roughly the last
+ten), so it reflects current habits rather than any single game or your full
+history.
+
+## Trends and Per-Player Breakdown
+
+Beyond the averages, the tab adds:
+
+- **Per-stat trend sparklines** — each positional stat plotted over the recent
+  scrim window, so you can see whether a habit is improving, slipping, or steady.
+- **Per-player deviation heatmap** — a grid showing how each player sits above or
+  below the team's average on each stat, which makes individual outliers easy to
+  spot.
+
+## Engagement, Zone, and Route Rollups
+
+When the underlying data is present, the tab also surfaces spatial summaries
+pooled across the team's maps:
+
+- **Engagement winrate** — overall fights won, lost, and even, with a breakdown
+  by zone where zone data exists.
+- **Zone control by map** — how often your team holds key areas on each map.
+- **Routes by map** — engagement outcomes broken down per map, so you can see
+  which maps your positioning serves well and which it doesn't.
+
+These mirror the per-scrim positional visualizations, aggregated so you read the
+team's overall tendencies instead of one map at a time.
+
+## Per-Map Counterparts
+
+The Positional tab is the team-wide view. To dig into a single map, use the
+per-map tools on a scrim's map page:
+
+- The [heatmap](/docs/maps/heatmap) shows where events happened on one map.
+- [Routes](/docs/maps/routes) shows movement and engagement paths for one map.
+
+The Positional tab tells you the team's overall habits; the per-map views tell
+you exactly where those habits play out.
+
+## How to Use It
+
+Read the team averages first to anchor your team's style, then check the
+sparklines to see which habits are trending the wrong way. Use the per-player
+heatmap to find who is driving an outlier, then drop into the per-map
+[heatmap](/docs/maps/heatmap) and [routes](/docs/maps/routes) to see the positioning in
+context before you bring it to a review.

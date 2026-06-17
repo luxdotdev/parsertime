@@ -1,0 +1,75 @@
+---
+title: "TSR Leaderboard"
+description: "The tournament leaderboard, what the tier ladder shows, and how to read the detail panel."
+---
+
+The TSR leaderboard lives at `/leaderboard/tsr` and is reached from the
+**Skill Ratings** hub at `/leaderboard`. CSR has its own board at
+`/leaderboard/csr`; the two surface the same kinds of data with different
+inputs.
+
+## What the table shows
+
+Each row is a single player who clears the activity floor (at least 3
+tracked tournament matches in the last 365 days).
+
+- **Rank**, region-scoped (NA or EMEA)
+- **BattleTag**, with the FACEIT nickname demoted to a hover
+- **Tier**, the player's current bucket on the ladder
+- **TSR**, integer 1 to 5000
+- **Matches played**, total tracked
+- **Last match**, relative date
+
+Filtering by region, tier, and organizer is server-side via the leaderboard
+API; the board paginates with load-more.
+
+## The tier ladder
+
+The ladder visualization clamps to a **4300 ceiling** for visible
+granularity. The full 1 to 5000 scale label is shown for context, but the
+ladder zooms into the band where most active players live so the spacing is
+readable.
+
+| Tier      | Band         |
+| --------- | ------------ |
+| Open      | Under 2800   |
+| Advanced  | 2800 to 3099 |
+| Expert    | 3100 to 3449 |
+| Masters   | 3450 to 3849 |
+| OWCS      | 3850 and up  |
+
+## The detail panel
+
+Selecting a player opens a server-rendered breakdown.
+
+- **Tier ladder** showing where the player sits relative to the bracket
+  cutoffs, with their current rating marked
+- **Record**, wins and losses across the active window, broken out by tier
+- **Factors radar** combining recency weight, margin of victory, opponent
+  strength, and match count; a quick read of what is moving their rating
+- **Recent matches** with opponent, score, tier, and the rating delta
+  attributable to that match
+
+The detail panel is the place to verify whether a player's rating is being
+held up by old OWCS results, by a recent run of upsets, or by consistent
+mid-tier wins.
+
+## Linking through to a player
+
+BattleTag is the canonical handle. Click any row to reach
+`/stats/[playerName]`, which now leads with the [CSR performance
+breakdown](/docs/stats/player-stats) plus the player's TSR card. FACEIT
+nickname is a secondary identifier and is shown only where it differs from
+the BattleTag.
+
+## Filtering
+
+The leaderboard filters are URL-driven; bookmarkable views work for any
+region, tier, and organizer combination. Filtering happens on the server, so
+moving across pages does not redo client-side work.
+
+<Callout type="info">
+  If a player you expect to see is missing, check the activity window. A
+  player with no tracked match in the last 365 days has a TSR, but is not
+  publicly ranked. Admin views surface them.
+</Callout>

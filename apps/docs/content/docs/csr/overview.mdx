@@ -1,0 +1,89 @@
+---
+title: "Composite Skill Rating (CSR)"
+---
+
+<Callout type="info" eyebrow="Two ratings, side by side">
+  CSR is a per-hero rating derived from your stats. [TSR](/docs/tsr/overview)
+  is a per-player rating derived from tournament outcomes. They live side by
+  side and are not coupled. The skill ratings hub at `/leaderboard` is the
+  shared entry point; CSR is at `/leaderboard/csr`, TSR is at
+  `/leaderboard/tsr`.
+</Callout>
+
+A composite skill rating (CSR) system is a skill rating derived from your statistical performance compared to the average player on a specific hero.
+
+![Most Played Heroes](/most-played-heroes.png)
+
+For specific maps, each stat individually has its own skill rating as well. Your average per 10 minutes is compared to the average player, and the difference is converted into a skill rating. Each stat's skill rating is then combined into a composite skill rating that summarizes your overall performance on that hero.
+
+![Hero skill rating](/hero-sr.png)
+
+For a player's profile, the CSR is calculated by their **overall averages**. All of their stats are averaged per 10 minutes and compared to the average player. Therefore, general outliers do not affect the CSR as heavily as they do for individual maps. Note that the profile SR is NOT an average of each map's hero SR.
+
+![Hero comparison](/hero-comparison.png)
+
+### MVP Score
+
+![MVP Score](/mvp-score.png)
+
+A player's MVP score is calculated by their stats per 10 compared to the average player as well. This score is then converted to a range between ±100. Most scores will fall between ±50, with extreme outliers scoring above this range. This score is calculated differently than CSR, leading to a different distribution. MVP scores are recorded and can be viewed on your profile page. 
+
+### The Formula
+We calculate a **Z-Score** for each key statistic, which measures how many standard deviations you are above or below the average.
+- Stats are normalized to "per 10 minutes".
+- Positive stats (e.g., Eliminations) reward higher values.
+- Negative stats (e.g., Deaths, Damage Taken) reward lower values.
+
+### Role Weighting
+Each role prioritizes different stats. For example:
+- **Tank:** Prioritizes low Deaths (30%), Eliminations (20%), and Solo Kills (15%).
+- **Damage:** Prioritizes Eliminations (30%), Final Blows (20%), and Damage Dealt (20%).
+- **Support:** Prioritizes Healing (35%) and low Deaths (25%).
+Specific heroes like Mercy have unique weightings.
+
+### Final CSR Calculation
+The weighted Z-scores are summed and converted to an CSR scale centered at **2500** (average).
+```
+2500 + (Z_Score * (1250 / (1 + |Z_Score| / 3)))
+```
+This formula ensures that extreme outliers don't break the scale, while rewarding consistent high performance.
+
+### What is a good CSR?
+In this leaderboard system, player scores (SR) are distributed along a bell curve, also known as a _normal distribution_. This means most players will have scores clustered around the **average**, and fewer players will have extremely high or low scores.
+
+The **average SR** is 2500, representing the skill level of a typical player. Scores above 2500 are considered above average, while those below 2500 are below average.
+
+The concept of the bell curve ensures that:
+
+- Most players will have SRs close to 2500.
+- A "good" SR is typically anything above the average (2500).
+- The further your SR is above 2500, the rarer and more impressive your ranking.
+
+**Standard deviation** is used to measure how spread out the scores are around the average. If your SR is one standard deviation (_about 300-400 SR_) above 2500, you're already in roughly the top 16% of players. The higher your SR relative to 2500, the fewer players have achieved that score.
+
+## Raw vs Adjusted CSR
+
+Two flavors of CSR are surfaced:
+
+- **Raw CSR** is the unchanged Z-score described above. Same hero, same
+  global pool, same scale. This is what you see on profile cards and what
+  feeds the [leaderboard](/docs/csr/leaderboard).
+- **Adjusted CSR** is a display-only metric that compares you to peers
+  inside your current [TSR](/docs/tsr/overview) tier, not the entire
+  player pool. It answers a different question: "how does this player's
+  hero performance compare against peers in their tier?"
+
+Adjusted CSR uses the same per-10 stat model as Raw CSR; only the baseline
+changes. Inside each TSR tier, players are scored against their tier peers,
+then anchored at the tier's TSR prior.
+
+| Current TSR rating | Adjusted CSR anchor    |
+| ------------------ | ---------------------- |
+| Under 2800         | 2500 (Open)            |
+| 2800 to 3099       | 2800 (Advanced)        |
+| 3100 to 3449       | 3100 (Expert)          |
+| 3450 to 3849       | 3450 (Masters)         |
+| 3850 and up        | 3850 (OWCS)            |
+
+Adjusted CSR is meant for the question "who is climbing within their
+bracket?" Raw CSR is the cross-bracket baseline.

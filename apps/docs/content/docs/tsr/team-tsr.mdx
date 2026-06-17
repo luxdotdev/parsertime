@@ -1,0 +1,79 @@
+---
+title: "Team TSR"
+description: "How team rating is rolled up from player TSRs, how unrostered players are handled, and what the confidence label means."
+---
+
+Team TSR is the team-level rating that powers the
+[Matchmaker](/docs/matchmaker) and the team page header. It is recomputed
+nightly and on demand whenever a contributing player's TSR moves.
+
+## How it's calculated
+
+```
+team_tsr = mean(player_tsr for player in starting_5)
+```
+
+A plain mean across the five most-played players on the team's scrims, with
+playtime weighting determining who counts as a starter. Role weighting and
+weakest-link floors are deliberately deferred until there is real Team TSR
+data to A/B against.
+
+The card on the team page shows the rating, the bracket bucket, and a
+**confidence label**. Confidence reflects how much of the rating is real
+versus predicted.
+
+| Real player TSRs on the team | Source         | Confidence       |
+| ---------------------------- | -------------- | ---------------- |
+| 5 of 5                       | `tsr`          | high             |
+| 4 of 5                       | `predicted`    | high             |
+| 3 of 5                       | `predicted`    | medium           |
+| 0 to 2 of 5                  | `csr_fallback` | low              |
+
+## Predicted TSR for unrostered players
+
+When a team has 3 or 4 players with real TSRs, the system **predicts** the
+rating of the unrostered players from CSR and the team-level TSR offset.
+
+```
+team_offset    = mean(player.TSR - player.composite_CSR for rostered players)
+predicted_TSR  = clamp(unrostered.composite_CSR + team_offset, 1, 5000)
+```
+
+The intuition is that a team's TSR and CSR usually move together by a roughly
+constant offset; that offset is the team's "skill above what raw stats
+suggest." Applying it to an unrostered player's composite CSR gets a fair
+estimate of where they would sit on the TSR ladder.
+
+If the rostered players' offsets disagree too much (high variance), the
+prediction is still produced but **confidence drops to low**.
+
+## CSR fallback
+
+When fewer than 3 players have a real TSR, predicted TSR becomes unreliable.
+The card falls back to a **CSR-only team rating**, marked
+`source = "csr_fallback"` with low confidence. This rating still lets the
+Matchmaker propose scrims; it just makes the uncertainty visible.
+
+## Roster weighting and the scrim bracket
+
+Team TSR is **playtime-weighted across the team's scrims**, not across all
+their scrims. A player who logged 50 hours on the team but has not played a
+scrim with them in two months will not contribute proportionally; the rating
+reflects the lineup that is actually playing today.
+
+The team page shows a **scrim bracket chip** alongside Team TSR, derived
+from the rating using the same tier anchors as TSR itself. The Matchmaker
+uses the bracket, not the raw rating, to pair adjacent teams.
+
+## The two-scrim minimum
+
+Team TSR only renders once a team has uploaded **at least two scrims**.
+Below that, the team page shows the rating slot as empty and the Matchmaker
+will not list the team. This avoids inflating a brand-new team's rating off
+a single noisy match.
+
+<Callout type="info">
+  Snapshots run as part of the daily cron and refresh after every scrim
+  upload that materially changes the lineup. There is no manual recompute
+  button — uploading a scrim is the trigger.
+</Callout>

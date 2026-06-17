@@ -1,0 +1,77 @@
+---
+title: "Overview"
+---
+
+FACEIT Scouting turns the FACEIT Overwatch ladder into something you can
+prepare against. Instead of clicking through match pages and guessing,
+you search a team or a player and get a structured report: how they win,
+what maps and heroes move their results, who is on the roster, and how
+good each player actually is relative to their peers.
+
+It is built for the coach or analyst doing opponent prep the night before
+a match. The point is not raw data; FACEIT already has that. The point is
+the read — the few things you can actually act on when you sit down to
+plan a ban phase or a map veto.
+
+<Callout type="info">
+  FACEIT Scouting is a premium feature, gated behind a feature flag. It may
+  not be available on every account. If you do not see it and think you
+  should, reach out at [help@parsertime.app](mailto:help@parsertime.app) or
+  in [Discord](https://parserti.me/discord).
+</Callout>
+
+## What it covers
+
+The feature lives under `/faceit` and is split into two areas.
+
+- **[Team Scouting](/docs/scouting/team-scouting)** — search a FACEIT team
+  and open its profile. You get recent form, the tiers they have played,
+  map and mode performance, an attack-versus-defense split, a hero ban
+  environment, a patch timeline of how they have done across balance eras,
+  the roster, and a condensed game plan of maps to force or avoid and heroes
+  to ban or leave open.
+- **[Player Scouting](/docs/scouting/player-scouting)** — search a FACEIT
+  player and open their profile. You get a threat assessment, their FSR
+  (FACEIT Skill Rating) broken out by role and tier, a per-stat profile
+  versus peers, role usage, map win rates, full match history, and the
+  teams they have played for.
+
+Both areas are searchable from their own page, and they link into each
+other: a team's roster links to each player, and a player's history and
+team list link back to the teams they have appeared on.
+
+## What FSR is
+
+FSR (FACEIT Skill Rating) is a single number, on a **1–5000 scale**, that
+estimates how good a FACEIT player is from their in-game statistics — not
+from wins and losses. It is built per role and anchored to the tier a
+player competes in, so a player's output is always compared against peers
+playing the same role at the same level rather than against the entire
+ladder.
+
+In short, FSR answers "how strong is this player for their tier and role?"
+A high FSR means they are putting up output well above their tier peers;
+a middling FSR means they look like a typical player at that level. Because
+every stat is measured against same-role, same-tier peers, the number is
+"good for their level," not an absolute power ranking — so a high FSR
+anchored at Open does not outrank a solid one earned at Masters. FSR is
+explained in depth on the
+[Player Scouting](/docs/scouting/player-scouting) page, including what the
+percentile and per-stat breakdown mean.
+
+Treat FSR as a scouting estimate, not ground truth. It is built from a
+fixed set of FACEIT stats with no hero or comp context (FACEIT does not
+expose either), so it captures statistical output, not playmaking,
+positioning, or shotcalling. Read it alongside the rest of the profile.
+
+## How to use it
+
+- **Before a match**, scout the opposing team first to set your map and ban
+  plan, then drill into individual players to find who to target and who to
+  respect.
+- **When you only have a player name** (a known smurf or a transfer), start
+  from player search and use their team list to find who they currently
+  run with.
+- **Treat low-sample readings carefully.** Where there is not enough data
+  to trust a number, the profile marks it as low sample or leaves the
+  player unrated rather than showing a misleading figure.

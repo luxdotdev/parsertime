@@ -1,0 +1,59 @@
+---
+title: "Heatmap"
+---
+
+The heatmap shows where events happened on the map. It sits on the
+**Heatmap** tab of a scrim's map page and overlays colored point
+clusters on top of the map image so you can see activity at a glance.
+
+The heatmap is available on paid plans (Basic and Premium). It needs
+positional data on the scrim and a calibrated map.
+
+<Callout type="info">
+    If the map has not been calibrated, the tab shows a
+    "No calibration available" message. If the scrim has no
+    coordinate data for the selected event type, it shows
+    "No coordinate data". Map calibration is handled by Parsertime
+    admins for supported maps.
+</Callout>
+
+## What You See
+
+The map image is overlaid with colored point clusters. Denser
+clusters indicate higher activity, and the intensity or opacity of
+each cluster reflects how often events occurred in that area.
+
+## Event Type Tabs
+
+Filter tabs at the top of the heatmap switch between event types:
+
+- **Kills**: locations where kills were scored.
+- **Deaths**: locations where players died.
+- **Fights**: the centers of each fight on the map.
+- **Damage**: locations where damage was dealt (where available).
+- **Healing**: locations where healing was applied (where available).
+
+Damage and Healing tabs appear only when the underlying data is
+present on the scrim.
+
+## Control Maps
+
+For Control game modes, each sub-map or round has its own tab at the
+top of the heatmap. Switch between them to compare activity across
+rounds on the same map.
+
+## How Coaches Use It
+
+The heatmap is a fast way to spot hot zones, common engagement
+lines, and positioning mistakes. Look for:
+
+- Clusters of deaths in the same spot, which may mean a player is
+  holding a bad angle.
+- Fight centers that drift away from the objective, which can point
+  to map control problems.
+- Damage or healing clusters that are far from where your team
+  actually won fights.
+
+Pair the heatmap with the [replay viewer](/maps/replay) to dig into
+any cluster that looks interesting. The heatmap tells you where to
+look; the replay viewer tells you what happened.

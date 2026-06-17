@@ -1,0 +1,142 @@
+---
+title: "Fight Initiation"
+---
+
+The Fight Initiation tab — sometimes called "Going First" — answers a
+simple but important question: **who started each teamfight, and did
+going first actually pay off?** Initiating a fight is a deliberate choice
+with real risk and reward, and this tab shows you, fight by fight,
+whether your team's openers were winning you fights or feeding the enemy.
+It sits on the **Initiation** tab of a scrim's map page.
+
+<Callout type="info">
+    "Going first" means **initiating the engagement** — throwing the
+    first punch and committing resources — not landing the first kill. A
+    team can clearly go first and still lose the opener, and Parsertime
+    keeps those cases (see [Confidence and Evidence](#confidence-and-evidence)).
+</Callout>
+
+## What It Answers
+
+Going first is not always good. A clean, coordinated commit that catches
+the enemy out of position wins fights; a hasty one that gets answered
+instantly loses them. Fight Initiation grades each teamfight by who
+threw the first punch and whether they came out ahead, so you can tell
+the difference between proactive, profitable aggression and just dying
+first.
+
+Crucially, initiation is treated as a **team** decision, not a single
+player's moment. The detector looks for **breadth of commitment** —
+several players engaging the enemy together — rather than one big damage
+spike. A lone Widowmaker headshot is a damage spike, but it is not your
+team going first; a two-player dive (say, Ball and Tracer diving in
+together) is. This is a deliberate choice: it keeps the stat honest, so
+the "who initiated" call reflects an actual team commitment you can hold
+the team accountable to, not a flashy pick that happened in isolation. A
+**hard commit** — an offensive ultimate, or multiple abilities fired off
+together — also counts as going first, because that is the team spending
+resources to open.
+
+## The Per-Map Inspector
+
+The tab opens with a pair of summary cells, one per team, showing each
+team's **win rate going first** and how many fights they initiated, along
+with a note on how many of the map's fights could be labeled. The win
+rate counts only fights with a clear initiator; **contested starts** are
+still listed in the timeline but left out of the win-rate math, since
+neither side truly went first.
+
+The inspector is read-only — there is no way to override a label by hand.
+That is by design: it exists so you can audit every call and see the
+evidence the detector used, fight by fight.
+
+Below that is a chronological timeline of every fight on the map. Each
+fight is a row with:
+
+- The **fight number** and the **time** it happened.
+- A **headline** describing the start: one team going first, or a
+  **contested start** when both teams committed at almost the same
+  moment. When no clear pre-fight commit is found (for example, an
+  instant pick out of neutral), the call falls back to whichever team
+  scored first and is marked **low confidence** so you know it is a
+  best-effort read.
+- Whether the initiator **won** or **lost** the fight, when both are
+  known. If a team went first and still lost, the row flags it as losing
+  the opener — exactly the situation worth reviewing. Parsertime keeps
+  these "went first, lost the opener" fights on purpose, because they are
+  the ones coaches most want to find.
+
+### Confidence and Evidence
+
+Detecting who went first is a judgement call, so every labeled fight
+carries a **confidence level** — high, medium, or low — shown with a
+small indicator. Confidence is built from three things: how cleanly the
+initiator committed **before** the enemy responded (a bigger head start
+reads cleaner), how many independent signals agree (damage breadth plus
+an ult plus an ability burst all pointing the same way), and a
+reactive-healing cross-check (the team being engaged on should show a
+healing spike just after — agreement raises confidence, contradiction
+caps it low rather than guessing).
+
+Treat the confidence chip as how much weight to put on a single fight.
+**High** confidence reads can be taken at face value in review. **Low**
+confidence reads — a near-simultaneous start, an instant pick with no
+clear opener, or signals that disagree — are worth opening in the
+[Replay Viewer](/docs/maps/replay) to confirm with your own eyes before
+you draw a conclusion. Confidence does not change the aggregate numbers;
+it just tells you how trustworthy each individual call is.
+
+Each fight also shows the supporting evidence behind the call, as small
+chips:
+
+- **Response gap** — how long the initiating team committed before the
+  other team responded (for example, "1.2s before response"). A bigger
+  gap is a cleaner initiation.
+- **Ability and ult commit signals** — whether the opener was backed by
+  an ultimate or a burst of offensive abilities fired together.
+- **Players committed** — how many of the initiating team pushed in
+  together.
+
+Behind the scenes the grader also cross-checks reactive healing — if the
+healing pattern contradicts the engagement read, the fight is graded
+with less confidence — so the labels stay honest about what the log can
+actually support.
+
+### Round Markers
+
+A **Rounds** toggle in the section header drops round-boundary markers
+into the timeline, showing where each round started, changed, and ended.
+This makes it easy to read initiation in the context of the map's
+structure — for example, whether your team consistently goes first on
+attack but plays reactively on defense.
+
+<Callout type="info">
+    Fight Initiation is not gated behind a plan or feature flag — it
+    shows up wherever the data supports it. Older maps parsed before the
+    detailed log format will show an unavailable message ("This map
+    predates the detailed log format, so fight initiation can't be
+    detected."), because the signals the detector relies on were not
+    captured.
+</Callout>
+
+## Team-Level Views
+
+The per-map inspector is the detailed view, but initiation is also rolled
+up so you can see the trend across a whole block or season:
+
+- The **Teamfights** tab on the [team stats page](/docs/team-stats/teamfights)
+  aggregates your win rate going first, how often you initiate, and your
+  win rate going second across every map with detailed logs.
+- The [scrim overview](/docs/scrims) has a Fight Initiations section that
+  summarizes initiation across all the maps in a single scrim.
+
+## How to Use It
+
+Read the per-map timeline to spot openers that lost — fights where your
+team went first and still lost the fight. Check the confidence and
+evidence to make sure the read is solid, then use the **Rounds** toggle
+to see whether the problem is tied to attack, defense, or a specific
+point. When you find a costly opener, jump into the
+[Replay Viewer](/docs/maps/replay) to see the commit itself, then bring the
+[Teamfights](/docs/team-stats/teamfights) trend to your review to check
+whether it is a one-off or a habit.

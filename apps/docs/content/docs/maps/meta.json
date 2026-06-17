@@ -1,0 +1,17 @@
+{
+  "pages": [
+    "overview",
+    "killfeed",
+    "charts",
+    "match-story",
+    "events",
+    "initiation",
+    "replay",
+    "heatmap",
+    "routes",
+    "tempo",
+    "telemetry",
+    "compare",
+    "hero-trends"
+  ]
+}

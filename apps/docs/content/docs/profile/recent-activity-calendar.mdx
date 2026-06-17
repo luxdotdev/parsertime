@@ -1,0 +1,50 @@
+---
+title: "Recent Activity Calendar"
+---
+
+GitHub-style activity heatmap showing scrim participation over time.
+
+![Recent Activity Calendar](/recent-activity-calendar.png)
+
+## Features
+
+**Year Selection**
+- Buttons on the left to switch between years (2023 to present)
+- Default view shows current year
+
+**Activity Visualization**
+- Each square represents one day
+- Color intensity indicates number of scrims played:
+  - Gray: No activity
+  - Light Green: 1-25% of max daily activity
+  - Medium Green: 25-50% of max daily activity
+  - Dark Green: 50-75% of max daily activity
+  - Darkest Green: 75-100% of max daily activity
+
+**Time Display**
+- **Current Year**: Shows last 52 weeks (rolling)
+- **Past Years**: Shows full calendar year (Jan 1 - Dec 31)
+- Day-of-week labels (Mon, Wed, Fri) on the left
+- Month labels across the top
+
+**Statistics Summary**
+- **Total Scrims**: Total number of scrims played in selected year
+- **Current Streak**: Consecutive days with activity (current year only)
+- **Longest Streak**: Longest consecutive day streak in selected year
+
+**Interactive Tooltips**
+- Hover over any day to see:
+  - Exact date
+  - Number of scrims played that day
+  - "No activity" for days without scrims
+
+**Activity Summary**
+- Displays total active days in the visible timeframe
+- Shows number of weeks displayed
+
+## Streak Calculation
+
+Streaks count consecutive days with at least one scrim:
+- Current streak only shows if you played today or yesterday
+- Longest streak accounts for all-time best consecutive days
+- Breaks with any day of inactivity
