@@ -10,7 +10,6 @@ import {
   aiChat,
   coachingCanvas,
   dataLabeling,
-  positionalData,
   scoutingTool,
   tournament,
 } from "@/lib/flags";
@@ -189,7 +188,6 @@ export async function Footer() {
     dataToolsEnabled,
     coachingCanvasEnabled,
     tournamentEnabled,
-    positionalDataEnabled,
   ] = await Promise.all([
     get<string>("version"),
     get<Route>("changelog"),
@@ -198,7 +196,6 @@ export async function Footer() {
     dataLabeling(),
     coachingCanvas(),
     tournament(),
-    positionalData(),
   ]);
 
   const columns: FooterColumn[] = [
