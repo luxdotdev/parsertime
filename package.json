@@ -1,0 +1,36 @@
+{
+  "name": "parsertime-monorepo",
+  "version": "3.0.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.9",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "format": "turbo run format"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.8"
+  },
+  "pnpm": {
+    "overrides": {
+      "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz",
+      "@types/react": "19.2.2",
+      "@types/react-dom": "19.2.2"
+    },
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@prisma/client",
+      "@prisma/engines",
+      "@tailwindcss/oxide",
+      "@vercel/speed-insights",
+      "esbuild",
+      "msgpackr-extract",
+      "prisma",
+      "protobufjs",
+      "sharp"
+    ]
+  }
+}

@@ -199,24 +199,5 @@
     "typescript": "^5.7.3",
     "vitest": "^3.2.4",
     "vitest-mock-extended": "^3.1.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz",
-      "@types/react": "19.2.2",
-      "@types/react-dom": "19.2.2"
-    },
-    "onlyBuiltDependencies": [
-      "@parcel/watcher",
-      "@prisma/client",
-      "@prisma/engines",
-      "@tailwindcss/oxide",
-      "@vercel/speed-insights",
-      "esbuild",
-      "msgpackr-extract",
-      "prisma",
-      "protobufjs",
-      "sharp"
-    ]
   }
 }

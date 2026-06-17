@@ -1,66 +1,48 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Repo-wide ignores. Each app under apps/* also has its own .gitignore.
 
 # dependencies
-/node_modules
-/.pnp
+node_modules/
+.pnp
 .pnp.js
 .yarn/install-state.gz
 .npmrc
 
+# build outputs
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# turborepo
+.turbo/
+
 # testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+coverage/
 
 # local env files
+.env
 .env*.local
 
 # vercel
 .vercel
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# editor / OS
+.DS_Store
+*.pem
+.idea/
 .vscode/settings.json
-.env
 
-# intellij
-.idea
+# debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# CI
-/reports
-
+# agents / tooling
 .claude/settings.local.json
-
-# Superpowers brainstorm files
 .superpowers/
-# next-agents-md
-.next-docs/
-# agent-browser auth state
+.worktrees/
 my-auth.json
 *.auth.json
-
-docs/superpowers/
-
-# git worktrees
-.worktrees/
-
-# WP training output (derived from user data — never commit)
-artifacts/
-
-# Prisma generated client
-src/generated/
