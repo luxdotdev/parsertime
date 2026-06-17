@@ -2,7 +2,7 @@ import { Logger } from "@/lib/logger";
 import { ingestMatchById } from "@/lib/tsr/ingest";
 import { recomputeAllTsrs } from "@/lib/tsr/replay";
 import { kv } from "@vercel/kv";
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { timingSafeEqual } from "node:crypto";
 
 export const runtime = "nodejs";
 
@@ -35,25 +35,20 @@ function eventTimestampToMs(timestamp: number | undefined): number | null {
   return timestamp > 1_000_000_000_000 ? timestamp : timestamp * 1000;
 }
 
-function verifySignature(rawBody: string, header: string | null): boolean {
+function verifySignature(header: string | null): boolean {
   const secret = process.env.FACEIT_WEBHOOK_SECRET;
   if (!secret) {
     // No secret configured — refuse rather than process unauthenticated input.
     return false;
   }
   if (!header) return false;
-  const expected = createHmac("sha256", secret).update(rawBody).digest("hex");
-  // FACEIT delivers the signature as `sha256=<hex>` per their webhook docs.
-  const provided = header.startsWith("sha256=") ? header.slice(7) : header;
+  // FACEIT does not HMAC-sign the request body. It echoes back, unchanged, the
+  // static security header value configured in App Studio. So we compare the
+  // incoming header to our shared secret with a timing-safe equality check.
+  const provided = Buffer.from(header);
+  const expected = Buffer.from(secret);
   if (provided.length !== expected.length) return false;
-  try {
-    return timingSafeEqual(
-      Buffer.from(provided, "hex"),
-      Buffer.from(expected, "hex")
-    );
-  } catch {
-    return false;
-  }
+  return timingSafeEqual(provided, expected);
 }
 
 export async function POST(req: Request): Promise<Response> {
@@ -71,7 +66,7 @@ export async function POST(req: Request): Promise<Response> {
       req.headers.get("x-faceit-signature-256") ??
       req.headers.get("x-faceit-signature");
 
-    if (!verifySignature(rawBody, sig)) {
+    if (!verifySignature(sig)) {
       wideEvent.outcome = "denied";
       wideEvent.signature_valid = false;
       wideEvent.status_code = 401;
