@@ -1,94 +1,71 @@
 import { getCurrentUser } from "@/lib/auth";
+import { auditLog } from "@/lib/audit-logs";
+import { imageKey, imageProxyPath } from "@/lib/avatar";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
+import { r2 } from "@/lib/r2";
 import { Ratelimit } from "@upstash/ratelimit";
 import { track } from "@vercel/analytics/server";
-import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { kv } from "@vercel/kv";
-import { type NextRequest, NextResponse } from "next/server";
+import { unauthorized } from "next/navigation";
+import { after, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
-  const body = (await request.json()) as HandleUploadBody;
-  const userId = request.nextUrl.searchParams.get("userId");
+export const runtime = "nodejs";
 
-  if (body.type === "blob.generate-client-token" && !userId) {
-    return NextResponse.json({ error: "userId is required" }, { status: 400 });
-  }
+const MAX_BYTES = 5 * 1024 * 1024;
 
-  Logger.info("Handling avatar upload request", {
-    userId: userId ?? "callback",
-    type: body.type,
-  });
+export async function POST(request: Request): Promise<NextResponse> {
+  const user = await getCurrentUser();
+  if (!user) unauthorized();
 
-  try {
-    const jsonResponse = await handleUpload({
-      body,
-      request,
-      onBeforeGenerateToken: async (pathname) => {
-        // pathname: string
-        /* clientPayload?: string, */
-        // Generate a client token for the browser to upload the file
-        // ⚠️ Authenticate and authorize users before generating the token.
-        // Otherwise, you're allowing anonymous uploads.
-        const authedUser = await getCurrentUser();
-        if (!authedUser) throw new Error("Unauthorized");
-        if (authedUser.id !== userId) throw new Error("Forbidden");
-        if (pathname !== `avatars/${authedUser.id}.png`) {
-          throw new Error("Invalid upload path");
-        }
-
-        const ratelimit = new Ratelimit({
-          redis: kv,
-          limiter: Ratelimit.slidingWindow(5, "1 m"),
-          analytics: true,
-        });
-        const { success } = await ratelimit.limit(
-          `api/image-upload/${authedUser.id}`
-        );
-        if (!success) throw new Error("Rate limit exceeded");
-
-        return {
-          tokenPayload: JSON.stringify({ userId: authedUser.id }),
-          allowedContentTypes: ["image/png", "image/jpeg", "image/webp"],
-          maximumSizeInBytes: 5 * 1024 * 1024,
-        };
-      },
-      onUploadCompleted: async ({ blob, tokenPayload }) => {
-        // Get notified of client upload completion
-        // ⚠️ This will not work on `localhost` websites,
-        // Use ngrok or similar to get the full upload flow
-
-        try {
-          // Run any logic after the file upload completed
-          const { userId } = JSON.parse(tokenPayload ?? "{}") as {
-            userId?: string;
-          };
-          if (!userId) throw new Error("Missing token payload userId");
-
-          Logger.info("Avatar blob upload completed", {
-            blobUrl: blob.url,
-            userId,
-          });
-          await track("Image Upload", { label: "User Avatar" });
-
-          await prisma.user.update({
-            where: { id: userId },
-            data: { image: blob.url },
-          });
-        } catch {
-          throw new Error("Could not update user");
-        }
-      },
-    });
-
-    return NextResponse.json(jsonResponse);
-  } catch (error) {
-    if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
+  if (request.headers.get("content-type") !== "image/png") {
     return NextResponse.json(
-      { error: "An unknown error occurred" },
-      { status: 400 } // The webhook will retry 5 times waiting for a 200
+      { error: "Only image/png is supported" },
+      { status: 415 }
     );
   }
+  if (Number(request.headers.get("content-length") ?? "0") > MAX_BYTES) {
+    return NextResponse.json({ error: "File too large" }, { status: 413 });
+  }
+
+  const ratelimit = new Ratelimit({
+    redis: kv,
+    limiter: Ratelimit.slidingWindow(5, "1 m"),
+    analytics: true,
+  });
+  const { success } = await ratelimit.limit(`api/image-upload/${user.id}`);
+  if (!success) {
+    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
+  }
+
+  const buffer = Buffer.from(await request.arrayBuffer());
+  if (buffer.byteLength === 0) {
+    return NextResponse.json({ error: "Empty body" }, { status: 400 });
+  }
+  if (buffer.byteLength > MAX_BYTES) {
+    return NextResponse.json({ error: "File too large" }, { status: 413 });
+  }
+
+  await r2.upload({
+    key: imageKey("avatar", user.id),
+    body: buffer,
+    contentType: "image/png",
+  });
+
+  const url = imageProxyPath("avatar", user.id, Date.now());
+  await prisma.user.update({ where: { id: user.id }, data: { image: url } });
+
+  Logger.info("Avatar uploaded to R2", { userId: user.id, url });
+  await track("Image Upload", { label: "User Avatar" });
+
+  after(async () => {
+    await auditLog.createAuditLog({
+      userEmail: user.email,
+      action: "USER_AVATAR_UPDATED",
+      target: user.email,
+      details: `Updated avatar for user ${user.email}`,
+    });
+  });
+
+  return NextResponse.json({ url });
 }
