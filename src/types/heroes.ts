@@ -1164,6 +1164,7 @@ export type DPS =
   | typeof Mei
   | typeof Pharah
   | typeof Reaper
+  | typeof Shion
   | typeof Sierra
   | typeof Sojourn
   | typeof Soldier76
@@ -1227,6 +1228,7 @@ export const heroRoleMapping: Record<HeroName, "Tank" | "Damage" | "Support"> =
     Reaper: "Damage",
     Reinhardt: "Tank",
     Roadhog: "Tank",
+    Shion: "Damage",
     Sierra: "Damage",
     Sigma: "Tank",
     Sojourn: "Damage",
@@ -1279,6 +1281,7 @@ export const roleHeroMapping: Record<
     "Mei",
     "Pharah",
     "Reaper",
+    "Shion",
     "Sierra",
     "Sojourn",
     "Soldier: 76",
@@ -1339,6 +1342,7 @@ export const subroleHeroMapping: Record<
     "Mei",
     "Pharah",
     "Reaper",
+    "Shion",
     "Sombra",
     "Symmetra",
     "Torbjörn",
@@ -1464,6 +1468,7 @@ export const allHeroes = [
   Reaper,
   Reinhardt,
   Roadhog,
+  Shion,
   Sierra,
   Sigma,
   Sojourn,
