@@ -8,9 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Logger } from "@/lib/logger";
-import type { User } from "@/generated/prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { upload } from "@vercel/blob/client";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import {
@@ -63,12 +61,10 @@ async function getCroppedImg(
 }
 
 export function BannerUpdateDialog({
-  user,
   isOpen,
   setIsOpen,
   selectedFile,
 }: {
-  user: User;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   selectedFile: File | null;
@@ -113,17 +109,10 @@ export function BannerUpdateDialog({
           croppedAreaPixels
         );
 
-        const { url } = await upload(`banners/${user.id}.png`, croppedImage, {
-          access: "public",
-          handleUploadUrl: `/api/user/banner-upload?userId=${user.id}`,
-        });
-
-        const res = await fetch("/api/user/update-banner", {
+        const res = await fetch("/api/user/banner-upload", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId: user.id, bannerImage: url }),
+          headers: { "Content-Type": "image/png" },
+          body: croppedImage,
         });
 
         if (res.ok) {

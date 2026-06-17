@@ -431,7 +431,6 @@ export function ProfileForm({
                   onClick={handleAvatarClick}
                 />
                 <AvatarUpdateDialog
-                  user={user}
                   isOpen={avatarDialogOpen}
                   setIsOpen={setAvatarDialogOpen}
                   selectedFile={selectedFile}
@@ -477,7 +476,6 @@ export function ProfileForm({
                     </button>
                   </AspectRatio>
                   <BannerUpdateDialog
-                    user={user}
                     isOpen={bannerDialogOpen}
                     setIsOpen={setBannerDialogOpen}
                     selectedFile={selectedBannerFile}

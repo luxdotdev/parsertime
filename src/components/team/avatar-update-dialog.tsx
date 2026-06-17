@@ -10,7 +10,6 @@ import {
 import { Logger } from "@/lib/logger";
 import type { Team } from "@/generated/prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { upload } from "@vercel/blob/client";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useCallback, useState } from "react";
@@ -93,21 +92,10 @@ export function AvatarUpdateDialog({
           selectedFile,
           croppedAreaPixels
         );
-        const { url } = await upload(
-          `team-avatars/${team.id}.png`,
-          croppedImage,
-          {
-            access: "public",
-            handleUploadUrl: `/api/team/avatar-upload?teamId=${team.id}`,
-          }
-        );
-
-        const res = await fetch("/api/team/update-avatar", {
+        const res = await fetch(`/api/team/avatar-upload?teamId=${team.id}`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ teamId: team.id, image: url }),
+          headers: { "Content-Type": "image/png" },
+          body: croppedImage,
         });
 
         if (res.ok) {

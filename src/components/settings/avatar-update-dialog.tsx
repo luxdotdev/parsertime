@@ -8,9 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Logger } from "@/lib/logger";
-import type { User } from "@/generated/prisma/client";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { upload } from "@vercel/blob/client";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useCallback, useState } from "react";
@@ -57,12 +55,10 @@ async function getCroppedImg(
 }
 
 export function AvatarUpdateDialog({
-  user,
   isOpen,
   setIsOpen,
   selectedFile,
 }: {
-  user: User;
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   selectedFile: File | null;
@@ -94,17 +90,10 @@ export function AvatarUpdateDialog({
           croppedAreaPixels
         );
 
-        const { url } = await upload(`avatars/${user.id}.png`, croppedImage, {
-          access: "public",
-          handleUploadUrl: `/api/user/avatar-upload?userId=${user.id}`,
-        });
-
-        const res = await fetch("/api/user/update-avatar", {
+        const res = await fetch("/api/user/avatar-upload", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId: user.id, image: url }),
+          headers: { "Content-Type": "image/png" },
+          body: croppedImage,
         });
 
         if (res.ok) {
