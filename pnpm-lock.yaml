@@ -14,7 +14,7 @@ importers:
   .:
     devDependencies:
       turbo:
-        specifier: ^2.5.8
+        specifier: ^2.9.18
         version: 2.9.18
 
   apps/bot:
