@@ -19,6 +19,10 @@ import type { AddMapRequestData } from "../add-map/route";
  * "OK". The non-streaming route is kept intact as a fallback; reverting this
  * feature is just pointing the client back at it.
  */
+// Large logs insert tens of thousands of event rows; give the function the
+// plan's maximum runtime so a big upload is never killed mid-insert.
+export const maxDuration = 800;
+
 export async function POST(req: NextRequest) {
   const startTime = Date.now();
   const event: Record<string, unknown> = {
