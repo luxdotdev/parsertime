@@ -23,7 +23,7 @@ export async function createDefensiveAssistsRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
   await db.defensiveAssist.createMany({
@@ -37,14 +37,6 @@ export async function createDefensiveAssistsRows(
       MapDataId: mapId,
     })),
   });
-
-  const defensiveAssistsByScrimId = await db.defensiveAssist.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return defensiveAssistsByScrimId;
 }
 
 export async function createDvaRemechRows(
@@ -59,7 +51,7 @@ export async function createDvaRemechRows(
     !data.dva_remech
   ) {
     Logger.log("No D.Va remechs found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
   await db.dvaRemech.createMany({
@@ -73,14 +65,6 @@ export async function createDvaRemechRows(
       MapDataId: mapId,
     })),
   });
-
-  const dvaRemechsByScrimId = await db.dvaRemech.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return dvaRemechsByScrimId;
 }
 
 export async function createEchoDuplicateEndRows(
@@ -100,7 +84,7 @@ export async function createEchoDuplicateEndRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
   await db.echoDuplicateEnd.createMany({
@@ -114,14 +98,6 @@ export async function createEchoDuplicateEndRows(
       MapDataId: mapId,
     })),
   });
-
-  const echoDuplicateEndsByScrimId = await db.echoDuplicateEnd.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return echoDuplicateEndsByScrimId;
 }
 
 export async function createEchoDuplicateStartRows(
@@ -141,7 +117,7 @@ export async function createEchoDuplicateStartRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
   await db.echoDuplicateStart.createMany({
@@ -156,16 +132,6 @@ export async function createEchoDuplicateStartRows(
       MapDataId: mapId,
     })),
   });
-
-  const echoDuplicateStartsByScrimId = await db.echoDuplicateStart.findMany(
-    {
-      where: {
-        scrimId: scrim.id,
-      },
-    }
-  );
-
-  return echoDuplicateStartsByScrimId;
 }
 
 export async function createHeroSpawnRows(
@@ -180,7 +146,7 @@ export async function createHeroSpawnRows(
     !data.hero_spawn
   ) {
     Logger.log("No hero spawns found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
   await db.heroSpawn.createMany({
@@ -195,14 +161,6 @@ export async function createHeroSpawnRows(
       MapDataId: mapId,
     })),
   });
-
-  const heroSpawnsByScrimId = await db.heroSpawn.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return heroSpawnsByScrimId;
 }
 
 export async function createHeroSwapRows(
@@ -217,7 +175,7 @@ export async function createHeroSwapRows(
     !data.hero_swap
   ) {
     Logger.log("No hero swaps found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
   await db.heroSwap.createMany({
@@ -232,14 +190,6 @@ export async function createHeroSwapRows(
       MapDataId: mapId,
     })),
   });
-
-  const heroSwapsByScrimId = await db.heroSwap.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return heroSwapsByScrimId;
 }
 
 export async function createKillRows(
@@ -254,7 +204,7 @@ export async function createKillRows(
     !data.kill
   ) {
     Logger.log("No kills found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
   await db.kill.createMany({
@@ -285,14 +235,6 @@ export async function createKillRows(
       };
     }),
   });
-
-  const killsByScrimId = await db.kill.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return killsByScrimId;
 }
 
 export async function createMatchEndRows(
@@ -307,7 +249,7 @@ export async function createMatchEndRows(
     !data.match_end
   ) {
     Logger.log("No match ends found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
   await db.matchEnd.createMany({
@@ -320,14 +262,6 @@ export async function createMatchEndRows(
       MapDataId: mapId,
     })),
   });
-
-  const matchEndsByScrimId = await db.matchEnd.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return matchEndsByScrimId;
 }
 
 export async function createMatchStartRows(
@@ -342,7 +276,7 @@ export async function createMatchStartRows(
     !data.match_start
   ) {
     Logger.log("No match starts found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
   await db.matchStart.createMany({
@@ -356,14 +290,6 @@ export async function createMatchStartRows(
       MapDataId: mapId,
     })),
   });
-
-  const matchStartsByScrimId = await db.matchStart.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return matchStartsByScrimId;
 }
 
 export async function createMercyRezRows(
@@ -378,7 +304,7 @@ export async function createMercyRezRows(
     !data.mercy_rez
   ) {
     Logger.log("No mercy rezzes found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
   await db.mercyRez.createMany({
@@ -394,14 +320,6 @@ export async function createMercyRezRows(
       MapDataId: mapId,
     })),
   });
-
-  const mercyRezzesByScrimId = await db.mercyRez.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return mercyRezzesByScrimId;
 }
 
 export async function createObjectiveCapturedRows(
@@ -421,7 +339,7 @@ export async function createObjectiveCapturedRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
   await db.objectiveCaptured.createMany({
@@ -437,14 +355,6 @@ export async function createObjectiveCapturedRows(
       MapDataId: mapId,
     })),
   });
-
-  const objectiveCapturesByScrimId = await db.objectiveCaptured.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return objectiveCapturesByScrimId;
 }
 
 export async function createObjectiveUpdatedRows(
@@ -464,7 +374,7 @@ export async function createObjectiveUpdatedRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
   await db.objectiveUpdated.createMany({
@@ -477,14 +387,6 @@ export async function createObjectiveUpdatedRows(
       MapDataId: mapId,
     })),
   });
-
-  const objectiveUpdatesByScrimId = await db.objectiveUpdated.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return objectiveUpdatesByScrimId;
 }
 
 export async function createOffensiveAssistRows(
@@ -504,7 +406,7 @@ export async function createOffensiveAssistRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
   await db.offensiveAssist.createMany({
@@ -518,14 +420,6 @@ export async function createOffensiveAssistRows(
       MapDataId: mapId,
     })),
   });
-
-  const offensiveAssistsByScrimId = await db.offensiveAssist.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return offensiveAssistsByScrimId;
 }
 
 export async function createPayloadProgressRows(
@@ -545,7 +439,7 @@ export async function createPayloadProgressRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
   await db.payloadProgress.createMany({
@@ -559,14 +453,6 @@ export async function createPayloadProgressRows(
       MapDataId: mapId,
     })),
   });
-
-  const payloadProgressesByScrimId = await db.payloadProgress.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return payloadProgressesByScrimId;
 }
 
 export async function createPlayerStatRows(
@@ -580,7 +466,7 @@ export async function createPlayerStatRows(
     data.player_stat.length === 0
   ) {
     Logger.log("No player stats found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
   await db.playerStat.createMany({
@@ -627,14 +513,6 @@ export async function createPlayerStatRows(
       MapDataId: mapId,
     })),
   });
-
-  const playerStatsByScrimId = await db.playerStat.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return playerStatsByScrimId;
 }
 
 export async function createPointProgressRows(
@@ -649,7 +527,7 @@ export async function createPointProgressRows(
     !data.point_progress
   ) {
     Logger.log("No point progress found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
   await db.pointProgress.createMany({
@@ -663,14 +541,6 @@ export async function createPointProgressRows(
       MapDataId: mapId,
     })),
   });
-
-  const pointProgressesByScrimId = await db.pointProgress.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return pointProgressesByScrimId;
 }
 
 export async function createRemechChargedRows(
@@ -690,7 +560,7 @@ export async function createRemechChargedRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
   await db.remechCharged.createMany({
@@ -705,14 +575,6 @@ export async function createRemechChargedRows(
       MapDataId: mapId,
     })),
   });
-
-  const remechChargedsByScrimId = await db.remechCharged.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return remechChargedsByScrimId;
 }
 
 export async function createRoundEndRows(
@@ -727,7 +589,7 @@ export async function createRoundEndRows(
     !data.round_end
   ) {
     Logger.log("No round ends found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
   await db.roundEnd.createMany({
@@ -745,14 +607,6 @@ export async function createRoundEndRows(
       MapDataId: mapId,
     })),
   });
-
-  const roundEndsByScrimId = await db.roundEnd.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return roundEndsByScrimId;
 }
 
 export async function createRoundStartRows(
@@ -767,7 +621,7 @@ export async function createRoundStartRows(
     !data.round_start
   ) {
     Logger.log("No round starts found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
   await db.roundStart.createMany({
@@ -782,14 +636,6 @@ export async function createRoundStartRows(
       MapDataId: mapId,
     })),
   });
-
-  const roundStartsByScrimId = await db.roundStart.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return roundStartsByScrimId;
 }
 
 export async function createSetupCompleteRows(
@@ -809,7 +655,7 @@ export async function createSetupCompleteRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
   await db.setupComplete.createMany({
@@ -821,14 +667,6 @@ export async function createSetupCompleteRows(
       MapDataId: mapId,
     })),
   });
-
-  const setupCompletesByScrimId = await db.setupComplete.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return setupCompletesByScrimId;
 }
 
 export async function createUltimateChargedRows(
@@ -848,7 +686,7 @@ export async function createUltimateChargedRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
   await db.ultimateCharged.createMany({
@@ -863,14 +701,6 @@ export async function createUltimateChargedRows(
       MapDataId: mapId,
     })),
   });
-
-  const ultimateChargedsByScrimId = await db.ultimateCharged.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return ultimateChargedsByScrimId;
 }
 
 export async function createUltimateEndRows(
@@ -885,7 +715,7 @@ export async function createUltimateEndRows(
     !data.ultimate_end
   ) {
     Logger.log("No ultimate ends found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
   await db.ultimateEnd.createMany({
@@ -907,14 +737,6 @@ export async function createUltimateEndRows(
       };
     }),
   });
-
-  const ultimateEndsByScrimId = await db.ultimateEnd.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return ultimateEndsByScrimId;
 }
 
 export async function createUltimateStartRows(
@@ -934,7 +756,7 @@ export async function createUltimateStartRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
   await db.ultimateStart.createMany({
@@ -956,14 +778,6 @@ export async function createUltimateStartRows(
       };
     }),
   });
-
-  const ultimateStartsByScrimId = await db.ultimateStart.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return ultimateStartsByScrimId;
 }
 
 export async function createAbility1UsedRows(
@@ -978,7 +792,7 @@ export async function createAbility1UsedRows(
     !data.ability_1_used
   ) {
     Logger.log("No ability 1 used found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
   await db.ability1Used.createMany({
@@ -999,14 +813,6 @@ export async function createAbility1UsedRows(
       };
     }),
   });
-
-  const ability1UsedByScrimId = await db.ability1Used.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return ability1UsedByScrimId;
 }
 
 export async function createAbility2UsedRows(
@@ -1021,7 +827,7 @@ export async function createAbility2UsedRows(
     !data.ability_2_used
   ) {
     Logger.log("No ability 2 used found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
   await db.ability2Used.createMany({
@@ -1042,14 +848,6 @@ export async function createAbility2UsedRows(
       };
     }),
   });
-
-  const ability2UsedByScrimId = await db.ability2Used.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return ability2UsedByScrimId;
 }
 
 export async function createDamageRows(
@@ -1064,7 +862,7 @@ export async function createDamageRows(
     !data.damage
   ) {
     Logger.log("No damage found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
   await db.damage.createMany({
@@ -1095,14 +893,6 @@ export async function createDamageRows(
       };
     }),
   });
-
-  const damageByScrimId = await db.damage.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return damageByScrimId;
 }
 
 export async function createHealingRows(
@@ -1117,7 +907,7 @@ export async function createHealingRows(
     !data.healing
   ) {
     Logger.log("No healing found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
   await db.healing.createMany({
@@ -1147,12 +937,4 @@ export async function createHealingRows(
       };
     }),
   });
-
-  const healingByScrimId = await db.healing.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return healingByScrimId;
 }
