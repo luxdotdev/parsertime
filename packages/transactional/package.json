@@ -9,8 +9,8 @@
   "scripts": {
     "dev": "email dev --port 3200",
     "lint": "oxlint",
-    "format": "oxfmt",
-    "format:check": "oxfmt --check",
+    "format": "oxfmt --config ./node_modules/@parsertime/lint-config/oxfmt.json",
+    "format:check": "oxfmt --config ./node_modules/@parsertime/lint-config/oxfmt.json --check",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
