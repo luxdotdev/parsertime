@@ -120,7 +120,6 @@
     "ai": "^6.0.134",
     "ansi-to-react": "^6.2.6",
     "babel-plugin-react-compiler": "^1.0.0",
-    "botid": "^1.5.10",
     "cheerio": "^1.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

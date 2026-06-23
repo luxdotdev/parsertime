@@ -106,17 +106,29 @@ async function insertMapEventRows(
       () => createPayloadProgressRows(map, scrim, mapDataId, db),
     ],
     ["player_stat", () => createPlayerStatRows(map, scrim, mapDataId, db)],
-    ["point_progress", () => createPointProgressRows(map, scrim, mapDataId, db)],
-    ["remech_charged", () => createRemechChargedRows(map, scrim, mapDataId, db)],
+    [
+      "point_progress",
+      () => createPointProgressRows(map, scrim, mapDataId, db),
+    ],
+    [
+      "remech_charged",
+      () => createRemechChargedRows(map, scrim, mapDataId, db),
+    ],
     ["round_end", () => createRoundEndRows(map, scrim, mapDataId, db)],
     ["round_start", () => createRoundStartRows(map, scrim, mapDataId, db)],
-    ["setup_complete", () => createSetupCompleteRows(map, scrim, mapDataId, db)],
+    [
+      "setup_complete",
+      () => createSetupCompleteRows(map, scrim, mapDataId, db),
+    ],
     [
       "ultimate_charged",
       () => createUltimateChargedRows(map, scrim, mapDataId, db),
     ],
     ["ultimate_end", () => createUltimateEndRows(map, scrim, mapDataId, db)],
-    ["ultimate_start", () => createUltimateStartRows(map, scrim, mapDataId, db)],
+    [
+      "ultimate_start",
+      () => createUltimateStartRows(map, scrim, mapDataId, db),
+    ],
   ];
 
   const weights = tasks.map(([key]) => map[key]?.length ?? 0);

@@ -2,7 +2,6 @@ import { normalizeNameKey } from "@/lib/availability/slots";
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { Ratelimit } from "@upstash/ratelimit";
-import { checkBotId } from "botid/server";
 import { ipAddress } from "@vercel/functions";
 import { kv } from "@vercel/kv";
 import type { NextRequest } from "next/server";
@@ -23,11 +22,6 @@ type RouteCtx = { params: Promise<{ scheduleId: string }> };
 
 export async function POST(req: NextRequest, ctx: RouteCtx) {
   const { scheduleId } = await ctx.params;
-
-  const verification = await checkBotId();
-  if (verification.isBot) {
-    return new Response("Access denied", { status: 403 });
-  }
 
   const parsed = BodySchema.safeParse(await req.json());
   if (!parsed.success) {

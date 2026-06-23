@@ -11,7 +11,6 @@ import {
 import { Ratelimit } from "@upstash/ratelimit";
 import { ipAddress } from "@vercel/functions";
 import { kv } from "@vercel/kv";
-import { checkBotId } from "botid/server";
 import { after, type NextRequest, userAgent } from "next/server";
 import { z } from "zod";
 
@@ -30,11 +29,6 @@ const ratelimit = new Ratelimit({
 });
 
 export async function POST(req: NextRequest) {
-  const verification = await checkBotId();
-  if (verification.isBot) {
-    return new Response("Access denied", { status: 403 });
-  }
-
   const identifier = ipAddress(req) ?? "127.0.0.1";
   const { success } = await ratelimit.limit(identifier);
   if (!success) {

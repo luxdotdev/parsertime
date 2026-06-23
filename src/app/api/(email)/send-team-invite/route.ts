@@ -19,11 +19,6 @@ const SendInviteSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  // const verification = await checkBotId();
-  // if (verification.isBot) {
-  //   return new Response("Access denied", { status: 403 });
-  // }
-
   const user = await getCurrentUser();
   if (!user) unauthorized();
 
