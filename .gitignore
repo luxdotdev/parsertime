@@ -46,3 +46,4 @@ yarn-error.log*
 .worktrees/
 my-auth.json
 *.auth.json
+docs/superpowers
