@@ -104,4 +104,9 @@ export function SubscriptionCreatedEmail({
   );
 }
 
+SubscriptionCreatedEmail.PreviewProps = {
+  user: { name: "Alex Morgan", email: "alex@example.com" },
+  billingPlan: "premium",
+} satisfies SubscriptionEmailProps;
+
 export default SubscriptionCreatedEmail;

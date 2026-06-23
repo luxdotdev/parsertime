@@ -134,4 +134,9 @@ export function UserOnboardingEmail({ name, email }: OnboardingEmailProps) {
   );
 }
 
+UserOnboardingEmail.PreviewProps = {
+  name: "Alex Morgan",
+  email: "alex@example.com",
+} satisfies OnboardingEmailProps;
+
 export default UserOnboardingEmail;

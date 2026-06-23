@@ -134,4 +134,14 @@ export function CreditTopupEmail({
   );
 }
 
+CreditTopupEmail.PreviewProps = {
+  user: { name: "Alex Morgan", email: "alex@example.com" },
+  amountCents: 2000,
+  balanceAfterCents: 2480,
+  source: "topup",
+  autoRefillEnabled: true,
+  autoRefillThresholdCents: 500,
+  autoRefillAmountCents: 2000,
+} satisfies CreditTopupEmailProps;
+
 export default CreditTopupEmail;

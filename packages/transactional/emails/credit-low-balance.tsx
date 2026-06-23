@@ -98,4 +98,9 @@ export function CreditLowBalanceEmail({
   );
 }
 
+CreditLowBalanceEmail.PreviewProps = {
+  user: { name: "Alex Morgan", email: "alex@example.com" },
+  balanceCents: 180,
+} satisfies CreditLowBalanceEmailProps;
+
 export default CreditLowBalanceEmail;

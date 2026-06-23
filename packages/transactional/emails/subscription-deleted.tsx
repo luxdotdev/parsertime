@@ -97,4 +97,8 @@ export function SubscriptionDeletedEmail({ user }: SubscriptionEmailProps) {
   );
 }
 
+SubscriptionDeletedEmail.PreviewProps = {
+  user: { name: "Alex Morgan", email: "alex@example.com" },
+} satisfies SubscriptionEmailProps;
+
 export default SubscriptionDeletedEmail;

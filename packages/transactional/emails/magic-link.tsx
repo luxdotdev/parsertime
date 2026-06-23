@@ -87,4 +87,9 @@ export function MagicLinkEmail({ magicLink, username }: MagicLinkEmailProps) {
   );
 }
 
+MagicLinkEmail.PreviewProps = {
+  username: "Alex Morgan",
+  magicLink: "https://parsertime.app/auth/magic?token=preview-token",
+} satisfies MagicLinkEmailProps;
+
 export default MagicLinkEmail;

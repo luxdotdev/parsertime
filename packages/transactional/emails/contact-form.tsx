@@ -85,4 +85,11 @@ export function ContactFormEmail({
   );
 }
 
+ContactFormEmail.PreviewProps = {
+  name: "Jordan Lee",
+  email: "jordan@example.com",
+  message:
+    "Hey! I'm having trouble getting my scrim logs to upload — the map stats come through empty. Could you take a look?",
+} satisfies ContactFormEmailProps;
+
 export default ContactFormEmail;

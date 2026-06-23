@@ -102,4 +102,9 @@ export function SubscriptionUpdatedEmail({
   );
 }
 
+SubscriptionUpdatedEmail.PreviewProps = {
+  user: { name: "Alex Morgan", email: "alex@example.com" },
+  billingPlan: "premium",
+} satisfies SubscriptionEmailProps;
+
 export default SubscriptionUpdatedEmail;

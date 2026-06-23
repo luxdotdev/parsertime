@@ -139,4 +139,14 @@ export function TeamInviteUserEmail({
   );
 }
 
+TeamInviteUserEmail.PreviewProps = {
+  username: "Alex Morgan",
+  userImage: "https://parsertime.app/parsertime.png",
+  invitedByUsername: "Jordan Lee",
+  invitedByEmail: "jordan@example.com",
+  teamName: "Neon Wolves",
+  teamImage: "https://parsertime.app/parsertime.png",
+  inviteLink: "https://parsertime.app/team/join?token=preview-token",
+} satisfies TeamInviteUserEmailProps;
+
 export default TeamInviteUserEmail;
