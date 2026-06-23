@@ -9,7 +9,6 @@ import prisma from "@/lib/prisma";
 import { isTaggedError } from "@/lib/utils";
 import { render } from "@react-email/render";
 import { track } from "@vercel/analytics/server";
-import { checkBotId } from "botid/server";
 import { unauthorized } from "next/navigation";
 import { after, type NextRequest } from "next/server";
 import { z } from "zod";
@@ -20,10 +19,10 @@ const SendInviteSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  const verification = await checkBotId();
-  if (verification.isBot) {
-    return new Response("Access denied", { status: 403 });
-  }
+  // const verification = await checkBotId();
+  // if (verification.isBot) {
+  //   return new Response("Access denied", { status: 403 });
+  // }
 
   const user = await getCurrentUser();
   if (!user) unauthorized();
