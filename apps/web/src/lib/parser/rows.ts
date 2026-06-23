@@ -4,11 +4,13 @@ import { Logger } from "@/lib/logger";
 import { parseCoordinate } from "@/lib/parser/client";
 import prisma from "@/lib/prisma";
 import type { ParserData } from "@/types/parser";
+import type { Prisma } from "@/generated/prisma/client";
 
 export async function createDefensiveAssistsRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.defensive_assist === "undefined" ||
@@ -21,10 +23,10 @@ export async function createDefensiveAssistsRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
-  await prisma.defensiveAssist.createMany({
+  await db.defensiveAssist.createMany({
     data: data.defensive_assist.map((assist) => ({
       scrimId: scrim.id,
       match_time: assist[1],
@@ -35,20 +37,13 @@ export async function createDefensiveAssistsRows(
       MapDataId: mapId,
     })),
   });
-
-  const defensiveAssistsByScrimId = await prisma.defensiveAssist.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return defensiveAssistsByScrimId;
 }
 
 export async function createDvaRemechRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.dva_remech === "undefined" ||
@@ -56,10 +51,10 @@ export async function createDvaRemechRows(
     !data.dva_remech
   ) {
     Logger.log("No D.Va remechs found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
-  await prisma.dvaRemech.createMany({
+  await db.dvaRemech.createMany({
     data: data.dva_remech.map((remech) => ({
       scrimId: scrim.id,
       match_time: remech[1],
@@ -70,20 +65,13 @@ export async function createDvaRemechRows(
       MapDataId: mapId,
     })),
   });
-
-  const dvaRemechsByScrimId = await prisma.dvaRemech.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return dvaRemechsByScrimId;
 }
 
 export async function createEchoDuplicateEndRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.echo_duplicate_end === "undefined" ||
@@ -96,10 +84,10 @@ export async function createEchoDuplicateEndRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
-  await prisma.echoDuplicateEnd.createMany({
+  await db.echoDuplicateEnd.createMany({
     data: data.echo_duplicate_end.map((duplicateEnd) => ({
       scrimId: scrim.id,
       match_time: duplicateEnd[1],
@@ -110,20 +98,13 @@ export async function createEchoDuplicateEndRows(
       MapDataId: mapId,
     })),
   });
-
-  const echoDuplicateEndsByScrimId = await prisma.echoDuplicateEnd.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return echoDuplicateEndsByScrimId;
 }
 
 export async function createEchoDuplicateStartRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.echo_duplicate_start === "undefined" ||
@@ -136,10 +117,10 @@ export async function createEchoDuplicateStartRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
-  await prisma.echoDuplicateStart.createMany({
+  await db.echoDuplicateStart.createMany({
     data: data.echo_duplicate_start.map((duplicateStart) => ({
       scrimId: scrim.id,
       match_time: duplicateStart[1],
@@ -151,22 +132,13 @@ export async function createEchoDuplicateStartRows(
       MapDataId: mapId,
     })),
   });
-
-  const echoDuplicateStartsByScrimId = await prisma.echoDuplicateStart.findMany(
-    {
-      where: {
-        scrimId: scrim.id,
-      },
-    }
-  );
-
-  return echoDuplicateStartsByScrimId;
 }
 
 export async function createHeroSpawnRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.hero_spawn === "undefined" ||
@@ -174,10 +146,10 @@ export async function createHeroSpawnRows(
     !data.hero_spawn
   ) {
     Logger.log("No hero spawns found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
-  await prisma.heroSpawn.createMany({
+  await db.heroSpawn.createMany({
     data: data.hero_spawn.map((spawn) => ({
       scrimId: scrim.id,
       match_time: spawn[1],
@@ -189,20 +161,13 @@ export async function createHeroSpawnRows(
       MapDataId: mapId,
     })),
   });
-
-  const heroSpawnsByScrimId = await prisma.heroSpawn.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return heroSpawnsByScrimId;
 }
 
 export async function createHeroSwapRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.hero_swap === "undefined" ||
@@ -210,10 +175,10 @@ export async function createHeroSwapRows(
     !data.hero_swap
   ) {
     Logger.log("No hero swaps found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
-  await prisma.heroSwap.createMany({
+  await db.heroSwap.createMany({
     data: data.hero_swap.map((swap) => ({
       scrimId: scrim.id,
       match_time: swap[1],
@@ -225,20 +190,13 @@ export async function createHeroSwapRows(
       MapDataId: mapId,
     })),
   });
-
-  const heroSwapsByScrimId = await prisma.heroSwap.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return heroSwapsByScrimId;
 }
 
 export async function createKillRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.kill === "undefined" ||
@@ -246,10 +204,10 @@ export async function createKillRows(
     !data.kill
   ) {
     Logger.log("No kills found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
-  await prisma.kill.createMany({
+  await db.kill.createMany({
     data: data.kill.map((kill) => {
       const row = kill as unknown as unknown[];
       const pos1 = parseCoordinate(row[row.length - 2]);
@@ -277,20 +235,13 @@ export async function createKillRows(
       };
     }),
   });
-
-  const killsByScrimId = await prisma.kill.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return killsByScrimId;
 }
 
 export async function createMatchEndRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.match_end === "undefined" ||
@@ -298,10 +249,10 @@ export async function createMatchEndRows(
     !data.match_end
   ) {
     Logger.log("No match ends found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
-  await prisma.matchEnd.createMany({
+  await db.matchEnd.createMany({
     data: data.match_end.map((end) => ({
       scrimId: scrim.id,
       match_time: end[1],
@@ -311,20 +262,13 @@ export async function createMatchEndRows(
       MapDataId: mapId,
     })),
   });
-
-  const matchEndsByScrimId = await prisma.matchEnd.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return matchEndsByScrimId;
 }
 
 export async function createMatchStartRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.match_start === "undefined" ||
@@ -332,10 +276,10 @@ export async function createMatchStartRows(
     !data.match_start
   ) {
     Logger.log("No match starts found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
-  await prisma.matchStart.createMany({
+  await db.matchStart.createMany({
     data: data.match_start.map((start) => ({
       scrimId: scrim.id,
       match_time: start[1],
@@ -346,20 +290,13 @@ export async function createMatchStartRows(
       MapDataId: mapId,
     })),
   });
-
-  const matchStartsByScrimId = await prisma.matchStart.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return matchStartsByScrimId;
 }
 
 export async function createMercyRezRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.mercy_rez === "undefined" ||
@@ -367,10 +304,10 @@ export async function createMercyRezRows(
     !data.mercy_rez
   ) {
     Logger.log("No mercy rezzes found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
-  await prisma.mercyRez.createMany({
+  await db.mercyRez.createMany({
     data: data.mercy_rez.map((rez) => ({
       scrimId: scrim.id,
       match_time: rez[1],
@@ -383,20 +320,13 @@ export async function createMercyRezRows(
       MapDataId: mapId,
     })),
   });
-
-  const mercyRezzesByScrimId = await prisma.mercyRez.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return mercyRezzesByScrimId;
 }
 
 export async function createObjectiveCapturedRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.objective_captured === "undefined" ||
@@ -409,10 +339,10 @@ export async function createObjectiveCapturedRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
-  await prisma.objectiveCaptured.createMany({
+  await db.objectiveCaptured.createMany({
     data: data.objective_captured.map((capture) => ({
       scrimId: scrim.id,
       match_time: capture[1],
@@ -425,20 +355,13 @@ export async function createObjectiveCapturedRows(
       MapDataId: mapId,
     })),
   });
-
-  const objectiveCapturesByScrimId = await prisma.objectiveCaptured.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return objectiveCapturesByScrimId;
 }
 
 export async function createObjectiveUpdatedRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.objective_updated === "undefined" ||
@@ -451,10 +374,10 @@ export async function createObjectiveUpdatedRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
-  await prisma.objectiveUpdated.createMany({
+  await db.objectiveUpdated.createMany({
     data: data.objective_updated.map((update) => ({
       scrimId: scrim.id,
       match_time: update[1],
@@ -464,20 +387,13 @@ export async function createObjectiveUpdatedRows(
       MapDataId: mapId,
     })),
   });
-
-  const objectiveUpdatesByScrimId = await prisma.objectiveUpdated.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return objectiveUpdatesByScrimId;
 }
 
 export async function createOffensiveAssistRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.offensive_assist === "undefined" ||
@@ -490,10 +406,10 @@ export async function createOffensiveAssistRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
-  await prisma.offensiveAssist.createMany({
+  await db.offensiveAssist.createMany({
     data: data.offensive_assist.map((assist) => ({
       scrimId: scrim.id,
       match_time: assist[1],
@@ -504,20 +420,13 @@ export async function createOffensiveAssistRows(
       MapDataId: mapId,
     })),
   });
-
-  const offensiveAssistsByScrimId = await prisma.offensiveAssist.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return offensiveAssistsByScrimId;
 }
 
 export async function createPayloadProgressRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.payload_progress === "undefined" ||
@@ -530,10 +439,10 @@ export async function createPayloadProgressRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
-  await prisma.payloadProgress.createMany({
+  await db.payloadProgress.createMany({
     data: data.payload_progress.map((progress) => ({
       scrimId: scrim.id,
       match_time: progress[1],
@@ -544,30 +453,23 @@ export async function createPayloadProgressRows(
       MapDataId: mapId,
     })),
   });
-
-  const payloadProgressesByScrimId = await prisma.payloadProgress.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return payloadProgressesByScrimId;
 }
 
 export async function createPlayerStatRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.player_stat === "undefined" ||
     data.player_stat.length === 0
   ) {
     Logger.log("No player stats found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
-  await prisma.playerStat.createMany({
+  await db.playerStat.createMany({
     data: data.player_stat.map((stat) => ({
       scrimId: scrim.id,
       match_time: stat[1],
@@ -611,20 +513,13 @@ export async function createPlayerStatRows(
       MapDataId: mapId,
     })),
   });
-
-  const playerStatsByScrimId = await prisma.playerStat.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return playerStatsByScrimId;
 }
 
 export async function createPointProgressRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.point_progress === "undefined" ||
@@ -632,10 +527,10 @@ export async function createPointProgressRows(
     !data.point_progress
   ) {
     Logger.log("No point progress found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
-  await prisma.pointProgress.createMany({
+  await db.pointProgress.createMany({
     data: data.point_progress.map((progress) => ({
       scrimId: scrim.id,
       match_time: progress[1],
@@ -646,20 +541,13 @@ export async function createPointProgressRows(
       MapDataId: mapId,
     })),
   });
-
-  const pointProgressesByScrimId = await prisma.pointProgress.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return pointProgressesByScrimId;
 }
 
 export async function createRemechChargedRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.remech_charged === "undefined" ||
@@ -672,10 +560,10 @@ export async function createRemechChargedRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
-  await prisma.remechCharged.createMany({
+  await db.remechCharged.createMany({
     data: data.remech_charged.map((charged) => ({
       scrimId: scrim.id,
       match_time: charged[1],
@@ -687,20 +575,13 @@ export async function createRemechChargedRows(
       MapDataId: mapId,
     })),
   });
-
-  const remechChargedsByScrimId = await prisma.remechCharged.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return remechChargedsByScrimId;
 }
 
 export async function createRoundEndRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.round_end === "undefined" ||
@@ -708,10 +589,10 @@ export async function createRoundEndRows(
     !data.round_end
   ) {
     Logger.log("No round ends found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
-  await prisma.roundEnd.createMany({
+  await db.roundEnd.createMany({
     data: data.round_end.map((end) => ({
       scrimId: scrim.id,
       match_time: end[1],
@@ -726,20 +607,13 @@ export async function createRoundEndRows(
       MapDataId: mapId,
     })),
   });
-
-  const roundEndsByScrimId = await prisma.roundEnd.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return roundEndsByScrimId;
 }
 
 export async function createRoundStartRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.round_start === "undefined" ||
@@ -747,10 +621,10 @@ export async function createRoundStartRows(
     !data.round_start
   ) {
     Logger.log("No round starts found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
-  await prisma.roundStart.createMany({
+  await db.roundStart.createMany({
     data: data.round_start.map((start) => ({
       scrimId: scrim.id,
       match_time: start[1],
@@ -762,20 +636,13 @@ export async function createRoundStartRows(
       MapDataId: mapId,
     })),
   });
-
-  const roundStartsByScrimId = await prisma.roundStart.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return roundStartsByScrimId;
 }
 
 export async function createSetupCompleteRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.setup_complete === "undefined" ||
@@ -788,10 +655,10 @@ export async function createSetupCompleteRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
-  await prisma.setupComplete.createMany({
+  await db.setupComplete.createMany({
     data: data.setup_complete.map((complete) => ({
       scrimId: scrim.id,
       match_time: complete[1],
@@ -800,20 +667,13 @@ export async function createSetupCompleteRows(
       MapDataId: mapId,
     })),
   });
-
-  const setupCompletesByScrimId = await prisma.setupComplete.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return setupCompletesByScrimId;
 }
 
 export async function createUltimateChargedRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.ultimate_charged === "undefined" ||
@@ -826,10 +686,10 @@ export async function createUltimateChargedRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
-  await prisma.ultimateCharged.createMany({
+  await db.ultimateCharged.createMany({
     data: data.ultimate_charged.map((charged) => ({
       scrimId: scrim.id,
       match_time: charged[1],
@@ -841,20 +701,13 @@ export async function createUltimateChargedRows(
       MapDataId: mapId,
     })),
   });
-
-  const ultimateChargedsByScrimId = await prisma.ultimateCharged.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return ultimateChargedsByScrimId;
 }
 
 export async function createUltimateEndRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.ultimate_end === "undefined" ||
@@ -862,10 +715,10 @@ export async function createUltimateEndRows(
     !data.ultimate_end
   ) {
     Logger.log("No ultimate ends found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
-  await prisma.ultimateEnd.createMany({
+  await db.ultimateEnd.createMany({
     data: data.ultimate_end.map((end) => {
       const row = end as unknown as unknown[];
       const pos = parseCoordinate(row[row.length - 1]);
@@ -884,20 +737,13 @@ export async function createUltimateEndRows(
       };
     }),
   });
-
-  const ultimateEndsByScrimId = await prisma.ultimateEnd.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return ultimateEndsByScrimId;
 }
 
 export async function createUltimateStartRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.ultimate_start === "undefined" ||
@@ -910,10 +756,10 @@ export async function createUltimateStartRows(
       "scrim: ",
       scrim.id
     );
-    return [];
+    return;
   }
 
-  await prisma.ultimateStart.createMany({
+  await db.ultimateStart.createMany({
     data: data.ultimate_start.map((start) => {
       const row = start as unknown as unknown[];
       const pos = parseCoordinate(row[row.length - 1]);
@@ -932,20 +778,13 @@ export async function createUltimateStartRows(
       };
     }),
   });
-
-  const ultimateStartsByScrimId = await prisma.ultimateStart.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return ultimateStartsByScrimId;
 }
 
 export async function createAbility1UsedRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.ability_1_used === "undefined" ||
@@ -953,10 +792,10 @@ export async function createAbility1UsedRows(
     !data.ability_1_used
   ) {
     Logger.log("No ability 1 used found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
-  await prisma.ability1Used.createMany({
+  await db.ability1Used.createMany({
     data: data.ability_1_used.map((ability) => {
       const row = ability as unknown as unknown[];
       const pos = parseCoordinate(row[row.length - 1]);
@@ -974,20 +813,13 @@ export async function createAbility1UsedRows(
       };
     }),
   });
-
-  const ability1UsedByScrimId = await prisma.ability1Used.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return ability1UsedByScrimId;
 }
 
 export async function createAbility2UsedRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.ability_2_used === "undefined" ||
@@ -995,10 +827,10 @@ export async function createAbility2UsedRows(
     !data.ability_2_used
   ) {
     Logger.log("No ability 2 used found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
-  await prisma.ability2Used.createMany({
+  await db.ability2Used.createMany({
     data: data.ability_2_used.map((ability) => {
       const row = ability as unknown as unknown[];
       const pos = parseCoordinate(row[row.length - 1]);
@@ -1016,20 +848,13 @@ export async function createAbility2UsedRows(
       };
     }),
   });
-
-  const ability2UsedByScrimId = await prisma.ability2Used.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return ability2UsedByScrimId;
 }
 
 export async function createDamageRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.damage === "undefined" ||
@@ -1037,10 +862,10 @@ export async function createDamageRows(
     !data.damage
   ) {
     Logger.log("No damage found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
-  await prisma.damage.createMany({
+  await db.damage.createMany({
     data: data.damage.map((dmg) => {
       const row = dmg as unknown as unknown[];
       const pos1 = parseCoordinate(row[row.length - 2]);
@@ -1068,20 +893,13 @@ export async function createDamageRows(
       };
     }),
   });
-
-  const damageByScrimId = await prisma.damage.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return damageByScrimId;
 }
 
 export async function createHealingRows(
   data: ParserData,
   scrim: { id: number },
-  mapId: number
+  mapId: number,
+  db: Prisma.TransactionClient = prisma
 ) {
   if (
     typeof data.healing === "undefined" ||
@@ -1089,10 +907,10 @@ export async function createHealingRows(
     !data.healing
   ) {
     Logger.log("No healing found for map: ", mapId, "scrim: ", scrim.id);
-    return [];
+    return;
   }
 
-  await prisma.healing.createMany({
+  await db.healing.createMany({
     data: data.healing.map((heal) => {
       const row = heal as unknown as unknown[];
       const pos1 = parseCoordinate(row[row.length - 2]);
@@ -1119,12 +937,4 @@ export async function createHealingRows(
       };
     }),
   });
-
-  const healingByScrimId = await prisma.healing.findMany({
-    where: {
-      scrimId: scrim.id,
-    },
-  });
-
-  return healingByScrimId;
 }

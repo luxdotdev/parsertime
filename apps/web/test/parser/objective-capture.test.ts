@@ -8,10 +8,9 @@ vi.mock("@/lib/prisma", async () => {
 import prismaMock from "@/lib/__mocks__/prisma";
 import { createObjectiveCapturedRows } from "@/lib/parser";
 import type { ObjectiveCapturedTableRow, ParserData } from "@/types/parser";
-import type { ObjectiveCaptured } from "@/generated/prisma/client";
 import { expect, test } from "vitest";
 
-test("should return the generated objective capture row", async () => {
+test("should insert the parsed objective capture row", async () => {
   const newObjectiveCapturedRow: ObjectiveCapturedTableRow = [
     "objective_captured",
     100,
@@ -27,27 +26,7 @@ test("should return the generated objective capture row", async () => {
     objective_captured: [newObjectiveCapturedRow],
   };
 
-  const expectedRow: ObjectiveCaptured = {
-    id: 1,
-    scrimId: 1,
-    event_type: "objective_captured",
-    match_time: 100,
-    round_number: 1,
-    capturing_team: "Team 1",
-    objective_index: 1,
-    control_team_1_progress: 0.01,
-    control_team_2_progress: 0,
-    match_time_remaining: 0,
-    MapDataId: 100,
-  };
-
-  prismaMock.objectiveCaptured.findMany.mockResolvedValue([expectedRow]);
-
-  const result = await createObjectiveCapturedRows(
-    data as never,
-    { id: 1 },
-    100
-  );
+  await createObjectiveCapturedRows(data as never, { id: 1 }, 100);
 
   expect(prismaMock.objectiveCaptured.createMany).toHaveBeenCalledWith({
     data: [
@@ -64,15 +43,12 @@ test("should return the generated objective capture row", async () => {
       },
     ],
   });
-
-  expect(result).toEqual([expectedRow]);
 });
 
-test("should return empty array", async () => {
+test("should not insert when no objective capture data", async () => {
   const data = {};
 
-  const result = await createObjectiveCapturedRows(data as never, { id: 1 }, 1);
+  await createObjectiveCapturedRows(data as never, { id: 1 }, 1);
 
-  expect(result).toEqual([]);
   expect(prismaMock.objectiveCaptured.createMany).not.toHaveBeenCalled();
 });

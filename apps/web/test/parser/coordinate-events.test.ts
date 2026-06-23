@@ -53,8 +53,6 @@ describe("createKillRows with coordinates", () => {
 
     const data = { kill: [rowWithCoords] } as unknown as ParserData;
 
-    prismaMock.kill.findMany.mockResolvedValue([]);
-
     await createKillRows(data, { id: 1 }, 100);
 
     expect(prismaMock.kill.createMany).toHaveBeenCalledWith({
@@ -88,8 +86,6 @@ describe("createKillRows with coordinates", () => {
     ];
 
     const data = { kill: [killRow] } as unknown as ParserData;
-
-    prismaMock.kill.findMany.mockResolvedValue([]);
 
     await createKillRows(data, { id: 1 }, 100);
 
@@ -132,8 +128,6 @@ describe("createDamageRows with coordinates", () => {
 
     const data = { damage: [rowWithCoords] } as unknown as ParserData;
 
-    prismaMock.damage.findMany.mockResolvedValue([]);
-
     await createDamageRows(data, { id: 1 }, 100);
 
     expect(prismaMock.damage.createMany).toHaveBeenCalledWith({
@@ -167,8 +161,6 @@ describe("createDamageRows with coordinates", () => {
     ];
 
     const data = { damage: [dmgRow] } as unknown as ParserData;
-
-    prismaMock.damage.findMany.mockResolvedValue([]);
 
     await createDamageRows(data, { id: 1 }, 100);
 
@@ -210,8 +202,6 @@ describe("createHealingRows with coordinates", () => {
 
     const data = { healing: [rowWithCoords] } as unknown as ParserData;
 
-    prismaMock.healing.findMany.mockResolvedValue([]);
-
     await createHealingRows(data, { id: 1 }, 100);
 
     expect(prismaMock.healing.createMany).toHaveBeenCalledWith({
@@ -243,8 +233,6 @@ describe("createAbility1UsedRows with coordinates", () => {
 
     const data = { ability_1_used: [rowWithCoords] } as unknown as ParserData;
 
-    prismaMock.ability1Used.findMany.mockResolvedValue([]);
-
     await createAbility1UsedRows(data, { id: 1 }, 100);
 
     expect(prismaMock.ability1Used.createMany).toHaveBeenCalledWith({
@@ -269,8 +257,6 @@ describe("createAbility1UsedRows with coordinates", () => {
     ];
 
     const data = { ability_1_used: [abilityRow] } as unknown as ParserData;
-
-    prismaMock.ability1Used.findMany.mockResolvedValue([]);
 
     await createAbility1UsedRows(data, { id: 1 }, 100);
 
@@ -299,8 +285,6 @@ describe("createAbility2UsedRows with coordinates", () => {
     const rowWithCoords = [...abilityRow, "(56.29, 267.59, 336.58)"];
 
     const data = { ability_2_used: [rowWithCoords] } as unknown as ParserData;
-
-    prismaMock.ability2Used.findMany.mockResolvedValue([]);
 
     await createAbility2UsedRows(data, { id: 1 }, 100);
 
@@ -331,8 +315,6 @@ describe("createUltimateEndRows with coordinates", () => {
 
     const data = { ultimate_end: [rowWithCoords] } as unknown as ParserData;
 
-    prismaMock.ultimateEnd.findMany.mockResolvedValue([]);
-
     await createUltimateEndRows(data, { id: 1 }, 100);
 
     expect(prismaMock.ultimateEnd.createMany).toHaveBeenCalledWith({
@@ -358,8 +340,6 @@ describe("createUltimateEndRows with coordinates", () => {
     ];
 
     const data = { ultimate_end: [ultEndRow] } as unknown as ParserData;
-
-    prismaMock.ultimateEnd.findMany.mockResolvedValue([]);
 
     await createUltimateEndRows(data, { id: 1 }, 100);
 
@@ -392,8 +372,6 @@ describe("createUltimateStartRows with coordinates", () => {
       ultimate_start: [rowWithCoords],
     } as unknown as ParserData;
 
-    prismaMock.ultimateStart.findMany.mockResolvedValue([]);
-
     await createUltimateStartRows(data, { id: 1 }, 100);
 
     expect(prismaMock.ultimateStart.createMany).toHaveBeenCalledWith({
@@ -423,8 +401,6 @@ describe("createUltimateStartRows with coordinates", () => {
     const data = {
       ultimate_start: [rowWithArtifact],
     } as unknown as ParserData;
-
-    prismaMock.ultimateStart.findMany.mockResolvedValue([]);
 
     await createUltimateStartRows(data, { id: 1 }, 100);
 

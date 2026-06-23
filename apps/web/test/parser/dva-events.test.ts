@@ -12,10 +12,9 @@ import type {
   ParserData,
   RemechChargedTableRow,
 } from "@/types/parser";
-import type { DvaRemech, RemechCharged } from "@/generated/prisma/client";
 import { expect, test } from "vitest";
 
-test("should return the generated D.Va remech row", async () => {
+test("should insert the parsed D.Va remech row", async () => {
   const newDvaRemechRow: DvaRemechTableRow = [
     "dva_remech",
     100,
@@ -29,21 +28,7 @@ test("should return the generated D.Va remech row", async () => {
     dva_remech: [newDvaRemechRow],
   };
 
-  const expectedRow: DvaRemech = {
-    id: 1,
-    scrimId: 1,
-    event_type: "dva_remech",
-    match_time: 100,
-    player_team: "Team 1",
-    player_name: "lux",
-    player_hero: "D.Va",
-    ultimate_id: 1,
-    MapDataId: 100,
-  };
-
-  prismaMock.dvaRemech.findMany.mockResolvedValue([expectedRow]);
-
-  const result = await createDvaRemechRows(data as never, { id: 1 }, 100);
+  await createDvaRemechRows(data as never, { id: 1 }, 100);
 
   expect(prismaMock.dvaRemech.createMany).toHaveBeenCalledWith({
     data: [
@@ -58,20 +43,17 @@ test("should return the generated D.Va remech row", async () => {
       },
     ],
   });
-
-  expect(result).toEqual([expectedRow]);
 });
 
-test("should return empty array when no D.Va remech data", async () => {
+test("should not insert when no D.Va remech data", async () => {
   const data = {};
 
-  const result = await createDvaRemechRows(data as never, { id: 1 }, 1);
+  await createDvaRemechRows(data as never, { id: 1 }, 1);
 
-  expect(result).toEqual([]);
   expect(prismaMock.dvaRemech.createMany).not.toHaveBeenCalled();
 });
 
-test("should return the generated remech charged row", async () => {
+test("should insert the parsed remech charged row", async () => {
   const newRemechChargedRow: RemechChargedTableRow = [
     "remech_charged",
     100,
@@ -86,22 +68,7 @@ test("should return the generated remech charged row", async () => {
     remech_charged: [newRemechChargedRow],
   };
 
-  const expectedRow: RemechCharged = {
-    id: 1,
-    scrimId: 1,
-    event_type: "remech_charged",
-    match_time: 100,
-    player_team: "Team 1",
-    player_name: "lux",
-    player_hero: "D.Va",
-    hero_duplicated: "0",
-    ultimate_id: 1,
-    MapDataId: 100,
-  };
-
-  prismaMock.remechCharged.findMany.mockResolvedValue([expectedRow]);
-
-  const result = await createRemechChargedRows(data as never, { id: 1 }, 100);
+  await createRemechChargedRows(data as never, { id: 1 }, 100);
 
   expect(prismaMock.remechCharged.createMany).toHaveBeenCalledWith({
     data: [
@@ -117,15 +84,12 @@ test("should return the generated remech charged row", async () => {
       },
     ],
   });
-
-  expect(result).toEqual([expectedRow]);
 });
 
-test("should return empty array when no remech charged data", async () => {
+test("should not insert when no remech charged data", async () => {
   const data = {};
 
-  const result = await createRemechChargedRows(data as never, { id: 1 }, 1);
+  await createRemechChargedRows(data as never, { id: 1 }, 1);
 
-  expect(result).toEqual([]);
   expect(prismaMock.remechCharged.createMany).not.toHaveBeenCalled();
 });

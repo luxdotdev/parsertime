@@ -161,6 +161,10 @@ const tournamentMapUploadLimiter = new Ratelimit({
   analytics: true,
 });
 
+// Large logs insert tens of thousands of event rows; give the function the
+// plan's maximum runtime so a big upload is never killed mid-insert.
+export const maxDuration = 800;
+
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ matchId: string }> }
