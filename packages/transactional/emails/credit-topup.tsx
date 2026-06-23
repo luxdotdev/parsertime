@@ -1,4 +1,3 @@
-import type { User } from "@/generated/prisma/client";
 import {
   Body,
   Container,
@@ -11,11 +10,12 @@ import {
   Preview,
   Section,
   Text,
-} from "@react-email/components";
-import { Tailwind } from "@react-email/tailwind";
+} from "react-email";
+import type { EmailUser } from "./_types";
+import { EmailTailwind } from "./_email-tailwind";
 
 type CreditTopupEmailProps = {
-  user: User;
+  user: EmailUser;
   amountCents: number;
   balanceAfterCents: number;
   source: "topup" | "auto_refill";
@@ -46,7 +46,7 @@ export function CreditTopupEmail({
     <Html>
       <Head />
       <Preview>{previewText}</Preview>
-      <Tailwind>
+      <EmailTailwind>
         <Body className="mx-auto my-auto bg-white px-2 font-sans">
           <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
@@ -129,7 +129,7 @@ export function CreditTopupEmail({
             )}
           </Container>
         </Body>
-      </Tailwind>
+      </EmailTailwind>
     </Html>
   );
 }

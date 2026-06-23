@@ -1,5 +1,4 @@
-import { toTitleCase } from "@/lib/utils";
-import type { User } from "@/generated/prisma/client";
+import { toTitleCase } from "./_utils";
 import {
   Body,
   Container,
@@ -12,11 +11,12 @@ import {
   Preview,
   Section,
   Text,
-} from "@react-email/components";
-import { Tailwind } from "@react-email/tailwind";
+} from "react-email";
+import type { EmailUser } from "./_types";
+import { EmailTailwind } from "./_email-tailwind";
 
 type SubscriptionEmailProps = {
-  user: User;
+  user: EmailUser;
   billingPlan: string;
 };
 
@@ -30,7 +30,7 @@ export function SubscriptionCreatedEmail({
     <Html>
       <Head />
       <Preview>{previewText}</Preview>
-      <Tailwind>
+      <EmailTailwind>
         <Body className="mx-auto my-auto bg-white px-2 font-sans">
           <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
@@ -99,7 +99,7 @@ export function SubscriptionCreatedEmail({
             )}
           </Container>
         </Body>
-      </Tailwind>
+      </EmailTailwind>
     </Html>
   );
 }
