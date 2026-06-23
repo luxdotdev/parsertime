@@ -1,4 +1,4 @@
-import { UsageReportEmail } from "@/components/email/usage-report";
+import { UsageReportEmail } from "@parsertime/transactional/emails/usage-report";
 import { email } from "@/lib/email";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";

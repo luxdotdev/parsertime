@@ -1,6 +1,6 @@
-import SubscriptionCreatedEmail from "@/components/email/subscription-created";
-import SubscriptionDeletedEmail from "@/components/email/subscription-deleted";
-import SubscriptionUpdatedEmail from "@/components/email/subscription-updated";
+import SubscriptionCreatedEmail from "@parsertime/transactional/emails/subscription-created";
+import SubscriptionDeletedEmail from "@parsertime/transactional/emails/subscription-deleted";
+import SubscriptionUpdatedEmail from "@parsertime/transactional/emails/subscription-updated";
 import { email } from "@/lib/email";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";

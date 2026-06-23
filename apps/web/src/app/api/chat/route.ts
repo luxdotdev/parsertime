@@ -1,4 +1,4 @@
-import CreditLowBalanceEmail from "@/components/email/credit-low-balance";
+import CreditLowBalanceEmail from "@parsertime/transactional/emails/credit-low-balance";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";

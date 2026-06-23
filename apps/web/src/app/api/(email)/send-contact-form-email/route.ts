@@ -1,4 +1,4 @@
-import ContactFormEmail from "@/components/email/contact-form";
+import ContactFormEmail from "@parsertime/transactional/emails/contact-form";
 import { email } from "@/lib/email";
 import { Logger } from "@/lib/logger";
 import { render } from "@react-email/render";

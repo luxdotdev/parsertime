@@ -1,4 +1,4 @@
-import TeamInviteUserEmail from "@/components/email/team-invite";
+import TeamInviteUserEmail from "@parsertime/transactional/emails/team-invite";
 import { auditLog } from "@/lib/audit-logs";
 import { canManageTeam, getCurrentUser } from "@/lib/auth";
 import { email } from "@/lib/email";

@@ -1,6 +1,6 @@
 import { stripeWebhookCounter } from "@/lib/axiom/metrics";
 import { handleSubscriptionEvent } from "@/lib/billing-plans";
-import CreditTopupEmail from "@/components/email/credit-topup";
+import CreditTopupEmail from "@parsertime/transactional/emails/credit-topup";
 import { email } from "@/lib/email";
 import {
   clearPendingAutoRefill,

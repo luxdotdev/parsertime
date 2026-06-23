@@ -1,5 +1,5 @@
-import MagicLinkEmail from "@/components/email/magic-link";
-import UserOnboardingEmail from "@/components/email/onboarding";
+import MagicLinkEmail from "@parsertime/transactional/emails/magic-link";
+import UserOnboardingEmail from "@parsertime/transactional/emails/onboarding";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import {

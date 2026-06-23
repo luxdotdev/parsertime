@@ -27,6 +27,7 @@ const cspHeader = `
 const nextConfig: NextConfig = {
   reactCompiler: true,
   typedRoutes: true,
+  transpilePackages: ["@parsertime/transactional"],
   typescript: {
     ignoreBuildErrors: true,
   },
