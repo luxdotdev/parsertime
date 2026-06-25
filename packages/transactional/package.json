@@ -16,11 +16,11 @@
   "dependencies": {
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-email": "^6.0.0"
+    "react-email": "^6.6.5"
   },
   "devDependencies": {
     "@parsertime/lint-config": "workspace:*",
-    "@react-email/ui": "^6.0.0",
+    "@react-email/ui": "^6.6.5",
     "@types/node": "^20.19.15",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
