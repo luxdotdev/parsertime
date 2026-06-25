@@ -28,7 +28,7 @@ import { useTranslations } from "next-intl";
 
 type ColumnData = {
   stat: string;
-  value: number;
+  value: number | string;
   per10: number | string;
 };
 
@@ -271,7 +271,6 @@ export function StatsTable({ data: playerStat }: { data: PlayerStat }) {
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: tableData,
-    // @ts-expect-error idk how to fix this
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,

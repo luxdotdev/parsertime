@@ -32,9 +32,11 @@
     "@parsertime/lint-config": "workspace:*",
     "@types/bun": "latest",
     "@types/pg": "^8.18.0",
+    "bun-types": "latest",
     "oxfmt": "^0.40.0",
     "oxlint": "^1.58.0",
     "prisma": "^7.5.0",
-    "typescript": "^5.7.3"
+    "typescript": "npm:@typescript/typescript6@^6.0.1",
+    "typescript-7": "npm:typescript@7.0.1-rc"
   }
 }

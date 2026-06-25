@@ -19,6 +19,17 @@ A Turborepo managed with pnpm workspaces. Three deployable services live under `
 
 pnpm@9.15.9 installs dependencies for all apps. The bot still **runs** on Bun (`bun run index.ts`) on Railway, but its dependencies are installed by pnpm like every other workspace. Workspace-level pnpm config (`overrides`, `onlyBuiltDependencies`) lives in the root `package.json`.
 
+## TypeScript (7.0 RC, dual-compiler)
+
+The repo runs the TypeScript 7.0 native (Go) compiler for type-checking, with TypeScript 6 kept alongside for tools that still need the JS compiler API (Next.js, fumadocs). Each workspace pins two aliases:
+
+- `typescript` → `npm:@typescript/typescript6` — the TS6 API the `node_modules/typescript` slot resolves to. Everything that `import`s `typescript` (Next.js typegen/build, fumadocs) gets this. Ships the **`tsc6`** binary.
+- `typescript-7` → `npm:typescript@7.0.x-rc` — the real TS7 RC. Ships the **`tsc`** binary.
+
+So `tsc --noEmit` (every `typecheck` script) runs the fast TS7 compiler, while `require("typescript")` stays on TS6. To run the TS6 checker explicitly, use `tsc6 --noEmit`.
+
+Caveat: TS7's native compiler can't load `tsconfig` language-service plugins or be patched, so `@effect/language-service`'s build-time `tsc` diagnostics are gone (its `prepare` patch step was removed from `apps/web`). Effect diagnostics still work **in-editor** via the tsconfig plugin (the TS6-shim `tsserver` loads it).
+
 ## Deployment
 
 - `apps/web` and `apps/docs` → separate Vercel projects, each with **Root Directory** set to its app folder.

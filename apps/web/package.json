@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "prepare": "effect-language-service patch",
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next typegen && oxlint",
@@ -195,7 +194,8 @@
     "sass": "^1.93.2",
     "tailwindcss": "^4.1.13",
     "tw-animate-css": "^1.3.8",
-    "typescript": "^5.7.3",
+    "typescript": "npm:@typescript/typescript6@^6.0.1",
+    "typescript-7": "npm:typescript@7.0.1-rc",
     "vitest": "^3.2.4",
     "vitest-mock-extended": "^3.1.0"
   }
