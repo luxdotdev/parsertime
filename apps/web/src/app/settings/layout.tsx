@@ -36,9 +36,7 @@ export function generateMetadata(): Metadata {
   };
 }
 
-export default function SettingsLayout({
-  children,
-}: LayoutProps<"/settings">) {
+export default function SettingsLayout({ children }: LayoutProps<"/settings">) {
   return (
     <DashboardLayout>
       <SettingsChrome>{children}</SettingsChrome>
