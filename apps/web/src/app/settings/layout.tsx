@@ -10,6 +10,7 @@ import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import { $Enums } from "@/generated/prisma/browser";
 import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
+import type { ReactNode } from "react";
 
 export function generateMetadata(): Metadata {
   const t = getMetadataTranslations("settingsPage.metadata");
@@ -35,9 +36,17 @@ export function generateMetadata(): Metadata {
   };
 }
 
-export default async function SettingsLayout({
+export default function SettingsLayout({
   children,
 }: LayoutProps<"/settings">) {
+  return (
+    <DashboardLayout>
+      <SettingsChrome>{children}</SettingsChrome>
+    </DashboardLayout>
+  );
+}
+
+async function SettingsChrome({ children }: { children: ReactNode }) {
   const t = await getTranslations("settingsPage");
 
   const sidebarNavItems: { title: string; href: Route }[] = [
@@ -83,29 +92,27 @@ export default async function SettingsLayout({
   const isAdmin = user?.role === $Enums.UserRole.ADMIN;
 
   return (
-    <DashboardLayout>
-      <div className="min-h-[90vh] space-y-6 p-10 pb-16 md:block">
-        <div className="space-y-0.5">
-          <h2 className="text-2xl font-bold tracking-tight">{t("title")}</h2>
-          <p className="text-muted-foreground">{t("description")}</p>
-        </div>
-        <Separator className="my-6" />
-        <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
-          <aside className="lg:w-1/6">
-            <SidebarNav items={sidebarNavItems} />
-            {isAdmin && (
-              <>
-                <h3 className="text-muted-foreground mt-6 pl-2 text-sm tracking-tight">
-                  {t("sideNav.admin")}
-                </h3>
-                <Separator className="mb-4" />
-                <SidebarNav items={adminNavItems} />
-              </>
-            )}
-          </aside>
-          <div className="flex-1">{children}</div>
-        </div>
+    <div className="min-h-[90vh] space-y-6 p-10 pb-16 md:block">
+      <div className="space-y-0.5">
+        <h2 className="text-2xl font-bold tracking-tight">{t("title")}</h2>
+        <p className="text-muted-foreground">{t("description")}</p>
       </div>
-    </DashboardLayout>
+      <Separator className="my-6" />
+      <div className="flex flex-col space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
+        <aside className="lg:w-1/6">
+          <SidebarNav items={sidebarNavItems} />
+          {isAdmin && (
+            <>
+              <h3 className="text-muted-foreground mt-6 pl-2 text-sm tracking-tight">
+                {t("sideNav.admin")}
+              </h3>
+              <Separator className="mb-4" />
+              <SidebarNav items={adminNavItems} />
+            </>
+          )}
+        </aside>
+        <div className="flex-1">{children}</div>
+      </div>
+    </div>
   );
 }

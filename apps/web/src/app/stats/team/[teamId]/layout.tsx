@@ -8,6 +8,7 @@ import { positionalData, simulationTool } from "@/lib/flags";
 import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 export async function generateMetadata(
   props: LayoutProps<"/stats/team/[teamId]">
@@ -55,11 +56,28 @@ export async function generateMetadata(
 // in the header's stats-summary API route, since layouts do not re-render on
 // soft navigation and are not a valid security boundary. Only non-sensitive
 // data (feature flags, the teamId already in the URL) is read here.
-export default async function TeamStatsLayout(
+export default function TeamStatsLayout(
   props: LayoutProps<"/stats/team/[teamId]">
 ) {
-  const params = await props.params;
-  const teamId = parseInt(params.teamId);
+  return (
+    <div className="px-6 pt-8 pb-16 sm:px-10">
+      <RangeTransitionProvider>
+        <Suspense fallback={<div className="h-24" />}>
+          <TeamStatsNav params={props.params} />
+        </Suspense>
+        <TeamStatsContent>{props.children}</TeamStatsContent>
+      </RangeTransitionProvider>
+    </div>
+  );
+}
+
+async function TeamStatsNav({
+  params,
+}: {
+  params: LayoutProps<"/stats/team/[teamId]">["params"];
+}) {
+  const { teamId: rawTeamId } = await params;
+  const teamId = parseInt(rawTeamId);
 
   const [positionalEnabled, simulationEnabled] = await Promise.all([
     positionalData(),
@@ -67,16 +85,13 @@ export default async function TeamStatsLayout(
   ]);
 
   return (
-    <div className="px-6 pt-8 pb-16 sm:px-10">
-      <RangeTransitionProvider>
-        <TeamStatsHeaderClient teamId={teamId} />
-        <TeamStatsTabsNav
-          teamId={teamId}
-          positionalEnabled={positionalEnabled}
-          simulationEnabled={simulationEnabled}
-        />
-        <TeamStatsContent>{props.children}</TeamStatsContent>
-      </RangeTransitionProvider>
-    </div>
+    <>
+      <TeamStatsHeaderClient teamId={teamId} />
+      <TeamStatsTabsNav
+        teamId={teamId}
+        positionalEnabled={positionalEnabled}
+        simulationEnabled={simulationEnabled}
+      />
+    </>
   );
 }
