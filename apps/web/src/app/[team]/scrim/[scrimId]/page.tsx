@@ -96,30 +96,35 @@ export default async function ScrimDashboardPage(
 ) {
   const params = await props.params;
   const id = parseInt(params.scrimId);
+  if (!Number.isSafeInteger(id) || id <= 0) notFound();
   const session = await auth();
   const t = await getTranslations("scrimPage");
 
-  const scrim = await AppRuntime.runPromise(
-    ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(id)))
-  );
-  if (!scrim) notFound();
-
-  const teamId = scrim.teamId;
-
-  const maps = await prisma.map.findMany({
-    where: {
-      scrimId: id,
-    },
-    orderBy: [{ order: "asc" }, { id: "asc" }],
-  });
-
-  // Per-map team names (from the round's MatchStart) power the winner-override
-  // dialog. The set-winner endpoint validates the submitted winner against the
-  // map's own MatchStart names, so the dialog must offer them verbatim. Keyed
-  // by Map.id via MapData.
-  const mapTeamNames = new Map<number, { team1: string; team2: string }>();
-  if (maps.length > 0) {
-    const mapDataRows = await prisma.mapData.findMany({
+  // Independent reads — none depends on another (the user lookup only needs the
+  // session, already resolved), so fetch them together instead of in a chain.
+  const [
+    scrim,
+    maps,
+    mapDataRows,
+    user,
+    feedbackScrim,
+    visibilityRow,
+    mapComparisonEnabled,
+    overviewCardEnabled,
+    showPositional,
+  ] = await Promise.all([
+    AppRuntime.runPromise(
+      ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(id)))
+    ),
+    prisma.map.findMany({
+      where: { scrimId: id },
+      orderBy: [{ order: "asc" }, { id: "asc" }],
+    }),
+    // Per-map team names (from the round's MatchStart) power the winner-override
+    // dialog. The set-winner endpoint validates the submitted winner against the
+    // map's own MatchStart names, so the dialog must offer them verbatim. Keyed
+    // by Map.id via MapData.
+    prisma.mapData.findMany({
       where: { scrimId: id },
       select: {
         Map: { select: { id: true } },
@@ -128,31 +133,88 @@ export default async function ScrimDashboardPage(
           take: 1,
         },
       },
-    });
-    for (const row of mapDataRows) {
-      const mapId = row.Map?.id;
-      const ms = row.match_start[0];
-      if (mapId != null && ms && !mapTeamNames.has(mapId)) {
-        mapTeamNames.set(mapId, {
-          team1: ms.team_1_name,
-          team2: ms.team_2_name,
-        });
-      }
+    }),
+    AppRuntime.runPromise(
+      UserService.pipe(
+        Effect.flatMap((svc) => svc.getUser(session?.user?.email))
+      )
+    ),
+    prisma.scrim.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        teamId: true,
+        opponentTeamId: true,
+        feedback: { select: { id: true } },
+        opponentTeam: { select: { name: true } },
+      },
+    }),
+    prisma.scrim.findFirst({
+      where: { id },
+      select: { guestMode: true },
+    }),
+    mapComparison(),
+    overviewCard(),
+    positionalData(),
+  ]);
+  if (!scrim) notFound();
+
+  const teamId = scrim.teamId;
+  const visibility = visibilityRow ?? { guestMode: false };
+
+  const mapTeamNames = new Map<number, { team1: string; team2: string }>();
+  for (const row of mapDataRows) {
+    const mapId = row.Map?.id;
+    const ms = row.match_start[0];
+    if (mapId != null && ms && !mapTeamNames.has(mapId)) {
+      mapTeamNames.set(mapId, {
+        team1: ms.team_1_name,
+        team2: ms.team_2_name,
+      });
     }
   }
 
-  const user = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
-  );
+  // Permission + context reads that depend on the scrim/user above. The overview
+  // gate (totalScrimCount) is grouped here too: the roster-identity heuristic
+  // (getTeamRoster) anchors on the most-frequent player across the team's maps,
+  // which can't reliably tell which side is "our team" until the team has at
+  // least two scrims. Mirror the team stats page (totalScrimCount < 2 ->
+  // placeholder) and skip the overview for new teams rather than render a
+  // possibly-inverted record.
+  const [isManagerRecord, canManage, opponentFullName, totalScrimCount] =
+    await Promise.all([
+      teamId
+        ? prisma.teamManager.findFirst({ where: { teamId, userId: user?.id } })
+        : Promise.resolve(null),
+      canManageTeam(feedbackScrim?.teamId, user),
+      scrim.opponentTeamAbbr
+        ? prisma.scoutingMatch
+            .findFirst({
+              where: {
+                OR: [
+                  { team1: scrim.opponentTeamAbbr },
+                  { team2: scrim.opponentTeamAbbr },
+                ],
+              },
+              select: {
+                team1: true,
+                team1FullName: true,
+                team2: true,
+                team2FullName: true,
+              },
+            })
+            .then((m) => {
+              if (!m) return scrim.opponentTeamAbbr;
+              return m.team1 === scrim.opponentTeamAbbr
+                ? m.team1FullName
+                : m.team2FullName;
+            })
+        : Promise.resolve(null),
+      teamId ? prisma.scrim.count({ where: { teamId } }) : Promise.resolve(0),
+    ]);
 
-  const isManager = teamId
-    ? (await prisma.teamManager.findFirst({
-        where: {
-          teamId,
-          userId: user?.id,
-        },
-      })) !== null && session !== null
-    : false;
+  const isManager =
+    teamId !== null ? isManagerRecord !== null && session !== null : false;
 
   const hasPerms =
     user?.id === scrim?.creatorId ||
@@ -160,113 +222,50 @@ export default async function ScrimDashboardPage(
     user?.role === $Enums.UserRole.MANAGER ||
     user?.role === $Enums.UserRole.ADMIN;
 
-  const feedbackScrim = await prisma.scrim.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      teamId: true,
-      opponentTeamId: true,
-      feedback: { select: { id: true } },
-      opponentTeam: { select: { name: true } },
-    },
-  });
-
-  const canManage = await canManageTeam(feedbackScrim?.teamId, user);
-
-  const visibility = (await prisma.scrim.findFirst({
-    where: {
-      id: parseInt(params.scrimId),
-    },
-    select: {
-      guestMode: true,
-    },
-  })) ?? { guestMode: false };
-
-  const [
-    mapComparisonEnabled,
-    overviewCardEnabled,
-    showPositional,
-    opponentFullName,
-  ] = await Promise.all([
-    mapComparison(),
-    overviewCard(),
-    positionalData(),
-    scrim.opponentTeamAbbr
-      ? prisma.scoutingMatch
-          .findFirst({
-            where: {
-              OR: [
-                { team1: scrim.opponentTeamAbbr },
-                { team2: scrim.opponentTeamAbbr },
-              ],
-            },
-            select: {
-              team1: true,
-              team1FullName: true,
-              team2: true,
-              team2FullName: true,
-            },
-          })
-          .then((m) => {
-            if (!m) return scrim.opponentTeamAbbr;
-            return m.team1 === scrim.opponentTeamAbbr
-              ? m.team1FullName
-              : m.team2FullName;
-          })
-      : Promise.resolve(null),
-  ]);
-
-  // The overview's roster-identity heuristic (getTeamRoster) anchors on the
-  // most-frequent player across the team's maps, which can't reliably tell
-  // which side is "our team" until the team has at least two scrims. Mirror
-  // the team stats page (totalScrimCount < 2 -> placeholder) and skip the
-  // overview for new teams rather than render a possibly-inverted record.
-  const totalScrimCount = teamId
-    ? await prisma.scrim.count({ where: { teamId } })
-    : 0;
   const isNewTeam = teamId !== null && totalScrimCount < 2;
 
-  const overviewData =
-    overviewCardEnabled && maps.length > 0 && teamId && !isNewTeam
-      ? await AppRuntime.runPromise(
-          ScrimOverviewService.pipe(
-            Effect.flatMap((svc) => svc.getScrimOverview(id, teamId))
+  // Heavy reads — independent of one another, so run them together instead of
+  // four sequential awaits.
+  const [overviewData, positionalStats, positionalArtifacts, scrimInitiation] =
+    await Promise.all([
+      overviewCardEnabled && maps.length > 0 && teamId && !isNewTeam
+        ? AppRuntime.runPromise(
+            ScrimOverviewService.pipe(
+              Effect.flatMap((svc) => svc.getScrimOverview(id, teamId))
+            )
           )
-        )
-      : null;
+        : Promise.resolve(null),
+      showPositional && maps.length > 0
+        ? AppRuntime.runPromise(
+            ScrimPositionalStatsService.pipe(
+              Effect.flatMap((svc) => svc.getScrimPositionalStats(id))
+            )
+          )
+        : Promise.resolve(null),
+      showPositional && maps.length > 0 && teamId
+        ? AppRuntime.runPromise(
+            ScrimPositionalArtifactsService.pipe(
+              Effect.flatMap((svc) =>
+                svc.getScrimPositionalArtifacts(id, teamId)
+              )
+            )
+          )
+        : Promise.resolve(null),
+      overviewCardEnabled && maps.length > 0 && teamId && !isNewTeam
+        ? AppRuntime.runPromise(
+            ScrimInitiationService.pipe(
+              Effect.flatMap((svc) => svc.getScrimInitiation(id))
+            )
+          )
+        : Promise.resolve(null),
+    ]);
+
   const showOverview =
     overviewData !== null &&
     overviewData.mapCount > 0 &&
     overviewData.teamPlayers.length > 0;
   const showOverviewUnavailable =
     overviewCardEnabled && isNewTeam && maps.length > 0;
-
-  const positionalStats =
-    showPositional && maps.length > 0
-      ? await AppRuntime.runPromise(
-          ScrimPositionalStatsService.pipe(
-            Effect.flatMap((svc) => svc.getScrimPositionalStats(id))
-          )
-        )
-      : null;
-
-  const positionalArtifacts =
-    showPositional && maps.length > 0 && teamId
-      ? await AppRuntime.runPromise(
-          ScrimPositionalArtifactsService.pipe(
-            Effect.flatMap((svc) => svc.getScrimPositionalArtifacts(id, teamId))
-          )
-        )
-      : null;
-
-  const scrimInitiation =
-    overviewCardEnabled && maps.length > 0 && teamId && !isNewTeam
-      ? await AppRuntime.runPromise(
-          ScrimInitiationService.pipe(
-            Effect.flatMap((svc) => svc.getScrimInitiation(id))
-          )
-        )
-      : null;
 
   // Build per-map winner metadata for the map cards' W/L badge + override
   // dialog. The resolved winner prefers the stored Map.winner (manual override

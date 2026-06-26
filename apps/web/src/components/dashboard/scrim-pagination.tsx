@@ -56,6 +56,8 @@ type ScrimResponse = {
   nextCursor?: string;
   hasMore: boolean;
   totalCount: number;
+  /** Whether the user has any scrims at all (ignoring search/filter). */
+  hasAnyScrims: boolean;
 };
 
 export function ScrimPagination({
@@ -184,33 +186,6 @@ export function ScrimPagination({
     },
   });
 
-  // Check if user has any scrims at all (without filters)
-  const { data: totalScrimsData } = useQuery<ScrimResponse, Error>({
-    queryKey: isAdmin ? ["admin-scrims-total"] : ["scrims-total", teamId],
-    queryFn: async () => {
-      const params = new URLSearchParams();
-      params.set("limit", "1");
-
-      if (isAdmin) {
-        params.set("adminMode", "true");
-      }
-
-      if (teamId && !isAdmin) {
-        params.set("teamId", teamId.toString());
-      }
-
-      const response = await fetch(
-        `/api/scrim/get-scrims?${params.toString()}`
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch scrims");
-      }
-
-      return response.json() as Promise<ScrimResponse>;
-    },
-  });
-
   const totalCount = data?.totalCount ?? 0;
 
   const pagination = handlePagination({
@@ -241,7 +216,7 @@ export function ScrimPagination({
   }
 
   // Show empty scrim list only if user has no scrims at all
-  if (!isLoading && totalScrimsData?.totalCount === 0) {
+  if (!isLoading && data?.hasAnyScrims === false) {
     return <EmptyScrimList isOnboarding={!seenOnboarding} />;
   }
 

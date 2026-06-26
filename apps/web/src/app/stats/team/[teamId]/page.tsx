@@ -1,20 +1,16 @@
-import { MapPerformanceTable } from "@/components/stats/team/map-performance-table";
-import { OverviewInsightsBand } from "@/components/stats/team/overview-insights-band";
-import { QuickStatsRibbon } from "@/components/stats/team/quick-stats-ribbon";
-import { TeamRosterGrid } from "@/components/stats/team/team-roster-grid";
-import { TeamStatsGate } from "@/components/stats/team/team-stats-gate";
-import { AppRuntime } from "@/data/runtime";
 import {
-  TeamHeroPoolService,
-  TeamQuickWinsService,
-  TeamRoleStatsService,
-  TeamSharedDataService,
-  TeamStatsService,
-} from "@/data/team";
-import { getTempoBaselines } from "@/lib/tempo/read";
-import { getMapNames } from "@/lib/utils";
+  OverviewAnalysisSection,
+  QuickStatsRibbonSection,
+  TeamRosterSection,
+} from "@/components/stats/team/overview-sections";
+import {
+  SkeletonRibbon,
+  SkeletonSection,
+  SkeletonTable,
+} from "@/components/stats/team/overview-skeletons";
+import { TeamStatsGate } from "@/components/stats/team/team-stats-gate";
 import type { PagePropsWithLocale } from "@/types/next";
-import { Effect } from "effect";
+import { Suspense } from "react";
 import { loadTeamStatsShell } from "./_lib/context";
 
 // The heaviest dashboard in the app: dozens of services over a shared
@@ -36,103 +32,33 @@ export default async function TeamStatsOverviewPage(
 
   const { teamId, dateRange, isManager, substituteNames } = shell;
 
-  const [
-    {
-      quickStats,
-      roleStats,
-      roleBalance,
-      bestMapByWinrate,
-      blindSpotMap,
-      top5Maps,
-      allMapsPlaytime,
-      heroPool,
-      teamRoster,
-      winrates,
-    },
-    mapNames,
-  ] = await Promise.all([
-    AppRuntime.runPromise(
-      Effect.all(
-        {
-          quickStats: TeamQuickWinsService.pipe(
-            Effect.flatMap((svc) => svc.getQuickWinsStats(teamId, dateRange))
-          ),
-          roleStats: TeamRoleStatsService.pipe(
-            Effect.flatMap((svc) =>
-              svc.getRolePerformanceStats(teamId, dateRange)
-            )
-          ),
-          roleBalance: TeamRoleStatsService.pipe(
-            Effect.flatMap((svc) =>
-              svc.getRoleBalanceAnalysis(teamId, dateRange)
-            )
-          ),
-          bestMapByWinrate: TeamStatsService.pipe(
-            Effect.flatMap((svc) => svc.getBestMapByWinrate(teamId, dateRange))
-          ),
-          blindSpotMap: TeamStatsService.pipe(
-            Effect.flatMap((svc) => svc.getBlindSpotMap(teamId, dateRange))
-          ),
-          top5Maps: TeamStatsService.pipe(
-            Effect.flatMap((svc) =>
-              svc.getTop5MapsByPlaytime(teamId, dateRange)
-            )
-          ),
-          allMapsPlaytime: TeamStatsService.pipe(
-            Effect.flatMap((svc) => svc.getTopMapsByPlaytime(teamId, dateRange))
-          ),
-          heroPool: TeamHeroPoolService.pipe(
-            Effect.flatMap((svc) =>
-              svc.getHeroPoolAnalysis(teamId, dateRange?.from, dateRange?.to)
-            )
-          ),
-          teamRoster: TeamSharedDataService.pipe(
-            Effect.flatMap((svc) => svc.getTeamRoster(teamId))
-          ),
-          winrates: TeamStatsService.pipe(
-            Effect.flatMap((svc) => svc.getTeamWinrates(teamId, dateRange))
-          ),
-        },
-        { concurrency: "unbounded" }
-      )
-    ),
-    getMapNames(),
-  ]);
-
-  const baselines = await getTempoBaselines();
-
+  // Stream each block independently: the above-the-fold ribbon paints as soon
+  // as its (light) reads resolve, while the heavier analysis and roster reads
+  // continue in the background instead of blocking the whole page's first byte.
   return (
     <div className="mt-8 space-y-12">
-      <QuickStatsRibbon
-        stats={quickStats}
-        uniqueHeroes={heroPool.diversity.totalUniqueHeroes}
-        uniqueMaps={allMapsPlaytime.length}
-        fightBaseline={baselines.FIGHT_DURATION ?? null}
-      />
+      <Suspense fallback={<SkeletonRibbon />}>
+        <QuickStatsRibbonSection teamId={teamId} dateRange={dateRange} />
+      </Suspense>
 
-      <OverviewInsightsBand
-        quickStats={quickStats}
-        roleStats={roleStats}
-        roleBalance={roleBalance}
-        bestMap={bestMapByWinrate}
-        blindSpot={blindSpotMap}
-        mapNames={mapNames}
-      />
+      <Suspense
+        fallback={
+          <>
+            <SkeletonSection bodyHeight={260} />
+            <SkeletonTable rows={6} />
+          </>
+        }
+      >
+        <OverviewAnalysisSection teamId={teamId} dateRange={dateRange} />
+      </Suspense>
 
-      <MapPerformanceTable
-        topMaps={top5Maps}
-        winrates={winrates.byMap}
-        bestMap={bestMapByWinrate}
-        blindSpot={blindSpotMap}
-        mapNames={mapNames}
-      />
-
-      <TeamRosterGrid
-        roster={teamRoster}
-        teamId={teamId}
-        isManager={isManager}
-        substitutes={[...substituteNames]}
-      />
+      <Suspense fallback={<SkeletonSection bodyHeight={320} />}>
+        <TeamRosterSection
+          teamId={teamId}
+          isManager={isManager}
+          substituteNames={substituteNames}
+        />
+      </Suspense>
     </div>
   );
 }

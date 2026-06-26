@@ -11,43 +11,54 @@ type TabDef = {
   shortLabel?: string;
   hidden?: boolean;
   className?: string;
-  content: ReactNode;
 };
 
 type MapTabsProps = {
   tabs: TabDef[];
+  /** The active tab, resolved server-side from the `?tab=` search param. */
+  activeTab: string;
+  /** Server-rendered content for the active tab only. */
+  children: ReactNode;
 };
 
-export function MapTabs({ tabs }: MapTabsProps) {
+export function MapTabs({ tabs, activeTab, children }: MapTabsProps) {
   const t = useTranslations("mapPage");
-  const [tab, setTab] = useQueryState(
+  // shallow:false so switching tabs re-runs the server page and renders the
+  // newly-selected tab's content, instead of shipping every tab up front.
+  const [, setTab] = useQueryState(
     "tab",
-    parseAsString.withDefault("overview")
+    parseAsString.withDefault("overview").withOptions({ shallow: false })
   );
 
   return (
-    <Tabs value={tab} onValueChange={setTab} className="space-y-4">
+    <Tabs
+      value={activeTab}
+      onValueChange={(value) => void setTab(value)}
+      className="space-y-4"
+    >
       <TabsList aria-label={t("tabsLabel")}>
-        {tabs.map((t) =>
-          t.hidden ? null : (
-            <TabsTrigger key={t.value} value={t.value} className={t.className}>
-              {t.shortLabel ? (
+        {tabs.map((tab) =>
+          tab.hidden ? null : (
+            <TabsTrigger
+              key={tab.value}
+              value={tab.value}
+              className={tab.className}
+            >
+              {tab.shortLabel ? (
                 <>
-                  <span className="hidden md:inline">{t.label}</span>
-                  <span className="md:hidden">{t.shortLabel}</span>
+                  <span className="hidden md:inline">{tab.label}</span>
+                  <span className="md:hidden">{tab.shortLabel}</span>
                 </>
               ) : (
-                t.label
+                tab.label
               )}
             </TabsTrigger>
           )
         )}
       </TabsList>
-      {tabs.map((t) => (
-        <TabsContent key={t.value} value={t.value} className="space-y-4">
-          {t.content}
-        </TabsContent>
-      ))}
+      <TabsContent value={activeTab} className="space-y-4">
+        {children}
+      </TabsContent>
     </Tabs>
   );
 }

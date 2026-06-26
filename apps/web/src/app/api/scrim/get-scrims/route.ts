@@ -88,14 +88,19 @@ export async function GET(req: NextRequest) {
       userData.role === $Enums.UserRole.ADMIN ||
       userData.role === $Enums.UserRole.MANAGER;
 
-    // Build where clause for database filtering
-    // Exclude synthetic scrims created for tournament matches
-    const whereClause: Prisma.ScrimWhereInput = {
+    // Base scope (team + tournament exclusion) without the search filter, so we
+    // can cheaply tell "no scrims at all" apart from "no scrims after filters"
+    // without a second request from the client.
+    // Exclude synthetic scrims created for tournament matches.
+    const baseWhere: Prisma.ScrimWhereInput = {
       tournamentMatch: null,
     };
 
     // Filter by team if teamId is provided
-    if (teamId) whereClause.teamId = teamId;
+    if (teamId) baseWhere.teamId = teamId;
+
+    // Build where clause for database filtering (base scope + search)
+    const whereClause: Prisma.ScrimWhereInput = { ...baseWhere };
 
     // Apply search filter at database level
     if (search) {
@@ -258,6 +263,31 @@ export async function GET(req: NextRequest) {
       };
     });
 
+    // Distinguish "no scrims at all" (onboarding) from "no scrims after
+    // filters" (no-results message). Only pay for the existence check when the
+    // filtered page came back empty — if there are results there are scrims.
+    let hasAnyScrims = scrimDetails.length > 0;
+    if (!hasAnyScrims) {
+      const existing = await prisma.scrim.findFirst({
+        where:
+          adminMode && isAdmin
+            ? baseWhere
+            : {
+                AND: [
+                  {
+                    OR: [
+                      { creatorId: userData.id },
+                      { Team: { users: { some: { id: userData.id } } } },
+                    ],
+                  },
+                  baseWhere,
+                ],
+              },
+        select: { id: true },
+      });
+      hasAnyScrims = existing !== null;
+    }
+
     const nextCursor = scrims[scrims.length - 1]?.id;
 
     // Calculate hasMore based on pagination method
@@ -276,6 +306,7 @@ export async function GET(req: NextRequest) {
       nextCursor: nextCursor?.toString() ?? undefined,
       hasMore,
       totalCount,
+      hasAnyScrims,
     });
   } catch (error) {
     Logger.error("Error fetching scrims:", error);

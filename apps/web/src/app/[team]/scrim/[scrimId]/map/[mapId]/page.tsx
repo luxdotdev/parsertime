@@ -1,32 +1,17 @@
 import { AppHeader } from "@/components/app-header";
-import { MapCharts } from "@/components/charts/map/map-charts";
 import { DirectionalTransition } from "@/components/directional-transition";
-import { ComparePlayers } from "@/components/map/compare-players";
-import { DefaultOverview } from "@/components/map/default-overview";
-import { FightInitiationInspector } from "@/components/map/fight-initiation-inspector";
-import { HeatmapTab } from "@/components/map/heatmap/heatmap-tab";
+import { ActiveMapTab } from "@/components/map/active-map-tab";
 import { HeroBans } from "@/components/map/hero-bans";
-import { Killfeed } from "@/components/map/killfeed";
-import { MapEvents } from "@/components/map/map-events";
 import { MapTabs } from "@/components/map/map-tabs";
 import { MapTabsSkeleton } from "@/components/map/map-tabs-skeleton";
-import { MatchStoryTab } from "@/components/map/match-story/match-story-tab";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
-import { ReplayTab } from "@/components/map/replay/replay-tab";
-import { RoutesTab } from "@/components/map/routes/routes-tab";
 import { ReplayCode } from "@/components/scrim/replay-code";
-import { TipTap } from "@/components/tiptap/tiptap";
 import { StatsViewBeacon } from "@/components/usage/stats-view-beacon";
-import { VodOverview } from "@/components/vods/vod-overview";
 import { MatchStoryService } from "@/data/map/match-story-service";
 import { PlayerService } from "@/data/player";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth, isAuthedToViewMap } from "@/lib/auth";
-import {
-  getFightInitiationForMapData,
-  type MapInitiationResult,
-} from "@/lib/fight-initiation";
 import { positionalData, tempoChart } from "@/lib/flags";
 import { resolveScrimMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
@@ -120,7 +105,6 @@ export default async function MapDashboardPage(
     tempoChartEnabled,
     positionalDataEnabled,
     matchStory,
-    fightInitiation,
   ] = await Promise.all([
     AppRuntime.runPromise(
       PlayerService.pipe(Effect.flatMap((svc) => svc.getMostPlayedHeroes(id)))
@@ -156,20 +140,41 @@ export default async function MapDashboardPage(
         Effect.catchAll(() => Effect.succeed(null))
       )
     ),
-    getFightInitiationForMapData(mapDataId).catch(
-      () =>
-        ({
-          available: false,
-          labels: [],
-          summary: null,
-          rounds: [],
-        }) satisfies MapInitiationResult
-    ),
   ]);
 
   const translatedMapName = await translateMapName(
     mapDetails?.map_name ?? "Map"
   );
+
+  // Tab triggers are always shown; only the active tab's content is rendered.
+  const tabs = [
+    { value: "overview", label: t("tabs.overview") },
+    { value: "killfeed", label: t("tabs.killfeed") },
+    { value: "charts", label: t("tabs.charts") },
+    ...(matchStory !== null
+      ? [{ value: "story", label: t("tabs.story") }]
+      : []),
+    ...(positionalDataEnabled
+      ? [
+          { value: "heatmap", label: t("tabs.heatmap") },
+          { value: "replay", label: t("tabs.replay") },
+          { value: "routes", label: t("tabs.routes") },
+        ]
+      : []),
+    { value: "events", label: t("tabs.events"), className: "hidden md:flex" },
+    { value: "initiation", label: t("tabs.initiation") },
+    { value: "compare", label: t("tabs.compare") },
+    { value: "notes", label: t("tabs.notes") },
+    { value: "vods", label: t("tabs.vod") },
+  ];
+
+  // Resolve the active tab from `?tab=`, falling back to overview for unknown
+  // or feature-gated values.
+  const requestedTab =
+    typeof searchParams.tab === "string" ? searchParams.tab : "overview";
+  const activeTab = tabs.some((tab) => tab.value === requestedTab)
+    ? requestedTab
+    : "overview";
 
   return (
     <DirectionalTransition>
@@ -209,125 +214,32 @@ export default async function MapDashboardPage(
               <ReplayCode replayCode={map?.replayCode ?? ""} subtitle={true} />
             )}
           </div>
-          <Suspense
-            fallback={
-              <ViewTransition exit="slide-down">
-                <MapTabsSkeleton />
-              </ViewTransition>
-            }
-          >
-            <ViewTransition enter="slide-up" default="none">
-              <MapTabs
-                tabs={[
-                  {
-                    value: "overview",
-                    label: t("tabs.overview"),
-                    content: (
-                      <DefaultOverview
-                        id={id}
-                        team1Color={team1}
-                        team2Color={team2}
-                      />
-                    ),
-                  },
-                  {
-                    value: "killfeed",
-                    label: t("tabs.killfeed"),
-                    content: (
-                      <Killfeed id={id} team1Color={team1} team2Color={team2} />
-                    ),
-                  },
-                  {
-                    value: "charts",
-                    label: t("tabs.charts"),
-                    content: (
-                      <MapCharts
-                        id={id}
-                        team1Color={team1}
-                        team2Color={team2}
-                        tempoChartEnabled={tempoChartEnabled}
-                      />
-                    ),
-                  },
-                  ...(matchStory !== null
-                    ? [
-                        {
-                          value: "story",
-                          label: t("tabs.story"),
-                          content: (
-                            <MatchStoryTab
-                              result={matchStory}
-                              team1Color={team1}
-                              team2Color={team2}
-                            />
-                          ),
-                        },
-                      ]
-                    : []),
-                  ...(positionalDataEnabled
-                    ? [
-                        {
-                          value: "heatmap",
-                          label: t("tabs.heatmap"),
-                          content: <HeatmapTab id={mapDataId} />,
-                        },
-                        {
-                          value: "replay",
-                          label: t("tabs.replay"),
-                          content: <ReplayTab id={mapDataId} />,
-                        },
-                        {
-                          value: "routes",
-                          label: t("tabs.routes"),
-                          content: <RoutesTab id={mapDataId} />,
-                        },
-                      ]
-                    : []),
-                  {
-                    value: "events",
-                    label: t("tabs.events"),
-                    className: "hidden md:flex",
-                    content: (
-                      <MapEvents
-                        id={id}
-                        team1Color={team1}
-                        team2Color={team2}
-                        includePositional={positionalDataEnabled}
-                      />
-                    ),
-                  },
-                  {
-                    value: "initiation",
-                    label: t("tabs.initiation"),
-                    content: (
-                      <FightInitiationInspector result={fightInitiation} />
-                    ),
-                  },
-                  {
-                    value: "compare",
-                    label: t("tabs.compare"),
-                    content: <ComparePlayers id={id} />,
-                  },
-                  {
-                    value: "notes",
-                    label: t("tabs.notes"),
-                    content: (
-                      <TipTap
-                        noteContent={noteContent?.content ?? ""}
-                        mapDataId={mapDataId}
-                        scrimId={parseInt(params.scrimId)}
-                      />
-                    ),
-                  },
-                  {
-                    value: "vods",
-                    label: t("tabs.vod"),
-                    content: <VodOverview vod={map?.vod ?? ""} mapId={id} />,
-                  },
-                ]}
-              />
-            </ViewTransition>
-          </Suspense>
+          <ViewTransition enter="slide-up" default="none">
+            <MapTabs tabs={tabs} activeTab={activeTab}>
+              <Suspense
+                key={activeTab}
+                fallback={
+                  <ViewTransition exit="slide-down">
+                    <MapTabsSkeleton />
+                  </ViewTransition>
+                }
+              >
+                <ActiveMapTab
+                  activeTab={activeTab}
+                  id={id}
+                  mapDataId={mapDataId}
+                  scrimId={parseInt(params.scrimId)}
+                  team1Color={team1}
+                  team2Color={team2}
+                  tempoChartEnabled={tempoChartEnabled}
+                  positionalDataEnabled={positionalDataEnabled}
+                  matchStory={matchStory}
+                  noteContent={noteContent?.content ?? ""}
+                  vod={map?.vod ?? ""}
+                />
+              </Suspense>
+            </MapTabs>
+          </ViewTransition>
         </div>
       </div>
     </DirectionalTransition>
