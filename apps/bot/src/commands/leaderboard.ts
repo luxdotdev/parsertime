@@ -106,7 +106,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       );
     });
 
-    const table = "```\n" + [header, separator, ...rows].join("\n") + "\n```";
+    const table = `\`\`\`\n${[header, separator, ...rows].join("\n")}\n\`\`\``;
     embed.setDescription(table);
 
     // Medal highlights for top 3

@@ -47,7 +47,6 @@ export type {
 } from "./types";
 import type {
   AbilityScenarioStats,
-  AbilityImpactData,
   HeroAbilityImpact,
   AbilityImpactAnalysis,
 } from "./types";

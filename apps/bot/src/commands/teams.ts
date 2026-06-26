@@ -59,22 +59,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   );
   const roleWidth = Math.max(4, ...teams.map((t) => t.role.length));
 
-  const header =
-    padLeft("ID", idWidth) +
-    "  " +
-    padRight("Name", nameWidth) +
-    "  " +
-    padRight("Role", roleWidth);
+  const header = `${padLeft("ID", idWidth)}  ${padRight("Name", nameWidth)}  ${padRight("Role", roleWidth)}`;
   const separator = "─".repeat(header.length);
   const rows = teams.map(
     (t) =>
-      padLeft(String(t.id), idWidth) +
-      "  " +
-      padRight(t.name, nameWidth) +
-      "  " +
-      padRight(t.role, roleWidth)
+      `${padLeft(String(t.id), idWidth)}  ${padRight(t.name, nameWidth)}  ${padRight(t.role, roleWidth)}`
   );
-  const table = "```\n" + [header, separator, ...rows].join("\n") + "\n```";
+  const table = `\`\`\`\n${[header, separator, ...rows].join("\n")}\n\`\`\``;
 
   const embed = brandEmbed("Your teams")
     .setDescription(`${teams.length} team${teams.length === 1 ? "" : "s"}`)

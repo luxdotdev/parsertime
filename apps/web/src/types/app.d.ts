@@ -51,8 +51,6 @@ const envVariables = z.object({
   AXIOM_METRICS_DATASET: z.string(),
 });
 
-envVariables.parse(process.env);
-
 declare global {
   namespace NodeJS {
     // oxlint-disable-next-line @typescript-eslint/consistent-type-definitions

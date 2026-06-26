@@ -105,13 +105,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
       const rows = sorted.map(
         ([map, data]) =>
-          padRight(map, mapNameWidth + 1) +
-          padLeft(String(data.totalWins), 4) +
-          padLeft(String(data.totalLosses), 4) +
-          padLeft(`${data.totalWinrate.toFixed(1)}%`, 7)
+          `${padRight(map, mapNameWidth + 1)}${padLeft(String(data.totalWins), 4)}${padLeft(String(data.totalLosses), 4)}${padLeft(`${data.totalWinrate.toFixed(1)}%`, 7)}`
       );
 
-      const table = "```\n" + [header, separator, ...rows].join("\n") + "\n```";
+      const table = `\`\`\`\n${[header, separator, ...rows].join("\n")}\n\`\`\``;
       embed.addFields({
         name: "Map Breakdown",
         value: table,

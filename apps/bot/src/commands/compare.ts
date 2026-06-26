@@ -94,11 +94,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     const statNameWidth = 18;
     const colWidth = Math.max(n1.length, n2.length, 8);
 
-    const headerLine =
-      padRight("", statNameWidth) +
-      padLeft(n1, colWidth) +
-      "  " +
-      padLeft(n2, colWidth);
+    const headerLine = `${padRight("", statNameWidth)}${padLeft(n1, colWidth)}  ${padLeft(n2, colWidth)}`;
 
     const rows: string[] = [headerLine];
 
@@ -121,16 +117,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       }
 
       rows.push(
-        padRight(formatStatName(key), statNameWidth) +
-          padLeft(s1, colWidth) +
-          "  " +
-          padLeft(s2, colWidth) +
-          "  " +
-          arrow
+        `${padRight(formatStatName(key), statNameWidth)}${padLeft(s1, colWidth)}  ${padLeft(s2, colWidth)}  ${arrow}`
       );
     }
 
-    const table = "```\n" + rows.join("\n") + "\n```";
+    const table = `\`\`\`\n${rows.join("\n")}\n\`\`\``;
 
     const embed = brandEmbed(`${p1.playerName} vs ${p2.playerName}`)
       .setDescription(`${p1.mapCount} maps · ${p2.mapCount} maps`)
