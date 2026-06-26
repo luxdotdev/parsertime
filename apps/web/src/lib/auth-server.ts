@@ -17,6 +17,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { admin, magicLink } from "better-auth/plugins";
+import { adminAc, userAc } from "better-auth/plugins/admin/access";
 import isEmail from "validator/lib/isEmail";
 
 function handleEmailError(error: unknown): never {
@@ -148,8 +149,20 @@ export const auth = betterAuth({
   },
   plugins: [
     // Maps onto the app's UserRole enum so existing ADMIN users keep their
-    // privileges; powers admin-gated user management and impersonation.
-    admin({ adminRoles: ["ADMIN"], defaultRole: "USER" }),
+    // privileges; powers admin-gated user management and impersonation. The
+    // `roles` map keys the built-in access-control roles by our uppercase enum
+    // values — without it, `hasPermission` resolves the acting user's "ADMIN"
+    // role against Better Auth's lowercase `defaultRoles` ({ admin, user }),
+    // finds nothing, and impersonation throws YOU_ARE_NOT_ALLOWED_TO_IMPERSONATE_USERS.
+    admin({
+      adminRoles: ["ADMIN"],
+      defaultRole: "USER",
+      roles: { ADMIN: adminAc, USER: userAc },
+      // Preserve the historical behavior where an admin can impersonate any
+      // user, including other admins (the built-in admin role otherwise lacks
+      // the `impersonate-admins` permission).
+      allowImpersonatingAdmins: true,
+    }),
     magicLink({
       expiresIn: 60 * 10,
       sendMagicLink: async ({ email: userEmail, url }) => {
