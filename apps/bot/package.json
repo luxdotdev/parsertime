@@ -35,6 +35,7 @@
     "bun-types": "latest",
     "oxfmt": "^0.40.0",
     "oxlint": "^1.58.0",
+    "oxlint-tsgolint": "^0.20.0",
     "prisma": "^7.5.0",
     "typescript": "npm:@typescript/typescript6@^6.0.1",
     "typescript-7": "npm:typescript@7.0.1-rc"

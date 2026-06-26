@@ -38,6 +38,7 @@
     "@types/three": "^0.184.1",
     "oxfmt": "^0.40.0",
     "oxlint": "^1.58.0",
+    "oxlint-tsgolint": "^0.20.0",
     "postcss": "^8.5.15",
     "tailwindcss": "^4.3.0",
     "typescript": "npm:@typescript/typescript6@^6.0.1",
