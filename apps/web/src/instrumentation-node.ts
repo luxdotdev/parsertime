@@ -15,7 +15,6 @@ import {
 import {
   BatchSpanProcessor,
   NodeTracerProvider,
-  SimpleSpanProcessor,
 } from "@opentelemetry/sdk-trace-node";
 import {
   ATTR_SERVICE_NAME,
@@ -74,11 +73,10 @@ export function registerNode() {
 
   const provider = new NodeTracerProvider({
     resource: RESOURCE,
-    spanProcessors: [
-      IS_PROD
-        ? new BatchSpanProcessor(otlpTraceExporter)
-        : new SimpleSpanProcessor(otlpTraceExporter),
-    ],
+    // BatchSpanProcessor exports on a timer rather than synchronously on span
+    // end, so trace export never reads Date.now() inside a Cache Components
+    // prerender pass (which the dev server runs per request).
+    spanProcessors: [new BatchSpanProcessor(otlpTraceExporter)],
   });
 
   registerInstrumentations({
@@ -188,9 +186,7 @@ const EffectTracingLive = NodeSdk.layer(() => ({
       [ATTR_DEPLOYMENT_ENVIRONMENT_NAME]: ENVIRONMENT,
     },
   },
-  spanProcessor: IS_PROD
-    ? new BatchSpanProcessor(new OTLPTraceExporter(OTLP_CONFIG))
-    : new SimpleSpanProcessor(new OTLPTraceExporter(OTLP_CONFIG)),
+  spanProcessor: new BatchSpanProcessor(new OTLPTraceExporter(OTLP_CONFIG)),
   metricReader: new PeriodicExportingMetricReader({
     exporter: new OTLPMetricExporter(METRIC_EXPORTER_CONFIG),
     exportIntervalMillis: 10_000,
