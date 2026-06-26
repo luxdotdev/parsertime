@@ -1,6 +1,15 @@
 import prisma from "@/lib/prisma";
 import type { HeroName } from "@/types/heroes";
 import { Prisma } from "@/generated/prisma/client";
+import { unstable_cache } from "next/cache";
+
+// These baselines scan the whole PlayerStat table per hero (the app's biggest
+// rows-read offender) yet are global, slowly-changing population statistics —
+// they only move when new scrims are uploaded. Cache them with a TTL so the
+// repeated stat-card reads collapse to one scan per (hero, params) window. The
+// shared tag lets a future upload hook bust them eagerly via revalidateTag.
+const HERO_BASELINE_TAG = "hero-baselines";
+const HERO_BASELINE_TTL_SECONDS = 60 * 60 * 6; // 6 hours
 
 type ValidStatColumn =
   | "eliminations"
@@ -435,7 +444,7 @@ function buildMultiStatComparisonQuery({
   `;
 }
 
-export async function compareMultipleStatsToDistribution(
+async function compareMultipleStatsToDistributionUncached(
   params: MultiStatComparisonParams
 ): Promise<MultiStatComparisonResult | null> {
   const query = buildMultiStatComparisonQuery(params);
@@ -453,6 +462,12 @@ export async function compareMultipleStatsToDistribution(
     comparisons: result[0].comparisons ?? [],
   };
 }
+
+export const compareMultipleStatsToDistribution = unstable_cache(
+  compareMultipleStatsToDistributionUncached,
+  ["multi-stat-comparison"],
+  { revalidate: HERO_BASELINE_TTL_SECONDS, tags: [HERO_BASELINE_TAG] }
+);
 
 function buildStatDistributionBaselineQuery({
   hero,
@@ -507,13 +522,19 @@ function buildStatDistributionBaselineQuery({
   `;
 }
 
-export async function getStatDistributionBaseline(
+async function getStatDistributionBaselineUncached(
   params: StatDistributionBaselineParams
 ): Promise<StatDistributionBaseline | null> {
   const query = buildStatDistributionBaselineQuery(params);
   const result = await prisma.$queryRaw<StatDistributionBaseline[]>(query);
   return result[0] ?? null;
 }
+
+export const getStatDistributionBaseline = unstable_cache(
+  getStatDistributionBaselineUncached,
+  ["stat-distribution-baseline"],
+  { revalidate: HERO_BASELINE_TTL_SECONDS, tags: [HERO_BASELINE_TAG] }
+);
 
 export type {
   StatDistributionBaseline,
