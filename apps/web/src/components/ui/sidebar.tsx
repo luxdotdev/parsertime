@@ -591,10 +591,13 @@ function SidebarMenuSkeleton({
 }: React.ComponentProps<"div"> & {
   showIcon?: boolean;
 }) {
-  // Random width between 50 to 90%.
-  const [width] = React.useState(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`;
-  });
+  // Random width between 50 to 90%. Generated after mount so the prerender
+  // pass stays deterministic (Math.random() during render is disallowed under
+  // Cache Components) and the server/client markup matches on first paint.
+  const [width, setWidth] = React.useState("70%");
+  React.useEffect(() => {
+    setWidth(`${Math.floor(Math.random() * 40) + 50}%`);
+  }, []);
 
   return (
     <div
