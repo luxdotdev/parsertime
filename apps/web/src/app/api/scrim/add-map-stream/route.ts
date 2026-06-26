@@ -113,7 +113,6 @@ export async function POST(req: NextRequest) {
       scrimParsingDuration.record(parseDuration);
       mapAddedCounter.add(1);
 
-      // A new map changes the scrim's aggregates and the team's stats.
       revalidateScrim(scrimId);
       if (scrim?.teamId) revalidateTeamStats(scrim.teamId);
 

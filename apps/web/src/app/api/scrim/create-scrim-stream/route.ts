@@ -157,7 +157,6 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // A new scrim for the team changes its aggregated stats.
       if (teamId) revalidateTeamStats(teamId);
 
       emit({ type: "done", scrimId: newScrimId });

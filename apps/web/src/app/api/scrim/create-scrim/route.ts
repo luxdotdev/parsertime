@@ -326,7 +326,6 @@ export async function POST(request: NextRequest) {
           }
         });
 
-        // A new scrim for the team changes its aggregated stats.
         if (teamId) revalidateTeamStats(teamId);
 
         return Response.json({ scrimId: newScrimId }, { status: 200 });
