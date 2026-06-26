@@ -13,9 +13,12 @@ import enMessages from "../../messages/en.json";
  * `NextIntlClientProvider` in the root layout.
  */
 export function getMetadataTranslations(namespace?: string) {
+  // The app does not augment next-intl's global `Messages` type, so cast to the
+  // translator's default (loosely-typed) options instead of having it infer a
+  // strict namespace union from the imported catalog.
   return createTranslator({
     locale: defaultLocale,
     messages: enMessages,
     namespace,
-  });
+  } as Parameters<typeof createTranslator>[0]);
 }

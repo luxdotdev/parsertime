@@ -410,6 +410,7 @@ export function TsrLeaderboard({ initialSnapshot }: Props) {
                   showInactive={showInactive}
                   t={t}
                   formatter={formatter}
+                  now={now}
                 />
               ))}
             </ul>
@@ -511,6 +512,7 @@ function PlayerRow({
   showInactive,
   t,
   formatter,
+  now,
 }: {
   row: TsrLeaderboardRow;
   selected: boolean;
@@ -518,6 +520,7 @@ function PlayerRow({
   showInactive: boolean;
   t: TsrMessages;
   formatter: ReturnType<typeof useFormatter>;
+  now: number | null;
 }) {
   const isTop = row.rank === 1;
   const rank = String(row.rank).padStart(2, "0");

@@ -14,7 +14,7 @@ import { heroRoleMapping, type HeroName } from "@/types/heroes";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
-export async function generateMetadata(): Promise<Metadata> {
+export function generateMetadata(): Metadata {
   const t = getMetadataTranslations("leaderboardPage.csrPage.metadata");
   return {
     title: t("title"),

@@ -9,7 +9,7 @@ import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import { getTierBucket } from "@/lib/tsr/tier-bucket";
 import type { Metadata } from "next";
 
-export async function generateMetadata(): Promise<Metadata> {
+export function generateMetadata(): Metadata {
   const t = getMetadataTranslations("matchmaker.metadata");
   return {
     title: t("title"),

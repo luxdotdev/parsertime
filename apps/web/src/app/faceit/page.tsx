@@ -8,7 +8,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-export async function generateMetadata(): Promise<Metadata> {
+export function generateMetadata(): Metadata {
   const t = getMetadataTranslations("faceitScoutingPage");
   return { title: t("metadata.searchTitle"), description: t("subtitle") };
 }
