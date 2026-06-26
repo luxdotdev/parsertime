@@ -4,6 +4,10 @@
 
 The Next.js app uses `next-intl` for internationalization, with `en.json`, `ko.json`, and `zh.json` files living at `apps/web/messages`. When building user-facing components, make sure to include proper translation support.
 
+## Pre-commit Checks
+
+Before committing, ensure that changes are formatted, linted, typechecked, and pass the test suite.
+
 ## Agent skills
 
 ### Issue tracker
