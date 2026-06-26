@@ -11,8 +11,10 @@ import { PlayerService } from "@/data/player";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
+import { defaultLocale } from "@/i18n/config";
 import { auth } from "@/lib/auth";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import { translateHeroName, translateMapName } from "@/lib/utils";
 import { heroRoleMapping, type HeroName } from "@/types/heroes";
@@ -24,10 +26,7 @@ export async function generateMetadata(
   props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]/player/[playerId]">
 ): Promise<Metadata> {
   const params = await props.params;
-  const t = await getTranslations({
-    locale: params.locale,
-    namespace: "mapPage.playerMetadata",
-  });
+  const t = getMetadataTranslations("mapPage.playerMetadata");
   const playerName = decodeURIComponent(params.playerId);
 
   return {
@@ -48,7 +47,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale: params.locale,
+      locale: defaultLocale,
     },
   };
 }

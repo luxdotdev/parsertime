@@ -4,21 +4,15 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@/generated/prisma/browser";
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-export async function generateMetadata(
-  props: PagePropsWithLocale<"/[team]/map-groups">
-): Promise<Metadata> {
-  const params = await props.params;
-  const t = await getTranslations({
-    locale: params.locale,
-    namespace: "mapGroupsPage.metadata",
-  });
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("mapGroupsPage.metadata");
 
   return {
     title: t("title"),

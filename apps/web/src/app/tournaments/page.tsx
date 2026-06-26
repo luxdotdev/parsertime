@@ -6,12 +6,12 @@ import { AppRuntime } from "@/data/runtime";
 import { TournamentService } from "@/data/tournament";
 import { auth } from "@/lib/auth";
 import { tournament } from "@/lib/flags";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("tournamentsPage.metadata");
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("tournamentsPage.metadata");
   return { title: t("title"), description: t("description") };
 }
 

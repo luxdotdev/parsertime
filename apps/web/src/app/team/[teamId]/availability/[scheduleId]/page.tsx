@@ -1,16 +1,16 @@
 import { AvailabilityFillView } from "@/components/availability/availability-fill-view";
 import { auth } from "@/lib/auth";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 type PageProps = {
   params: Promise<{ teamId: string; scheduleId: string }>;
 };
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("availability.fillView.metadata");
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("availability.fillView.metadata");
   return { title: t("title"), description: t("description") };
 }
 

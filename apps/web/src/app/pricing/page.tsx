@@ -15,18 +15,15 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import { toTitleCase } from "@/lib/utils";
 import type { Metadata, Route } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { Instrument_Serif } from "next/font/google";
 import type { SVGProps } from "react";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
-  const t = await getTranslations({
-    locale,
-    namespace: "pricingPage.metadata",
-  });
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("pricingPage.metadata");
 
   return {
     title: t("title"),

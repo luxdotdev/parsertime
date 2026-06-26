@@ -1,12 +1,12 @@
+import { defaultLocale } from "@/i18n/config";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import type { Metadata } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
 
 export async function generateMetadata(
   props: LayoutProps<"/scouting/player/[slug]">
 ): Promise<Metadata> {
   const params = await props.params;
-  const t = await getTranslations("scoutingPage.player.profile.metadata");
-  const locale = await getLocale();
+  const t = getMetadataTranslations("scoutingPage.player.profile.metadata");
 
   const player = decodeURIComponent(params.slug);
 
@@ -26,7 +26,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale,
+      locale: defaultLocale,
     },
   };
 }

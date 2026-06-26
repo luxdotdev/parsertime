@@ -15,18 +15,15 @@ import { RankedService } from "@/data/ranked";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
-import type { PagePropsWithLocale } from "@/types/next";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import { Effect } from "effect";
 import { Crosshair, Plus } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
-export async function generateMetadata(
-  props: PagePropsWithLocale<"/ranked">
-): Promise<Metadata> {
-  const { locale } = await props.params;
-  const t = await getTranslations({ locale, namespace: "ranked.metadata" });
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("ranked.metadata");
   return { title: t("title"), description: t("description") };
 }
 

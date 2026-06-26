@@ -2,13 +2,14 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { QueryBuilder } from "@/components/query-builder/query-builder";
 import { auth } from "@/lib/auth";
 import { queryBuilder } from "@/lib/flags";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import { getViewableTeams, listSavedQueries } from "@/lib/query-builder/server";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("queryBuilderPage.metadata");
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("queryBuilderPage.metadata");
   return { title: t("title"), description: t("description") };
 }
 

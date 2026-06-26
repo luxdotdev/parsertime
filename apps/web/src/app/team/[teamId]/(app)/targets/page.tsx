@@ -10,6 +10,7 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import type { RoleName } from "@/lib/target-stats";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
@@ -21,8 +22,8 @@ type Props = {
   params: Promise<{ teamId: string }>;
 };
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("targets.metadata");
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("targets.metadata");
   return { title: t("title"), description: t("description") };
 }
 

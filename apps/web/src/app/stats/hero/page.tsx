@@ -1,17 +1,15 @@
 import { StatPanel } from "@/components/player/stat-panel";
 import { Link } from "@/components/ui/link";
+import { defaultLocale } from "@/i18n/config";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import { getHeroNames, toHero } from "@/lib/utils";
 import { type HeroName, roleHeroMapping } from "@/types/heroes";
-import type { PagePropsWithLocale } from "@/types/next";
 import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
-export async function generateMetadata(
-  props: PagePropsWithLocale<"/stats/hero">
-): Promise<Metadata> {
-  const params = await props.params;
-  const t = await getTranslations("statsPage.heroStatsMetadata");
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("statsPage.heroStatsMetadata");
   return {
     title: t("title"),
     description: t("description"),
@@ -28,7 +26,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale: params.locale,
+      locale: defaultLocale,
     },
   };
 }

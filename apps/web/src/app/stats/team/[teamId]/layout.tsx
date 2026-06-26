@@ -2,18 +2,18 @@ import { RangeTransitionProvider } from "@/components/stats/team/range-transitio
 import { TeamStatsContent } from "@/components/stats/team/team-stats-content";
 import { TeamStatsHeaderClient } from "@/components/stats/team/team-stats-header-client";
 import { TeamStatsTabsNav } from "@/components/stats/team/team-stats-tabs-nav";
+import { defaultLocale } from "@/i18n/config";
 import { isAuthedToViewTeam } from "@/lib/auth";
 import { positionalData, simulationTool } from "@/lib/flags";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import type { Metadata } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
 
 export async function generateMetadata(
   props: LayoutProps<"/stats/team/[teamId]">
 ): Promise<Metadata> {
   const params = await props.params;
-  const t = await getTranslations("teamStatsPage.layoutMetadata");
-  const locale = await getLocale();
+  const t = getMetadataTranslations("teamStatsPage.layoutMetadata");
 
   const teamId = parseInt(params.teamId);
   const canViewTeam =
@@ -45,7 +45,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale,
+      locale: defaultLocale,
     },
   };
 }

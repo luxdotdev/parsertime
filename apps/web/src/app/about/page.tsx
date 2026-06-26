@@ -9,17 +9,17 @@ import { StatsCounter } from "@/components/home/new-landing/stats-counter";
 import { TrackedLink } from "@/components/home/new-landing/tracked-link";
 import { TrackedSection } from "@/components/home/new-landing/tracked-section";
 import { auth } from "@/lib/auth";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import type { Metadata, Route } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { OrganizationJsonLd, ProfilePageJsonLd } from "next-seo";
 import { cacheLife } from "next/cache";
 import { Instrument_Serif } from "next/font/google";
 import type { SVGProps } from "react";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
-  const t = await getTranslations({ locale, namespace: "aboutPage.metadata" });
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("aboutPage.metadata");
 
   return {
     title: t("title"),

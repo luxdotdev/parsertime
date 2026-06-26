@@ -61,9 +61,16 @@ const COLS =
 
 const PAGE_SIZE = 50;
 
-function formatRelativeDate(d: Date | null, t: TsrMessages): string {
-  if (!d) return "—";
-  const days = Math.floor((Date.now() - d.getTime()) / 86_400_000);
+// `now` is resolved after mount (see the `now` state below) so the prerender
+// pass stays deterministic — reading the current time during render is
+// disallowed under Cache Components.
+function formatRelativeDate(
+  d: Date | null,
+  t: TsrMessages,
+  now: number | null
+): string {
+  if (!d || now === null) return "—";
+  const days = Math.floor((now - d.getTime()) / 86_400_000);
   if (days < 1) return t("relative.today");
   if (days < 7) return t("relative.days", { count: days });
   if (days < 30) return t("relative.weeks", { count: Math.floor(days / 7) });
@@ -71,9 +78,13 @@ function formatRelativeDate(d: Date | null, t: TsrMessages): string {
   return t("relative.years", { count: Math.floor(days / 365) });
 }
 
-function formatComputedAt(d: Date | null, t: TsrMessages): string | null {
-  if (!d) return null;
-  const minutes = Math.floor((Date.now() - d.getTime()) / 60_000);
+function formatComputedAt(
+  d: Date | null,
+  t: TsrMessages,
+  now: number | null
+): string | null {
+  if (!d || now === null) return null;
+  const minutes = Math.floor((now - d.getTime()) / 60_000);
   if (minutes < 1) return t("relative.justNow");
   if (minutes < 60) return t("relative.minutesAgo", { count: minutes });
   const hours = Math.floor(minutes / 60);
@@ -180,6 +191,10 @@ async function fetchSnapshot(
 export function TsrLeaderboard({ initialSnapshot }: Props) {
   const t = useTranslations("leaderboardPage.tsr");
   const formatter = useFormatter();
+  // Resolved after mount so relative-time labels don't read the clock during
+  // the prerender pass (disallowed under Cache Components).
+  const [now, setNow] = useState<number | null>(null);
+  useEffect(() => setNow(Date.now()), []);
   const [region, setRegion] = useState<RegionFilter>("All");
   const [tier, setTier] = useState<TierFilter>("All");
   const [sortKey, setSortKey] = useState<TsrSortKey>("rating");
@@ -237,7 +252,7 @@ export function TsrLeaderboard({ initialSnapshot }: Props) {
     }
   }, [result.data, offset]);
 
-  const computedAt = formatComputedAt(snapshot.meta.computedAt, t);
+  const computedAt = formatComputedAt(snapshot.meta.computedAt, t, now);
   const showInactive = debouncedQuery.trim() !== "";
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -595,7 +610,7 @@ function PlayerRow({
       </div>
 
       <div className="text-muted-foreground hidden text-right font-mono text-sm tabular-nums sm:block">
-        {formatRelativeDate(row.lastMatchAt, t)}
+        {formatRelativeDate(row.lastMatchAt, t, now)}
       </div>
     </li>
   );

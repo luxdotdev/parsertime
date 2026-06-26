@@ -11,6 +11,8 @@ import { UserService } from "@/data/user";
 import { auth, getViewableScrimIds } from "@/lib/auth";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
+import { defaultLocale } from "@/i18n/config";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import type { PagePropsWithLocale } from "@/types/next";
 import type { Kill, PlayerStat, Scrim } from "@/generated/prisma/client";
 import type { Metadata } from "next";
@@ -21,7 +23,7 @@ export async function generateMetadata(
   props: PagePropsWithLocale<"/stats/[playerName]">
 ): Promise<Metadata> {
   const params = await props.params;
-  const t = await getTranslations("statsPage.playerMetadata");
+  const t = getMetadataTranslations("statsPage.playerMetadata");
   const playerName = decodeURIComponent(params.playerName);
   const suffix = playerName.endsWith("s") ? "'" : "'s";
 
@@ -44,7 +46,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale: params.locale,
+      locale: defaultLocale,
     },
   };
 }

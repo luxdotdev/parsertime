@@ -15,8 +15,10 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { ScoutingService } from "@/data/scouting";
 import { UserService } from "@/data/user";
+import { defaultLocale } from "@/i18n/config";
 import { auth, isAuthedToViewTeam } from "@/lib/auth";
 import { scoutingTool } from "@/lib/flags";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import { computeTeamTsr } from "@/lib/tsr/team";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -29,7 +31,7 @@ export async function generateMetadata(
   props: PagePropsWithLocale<"/team/[teamId]">
 ): Promise<Metadata> {
   const params = await props.params;
-  const t = await getTranslations("teamPage.teamMetadata");
+  const t = getMetadataTranslations("teamPage.teamMetadata");
   const teamId = Number(params.teamId);
   const canViewTeam =
     Number.isSafeInteger(teamId) &&
@@ -61,7 +63,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale: params.locale,
+      locale: defaultLocale,
     },
   };
 }

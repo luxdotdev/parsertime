@@ -32,8 +32,10 @@ import { resolveScrimMapWinners } from "@/data/scrim/map-winner-names";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
+import { defaultLocale } from "@/i18n/config";
 import { auth, canManageTeam, isAuthedToViewScrim } from "@/lib/auth";
 import { mapComparison, overviewCard, positionalData } from "@/lib/flags";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@/generated/prisma/browser";
@@ -47,10 +49,7 @@ export async function generateMetadata(
   props: PagePropsWithLocale<"/[team]/scrim/[scrimId]">
 ): Promise<Metadata> {
   const params = await props.params;
-  const t = await getTranslations({
-    locale: params.locale,
-    namespace: "scrimPage.metadata",
-  });
+  const t = getMetadataTranslations("scrimPage.metadata");
   const scrimId = Number(params.scrimId);
   const canViewScrim =
     Number.isSafeInteger(scrimId) &&
@@ -86,7 +85,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale: params.locale,
+      locale: defaultLocale,
     },
   };
 }

@@ -1,9 +1,9 @@
 import { Footer } from "@/components/footer";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("verifyRequest.metadata");
+  const t = getMetadataTranslations("verifyRequest.metadata");
   return { title: t("title"), description: t("description") };
 }
 

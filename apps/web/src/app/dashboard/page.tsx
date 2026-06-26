@@ -5,24 +5,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
+import { defaultLocale } from "@/i18n/config";
 import { auth } from "@/lib/auth";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import { getPendingFeedbackCount } from "@/lib/team-ops/scrim-feedback";
-import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@/generated/prisma/browser";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
-export async function generateMetadata(
-  props: PagePropsWithLocale<"/dashboard">
-): Promise<Metadata> {
-  const params = await props.params;
-
-  const { locale } = params;
-
-  const t = await getTranslations({
-    locale,
-    namespace: "dashboard.metadata",
-  });
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("dashboard.metadata");
 
   return {
     title: t("title"),
@@ -40,7 +32,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale,
+      locale: defaultLocale,
     },
   };
 }

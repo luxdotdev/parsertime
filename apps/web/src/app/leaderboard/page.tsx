@@ -2,12 +2,13 @@ import {
   LeaderboardHub,
   type MetricStats,
 } from "@/components/leaderboard/leaderboard-hub";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import { getInitialTsrLeaderboard } from "@/lib/tsr/leaderboard";
 import type { Metadata } from "next";
 import { getFormatter, getTranslations } from "next-intl/server";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("leaderboardPage.hub.metadata");
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("leaderboardPage.hub.metadata");
   return {
     title: t("title"),
     description: t("description"),

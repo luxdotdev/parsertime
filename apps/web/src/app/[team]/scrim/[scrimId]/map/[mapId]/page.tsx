@@ -11,9 +11,11 @@ import { MatchStoryService } from "@/data/map/match-story-service";
 import { PlayerService } from "@/data/player";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
+import { defaultLocale } from "@/i18n/config";
 import { auth, isAuthedToViewMap } from "@/lib/auth";
 import { positionalData, tempoChart } from "@/lib/flags";
 import { resolveScrimMapDataId } from "@/lib/map-data-resolver";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import { getColorblindMode } from "@/lib/server-utils";
 import { translateMapName } from "@/lib/utils";
@@ -34,10 +36,7 @@ export async function generateMetadata(
     Number.isSafeInteger(scrimId) &&
     Number.isSafeInteger(mapId) &&
     (await isAuthedToViewMap(scrimId, mapId));
-  const t = await getTranslations({
-    locale: params.locale,
-    namespace: "mapPage.mapMetadata",
-  });
+  const t = getMetadataTranslations("mapPage.mapMetadata");
 
   const mapName = canViewMap
     ? await prisma.matchStart.findFirst({
@@ -68,7 +67,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale: params.locale,
+      locale: defaultLocale,
     },
   };
 }

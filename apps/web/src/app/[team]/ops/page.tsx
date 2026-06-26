@@ -5,6 +5,7 @@ import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { canManageTeam } from "@/lib/auth";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import {
   listBlacklist,
   getBlacklistSuggestions,
@@ -14,14 +15,8 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-export async function generateMetadata(
-  props: PagePropsWithLocale<"/[team]/ops">
-): Promise<Metadata> {
-  const params = await props.params;
-  const t = await getTranslations({
-    locale: params.locale,
-    namespace: "teamOps",
-  });
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("teamOps");
 
   return {
     title: t("title"),

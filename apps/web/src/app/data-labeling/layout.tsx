@@ -1,9 +1,9 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("dataLabeling.metadata");
+  const t = getMetadataTranslations("dataLabeling.metadata");
 
   return {
     title: t("title"),

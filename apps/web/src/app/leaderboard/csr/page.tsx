@@ -8,13 +8,14 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { getCompositeSRLeaderboard } from "@/lib/hero-rating";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import { getHeroNames, toHero } from "@/lib/utils";
 import { heroRoleMapping, type HeroName } from "@/types/heroes";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("leaderboardPage.csrPage.metadata");
+  const t = getMetadataTranslations("leaderboardPage.csrPage.metadata");
   return {
     title: t("title"),
     description: t("description"),
