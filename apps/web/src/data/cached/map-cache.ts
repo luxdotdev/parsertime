@@ -11,7 +11,7 @@ import { cacheLife, cacheTag } from "next/cache";
 // indefinitely and invalidate `map:${mapId}` only when that map is removed or
 // its winner changes (see the scrim mutation routes).
 
-export function getCachedMostPlayedHeroes(mapId: number) {
+export async function getCachedMostPlayedHeroes(mapId: number) {
   "use cache";
   cacheLife("max");
   cacheTag(`map:${mapId}`);
@@ -20,7 +20,7 @@ export function getCachedMostPlayedHeroes(mapId: number) {
   );
 }
 
-export function getCachedMatchStory(mapId: number, mapDataId: number) {
+export async function getCachedMatchStory(mapId: number, mapDataId: number) {
   "use cache";
   cacheLife("max");
   cacheTag(`map:${mapId}`);
