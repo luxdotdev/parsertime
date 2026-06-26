@@ -93,7 +93,11 @@ export default async function TeamStatsOverviewPage(
             Effect.flatMap((svc) => svc.getTeamWinrates(teamId, dateRange))
           ),
         },
-        { concurrency: "unbounded" }
+        // Bounded, not unbounded: the shared base read is deduped by an Effect
+        // Cache, so the gain from firing all panels at once is small, while the
+        // secondary per-panel queries can otherwise spike the connection pool
+        // and blow up the tail (observed p99 well past the 60s budget).
+        { concurrency: 4 }
       )
     ),
     getMapNames(),
