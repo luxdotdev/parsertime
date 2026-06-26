@@ -1,3 +1,4 @@
+import { AppBootSkeleton } from "@/components/app-boot-skeleton";
 import { BrandThemeProvider } from "@/components/brand-theme-provider";
 import { CommandDialogMenu } from "@/components/command-menu";
 import { CommandMenuProvider } from "@/components/command-menu-provider";
@@ -108,8 +109,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           {/* The provider tree depends on request-time data (locale, auth,
               feature flags), so it streams under Suspense while the document
-              shell prerenders. */}
-          <Suspense fallback={null}>
+              shell prerenders. The fallback mirrors the app chrome so a hard
+              reload shows the app loading rather than a blank document. */}
+          <Suspense fallback={<AppBootSkeleton />}>
             <RootProviders>{children}</RootProviders>
           </Suspense>
         </ThemeProvider>
