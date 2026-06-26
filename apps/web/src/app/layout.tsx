@@ -13,6 +13,7 @@ import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { register } from "@/instrumentation";
 import { auth } from "@/lib/auth";
+import { defaultLocale } from "@/i18n/config";
 import { DSG_TEAM_ID } from "@/lib/brand-theme";
 import { WebVitals } from "@/lib/axiom/client";
 import { resolveAllFlags, toFlagValues } from "@/lib/flags-helpers";
@@ -25,15 +26,17 @@ import { FlagValues } from "flags/react";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { Suspense, type ReactNode } from "react";
-import { getLocale, getMessages, getTranslations } from "next-intl/server";
+import { getLocale, getMessages } from "next-intl/server";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import { Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
-  const t = await getTranslations({ locale, namespace: "metadata" });
+export function generateMetadata(): Metadata {
+  // Resolved in the default locale (see getMetadataTranslations) so the route's
+  // <head> can be prerendered under Cache Components.
+  const t = getMetadataTranslations("metadata");
 
   return {
     title: t("title"),
@@ -52,7 +55,7 @@ export async function generateMetadata(): Promise<Metadata> {
           height: 630,
         },
       ],
-      locale,
+      locale: defaultLocale,
     },
   };
 }
