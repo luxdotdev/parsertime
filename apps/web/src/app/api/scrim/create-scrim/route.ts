@@ -4,6 +4,7 @@ import { UserService } from "@/data/user";
 import { auditLog } from "@/lib/audit-logs";
 import { auth, canManageTeam } from "@/lib/auth";
 import { withRequestContext } from "@/lib/axiom/baggage";
+import { revalidateTeamStats } from "@/lib/cache-tags";
 import {
   rateLimitHitCounter,
   scrimCreatedCounter,
@@ -324,6 +325,8 @@ export async function POST(request: NextRequest) {
             });
           }
         });
+
+        if (teamId) revalidateTeamStats(teamId);
 
         return Response.json({ scrimId: newScrimId }, { status: 200 });
       }

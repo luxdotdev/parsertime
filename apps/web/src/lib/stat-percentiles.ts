@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import type { HeroName } from "@/types/heroes";
 import { Prisma } from "@/generated/prisma/client";
-import { unstable_cache } from "next/cache";
+import { cacheLife, cacheTag } from "next/cache";
 
 // These baselines scan the whole PlayerStat table per hero (the app's biggest
 // rows-read offender) yet are global, slowly-changing population statistics —
@@ -444,9 +444,16 @@ function buildMultiStatComparisonQuery({
   `;
 }
 
-async function compareMultipleStatsToDistributionUncached(
+export async function compareMultipleStatsToDistribution(
   params: MultiStatComparisonParams
 ): Promise<MultiStatComparisonResult | null> {
+  "use cache";
+  cacheLife({
+    revalidate: HERO_BASELINE_TTL_SECONDS,
+    expire: HERO_BASELINE_TTL_SECONDS * 4,
+  });
+  cacheTag(HERO_BASELINE_TAG);
+
   const query = buildMultiStatComparisonQuery(params);
   const result =
     await prisma.$queryRaw<{ hero: string; comparisons: StatComparison[] }[]>(
@@ -462,12 +469,6 @@ async function compareMultipleStatsToDistributionUncached(
     comparisons: result[0].comparisons ?? [],
   };
 }
-
-export const compareMultipleStatsToDistribution = unstable_cache(
-  compareMultipleStatsToDistributionUncached,
-  ["multi-stat-comparison"],
-  { revalidate: HERO_BASELINE_TTL_SECONDS, tags: [HERO_BASELINE_TAG] }
-);
 
 function buildStatDistributionBaselineQuery({
   hero,
@@ -522,19 +523,20 @@ function buildStatDistributionBaselineQuery({
   `;
 }
 
-async function getStatDistributionBaselineUncached(
+export async function getStatDistributionBaseline(
   params: StatDistributionBaselineParams
 ): Promise<StatDistributionBaseline | null> {
+  "use cache";
+  cacheLife({
+    revalidate: HERO_BASELINE_TTL_SECONDS,
+    expire: HERO_BASELINE_TTL_SECONDS * 4,
+  });
+  cacheTag(HERO_BASELINE_TAG);
+
   const query = buildStatDistributionBaselineQuery(params);
   const result = await prisma.$queryRaw<StatDistributionBaseline[]>(query);
   return result[0] ?? null;
 }
-
-export const getStatDistributionBaseline = unstable_cache(
-  getStatDistributionBaselineUncached,
-  ["stat-distribution-baseline"],
-  { revalidate: HERO_BASELINE_TTL_SECONDS, tags: [HERO_BASELINE_TAG] }
-);
 
 export type {
   StatDistributionBaseline,

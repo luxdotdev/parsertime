@@ -1,5 +1,6 @@
 import { AvailabilitySettingsForm } from "@/components/availability/availability-settings-form";
 import { isTeamOwnerOrManager } from "@/lib/auth";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
@@ -7,8 +8,8 @@ import type { Metadata } from "next";
 
 type PageProps = { params: Promise<{ teamId: string }> };
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("availability.settingsPage.metadata");
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("availability.settingsPage.metadata");
   return { title: t("title"), description: t("description") };
 }
 

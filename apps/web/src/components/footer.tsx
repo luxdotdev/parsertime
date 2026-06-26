@@ -17,6 +17,7 @@ import { get } from "@vercel/edge-config";
 import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
+import { Suspense } from "react";
 
 type FooterLink = {
   labelKey: string;
@@ -177,7 +178,18 @@ function FooterColumn({
   );
 }
 
-export async function Footer() {
+// The footer reads the locale cookie (getTranslations) and the current year,
+// both request-time. Wrapping its own content in Suspense lets it sit in any
+// route's static shell without blocking the prerender — it streams itself in.
+export function Footer() {
+  return (
+    <Suspense fallback={null}>
+      <FooterContent />
+    </Suspense>
+  );
+}
+
+async function FooterContent() {
   const t = await getTranslations("footer");
 
   const [

@@ -6,19 +6,18 @@ import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { Effect } from "effect";
+import { Suspense, type ReactNode } from "react";
 
-export async function DashboardLayout({
+export function DashboardLayout({
   children,
   guestMode,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   guestMode?: boolean;
 }) {
-  const session = await auth();
-  const user = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
-  );
-
+  // The page chrome (skip link, layout structure, Footer) is static so any
+  // route using this layout paints instantly; the auth-derived header and the
+  // page content each stream in behind their own boundary.
   return (
     <TeamSwitcherProvider>
       <a
@@ -28,15 +27,30 @@ export async function DashboardLayout({
         Skip to content
       </a>
       <div className="min-h-[90vh] flex-col md:flex">
-        <AppHeader
-          switcher={session && <TeamSwitcher session={session} />}
-          session={session}
-          user={user}
-          guestMode={guestMode}
-        />
-        <main id="main-content">{children}</main>
+        <Suspense fallback={<div className="border-border h-14 border-b" />}>
+          <AuthedAppHeader guestMode={guestMode} />
+        </Suspense>
+        <main id="main-content">
+          <Suspense fallback={null}>{children}</Suspense>
+        </main>
       </div>
       <Footer />
     </TeamSwitcherProvider>
+  );
+}
+
+async function AuthedAppHeader({ guestMode }: { guestMode?: boolean }) {
+  const session = await auth();
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
+
+  return (
+    <AppHeader
+      switcher={session && <TeamSwitcher session={session} />}
+      session={session}
+      user={user}
+      guestMode={guestMode}
+    />
   );
 }

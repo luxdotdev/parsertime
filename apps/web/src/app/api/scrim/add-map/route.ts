@@ -1,6 +1,7 @@
 import { auditLog } from "@/lib/audit-logs";
 import { auth, canEditScrim, getCurrentUser } from "@/lib/auth";
 import { mapAddedCounter, scrimParsingDuration } from "@/lib/axiom/metrics";
+import { revalidateScrim, revalidateTeamStats } from "@/lib/cache-tags";
 import { Logger } from "@/lib/logger";
 import { createNewMap } from "@/lib/parser";
 import prisma from "@/lib/prisma";
@@ -136,6 +137,10 @@ export async function POST(req: NextRequest) {
     const parseDuration = performance.now() - parseStart;
     scrimParsingDuration.record(parseDuration);
     mapAddedCounter.add(1);
+
+    revalidateScrim(scrimId);
+    if (scrim?.teamId) revalidateTeamStats(scrim.teamId);
+
     void usage.track({
       name: UsageEventName.SCRIM_MAP_ADD,
       userId: user?.id,

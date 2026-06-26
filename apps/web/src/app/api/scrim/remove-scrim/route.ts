@@ -1,6 +1,7 @@
 import { auditLog } from "@/lib/audit-logs";
 import { auth, canEditScrim, getCurrentUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
+import { revalidateScrim, revalidateTeamStats } from "@/lib/cache-tags";
 import { notifications } from "@/lib/notifications";
 import prisma from "@/lib/prisma";
 import { unauthorized } from "next/navigation";
@@ -52,6 +53,9 @@ export async function POST(req: NextRequest) {
 
   await prisma.map.deleteMany({ where: { scrimId } });
   await prisma.scrim.delete({ where: { id: scrimId } });
+
+  revalidateScrim(scrimId);
+  if (scrim.teamId) revalidateTeamStats(scrim.teamId);
 
   after(async () => {
     await auditLog.createAuditLog({

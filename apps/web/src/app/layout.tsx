@@ -1,3 +1,4 @@
+import { AppBootSkeleton } from "@/components/app-boot-skeleton";
 import { BrandThemeProvider } from "@/components/brand-theme-provider";
 import { CommandDialogMenu } from "@/components/command-menu";
 import { CommandMenuProvider } from "@/components/command-menu-provider";
@@ -13,6 +14,7 @@ import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { register } from "@/instrumentation";
 import { auth } from "@/lib/auth";
+import { defaultLocale } from "@/i18n/config";
 import { DSG_TEAM_ID } from "@/lib/brand-theme";
 import { WebVitals } from "@/lib/axiom/client";
 import { resolveAllFlags, toFlagValues } from "@/lib/flags-helpers";
@@ -24,16 +26,18 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { FlagValues } from "flags/react";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
-import { Suspense } from "react";
-import { getLocale, getMessages, getTranslations } from "next-intl/server";
+import { Suspense, type ReactNode } from "react";
+import { getLocale, getMessages } from "next-intl/server";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import { Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
-  const t = await getTranslations({ locale, namespace: "metadata" });
+export function generateMetadata(): Metadata {
+  // Resolved in the default locale (see getMetadataTranslations) so the route's
+  // <head> can be prerendered under Cache Components.
+  const t = getMetadataTranslations("metadata");
 
   return {
     title: t("title"),
@@ -52,7 +56,7 @@ export async function generateMetadata(): Promise<Metadata> {
           height: 630,
         },
       ],
-      locale,
+      locale: defaultLocale,
     },
   };
 }
@@ -81,7 +85,42 @@ const geistMono = Geist_Mono({
 
 void register();
 
-export default async function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: LayoutProps<"/">) {
+  return (
+    <html lang="en" className="h-full" suppressHydrationWarning>
+      <body
+        className={cn(
+          switzer.variable,
+          geistMono.variable,
+          "font-sans h-full antialiased"
+        )}
+      >
+        {/* next-themes renders its anti-flash script here, in the static
+            document shell, so it runs before first paint and applies the
+            stored theme. If it streamed in with the request-data providers
+            below, the page would paint light first and then flip to dark.
+            defaultTheme stays request-independent so the shell prerenders. */}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          themes={["light", "dark", "disguised"]}
+          disableTransitionOnChange
+        >
+          {/* The provider tree depends on request-time data (locale, auth,
+              feature flags), so it streams under Suspense while the document
+              shell prerenders. The fallback mirrors the app chrome so a hard
+              reload shows the app loading rather than a blank document. */}
+          <Suspense fallback={<AppBootSkeleton />}>
+            <RootProviders>{children}</RootProviders>
+          </Suspense>
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+
+async function RootProviders({ children }: { children: ReactNode }) {
   const locale = await getLocale();
   const messages = await getMessages();
   const session = await auth();
@@ -108,51 +147,33 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const flags = await resolveAllFlags();
 
   return (
-    <html lang={locale} className="h-full" suppressHydrationWarning>
-      <body
-        className={cn(
-          switzer.variable,
-          geistMono.variable,
-          "font-sans h-full antialiased"
-        )}
-      >
-        <NuqsAdapter>
-          <QueryProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme={isDsgMember ? "disguised" : "system"}
-              enableSystem
-              themes={["light", "dark", "disguised"]}
-              disableTransitionOnChange
-            >
-              <TooltipProvider>
-                <NextIntlClientProvider messages={messages}>
-                  <CommandMenuProvider>
-                    <AppSettingsProvider>
-                      <BrandThemeProvider canUseDisguised={isDsgMember}>
-                        <FeatureFlagsProvider flags={flags}>
-                          <FlagValues values={toFlagValues(flags)} />
-                          <BetaBanner />
-                          {children}
-                          <CommandDialogMenu user={user} />
-                        </FeatureFlagsProvider>
-                      </BrandThemeProvider>
-                    </AppSettingsProvider>
-                  </CommandMenuProvider>
-                </NextIntlClientProvider>
-              </TooltipProvider>
-              <Toaster />
-              <SpeedInsights />
-              <Analytics />
-              <Suspense fallback={null}>
-                <UsageBeacon />
-              </Suspense>
-              <DevTools />
-              <WebVitals />
-            </ThemeProvider>
-          </QueryProvider>
-        </NuqsAdapter>
-      </body>
-    </html>
+    <NuqsAdapter>
+      <QueryProvider>
+        <TooltipProvider>
+          <NextIntlClientProvider locale={locale} messages={messages}>
+            <CommandMenuProvider>
+              <AppSettingsProvider>
+                <BrandThemeProvider canUseDisguised={isDsgMember}>
+                  <FeatureFlagsProvider flags={flags}>
+                    <FlagValues values={toFlagValues(flags)} />
+                    <BetaBanner />
+                    {children}
+                    <CommandDialogMenu user={user} />
+                  </FeatureFlagsProvider>
+                </BrandThemeProvider>
+              </AppSettingsProvider>
+            </CommandMenuProvider>
+          </NextIntlClientProvider>
+        </TooltipProvider>
+        <Toaster />
+        <SpeedInsights />
+        <Analytics />
+        <Suspense fallback={null}>
+          <UsageBeacon />
+        </Suspense>
+        <DevTools />
+        <WebVitals />
+      </QueryProvider>
+    </NuqsAdapter>
   );
 }

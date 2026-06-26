@@ -16,21 +16,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { PlayerService } from "@/data/player";
+import { defaultLocale } from "@/i18n/config";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import { toTitleCase, translateMapName } from "@/lib/utils";
-import type { PagePropsWithLocale } from "@/types/next";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
 const DEMO_MAP_ID = 10148;
 
-export async function generateMetadata(
-  props: PagePropsWithLocale<"/demo">
-): Promise<Metadata> {
-  const params = await props.params;
-  const t = await getTranslations("demoPage.metadata");
+export async function generateMetadata(): Promise<Metadata> {
+  const t = getMetadataTranslations("demoPage.metadata");
   const mapDataId = await resolveMapDataId(DEMO_MAP_ID);
 
   const mapName = await prisma.matchStart.findFirst({
@@ -64,7 +62,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale: params.locale,
+      locale: defaultLocale,
     },
   };
 }

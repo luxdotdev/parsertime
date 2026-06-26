@@ -4,8 +4,6 @@ import { recomputeAllTsrs } from "@/lib/tsr/replay";
 import { kv } from "@vercel/kv";
 import { timingSafeEqual } from "node:crypto";
 
-export const runtime = "nodejs";
-
 type FaceitWebhookEvent = {
   transaction_id?: string;
   event?: string;

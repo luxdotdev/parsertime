@@ -6,19 +6,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
+import { defaultLocale } from "@/i18n/config";
 import { auth } from "@/lib/auth";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
-import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@/generated/prisma/browser";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
-export async function generateMetadata(
-  props: PagePropsWithLocale<"/team">
-): Promise<Metadata> {
-  const params = await props.params;
-  const t = await getTranslations("teamPage.metadata");
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("teamPage.metadata");
   return {
     title: t("title"),
     description: t("description"),
@@ -35,7 +33,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale: params.locale,
+      locale: defaultLocale,
     },
   };
 }

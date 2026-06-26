@@ -3,12 +3,13 @@ import { AppRuntime } from "@/data/runtime";
 import { ScoutingService } from "@/data/scouting";
 import { Effect } from "effect";
 import { scoutingTool } from "@/lib/flags";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("scoutingPage.metadata");
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("scoutingPage.metadata");
   return {
     title: t("title"),
     description: t("description"),

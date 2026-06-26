@@ -6,7 +6,6 @@ import {
 import prisma from "@/lib/prisma";
 import { timingSafeEqual } from "node:crypto";
 
-export const runtime = "nodejs";
 export const maxDuration = 300;
 
 // Number of stale players whose match history is re-ingested per run. The set

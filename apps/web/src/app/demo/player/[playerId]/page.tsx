@@ -11,7 +11,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { PlayerService } from "@/data/player";
+import { defaultLocale } from "@/i18n/config";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import { toTitleCase } from "@/lib/utils";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -32,10 +34,7 @@ export async function generateMetadata(
   props: PagePropsWithLocale<"/demo/player/[playerId]">
 ): Promise<Metadata> {
   const params = await props.params;
-  const t = await getTranslations({
-    locale: params.locale,
-    namespace: "mapPage.playerMetadata",
-  });
+  const t = getMetadataTranslations("mapPage.playerMetadata");
   const playerName = decodePlayerId(params.playerId) ?? "Player";
 
   return {
@@ -56,7 +55,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale: params.locale,
+      locale: defaultLocale,
     },
   };
 }

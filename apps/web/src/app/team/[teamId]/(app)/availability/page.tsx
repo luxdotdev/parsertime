@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { isTeamOwnerOrManager } from "@/lib/auth";
 import { weekEndInTz, weekStartInTz } from "@/lib/availability/tz";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
@@ -11,8 +12,8 @@ import type { Metadata } from "next";
 
 type PageProps = { params: Promise<{ teamId: string }> };
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("availability.metadata");
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("availability.metadata");
   return { title: t("title"), description: t("description") };
 }
 

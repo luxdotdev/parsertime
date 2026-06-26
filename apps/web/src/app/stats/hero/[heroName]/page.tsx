@@ -9,9 +9,11 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth, getViewableScrimIds } from "@/lib/auth";
+import { defaultLocale } from "@/i18n/config";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
-import { translateHeroName } from "@/lib/utils";
+import { toHero, translateHeroName } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import type { PagePropsWithLocale } from "@/types/next";
 import type { Kill, PlayerStat, Scrim } from "@/generated/prisma/client";
@@ -24,8 +26,8 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const params = await props.params;
   const heroName = decodeURIComponent(params.heroName);
-  const hero = await translateHeroName(heroName);
-  const t = await getTranslations("statsPage.heroMetadata");
+  const hero = getMetadataTranslations("heroes")(toHero(heroName));
+  const t = getMetadataTranslations("statsPage.heroMetadata");
 
   return {
     title: t("title", { hero }),
@@ -43,7 +45,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale: params.locale,
+      locale: defaultLocale,
     },
   };
 }

@@ -2,8 +2,6 @@ import { imageKey, isImageKind } from "@/lib/avatar";
 import { r2 } from "@/lib/r2";
 import { NextResponse } from "next/server";
 
-export const runtime = "nodejs";
-
 const ID_RE = /^[A-Za-z0-9_-]+$/;
 
 export async function GET(

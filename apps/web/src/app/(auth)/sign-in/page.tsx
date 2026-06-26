@@ -1,23 +1,15 @@
 import { UserAuthForm } from "@/components/auth/user-auth-form";
 import { Link } from "@/components/ui/link";
 import { auth } from "@/lib/auth";
-import type { PagePropsWithLocale } from "@/types/next";
+import { defaultLocale } from "@/i18n/config";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
-export async function generateMetadata(
-  props: PagePropsWithLocale<"/sign-in">
-): Promise<Metadata> {
-  const params = await props.params;
-
-  const { locale } = params;
-
-  const t = await getTranslations({
-    locale,
-    namespace: "signInPage.metadataSignIn",
-  });
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("signInPage.metadataSignIn");
 
   return {
     title: t("title"),
@@ -35,7 +27,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale,
+      locale: defaultLocale,
     },
   };
 }

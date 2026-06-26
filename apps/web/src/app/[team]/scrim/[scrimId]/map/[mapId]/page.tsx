@@ -7,13 +7,17 @@ import { MapTabsSkeleton } from "@/components/map/map-tabs-skeleton";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
 import { ReplayCode } from "@/components/scrim/replay-code";
 import { StatsViewBeacon } from "@/components/usage/stats-view-beacon";
-import { MatchStoryService } from "@/data/map/match-story-service";
-import { PlayerService } from "@/data/player";
+import {
+  getCachedMatchStory,
+  getCachedMostPlayedHeroes,
+} from "@/data/cached/map-cache";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
+import { defaultLocale } from "@/i18n/config";
 import { auth, isAuthedToViewMap } from "@/lib/auth";
 import { positionalData, tempoChart } from "@/lib/flags";
 import { resolveScrimMapDataId } from "@/lib/map-data-resolver";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import { getColorblindMode } from "@/lib/server-utils";
 import { translateMapName } from "@/lib/utils";
@@ -34,10 +38,7 @@ export async function generateMetadata(
     Number.isSafeInteger(scrimId) &&
     Number.isSafeInteger(mapId) &&
     (await isAuthedToViewMap(scrimId, mapId));
-  const t = await getTranslations({
-    locale: params.locale,
-    namespace: "mapPage.mapMetadata",
-  });
+  const t = getMetadataTranslations("mapPage.mapMetadata");
 
   const mapName = canViewMap
     ? await prisma.matchStart.findFirst({
@@ -68,7 +69,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale: params.locale,
+      locale: defaultLocale,
     },
   };
 }
@@ -106,9 +107,7 @@ export default async function MapDashboardPage(
     positionalDataEnabled,
     matchStory,
   ] = await Promise.all([
-    AppRuntime.runPromise(
-      PlayerService.pipe(Effect.flatMap((svc) => svc.getMostPlayedHeroes(id)))
-    ),
+    getCachedMostPlayedHeroes(id),
     prisma.matchStart.findFirst({
       where: { MapDataId: mapDataId },
       select: { map_name: true, team_1_name: true },
@@ -133,13 +132,7 @@ export default async function MapDashboardPage(
     }),
     tempoChart(),
     positionalData(),
-    // A story failure must never break the map page — the tab just hides.
-    AppRuntime.runPromise(
-      MatchStoryService.pipe(
-        Effect.flatMap((svc) => svc.getMatchStory(mapDataId)),
-        Effect.catchAll(() => Effect.succeed(null))
-      )
-    ),
+    getCachedMatchStory(id, mapDataId),
   ]);
 
   const translatedMapName = await translateMapName(

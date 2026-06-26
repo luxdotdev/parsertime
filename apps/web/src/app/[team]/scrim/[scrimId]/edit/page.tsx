@@ -10,6 +10,7 @@ import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { scoutingTool } from "@/lib/flags";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
@@ -18,7 +19,7 @@ export async function generateMetadata(
   props: PageProps<"/[team]/scrim/[scrimId]/edit">
 ): Promise<Metadata> {
   const params = await props.params;
-  const t = await getTranslations("scrimPage.editMetadata");
+  const t = getMetadataTranslations("scrimPage.editMetadata");
   const scrim = await AppRuntime.runPromise(
     ScrimService.pipe(
       Effect.flatMap((svc) => svc.getScrim(parseInt(params.scrimId)))

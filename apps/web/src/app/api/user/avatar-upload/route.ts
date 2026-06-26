@@ -10,8 +10,6 @@ import { kv } from "@vercel/kv";
 import { unauthorized } from "next/navigation";
 import { after, NextResponse } from "next/server";
 
-export const runtime = "nodejs";
-
 const MAX_BYTES = 5 * 1024 * 1024;
 
 export async function POST(request: Request): Promise<NextResponse> {

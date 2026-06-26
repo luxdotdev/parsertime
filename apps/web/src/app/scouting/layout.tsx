@@ -1,12 +1,10 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
+import { defaultLocale } from "@/i18n/config";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 
-export async function generateMetadata(
-  props: LayoutProps<"/scouting">
-): Promise<Metadata> {
-  const params = (await props.params) as { locale: string };
-  const t = await getTranslations("scoutingPage.metadata");
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("scoutingPage.metadata");
 
   return {
     title: t("title"),
@@ -24,7 +22,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale: params.locale,
+      locale: defaultLocale,
     },
   };
 }

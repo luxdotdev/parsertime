@@ -22,18 +22,20 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  ScrimOverviewService,
-  ScrimPositionalArtifactsService,
-  ScrimPositionalStatsService,
-  ScrimService,
-} from "@/data/scrim";
-import { ScrimInitiationService } from "@/data/scrim/initiation-service";
+  getCachedScrim,
+  getCachedScrimInitiation,
+  getCachedScrimOverview,
+  getCachedScrimPositionalArtifacts,
+  getCachedScrimPositionalStats,
+} from "@/data/cached/scrim-cache";
 import { resolveScrimMapWinners } from "@/data/scrim/map-winner-names";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
+import { defaultLocale } from "@/i18n/config";
 import { auth, canManageTeam, isAuthedToViewScrim } from "@/lib/auth";
 import { mapComparison, overviewCard, positionalData } from "@/lib/flags";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@/generated/prisma/browser";
@@ -47,10 +49,7 @@ export async function generateMetadata(
   props: PagePropsWithLocale<"/[team]/scrim/[scrimId]">
 ): Promise<Metadata> {
   const params = await props.params;
-  const t = await getTranslations({
-    locale: params.locale,
-    namespace: "scrimPage.metadata",
-  });
+  const t = getMetadataTranslations("scrimPage.metadata");
   const scrimId = Number(params.scrimId);
   const canViewScrim =
     Number.isSafeInteger(scrimId) &&
@@ -86,7 +85,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale: params.locale,
+      locale: defaultLocale,
     },
   };
 }
@@ -113,9 +112,7 @@ export default async function ScrimDashboardPage(
     overviewCardEnabled,
     showPositional,
   ] = await Promise.all([
-    AppRuntime.runPromise(
-      ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(id)))
-    ),
+    getCachedScrim(id),
     prisma.map.findMany({
       where: { scrimId: id },
       orderBy: [{ order: "asc" }, { id: "asc" }],
@@ -229,34 +226,16 @@ export default async function ScrimDashboardPage(
   const [overviewData, positionalStats, positionalArtifacts, scrimInitiation] =
     await Promise.all([
       overviewCardEnabled && maps.length > 0 && teamId && !isNewTeam
-        ? AppRuntime.runPromise(
-            ScrimOverviewService.pipe(
-              Effect.flatMap((svc) => svc.getScrimOverview(id, teamId))
-            )
-          )
+        ? getCachedScrimOverview(id, teamId)
         : Promise.resolve(null),
       showPositional && maps.length > 0
-        ? AppRuntime.runPromise(
-            ScrimPositionalStatsService.pipe(
-              Effect.flatMap((svc) => svc.getScrimPositionalStats(id))
-            )
-          )
+        ? getCachedScrimPositionalStats(id)
         : Promise.resolve(null),
       showPositional && maps.length > 0 && teamId
-        ? AppRuntime.runPromise(
-            ScrimPositionalArtifactsService.pipe(
-              Effect.flatMap((svc) =>
-                svc.getScrimPositionalArtifacts(id, teamId)
-              )
-            )
-          )
+        ? getCachedScrimPositionalArtifacts(id, teamId)
         : Promise.resolve(null),
       overviewCardEnabled && maps.length > 0 && teamId && !isNewTeam
-        ? AppRuntime.runPromise(
-            ScrimInitiationService.pipe(
-              Effect.flatMap((svc) => svc.getScrimInitiation(id))
-            )
-          )
+        ? getCachedScrimInitiation(id)
         : Promise.resolve(null),
     ]);
 

@@ -7,12 +7,14 @@ import { DefaultOverview } from "@/components/player/default-overview";
 import { PlayerTelemetry } from "@/components/player/player-telemetry";
 import { Link } from "@/components/ui/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlayerService } from "@/data/player";
+import { getCachedMostPlayedHeroes } from "@/data/cached/map-cache";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
+import { defaultLocale } from "@/i18n/config";
 import { auth } from "@/lib/auth";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import { translateHeroName, translateMapName } from "@/lib/utils";
 import { heroRoleMapping, type HeroName } from "@/types/heroes";
@@ -24,10 +26,7 @@ export async function generateMetadata(
   props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]/player/[playerId]">
 ): Promise<Metadata> {
   const params = await props.params;
-  const t = await getTranslations({
-    locale: params.locale,
-    namespace: "mapPage.playerMetadata",
-  });
+  const t = getMetadataTranslations("mapPage.playerMetadata");
   const playerName = decodeURIComponent(params.playerId);
 
   return {
@@ -48,7 +47,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale: params.locale,
+      locale: defaultLocale,
     },
   };
 }
@@ -62,9 +61,7 @@ export default async function PlayerDashboardPage(
   const mapDataId = await resolveMapDataId(id);
   const playerName = decodeURIComponent(params.playerId);
 
-  const mostPlayedHeroes = await AppRuntime.runPromise(
-    PlayerService.pipe(Effect.flatMap((svc) => svc.getMostPlayedHeroes(id)))
-  );
+  const mostPlayedHeroes = await getCachedMostPlayedHeroes(id);
 
   const mapName = await prisma.matchStart.findFirst({
     where: {
