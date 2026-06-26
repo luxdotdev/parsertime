@@ -94,12 +94,25 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           "font-sans h-full antialiased"
         )}
       >
-        {/* The provider tree depends on request-time data (locale, auth,
-            feature flags), so it streams under Suspense while the document
-            shell prerenders. */}
-        <Suspense fallback={null}>
-          <RootProviders>{children}</RootProviders>
-        </Suspense>
+        {/* next-themes renders its anti-flash script here, in the static
+            document shell, so it runs before first paint and applies the
+            stored theme. If it streamed in with the request-data providers
+            below, the page would paint light first and then flip to dark.
+            defaultTheme stays request-independent so the shell prerenders. */}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          themes={["light", "dark", "disguised"]}
+          disableTransitionOnChange
+        >
+          {/* The provider tree depends on request-time data (locale, auth,
+              feature flags), so it streams under Suspense while the document
+              shell prerenders. */}
+          <Suspense fallback={null}>
+            <RootProviders>{children}</RootProviders>
+          </Suspense>
+        </ThemeProvider>
       </body>
     </html>
   );
@@ -134,38 +147,30 @@ async function RootProviders({ children }: { children: ReactNode }) {
   return (
     <NuqsAdapter>
       <QueryProvider>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme={isDsgMember ? "disguised" : "system"}
-          enableSystem
-          themes={["light", "dark", "disguised"]}
-          disableTransitionOnChange
-        >
-          <TooltipProvider>
-            <NextIntlClientProvider locale={locale} messages={messages}>
-              <CommandMenuProvider>
-                <AppSettingsProvider>
-                  <BrandThemeProvider canUseDisguised={isDsgMember}>
-                    <FeatureFlagsProvider flags={flags}>
-                      <FlagValues values={toFlagValues(flags)} />
-                      <BetaBanner />
-                      {children}
-                      <CommandDialogMenu user={user} />
-                    </FeatureFlagsProvider>
-                  </BrandThemeProvider>
-                </AppSettingsProvider>
-              </CommandMenuProvider>
-            </NextIntlClientProvider>
-          </TooltipProvider>
-          <Toaster />
-          <SpeedInsights />
-          <Analytics />
-          <Suspense fallback={null}>
-            <UsageBeacon />
-          </Suspense>
-          <DevTools />
-          <WebVitals />
-        </ThemeProvider>
+        <TooltipProvider>
+          <NextIntlClientProvider locale={locale} messages={messages}>
+            <CommandMenuProvider>
+              <AppSettingsProvider>
+                <BrandThemeProvider canUseDisguised={isDsgMember}>
+                  <FeatureFlagsProvider flags={flags}>
+                    <FlagValues values={toFlagValues(flags)} />
+                    <BetaBanner />
+                    {children}
+                    <CommandDialogMenu user={user} />
+                  </FeatureFlagsProvider>
+                </BrandThemeProvider>
+              </AppSettingsProvider>
+            </CommandMenuProvider>
+          </NextIntlClientProvider>
+        </TooltipProvider>
+        <Toaster />
+        <SpeedInsights />
+        <Analytics />
+        <Suspense fallback={null}>
+          <UsageBeacon />
+        </Suspense>
+        <DevTools />
+        <WebVitals />
       </QueryProvider>
     </NuqsAdapter>
   );
