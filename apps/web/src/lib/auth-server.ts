@@ -1,9 +1,6 @@
 import MagicLinkEmail from "@parsertime/transactional/emails/magic-link";
 import UserOnboardingEmail from "@parsertime/transactional/emails/onboarding";
-import {
-  authNewUserCounter,
-  authSignInCounter,
-} from "@/lib/axiom/metrics";
+import { authNewUserCounter, authSignInCounter } from "@/lib/axiom/metrics";
 import { assertUserAllowed, enforceSignInRateLimit } from "@/lib/auth-gating";
 import { email } from "@/lib/email";
 import { createShortLink } from "@/lib/link-service";
@@ -13,10 +10,7 @@ import { stripe } from "@/lib/stripe";
 import { UsageEventName } from "@/lib/usage/names";
 import { usage } from "@/lib/usage/server";
 import { isTaggedError } from "@/lib/utils";
-import {
-  newUserWebhookConstructor,
-  sendDiscordWebhook,
-} from "@/lib/webhooks";
+import { newUserWebhookConstructor, sendDiscordWebhook } from "@/lib/webhooks";
 import { render } from "@react-email/render";
 import { track } from "@vercel/analytics/server";
 import { betterAuth } from "better-auth";
@@ -101,7 +95,10 @@ export const auth = betterAuth({
           await track("New User", { email: user.email });
 
           const emailHtml = await render(
-            UserOnboardingEmail({ name: user.name || "user", email: user.email })
+            UserOnboardingEmail({
+              name: user.name || "user",
+              email: user.email,
+            })
           );
           try {
             await email.sendEmail({

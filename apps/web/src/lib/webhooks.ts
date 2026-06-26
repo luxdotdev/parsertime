@@ -73,7 +73,9 @@ export function newUserWebhookConstructor(user: WebhookUser): DiscordWebhook {
  * @param {User} user - The user that was created.
  * @returns {DiscordWebhook} The constructed webhook.
  */
-export function deleteUserWebhookConstructor(user: WebhookUser): DiscordWebhook {
+export function deleteUserWebhookConstructor(
+  user: WebhookUser
+): DiscordWebhook {
   return {
     username: "Parsertime",
     avatar_url: "https://parsertime.app/icon.png",
