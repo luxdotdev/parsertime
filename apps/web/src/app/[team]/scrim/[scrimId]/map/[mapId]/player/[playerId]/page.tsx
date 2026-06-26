@@ -7,7 +7,7 @@ import { DefaultOverview } from "@/components/player/default-overview";
 import { PlayerTelemetry } from "@/components/player/player-telemetry";
 import { Link } from "@/components/ui/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlayerService } from "@/data/player";
+import { getCachedMostPlayedHeroes } from "@/data/cached/map-cache";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
@@ -61,9 +61,7 @@ export default async function PlayerDashboardPage(
   const mapDataId = await resolveMapDataId(id);
   const playerName = decodeURIComponent(params.playerId);
 
-  const mostPlayedHeroes = await AppRuntime.runPromise(
-    PlayerService.pipe(Effect.flatMap((svc) => svc.getMostPlayedHeroes(id)))
-  );
+  const mostPlayedHeroes = await getCachedMostPlayedHeroes(id);
 
   const mapName = await prisma.matchStart.findFirst({
     where: {

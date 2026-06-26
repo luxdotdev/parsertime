@@ -3,6 +3,7 @@ import { auth, canEditScrim, getCurrentUser } from "@/lib/auth";
 import { mapDeletionDuration, mapRemovedCounter } from "@/lib/axiom/metrics";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
+import { revalidateTag } from "next/cache";
 import { unauthorized } from "next/navigation";
 import { after, type NextRequest } from "next/server";
 
@@ -42,6 +43,8 @@ export async function POST(req: NextRequest) {
   await prisma.map.delete({ where: { id: mapId } });
   mapDeletionDuration.record(performance.now() - deleteStart);
   mapRemovedCounter.add(1);
+
+  revalidateTag(`map:${mapId}`, "max");
 
   after(async () => {
     await auditLog.createAuditLog({

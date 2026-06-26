@@ -3,6 +3,7 @@ import { auth, canEditScrim, getCurrentUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { resolveSetWinnerOutcome } from "@/lib/scrim/set-winner-validation";
+import { revalidateTag } from "next/cache";
 import { unauthorized, unstable_rethrow } from "next/navigation";
 import { after, type NextRequest } from "next/server";
 import { z } from "zod";
@@ -69,6 +70,8 @@ export async function POST(
       where: { id: mapId },
       data: { winner: parsed.data.winner, winnerSource: "manual" },
     });
+
+    revalidateTag(`map:${mapId}`, "max");
 
     after(async () => {
       await auditLog.createAuditLog({
