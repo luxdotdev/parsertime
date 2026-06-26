@@ -1,1 +1,1 @@
-export { RouteLoading as default } from "@/components/route-loading";
+export { FormLoading as default } from "@/components/route-loading";

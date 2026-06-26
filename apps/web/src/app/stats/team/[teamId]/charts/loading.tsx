@@ -1,1 +1,1 @@
-export { RouteLoading as default } from "@/components/route-loading";
+export { StatsLoading as default } from "@/components/route-loading";
