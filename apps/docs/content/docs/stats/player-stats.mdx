@@ -1,0 +1,146 @@
+---
+title: "Player Stats"
+---
+
+Every time a scrim is uploaded to Parsertime, player statistics are calculated 
+and stored in the database. This allows you to see detailed stats for each player, 
+including eliminations, deaths, damage, and more.
+
+This enables the ability to see your stats over time. You can see trends such as
+improvements in your eliminations or damage over time. You can also compare your
+stats to the global average or other players to see how you stack up against the 
+competition.
+
+Stats can be filtered by a timeframe, such as the last week, month, or all time.
+There is also a filter to select the specific hero you want to view stats for.
+
+To view stats for a specific player, enter the player name in the player name input.
+![Player name input](/player-name-input.png)
+
+![An example of the player stats page using the player 'reyzr'.](/reyzr-stats.png)
+*An example of the player stats page using the player 'reyzr'. The current timeframe 
+is "All Time" and the hero filter is set to "All Heroes".*
+
+## Key Information
+
+The player stats page shows the following metrics:
+- Most Played Heroes
+- Best Performance
+- Average Hero Damage Dealt per 10 Minutes (per scrim)
+- Average Deaths per 10 Minutes (per scrim)
+- Time Spent on Each Role
+- Final Blows By Method
+- Map Winrates
+- Winrate By Map Type
+- Heroes Died To Most
+- Heroes Eliminated Most
+- Variable Stats per 10 chart
+
+<Callout type="warning">
+    Please be aware that Map Winrates and Winrate By Map Type are not able to be filtered by hero.
+    These stats are calculated by the total number of wins and losses across all scrims within the selected timeframe.
+    Determining the winrate for a specific hero on a specific map is not currently supported.
+</Callout>
+
+### Variable Stats per 10 Chart
+
+The Variable Stats per 10 chart shows the average of a specific stat per 10 minutes across all maps played in a scrim.
+The currently supported stats are:
+
+- Eliminations
+- Final Blows
+- Healing Dealt
+- Healing Received
+- Self Healing
+- Damage Taken
+- Damage Blocked
+- Ultimates Earned
+- Solo Kills
+- Environmental Kills
+
+Click the selector to choose which stat you want to view. The chart will update to show the average of that stat per 10 minutes.
+
+![Variable Stats per 10 chart showing the average eliminations per 10 minutes.](/variable-stat.png)
+*An example of the Variable Stats per 10 chart showing the average eliminations per 10 minutes.*
+
+![Variable selector](/variable-dropdown.png)
+*An example of the variable selector dropdown.*
+
+## Stats
+
+### Most Played Heroes
+
+This category shows the most played heroes for the player across all scrims.
+This is calculated by the number of games in which the player selected each hero.
+
+### Best Performance
+
+This category is calculated by the highest **final blows** count recorded in a single game.
+You can see the hero played, the number of final blows, and the map in which the performance occurred.
+
+To see the map in more detail, click the hero name to view the map stats page for that performance.
+
+### Average Hero Damage Dealt per 10 Minutes (per scrim)
+
+The average hero damage dealt per 10 minutes is calculated by the total hero damage dealt divided by the total time played in minutes, 
+then multiplied by 10. This is a good metric to compare your damage output to other players. While total hero damage is important,
+it's also important to consider the time played to get a more accurate representation of your performance.
+
+The chart finds the average hero damage dealt per 10 minutes across every map in which the player has played. This is then averaged
+by the number of maps played within the scrim to get the value per 10 per scrim. This is then assigned to the scrim date.
+
+Each dot on the line chart represents a scrim date. Hover over the dots to see the exact value for that scrim.
+
+### Average Deaths per 10 Minutes (per scrim)
+
+The average deaths per 10 minutes is calculated by the total deaths divided by the total time played in minutes, 
+then multiplied by 10. This is a good metric to compare your survivability to other players. While total deaths are important,
+it's also important to consider the time played to get a more accurate representation of your performance.
+
+The chart finds the average deaths per 10 minutes across every map in which the player has played. This is then averaged
+by the number of maps played within the scrim to get the value per 10 per scrim. This is then assigned to the scrim date.
+
+Each dot on the line chart represents a scrim date. Hover over the dots to see the exact value for that scrim.
+
+### Time Spent on Each Role
+
+This chart shows the time spent on each role for the player. This is calculated by the total hero time played across all scrims within
+the selected timeframe. This is then divided by the total time played to get the percentage of time spent on each role.
+
+### Final Blows By Method
+
+The final blows by method chart shows the most common methods of final blows for the player. This is calculated by the number of final
+blows for each method across all scrims within the selected timeframe.
+
+Some hero-specific outliers may be visible, such as a Wrecking Ball player having final blows that show as "Crouch". This
+corresponds to Wrecking Ball's Piledriver ability.
+
+### Map Winrates
+<Callout type="warning">
+    Map Winrates are not able to be filtered by hero. These stats 
+    are calculated by the total number of wins and losses
+    across all scrims within the selected timeframe.
+</Callout>
+
+The map winrates chart shows the winrate for each map that the player has played on. This is calculated by the number of wins and losses
+for each map within the selected timeframe.
+
+### Winrate By Map Type
+<Callout type="warning">
+    Winrate By Map Type is not able to be filtered by hero. These stats 
+    are calculated by the total number of wins and losses
+    across all scrims within the selected timeframe.
+</Callout>
+
+The winrate by map type chart shows the winrate for each map type that the player has played on. This is calculated by the number of wins
+and losses for each map type within the selected timeframe.
+
+### Heroes Died To Most
+
+This category shows the heroes that the player has died to the most across all scrims within the selected timeframe. This is calculated by
+the number of deaths to each hero. This can help you identify which heroes you struggle against the most.
+
+### Heroes Eliminated Most
+
+This category shows the heroes that the player has eliminated the most across all scrims within the selected timeframe. This is calculated
+by the number of eliminations on each hero. This can help you identify which heroes you are most effective against.

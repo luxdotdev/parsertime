@@ -1,0 +1,105 @@
+---
+title: "Charts"
+---
+
+The Charts tab turns your roster's raw stats into per-player scatter charts, so
+you can see how two metrics relate to each other across the team. Each chart
+plots one dot per player, with one stat on the X axis and another on the Y axis.
+Reading the cloud of dots, and the trend through it, is often a faster way to
+spot outliers and patterns than scanning a table of numbers.
+
+## How the Charts Work
+
+Every chart compares two stats. For example, hero damage against deaths, or
+final blows against deaths. Each player is a single dot, an **aggregate of all
+their games** over the selected timeframe, positioned by their values for the two
+chosen stats. (Charts are about how players compare to each other, not how one
+player's stats moved over a session; for trend-over-time, use the per-player line
+chart on the player page.)
+
+All values are normalized to a **per-10-minutes** basis. This is the whole point
+of the view: it puts a starter and a part-time fill-in on the same footing, so a
+player isn't pushed to the edge of the chart just because they logged more total
+time. You're comparing *rates*, not totals.
+
+Hover a dot to see the player's name and their exact values for both axes. Each
+dot is labelled with the player's name, so you can read the whole roster without
+hovering.
+
+## Preset Charts
+
+The tab opens with four preset charts. Each was chosen because it pairs a stat
+about *output* with a stat about *cost or risk*, the kind of trade-off that's
+hard to judge from a table but obvious as a cloud of dots:
+
+- **Hero damage vs deaths** — output relative to how often a player dies. Are
+  your big-damage players also the ones feeding?
+- **Final blows vs deaths** — finishing power against risk taken.
+- **Damage taken vs healing received** — how much punishment a player absorbs
+  against the healing they soak up, a read on who's pulling resources.
+- **Damage blocked vs damage taken** — mitigation against damage absorbed,
+  useful for reading tank survivability.
+
+These four render side by side so you can scan the team's shape at a glance.
+
+## Custom Chart Builder
+
+Below the presets is a custom chart where you pick both axes yourself. Choose any
+two stats from the dropdowns, eliminations, healing dealt, self-healing,
+ultimates earned, solo kills, and more, and the chart redraws instantly. Use it
+to test a hunch that two stats move together, or to build a comparison the
+presets don't cover.
+
+## Shared Hero Filter and Regression Toggle
+
+Two controls at the top of the tab apply to every chart at once, presets and
+custom alike:
+
+- **Hero filter** — narrow the data to one or more heroes. With a hero selected,
+  each player's dot reflects only their games on that hero, so you can compare,
+  for example, how everyone performs specifically on their dive picks. With no
+  hero selected, every chart uses each player's full pool.
+- **Regression line** — toggle a best-fit trend line through the dots. When it's
+  on, each chart also reports a correlation value (**Pearson's r**) so you can
+  judge how tightly the two stats actually track together. r runs from -1 to +1:
+  near +1 the dots line up tightly with the upward trend (the two stats rise
+  together), near -1 they track in opposite directions, and near 0 there's no
+  real relationship, the line is just noise. Use it to tell a genuine pattern
+  from coincidence before you read anything into it. A line only appears when
+  there are at least two players to fit; if a filter narrows the data too far,
+  the chart says the trend is unavailable rather than drawing a misleading line.
+
+## Expand to Inspect
+
+Any chart has an expand button that opens it in a full-screen inspector. Inside
+the inspector you get **axis-zoom sliders** for both the X and Y axes, so you can
+narrow the visible range and pull apart a tight cluster of dots that overlaps in
+the compact view. A reset control returns the chart to its full range. For the
+custom chart, the axis pickers are available inside the inspector too, so you can
+keep rebuilding the comparison without leaving full-screen.
+
+## Substitutes Are Excluded
+
+Charts reflect your **core roster**: players you've marked as substitutes are
+left out. This is intentional, a chart is meant to show how your regular players
+compare to one another, and a fill-in who played a handful of maps would sit as
+an unrepresentative dot that skews the cloud and any trend line drawn through it.
+Excluding subs keeps the picture, and the correlation, honest about the players
+you actually run. This is the same substitute handling used across the team stats
+tabs. See the
+[substitutes section on the Overview page](/docs/team-stats/overview) for how marking
+substitutes works.
+
+<Callout type="info">
+    The Charts tab needs at least two scrims of data before it appears. With
+    fewer than two scrims, the team stats page shows an insufficient-data
+    placeholder instead.
+</Callout>
+
+## How to Use It
+
+Start with the presets to get a feel for the team's shape, then reach for the
+custom builder when you have a specific question. Turn on the regression line to
+confirm whether a relationship is real or just noise, and use the hero filter to
+check whether a pattern holds on specific picks. When two dots sit on top of each
+other, expand the chart and zoom the axes to separate them.

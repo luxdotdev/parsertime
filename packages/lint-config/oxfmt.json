@@ -1,0 +1,23 @@
+{
+  "trailingComma": "es5",
+  "tabWidth": 2,
+  "semi": true,
+  "singleQuote": false,
+  "printWidth": 80,
+  "sortTailwindcss": {},
+  "sortPackageJson": false,
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/_next/**",
+    "**/dist/**",
+    "**/.source/**",
+    "**/__tmp__/**",
+    "**/src/generated/**",
+    "**/*.md",
+    "**/*.mdx",
+    "lerna.json",
+    ".github",
+    "pnpm-lock.yaml"
+  ]
+}

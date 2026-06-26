@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "extends": ["./node_modules/@parsertime/lint-config/oxlint.json"],
+  "ignorePatterns": [
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+    "**/components/ui/**",
+    "**/components/ai-elements/**",
+    "scripts/**",
+    "src/generated/**"
+  ]
+}

@@ -1,0 +1,177 @@
+---
+title: "Player Scouting"
+---
+
+Player Scouting lives at `/faceit/player`. You search for a FACEIT player
+by name and open a profile built around one question: how dangerous is this
+player, and where? The centerpiece is FSR — the FACEIT Skill Rating — which
+gives you a single, peer-relative read on their skill.
+
+<Callout type="info">
+  FACEIT Scouting is a premium feature, gated behind a feature flag, and may
+  not be available on every account.
+</Callout>
+
+## Finding a player
+
+The search page is a single search box. Type a player name and a list of
+matches appears, each row showing the nickname and how many tracked matches
+the player has; players without enough rated data are marked unrated. Pick
+one to open the profile. You can also reach a player profile directly from a
+team's [roster](/docs/scouting/team-scouting) or match history.
+
+## Reading the profile
+
+### Header
+
+The top of the page shows the player's nickname, their Battle Tag if known,
+and a strip of identity facts:
+
+- **Region** — the player's FACEIT region.
+- **FACEIT level** — their Overwatch 2 skill level on FACEIT, if available.
+- **Verified** — whether the player's account is verified (Yes/No).
+
+### Threat assessment
+
+A scouting brief that condenses the rest of the page into a quick read.
+On one side sits the headline FSR for the player's primary role, the tier
+it is anchored to, and a percentile line — "Better than X% of [tier]
+[role] players." On the other side is a short list of insights:
+
+- **Threatens with** — the stats they are strongest at versus peers, with
+  how many standard deviations (z-score) above the peer average.
+- **Exploit** — the stats they are weakest at, where you can pressure them.
+- **Strongest** and **weakest map** — by their own win rate.
+- **Tracked record** — their win–loss across tracked matches.
+
+If a player does not have enough rated maps for an FSR yet, this section
+says **Unrated** and notes that the map and match history below still apply.
+
+## FSR in depth
+
+FSR (FACEIT Skill Rating) estimates individual skill **from in-game stats,
+not from wins and losses**, on a **1–5000 scale**. The goal is to answer
+"how good is this player for their role and tier?" rather than "did their
+team win?"
+
+### Built per role, anchored per tier
+
+FSR is computed separately for each **role** (Tank, Damage, Support) and
+each **tier** (Open, Advanced, Expert, Masters, OWCS). For every
+tier-and-role combination, Parsertime builds a baseline from the players
+who actually play there: the average and spread of each tracked stat,
+measured per 10 minutes.
+
+A player's own per-10 stats are then turned into **z-scores** against that
+baseline — how many standard deviations above or below the peer average
+they sit on each stat. Because the comparison is always within the same
+tier and role, a Support is judged against other Supports at their level,
+never against Tanks or against the whole ladder.
+
+### What goes into the number
+
+Each role weights the stats that matter for it. For example:
+
+- **Damage** leans on eliminations and final blows, with damage dealt,
+  low deaths, and solo kills behind them.
+- **Tank** leans on low deaths and damage mitigated, alongside
+  eliminations, solo kills, and damage.
+- **Support** leans heavily on healing and low deaths, with damage,
+  eliminations, and assists behind them.
+
+Deaths are inverted — fewer is better. The weighted z-scores are summed
+into a composite, that composite is converted onto the FSR scale, and the
+result is anchored to the tier's baseline rating. Each tier has its own
+anchor — roughly 2500 at Open rising through to about 3850 at OWCS — so the
+tier sets the floor the rating is built on and the peer comparison decides
+how far above or below it the player lands. In short, a player's FSR is
+"their tier's level, plus or minus how far their output sits from their
+tier peers."
+
+This is why two players with similar-looking stats can have very different
+FSRs: the one playing at a higher tier starts from a higher anchor and is
+being measured against tougher peers. It also means FSR is not a kill or
+damage leaderboard — a player can post big raw numbers in easy lobbies and
+still land mid-pack once those numbers are compared to peers at their
+level.
+
+### Recency, tier weighting, and sample size
+
+A few adjustments keep the number honest:
+
+- **Recency-weighted** — recent maps count for more than old ones (older
+  maps fade on a roughly one-year half-life), so FSR tracks current form
+  rather than a player's all-time peak.
+- **Tier-weighted** — the headline FSR blends across every tier a player
+  has competed in, weighting recent maps and higher tiers more heavily. A
+  smurf with only Open maps stays anchored near the Open level and cannot
+  out-rate a Masters regular, while strong recent play at a high tier pulls
+  the headline up. The per-tier breakdown keeps the detail visible (for
+  example "Open 4100, Expert 2900 — untested at the top").
+- **Sample-aware (shrinkage)** — when a player has few maps in a tier, their
+  rating is pulled toward the tier average until more data arrives, so a
+  couple of hot games will not inflate a rating off a tiny sample. The fewer
+  the maps, the harder the pull. A tier cell also needs a minimum number of
+  maps before it is rated at all; below that, the player (or that tier/role
+  slice) shows as unrated rather than as a noisy guess.
+
+### Reading FSR by role and tier
+
+For a rated player, the profile shows FSR broken out per role and, within
+each role, per tier. Each role block carries a headline FSR, the number of
+maps behind it, and how many of those maps fell in the last 365 days. The
+per-tier table then shows the rating, map count, and **percentile** within
+that tier and role — the percentile is the most direct "how do they rank
+against their peers" figure on the page. The primary role is tagged.
+
+**A high FSR** means the player's stat output is well above their tier
+peers for that role — respect them, and expect them to carry. **A low or
+middling FSR** means they look like a typical player for that level, or
+weaker — a place you can apply pressure. Because FSR is peer-relative, a
+high FSR at OWCS is a far stronger signal than the same number anchored at
+Open; always read the rating together with the tier it is anchored to.
+
+### Stat profile
+
+A radar chart and a ranked list show each tracked stat as a z-score versus
+tier peers — the same numbers the threat assessment summarizes, laid out in
+full. Bars to the right of zero are strengths; bars to the left are
+weaknesses, and a stat only surfaces as a notable strength or weakness once
+it sits clearly above or below the peer average (not for small, noise-level
+gaps). Because the comparison is tier-specific, the chart defaults to the
+tier where the player has the most maps for that role — their most reliable
+read — and you can switch tiers to see how the same player compares against
+tougher or softer peers. This is where you see exactly what makes a player
+good or beatable.
+
+## Role usage, maps, history, and teams
+
+- **Role usage** — the share of maps the player spent on each role, so you
+  can tell a one-trick from a flex.
+- **Map win rates** — win rate by map and by mode, rated rows first,
+  thin samples flagged as low sample.
+- **Match history** — a paginated table of tracked matches with result,
+  team, opponent, tier, score, the role they played, and date. Teams link
+  back to their profiles.
+- **Teams played for** — every team the player has appeared on, with how
+  many matches, linking to each team's
+  [profile](/docs/scouting/team-scouting).
+
+## How to use it
+
+- **Lead with the threat assessment.** It tells you in a glance whether
+  this player is a carry to respect or a soft spot to target, and which
+  stats to play around.
+- **Read FSR with its tier.** Anchor every rating to the level it was
+  earned at before you decide how much to fear it.
+- **Use the stat profile to plan, not just rank.** A Support bleeding
+  z-score on deaths is a dive target; a Damage spiking on final blows is
+  someone to peel for.
+- **Check role usage before committing a read.** A high FSR on a role they
+  rarely play matters less than a solid FSR on the role they always run.
+- **Follow the team links** to see who they play with now, then prep the
+  whole team on the [Team Scouting](/docs/scouting/team-scouting) page.
+
+If something in a report looks wrong, let us know at
+[help@parsertime.app](mailto:help@parsertime.app) or in
+[Discord](https://parserti.me/discord).

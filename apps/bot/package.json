@@ -1,0 +1,43 @@
+{
+  "name": "parsertime-bot",
+  "version": "0.0.0",
+  "private": true,
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run index.ts",
+    "dev": "bun --watch index.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint",
+    "format": "oxfmt --config ./node_modules/@parsertime/lint-config/oxfmt.json",
+    "format:check": "oxfmt --config ./node_modules/@parsertime/lint-config/oxfmt.json --check",
+    "db:generate": "prisma generate",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.1",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.219.0",
+    "@opentelemetry/resources": "^2.8.0",
+    "@opentelemetry/sdk-trace-base": "^2.8.0",
+    "@opentelemetry/sdk-trace-node": "^2.8.0",
+    "@opentelemetry/semantic-conventions": "^1.41.1",
+    "@prisma/adapter-pg": "^7.5.0",
+    "@prisma/client": "^7.5.0",
+    "@prisma/instrumentation": "^7.5.0",
+    "discord.js": "^14.26.4",
+    "dotenv": "^17.3.1",
+    "pg": "^8.20.0"
+  },
+  "devDependencies": {
+    "@parsertime/lint-config": "workspace:*",
+    "@types/bun": "latest",
+    "@types/pg": "^8.18.0",
+    "bun-types": "latest",
+    "oxfmt": "^0.40.0",
+    "oxlint": "^1.58.0",
+    "oxlint-tsgolint": "^0.20.0",
+    "prisma": "^7.5.0",
+    "typescript": "npm:@typescript/typescript6@^6.0.1",
+    "typescript-7": "npm:typescript@7.0.1-rc"
+  }
+}

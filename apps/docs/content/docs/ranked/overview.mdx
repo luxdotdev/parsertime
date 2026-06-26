@@ -1,0 +1,73 @@
+---
+title: "Overview"
+---
+
+The Ranked tracker is your personal competitive-progress dashboard. It lives at
+`/ranked` and turns a log of your Overwatch ranked games into trends, win rates,
+and breakdowns that help you see where you are climbing and where you are stuck.
+
+<Callout type="info">
+  Ranked is available to every signed-in user. It is not a paid feature and it
+  is not tied to a team. Everything you track here belongs to your personal
+  account, and it stays private unless you choose to publish a summary. See
+  [Privacy & Public Profile](/docs/ranked/privacy) for details.
+</Callout>
+
+## Who it is for
+
+Ranked is built for individual players who want to understand their own
+results over time. The rest of Parsertime is built around scrims and team
+play, where data is shared with coaches and teammates. The Ranked tracker is
+deliberately the opposite: it is purely about your own solo and group
+competitive ladder experience — the maps you play, the heroes you pick, who you
+queue with, and how all of that moves your win rate. It answers questions a
+shared team workspace cannot, like "which hero should I stop forcing?" or "am I
+actually better solo than in a stack?"
+
+Because this is your personal climbing data and not your team's, it is yours
+alone by default. There is no team to set up and nothing to configure. As soon
+as you have logged or imported a few games, the dashboard fills in
+automatically.
+
+## The dashboard
+
+When you have games logged, `/ranked` shows a set of summary cards followed by
+tabbed analytics. Two filters sit above the tabs and apply across the whole
+dashboard:
+
+- **Season / patch filter** scopes everything to a specific balance patch or
+  season window, so you can ask "how have I done since the last patch?" rather
+  than looking at your entire history at once.
+- **Role filter** narrows the view to Tank, Damage, or Support so you can study
+  one role in isolation.
+
+### Tabs
+
+- **Overview** — your overall win/loss picture, plus distribution and win rate
+  by game mode. This is the quick read on how things are going.
+- **Heroes** — your best and most-played heroes, hero win rates, hero-pool
+  diversity, one-trick detection, and hero-swap analytics.
+- **Maps** — win rate by map, a map tier list, volatility, hero/map synergy
+  (including the best hero per map), learning curves, and familiarity patterns.
+- **Time** — your win rate trend over time, an activity heatmap, win/loss
+  streaks, recent form, session analysis, and a day-of-week breakdown.
+- **Patches** — how Overwatch balance patches moved your results. This tab
+  deliberately ignores the season / patch filter above and always shows your
+  full patch history, because the whole point of the view is to compare across
+  patches — scoping it to a single patch would defeat that. It does still
+  respect the role filter, so you can ask "how did each patch treat my Tank
+  games?"
+- **Groups** — performance by group size, comparing how you do solo versus in a
+  duo or a larger stack.
+- **Roles** — your role distribution, win rate by role, and how flexible you
+  are across roles.
+
+## Getting started
+
+The tracker only knows what you tell it. Log your first game with the match
+form, or bring your history over in bulk with a JSON import. See
+[Logging & Importing Games](/docs/ranked/logging-and-import) to get data in.
+
+Once your stats are in, they are private by default. If you want to show a
+summary on your public profile, head to
+[Privacy & Public Profile](/docs/ranked/privacy).

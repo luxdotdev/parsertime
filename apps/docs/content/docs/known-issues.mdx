@@ -1,0 +1,133 @@
+---
+title: "Known Issues"
+---
+
+<Callout type="info">
+    If you encounter any issues with Parsertime, please report them to us on
+    [Discord](https://discord.gg/svz3qhVDXM) or send us an email at
+    [help@parsertime.app](mailto:help@parsertime.app). We will do our best to fix the
+    issue as soon as possible.
+</Callout>
+
+There are a few known issues with Parsertime. We are working on fixing these issues 
+and will update this page as we make progress.
+
+## All Issues
+
+### Select Overwatch 2 supports showing zero healing dealt
+Due to limitations with the Workshop, the healing dealt for Wuyang and Juno cannot be tracked.
+Blizzard has not updated the Workshop to support this yet. We are waiting for a fix.
+
+**Severity**: Major
+
+**Fix**: We are waiting for Blizzard to release a fix for this issue. We will update this
+page when the issue is resolved.
+
+### Clash mode showing objective captures incorrectly
+Clash mode is not supported by the Workshop code. This means that the Workshop code
+will need to be updated to support the new Clash mode. We are waiting on the Workshop code
+to be updated to support Clash mode.
+
+**Severity**: Major
+
+**Fix**: We are waiting on the Workshop code to be updated to support the new Clash mode. We will
+update this page when the issue is resolved.
+
+### Logs in languages other than English are not supported
+Currently, the parser only supports English logs. We are working on adding support for
+other languages and will update this page when the issue is resolved. We aim to resolve this for v1.3.
+
+**Severity**: Minor
+
+**Fix**: We are working on adding support for other languages. We will update this page when the issue is resolved.
+
+### Flashpoint maps only containing 4 rounds
+We are aware of an issue where Flashpoint maps only contain 4 rounds. 
+This seems to be an issue with the log generator. This can lead to some charts and 
+statistics looking incorrect.
+
+![Flashpoint overview bug](/known-issues/flashpoint-bug-1.png)
+*The overview page not showing the round 5 stats for Flashpoint maps.*
+
+![Flashpoint player charts bug](/known-issues/flashpoint-bug-2.png)
+*The player charts showing only 4 rounds for Flashpoint maps. The charts incorrectly 
+show a steep increase in values.*
+
+**Severity**: Minor
+
+**Fix**: The final round stats are visible from the Overview tab. As for the player 
+charts, a fix is reliant on the log generator.
+
+---
+
+
+## Non Issues
+### Push maps only showing 1 round
+Push maps only show 1 round in the overview. This is due to the nature of the game mode.
+This is not a bug and will not be changed.
+
+**Severity**: Non-issue
+
+**Fix**: N/A
+
+---
+
+## Fixed
+
+### Push maps not showing score
+Push maps do not show the score for each round. This is due to limitations with both
+the in-game Workshop and the log generator. With Overwatch 2's release, the Workshop
+was not updated to support the new Push game mode. This means that the log generator
+cannot generate the score when the push bot is pushed to the end of the map.
+Additionally, there is no way to track the progress of the push bot.
+
+**Severity**: Fixed
+
+### Overview stats table showing incorrect player roles
+Occasionally, the overview stats table will show incorrect player roles.
+This is due to player role being determined by the first character the player picked.
+
+![Incorrect role being displayed](/known-issues/incorrect-roles-bug.png)
+*An example of three players being listed as Damage, when there can only be two Damage players.*
+
+**Severity**: Fixed
+
+### Map winrates are tracking all maps in a scrim regardless of player participation
+There is currently a flaw within the map winrate calculation that is causing the winrates
+to be calculated for all maps in a scrim, regardless of whether or not the player participated
+in that map. We are working on fixing this issue and will update this page when the issue is resolved.
+We aim to resolve this for v1.3.
+
+**Severity**: Major
+
+**Fix**: Fixed in v1.2.1
+
+### Average time to use ultimate stat is not accurate
+The average time to use ultimate stat is not accurate. This is due to a flaw in the
+implementation. We are working on fixing this issue and will update this page when the issue is resolved.
+We aim to resolve this for v1.3.
+
+**Severity**: Minor
+
+**Fix**: Fixed in v1.3
+
+### Workshop Inspector Log File not appearing in Overwatch settings
+We are aware of an issue where users cannot enable the Workshop Inspector Log File in
+their game settings. Blizzard is aware of the issue and we are waiting for a fix.
+
+**Severity**: Critical
+
+**Fix**: Fixed in v1.4
+
+### Wave Respawns showing Mercy resurrects from an unknown player
+Due to the spawn changes in Season 12, Wave Respawns are counting as Mercy resurrects.
+This is due to how the Workshop code tracks resurrects. The Workshop code looks for
+respawns within 10 seconds of a player's death. Wave respawns are thus counted as
+Mercy resurrects.
+
+**Severity**: Major
+
+**Fix**: We are waiting on the log generator to be updated to support the new spawn
+changes. We will update this page when the issue is resolved.
+
+**Fix**: Fixed in v2.0

@@ -1,0 +1,47 @@
+{
+  "name": "parsertime-docs",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev --port 3001",
+    "start": "next start",
+    "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
+    "typecheck": "fumadocs-mdx && next typegen && tsc --noEmit",
+    "lint": "next typegen && oxlint",
+    "format": "oxfmt --config ./node_modules/@parsertime/lint-config/oxfmt.json",
+    "format:check": "oxfmt --config ./node_modules/@parsertime/lint-config/oxfmt.json --check",
+    "postinstall": "fumadocs-mdx"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "@vercel/edge-config": "^1.4.3",
+    "fumadocs-core": "16.9.1",
+    "fumadocs-mdx": "15.0.9",
+    "fumadocs-ui": "16.9.1",
+    "lucide-react": "^1.16.0",
+    "next": "16.2.6",
+    "next-seo": "^7.2.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "tailwind-merge": "^3.6.0",
+    "three": "^0.184.0"
+  },
+  "devDependencies": {
+    "@parsertime/lint-config": "workspace:*",
+    "@tailwindcss/postcss": "^4.3.0",
+    "@types/mdx": "^2.0.13",
+    "@types/node": "^25.9.1",
+    "@types/react": "^19.2.15",
+    "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.184.1",
+    "oxfmt": "^0.40.0",
+    "oxlint": "^1.58.0",
+    "oxlint-tsgolint": "^0.20.0",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^4.3.0",
+    "typescript": "npm:@typescript/typescript6@^6.0.1",
+    "typescript-7": "npm:typescript@7.0.1-rc"
+  }
+}

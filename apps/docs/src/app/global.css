@@ -1,0 +1,248 @@
+@import "tailwindcss";
+@import "fumadocs-ui/css/preset.css";
+
+/*
+ * Parsertime docs v3 — mirrors src/app/globals.css in the main parsertime repo.
+ * Achromatic-first with one amber signal hue. Cool-tinted neutrals (hue ~250°).
+ */
+
+@theme {
+  --color-fd-background: oklch(0.985 0.003 250);
+  --color-fd-foreground: oklch(0.185 0.005 250);
+  --color-fd-muted: oklch(0.965 0.003 250);
+  --color-fd-muted-foreground: oklch(0.5 0.005 250);
+  --color-fd-popover: oklch(0.998 0.002 250);
+  --color-fd-popover-foreground: oklch(0.185 0.005 250);
+  --color-fd-card: oklch(0.998 0.002 250);
+  --color-fd-card-foreground: oklch(0.185 0.005 250);
+  --color-fd-border: oklch(0.915 0.004 250);
+  --color-fd-primary: oklch(0.55 0.17 68);
+  --color-fd-primary-foreground: oklch(0.985 0.003 250);
+  --color-fd-secondary: oklch(0.965 0.003 250);
+  --color-fd-secondary-foreground: oklch(0.21 0.005 250);
+  --color-fd-accent: oklch(0.945 0.004 250);
+  --color-fd-accent-foreground: oklch(0.21 0.005 250);
+  --color-fd-ring: oklch(0.55 0.17 68);
+  --color-fd-overlay: oklch(0.14 0.003 250 / 0.4);
+
+  --font-sans:
+    var(--font-switzer), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono:
+    var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+/* Semantic palette for callouts, diff blocks, and shiki tokens. Warning
+ * intentionally lands in the brand amber family so callouts feel native. */
+@theme static {
+  --color-fd-info: oklch(0.62 0.18 245);
+  --color-fd-warning: oklch(0.72 0.16 78);
+  --color-fd-error: oklch(0.62 0.22 27);
+  --color-fd-success: oklch(0.7 0.18 150);
+  --color-fd-idea: oklch(0.68 0.18 60);
+  --color-fd-diff-remove: oklch(0.62 0.22 27 / 0.12);
+  --color-fd-diff-remove-symbol: oklch(0.62 0.22 27);
+  --color-fd-diff-add: oklch(0.7 0.18 150 / 0.12);
+  --color-fd-diff-add-symbol: oklch(0.7 0.18 150);
+}
+
+.dark {
+  --color-fd-background: oklch(0.14 0.003 250);
+  --color-fd-foreground: oklch(0.98 0.002 250);
+  --color-fd-muted: oklch(0.22 0.004 250);
+  --color-fd-muted-foreground: oklch(0.68 0.005 250);
+  --color-fd-popover: oklch(0.175 0.004 250);
+  --color-fd-popover-foreground: oklch(0.98 0.002 250);
+  --color-fd-card: oklch(0.175 0.004 250);
+  --color-fd-card-foreground: oklch(0.98 0.002 250);
+  --color-fd-border: oklch(1 0 0 / 10%);
+  --color-fd-primary: oklch(0.82 0.17 78);
+  --color-fd-primary-foreground: oklch(0.185 0.02 80);
+  --color-fd-secondary: oklch(0.225 0.005 250);
+  --color-fd-secondary-foreground: oklch(0.98 0.002 250);
+  --color-fd-accent: oklch(0.27 0.005 250);
+  --color-fd-accent-foreground: oklch(0.98 0.002 250);
+  --color-fd-ring: oklch(0.82 0.17 78);
+  --color-fd-overlay: oklch(0 0 0 / 0.5);
+}
+
+/* Flat sidebar: match the page background so the docs feel like one
+ * continuous dark surface, the same way the landing page reads. The 1px
+ * end-border that fumadocs already paints carries the separation. Cards
+ * inside MDX content stay one tonal step lifted (--color-fd-card) so the
+ * layering vocabulary still works for genuine content surfaces. */
+#nd-sidebar,
+#nd-sidebar-mobile,
+aside[data-collapsible] {
+  background-color: var(--color-fd-background) !important;
+}
+
+/* Slight lift for in-sidebar pills (search button, theme switcher) so they
+ * read as interactive against the now-flat surrounding surface. */
+.dark #nd-sidebar [data-search-toggle],
+.dark #nd-sidebar-mobile [data-search-toggle] {
+  background-color: oklch(0.2 0.004 250);
+}
+
+html {
+  scrollbar-gutter: stable;
+  font-feature-settings: "ss01", "cv11";
+}
+
+html > body[data-scroll-locked] {
+  margin-right: 0px !important;
+  --removed-body-scroll-bar-size: 0px !important;
+}
+
+/* All comparable numbers run tabular so columns align on the digit.
+ * The Tabular-Numeral Rule from DESIGN.md. */
+code,
+kbd,
+samp,
+pre,
+.font-mono,
+[class*="tabular"] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* The metadata layer — caps + mono + tracked-out. Only label text uses this;
+ * never buttons, headings, hero names, or CTAs. */
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-fd-muted-foreground);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * Sidebar — match the landing's stylized vocabulary.
+ *
+ * Separators (the `---Setup---` style markers in meta.json) render as mono
+ * caps tracked-out group labels with a tiny rule above. Items get tighter
+ * padding and a small mono indicator on hover. Active item carries an amber
+ * left bar instead of the default tinted background, which keeps amber as
+ * pure signal (per the Amber-as-Signal Rule in DESIGN.md).
+ * ───────────────────────────────────────────────────────────────────────── */
+
+#nd-sidebar [data-radix-scroll-area-viewport] > div,
+#nd-sidebar-mobile [data-radix-scroll-area-viewport] > div {
+  padding-inline: 4px;
+}
+
+/* Separators — group headers */
+#nd-sidebar p,
+#nd-sidebar-mobile p {
+  font-family: var(--font-mono);
+  font-size: 10px !important;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-fd-muted-foreground);
+  padding-inline: 12px;
+  margin-top: 28px !important;
+  margin-bottom: 8px !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#nd-sidebar p::before,
+#nd-sidebar-mobile p::before {
+  content: "";
+  flex-shrink: 0;
+  display: block;
+  height: 1px;
+  width: 16px;
+  background: var(--color-fd-border);
+}
+
+#nd-sidebar nav > p:first-child,
+#nd-sidebar-mobile nav > p:first-child {
+  margin-top: 4px !important;
+}
+
+/* Items — tighter rows, with a mono caret on hover/active */
+#nd-sidebar a,
+#nd-sidebar-mobile a,
+#nd-sidebar button,
+#nd-sidebar-mobile button {
+  border-radius: 6px;
+  font-size: 13.5px;
+  letter-spacing: -0.005em;
+}
+
+/* Active state: amber-as-signal via a 2px left bar. Drop the default tinted
+ * background so the indicator stays the clear "selected" marker. */
+#nd-sidebar a[data-active="true"],
+#nd-sidebar-mobile a[data-active="true"] {
+  background-color: transparent !important;
+  color: var(--color-fd-primary) !important;
+  font-weight: 500;
+  position: relative;
+}
+
+#nd-sidebar a[data-active="true"]::before,
+#nd-sidebar-mobile a[data-active="true"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--color-fd-primary);
+}
+
+/* Hover: surface lift, no amber (per the Amber-as-Signal Rule) */
+#nd-sidebar a:not([data-active="true"]):hover,
+#nd-sidebar-mobile a:not([data-active="true"]):hover {
+  background-color: color-mix(
+    in oklch,
+    var(--color-fd-foreground) 5%,
+    transparent
+  );
+  color: var(--color-fd-foreground);
+}
+
+/* Folder chevrons sit tight against the right edge */
+#nd-sidebar [data-icon],
+#nd-sidebar-mobile [data-icon] {
+  opacity: 0.55;
+}
+
+/* View transitions — gated behind reduced motion per DESIGN.md. */
+:root {
+  --duration-exit: 150ms;
+  --duration-enter: 210ms;
+  --duration-move: 400ms;
+}
+
+@keyframes fd-fade {
+  from {
+    filter: blur(3px);
+    opacity: 0;
+  }
+  to {
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+
+::view-transition-old(root) {
+  animation: var(--duration-exit) ease-in fd-fade reverse;
+}
+::view-transition-new(root) {
+  animation: var(--duration-enter) ease-out var(--duration-exit) both fd-fade;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

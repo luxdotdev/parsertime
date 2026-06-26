@@ -1,0 +1,57 @@
+---
+title: "Tempo Chart"
+---
+
+The tempo chart visualizes match momentum for both teams over time.
+It sits on the **Events** tab of a scrim's map page, alongside the
+event timeline, and is available to all users, on every plan.
+
+## What You See
+
+The tempo chart is a time-series chart with match time on the X-axis
+and a tempo score on the Y-axis. Positive values favor team 1 and
+negative values favor team 2. Two smooth curves oscillate across the
+centerline, filled above and below in each team's color. The further
+a curve sits from the centerline, the stronger that team's momentum
+at that moment.
+
+Hovering anywhere on the chart shows the tempo value at that time.
+Fight boundaries are marked with vertical lines, and small kill and
+ultimate icons pin to the timeline so you can see discrete events in
+the context of the momentum curve.
+
+## Tabs
+
+Three tabs change what the chart is measuring:
+
+- **Combined**: the overall picture, combining ultimate economy and
+  kill trades.
+- **Ultimates**: tempo driven only by ultimate economy.
+- **Kills**: tempo driven only by kill trades.
+
+Switching tabs is useful for answering questions like "did we lose
+the map because of bad ult tracking, or because we kept losing first
+picks?"
+
+## EvalBar
+
+A small legend and indicator next to the chart, the EvalBar, shows
+the live team score advantage at the hovered time. As you move your
+cursor across the chart, the EvalBar updates to reflect which team
+was ahead and by how much at that moment.
+
+## How Coaches Use It
+
+The tempo chart is the fastest way to pinpoint the exact moment a
+match shifted. Look for:
+
+- A sharp swing across the centerline, which usually marks a
+  decisive fight.
+- A team that sits on the wrong side of the centerline for a long
+  stretch, which points to a sustained momentum problem.
+- Kill and ultimate icons clustered around a swing, which tells you
+  what drove it.
+
+Once you have found a moment, cross-reference it with the
+[killfeed](/maps/killfeed) or open the [replay viewer](/maps/replay)
+at that time to see what happened on the ground.

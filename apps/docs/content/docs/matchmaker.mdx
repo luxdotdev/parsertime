@@ -1,0 +1,106 @@
+---
+title: "Matchmaker"
+description: "Find scrim partners at your team's bracket, with requests delivered to Discord and answered out-of-band."
+---
+
+The Matchmaker lives at `/matchmaker`. It pairs teams by
+[Team TSR](/docs/tsr/team-tsr) bracket and ferries scrim requests to the
+other team's Discord through the [Parsertime bot](/docs/discord-bot).
+
+It is built for the gap between "we need a scrim Thursday" and "we have one
+on the calendar." The pairing logic and the request pipeline are the
+features; the response is just a Discord message the other coach reads on
+their phone.
+
+## The hub
+
+The hub lists every team you manage. Each card shows:
+
+- **Team name**
+- **Bracket**, derived from the team's TSR (Open, Advanced, Expert,
+  Masters, OWCS)
+- **Region**, NA or EMEA
+- **Team TSR**, rounded to the nearest integer
+
+Picking a team opens that team's matchmaker page, which is the matchmaking
+surface itself.
+
+<Callout type="info">
+  A team only appears in the hub once it has a [Team TSR
+  snapshot](/docs/tsr/team-tsr). That requires at least two scrims uploaded
+  and the daily cron having run. New teams will not see themselves listed on
+  the day they create.
+</Callout>
+
+## Finding scrim partners
+
+Inside a team's matchmaker page, the **candidates list** shows other teams
+in **adjacent brackets** to yours, in the same region. Adjacency is the
+default scope; the assumption is that a Masters team wants Masters and
+Expert opponents, not Open scrims.
+
+Each candidate row shows:
+
+- **Team name** linking to the team's page
+- **Bracket**
+- **Rating gap** vs your team
+- **Recent activity** (last scrim upload)
+- **Availability** if the team has filled out their
+  [Availability Calendar](/docs/availability)
+
+Click a candidate to see the **vs detail page**, which compares the two
+teams side by side: TSR, recent form, hero pools, common maps, and
+availability overlap. If you want to scrim them, the request button is on
+this page.
+
+## Scrim requests
+
+A scrim request is a structured message delivered to the target team's
+Discord notification channel through the Parsertime bot. The target team's
+coach can accept, decline, or ignore; the response happens **out of band**
+in Discord and over whatever channel coaches already use. Parsertime tracks
+the request but does not own the conversation.
+
+Each request includes:
+
+- Your team name and bracket
+- Your availability window
+- A short freeform note (optional)
+- A link back to the matchmaker vs page
+
+### Rate limits
+
+To keep the request flow useful, both sides are capped:
+
+- **Per-team cooldown**: one request to the same target team every **24
+  hours**
+- **Daily limit**: **10 requests per team per day**, across all targets
+
+Going over either limit returns a 429 with the reason. Cooldowns and limits
+reset on a rolling 24-hour window.
+
+### Required conditions
+
+- Both teams must have a [Team TSR](/docs/tsr/team-tsr) snapshot
+- You must be a manager or owner of the sending team
+- Neither team can be archived (read-only)
+- The target team must have notifications routed to a Discord channel
+
+If any of these is missing, the send returns a 422 with the missing piece
+called out.
+
+## Bot delivery
+
+When a request is sent, the bot posts a message to the target team's
+notification channel with the request body, the sender's contact, and a
+"View on Parsertime" link that drops the recipient onto the matchmaker vs
+page. Permissions on the bot side are scoped to the target team's Discord
+guild membership; the bot will not surface a server the team manager does
+not have access to.
+
+## Privacy
+
+Bracket and Team TSR are visible to other teams in the same region. Player
+identities, scrim contents, and roster details are not exposed through the
+Matchmaker hub. The vs page only shows aggregates and shared maps; nothing
+in there leaks per-scrim data.

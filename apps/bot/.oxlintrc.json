@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "extends": ["./node_modules/@parsertime/lint-config/oxlint.json"],
+  "ignorePatterns": ["src/generated/**", "dist/**"],
+  "overrides": [
+    {
+      "files": ["**/*.ts"],
+      "rules": {
+        "no-console": "off",
+        "no-unused-vars": ["error", { "ignoreRestSiblings": true }],
+        "typescript/no-explicit-any": "off",
+        "typescript/no-unsafe-assignment": "off",
+        "typescript/no-unsafe-call": "off",
+        "typescript/no-unsafe-member-access": "off",
+        "typescript/no-unsafe-argument": "off",
+        "typescript/no-unsafe-return": "off",
+        "typescript/no-base-to-string": "off",
+        "typescript/restrict-template-expressions": "off"
+      }
+    }
+  ]
+}

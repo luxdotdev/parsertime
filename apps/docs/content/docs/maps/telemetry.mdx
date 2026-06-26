@@ -1,0 +1,78 @@
+---
+title: "Player Telemetry"
+description: "F1-style per-player telemetry for a scrim map: damage lanes, opponent matchups, focus fire, and ult interplay."
+---
+
+The **Player Telemetry** tab on a scrim map view is the most data-dense
+surface in the product. It is modeled on F1 telemetry: pick a player, pick
+a comparison axis, read the picture in one pass. The view is designed for
+analysts working through a map at the end of a scrim block.
+
+You'll find it as a tab on the scrim map page, alongside Overview, Charts,
+Events, Replay, Heatmap, Tempo, and Compare.
+
+## Damage by target
+
+A **lane chart** showing damage dealt by the selected player, broken out
+by the opposing hero on the receiving end. Each lane is one opponent. The
+shape tells you who the player actually focused versus who they were
+supposed to focus.
+
+Damage **received** is rendered in the opposing team's color, so you can
+read both directions at once without a legend. The colorblind variant
+honored is the user's current setting.
+
+## Opponent matchup radar
+
+A radar chart comparing the selected player to a chosen opposing player
+across five axes:
+
+- Eliminations per 10
+- Final blows per 10
+- Damage dealt per 10
+- Deaths per 10 (inverted: closer to the center is better)
+- Healing or damage blocked per 10 (role-specific)
+
+The radar is anchored to the per-map context, not season averages. It
+answers "who won this individual matchup on this map?" and nothing else.
+
+## Focus fire
+
+A grouped breakdown of the player's eliminations and final blows by **enemy
+role**: tank kills, damage kills, support kills. The companion chart
+splits **damage taken by enemy role**, so you can see whether a support
+was eaten by tanks or burst by a flanker.
+
+This is a fast read for tank duels (did our tank actually pressure their
+tank?) and for support survival (which role keeps killing our supports?).
+
+## Ult combos and counter-ult response
+
+Two paired charts:
+
+- **Ult combos**: which of the player's ultimates were chained with a
+  teammate's ultimate, and which followed an enemy ultimate. The pairing
+  surfaces the most common combos and the most common counter chains.
+- **Counter-ult response**: how the team's win rate moved on fights where
+  this player responded to an enemy ultimate with their own.
+
+Both charts cross-reference the
+[Ultimate Impact](/docs/team-stats/ultimate-impact) numbers, but scoped to
+the single map and single player.
+
+## Ultimate advantage
+
+The **ultimate advantage card** quantifies the gap between when the
+player's team had an ult lead going into a fight versus the opposing team.
+A 1-ult advantage going into a fight wins fights at a much higher rate
+than parity; the card shows that delta for this player's team across the
+map.
+
+The same card is ported to the scrim and map pages so the read is
+consistent across the three altitudes.
+
+<Callout type="info" eyebrow="Reading order">
+  Skim damage-by-target first to set the scene. Then pull up the matchup
+  radar for the duel you care about. Use focus fire to validate intent;
+  use ult combos to validate execution.
+</Callout>

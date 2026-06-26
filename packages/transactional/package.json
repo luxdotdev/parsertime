@@ -1,0 +1,33 @@
+{
+  "name": "@parsertime/transactional",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./emails/*": "./emails/*.tsx"
+  },
+  "scripts": {
+    "dev": "email dev --port 3200",
+    "lint": "oxlint",
+    "format": "oxfmt --config ./node_modules/@parsertime/lint-config/oxfmt.json",
+    "format:check": "oxfmt --config ./node_modules/@parsertime/lint-config/oxfmt.json --check",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-email": "^6.6.5"
+  },
+  "devDependencies": {
+    "@parsertime/lint-config": "workspace:*",
+    "@react-email/ui": "^6.6.5",
+    "@types/node": "^20.19.15",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "oxfmt": "^0.40.0",
+    "oxlint": "^1.58.0",
+    "oxlint-tsgolint": "^0.20.0",
+    "typescript": "npm:@typescript/typescript6@^6.0.1",
+    "typescript-7": "npm:typescript@7.0.1-rc"
+  }
+}

@@ -1,0 +1,87 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { ClientOnly } from "@/lib/client-only";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+
+const adminFormSchema = z.object({
+  email: z.string().email({
+    message: "Please enter a valid email address.",
+  }),
+});
+
+type AdminFormValues = z.infer<typeof adminFormSchema>;
+
+export function ImpersonateUserForm() {
+  const t = useTranslations("settingsPage.admin");
+
+  const form = useForm<AdminFormValues>({
+    resolver: zodResolver(adminFormSchema),
+  });
+
+  async function onSubmit(data: AdminFormValues) {
+    try {
+      const res = await fetch("/api/admin/impersonate-user", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("An error occurred while impersonating the user.");
+      }
+
+      // The response set the impersonation session cookie; land in the app as
+      // the impersonated user.
+      window.location.href = "/dashboard";
+    } catch {
+      toast.error(t("onSubmit.errorTitle"), {
+        description: t("onSubmit.errorDescription"),
+      });
+    }
+  }
+
+  return (
+    <ClientOnly>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("email.title")}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="lucas@lux.dev"
+                    defaultValue=""
+                    {...field}
+                  />
+                </FormControl>
+                <FormDescription>{t("email.description")}</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit">{t("impersonate")}</Button>
+        </form>
+      </Form>
+    </ClientOnly>
+  );
+}

@@ -1,0 +1,2216 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?   @db.Text
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @default(now()) @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  ipAddress      String?
+  userAgent      String?
+  impersonatedBy String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model User {
+  id                     String                  @id @default(cuid())
+  name                   String?
+  email                  String                  @unique
+  emailVerified          Boolean                 @default(false)
+  image                  String?
+  accounts               Account[]
+  sessions               Session[]
+  role                   UserRole                @default(USER)
+  banned                 Boolean?                @default(false)
+  banReason              String?
+  banExpires             DateTime?
+  teamId                 Int?
+  teams                  Team[]
+  managedTeams           TeamManager[]
+  stripeId               String?                 @unique
+  billingPlan            BillingPlan             @default(FREE)
+  Notification           Notification[]
+  AppSettings            AppSettings[]
+  titles                 Title[]                 @default([])
+  bannerImage            String?
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @default(now()) @updatedAt
+  battletag              String?
+  rankedStatsPublic      Boolean                 @default(false)
+  appliedTitles          AppliedTitle[]
+  seenOnboarding         Boolean                 @default(false)
+  comparisonGroups       ComparisonGroup[]
+  mapGroups              MapGroup[]
+  botNotificationConfigs BotNotificationConfig[]
+  createdTargets         PlayerTarget[]
+  chatConversations      ChatConversation[]
+  chatReports            ChatReport[]
+  availabilityResponses  AvailabilityResponse[]
+  credits                UserCredits?
+  creditTransactions     CreditTransaction[]
+  pendingAutoRefill      PendingAutoRefill?
+  scrimRequestsSent      ScrimRequest[]
+  teamSubstitutes        TeamSubstitute[]
+  teamBlacklists         TeamBlacklist[]
+  scrimFeedback          ScrimFeedback[]
+  rankedMatches          RankedMatch[]
+
+  @@index([id, email])
+}
+
+enum Title {
+  // Special user titles
+  DEVELOPER
+  EMPLOYEE
+  BETA_TESTER
+  DAY_ONE_USER
+  BASIC_PLAN_SUBSCRIBER
+  PREMIUM_PLAN_SUBSCRIBER
+  VIP
+
+  // Achievement titles
+  HIGHEST_RANK_ON_A_HERO
+  HIGHEST_AJAX_COUNT
+  HIGHEST_FLETA_DEADLIFT_PERCENTAGE
+  TOP_3_KILLS
+  TOP_3_DAMAGE_DEALT
+  TOP_3_HEALING
+  TOP_3_DAMAGE_BLOCKED
+  TOP_3_DEATHS
+  TOP_3_TIME_PLAYED
+}
+
+enum ColorblindMode {
+  OFF
+  DEUTERANOPIA
+  PROTANOPIA
+  TRITANOPIA
+  CUSTOM
+}
+
+model AppSettings {
+  id               Int            @id @default(autoincrement())
+  userId           String         @unique
+  colorblindMode   ColorblindMode @default(OFF)
+  customTeam1Color String?
+  customTeam2Color String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum BillingPlan {
+  FREE
+  BASIC
+  PREMIUM
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@index([identifier])
+}
+
+model Notification {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  title       String
+  description String
+  read        Boolean  @default(false)
+  href        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+enum AuditLogAction {
+  USER_BAN
+  USER_UNBAN
+  TRUST_SCORE_ADJUST
+  IMPERSONATE_USER
+  SUSPICIOUS_ACTIVITY_DETECTED
+  TEAM_INVITE_SENT
+  TEAM_AVATAR_UPDATED
+  TEAM_JOINED
+  TEAM_LEFT
+  TEAM_CREATED
+  TEAM_DELETED
+  TEAM_UPDATED
+  TEAM_MEMBER_PROMOTED
+  TEAM_MEMBER_DEMOTED
+  TEAM_MEMBER_REMOVED
+  TEAM_SUBSTITUTE_MARKED
+  TEAM_SUBSTITUTE_UNMARKED
+  TEAM_OWNERSHIP_TRANSFERRED
+  SCRIM_CREATED
+  SCRIM_UPDATED
+  SCRIM_DELETED
+  MAP_CREATED
+  MAP_UPDATED
+  MAP_DELETED
+  USER_AVATAR_UPDATED
+  USER_BANNER_UPDATED
+  USER_ACCOUNT_DELETED
+  USER_NAME_UPDATED
+  USER_BATTLETAG_UPDATED
+  BUG_REPORT_SUBMITTED
+  TOURNAMENT_CREATED
+  TOURNAMENT_UPDATED
+  TOURNAMENT_DELETED
+  TOURNAMENT_MATCH_UPDATED
+  SCRIM_REQUEST_SENT
+}
+
+model AuditLog {
+  id        Int            @id @default(autoincrement())
+  userEmail String
+  action    AuditLogAction
+  target    String
+  details   String
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@index([userEmail, target])
+}
+
+model Team {
+  id                    Int                       @id @default(autoincrement())
+  name                  String
+  createdAt             DateTime                  @default(now())
+  updatedAt             DateTime                  @updatedAt
+  image                 String?
+  users                 User[]
+  scrims                Scrim[]
+  ownerId               String
+  managers              TeamManager[]
+  readonly              Boolean                   @default(false)
+  comparisonGroups      ComparisonGroup[]
+  mapGroups             MapGroup[]
+  playerTargets         PlayerTarget[]
+  scoutingTeamAbbr      String?
+  tournamentTeams       TournamentTeam[]
+  availabilitySettings  TeamAvailabilitySettings?
+  availabilitySchedules AvailabilitySchedule[]
+  teamTsrSnapshot       TeamTsrSnapshot?
+  scrimRequestsFrom     ScrimRequest[]            @relation("ScrimRequestFrom")
+  scrimRequestsTo       ScrimRequest[]            @relation("ScrimRequestTo")
+  substitutes           TeamSubstitute[]
+  blacklistsOwned       TeamBlacklist[]           @relation("BlacklistOwner")
+  blacklistedBy         TeamBlacklist[]           @relation("BlacklistBlocked")
+  scrimsAgainst         Scrim[]                   @relation("ScrimOpponent")
+}
+
+model BotNotificationConfig {
+  id        String   @id @default(cuid())
+  guildId   String
+  channelId String
+  teamIds   Int[]
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  creator User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@unique([guildId, channelId])
+  @@index([createdBy])
+}
+
+model TeamManager {
+  id     Int    @id @default(autoincrement())
+  teamId Int
+  userId String
+  team   Team   @relation(fields: [teamId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([teamId, userId])
+  @@index([userId])
+}
+
+model TeamSubstitute {
+  id         Int      @id @default(autoincrement())
+  teamId     Int
+  playerName String
+  createdBy  String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  team    Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  creator User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, playerName])
+  @@index([createdBy])
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  USER
+}
+
+enum TeamBlacklistSource {
+  MANUAL
+  POST_SCRIM
+}
+
+enum ScrimFeedbackVerdict {
+  GOOD
+  NEUTRAL
+  BLACKLISTED
+  DISMISSED
+}
+
+model TeamInviteToken {
+  id      Int      @id @default(autoincrement())
+  teamId  Int
+  email   String
+  token   String   @unique
+  expires DateTime
+}
+
+model ComparisonGroup {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  teamId      Int
+  createdBy   String
+  playerName  String
+  heroes      String[] @default([])
+  mapIds      Int[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@index([createdBy])
+  @@index([teamId, playerName])
+}
+
+model MapGroup {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  teamId      Int
+  mapIds      Int[]
+  category    String?
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@index([teamId])
+  @@index([createdBy])
+}
+
+model SavedQuery {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  teamId    Int
+  spec      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([teamId])
+}
+
+model Scrim {
+  id                  Int              @id @default(autoincrement())
+  name                String
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  date                DateTime
+  maps                Map[]
+  Team                Team?            @relation(fields: [teamId], references: [id])
+  teamId              Int?
+  creatorId           String
+  guestMode           Boolean          @default(false)
+  opponentTeamAbbr    String?
+  autoAssignTeamNames Boolean          @default(false)
+  team1Name           String?
+  team2Name           String?
+  tournamentMatch     TournamentMatch?
+  opponentTeamId      Int?
+  scrimRequestId      String?
+  opponentTeam        Team?            @relation("ScrimOpponent", fields: [opponentTeamId], references: [id], onDelete: SetNull)
+  scrimRequest        ScrimRequest?    @relation(fields: [scrimRequestId], references: [id], onDelete: SetNull)
+  feedback            ScrimFeedback?
+
+  @@index([opponentTeamId])
+  @@index([teamId, opponentTeamId])
+}
+
+model Map {
+  id             Int             @id @default(autoincrement())
+  name           String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  order          Int             @default(0)
+  mapData        MapData[]
+  Scrim          Scrim?          @relation(fields: [scrimId], references: [id])
+  vod            String?
+  scrimId        Int?
+  replayCode     String?
+  winner         String?
+  winnerSource   WinnerSource?
+  tournamentMaps TournamentMap[]
+
+  @@index([scrimId, order])
+}
+
+model HeroBan {
+  id          Int      @id @default(autoincrement())
+  scrimId     Int
+  hero        String
+  team        String
+  banPosition Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  MapData     MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId   Int
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model MapBan {
+  id          Int      @id @default(autoincrement())
+  scrimId     Int
+  map         String
+  team        String
+  banPosition Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  MapData     MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId   Int
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model Note {
+  id        Int      @id @default(autoincrement())
+  content   String   @default("")
+  scrimId   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  MapData   MapData  @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int
+
+  @@unique([scrimId, MapDataId])
+}
+
+model AppliedTitle {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  title     Title
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, title])
+}
+
+enum CalculatedStatType {
+  FLETA_DEADLIFT_PERCENTAGE
+  FIRST_PICK_PERCENTAGE
+  FIRST_PICK_COUNT
+  FIRST_DEATH_PERCENTAGE
+  FIRST_DEATH_COUNT
+  MVP_SCORE
+  MAP_MVP_COUNT
+  AJAX_COUNT
+  AVERAGE_ULT_CHARGE_TIME
+  AVERAGE_TIME_TO_USE_ULT
+  AVERAGE_DROUGHT_TIME
+  KILLS_PER_ULTIMATE
+  DUEL_WINRATE_PERCENTAGE
+  FIGHT_REVERSAL_PERCENTAGE
+  AVERAGE_ENGAGEMENT_DISTANCE
+  HIGH_GROUND_KILL_PERCENTAGE
+  ISOLATION_DEATH_PERCENTAGE
+  AVERAGE_FIGHT_START_SPREAD
+  AVERAGE_ULT_CONVERSION_KILLS
+  ULT_DEATH_PERCENTAGE
+  AVERAGE_ULT_DISPLACEMENT
+  ULTS_ON_OBJECTIVE_PERCENTAGE
+}
+
+enum Role {
+  TANK
+  DAMAGE
+  SUPPORT
+}
+
+model CalculatedStat {
+  id         Int                @id @default(autoincrement())
+  scrimId    Int
+  playerName String
+  hero       String
+  role       Role
+  stat       CalculatedStatType
+  value      Float
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+  MapData    MapData            @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId  Int
+
+  @@index([scrimId, MapDataId])
+  @@index([playerName, hero, stat])
+  @@index([MapDataId, stat])
+}
+
+enum EventType {
+  defensive_assist
+  dva_remech
+  echo_duplicate_end
+  echo_duplicate_start
+  hero_spawn
+  hero_swap
+  kill
+  match_end
+  match_start
+  mercy_rez
+  objective_captured
+  objective_updated
+  offensive_assist
+  payload_progress
+  point_progress
+  player_stat
+  remech_charged
+  round_end
+  round_start
+  setup_complete
+  ultimate_charged
+  ultimate_end
+  ultimate_start
+  ability_1_used
+  ability_2_used
+  damage
+  healing
+}
+
+enum MapType {
+  Clash
+  Control
+  Escort
+  Flashpoint
+  Hybrid
+  Push
+}
+
+enum WinnerSource {
+  auto_score
+  auto_coords
+  manual
+}
+
+enum TournamentFormat {
+  SINGLE_ELIMINATION
+  DOUBLE_ELIMINATION
+  ROUND_ROBIN
+  ROUND_ROBIN_SE
+  SWISS
+}
+
+enum TournamentStatus {
+  DRAFT
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum TournamentMatchStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+}
+
+enum BracketSide {
+  WINNERS
+  LOSERS
+  GRAND_FINAL
+  ROUND_ROBIN
+}
+
+model MapData {
+  id                   Int                  @id @default(autoincrement())
+  scrimId              Int
+  userId               String
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  defensive_assist     DefensiveAssist[]
+  DvaRemech            DvaRemech[]
+  echo_duplicate_end   EchoDuplicateEnd[]
+  echo_duplicate_start EchoDuplicateStart[]
+  hero_spawn           HeroSpawn[]
+  hero_swap            HeroSwap[]
+  kill                 Kill[]
+  match_end            MatchEnd[]
+  match_start          MatchStart[]
+  MercyRez             MercyRez[]
+  objective_captured   ObjectiveCaptured[]
+  objective_updated    ObjectiveUpdated[]
+  offensive_assist     OffensiveAssist[]
+  payload_progress     PayloadProgress[]
+  player_stat          PlayerStat[]
+  point_progress       PointProgress[]
+  RemechCharged        RemechCharged[]
+  round_end            RoundEnd[]
+  round_start          RoundStart[]
+  setup_complete       SetupComplete[]
+  ultimate_charged     UltimateCharged[]
+  ultimate_end         UltimateEnd[]
+  ultimate_start       UltimateStart[]
+  HeroBan              HeroBan[]
+  mapBans              MapBan[]
+  Note                 Note[]
+  calculatedStats      CalculatedStat[]
+
+  Map           Map?           @relation(fields: [mapId], references: [id], onDelete: Cascade)
+  mapId         Int?
+  ability1Useds Ability1Used[]
+  ability2Useds Ability2Used[]
+  damages       Damage[]
+  healings      Healing[]
+
+  @@index([scrimId])
+  @@index([mapId])
+}
+
+model DefensiveAssist {
+  id              Int       @id @default(autoincrement())
+  scrimId         Int
+  event_type      EventType @default(defensive_assist)
+  match_time      Float
+  player_team     String
+  player_name     String
+  player_hero     String
+  hero_duplicated String
+  MapData         MapData?  @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId       Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model DvaRemech {
+  id          Int       @id @default(autoincrement())
+  scrimId     Int
+  event_type  EventType @default(dva_remech)
+  match_time  Float
+  player_team String
+  player_name String
+  player_hero String
+  ultimate_id Int
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model EchoDuplicateEnd {
+  id          Int       @id @default(autoincrement())
+  scrimId     Int
+  event_type  EventType @default(echo_duplicate_end)
+  match_time  Float
+  player_team String
+  player_name String
+  player_hero String
+  ultimate_id Int
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model EchoDuplicateStart {
+  id              Int       @id @default(autoincrement())
+  scrimId         Int
+  event_type      EventType @default(echo_duplicate_start)
+  match_time      Float
+  player_team     String
+  player_name     String
+  player_hero     String
+  hero_duplicated String
+  ultimate_id     Int
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model HeroSpawn {
+  id               Int       @id @default(autoincrement())
+  scrimId          Int
+  event_type       EventType @default(hero_spawn)
+  match_time       Float
+  player_team      String
+  player_name      String
+  player_hero      String
+  previous_hero    Int?
+  hero_time_played Float
+  MapData          MapData?  @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId        Int?
+
+  @@index([MapDataId])
+}
+
+model HeroSwap {
+  id               Int       @id @default(autoincrement())
+  scrimId          Int
+  event_type       EventType @default(hero_swap)
+  match_time       Float
+  player_team      String
+  player_name      String
+  player_hero      String
+  previous_hero    String
+  hero_time_played Float
+  MapData          MapData?  @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId        Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model Kill {
+  id               Int       @id @default(autoincrement())
+  scrimId          Int
+  event_type       EventType @default(kill)
+  match_time       Float
+  attacker_team    String
+  attacker_name    String
+  attacker_hero    String
+  victim_team      String
+  victim_name      String
+  victim_hero      String
+  event_ability    String
+  event_damage     Int
+  is_critical_hit  String
+  is_environmental String
+  attacker_x       Float?
+  attacker_y       Float?
+  attacker_z       Float?
+  victim_x         Float?
+  victim_y         Float?
+  victim_z         Float?
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model MatchEnd {
+  id           Int       @id @default(autoincrement())
+  scrimId      Int
+  event_type   EventType @default(match_end)
+  match_time   Float
+  round_number Int
+  team_1_score Int
+  team_2_score Int
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model MatchStart {
+  id          Int       @id @default(autoincrement())
+  scrimId     Int
+  event_type  EventType @default(match_start)
+  match_time  Float
+  map_name    String
+  map_type    MapType
+  team_1_name String
+  team_2_name String
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model MercyRez {
+  id                 Int       @id @default(autoincrement())
+  scrimId            Int
+  event_type         EventType @default(mercy_rez)
+  match_time         Float
+  resurrecter_team   String
+  resurrecter_player String
+  resurrecter_hero   String
+  resurrectee_team   String
+  resurrectee_player String
+  resurrectee_hero   String
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model ObjectiveCaptured {
+  id                      Int       @id @default(autoincrement())
+  scrimId                 Int
+  event_type              EventType @default(objective_captured)
+  match_time              Float
+  round_number            Int
+  capturing_team          String
+  objective_index         Int
+  control_team_1_progress Float
+  control_team_2_progress Float
+  match_time_remaining    Float
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model ObjectiveUpdated {
+  id                       Int       @id @default(autoincrement())
+  scrimId                  Int
+  event_type               EventType @default(objective_updated)
+  match_time               Float
+  round_number             Int
+  previous_objective_index Int
+  current_objective_index  Int
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model OffensiveAssist {
+  id              Int       @id @default(autoincrement())
+  scrimId         Int
+  event_type      EventType @default(offensive_assist)
+  match_time      Float
+  player_team     String
+  player_name     String
+  player_hero     String
+  hero_duplicated String
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model PayloadProgress {
+  id                       Int       @id @default(autoincrement())
+  scrimId                  Int
+  event_type               EventType @default(payload_progress)
+  match_time               Float
+  round_number             Int
+  capturing_team           String
+  objective_index          Int
+  payload_capture_progress Float
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model PlayerStat {
+  id                           Int       @id @default(autoincrement())
+  scrimId                      Int
+  event_type                   EventType @default(player_stat)
+  match_time                   Float
+  round_number                 Int
+  player_team                  String
+  player_name                  String
+  player_hero                  String
+  eliminations                 Int
+  final_blows                  Int
+  deaths                       Int
+  all_damage_dealt             Float
+  barrier_damage_dealt         Float
+  hero_damage_dealt            Float
+  healing_dealt                Float
+  healing_received             Float
+  self_healing                 Float
+  damage_taken                 Float
+  damage_blocked               Float
+  defensive_assists            Int
+  offensive_assists            Int
+  ultimates_earned             Int
+  ultimates_used               Int
+  multikill_best               Int
+  multikills                   Int
+  solo_kills                   Int
+  objective_kills              Int
+  environmental_kills          Int
+  environmental_deaths         Int
+  critical_hits                Int
+  critical_hit_accuracy        Float
+  scoped_accuracy              Float
+  scoped_critical_hit_accuracy Float
+  scoped_critical_hit_kills    Int
+  shots_fired                  Int
+  shots_hit                    Int
+  shots_missed                 Int
+  scoped_shots                 Int
+  scoped_shots_hit             Int
+  weapon_accuracy              Float
+  hero_time_played             Float
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+  @@index([player_name, player_hero, hero_time_played])
+}
+
+model PointProgress {
+  id                     Int       @id @default(autoincrement())
+  scrimId                Int
+  event_type             EventType @default(point_progress)
+  match_time             Float
+  round_number           Int
+  capturing_team         String
+  objective_index        Int
+  point_capture_progress Float
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model RemechCharged {
+  id              Int       @id @default(autoincrement())
+  scrimId         Int
+  event_type      EventType @default(remech_charged)
+  match_time      Float
+  player_team     String
+  player_name     String
+  player_hero     String
+  hero_duplicated String
+  ultimate_id     Int
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model RoundEnd {
+  id                      Int       @id @default(autoincrement())
+  scrimId                 Int
+  event_type              EventType @default(round_end)
+  match_time              Float
+  round_number            Int
+  capturing_team          String
+  team_1_score            Int
+  team_2_score            Int
+  objective_index         Int
+  control_team_1_progress Float
+  control_team_2_progress Float
+  match_time_remaining    Float
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model RoundStart {
+  id              Int       @id @default(autoincrement())
+  scrimId         Int
+  event_type      EventType @default(round_start)
+  match_time      Float
+  round_number    Int
+  capturing_team  String
+  team_1_score    Int
+  team_2_score    Int
+  objective_index Int
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model SetupComplete {
+  id                   Int       @id @default(autoincrement())
+  scrimId              Int
+  event_type           EventType @default(setup_complete)
+  match_time           Float
+  round_number         Int
+  match_time_remaining Float
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model UltimateCharged {
+  id              Int       @id @default(autoincrement())
+  scrimId         Int
+  event_type      EventType @default(ultimate_charged)
+  match_time      Float
+  player_team     String
+  player_name     String
+  player_hero     String
+  hero_duplicated String
+  ultimate_id     Int
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model UltimateEnd {
+  id              Int       @id @default(autoincrement())
+  scrimId         Int
+  event_type      EventType @default(ultimate_end)
+  match_time      Float
+  player_team     String
+  player_name     String
+  player_hero     String
+  hero_duplicated String
+  ultimate_id     Int
+  player_x        Float?
+  player_y        Float?
+  player_z        Float?
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model UltimateStart {
+  id              Int       @id @default(autoincrement())
+  scrimId         Int
+  event_type      EventType @default(ultimate_start)
+  match_time      Float
+  player_team     String
+  player_name     String
+  player_hero     String
+  hero_duplicated String
+  ultimate_id     Int
+  player_x        Float?
+  player_y        Float?
+  player_z        Float?
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model Ability1Used {
+  id              Int       @id @default(autoincrement())
+  scrimId         Int
+  event_type      EventType @default(ability_1_used)
+  match_time      Float
+  player_team     String
+  player_name     String
+  player_hero     String
+  hero_duplicated String
+  player_x        Float?
+  player_y        Float?
+  player_z        Float?
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model Ability2Used {
+  id              Int       @id @default(autoincrement())
+  scrimId         Int
+  event_type      EventType @default(ability_2_used)
+  match_time      Float
+  player_team     String
+  player_name     String
+  player_hero     String
+  hero_duplicated String
+  player_x        Float?
+  player_y        Float?
+  player_z        Float?
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model Damage {
+  id               Int       @id @default(autoincrement())
+  scrimId          Int
+  event_type       EventType @default(damage)
+  match_time       Float
+  attacker_team    String
+  attacker_name    String
+  attacker_hero    String
+  victim_team      String
+  victim_name      String
+  victim_hero      String
+  event_ability    String
+  event_damage     Int
+  is_critical_hit  String
+  is_environmental String
+  attacker_x       Float?
+  attacker_y       Float?
+  attacker_z       Float?
+  victim_x         Float?
+  victim_y         Float?
+  victim_z         Float?
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model Healing {
+  id             Int       @id @default(autoincrement())
+  scrimId        Int
+  event_type     EventType @default(healing)
+  match_time     Float
+  healer_team    String
+  healer_name    String
+  healer_hero    String
+  healee_team    String
+  healee_name    String
+  healee_hero    String
+  event_ability  String
+  event_healing  Int
+  is_health_pack String
+  healer_x       Float?
+  healer_y       Float?
+  healer_z       Float?
+  healee_x       Float?
+  healee_y       Float?
+  healee_z       Float?
+
+  MapData   MapData? @relation(fields: [MapDataId], references: [id], onDelete: Cascade)
+  MapDataId Int?
+
+  @@index([scrimId])
+  @@index([MapDataId])
+}
+
+model PlayerTarget {
+  id              Int      @id @default(autoincrement())
+  teamId          Int
+  playerName      String
+  stat            String
+  targetDirection String
+  targetPercent   Float
+  baselineValue   Float
+  scrimWindow     Int      @default(10)
+  note            String?
+  createdBy       String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  team            Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  creator         User     @relation(fields: [createdBy], references: [id])
+
+  @@index([teamId, playerName])
+  @@index([createdBy])
+}
+
+// ---------------------------------------------------------------------------
+// Scouting models — professional tournament data from Liquipedia
+// ---------------------------------------------------------------------------
+
+model ScoutingTournament {
+  id        Int              @id @default(autoincrement())
+  title     String           @unique
+  sourceUrl String
+  mapPool   Json
+  matches   ScoutingMatch[]
+  rosters   ScoutingRoster[]
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+model ScoutingMatch {
+  id             Int                 @id @default(autoincrement())
+  tournamentId   Int
+  team1          String
+  team1FullName  String
+  team2          String
+  team2FullName  String
+  team1Score     Int?
+  team2Score     Int?
+  bestOf         Int
+  winner         String
+  winnerFullName String
+  matchDate      DateTime
+  mvp            String?
+  vods           Json                @default("[]")
+  matchRoomUrl   String?
+  maps           ScoutingMapResult[]
+  tournament     ScoutingTournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@index([tournamentId])
+  @@index([team1, team2])
+}
+
+model ScoutingMapResult {
+  id              Int                      @id @default(autoincrement())
+  matchId         Int
+  gameNumber      Int
+  mapType         MapType
+  mapName         String
+  team1Score      String
+  team2Score      String
+  winner          String
+  team1Comp       String[]                 @default([])
+  team2Comp       String[]                 @default([])
+  heroBans        ScoutingHeroBan[]
+  heroAssignments ScoutingHeroAssignment[]
+  match           ScoutingMatch            @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+
+  @@index([matchId])
+  @@index([mapName])
+}
+
+model ScoutingHeroBan {
+  id          Int               @id @default(autoincrement())
+  mapResultId Int
+  team        String
+  hero        String
+  banOrder    Int
+  mapResult   ScoutingMapResult @relation(fields: [mapResultId], references: [id], onDelete: Cascade)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([mapResultId])
+  @@index([hero])
+}
+
+model ScoutingHeroAssignment {
+  id          Int               @id @default(autoincrement())
+  mapResultId Int
+  team        String
+  heroName    String
+  playerName  String
+  mapResult   ScoutingMapResult @relation(fields: [mapResultId], references: [id], onDelete: Cascade)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@unique([mapResultId, team, heroName])
+  @@index([playerName])
+}
+
+enum RosterCategory {
+  player
+  staff
+  substitute
+}
+
+enum RosterRole {
+  DPS
+  Tank
+  Support
+  Flex
+  Coach
+  HeadCoach
+  AssistantCoach
+  Manager
+  AssistantManager
+  TeamManager
+  Analyst
+  PerformanceCoach
+  Substitute
+}
+
+model ScoutingRoster {
+  id           Int                    @id @default(autoincrement())
+  tournamentId Int
+  teamName     String
+  tournament   ScoutingTournament     @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  players      ScoutingRosterPlayer[]
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+
+  @@unique([tournamentId, teamName])
+  @@index([teamName])
+}
+
+model ScoutingRosterPlayer {
+  id          Int            @id @default(autoincrement())
+  rosterId    Int
+  name        String
+  displayName String
+  role        RosterRole
+  country     String
+  didNotPlay  Boolean        @default(false)
+  category    RosterCategory
+  roster      ScoutingRoster @relation(fields: [rosterId], references: [id], onDelete: Cascade)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([rosterId])
+  @@index([displayName])
+}
+
+model ScoutingPlayer {
+  id              Int      @id @default(autoincrement())
+  name            String
+  team            String
+  status          String
+  role            String
+  country         String
+  signatureHeroes String[]
+  winnings        Int      @default(0)
+  region          String
+  playerUrl       String   @unique
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([name])
+  @@index([team])
+  @@index([region])
+}
+
+model ChatConversation {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  messages  Json     @default("[]")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model ChatReport {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model MapCalibration {
+  id              Int                    @id @default(autoincrement())
+  mapName         String                 @unique
+  imageUrl        String
+  imageWidth      Int
+  imageHeight     Int
+  displayImageKey String?
+  affineA         Float?
+  affineB         Float?
+  affineC         Float?
+  affineD         Float?
+  affineTx        Float?
+  affineTy        Float?
+  createdBy       String
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+  anchors         MapCalibrationAnchor[]
+  zones           MapZone[]
+}
+
+model MapCalibrationAnchor {
+  id            Int            @id @default(autoincrement())
+  calibrationId Int
+  worldX        Float
+  worldY        Float
+  imageU        Float
+  imageV        Float
+  label         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  calibration   MapCalibration @relation(fields: [calibrationId], references: [id], onDelete: Cascade)
+
+  @@index([calibrationId])
+}
+
+enum MapZoneCategory {
+  POINT
+  LANE
+}
+
+enum MapZoneStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum MapZoneSource {
+  AUTO
+  MANUAL
+}
+
+enum LaneRole {
+  MAIN
+  FLANK
+}
+
+model MapZone {
+  id            Int             @id @default(autoincrement())
+  calibrationId Int
+  name          String
+  category      MapZoneCategory
+  status        MapZoneStatus   @default(DRAFT)
+  source        MapZoneSource   @default(MANUAL)
+  laneRole      LaneRole?
+  vertices      Json
+  createdBy     String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  calibration   MapCalibration  @relation(fields: [calibrationId], references: [id], onDelete: Cascade)
+
+  @@index([calibrationId, status])
+}
+
+// Tournament Models
+
+model Tournament {
+  id              Int               @id @default(autoincrement())
+  name            String
+  format          TournamentFormat
+  bestOf          Int               @default(3)
+  playoffBestOf   Int?
+  teamSlots       Int               @default(8)
+  status          TournamentStatus  @default(DRAFT)
+  startDate       DateTime?
+  endDate         DateTime?
+  grandFinalReset Boolean           @default(true)
+  advancingTeams  Int?
+  creatorId       String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  teams           TournamentTeam[]
+  rounds          TournamentRound[]
+  matches         TournamentMatch[]
+
+  @@index([creatorId])
+}
+
+model TournamentTeam {
+  id             Int               @id @default(autoincrement())
+  tournamentId   Int
+  teamId         Int?
+  name           String
+  seed           Int
+  eliminated     Boolean           @default(false)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  tournament     Tournament        @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  team           Team?             @relation(fields: [teamId], references: [id])
+  matchesAsTeam1 TournamentMatch[] @relation("MatchTeam1")
+  matchesAsTeam2 TournamentMatch[] @relation("MatchTeam2")
+  matchesWon     TournamentMatch[] @relation("MatchWinner")
+
+  @@unique([tournamentId, seed])
+  @@index([teamId])
+}
+
+model TournamentRound {
+  id           Int               @id @default(autoincrement())
+  tournamentId Int
+  roundNumber  Int
+  roundName    String
+  bestOf       Int?
+  bracket      BracketSide       @default(WINNERS)
+  tournament   Tournament        @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  matches      TournamentMatch[]
+
+  @@unique([tournamentId, bracket, roundNumber])
+}
+
+model TournamentMatch {
+  id              Int                   @id @default(autoincrement())
+  tournamentId    Int
+  roundId         Int
+  bracketPosition Int
+  team1Id         Int?
+  team2Id         Int?
+  winnerId        Int?
+  team1Score      Int                   @default(0)
+  team2Score      Int                   @default(0)
+  status          TournamentMatchStatus @default(UPCOMING)
+  scheduledAt     DateTime?
+  scrimId         Int?                  @unique
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  tournament      Tournament            @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  round           TournamentRound       @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  team1           TournamentTeam?       @relation("MatchTeam1", fields: [team1Id], references: [id])
+  team2           TournamentTeam?       @relation("MatchTeam2", fields: [team2Id], references: [id])
+  winner          TournamentTeam?       @relation("MatchWinner", fields: [winnerId], references: [id])
+  scrim           Scrim?                @relation(fields: [scrimId], references: [id])
+  maps            TournamentMap[]
+
+  @@index([tournamentId])
+  @@index([roundId])
+  @@index([team1Id])
+  @@index([team2Id])
+}
+
+model TournamentMap {
+  id             Int             @id @default(autoincrement())
+  matchId        Int
+  gameNumber     Int
+  mapId          Int?
+  winnerOverride String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  match          TournamentMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  map            Map?            @relation(fields: [mapId], references: [id])
+
+  @@unique([matchId, gameNumber])
+  @@index([mapId])
+}
+
+enum AvailabilityIntervalType {
+  WEEKLY
+}
+
+model TeamAvailabilitySettings {
+  id                  String                   @id @default(cuid())
+  teamId              Int                      @unique
+  intervalType        AvailabilityIntervalType @default(WEEKLY)
+  slotMinutes         Int                      @default(30)
+  hoursStart          Int                      @default(12)
+  hoursEnd            Int                      @default(24)
+  timezone            String                   @default("America/New_York")
+  reminderEnabled     Boolean                  @default(true)
+  reminderDayOfWeek   Int                      @default(0)
+  reminderHour        Int                      @default(12)
+  reminderMinute      Int                      @default(0)
+  reminderRoleId      String?
+  reminderGuildId     String?
+  reminderChannelId   String?
+  lastReminderFiredAt DateTime?
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  team                Team                     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+}
+
+model AvailabilitySchedule {
+  id        String   @id @default(cuid())
+  teamId    Int
+  weekStart DateTime
+  weekEnd   DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  team      Team                   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  responses AvailabilityResponse[]
+
+  @@unique([teamId, weekStart])
+}
+
+model AvailabilityResponse {
+  id              String   @id @default(cuid())
+  scheduleId      String
+  nameKey         String
+  displayName     String
+  userId          String?
+  passwordHash    String?
+  slots           Int[]
+  submittedFromTz String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  schedule AvailabilitySchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  user     User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@unique([scheduleId, nameKey])
+  @@index([userId])
+}
+
+model UserCredits {
+  userId                   String   @id
+  balanceCents             Int      @default(0)
+  autoRefillEnabled        Boolean  @default(false)
+  autoRefillThresholdCents Int      @default(200)
+  autoRefillAmountCents    Int      @default(1000)
+  stripePaymentMethodId    String?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum CreditTransactionType {
+  TOPUP
+  AUTO_REFILL
+  CHARGE
+  REFUND
+  ADJUSTMENT
+}
+
+model CreditTransaction {
+  id                Int                   @id @default(autoincrement())
+  userId            String
+  type              CreditTransactionType
+  amountCents       Int
+  balanceAfterCents Int
+  description       String
+  stripeEventId     String?               @unique
+  metadata          Json?
+  createdAt         DateTime              @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model PendingAutoRefill {
+  userId               String   @id
+  stripeIdempotencyKey String   @unique
+  paymentIntentId      String?
+  createdAt            DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum FaceitTier {
+  UNCLASSIFIED
+  OPEN
+  CAH
+  ADVANCED
+  EXPERT
+  MASTERS
+  OWCS
+}
+
+enum TeamTsrSource {
+  TSR
+  PREDICTED
+  CSR_FALLBACK
+}
+
+enum TeamTsrConfidence {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum TsrRegion {
+  NA
+  EMEA
+  OTHER
+}
+
+enum FaceitMatchStatus {
+  FINISHED
+  CANCELLED
+  ABORTED
+}
+
+enum FaceitRole {
+  TANK
+  DAMAGE
+  SUPPORT
+}
+
+enum TsrRosterOverrideAction {
+  INCLUDE
+  EXCLUDE
+}
+
+model FaceitPlayer {
+  faceitPlayerId String    @id
+  battletag      String?
+  faceitNickname String
+  region         TsrRegion @default(OTHER)
+  verified       Boolean   @default(false)
+  ow2SkillLevel  Int?
+  firstSeenAt    DateTime  @default(now())
+  lastSyncedAt   DateTime  @default(now())
+
+  rosterEntries   FaceitMatchRoster[]
+  rosterOverrides TsrRosterOverride[]
+  aliases         BattletagAlias[]
+  mapStats        FaceitMapPlayerStats[]
+  tsr             PlayerTsr?
+  fsr             PlayerFsr[]
+  fsrTiers        PlayerFsrTier[]
+
+  @@index([battletag])
+  @@index([region])
+}
+
+model FaceitTeam {
+  faceitTeamId String   @id
+  name         String
+  avatar       String?
+  type         String?
+  firstSeenAt  DateTime @default(now())
+  lastSyncedAt DateTime @default(now())
+
+  matchSides FaceitMatchTeam[]
+  mapStats   FaceitMapTeamStats[]
+
+  @@index([name])
+}
+
+model FaceitChampionship {
+  championshipId String     @id
+  name           String
+  organizerId    String
+  tier           FaceitTier @default(UNCLASSIFIED)
+  region         TsrRegion  @default(OTHER)
+  startDate      DateTime?
+  classifiedBy   String?
+  classifiedAt   DateTime?
+  ingestedAt     DateTime   @default(now())
+
+  matches FaceitMatch[]
+
+  @@index([tier])
+  @@index([organizerId, tier])
+}
+
+model FaceitMatch {
+  faceitMatchId     String            @id
+  championshipId    String
+  organizerId       String
+  bestOf            Int
+  team1FaceitTeamId String?
+  team2FaceitTeamId String?
+  team1Name         String?
+  team2Name         String?
+  team1Score        Int
+  team2Score        Int
+  winnerFaction     Int
+  status            FaceitMatchStatus
+  finishedAt        DateTime
+  rawRegion         String
+  rawDetails        Json?
+  rawVoting         Json?
+  ingestedAt        DateTime          @default(now())
+
+  championship    FaceitChampionship  @relation(fields: [championshipId], references: [championshipId], onDelete: Cascade)
+  matchTeams      FaceitMatchTeam[]
+  maps            FaceitMatchMap[]
+  rosters         FaceitMatchRoster[]
+  rosterOverrides TsrRosterOverride[]
+
+  @@index([championshipId])
+  @@index([finishedAt])
+  @@index([team1FaceitTeamId])
+  @@index([team2FaceitTeamId])
+  @@index([organizerId, finishedAt])
+}
+
+model FaceitMatchTeam {
+  id           Int     @id @default(autoincrement())
+  matchId      String
+  teamSide     Int
+  faceitTeamId String?
+  teamName     String
+  score        Int
+  winner       Boolean @default(false)
+  rawStats     Json?
+
+  match FaceitMatch @relation(fields: [matchId], references: [faceitMatchId], onDelete: Cascade)
+  team  FaceitTeam? @relation(fields: [faceitTeamId], references: [faceitTeamId], onDelete: SetNull)
+
+  @@unique([matchId, teamSide])
+  @@index([faceitTeamId])
+  @@index([teamName])
+}
+
+model FaceitMatchRoster {
+  id             Int    @id @default(autoincrement())
+  matchId        String
+  teamSide       Int
+  faceitPlayerId String
+
+  match  FaceitMatch  @relation(fields: [matchId], references: [faceitMatchId], onDelete: Cascade)
+  player FaceitPlayer @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@unique([matchId, faceitPlayerId])
+  @@index([faceitPlayerId])
+}
+
+model FaceitMatchMap {
+  id                    Int      @id @default(autoincrement())
+  matchId               String
+  gameNumber            Int
+  mapGuid               String?
+  mapName               String?
+  mapType               MapType?
+  attackingFirstFaction String?
+  winnerFaction         Int?
+  winnerFaceitTeamId    String?
+  team1Score            Int?
+  team2Score            Int?
+  scoreSummary          String?
+  played                Boolean?
+  rawRoundStats         Json?
+  rawDetailedResult     Json?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  match       FaceitMatch            @relation(fields: [matchId], references: [faceitMatchId], onDelete: Cascade)
+  heroBans    FaceitHeroBan[]
+  playerStats FaceitMapPlayerStats[]
+  teamStats   FaceitMapTeamStats[]
+
+  @@unique([matchId, gameNumber])
+  @@index([mapGuid])
+  @@index([mapName])
+  @@index([mapType])
+}
+
+model FaceitHeroBan {
+  id              Int      @id @default(autoincrement())
+  faceitMapId     Int
+  heroGuid        String?
+  heroName        String
+  role            String?
+  banOrder        Int
+  bannedByFaction Int?
+  source          String
+  rawEntity       Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  map FaceitMatchMap @relation(fields: [faceitMapId], references: [id], onDelete: Cascade)
+
+  @@index([faceitMapId])
+  @@index([heroName])
+}
+
+model FaceitMapTeamStats {
+  id            Int      @id @default(autoincrement())
+  faceitMapId   Int
+  teamSide      Int
+  faceitTeamId  String?
+  teamName      String
+  score         Int?
+  won           Boolean?
+  eliminations  Int?
+  deaths        Int?
+  finalBlows    Int?
+  objectiveTime Float?
+  timePlayed    Float?
+  rawStats      Json
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  map  FaceitMatchMap @relation(fields: [faceitMapId], references: [id], onDelete: Cascade)
+  team FaceitTeam?    @relation(fields: [faceitTeamId], references: [faceitTeamId], onDelete: SetNull)
+
+  @@unique([faceitMapId, teamSide])
+  @@index([faceitTeamId])
+  @@index([teamName])
+}
+
+model FaceitMapPlayerStats {
+  id                 Int      @id @default(autoincrement())
+  faceitMapId        Int
+  teamSide           Int
+  faceitPlayerId     String
+  nickname           String
+  role               String?
+  result             Int?
+  eliminations       Int?
+  assists            Int?
+  deaths             Int?
+  finalBlows         Int?
+  soloKills          Int?
+  multiKills         Int?
+  environmentalKills Int?
+  damageDealt        Float?
+  healingDone        Float?
+  damageMitigated    Float?
+  objectiveTime      Float?
+  timePlayed         Float?
+  rawStats           Json
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  map    FaceitMatchMap @relation(fields: [faceitMapId], references: [id], onDelete: Cascade)
+  player FaceitPlayer   @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@unique([faceitMapId, faceitPlayerId])
+  @@index([faceitPlayerId])
+  @@index([nickname])
+  @@index([role])
+}
+
+model TsrRosterOverride {
+  id             Int                     @id @default(autoincrement())
+  matchId        String
+  faceitPlayerId String
+  action         TsrRosterOverrideAction
+  // Only meaningful for INCLUDE (which team the sub played for, 1 or 2).
+  // Null for EXCLUDE.
+  teamSide       Int?
+  createdBy      String?
+  createdAt      DateTime                @default(now())
+
+  match  FaceitMatch  @relation(fields: [matchId], references: [faceitMatchId], onDelete: Cascade)
+  player FaceitPlayer @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@unique([matchId, faceitPlayerId])
+}
+
+model BattletagAlias {
+  battletag      String @id
+  faceitPlayerId String
+
+  player FaceitPlayer @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@index([faceitPlayerId])
+}
+
+model PlayerTsr {
+  faceitPlayerId       String     @id
+  region               TsrRegion
+  rating               Int
+  matchCount           Int
+  recentMatchCount365d Int
+  maxTierReached       FaceitTier
+  computedAt           DateTime
+
+  player FaceitPlayer @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@index([region, rating(sort: Desc)])
+  @@index([recentMatchCount365d])
+}
+
+model PlayerFsr {
+  faceitPlayerId     String
+  role               FaceitRole
+  fsr                Int
+  compositeZ         Float
+  effectiveAnchor    Int
+  mapCount           Int
+  recentMapCount365d Int
+  tiersPlayed        FaceitTier[]
+  computedAt         DateTime
+
+  player FaceitPlayer @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@id([faceitPlayerId, role])
+  @@index([role, fsr])
+}
+
+model PlayerFsrTier {
+  faceitPlayerId String
+  role           FaceitRole
+  tier           FaceitTier
+  fsr            Int
+  compositeZ     Float
+  mapCount       Int
+  minutesPlayed  Float
+  peerCount      Int
+  statZ          Json
+  computedAt     DateTime
+
+  player FaceitPlayer @relation(fields: [faceitPlayerId], references: [faceitPlayerId], onDelete: Cascade)
+
+  @@id([faceitPlayerId, role, tier])
+  @@index([tier, role, fsr])
+}
+
+model FsrBaseline {
+  tier       FaceitTier
+  role       FaceitRole
+  sampleN    Int
+  stats      Json
+  computedAt DateTime
+
+  @@id([tier, role])
+}
+
+enum TempoMetric {
+  FIGHT_DURATION
+  ULT_CHARGE_TIME
+  ULT_HOLD_TIME
+}
+
+model TempoBaseline {
+  metric     TempoMetric @id
+  mean       Float
+  stdDev     Float
+  sampleN    Int
+  computedAt DateTime    @default(now())
+}
+
+model TeamTsrSnapshot {
+  teamId              Int               @id
+  rating              Int
+  source              TeamTsrSource
+  confidence          TeamTsrConfidence
+  bracketTier         FaceitTier
+  bracketBand         String?
+  region              TsrRegion
+  rosterSize          Int
+  ratedCount          Int
+  playtimeBackedShare Float
+  computedAt          DateTime          @default(now())
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([region, rating])
+  @@index([bracketTier, bracketBand])
+}
+
+model ScrimRequest {
+  id           String   @id @default(cuid())
+  fromTeamId   Int
+  toTeamId     Int
+  sentByUserId String
+  fromTsr      Int
+  toTsr        Int
+  message      String
+  createdAt    DateTime @default(now())
+
+  fromTeam     Team    @relation("ScrimRequestFrom", fields: [fromTeamId], references: [id], onDelete: Cascade)
+  toTeam       Team    @relation("ScrimRequestTo", fields: [toTeamId], references: [id], onDelete: Cascade)
+  sentBy       User    @relation(fields: [sentByUserId], references: [id], onDelete: Cascade)
+  linkedScrims Scrim[]
+
+  @@index([fromTeamId, createdAt])
+  @@index([toTeamId, createdAt])
+  @@index([fromTeamId, toTeamId, createdAt])
+}
+
+model TeamBlacklist {
+  id              String              @id @default(cuid())
+  ownerTeamId     Int
+  blockedTeamId   Int?
+  blockedTeamName String
+  blockedKey      String
+  reason          String?
+  source          TeamBlacklistSource @default(MANUAL)
+  createdBy       String
+  createdAt       DateTime            @default(now())
+
+  ownerTeam   Team  @relation("BlacklistOwner", fields: [ownerTeamId], references: [id], onDelete: Cascade)
+  blockedTeam Team? @relation("BlacklistBlocked", fields: [blockedTeamId], references: [id], onDelete: SetNull)
+  creator     User  @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@unique([ownerTeamId, blockedKey])
+  @@index([blockedTeamId])
+  @@index([createdBy])
+}
+
+model ScrimFeedback {
+  id        String               @id @default(cuid())
+  scrimId   Int                  @unique
+  verdict   ScrimFeedbackVerdict
+  createdBy String
+  createdAt DateTime             @default(now())
+
+  scrim   Scrim @relation(fields: [scrimId], references: [id], onDelete: Cascade)
+  creator User  @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+
+  @@index([createdBy])
+}
+
+enum OverwatchPatchType {
+  SEASON
+  MID_SEASON
+  HOTFIX
+}
+
+enum OverwatchPatchSource {
+  MANUAL
+  SCRAPED
+}
+
+model OverwatchPatch {
+  id          String               @id @default(cuid())
+  date        DateTime             @db.Date
+  type        OverwatchPatchType
+  name        String
+  rawTitle    String?
+  sourceUrl   String?
+  bodyExcerpt String?
+  source      OverwatchPatchSource @default(SCRAPED)
+  needsReview Boolean              @default(false)
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@unique([date])
+}
+
+// ---------------------------------------------------------------------------
+// Usage-analytics models — raw events + per-day rollups
+// ---------------------------------------------------------------------------
+
+enum UsageSource {
+  SERVER
+  CLIENT
+}
+
+enum UsageEnv {
+  PRODUCTION
+  PREVIEW
+  DEVELOPMENT
+}
+
+model UsageEvent {
+  id          BigInt      @id @default(autoincrement())
+  ts          DateTime    @default(now())
+  name        String
+  source      UsageSource
+  environment UsageEnv
+  userId      String?
+  teamId      Int?
+  path        String?
+  sessionId   String?
+  props       Json?
+
+  @@index([ts])
+  @@index([environment, name, ts])
+  @@index([userId, ts])
+  @@index([environment, path, ts])
+}
+
+model DailyFeatureRollup {
+  environment UsageEnv
+  day         String
+  name        String
+  uniqueUsers Int
+  uniqueTeams Int
+  totalEvents Int
+
+  @@id([environment, day, name])
+}
+
+model DailyPageRollup {
+  environment UsageEnv
+  day         String
+  path        String
+  views       Int
+  uniqueUsers Int
+
+  @@id([environment, day, path])
+}
+
+model UserActiveDay {
+  environment UsageEnv
+  day         String
+  userId      String
+
+  @@id([environment, day, userId])
+}
+
+model RankedMatch {
+  id        String            @id @default(cuid())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  map       String
+  mapType   String
+  result    String // win | loss | draw
+  groupSize Int
+  playedAt  DateTime
+  sourceId  String? // original winrate-tracker Match.id, for idempotent import
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  heroes    RankedMatchHero[]
+
+  @@unique([userId, sourceId])
+}
+
+model RankedMatchHero {
+  id         String      @id @default(cuid())
+  matchId    String
+  match      RankedMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  hero       String
+  role       String
+  percentage Int
+
+  @@index([matchId])
+}
+
+model RankedImportClaim {
+  id        String    @id @default(cuid())
+  email     String
+  oauthKey  String? // "provider:providerAccountId" fallback identity
+  payload   Json // RankedExportBundle
+  claimedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([email])
+}

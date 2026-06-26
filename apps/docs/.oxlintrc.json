@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "extends": ["./node_modules/@parsertime/lint-config/oxlint.json"],
+  "ignorePatterns": [
+    ".next/**",
+    ".source/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts"
+  ],
+  "overrides": [
+    {
+      "files": ["**/*.tsx"],
+      "rules": {
+        "react/no-unknown-property": "off"
+      }
+    }
+  ]
+}

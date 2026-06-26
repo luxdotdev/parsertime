@@ -1,0 +1,87 @@
+---
+title: "Hero Trends"
+description: "Pick rate over time per hero, with patch reference lines, on the global Map Stats page."
+---
+
+Hero trends live on the global **Map Stats** page (`/map-stats`) and on the
+hover chart attached to every hero row inside a map's stats table. They
+answer one question fast: when did this hero start showing up here, and is
+the trend still moving?
+
+## The Map Stats page
+
+`/map-stats` lists every Overwatch 2 map with current pick-rate ranks per
+role, scoped to the active timeframe. Each row drills into the per-map
+hero distribution: pick rate by hero, win rate by hero, and the trend line.
+
+The hero trends table is the core. For the selected map and timeframe it
+shows:
+
+- **Hero**
+- **Pick rate** as a percentage of maps played
+- **Pick rate delta** vs the previous comparable window
+- **Win rate** when picked
+- **Trend sparkline** for the last 90 days
+
+Sorting and filtering are URL-driven so a saved view (Ilios, support,
+last 30 days) is bookmarkable.
+
+## Pick rate hover chart
+
+Hovering a hero row on any map stats table opens a **pick-rate line chart**
+with the last 90 days of data. Vertical reference lines mark **Overwatch 2
+patch dates**, so a sharp drop or jump can be attributed to a balance
+change at a glance.
+
+The patch dataset is maintained inside Parsertime and updates when Blizzard
+ships a patch. Reference lines render as muted gridlines so they read as
+context, not as primary data; the pick rate line stays the focus.
+
+## Patch Markers
+
+The vertical reference lines on the pick-rate chart mark when Overwatch 2
+balance patches landed, so you can line up a change in hero usage with the
+patch that likely caused it. If a hero spikes or falls off right after a
+marker, that is your cue the meta moved with the patch.
+
+Markers are styled by patch type so you can tell a major shake-up from a
+small tweak at a glance:
+
+- **Season** patches are drawn as solid lines and labelled with the season
+  (for example, "Season 2: Summit"). These ship at the start of a season and
+  carry the biggest balance changes, so a usage shift here is usually a real
+  meta move.
+- **Mid-season** patches use a lighter dashed line. Seasons run on roughly a
+  two-month cycle, so most balance patches land *between* season launches, this
+  is the default for any patch that isn't a season opener or a hotfix.
+- **Hotfixes** use a fine dashed line. These are smaller, targeted fixes (often
+  a single hero or bug), so a change lining up with a hotfix marker is usually a
+  narrow correction rather than a meta-wide swing.
+
+Knowing the patch type helps you read the chart correctly: a pick-rate jump
+against a season line is a stronger signal that the meta moved than the same jump
+against a hotfix line, which is more likely a targeted nudge.
+
+Parsertime scrapes Blizzard's published patch notes daily and classifies each
+one by type, so the markers stay current as new patches ship, no manual upkeep.
+They appear on the per-hero pick-rate chart described above.
+
+## Caching
+
+Hero trends are served from a cached service that refreshes on a schedule.
+The cache key includes map, timeframe, and patch window, so swapping
+timeframes is instant after the first load.
+
+<Callout type="info">
+  If a hero you expect is missing from the table, check the pick-rate floor:
+  heroes picked on fewer than a handful of maps in the window are excluded
+  from the trends view. Their data is still available in the per-map hero
+  stats.
+</Callout>
+
+## How this is different from team-stats heroes
+
+The [Team Stats Heroes tab](/docs/team-stats/heroes) answers "what does my
+team pick on this map?" The Map Stats hero trends answer "what does the
+ladder pick on this map?" Use Team Stats for opponent prep against
+yourselves; use Map Stats for the meta layer.
