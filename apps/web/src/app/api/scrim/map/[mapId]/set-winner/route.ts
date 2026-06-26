@@ -1,9 +1,13 @@
 import { auditLog } from "@/lib/audit-logs";
 import { auth, canEditScrim, getCurrentUser } from "@/lib/auth";
 import { Logger } from "@/lib/logger";
+import {
+  revalidateMap,
+  revalidateScrim,
+  revalidateTeamStats,
+} from "@/lib/cache-tags";
 import prisma from "@/lib/prisma";
 import { resolveSetWinnerOutcome } from "@/lib/scrim/set-winner-validation";
-import { revalidateTag } from "next/cache";
 import { unauthorized, unstable_rethrow } from "next/navigation";
 import { after, type NextRequest } from "next/server";
 import { z } from "zod";
@@ -39,7 +43,12 @@ export async function POST(
 
     const map = await prisma.map.findUnique({
       where: { id: mapId },
-      select: { id: true, scrimId: true, mapData: { select: { id: true } } },
+      select: {
+        id: true,
+        scrimId: true,
+        mapData: { select: { id: true } },
+        Scrim: { select: { teamId: true } },
+      },
     });
     if (!map?.scrimId) {
       return Response.json({ error: "Map not found" }, { status: 404 });
@@ -71,7 +80,9 @@ export async function POST(
       data: { winner: parsed.data.winner, winnerSource: "manual" },
     });
 
-    revalidateTag(`map:${mapId}`, "max");
+    revalidateMap(mapId);
+    revalidateScrim(map.scrimId);
+    if (map.Scrim?.teamId) revalidateTeamStats(map.Scrim.teamId);
 
     after(async () => {
       await auditLog.createAuditLog({

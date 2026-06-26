@@ -1,6 +1,9 @@
+import {
+  getCachedTeamSubstituteNames,
+  getCachedTeamWinrates,
+} from "@/data/cached/team-cache";
 import { AppRuntime } from "@/data/runtime";
-import { type TeamDateRange, TeamStatsService } from "@/data/team";
-import { getTeamSubstituteNames } from "@/data/team/substitutes";
+import { type TeamDateRange } from "@/data/team";
 import { UserService } from "@/data/user";
 import { $Enums } from "@/generated/prisma/browser";
 import { auth, canManageTeam } from "@/lib/auth";
@@ -124,7 +127,7 @@ export async function loadTeamStatsShell(
 
   const [isManager, substituteNames] = await Promise.all([
     canManageTeam(teamId, user),
-    getTeamSubstituteNames(teamId),
+    getCachedTeamSubstituteNames(teamId),
   ]);
 
   const [timeframe1, timeframe2, timeframe3] = await Promise.all([
@@ -181,11 +184,7 @@ export async function loadTeamStatsHeaderData(
 ) {
   const { teamId, team, dateRange, substituteNames } = shell;
   const [winrates, teamTsr] = await Promise.all([
-    AppRuntime.runPromise(
-      TeamStatsService.pipe(
-        Effect.flatMap((svc) => svc.getTeamWinrates(teamId, dateRange))
-      )
-    ),
+    getCachedTeamWinrates(teamId, dateRange),
     prisma.scrim
       .findMany({ where: { teamId }, select: { id: true } })
       .then((rows) =>

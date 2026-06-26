@@ -3,6 +3,7 @@ import "server-only";
 import { MatchStoryService } from "@/data/map/match-story-service";
 import { PlayerService } from "@/data/player";
 import { AppRuntime } from "@/data/runtime";
+import { mapTag } from "@/lib/cache-tags";
 import { Effect } from "effect";
 import { cacheLife, cacheTag } from "next/cache";
 
@@ -14,7 +15,7 @@ import { cacheLife, cacheTag } from "next/cache";
 export async function getCachedMostPlayedHeroes(mapId: number) {
   "use cache";
   cacheLife("max");
-  cacheTag(`map:${mapId}`);
+  cacheTag(mapTag(mapId));
   return AppRuntime.runPromise(
     PlayerService.pipe(Effect.flatMap((svc) => svc.getMostPlayedHeroes(mapId)))
   );
@@ -23,7 +24,7 @@ export async function getCachedMostPlayedHeroes(mapId: number) {
 export async function getCachedMatchStory(mapId: number, mapDataId: number) {
   "use cache";
   cacheLife("max");
-  cacheTag(`map:${mapId}`);
+  cacheTag(mapTag(mapId));
   // A story failure must never break the map page — the tab just hides.
   return AppRuntime.runPromise(
     MatchStoryService.pipe(
