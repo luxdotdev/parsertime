@@ -13,7 +13,7 @@ import prisma from "@/lib/prisma";
 import type { Metadata, Route } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { OrganizationJsonLd, ProfilePageJsonLd } from "next-seo";
-import { unstable_cache } from "next/cache";
+import { cacheLife } from "next/cache";
 import { Instrument_Serif } from "next/font/google";
 import type { SVGProps } from "react";
 
@@ -41,27 +41,26 @@ const instrumentSerif = Instrument_Serif({
   variable: "--font-instrument-serif",
 });
 
-const getAboutPageStats = unstable_cache(
-  async () => {
-    const results = await Promise.allSettled([
-      prisma.playerStat.count(),
-      prisma.calculatedStat.count(),
-      prisma.kill.count(),
-      prisma.map.count(),
-    ]);
+async function getAboutPageStats() {
+  "use cache";
+  cacheLife("hours");
 
-    const [playerStatCount, calculatedStatCount, killCount, mapCount] =
-      results.map((r) => (r.status === "fulfilled" ? r.value : 0));
+  const results = await Promise.allSettled([
+    prisma.playerStat.count(),
+    prisma.calculatedStat.count(),
+    prisma.kill.count(),
+    prisma.map.count(),
+  ]);
 
-    return {
-      statsCount: Math.max(playerStatCount + calculatedStatCount, 800_000),
-      killCount: Math.max(killCount, 450_000),
-      mapCount: Math.max(mapCount, 6_000),
-    };
-  },
-  ["about-page-stats"],
-  { revalidate: 3600 }
-);
+  const [playerStatCount, calculatedStatCount, killCount, mapCount] =
+    results.map((r) => (r.status === "fulfilled" ? r.value : 0));
+
+  return {
+    statsCount: Math.max(playerStatCount + calculatedStatCount, 800_000),
+    killCount: Math.max(killCount, 450_000),
+    mapCount: Math.max(mapCount, 6_000),
+  };
+}
 
 function roundCount(count: number): { value: number; suffix: string } {
   if (count >= 100_000) {

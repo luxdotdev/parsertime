@@ -6,8 +6,6 @@ import {
 } from "@/lib/tsr/leaderboard";
 import { FaceitTier, TsrRegion } from "@/generated/prisma/browser";
 
-export const runtime = "nodejs";
-
 const VALID_SORTS: TsrSortKey[] = ["rating", "matches", "recent"];
 
 function parseEnum<T extends string>(

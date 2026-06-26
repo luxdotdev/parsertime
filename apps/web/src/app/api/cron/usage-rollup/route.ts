@@ -8,7 +8,6 @@ import {
 } from "@/lib/usage/rollup";
 import { timingSafeEqual } from "node:crypto";
 
-export const runtime = "nodejs";
 export const maxDuration = 300;
 
 type AuthResult =

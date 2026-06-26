@@ -18,7 +18,7 @@ import {
 import { get } from "@vercel/edge-config";
 import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
-import { unstable_cache } from "next/cache";
+import { cacheLife } from "next/cache";
 import Image from "next/image";
 import Link from "next/link";
 import type { SVGProps } from "react";
@@ -45,24 +45,23 @@ function formatRoundedCount(count: number): string {
   return `${count.toLocaleString("en-US")}+`;
 }
 
-const getLandingPageStats = unstable_cache(
-  async () => {
-    const [playerStatCount, calculatedStatCount, killCount, mapCount] =
-      await Promise.all([
-        prisma.playerStat.count(),
-        prisma.calculatedStat.count(),
-        prisma.kill.count(),
-        prisma.map.count(),
-      ]);
-    return {
-      statsCount: playerStatCount + calculatedStatCount,
-      killCount,
-      mapCount,
-    };
-  },
-  ["landing-page-stats"],
-  { revalidate: 3600 }
-);
+async function getLandingPageStats() {
+  "use cache";
+  cacheLife("hours");
+
+  const [playerStatCount, calculatedStatCount, killCount, mapCount] =
+    await Promise.all([
+      prisma.playerStat.count(),
+      prisma.calculatedStat.count(),
+      prisma.kill.count(),
+      prisma.map.count(),
+    ]);
+  return {
+    statsCount: playerStatCount + calculatedStatCount,
+    killCount,
+    mapCount,
+  };
+}
 
 type FooterNavigation = {
   social: {

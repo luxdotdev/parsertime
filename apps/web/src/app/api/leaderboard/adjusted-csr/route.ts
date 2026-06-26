@@ -5,8 +5,6 @@ import {
 import { Logger } from "@/lib/logger";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 
-export const runtime = "nodejs";
-
 function parseInt32(value: string | null, fallback: number): number {
   if (!value) return fallback;
   const n = Number.parseInt(value, 10);

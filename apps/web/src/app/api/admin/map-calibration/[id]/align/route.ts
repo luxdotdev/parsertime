@@ -7,7 +7,6 @@ import { forbidden, unauthorized } from "next/navigation";
 import { NextResponse } from "next/server";
 import sharp from "sharp";
 
-export const runtime = "nodejs";
 export const maxDuration = 60;
 
 type Params = { params: Promise<{ id: string }> };

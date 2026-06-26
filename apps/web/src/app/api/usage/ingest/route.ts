@@ -11,8 +11,6 @@ import { kv } from "@vercel/kv";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
 
-export const runtime = "nodejs";
-
 const ratelimit = new Ratelimit({
   redis: kv,
   limiter: Ratelimit.slidingWindow(120, "1 m"),

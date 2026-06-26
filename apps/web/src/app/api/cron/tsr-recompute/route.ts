@@ -3,7 +3,6 @@ import { recomputeAllTeamTsrSnapshots } from "@/lib/matchmaker/snapshot";
 import { recomputeAllTsrs } from "@/lib/tsr/replay";
 import { timingSafeEqual } from "node:crypto";
 
-export const runtime = "nodejs";
 export const maxDuration = 300;
 
 type AuthResult =

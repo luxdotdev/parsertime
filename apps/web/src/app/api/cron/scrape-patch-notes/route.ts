@@ -3,7 +3,6 @@ import { Logger } from "@/lib/logger";
 import { scrapeRecent } from "@/lib/overwatch/patch-scraper";
 import { timingSafeEqual } from "node:crypto";
 
-export const runtime = "nodejs";
 export const maxDuration = 60;
 
 type AuthResult =
