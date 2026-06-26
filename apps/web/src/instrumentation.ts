@@ -7,10 +7,9 @@ type RequestErrorArgs = Parameters<Instrumentation.onRequestError>;
 export async function register() {
   if (process.env.NEXT_RUNTIME !== "nodejs") return;
 
-  // OpenTelemetry generates span/trace IDs with Math.random(), which Cache
-  // Components disallows during prerendering. Build-time prerendering needs no
-  // telemetry, so skip tracer setup in the build phase to keep prerenders
-  // deterministic. Runtime requests still register and export traces.
+  // OpenTelemetry generates span IDs with Math.random(), which Cache Components
+  // disallows during prerendering. Build-time prerenders need no telemetry;
+  // runtime requests still register and export traces.
   if (process.env.NEXT_PHASE === "phase-production-build") return;
 
   const { registerNode } = await import("./instrumentation-node");

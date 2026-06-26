@@ -12,9 +12,8 @@ export const metadata: Metadata = {
 };
 
 export default async function MapHeroStatsPage() {
-  // The trends service derives a time window from Date.now() and localizes map
-  // names via the request locale, so this page renders at request time. Reading
-  // the connection first keeps that allowed under Cache Components.
+  // The trends service reads Date.now() and the request locale, so render at
+  // request time rather than prerendering.
   await connection();
   const [data, patches] = await Promise.all([
     AppRuntime.runPromise(

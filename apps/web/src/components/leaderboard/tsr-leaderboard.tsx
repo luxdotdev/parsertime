@@ -61,9 +61,6 @@ const COLS =
 
 const PAGE_SIZE = 50;
 
-// `now` is resolved after mount (see the `now` state below) so the prerender
-// pass stays deterministic — reading the current time during render is
-// disallowed under Cache Components.
 function formatRelativeDate(
   d: Date | null,
   t: TsrMessages,
@@ -192,7 +189,7 @@ export function TsrLeaderboard({ initialSnapshot }: Props) {
   const t = useTranslations("leaderboardPage.tsr");
   const formatter = useFormatter();
   // Resolved after mount so relative-time labels don't read the clock during
-  // the prerender pass (disallowed under Cache Components).
+  // the Cache Components prerender pass.
   const [now, setNow] = useState<number | null>(null);
   useEffect(() => setNow(Date.now()), []);
   const [region, setRegion] = useState<RegionFilter>("All");

@@ -96,7 +96,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       >
         {/* The provider tree depends on request-time data (locale, auth,
             feature flags), so it streams under Suspense while the document
-            shell prerenders. See migrating-to-cache-components. */}
+            shell prerenders. */}
         <Suspense fallback={null}>
           <RootProviders>{children}</RootProviders>
         </Suspense>
