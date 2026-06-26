@@ -100,8 +100,8 @@ export async function PUT(req: NextRequest, ctx: RouteCtx) {
           where: { email: session.user.email },
           select: {
             accounts: {
-              where: { provider: "discord" },
-              select: { providerAccountId: true },
+              where: { providerId: "discord" },
+              select: { accountId: true },
               take: 1,
             },
           },
@@ -116,7 +116,7 @@ export async function PUT(req: NextRequest, ctx: RouteCtx) {
     }
 
     const membership = await verifyUserInGuild(
-      discordAccount.providerAccountId,
+      discordAccount.accountId,
       data.reminderGuildId
     );
     if (!membership.ok) {
@@ -133,7 +133,7 @@ export async function PUT(req: NextRequest, ctx: RouteCtx) {
     }
 
     const channelAccess = await verifyUserCanUseChannel(
-      discordAccount.providerAccountId,
+      discordAccount.accountId,
       data.reminderGuildId,
       data.reminderChannelId
     );

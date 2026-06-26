@@ -27,7 +27,7 @@ import {
   PlusCircledIcon,
 } from "@radix-ui/react-icons";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import type { Session } from "next-auth";
+import type { Session } from "@/lib/auth";
 import { useTranslations } from "next-intl";
 import * as React from "react";
 

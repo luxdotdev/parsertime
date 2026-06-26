@@ -14,8 +14,8 @@ export function authenticateBotSecret(request: Request): boolean {
 export async function resolveDiscordUser(discordId: string) {
   const account = await prisma.account.findFirst({
     where: {
-      provider: "discord",
-      providerAccountId: discordId,
+      providerId: "discord",
+      accountId: discordId,
     },
     include: {
       user: true,

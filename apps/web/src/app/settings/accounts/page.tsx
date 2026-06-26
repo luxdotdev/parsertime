@@ -41,7 +41,7 @@ export default async function LinkedAccountSettingsPage() {
   });
 
   const discordAccount = accounts.find(
-    (account) => account.provider === "discord"
+    (account) => account.providerId === "discord"
   );
 
   const teams = await prisma.team.findMany({

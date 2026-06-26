@@ -670,6 +670,7 @@
       "docs": "Docs",
       "admin": "Admin",
       "signOut": "Sign Out",
+      "stopImpersonating": "Stop Impersonating",
       "profile": "Profile"
     },
     "guestNav": {

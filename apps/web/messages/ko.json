@@ -670,6 +670,7 @@
       "docs": "문서",
       "admin": "관리자",
       "signOut": "로그아웃",
+      "stopImpersonating": "위장 종료",
       "profile": "프로필"
     },
     "guestNav": {

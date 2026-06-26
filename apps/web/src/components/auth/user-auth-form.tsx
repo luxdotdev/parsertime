@@ -16,8 +16,8 @@ import { Link } from "@/components/ui/link";
 import { ClientOnly } from "@/lib/client-only";
 import { cn } from "@/lib/utils";
 import { EnvelopeOpenIcon } from "@radix-ui/react-icons";
+import { authClient } from "@/lib/auth-client";
 import { track } from "@vercel/analytics";
-import { signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import * as React from "react";
@@ -56,14 +56,22 @@ export function UserAuthForm({
     setIsLoading(true);
     track("Sign In", { location: "Auth form", method: "Email" });
     rememberSignInMethod("email");
-    await signIn("email", { email, callbackUrl: callbackUrl ?? "/dashboard" });
+    await authClient.signIn.magicLink({
+      email,
+      callbackURL: callbackUrl ?? "/dashboard",
+    });
   }
 
-  async function handleProviderSignIn(provider: string) {
+  async function handleProviderSignIn(
+    provider: "discord" | "google" | "github"
+  ) {
     setIsLoading(true);
     track("Sign In", { location: "Auth form", method: provider });
     rememberSignInMethod(provider);
-    await signIn(provider, { callbackUrl: callbackUrl ?? "/dashboard" });
+    await authClient.signIn.social({
+      provider,
+      callbackURL: callbackUrl ?? "/dashboard",
+    });
   }
 
   const t = useTranslations("signInPage");

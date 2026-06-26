@@ -81,7 +81,7 @@ export async function GET(request: Request) {
     }),
     prisma.user.count({ where: { billingPlan: { not: "FREE" } } }),
     prisma.user.groupBy({ by: ["billingPlan"], _count: { id: true } }),
-    prisma.account.groupBy({ by: ["provider"], _count: { userId: true } }),
+    prisma.account.groupBy({ by: ["providerId"], _count: { userId: true } }),
     prisma.scrim.groupBy({
       by: ["creatorId"],
       where: { createdAt: { gte: weekStart } },
@@ -150,7 +150,7 @@ export async function GET(request: Request) {
   const providerCounts = new Map<string, number>();
   let totalOAuthUsers = 0;
   for (const account of oauthAccounts) {
-    providerCounts.set(account.provider, account._count.userId);
+    providerCounts.set(account.providerId, account._count.userId);
     totalOAuthUsers += account._count.userId;
   }
   const emailOnlyUsers = totalUsers - totalOAuthUsers;

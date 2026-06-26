@@ -3,9 +3,9 @@ import { parseRankedBundle } from "./export-schema";
 import { importRankedBundle } from "./importer";
 
 export function deriveOauthKeys(
-  accounts: { provider: string; providerAccountId: string }[]
+  accounts: { providerId: string; accountId: string }[]
 ): string[] {
-  return accounts.map((a) => `${a.provider}:${a.providerAccountId}`);
+  return accounts.map((a) => `${a.providerId}:${a.accountId}`);
 }
 
 // Run after a user signs in / is created. Attaches any parked ranked data
@@ -16,7 +16,7 @@ export async function claimRankedDataForUser(userId: string): Promise<void> {
 
   const accounts = await prisma.account.findMany({
     where: { userId },
-    select: { provider: true, providerAccountId: true },
+    select: { providerId: true, accountId: true },
   });
   const oauthKeys = deriveOauthKeys(accounts);
 

@@ -670,6 +670,7 @@
       "docs": "文档",
       "admin": "管理员",
       "signOut": "退出登录",
+      "stopImpersonating": "停止模拟",
       "profile": "个人资料"
     },
     "guestNav": {

@@ -106,8 +106,8 @@ export async function POST(request: NextRequest) {
         id: true,
         role: true,
         accounts: {
-          where: { provider: "discord" },
-          select: { providerAccountId: true },
+          where: { providerId: "discord" },
+          select: { accountId: true },
           take: 1,
         },
       },
@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
     };
 
     const membership = await verifyUserInGuild(
-      discordAccount.providerAccountId,
+      discordAccount.accountId,
       body.guildId
     );
     if (!membership.ok) {
@@ -176,7 +176,7 @@ export async function POST(request: NextRequest) {
     }
 
     const channelAccess = await verifyUserCanUseChannel(
-      discordAccount.providerAccountId,
+      discordAccount.accountId,
       body.guildId,
       body.channelId
     );

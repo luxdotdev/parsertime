@@ -1,7 +1,18 @@
 import { Logger } from "@/lib/logger";
 import type { User as PrismaUser } from "@/generated/prisma/client";
 import { $Enums } from "@/generated/prisma/browser";
-import type { User } from "next-auth";
+
+/**
+ * Minimal user shape these webhook constructors need. Permissive on purpose:
+ * callers pass either a full Prisma user or the partial user object handed to
+ * Better Auth's lifecycle hooks.
+ */
+type WebhookUser = {
+  id?: string | null;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+};
 
 /**
  * The structure of a Discord webhook. This is a simplified version of the actual
@@ -34,7 +45,7 @@ type DiscordWebhook = {
  * @param {User} user - The user that was created.
  * @returns {DiscordWebhook} The constructed webhook.
  */
-export function newUserWebhookConstructor(user: User): DiscordWebhook {
+export function newUserWebhookConstructor(user: WebhookUser): DiscordWebhook {
   return {
     username: "Parsertime",
     avatar_url: "https://parsertime.app/icon.png",
@@ -62,7 +73,7 @@ export function newUserWebhookConstructor(user: User): DiscordWebhook {
  * @param {User} user - The user that was created.
  * @returns {DiscordWebhook} The constructed webhook.
  */
-export function deleteUserWebhookConstructor(user: User): DiscordWebhook {
+export function deleteUserWebhookConstructor(user: WebhookUser): DiscordWebhook {
   return {
     username: "Parsertime",
     avatar_url: "https://parsertime.app/icon.png",
@@ -200,7 +211,7 @@ export function newSuspiciousActivityWebhookConstructor(
 }
 
 export function userSubscribedWebhookConstructor(
-  user: User,
+  user: WebhookUser,
   billingPlan: string
 ): DiscordWebhook {
   return {
@@ -225,7 +236,7 @@ export function userSubscribedWebhookConstructor(
 }
 
 export function userUnsubscribedWebhookConstructor(
-  user: User,
+  user: WebhookUser,
   billingPlan: string
 ): DiscordWebhook {
   return {

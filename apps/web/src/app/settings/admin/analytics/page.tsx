@@ -227,7 +227,7 @@ async function getSignupMethodData() {
   const [totalUsers, oauthAccounts] = await Promise.all([
     prisma.user.count(),
     prisma.account.groupBy({
-      by: ["provider"],
+      by: ["providerId"],
       _count: {
         userId: true,
       },
@@ -240,7 +240,7 @@ async function getSignupMethodData() {
 
   oauthAccounts.forEach((account) => {
     const count = account._count.userId;
-    providerCounts.set(account.provider, count);
+    providerCounts.set(account.providerId, count);
     totalOAuthUsers += count;
   });
 

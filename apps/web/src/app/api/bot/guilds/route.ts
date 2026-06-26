@@ -24,10 +24,10 @@ export async function GET() {
 
     const discordAccount = await prisma.account.findFirst({
       where: {
-        provider: "discord",
+        providerId: "discord",
         user: { email: session.user.email },
       },
-      select: { providerAccountId: true },
+      select: { accountId: true },
     });
 
     if (!discordAccount) {
@@ -59,7 +59,7 @@ export async function GET() {
     propagation.inject(context.active(), traceHeaders);
 
     const response = await fetch(
-      `${botApiUrl}/api/guilds?userId=${encodeURIComponent(discordAccount.providerAccountId)}`,
+      `${botApiUrl}/api/guilds?userId=${encodeURIComponent(discordAccount.accountId)}`,
       {
         headers: {
           Authorization: `Bearer ${botSecret}`,

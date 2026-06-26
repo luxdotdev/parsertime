@@ -1,4 +1,5 @@
 import { SignOutButton } from "@/components/auth/auth-components";
+import { StopImpersonatingButton } from "@/components/admin/stop-impersonating-button";
 import { SupporterHeart } from "@/components/profile/supporter-heart";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -102,6 +103,11 @@ export async function UserNav() {
           </>
         )}
         <DropdownMenuSeparator />
+        {session.impersonatedBy && (
+          <DropdownMenuItem>
+            <StopImpersonatingButton />
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem>
           <SignOutButton />
         </DropdownMenuItem>

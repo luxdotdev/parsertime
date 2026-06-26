@@ -16,7 +16,7 @@ import {
   scoutingTool,
   tournament,
 } from "@/lib/flags";
-import type { Session } from "next-auth";
+import type { Session } from "@/lib/auth";
 
 /**
  * Shared header bar for authenticated app pages (dashboard, map, player).

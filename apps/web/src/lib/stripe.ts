@@ -5,7 +5,7 @@ import type { BillingPlans } from "@/types/billing-plans";
 import type { User } from "@/generated/prisma/client";
 import { get } from "@vercel/edge-config";
 import { Effect } from "effect";
-import type { Session } from "next-auth";
+import type { Session } from "@/lib/auth";
 import Stripe from "stripe";
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {

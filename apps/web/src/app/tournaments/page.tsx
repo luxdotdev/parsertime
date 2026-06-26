@@ -24,7 +24,7 @@ export default async function TournamentsPage() {
 
   const tournaments = await AppRuntime.runPromise(
     TournamentService.pipe(
-      Effect.flatMap((svc) => svc.getUserTournaments(session.user.id!))
+      Effect.flatMap((svc) => svc.getUserTournaments(session.user.id))
     )
   );
 

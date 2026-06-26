@@ -2,8 +2,8 @@
 
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
 import { track } from "@vercel/analytics";
-import { signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { startTransition } from "react";
 
@@ -16,7 +16,7 @@ export function DiscordLoginButton() {
       onClick={() => {
         startTransition(async () => {
           track("Sign In", { location: "Settings", method: "Discord" });
-          await signIn("discord");
+          await authClient.signIn.social({ provider: "discord" });
         });
       }}
     >
