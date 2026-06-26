@@ -1,20 +1,27 @@
 import { NoAuthCard } from "@/components/auth/no-auth";
 import { SelectedPlayerProvider } from "@/components/map/player-switcher";
 import { isAuthedToViewScrim } from "@/lib/auth";
+import { Suspense, type ReactNode } from "react";
 
-export default async function ScrimDashboardLayout(
+export default function ScrimDashboardLayout(
   props: LayoutProps<"/[team]/scrim/[scrimId]">
 ) {
-  const params = await props.params;
+  return (
+    <Suspense fallback={null}>
+      <ScrimAuthGate params={props.params}>{props.children}</ScrimAuthGate>
+    </Suspense>
+  );
+}
 
-  const { children } = props;
-
-  const id = parseInt(params.scrimId);
-  const isAuthed = await isAuthedToViewScrim(id);
-
-  if (!isAuthed) {
-    return <NoAuthCard />;
-  }
-
+async function ScrimAuthGate({
+  params,
+  children,
+}: {
+  params: LayoutProps<"/[team]/scrim/[scrimId]">["params"];
+  children: ReactNode;
+}) {
+  const { scrimId } = await params;
+  const isAuthed = await isAuthedToViewScrim(parseInt(scrimId));
+  if (!isAuthed) return <NoAuthCard />;
   return <SelectedPlayerProvider>{children}</SelectedPlayerProvider>;
 }

@@ -26,10 +26,7 @@ const cspHeader = `
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
-  // partialPrefetching (instant navigations) is held until the authed routes
-  // are instant-ready — today their layouts read auth() at the top, so the
-  // per-route shell can't prerender and every authed nav reports as blocking.
-  // Re-enable once those shells stream auth-gated content behind <Suspense>.
+  partialPrefetching: true,
   reactCompiler: true,
   typedRoutes: true,
   transpilePackages: ["@parsertime/transactional"],
