@@ -140,12 +140,14 @@ export type PlayerScrimPerformance = {
   deaths: number;
   heroDamageDealt: number;
   healingDealt: number;
+  damageBlocked: number;
   heroTimePlayed: number;
   kdRatio: number;
   eliminationsPer10: number;
   deathsPer10: number;
   heroDamagePer10: number;
   healingDealtPer10: number;
+  damageBlockedPer10: number;
   firstDeathCount: number;
   firstDeathRate: number;
   teamFirstDeathCount: number;

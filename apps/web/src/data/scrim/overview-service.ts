@@ -2161,12 +2161,14 @@ export const make: Effect.Effect<
           deaths: aggregated.deaths,
           heroDamageDealt: aggregated.heroDamageDealt,
           healingDealt: aggregated.healingDealt,
+          damageBlocked: aggregated.damageBlocked,
           heroTimePlayed: aggregated.heroTimePlayed,
           kdRatio,
           eliminationsPer10: aggregated.eliminationsPer10,
           deathsPer10: aggregated.deathsPer10,
           heroDamagePer10: aggregated.heroDamagePer10,
           healingDealtPer10: aggregated.healingDealtPer10,
+          damageBlockedPer10: aggregated.damageBlockedPer10,
           firstDeathCount: totalFirstDeaths,
           firstDeathRate:
             totalFights > 0 ? (totalFirstDeaths / totalFights) * 100 : 0,
@@ -2213,7 +2215,7 @@ export const make: Effect.Effect<
             player.primaryHero,
             player.heroDamageDealt,
             player.healingDealt,
-            0,
+            player.damageBlocked,
             player.deaths,
             player.eliminations
           );
