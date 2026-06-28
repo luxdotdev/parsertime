@@ -1,4 +1,5 @@
 import { RecentActivityCalendar } from "@/components/profile/recent-activity-calendar";
+import { PageContentSkeleton } from "@/components/skeletons/page-content-skeleton";
 import { BestRoleTriosCard } from "@/components/stats/team/best-role-trios-card";
 import { HeroBanImpactCard } from "@/components/stats/team/hero-ban-impact-card";
 import { HeroOurBansCard } from "@/components/stats/team/hero-our-bans-card";
@@ -48,6 +49,7 @@ import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 export async function generateMetadata(props: {
   params: Promise<{ id: string; teamId: string }>;
@@ -71,7 +73,19 @@ export async function generateMetadata(props: {
   };
 }
 
-export default async function TournamentTeamStatsPage(props: {
+export default function TournamentTeamStatsPage(props: {
+  params: Promise<{ id: string; teamId: string }>;
+}) {
+  return (
+    <Suspense fallback={<PageContentSkeleton />}>
+      <TournamentTeamStatsPageContent params={props.params} />
+    </Suspense>
+  );
+}
+
+async function TournamentTeamStatsPageContent({
+  params: paramsPromise,
+}: {
   params: Promise<{ id: string; teamId: string }>;
 }) {
   const tournamentEnabled = await tournament();
@@ -80,7 +94,7 @@ export default async function TournamentTeamStatsPage(props: {
   const session = await auth();
   if (!session?.user) notFound();
 
-  const params = await props.params;
+  const params = await paramsPromise;
   const tournamentId = Number(params.id);
   const tournamentTeamId = Number(params.teamId);
   if (Number.isNaN(tournamentId) || Number.isNaN(tournamentTeamId)) notFound();

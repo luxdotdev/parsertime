@@ -4,6 +4,8 @@ import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { AvailabilityFillSkeleton } from "./loading-skeleton";
 
 type PageProps = {
   params: Promise<{ teamId: string; scheduleId: string }>;
@@ -14,7 +16,15 @@ export function generateMetadata(): Metadata {
   return { title: t("title"), description: t("description") };
 }
 
-export default async function PublicFillPage({ params }: PageProps) {
+export default function PublicFillPage(props: PageProps) {
+  return (
+    <Suspense fallback={<AvailabilityFillSkeleton />}>
+      <PublicFillPageContent params={props.params} />
+    </Suspense>
+  );
+}
+
+async function PublicFillPageContent({ params }: PageProps) {
   const { teamId: raw, scheduleId } = await params;
   const teamId = parseInt(raw);
   if (!Number.isFinite(teamId)) notFound();

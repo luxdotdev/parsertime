@@ -5,6 +5,8 @@ import prisma from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import { AvailabilitySettingsSkeleton } from "./loading-skeleton";
 
 type PageProps = { params: Promise<{ teamId: string }> };
 
@@ -13,7 +15,15 @@ export function generateMetadata(): Metadata {
   return { title: t("title"), description: t("description") };
 }
 
-export default async function AvailabilitySettingsPage({ params }: PageProps) {
+export default function AvailabilitySettingsPage(props: PageProps) {
+  return (
+    <Suspense fallback={<AvailabilitySettingsSkeleton />}>
+      <AvailabilitySettingsPageContent params={props.params} />
+    </Suspense>
+  );
+}
+
+async function AvailabilitySettingsPageContent({ params }: PageProps) {
   const { teamId: raw } = await params;
   const teamId = parseInt(raw);
   if (!Number.isFinite(teamId)) notFound();

@@ -10,8 +10,18 @@ import { getCustomerPortalUrl } from "@/lib/stripe";
 import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { SettingsBillingSkeleton } from "./loading-skeleton";
 
-export default async function SettingsBillingPage() {
+export default function SettingsBillingPage() {
+  return (
+    <Suspense fallback={<SettingsBillingSkeleton />}>
+      <SettingsBillingPageContent />
+    </Suspense>
+  );
+}
+
+async function SettingsBillingPageContent() {
   const t = await getTranslations("settingsPage.billing");
 
   const session = await auth();

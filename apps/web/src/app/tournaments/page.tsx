@@ -1,4 +1,5 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
+import { PageContentSkeleton } from "@/components/skeletons/page-content-skeleton";
 import { CreateTournamentButton } from "@/components/tournament/create-tournament-button";
 import { TournamentCard } from "@/components/tournament/tournament-card";
 import { Effect } from "effect";
@@ -9,13 +10,22 @@ import { tournament } from "@/lib/flags";
 import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
+import { Suspense } from "react";
 
 export function generateMetadata(): Metadata {
   const t = getMetadataTranslations("tournamentsPage.metadata");
   return { title: t("title"), description: t("description") };
 }
 
-export default async function TournamentsPage() {
+export default function TournamentsPage() {
+  return (
+    <Suspense fallback={<PageContentSkeleton />}>
+      <TournamentsPageContent />
+    </Suspense>
+  );
+}
+
+async function TournamentsPageContent() {
   const tournamentEnabled = await tournament();
   if (!tournamentEnabled) notFound();
 

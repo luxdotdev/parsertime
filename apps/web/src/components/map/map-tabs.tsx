@@ -1,9 +1,10 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { parseAsFloat, parseAsString, useQueryState } from "nuqs";
-import { useCallback, type ReactNode } from "react";
+import { useCallback, useTransition, type ReactNode } from "react";
 
 type TabDef = {
   value: string;
@@ -23,18 +24,23 @@ type MapTabsProps = {
 
 export function MapTabs({ tabs, activeTab, children }: MapTabsProps) {
   const t = useTranslations("mapPage");
-  // shallow:false so switching tabs re-runs the server page and renders the
-  // newly-selected tab's content, instead of shipping every tab up front.
+  // Drive the shallow:false navigation through a transition so React keeps the
+  // current page chrome visible while the new tab streams in, instead of
+  // reverting the outer Suspense boundary to its skeleton. shallow:false still
+  // re-runs the server page so only the selected tab's content is rendered.
+  const [isPending, startTransition] = useTransition();
   const [, setTab] = useQueryState(
     "tab",
-    parseAsString.withDefault("overview").withOptions({ shallow: false })
+    parseAsString
+      .withDefault("overview")
+      .withOptions({ shallow: false, startTransition })
   );
 
   return (
     <Tabs
       value={activeTab}
       onValueChange={(value) => void setTab(value)}
-      className="space-y-4"
+      className={cn("space-y-4", isPending && "[&_[role=tabpanel]]:opacity-60")}
     >
       <TabsList aria-label={t("tabsLabel")}>
         {tabs.map((tab) =>

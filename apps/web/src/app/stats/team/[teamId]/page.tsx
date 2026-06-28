@@ -11,6 +11,7 @@ import {
 import { TeamStatsGate } from "@/components/stats/team/team-stats-gate";
 import type { PagePropsWithLocale } from "@/types/next";
 import { Suspense } from "react";
+import { OverviewSkeleton } from "./loading-skeleton";
 import { loadTeamStatsShell } from "./_lib/context";
 
 // The heaviest dashboard in the app: dozens of services over a shared
@@ -18,13 +19,29 @@ import { loadTeamStatsShell } from "./_lib/context";
 // a cold cache; warm renders are far faster.
 export const maxDuration = 60;
 
-export default async function TeamStatsOverviewPage(
+export default function TeamStatsOverviewPage(
   props: PagePropsWithLocale<"/stats/team/[teamId]"> & {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
   }
 ) {
-  const params = await props.params;
-  const searchParams = await props.searchParams;
+  return (
+    <Suspense fallback={<OverviewSkeleton />}>
+      <TeamStatsOverviewContent
+        params={props.params}
+        searchParams={props.searchParams}
+      />
+    </Suspense>
+  );
+}
+
+async function TeamStatsOverviewContent({
+  params: paramsPromise,
+  searchParams: searchParamsPromise,
+}: PagePropsWithLocale<"/stats/team/[teamId]"> & {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = await paramsPromise;
+  const searchParams = await searchParamsPromise;
   const shell = await loadTeamStatsShell(params.teamId, searchParams);
   if (shell.gated) {
     return <TeamStatsGate scrimCount={shell.totalScrimCount} />;

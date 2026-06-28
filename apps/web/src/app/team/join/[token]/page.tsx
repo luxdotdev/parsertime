@@ -3,11 +3,27 @@ import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
 import { redirect } from "next/navigation";
+import { Suspense, type ReactNode } from "react";
+import { JoinTokenSkeleton } from "./loading-skeleton";
 
-export default async function TokenPage(
+export default function TokenPage(
   props: PagePropsWithLocale<"/team/join/[token]">
 ) {
-  const params = await props.params;
+  return (
+    <Suspense fallback={<JoinTokenSkeleton />}>
+      <TokenPageContent params={props.params} />
+    </Suspense>
+  );
+}
+
+async function TokenPageContent({
+  params: paramsPromise,
+}: {
+  params: PagePropsWithLocale<"/team/join/[token]">["params"];
+}): Promise<ReactNode> {
+  // Every path ends in redirect() (typed `never`), so the function never
+  // actually returns a node — the annotation just lets it satisfy JSX typing.
+  const params = await paramsPromise;
   const session = await auth();
   const token = params.token;
 

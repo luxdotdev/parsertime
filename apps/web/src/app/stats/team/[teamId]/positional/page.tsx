@@ -11,17 +11,32 @@ import {
 import type { PagePropsWithLocale } from "@/types/next";
 import { Effect } from "effect";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
+import { PositionalSkeleton } from "./loading-skeleton";
 import { loadTeamStatsShell } from "../_lib/context";
 
 export const maxDuration = 60;
 
-export default async function Page(
+export default function Page(
   props: PagePropsWithLocale<"/stats/team/[teamId]/positional"> & {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
   }
 ) {
-  const params = await props.params;
-  const searchParams = await props.searchParams;
+  return (
+    <Suspense fallback={<PositionalSkeleton />}>
+      <PageContent params={props.params} searchParams={props.searchParams} />
+    </Suspense>
+  );
+}
+
+async function PageContent({
+  params: paramsPromise,
+  searchParams: searchParamsPromise,
+}: PagePropsWithLocale<"/stats/team/[teamId]/positional"> & {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const params = await paramsPromise;
+  const searchParams = await searchParamsPromise;
   const shell = await loadTeamStatsShell(params.teamId, searchParams);
   if (shell.gated) {
     return <TeamStatsGate scrimCount={shell.totalScrimCount} />;

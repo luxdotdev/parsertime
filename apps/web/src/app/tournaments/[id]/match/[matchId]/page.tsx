@@ -1,4 +1,5 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
+import { PageContentSkeleton } from "@/components/skeletons/page-content-skeleton";
 import { MatchMapsPanel } from "@/components/tournament/match/match-maps-panel";
 import { TeamPanel } from "@/components/tournament/match/team-panel";
 import { TournamentAddMapCard } from "@/components/tournament/match/tournament-add-map-card";
@@ -13,6 +14,7 @@ import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 export async function generateMetadata(props: {
   params: Promise<{ id: string; matchId: string }>;
@@ -40,13 +42,25 @@ export async function generateMetadata(props: {
   };
 }
 
-export default async function TournamentMatchPage(props: {
+export default function TournamentMatchPage(props: {
+  params: Promise<{ id: string; matchId: string }>;
+}) {
+  return (
+    <Suspense fallback={<PageContentSkeleton />}>
+      <TournamentMatchPageContent params={props.params} />
+    </Suspense>
+  );
+}
+
+async function TournamentMatchPageContent({
+  params: paramsPromise,
+}: {
   params: Promise<{ id: string; matchId: string }>;
 }) {
   const tournamentEnabled = await tournament();
   if (!tournamentEnabled) notFound();
 
-  const params = await props.params;
+  const params = await paramsPromise;
   const tournamentId = Number(params.id);
   const matchId = Number(params.matchId);
   if (Number.isNaN(tournamentId) || Number.isNaN(matchId)) notFound();

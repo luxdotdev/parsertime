@@ -9,6 +9,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getFormatter, getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import { AvailabilityIndexSkeleton } from "./loading-skeleton";
 
 type PageProps = { params: Promise<{ teamId: string }> };
 
@@ -17,7 +19,15 @@ export function generateMetadata(): Metadata {
   return { title: t("title"), description: t("description") };
 }
 
-export default async function AvailabilityIndexPage({ params }: PageProps) {
+export default function AvailabilityIndexPage(props: PageProps) {
+  return (
+    <Suspense fallback={<AvailabilityIndexSkeleton />}>
+      <AvailabilityIndexPageContent params={props.params} />
+    </Suspense>
+  );
+}
+
+async function AvailabilityIndexPageContent({ params }: PageProps) {
   const { teamId: raw } = await params;
   const teamId = parseInt(raw);
   if (!Number.isFinite(teamId)) notFound();

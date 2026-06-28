@@ -41,6 +41,8 @@ import type { UsageEnv } from "@/generated/prisma/client";
 import { Effect } from "effect";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { SettingsAdminAnalyticsSkeleton } from "./loading-skeleton";
 
 type MonthWindow = {
   monthStart: Date;
@@ -416,7 +418,19 @@ async function getTeamActivityData(firstUserDate: Date) {
   return { monthlyActivity: { twelveMonth, historical }, pieData };
 }
 
-export default async function AdminAnalyticsPage(props: {
+export default function AdminAnalyticsPage(props: {
+  searchParams: Promise<{ env?: string }>;
+}) {
+  return (
+    <Suspense fallback={<SettingsAdminAnalyticsSkeleton />}>
+      <AdminAnalyticsPageContent searchParams={props.searchParams} />
+    </Suspense>
+  );
+}
+
+async function AdminAnalyticsPageContent({
+  searchParams,
+}: {
   searchParams: Promise<{ env?: string }>;
 }) {
   const session = await auth();
@@ -436,7 +450,7 @@ export default async function AdminAnalyticsPage(props: {
 
   const t = await getTranslations("settingsPage.admin.analytics");
 
-  const sp = await props.searchParams;
+  const sp = await searchParams;
   const envParam = (Array.isArray(sp.env) ? sp.env[0] : sp.env) ?? "PRODUCTION";
   const env: UsageEnv = ["PRODUCTION", "PREVIEW", "DEVELOPMENT"].includes(
     envParam

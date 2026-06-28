@@ -5,6 +5,8 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { Effect } from "effect";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { TeamSelectorSkeleton } from "./loading-skeleton";
 
 const SURFACES: { label: string; summary: string }[] = [
   {
@@ -39,7 +41,15 @@ const SURFACES: { label: string; summary: string }[] = [
   },
 ];
 
-export default async function TeamStatsPage() {
+export default function TeamStatsPage() {
+  return (
+    <Suspense fallback={<TeamSelectorSkeleton />}>
+      <TeamStatsPageContent />
+    </Suspense>
+  );
+}
+
+async function TeamStatsPageContent() {
   const session = await auth();
   const user = await AppRuntime.runPromise(
     UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user.email)))

@@ -15,6 +15,7 @@ import {
 } from "@/lib/flags";
 import { get } from "@vercel/edge-config";
 import type { Route } from "next";
+import { cacheLife } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { Suspense } from "react";
@@ -189,8 +190,19 @@ export function Footer() {
   );
 }
 
+// The copyright year is non-deterministic (`new Date()`), which can't be
+// prerendered directly. Computing it inside `use cache` lets it run once and be
+// cached, so the footer stays part of the static shell on prerendered routes.
+// oxlint-disable-next-line typescript/require-await -- `use cache` requires an async function even though the body has no await.
+async function getCopyrightYear() {
+  "use cache";
+  cacheLife("days");
+  return new Date().getFullYear();
+}
+
 async function FooterContent() {
   const t = await getTranslations("footer");
+  const copyrightYear = await getCopyrightYear();
 
   const [
     version,
@@ -267,7 +279,7 @@ async function FooterContent() {
             <WorkshopCodePill code="Z0ASA" />
 
             <p className="text-muted-foreground font-mono text-xs">
-              &copy; 2024&ndash;{new Date().getFullYear()} lux.dev
+              &copy; 2024&ndash;{copyrightYear} lux.dev
             </p>
           </div>
 

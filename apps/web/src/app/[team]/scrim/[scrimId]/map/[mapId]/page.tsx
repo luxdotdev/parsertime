@@ -2,6 +2,7 @@ import { AppHeader } from "@/components/app-header";
 import { DirectionalTransition } from "@/components/directional-transition";
 import { ActiveMapTab } from "@/components/map/active-map-tab";
 import { HeroBans } from "@/components/map/hero-bans";
+import { MapPageSkeleton } from "@/components/map/map-page-skeleton";
 import { MapTabs } from "@/components/map/map-tabs";
 import { MapTabsSkeleton } from "@/components/map/map-tabs-skeleton";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
@@ -74,13 +75,38 @@ export async function generateMetadata(
   };
 }
 
-export default async function MapDashboardPage(
+export default function MapDashboardPage(
   props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]"> & {
     searchParams: SearchParams;
   }
 ) {
-  const params = await props.params;
-  const searchParams = await props.searchParams;
+  // The shell reads no request data, so the route prerenders a non-empty static
+  // shell and navigations into a map (and between its tabs) update instantly.
+  // Everything that reads request data — auth, locale, feature flags, params,
+  // searchParams — lives in MapPageContent, behind the Suspense boundary, so it
+  // streams in under the skeleton instead of blocking the navigation.
+  return (
+    <DirectionalTransition>
+      <StatsViewBeacon />
+      <Suspense fallback={<MapPageSkeleton />}>
+        <MapPageContent
+          params={props.params}
+          searchParams={props.searchParams}
+        />
+      </Suspense>
+    </DirectionalTransition>
+  );
+}
+
+async function MapPageContent({
+  params: paramsPromise,
+  searchParams: searchParamsPromise,
+}: {
+  params: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]">["params"];
+  searchParams: SearchParams;
+}) {
+  const params = await paramsPromise;
+  const searchParams = await searchParamsPromise;
   const id = parseInt(params.mapId);
   const mapDataId = await resolveScrimMapDataId(parseInt(params.scrimId), id);
   const session = await auth();
@@ -170,71 +196,68 @@ export default async function MapDashboardPage(
     : "overview";
 
   return (
-    <DirectionalTransition>
-      <StatsViewBeacon />
-      <div className="flex-col md:flex">
-        <AppHeader
-          switcher={<PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />}
-          session={session}
-          user={user}
-          guestMode={visibility?.guestMode ?? false}
-        />
-        <div className="flex-1 space-y-4 px-6 pt-6 pb-12 md:px-8">
-          <nav className="text-muted-foreground text-sm">
-            <Link
-              href={
-                (fromTournament && tournamentId && matchId
-                  ? `/tournaments/${tournamentId}/match/${matchId}`
-                  : `/${params.team}/scrim/${params.scrimId}`) as Route
-              }
-              transitionTypes={["contract-map"]}
-              className="hover:text-foreground"
-            >
-              &larr; {t("back")}
-            </Link>
-          </nav>
-          <div className="flex items-center justify-between space-y-2">
-            <h1 className="text-2xl font-bold tracking-tight">
-              {translatedMapName}
-            </h1>
-            <HeroBans
-              heroBans={heroBans}
-              team1Name={mapDetails?.team_1_name ?? "Team 1"}
-            />
-          </div>
-          <div className="font-semibold tracking-tight">
-            {map?.replayCode && (
-              <ReplayCode replayCode={map?.replayCode ?? ""} subtitle={true} />
-            )}
-          </div>
-          <ViewTransition enter="slide-up" default="none">
-            <MapTabs tabs={tabs} activeTab={activeTab}>
-              <Suspense
-                key={activeTab}
-                fallback={
-                  <ViewTransition exit="slide-down">
-                    <MapTabsSkeleton />
-                  </ViewTransition>
-                }
-              >
-                <ActiveMapTab
-                  activeTab={activeTab}
-                  id={id}
-                  mapDataId={mapDataId}
-                  scrimId={parseInt(params.scrimId)}
-                  team1Color={team1}
-                  team2Color={team2}
-                  tempoChartEnabled={tempoChartEnabled}
-                  positionalDataEnabled={positionalDataEnabled}
-                  matchStory={matchStory}
-                  noteContent={noteContent?.content ?? ""}
-                  vod={map?.vod ?? ""}
-                />
-              </Suspense>
-            </MapTabs>
-          </ViewTransition>
+    <div className="flex-col md:flex">
+      <AppHeader
+        switcher={<PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />}
+        session={session}
+        user={user}
+        guestMode={visibility?.guestMode ?? false}
+      />
+      <div className="flex-1 space-y-4 px-6 pt-6 pb-12 md:px-8">
+        <nav className="text-muted-foreground text-sm">
+          <Link
+            href={
+              (fromTournament && tournamentId && matchId
+                ? `/tournaments/${tournamentId}/match/${matchId}`
+                : `/${params.team}/scrim/${params.scrimId}`) as Route
+            }
+            transitionTypes={["contract-map"]}
+            className="hover:text-foreground"
+          >
+            &larr; {t("back")}
+          </Link>
+        </nav>
+        <div className="flex items-center justify-between space-y-2">
+          <h1 className="text-2xl font-bold tracking-tight">
+            {translatedMapName}
+          </h1>
+          <HeroBans
+            heroBans={heroBans}
+            team1Name={mapDetails?.team_1_name ?? "Team 1"}
+          />
         </div>
+        <div className="font-semibold tracking-tight">
+          {map?.replayCode && (
+            <ReplayCode replayCode={map?.replayCode ?? ""} subtitle={true} />
+          )}
+        </div>
+        <ViewTransition enter="slide-up" default="none">
+          <MapTabs tabs={tabs} activeTab={activeTab}>
+            <Suspense
+              key={activeTab}
+              fallback={
+                <ViewTransition exit="slide-down">
+                  <MapTabsSkeleton />
+                </ViewTransition>
+              }
+            >
+              <ActiveMapTab
+                activeTab={activeTab}
+                id={id}
+                mapDataId={mapDataId}
+                scrimId={parseInt(params.scrimId)}
+                team1Color={team1}
+                team2Color={team2}
+                tempoChartEnabled={tempoChartEnabled}
+                positionalDataEnabled={positionalDataEnabled}
+                matchStory={matchStory}
+                noteContent={noteContent?.content ?? ""}
+                vod={map?.vod ?? ""}
+              />
+            </Suspense>
+          </MapTabs>
+        </ViewTransition>
       </div>
-    </DirectionalTransition>
+    </div>
   );
 }

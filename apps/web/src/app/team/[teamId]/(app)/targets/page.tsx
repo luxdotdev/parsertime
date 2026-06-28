@@ -17,6 +17,8 @@ import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import { $Enums } from "@/generated/prisma/browser";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
+import { TeamTargetsSkeleton } from "./loading-skeleton";
 
 type Props = {
   params: Promise<{ teamId: string }>;
@@ -27,7 +29,15 @@ export function generateMetadata(): Metadata {
   return { title: t("title"), description: t("description") };
 }
 
-export default async function TeamTargetsPage(props: Props) {
+export default function TeamTargetsPage(props: Props) {
+  return (
+    <Suspense fallback={<TeamTargetsSkeleton />}>
+      <TeamTargetsPageContent params={props.params} />
+    </Suspense>
+  );
+}
+
+async function TeamTargetsPageContent(props: Props) {
   const params = await props.params;
   const teamId = parseInt(params.teamId);
   const t = await getTranslations("targets");

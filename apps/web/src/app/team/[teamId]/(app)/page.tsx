@@ -26,6 +26,8 @@ import { $Enums } from "@/generated/prisma/browser";
 import { Lock } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
+import { TeamDetailSkeleton } from "./loading-skeleton";
 
 export async function generateMetadata(
   props: PagePropsWithLocale<"/team/[teamId]">
@@ -68,10 +70,20 @@ export async function generateMetadata(
   };
 }
 
-export default async function Team(
-  props: PagePropsWithLocale<"/team/[teamId]">
-) {
-  const params = await props.params;
+export default function Team(props: PagePropsWithLocale<"/team/[teamId]">) {
+  return (
+    <Suspense fallback={<TeamDetailSkeleton />}>
+      <TeamContent params={props.params} />
+    </Suspense>
+  );
+}
+
+async function TeamContent({
+  params: paramsPromise,
+}: {
+  params: PagePropsWithLocale<"/team/[teamId]">["params"];
+}) {
+  const params = await paramsPromise;
   const t = await getTranslations("teamPage");
   const session = await auth();
 

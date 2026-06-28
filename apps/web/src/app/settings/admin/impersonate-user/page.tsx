@@ -8,8 +8,18 @@ import { auth } from "@/lib/auth";
 import { $Enums } from "@/generated/prisma/browser";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { SettingsAdminImpersonateUserSkeleton } from "./loading-skeleton";
 
-export default async function AdminSettingsPage() {
+export default function AdminSettingsPage() {
+  return (
+    <Suspense fallback={<SettingsAdminImpersonateUserSkeleton />}>
+      <AdminSettingsPageContent />
+    </Suspense>
+  );
+}
+
+async function AdminSettingsPageContent() {
   const t = await getTranslations("settingsPage.admin.impersonateUser");
 
   const session = await auth();

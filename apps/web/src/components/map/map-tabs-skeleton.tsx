@@ -1,6 +1,5 @@
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getTranslations } from "next-intl/server";
 
 function MapStatCellSkeleton() {
   return (
@@ -12,13 +11,15 @@ function MapStatCellSkeleton() {
   );
 }
 
-export async function MapTabsSkeleton() {
-  const t = await getTranslations("mapPage.overview");
-
+// Kept synchronous (no getTranslations) so it is a valid static Suspense
+// fallback — a fallback that reads request data can't be prerendered and
+// re-triggers the blocking-prerender warning. The placeholder region is
+// decorative, so it is hidden from assistive tech rather than labelled.
+export function MapTabsSkeleton() {
   return (
     <div className="space-y-5">
       <Skeleton className="h-9 w-96" />
-      <section aria-label={t("title")} className="space-y-5">
+      <section aria-hidden className="space-y-5">
         <div className="grid grid-cols-2 gap-x-6 gap-y-5 lg:grid-cols-4">
           <MapStatCellSkeleton />
           <MapStatCellSkeleton />

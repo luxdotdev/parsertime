@@ -1,4 +1,5 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
+import { PageContentSkeleton } from "@/components/skeletons/page-content-skeleton";
 import type { BracketMatchData } from "@/components/tournament/bracket/bracket-match-card";
 import { BracketView } from "@/components/tournament/bracket/bracket-view";
 import { DoubleBracketView } from "@/components/tournament/bracket/double-bracket-view";
@@ -16,6 +17,7 @@ import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 export async function generateMetadata(props: {
   params: Promise<{ id: string }>;
@@ -39,13 +41,25 @@ export async function generateMetadata(props: {
   };
 }
 
-export default async function TournamentDetailPage(props: {
+export default function TournamentDetailPage(props: {
+  params: Promise<{ id: string }>;
+}) {
+  return (
+    <Suspense fallback={<PageContentSkeleton />}>
+      <TournamentDetailPageContent params={props.params} />
+    </Suspense>
+  );
+}
+
+async function TournamentDetailPageContent({
+  params: paramsPromise,
+}: {
   params: Promise<{ id: string }>;
 }) {
   const tournamentEnabled = await tournament();
   if (!tournamentEnabled) notFound();
 
-  const params = await props.params;
+  const params = await paramsPromise;
   const id = Number(params.id);
   if (Number.isNaN(id)) notFound();
 

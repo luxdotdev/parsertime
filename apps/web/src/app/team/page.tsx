@@ -14,6 +14,8 @@ import { $Enums } from "@/generated/prisma/browser";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { TeamPageSkeleton } from "./loading-skeleton";
 
 export function generateMetadata(): Metadata {
   const t = getMetadataTranslations("teamPage.metadata");
@@ -38,7 +40,15 @@ export function generateMetadata(): Metadata {
   };
 }
 
-export default async function TeamPage() {
+export default function TeamPage() {
+  return (
+    <Suspense fallback={<TeamPageSkeleton />}>
+      <TeamPageContent />
+    </Suspense>
+  );
+}
+
+async function TeamPageContent() {
   const t = await getTranslations("teamPage");
 
   const session = await auth();

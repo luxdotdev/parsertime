@@ -17,8 +17,18 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { SettingsAccountsSkeleton } from "./loading-skeleton";
 
-export default async function LinkedAccountSettingsPage() {
+export default function LinkedAccountSettingsPage() {
+  return (
+    <Suspense fallback={<SettingsAccountsSkeleton />}>
+      <LinkedAccountSettingsPageContent />
+    </Suspense>
+  );
+}
+
+async function LinkedAccountSettingsPageContent() {
   const t = await getTranslations("settingsPage.linkedAccounts");
 
   const session = await auth();
