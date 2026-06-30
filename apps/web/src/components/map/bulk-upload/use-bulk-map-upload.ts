@@ -1,9 +1,10 @@
 "use client";
 
-import { parseData } from "@/lib/parser/client";
+import { parseLogText } from "@/lib/parser/client";
 import { computePushWinner } from "@/lib/push-winner";
 import { pushInputFromParserData } from "@/lib/push-winner-adapters";
-import { detectFileCorruption } from "@/lib/utils";
+import { detectCorruptedData } from "@/lib/utils";
+import { Logger } from "@/lib/logger";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useTranslations } from "next-intl";
 import { useCallback, useRef, useState } from "react";
@@ -94,20 +95,69 @@ export function useBulkMapUpload(maxMaps: number = MAX_MAPS_PER_UPLOAD) {
       });
 
       // Parse each accepted file; resolve its row in place as it finishes.
+      // Each file emits exactly one structured "wide event" (file metadata,
+      // bytes actually read, parsed event/row counts, and outcome) so that an
+      // upload which silently produces an unidentifiable map — the reported
+      // failure mode — leaves a diagnosable trail instead of a blank row.
       await Promise.all(
         accepted.map(async (file) => {
+          const startedAt = performance.now();
+          const wideEvent: Record<string, unknown> = {
+            operation: "client_parse_map",
+            file_name: file.name,
+            file_size: file.size,
+            file_type: file.type,
+            timestamp: new Date().toISOString(),
+          };
+
           try {
-            const [parsed, corruption] = await Promise.all([
-              parseData(file),
-              detectFileCorruption(file),
-            ]);
+            // Read the file ONCE. A second File.text() (the old path read it
+            // again for corruption detection) doubles the exposure to a
+            // cloud-synced/placeholder file returning empty or truncated bytes,
+            // which is the prime suspect for a log that "parses" to a blank map.
+            const text = await file.text();
+            wideEvent.bytes_read = text.length;
+            wideEvent.read_empty = text.length === 0;
+
+            const parsed = parseLogText(text);
+            const corruption = detectCorruptedData(text);
+
+            const mapName = parsed.match_start?.[0]?.[2];
+            const rowCount = countParsedRows(parsed);
+            const hasMapName = typeof mapName === "string" && mapName.length > 0;
+
+            wideEvent.event_type_count = Object.keys(parsed).length;
+            wideEvent.match_start_count = parsed.match_start?.length ?? 0;
+            wideEvent.row_count = rowCount;
+            wideEvent.has_map_name = hasMapName;
+            wideEvent.map_name = hasMapName ? mapName : null;
+            wideEvent.has_corruption = corruption.isCorrupted;
+            wideEvent.has_invalid_mercy_rez = corruption.hasInvalidMercyRez;
+            wideEvent.has_asterisks = corruption.hasAsterisks;
+
+            // Guard: with no match_start the map has no name, image, or teams.
+            // It would render as a blank "ready" row and then throw server-side
+            // on `data.map.match_start[0]`. Surface it as a parse failure (with
+            // a logged reason) instead of a silent, unsubmittable row — this is
+            // exactly the state seen in the reported stuck uploads.
+            if (!hasMapName) {
+              wideEvent.outcome = "no_match_start";
+              setPendingMaps((prev) =>
+                prev.map((m) =>
+                  m.file === file
+                    ? { ...m, status: "failed", parseFailed: true }
+                    : m
+                )
+              );
+              return;
+            }
 
             // For Push maps, pre-fill the winner with the coordinate
             // algorithm's suggestion so the user only confirms it.
-            const mapName = parsed.match_start?.[0]?.[2];
             let winner: string | undefined;
             let winnerSource: "auto_coords" | undefined;
             let suggestedWinner: string | undefined;
+            wideEvent.is_push_map = isPushMap(mapName);
             if (isPushMap(mapName)) {
               const input = pushInputFromParserData(parsed);
               const suggestion = input ? computePushWinner(input) : null;
@@ -116,6 +166,7 @@ export function useBulkMapUpload(maxMaps: number = MAX_MAPS_PER_UPLOAD) {
                 winnerSource = "auto_coords";
                 suggestedWinner = suggestion.winner;
               }
+              wideEvent.push_winner_resolved = suggestedWinner != null;
             }
 
             setPendingMaps((prev) =>
@@ -125,7 +176,7 @@ export function useBulkMapUpload(maxMaps: number = MAX_MAPS_PER_UPLOAD) {
                       ...m,
                       status: "ready",
                       parsedData: parsed,
-                      rowCount: countParsedRows(parsed),
+                      rowCount,
                       mapName,
                       team1: parsed.match_start?.[0]?.[4],
                       team2: parsed.match_start?.[0]?.[5],
@@ -137,7 +188,13 @@ export function useBulkMapUpload(maxMaps: number = MAX_MAPS_PER_UPLOAD) {
                   : m
               )
             );
-          } catch {
+            wideEvent.outcome = "success";
+          } catch (e) {
+            wideEvent.outcome = "error";
+            wideEvent.error = {
+              message: e instanceof Error ? e.message : String(e),
+              type: e instanceof Error ? e.name : "UnknownError",
+            };
             setPendingMaps((prev) =>
               prev.map((m) =>
                 m.file === file
@@ -145,6 +202,9 @@ export function useBulkMapUpload(maxMaps: number = MAX_MAPS_PER_UPLOAD) {
                   : m
               )
             );
+          } finally {
+            wideEvent.duration_ms = Math.round(performance.now() - startedAt);
+            Logger.info(wideEvent);
           }
         })
       );

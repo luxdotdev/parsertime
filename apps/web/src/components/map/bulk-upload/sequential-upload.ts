@@ -1,3 +1,4 @@
+import { Logger } from "@/lib/logger";
 import type { PendingMap } from "./types";
 
 /**
@@ -83,64 +84,108 @@ export async function uploadMapStream(
   body: unknown,
   reportProgress: (fraction: number) => void
 ): Promise<StreamResult> {
-  const res = await fetch(url, {
-    method: "POST",
-    body: JSON.stringify(body),
-  });
+  const startedAt = performance.now();
+  const serializedBody = JSON.stringify(body);
+  // One wide event per stream attempt. A stuck upload (the original "stuck
+  // loading" report) never emits a terminal "done"/"error", so the telling
+  // signature in the logs is a `started` event with no matching completion —
+  // or a completion whose terminal_event is "closed_without_terminal".
+  const wideEvent: Record<string, unknown> = {
+    operation: "client_upload_map_stream",
+    url,
+    request_bytes: serializedBody.length,
+    timestamp: new Date().toISOString(),
+  };
+  Logger.info({ ...wideEvent, phase: "started" });
 
-  if (!res.ok || !res.body) {
-    const text = (await res.text()).trim();
-    throw new Error(
-      text.length > 0 ? `${text} (${res.status})` : `Error ${res.status}`
-    );
-  }
+  let progressEvents = 0;
+  let streamedBytes = 0;
+  let terminalEvent: "done" | "error" | "closed_without_terminal" | "http_error" =
+    "closed_without_terminal";
 
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  let result: StreamResult = {};
-  let failure: string | null = null;
-  let finished = false;
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      body: serializedBody,
+    });
+    wideEvent.http_status = res.status;
 
-  while (!finished) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
+    if (!res.ok || !res.body) {
+      terminalEvent = "http_error";
+      const text = (await res.text()).trim();
+      throw new Error(
+        text.length > 0 ? `${text} (${res.status})` : `Error ${res.status}`
+      );
+    }
 
-    let newline: number;
-    while ((newline = buffer.indexOf("\n")) >= 0) {
-      const line = buffer.slice(0, newline).trim();
-      buffer = buffer.slice(newline + 1);
-      if (!line) continue;
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let result: StreamResult = {};
+    let failure: string | null = null;
+    let finished = false;
 
-      const evt = JSON.parse(line) as {
-        type: "progress" | "done" | "error";
-        completed?: number;
-        total?: number;
-        scrimId?: number;
-        mapId?: number;
-        message?: string;
-      };
+    while (!finished) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      streamedBytes += value?.byteLength ?? 0;
+      buffer += decoder.decode(value, { stream: true });
 
-      if (evt.type === "progress") {
-        if (evt.total && evt.total > 0) {
-          reportProgress((evt.completed ?? 0) / evt.total);
+      let newline: number;
+      while ((newline = buffer.indexOf("\n")) >= 0) {
+        const line = buffer.slice(0, newline).trim();
+        buffer = buffer.slice(newline + 1);
+        if (!line) continue;
+
+        const evt = JSON.parse(line) as {
+          type: "progress" | "done" | "error";
+          completed?: number;
+          total?: number;
+          scrimId?: number;
+          mapId?: number;
+          message?: string;
+        };
+
+        if (evt.type === "progress") {
+          progressEvents += 1;
+          if (evt.total && evt.total > 0) {
+            reportProgress((evt.completed ?? 0) / evt.total);
+          }
+        } else if (evt.type === "done") {
+          terminalEvent = "done";
+          result = { scrimId: evt.scrimId, mapId: evt.mapId };
+          reportProgress(1);
+          finished = true;
+          break;
+        } else if (evt.type === "error") {
+          terminalEvent = "error";
+          failure = evt.message ?? "Upload failed";
+          finished = true;
+          break;
         }
-      } else if (evt.type === "done") {
-        result = { scrimId: evt.scrimId, mapId: evt.mapId };
-        reportProgress(1);
-        finished = true;
-        break;
-      } else if (evt.type === "error") {
-        failure = evt.message ?? "Upload failed";
-        finished = true;
-        break;
       }
     }
+
+    await reader.cancel().catch(() => undefined);
+
+    if (failure) throw new Error(failure);
+
+    wideEvent.outcome = "success";
+    wideEvent.scrim_id = result.scrimId;
+    wideEvent.map_id = result.mapId;
+    return result;
+  } catch (e) {
+    wideEvent.outcome = "error";
+    wideEvent.error = {
+      message: e instanceof Error ? e.message : String(e),
+      type: e instanceof Error ? e.name : "UnknownError",
+    };
+    throw e;
+  } finally {
+    wideEvent.terminal_event = terminalEvent;
+    wideEvent.progress_events = progressEvents;
+    wideEvent.streamed_bytes = streamedBytes;
+    wideEvent.duration_ms = Math.round(performance.now() - startedAt);
+    Logger.info(wideEvent);
   }
-
-  await reader.cancel().catch(() => undefined);
-
-  if (failure) throw new Error(failure);
-  return result;
 }

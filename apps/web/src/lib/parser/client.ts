@@ -205,6 +205,17 @@ export async function parseDataFromTXT(file: File) {
       ? await file?.text()
       : (file as unknown as string);
 
+  return parseLogText(fileContent);
+}
+
+/**
+ * Parse already-read log text into structured `ParserData`. Split out from
+ * `parseDataFromTXT` so callers that need the raw text for other reasons (the
+ * bulk uploader reads it once to also run corruption detection and to log how
+ * many bytes the file actually yielded) can parse without a second `File.text()`
+ * read. Pure and synchronous: same text in -> same data out.
+ */
+export function parseLogText(fileContent: string): ParserData {
   const lines = fileContent
     .split("\n")
     .map((line) => splitLinePreservingCoords(line));
