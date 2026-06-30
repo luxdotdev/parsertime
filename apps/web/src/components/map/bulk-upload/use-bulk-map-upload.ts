@@ -124,7 +124,8 @@ export function useBulkMapUpload(maxMaps: number = MAX_MAPS_PER_UPLOAD) {
 
             const mapName = parsed.match_start?.[0]?.[2];
             const rowCount = countParsedRows(parsed);
-            const hasMapName = typeof mapName === "string" && mapName.length > 0;
+            const hasMapName =
+              typeof mapName === "string" && mapName.length > 0;
 
             wideEvent.event_type_count = Object.keys(parsed).length;
             wideEvent.match_start_count = parsed.match_start?.length ?? 0;

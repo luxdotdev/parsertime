@@ -100,8 +100,11 @@ export async function uploadMapStream(
 
   let progressEvents = 0;
   let streamedBytes = 0;
-  let terminalEvent: "done" | "error" | "closed_without_terminal" | "http_error" =
-    "closed_without_terminal";
+  let terminalEvent:
+    | "done"
+    | "error"
+    | "closed_without_terminal"
+    | "http_error" = "closed_without_terminal";
 
   try {
     const res = await fetch(url, {
