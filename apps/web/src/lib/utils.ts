@@ -292,7 +292,13 @@ export function ultimateStartToKillEvent(
  */
 export async function translateMapName(name: string) {
   const t = await getTranslations("maps");
-  return t(toKebabCase(name));
+  const key = toKebabCase(name);
+  // The "maps" catalog is keyed by map slug and has no entry for unknown or
+  // fallback names (e.g. a map imported with an empty map_name resolves to the
+  // literal "Map" -> "map"). next-intl has no English fallback, so t("map")
+  // throws MISSING_MESSAGE and 500s the map page's generateMetadata. Degrade to
+  // the raw name instead of throwing when the slug isn't in the catalog.
+  return t.has(key) ? t(key) : name;
 }
 
 /**
@@ -304,7 +310,10 @@ export async function translateMapName(name: string) {
  */
 export function useMapName(name: string) {
   const t = useTranslations("maps");
-  return t(toKebabCase(name));
+  const key = toKebabCase(name);
+  // See translateMapName: fall back to the raw name when the slug isn't in the
+  // "maps" catalog so an unknown/empty map name can't throw MISSING_MESSAGE.
+  return t.has(key) ? t(key) : name;
 }
 
 /**
