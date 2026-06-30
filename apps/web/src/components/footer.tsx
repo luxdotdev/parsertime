@@ -15,6 +15,7 @@ import {
 } from "@/lib/flags";
 import { get } from "@vercel/edge-config";
 import type { Route } from "next";
+import { connection } from "next/server";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { Suspense } from "react";
@@ -190,13 +191,18 @@ export function Footer() {
 }
 
 async function FooterContent() {
-  // `getTranslations` reads the locale cookie, so this whole component renders
-  // at request time and never lands in a route's static shell. That makes the
-  // non-deterministic `new Date()` below safe to read inline. Do NOT hoist the
-  // year into a `use cache` helper: on `[param]` routes the cache entry's
-  // prerender is aborted by the unresolved fallback params, which turns it into
-  // a "dynamic use cache" whose hanging promise rejects once the prerender
-  // completes (HANGING_PROMISE_REJECTION).
+  // Force request-time rendering before any read below. This component reaches
+  // `use cache` functions — `@vercel/edge-config`'s `get()` and the feature
+  // flags (via `vercelAdapter`) both compile to cached Edge Config reads under
+  // Cache Components — and `getTranslations` (next-intl) reads the locale from a
+  // `cache()`d value, so it does NOT reliably push the render to request-time on
+  // its own. Without `connection()` those cache reads get prerendered into the
+  // route shell and, when the surrounding dynamic render aborts, turn into a
+  // "dynamic use cache" whose hanging promise rejects on prerender completion
+  // (HANGING_PROMISE_REJECTION, observed on `/profile/[playerName]` and
+  // `/dashboard`). It also makes the inline `new Date()` below safe. Same
+  // request-time guard as `AuthedAppHeader` in dashboard-layout.tsx.
+  await connection();
   const t = await getTranslations("footer");
   const copyrightYear = new Date().getFullYear();
 
