@@ -15,7 +15,6 @@ import {
 } from "@/lib/flags";
 import { get } from "@vercel/edge-config";
 import type { Route } from "next";
-import { cacheLife } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { Suspense } from "react";
@@ -190,19 +189,16 @@ export function Footer() {
   );
 }
 
-// The copyright year is non-deterministic (`new Date()`), which can't be
-// prerendered directly. Computing it inside `use cache` lets it run once and be
-// cached, so the footer stays part of the static shell on prerendered routes.
-// oxlint-disable-next-line typescript/require-await -- `use cache` requires an async function even though the body has no await.
-async function getCopyrightYear() {
-  "use cache";
-  cacheLife("days");
-  return new Date().getFullYear();
-}
-
 async function FooterContent() {
+  // `getTranslations` reads the locale cookie, so this whole component renders
+  // at request time and never lands in a route's static shell. That makes the
+  // non-deterministic `new Date()` below safe to read inline. Do NOT hoist the
+  // year into a `use cache` helper: on `[param]` routes the cache entry's
+  // prerender is aborted by the unresolved fallback params, which turns it into
+  // a "dynamic use cache" whose hanging promise rejects once the prerender
+  // completes (HANGING_PROMISE_REJECTION).
   const t = await getTranslations("footer");
-  const copyrightYear = await getCopyrightYear();
+  const copyrightYear = new Date().getFullYear();
 
   const [
     version,
