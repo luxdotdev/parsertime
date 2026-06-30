@@ -136,13 +136,21 @@ async function insertMapEventRows(
 
   let done = 0;
   onProgress?.(0, total);
-  await Promise.all(
-    tasks.map(async ([, run], i) => {
-      await run();
-      done += weights[i];
-      onProgress?.(done, total);
-    })
-  );
+  // Run the inserts SEQUENTIALLY, not under Promise.all. During ingestion `db`
+  // is an interactive-transaction client pinned to a single Postgres
+  // connection, and a connection can only execute one query at a time. Firing
+  // all event-type inserts concurrently issues overlapping queries on that one
+  // connection, which the pg driver only tolerates by queueing them (now a
+  // deprecation warning: "Calling client.query() when the client is already
+  // executing a query") and a future pg release will reject outright. Serial
+  // execution keeps one in-flight query per connection and still streams
+  // weighted progress after each event type commits.
+  for (let i = 0; i < tasks.length; i++) {
+    const [, run] = tasks[i];
+    await run();
+    done += weights[i];
+    onProgress?.(done, total);
+  }
 }
 
 export async function createNewScrimFromParsedData(
