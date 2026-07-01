@@ -123,6 +123,7 @@ export async function ActiveMapTab({
           id={id}
           team1Color={team1Color}
           team2Color={team2Color}
+          positionalDataOverride={positionalDataEnabled}
         />
       );
   }
