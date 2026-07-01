@@ -22,7 +22,13 @@ const identify = dedupe(async (): Promise<Entities> => {
 
   const user = await prisma.user.findUnique({
     where: { email: session?.user?.email },
-    include: { teams: true },
+    // `teams` feeds `idArray` below, which becomes part of the flag evaluation
+    // entities. Under `partialPrefetching`, flags are precomputed during
+    // prerendering, so a non-deterministic team order makes the cache-warming
+    // and final prerender passes disagree on the cache key ("Unexpected cache
+    // miss after cache warming phase"). Order deterministically to keep the
+    // entities — and therefore the cache key — stable across passes.
+    include: { teams: { orderBy: { id: "asc" } } },
   });
 
   return {
