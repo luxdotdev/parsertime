@@ -12,7 +12,7 @@ import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { isValidTimeframe, type Timeframe } from "@/lib/timeframe";
 import { computeTeamTsr, matchesAnyName } from "@/lib/tsr/team";
-import { addMonths, addWeeks, addYears } from "date-fns";
+import { addDays, addMonths, addWeeks, addYears, startOfDay } from "date-fns";
 import { Effect } from "effect";
 import { notFound } from "next/navigation";
 
@@ -27,32 +27,39 @@ export function computeDateRange(
   customFrom?: string,
   customTo?: string
 ): TeamDateRange | undefined {
-  const now = new Date();
+  // `to` anchors to the START OF TOMORROW rather than the exact instant. This
+  // range feeds `getCachedTeamWinrates`' cache key, and PPR renders each request
+  // twice (cache-warming + final prerender). A raw `new Date()` differs by
+  // milliseconds between the two passes, so the key would never match ("Unexpected
+  // cache miss after cache warming phase"). Quantizing to a day boundary makes the
+  // key change only once per day — matching the `cacheLife("days")` on the cached
+  // read — while start-of-tomorrow keeps all of today's scrims inside the window.
+  const to = startOfDay(addDays(new Date(), 1));
 
   switch (timeframe) {
     case "one-week":
-      return { from: addWeeks(now, -1), to: now };
+      return { from: addWeeks(to, -1), to };
     case "two-weeks":
-      return { from: addWeeks(now, -2), to: now };
+      return { from: addWeeks(to, -2), to };
     case "one-month":
-      return { from: addMonths(now, -1), to: now };
+      return { from: addMonths(to, -1), to };
     case "three-months":
-      return { from: addMonths(now, -3), to: now };
+      return { from: addMonths(to, -3), to };
     case "six-months":
-      return { from: addMonths(now, -6), to: now };
+      return { from: addMonths(to, -6), to };
     case "one-year":
-      return { from: addYears(now, -1), to: now };
+      return { from: addYears(to, -1), to };
     case "all-time":
       return undefined;
     case "custom": {
       if (customFrom && customTo) {
         const from = new Date(customFrom);
-        const to = new Date(customTo);
-        if (!isNaN(from.getTime()) && !isNaN(to.getTime())) {
-          return { from, to };
+        const customToDate = new Date(customTo);
+        if (!isNaN(from.getTime()) && !isNaN(customToDate.getTime())) {
+          return { from, to: customToDate };
         }
       }
-      return { from: addWeeks(now, -1), to: now };
+      return { from: addWeeks(to, -1), to };
     }
   }
 }
