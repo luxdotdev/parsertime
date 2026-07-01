@@ -8,6 +8,7 @@ import { positionalData, simulationTool } from "@/lib/flags";
 import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { Suspense } from "react";
 
 export async function generateMetadata(
@@ -78,6 +79,14 @@ async function TeamStatsNav({
 }) {
   const { teamId: rawTeamId } = await params;
   const teamId = parseInt(rawTeamId);
+
+  // This component lives in the layout's static-shell region and the flags
+  // below reach Edge Config `use cache` reads (via `vercelAdapter`). Force
+  // request-time so those never get prerendered into the shell and reject as a
+  // dynamic "use cache" hanging promise. `await params` above already defers on
+  // the fallback shell, but this makes the guard explicit and reorder-proof —
+  // same pattern as the footer and `AuthedAppHeader`.
+  await connection();
 
   const [positionalEnabled, simulationEnabled] = await Promise.all([
     positionalData(),
