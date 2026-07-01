@@ -1,6 +1,6 @@
 import { featureHash } from "@/lib/win-probability/features";
 import type { ModelArtifact } from "@/lib/win-probability/model";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { beforeEach, describe, expect, test, vi } from "vitest";
 
 const download = vi.fn();
 const upload = vi.fn();
@@ -13,9 +13,16 @@ vi.mock("@/lib/r2", () => ({
 vi.mock("@/lib/logger", () => ({
   Logger: { warn: vi.fn(), info: vi.fn(), error: vi.fn() },
 }));
+// `loadLatestArtifact` is now a `use cache` function; caching + TTL are Next's
+// responsibility (governed by `cacheLife`), not a hand-rolled module cache.
+// Outside the Next runtime these are no-ops so we can exercise the fetch logic.
+vi.mock("next/cache", () => ({
+  cacheLife: vi.fn(),
+  cacheTag: vi.fn(),
+  revalidateTag: vi.fn(),
+}));
 
 import {
-  __resetArtifactCacheForTests,
   loadLatestArtifact,
   publishArtifact,
 } from "@/lib/win-probability/artifact-store";
@@ -37,15 +44,9 @@ function artifact(overrides: Partial<ModelArtifact> = {}): ModelArtifact {
 }
 
 beforeEach(() => {
-  vi.useFakeTimers();
   download.mockReset();
   upload.mockReset();
   upload.mockResolvedValue({ key: "x" });
-  __resetArtifactCacheForTests();
-});
-
-afterEach(() => {
-  vi.useRealTimers();
 });
 
 function stubDownloads(pointerVersion: number, model: ModelArtifact) {
@@ -65,25 +66,17 @@ function stubDownloads(pointerVersion: number, model: ModelArtifact) {
 }
 
 describe("loadLatestArtifact", () => {
-  test("loads via the pointer and caches within the TTL", async () => {
+  test("resolves the live model via the pointer", async () => {
     stubDownloads(2, artifact());
-    const first = await loadLatestArtifact();
-    expect(first?.modelVersion).toBe(2);
-    expect(download).toHaveBeenCalledTimes(2); // pointer + model
-
-    await loadLatestArtifact();
-    expect(download).toHaveBeenCalledTimes(2); // cached
-
-    vi.advanceTimersByTime(61 * 60 * 1000);
-    await loadLatestArtifact();
-    expect(download).toHaveBeenCalledTimes(4); // TTL expired → refetched
+    const result = await loadLatestArtifact();
+    expect(result?.modelVersion).toBe(2);
+    expect(download).toHaveBeenCalledWith("wp-models/latest.json");
+    expect(download).toHaveBeenCalledWith("wp-models/model-v2.json");
   });
 
-  test("returns null on download failure without throwing, and caches the failure", async () => {
+  test("returns null on download failure without throwing", async () => {
     download.mockRejectedValue(new Error("boom"));
     expect(await loadLatestArtifact()).toBeNull();
-    expect(await loadLatestArtifact()).toBeNull();
-    expect(download).toHaveBeenCalledTimes(1); // one attempt per TTL window
   });
 
   test("returns null on feature hash mismatch", async () => {

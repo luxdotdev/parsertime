@@ -1,11 +1,13 @@
 import { Logger } from "@/lib/logger";
 import { r2 } from "@/lib/r2";
+import { cacheLife, cacheTag, revalidateTag } from "next/cache";
 import { featureHash } from "./features";
 import type { ModelArtifact } from "./model";
 
 const MODEL_PREFIX = "wp-models";
 const LATEST_KEY = `${MODEL_PREFIX}/latest.json`;
-export const ARTIFACT_TTL_MS = 60 * 60 * 1000;
+/** Cache tag for the live model artifact; busted by `publishArtifact`. */
+const ARTIFACT_TAG = "wp-artifact";
 
 type LatestPointer = { key: string; modelVersion: number };
 
@@ -31,12 +33,6 @@ function parseArtifact(raw: string): ModelArtifact | null {
   } catch {
     return null;
   }
-}
-
-let cache: { artifact: ModelArtifact | null; fetchedAt: number } | null = null;
-
-export function __resetArtifactCacheForTests(): void {
-  cache = null;
 }
 
 async function fetchLatest(): Promise<ModelArtifact | null> {
@@ -68,17 +64,24 @@ async function fetchLatest(): Promise<ModelArtifact | null> {
 }
 
 /**
- * TTL-cached loader. Returns null — never throws — on any failure; callers
- * hide the WP surface when no model is servable. Failures are cached too,
- * so an R2 outage costs one attempt per TTL window.
+ * Loads the live model artifact. Returns null — never throws — on any failure;
+ * callers hide the WP surface when no model is servable (failures are cached
+ * too, so an R2 outage costs one fetch per revalidation window).
+ *
+ * Wrapped in `use cache` so Next governs the TTL. This is deliberate: the old
+ * hand-rolled `Date.now()` module TTL read the wall clock, and this loader is
+ * the FIRST call inside `getCachedMatchStory`'s `use cache` body — so that
+ * `Date.now()` executed inside a cache scope, turning `getCachedMatchStory`
+ * into a dynamic `use cache` that never committed. The result: a
+ * HANGING_PROMISE_REJECTION and an 8.9MB model re-download on every map render.
+ * `fetchLatest()` takes no arguments and reads only the deterministic
+ * `featureHash()`, so it is safe to cache; `publishArtifact` busts the tag.
  */
 export async function loadLatestArtifact(): Promise<ModelArtifact | null> {
-  if (cache !== null && Date.now() - cache.fetchedAt < ARTIFACT_TTL_MS) {
-    return cache.artifact;
-  }
-  const artifact = await fetchLatest();
-  cache = { artifact, fetchedAt: Date.now() };
-  return artifact;
+  "use cache";
+  cacheLife("hours");
+  cacheTag(ARTIFACT_TAG);
+  return fetchLatest();
 }
 
 /** Versioned publish: model object first, pointer advance last — a crash
@@ -108,5 +111,8 @@ export async function publishArtifact(
     ),
     contentType: "application/json",
   });
+  // Drop the cached artifact so the freshly-published model is served
+  // immediately instead of waiting out the `cacheLife` window.
+  revalidateTag(ARTIFACT_TAG, "hours");
   return { key, modelVersion };
 }
