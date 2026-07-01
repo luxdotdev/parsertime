@@ -8,6 +8,13 @@ export async function resolveMapDataId(mapId: number): Promise<number> {
   const mapData = await prisma.mapData.findFirst({
     where: { mapId },
     select: { id: true },
+    // A map can have more than one MapData row (e.g. a re-upload). Without an
+    // explicit order, `findFirst` returns an arbitrary row that can differ
+    // between calls — and this id feeds cached-function arguments (e.g.
+    // getCachedMatchStory), so a non-deterministic result breaks the cache key
+    // between PPR's warming and final prerender passes ("Unexpected cache miss
+    // after cache warming phase"). Pin the oldest row for a stable result.
+    orderBy: { id: "asc" },
   });
   if (!mapData) {
     const directCheck = await prisma.mapData.findUnique({
@@ -32,6 +39,11 @@ export async function resolveScrimMapDataId(
   const mapData = await prisma.mapData.findFirst({
     where: { scrimId, mapId },
     select: { id: true },
+    // Deterministic pick: a map can have multiple MapData rows and this id is a
+    // cached-function argument across every map tab, so an unordered `findFirst`
+    // makes the cache key differ between PPR passes ("Unexpected cache miss
+    // after cache warming phase" → dynamic "use cache" hanging promise).
+    orderBy: { id: "asc" },
   });
   if (!mapData) {
     throw new Error(`No MapData found for scrimId=${scrimId}, mapId=${mapId}`);
