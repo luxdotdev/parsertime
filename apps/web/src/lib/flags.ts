@@ -16,20 +16,47 @@ type Entities = {
   };
 };
 
+/**
+ * Retry an idempotent read a few times on a transient failure. `identify` does
+ * two DB reads (session + user/teams) that run during PPR's prerender; a
+ * one-off pool/connection blip ("Connection closed") there makes the flag fall
+ * back to its defaultValue in only one of the two prerender passes, so the
+ * passes disagree on the flag/entities cache key and log an "Unexpected cache
+ * miss". Retrying the reads keeps the outcome stable across a blip. Both ops
+ * are read-only and idempotent, so replaying them is safe.
+ */
+async function withDbRetry<T>(op: () => Promise<T>, attempts = 3): Promise<T> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    try {
+      return await op();
+    } catch (error) {
+      lastError = error;
+      if (attempt < attempts - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 50 * (attempt + 1)));
+      }
+    }
+  }
+  throw lastError;
+}
+
 const identify = dedupe(async (): Promise<Entities> => {
-  const session = await auth();
+  const session = await withDbRetry(() => auth());
   if (!session) return { user: undefined, teams: undefined };
 
-  const user = await prisma.user.findUnique({
-    where: { email: session?.user?.email },
-    // `teams` feeds `idArray` below, which becomes part of the flag evaluation
-    // entities. Under `partialPrefetching`, flags are precomputed during
-    // prerendering, so a non-deterministic team order makes the cache-warming
-    // and final prerender passes disagree on the cache key ("Unexpected cache
-    // miss after cache warming phase"). Order deterministically to keep the
-    // entities — and therefore the cache key — stable across passes.
-    include: { teams: { orderBy: { id: "asc" } } },
-  });
+  const user = await withDbRetry(() =>
+    prisma.user.findUnique({
+      where: { email: session?.user?.email },
+      // `teams` feeds `idArray` below, which becomes part of the flag
+      // evaluation entities. Under `partialPrefetching`, flags are precomputed
+      // during prerendering, so a non-deterministic team order makes the
+      // cache-warming and final prerender passes disagree on the cache key
+      // ("Unexpected cache miss after cache warming phase"). Order
+      // deterministically to keep the entities — and therefore the cache key —
+      // stable across passes.
+      include: { teams: { orderBy: { id: "asc" } } },
+    })
+  );
 
   return {
     user: user
