@@ -219,18 +219,6 @@ export const positionalData = flag<boolean, Entities>({
   identify,
 });
 
-export const newLandingPage = flag<boolean, Entities>({
-  key: "new-landing-page",
-  adapter: vercelAdapter(),
-  options: [
-    { value: true, label: "Enabled" },
-    { value: false, label: "Disabled" },
-  ],
-  defaultValue: false,
-  description: "Show the redesigned landing page",
-  identify,
-});
-
 export const aiChat = flag<boolean, Entities>({
   key: "ai-chat",
   adapter: vercelAdapter(),

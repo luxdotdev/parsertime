@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { track } from "@vercel/analytics";
 import type { Route } from "next";
 import Link from "next/link";
+import { useIsLoggedIn } from "./logged-in-context";
 
 type CtaSectionProps = {
   subtitle: string;
@@ -11,7 +12,6 @@ type CtaSectionProps = {
   description: string;
   getStarted: string;
   learnMore: string;
-  isLoggedIn: boolean;
   learnMoreHref?: string;
 };
 
@@ -21,9 +21,9 @@ export function CtaSection({
   description,
   getStarted,
   learnMore,
-  isLoggedIn,
   learnMoreHref = "/about",
 }: CtaSectionProps) {
+  const isLoggedIn = useIsLoggedIn();
   return (
     <section
       className="relative overflow-hidden py-28 sm:py-36"

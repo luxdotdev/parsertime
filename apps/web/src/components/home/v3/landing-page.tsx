@@ -6,11 +6,13 @@ import { StructuredData } from "@/components/home/new-landing/structured-data";
 import { TrackedLink } from "@/components/home/new-landing/tracked-link";
 import { TrackedSection } from "@/components/home/new-landing/tracked-section";
 import { auth } from "@/lib/auth";
+import { getStaticTranslations } from "@/lib/metadata-i18n";
 import { get } from "@vercel/edge-config";
+import { cacheLife } from "next/cache";
 import type { Route } from "next";
-import { getTranslations } from "next-intl/server";
-import type { SVGProps } from "react";
+import { Suspense, type SVGProps } from "react";
 import { CtaSection } from "./cta-section";
+import { LoggedInHydrator, LoggedInProvider } from "./logged-in-context";
 import { DataPipeline } from "./data-pipeline";
 import { Features } from "./features";
 import { Hero } from "./hero";
@@ -66,20 +68,22 @@ const footerNavigation: FooterNavigation = {
   ],
 };
 
+/**
+ * The whole page prerenders into the static shell: stats and latest-updates
+ * reads are cached, copy resolves from the default-locale catalog (a
+ * `getTranslations` call would read the LOCALE cookie and force the page
+ * dynamic), and the only per-visitor bit — whether the CTAs say "Dashboard" —
+ * streams in through `LoggedInIsland` after first paint.
+ */
 export async function V3LandingPage() {
-  const [
-    { statsCount, killCount, mapCount, teamCount },
-    latestUpdates,
-    t,
-    session,
-  ] = await Promise.all([
-    getLandingPageStats(),
-    get<{ title: string; url: Route }>("latestUpdates"),
-    getTranslations("landingPage"),
-    auth(),
-  ]);
+  const t = getStaticTranslations("landingPage");
+  const [{ statsCount, killCount, mapCount, teamCount }, latestUpdates, year] =
+    await Promise.all([
+      getLandingPageStats(),
+      getLatestUpdates(),
+      getCopyrightYear(),
+    ]);
 
-  const isLoggedIn = !!session?.user;
   const hasLatestUpdates =
     typeof latestUpdates?.title === "string" &&
     latestUpdates.title.trim().length > 0 &&
@@ -111,8 +115,12 @@ export async function V3LandingPage() {
   ];
 
   return (
-    <div className="bg-background text-foreground">
-      <StructuredData teamCount={teamCount} />
+    <LoggedInProvider>
+      <div className="bg-background text-foreground">
+        <Suspense fallback={null}>
+          <LoggedInIsland />
+        </Suspense>
+        <StructuredData teamCount={teamCount} />
       <a
         href="#main-content"
         className="focus-visible:bg-background focus-visible:text-foreground sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:top-4 focus-visible:left-4 focus-visible:z-50 focus-visible:rounded-md focus-visible:px-4 focus-visible:py-2 focus-visible:text-sm focus-visible:font-semibold focus-visible:shadow-lg"
@@ -135,7 +143,6 @@ export async function V3LandingPage() {
             }
             latestUpdatesUrl={hasLatestUpdates ? latestUpdates.url : undefined}
             stats={statsData}
-            isLoggedIn={isLoggedIn}
           />
         </TrackedSection>
 
@@ -327,7 +334,6 @@ export async function V3LandingPage() {
             description={t("cta.description")}
             getStarted={t("cta.getStarted")}
             learnMore={t("cta.learnMore")}
-            isLoggedIn={isLoggedIn}
           />
         </TrackedSection>
       </main>
@@ -354,12 +360,37 @@ export async function V3LandingPage() {
               ))}
             </div>
             <p className="text-muted-foreground mt-8 text-xs leading-5 md:order-1 md:mt-0">
-              &copy; 2024&ndash;{new Date().getFullYear()}{" "}
+              &copy; 2024&ndash;{year}{" "}
               {t("footer.copyright")}
             </p>
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </LoggedInProvider>
   );
+}
+
+async function getLatestUpdates() {
+  "use cache";
+  cacheLife("hours");
+  return get<{ title: string; url: Route }>("latestUpdates");
+}
+
+/**
+ * `new Date()` is disallowed in prerendered shells (nondeterministic across
+ * PPR passes); inside `use cache` it executes once when the cache entry is
+ * filled, which is exactly the behavior a copyright year wants.
+ */
+// oxlint-disable-next-line typescript/require-await -- "use cache" must be async
+async function getCopyrightYear() {
+  "use cache";
+  cacheLife("days");
+  return new Date().getFullYear();
+}
+
+/** The only per-visitor read on the landing page, streamed after the shell. */
+async function LoggedInIsland() {
+  const session = await auth();
+  return <LoggedInHydrator isLoggedIn={!!session?.user} />;
 }

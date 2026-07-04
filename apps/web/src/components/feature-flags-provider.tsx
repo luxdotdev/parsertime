@@ -11,7 +11,6 @@ const defaultFlags: FeatureFlags = {
   dataLabelingEnabled: false,
   simulationToolEnabled: false,
   ultimateImpactToolEnabled: false,
-  newLandingPageEnabled: false,
   tempoChartEnabled: false,
   aiChatEnabled: false,
   positionalDataEnabled: false,

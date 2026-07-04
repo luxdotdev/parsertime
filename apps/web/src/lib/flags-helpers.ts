@@ -4,7 +4,6 @@ import {
   dataLabeling,
   faceitScouting,
   mapComparison,
-  newLandingPage,
   overviewCard,
   positionalData,
   queryBuilder,
@@ -56,7 +55,6 @@ export async function getAllFlags(): Promise<FeatureFlags> {
     ultimateImpactToolEnabled,
     tempoChartEnabled,
     positionalDataEnabled,
-    newLandingPageEnabled,
     aiChatEnabled,
     tournamentEnabled,
     coachingCanvasEnabled,
@@ -72,7 +70,6 @@ export async function getAllFlags(): Promise<FeatureFlags> {
     simulationToolEnabled,
     ultimateImpactToolEnabled,
     tempoChartEnabled,
-    newLandingPageEnabled,
     aiChatEnabled,
     positionalDataEnabled,
     tournamentEnabled,
@@ -90,7 +87,6 @@ export type FeatureFlags = {
   simulationToolEnabled: boolean;
   ultimateImpactToolEnabled: boolean;
   tempoChartEnabled: boolean;
-  newLandingPageEnabled: boolean;
   aiChatEnabled: boolean;
   positionalDataEnabled: boolean;
   tournamentEnabled: boolean;
@@ -115,7 +111,6 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     simulationToolEnabled,
     ultimateImpactToolEnabled,
     tempoChartEnabled,
-    newLandingPageEnabled,
     aiChatEnabled,
     positionalDataEnabled,
     tournamentEnabled,
@@ -130,7 +125,6 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     simulationTool(),
     ultimateImpactTool(),
     tempoChart(),
-    newLandingPage(),
     aiChat(),
     positionalData(),
     tournament(),
@@ -147,7 +141,6 @@ export async function resolveAllFlags(): Promise<FeatureFlags> {
     simulationToolEnabled,
     ultimateImpactToolEnabled,
     tempoChartEnabled,
-    newLandingPageEnabled,
     aiChatEnabled,
     positionalDataEnabled,
     tournamentEnabled,
@@ -166,7 +159,6 @@ export function toFlagValues(flags: FeatureFlags): Record<string, boolean> {
     "simulation-tool": flags.simulationToolEnabled,
     "ultimate-impact-tool": flags.ultimateImpactToolEnabled,
     "tempo-chart": flags.tempoChartEnabled,
-    "new-landing-page": flags.newLandingPageEnabled,
     "ai-chat": flags.aiChatEnabled,
     "positional-data": flags.positionalDataEnabled,
     tournament: flags.tournamentEnabled,
