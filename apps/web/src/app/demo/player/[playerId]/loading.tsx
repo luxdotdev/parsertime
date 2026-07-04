@@ -7,10 +7,10 @@ import {
 } from "@/components/ui/card";
 import { CardIcon } from "@/components/ui/card-icon";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getTranslations } from "next-intl/server";
+import { getStaticTranslations } from "@/lib/metadata-i18n";
 
-export default async function PlayerDashboardLoading() {
-  const t = await getTranslations("mapPage.player.overview");
+export default function PlayerDashboardLoading() {
+  const t = getStaticTranslations("mapPage.player.overview");
 
   return (
     <div className="flex-col md:flex">

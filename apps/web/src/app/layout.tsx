@@ -1,10 +1,16 @@
-import { AppBootSkeleton } from "@/components/app-boot-skeleton";
-import { BrandThemeProvider } from "@/components/brand-theme-provider";
+import {
+  BrandThemeHydrator,
+  BrandThemeProvider,
+} from "@/components/brand-theme-provider";
 import { CommandDialogMenu } from "@/components/command-menu";
 import { CommandMenuProvider } from "@/components/command-menu-provider";
 import { DevTools } from "@/components/devtools";
-import { FeatureFlagsProvider } from "@/components/feature-flags-provider";
+import {
+  FeatureFlagsHydrator,
+  FeatureFlagsProvider,
+} from "@/components/feature-flags-provider";
 import { BetaBanner } from "@/components/home/beta-banner";
+import { IntlHydrator, IntlProvider } from "@/components/intl-provider";
 import { AppSettingsProvider } from "@/components/settings/app-settings-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -14,7 +20,7 @@ import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { register } from "@/instrumentation";
 import { auth } from "@/lib/auth";
-import { defaultLocale } from "@/i18n/config";
+import { defaultLocale, type Locale, locales } from "@/i18n/config";
 import { DSG_TEAM_ID } from "@/lib/brand-theme";
 import { WebVitals } from "@/lib/axiom/client";
 import { getAllFlags, toFlagValues } from "@/lib/flags-helpers";
@@ -25,13 +31,14 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { FlagValues } from "flags/react";
 import type { Metadata } from "next";
-import { NextIntlClientProvider } from "next-intl";
-import { Suspense, type ReactNode } from "react";
-import { getLocale, getMessages } from "next-intl/server";
+import type { AbstractIntlMessages } from "next-intl";
+import { Suspense } from "react";
+import { cookies } from "next/headers";
 import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import { Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import enMessages from "../../messages/en.json";
 import "./globals.css";
 
 export function generateMetadata(): Metadata {
@@ -95,11 +102,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           "font-sans h-full antialiased"
         )}
       >
-        {/* next-themes renders its anti-flash script here, in the static
-            document shell, so it runs before first paint and applies the
-            stored theme. If it streamed in with the request-data providers
-            below, the page would paint light first and then flip to dark.
-            defaultTheme stays request-independent so the shell prerenders. */}
+        {/* Everything here is request-independent so the ENTIRE provider tree
+            prerenders into every route's static shell — pages paint their own
+            content instantly instead of waiting behind a root boundary.
+            Request-derived values (locale override, flags, session-derived
+            bits) stream in as self-contained islands below and hydrate the
+            stateful providers after first paint. */}
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -107,73 +115,115 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           themes={["light", "dark", "disguised"]}
           disableTransitionOnChange
         >
-          {/* The provider tree depends on request-time data (locale, auth,
-              feature flags), so it streams under Suspense while the document
-              shell prerenders. The fallback mirrors the app chrome so a hard
-              reload shows the app loading rather than a blank document. */}
-          <Suspense fallback={<AppBootSkeleton />}>
-            <RootProviders>{children}</RootProviders>
-          </Suspense>
+          <NuqsAdapter>
+            <QueryProvider>
+              <TooltipProvider>
+                <IntlProvider
+                  // Same shape next-intl consumes at runtime; the JSON import
+                  // type is too wide for AbstractIntlMessages (see i18n/request.ts).
+                  defaultMessages={enMessages as unknown as AbstractIntlMessages}
+                >
+                  <CommandMenuProvider>
+                    <AppSettingsProvider>
+                      <BrandThemeProvider>
+                        <FeatureFlagsProvider>
+                          <BetaBanner />
+                          {children}
+                          <Suspense fallback={null}>
+                            <LocaleIsland />
+                          </Suspense>
+                          <Suspense fallback={null}>
+                            <FlagsIsland />
+                          </Suspense>
+                          <Suspense fallback={null}>
+                            <SessionIsland />
+                          </Suspense>
+                        </FeatureFlagsProvider>
+                      </BrandThemeProvider>
+                    </AppSettingsProvider>
+                  </CommandMenuProvider>
+                </IntlProvider>
+              </TooltipProvider>
+              <Toaster />
+              <SpeedInsights />
+              <Analytics />
+              <Suspense fallback={null}>
+                <UsageBeacon />
+              </Suspense>
+              <DevTools />
+              <WebVitals />
+            </QueryProvider>
+          </NuqsAdapter>
         </ThemeProvider>
       </body>
     </html>
   );
 }
 
-async function RootProviders({ children }: { children: ReactNode }) {
-  const locale = await getLocale();
-  const messages = await getMessages();
-  const session = await auth();
-  let user = null;
+/**
+ * Streams the cookie-selected locale into the static intl provider. Reads the
+ * cookie directly (not `getLocale`) to guarantee this island is request-time.
+ * Default-locale users get no override — and no message payload — at all.
+ */
+async function LocaleIsland() {
+  const cookieLocale = (await cookies()).get("LOCALE")?.value;
+  const locale: Locale = locales.some((l) => l.code === cookieLocale)
+    ? (cookieLocale as Locale)
+    : defaultLocale;
+  if (locale === defaultLocale) return null;
 
-  if (session) {
-    user = await AppRuntime.runPromise(
-      UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
-    );
-  }
+  const messages = (
+    (await import(`../../messages/${locale}.json`)) as {
+      default: AbstractIntlMessages;
+    }
+  ).default;
 
-  let isDsgMember = false;
+  return <IntlHydrator locale={locale} messages={messages} />;
+}
 
-  if (session) {
-    isDsgMember = await AppRuntime.runPromise(
-      UserService.pipe(
-        Effect.flatMap((svc) =>
-          svc.isMemberOfTeam(session.user.email, DSG_TEAM_ID)
-        )
-      )
-    );
-  }
-
+/**
+ * Streams real flag values (decoded from the proxy's precomputed code) into
+ * the static flags provider, plus the Flags Explorer values script.
+ */
+async function FlagsIsland() {
   const flags = await getAllFlags();
 
   return (
-    <NuqsAdapter>
-      <QueryProvider>
-        <TooltipProvider>
-          <NextIntlClientProvider locale={locale} messages={messages}>
-            <CommandMenuProvider>
-              <AppSettingsProvider>
-                <BrandThemeProvider canUseDisguised={isDsgMember}>
-                  <FeatureFlagsProvider flags={flags}>
-                    <FlagValues values={toFlagValues(flags)} />
-                    <BetaBanner />
-                    {children}
-                    <CommandDialogMenu user={user} />
-                  </FeatureFlagsProvider>
-                </BrandThemeProvider>
-              </AppSettingsProvider>
-            </CommandMenuProvider>
-          </NextIntlClientProvider>
-        </TooltipProvider>
-        <Toaster />
-        <SpeedInsights />
-        <Analytics />
-        <Suspense fallback={null}>
-          <UsageBeacon />
-        </Suspense>
-        <DevTools />
-        <WebVitals />
-      </QueryProvider>
-    </NuqsAdapter>
+    <>
+      <FeatureFlagsHydrator flags={flags} />
+      <FlagValues values={toFlagValues(flags)} />
+    </>
+  );
+}
+
+/**
+ * Streams the session-derived extras: the command-menu dialog (its `user`
+ * prop only feeds the lazily-opened bug-report form) and the DSG brand-theme
+ * unlock. Nothing visible blocks on these.
+ */
+async function SessionIsland() {
+  const session = await auth();
+  const [user, isDsgMember] = session
+    ? await Promise.all([
+        AppRuntime.runPromise(
+          UserService.pipe(
+            Effect.flatMap((svc) => svc.getUser(session.user.email))
+          )
+        ),
+        AppRuntime.runPromise(
+          UserService.pipe(
+            Effect.flatMap((svc) =>
+              svc.isMemberOfTeam(session.user.email, DSG_TEAM_ID)
+            )
+          )
+        ),
+      ])
+    : [null, false];
+
+  return (
+    <>
+      <BrandThemeHydrator canUseDisguised={isDsgMember} />
+      <CommandDialogMenu user={user} />
+    </>
   );
 }

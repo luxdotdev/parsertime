@@ -7,10 +7,10 @@ import {
 } from "@/components/ui/card";
 import { CardIcon } from "@/components/ui/card-icon";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getTranslations } from "next-intl/server";
+import { getStaticTranslations } from "@/lib/metadata-i18n";
 
-export default async function MapDashboardLoading() {
-  const t = await getTranslations("mapPage.overview");
+export default function MapDashboardLoading() {
+  const t = getStaticTranslations("mapPage.overview");
 
   return (
     <div className="flex-col md:flex">

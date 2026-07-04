@@ -2,13 +2,13 @@ import { DirectionalTransition } from "@/components/directional-transition";
 import { StatPanel } from "@/components/player/stat-panel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getTranslations } from "next-intl/server";
+import { getStaticTranslations } from "@/lib/metadata-i18n";
 
 const STAT_BLOCK_SLOTS = ["a", "b", "c", "d"] as const;
 const HERO_STAT_SLOTS = ["a", "b", "c", "d", "e", "f"] as const;
 
-export default async function PlayerDashboardLoading() {
-  const t = await getTranslations("mapPage.player");
+export default function PlayerDashboardLoading() {
+  const t = getStaticTranslations("mapPage.player");
 
   return (
     <DirectionalTransition>

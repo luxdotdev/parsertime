@@ -1,10 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getTranslations } from "next-intl/server";
+import { getStaticTranslations } from "@/lib/metadata-i18n";
 
-export default async function StatsLoading() {
-  const t = await getTranslations("statsPage.heroStats");
+export default function StatsLoading() {
+  const t = getStaticTranslations("statsPage.heroStats");
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">

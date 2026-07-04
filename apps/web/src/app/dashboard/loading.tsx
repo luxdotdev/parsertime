@@ -2,10 +2,10 @@ import { DirectionalTransition } from "@/components/directional-transition";
 import { ScrimCardSkeleton } from "@/components/dashboard/scrim-card-skeleton";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getTranslations } from "next-intl/server";
+import { getStaticTranslations } from "@/lib/metadata-i18n";
 
-export default async function DashboardLoading() {
-  const t = await getTranslations("dashboard");
+export default function DashboardLoading() {
+  const t = getStaticTranslations("dashboard");
 
   return (
     <DirectionalTransition>

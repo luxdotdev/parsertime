@@ -13,6 +13,16 @@ import enMessages from "../../messages/en.json";
  * `NextIntlClientProvider` in the root layout.
  */
 export function getMetadataTranslations(namespace?: string) {
+  return getStaticTranslations(namespace);
+}
+
+/**
+ * The same cookie-free, default-locale translator for static-shell UI:
+ * `loading.tsx` skeletons and Suspense fallbacks. Fallbacks must be
+ * prerenderable — `getTranslations` reads the LOCALE cookie and would force
+ * the shell dynamic. The localized content replaces them when it streams.
+ */
+export function getStaticTranslations(namespace?: string) {
   // The app does not augment next-intl's global `Messages` type, so cast to the
   // translator's default (loosely-typed) options instead of having it infer a
   // strict namespace union from the imported catalog.
