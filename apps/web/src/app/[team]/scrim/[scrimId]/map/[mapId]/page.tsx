@@ -241,8 +241,11 @@ async function MapPageContent({
         </div>
         <ViewTransition enter="slide-up" default="none">
           <MapTabs tabs={tabs} activeTab={activeTab}>
+            {/* No key on this boundary: switching tabs re-suspends it inside
+                MapTabs' transition, so the previous tab stays visible (dimmed,
+                under the dot-matrix loader) instead of flashing the skeleton.
+                The skeleton only shows on the initial stream. */}
             <Suspense
-              key={activeTab}
               fallback={
                 <ViewTransition exit="slide-down">
                   <MapTabsSkeleton />

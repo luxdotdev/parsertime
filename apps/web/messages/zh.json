@@ -2187,6 +2187,7 @@
     "back": "返回比赛概览",
     "dashboard": "仪表板",
     "tabsLabel": "地图分区",
+    "loadingTab": "正在加载标签页数据",
     "mobileBanner": {
       "message": "为了获得最佳体验，建议使用更大的屏幕。",
       "dismiss": "关闭"

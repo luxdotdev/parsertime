@@ -2187,6 +2187,7 @@
     "back": "스크림 개요로 돌아가기",
     "dashboard": "대시보드",
     "tabsLabel": "맵 섹션",
+    "loadingTab": "탭 데이터 불러오는 중",
     "mobileBanner": {
       "message": "최상의 경험을 위해 더 큰 화면 사용을 권장합니다.",
       "dismiss": "닫기"

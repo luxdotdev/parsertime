@@ -2187,6 +2187,7 @@
     "back": "Back to scrim overview",
     "dashboard": "Dashboard",
     "tabsLabel": "Map sections",
+    "loadingTab": "Loading tab data",
     "mobileBanner": {
       "message": "For the best experience, we recommend using a larger screen.",
       "dismiss": "Dismiss"
