@@ -1,6 +1,7 @@
 import { AppHeader } from "@/components/app-header";
 import { TeamSwitcher } from "@/components/dashboard/team-switcher";
 import { Footer } from "@/components/footer";
+import { HeaderSkeleton } from "@/components/header-skeleton";
 import { TeamSwitcherProvider } from "@/components/team-switcher-provider";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AppRuntime } from "@/data/runtime";
@@ -29,7 +30,7 @@ export function DashboardLayout({
         Skip to content
       </a>
       <div className="min-h-[90vh] flex-col md:flex">
-        <Suspense fallback={<div className="border-border h-14 border-b" />}>
+        <Suspense fallback={<HeaderSkeleton />}>
           <AuthedAppHeader guestMode={guestMode} />
         </Suspense>
         <main id="main-content">
