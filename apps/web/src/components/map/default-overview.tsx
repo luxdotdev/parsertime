@@ -15,6 +15,7 @@ import {
 } from "@/data/scrim/ult-helpers";
 import type { PlayerUltSummary, UltEfficiency } from "@/data/scrim/types";
 import { positionalData } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { filterUtilityRoundStartSwaps } from "@/data/team/hero-swap-service";
@@ -254,7 +255,8 @@ export async function DefaultOverview({
   const team1Name = matchDetails?.team_1_name ?? t("team1");
   const team2Name = matchDetails?.team_2_name ?? t("team2");
 
-  const positionalEnabled = positionalDataOverride ?? (await positionalData());
+  const positionalEnabled =
+    positionalDataOverride ?? (await getFlag(positionalData));
 
   const [abilityTimingAnalysis, rotationDeathAnalysis, killfeedCalibration] =
     await Promise.all([

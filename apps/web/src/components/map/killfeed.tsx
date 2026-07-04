@@ -9,6 +9,7 @@ import {
   serializeCalibrationData,
 } from "@/data/map";
 import { coachingCanvas, positionalData } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { removeDuplicateRows, toTimestamp } from "@/lib/utils";
@@ -48,10 +49,10 @@ export async function Killfeed({
     ),
     positionalDataOverride != null
       ? Promise.resolve(positionalDataOverride)
-      : positionalData(),
+      : getFlag(positionalData),
     coachingCanvasOverride != null
       ? Promise.resolve(coachingCanvasOverride)
-      : coachingCanvas(),
+      : getFlag(coachingCanvas),
   ]);
 
   const calibrationData = positionalEnabled

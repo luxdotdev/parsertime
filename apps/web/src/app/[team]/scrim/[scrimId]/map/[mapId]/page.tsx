@@ -17,6 +17,7 @@ import { UserService } from "@/data/user";
 import { defaultLocale } from "@/i18n/config";
 import { auth, isAuthedToViewMap } from "@/lib/auth";
 import { positionalData, tempoChart } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { resolveScrimMapDataId } from "@/lib/map-data-resolver";
 import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
@@ -156,8 +157,8 @@ async function MapPageContent({
       },
       select: { content: true },
     }),
-    tempoChart(),
-    positionalData(),
+    getFlag(tempoChart),
+    getFlag(positionalData),
     getCachedMatchStory(id, mapDataId),
   ]);
 

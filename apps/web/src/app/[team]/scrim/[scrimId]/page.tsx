@@ -35,6 +35,7 @@ import { UserService } from "@/data/user";
 import { defaultLocale } from "@/i18n/config";
 import { auth, canManageTeam, isAuthedToViewScrim } from "@/lib/auth";
 import { mapComparison, overviewCard, positionalData } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -150,9 +151,9 @@ export default async function ScrimDashboardPage(
       where: { id },
       select: { guestMode: true },
     }),
-    mapComparison(),
-    overviewCard(),
-    positionalData(),
+    getFlag(mapComparison),
+    getFlag(overviewCard),
+    getFlag(positionalData),
   ]);
   if (!scrim) notFound();
 

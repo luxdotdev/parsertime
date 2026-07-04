@@ -9,6 +9,7 @@ import { ScoutingService } from "@/data/scouting";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { scoutingTool } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
@@ -60,7 +61,7 @@ export default async function EditScrimPage(
       AppRuntime.runPromise(
         ScoutingService.pipe(Effect.flatMap((svc) => svc.getScoutingTeams()))
       ),
-      scoutingTool(),
+      getFlag(scoutingTool),
     ]
   );
 
