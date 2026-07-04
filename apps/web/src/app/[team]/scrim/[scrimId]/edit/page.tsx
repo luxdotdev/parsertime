@@ -1,3 +1,4 @@
+import { NoAuthCard } from "@/components/auth/no-auth";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { DangerZone } from "@/components/scrim/danger-zone";
 import { EditScrimForm } from "@/components/scrim/edit-scrim-form";
@@ -8,7 +9,7 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { ScoutingService } from "@/data/scouting";
 import { UserService } from "@/data/user";
-import { auth } from "@/lib/auth";
+import { auth, isAuthedToViewScrim } from "@/lib/auth";
 import { scoutingTool } from "@/lib/flags";
 import { getFlag } from "@/lib/flags-helpers";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
@@ -64,6 +65,10 @@ async function EditScrimContent({
   params: PageProps<"/[team]/scrim/[scrimId]/edit">["params"];
 }) {
   const { team, scrimId } = await params;
+  // The route's access gate — the [scrimId] layout no longer gates the
+  // subtree (a layout gate adds a chrome-less loading phase above every
+  // child route).
+  if (!(await isAuthedToViewScrim(parseInt(scrimId)))) return <NoAuthCard />;
   const scrim = await AppRuntime.runPromise(
     ScrimService.pipe(Effect.flatMap((svc) => svc.getScrim(parseInt(scrimId))))
   );

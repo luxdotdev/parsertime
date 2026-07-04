@@ -14,9 +14,17 @@ import { Suspense, type ReactNode } from "react";
 export function DashboardLayout({
   children,
   guestMode,
+  guestModeSource,
 }: {
   children: ReactNode;
   guestMode?: boolean;
+  /**
+   * Late-resolved guest-mode read for routes whose guest state depends on
+   * route params (e.g. guest-shared scrims). It runs inside the streamed
+   * header — after `connection()` — so the caller's shell stays static; a
+   * plain `guestMode` boolean takes precedence when provided.
+   */
+  guestModeSource?: () => Promise<boolean>;
 }) {
   // The page chrome (skip link, layout structure, Footer) is static so any
   // route using this layout paints instantly; the auth-derived header and the
@@ -31,7 +39,10 @@ export function DashboardLayout({
       </a>
       <div className="min-h-[90vh] flex-col md:flex">
         <Suspense fallback={<HeaderSkeleton />}>
-          <AuthedAppHeader guestMode={guestMode} />
+          <AuthedAppHeader
+            guestMode={guestMode}
+            guestModeSource={guestModeSource}
+          />
         </Suspense>
         <main id="main-content">
           <Suspense fallback={<DashboardContentSkeleton />}>
@@ -56,12 +67,20 @@ function DashboardContentSkeleton() {
   );
 }
 
-async function AuthedAppHeader({ guestMode }: { guestMode?: boolean }) {
+async function AuthedAppHeader({
+  guestMode,
+  guestModeSource,
+}: {
+  guestMode?: boolean;
+  guestModeSource?: () => Promise<boolean>;
+}) {
   // This header is per-user (auth-derived) and always streams behind its
   // Suspense boundary, so mark it request-time up front. Without this, PPR
   // attempts to prerender it and trips on `Date.now()` inside the Effect
   // runtime before the auth read defers it.
   await connection();
+  const resolvedGuestMode =
+    guestMode ?? (guestModeSource ? await guestModeSource() : undefined);
   const session = await auth();
   const user = await AppRuntime.runPromise(
     UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
@@ -72,7 +91,7 @@ async function AuthedAppHeader({ guestMode }: { guestMode?: boolean }) {
       switcher={session && <TeamSwitcher session={session} />}
       session={session}
       user={user}
-      guestMode={guestMode}
+      guestMode={resolvedGuestMode}
     />
   );
 }

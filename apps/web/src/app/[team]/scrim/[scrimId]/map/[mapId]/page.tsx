@@ -1,4 +1,5 @@
 import { AppHeader } from "@/components/app-header";
+import { NoAuthCard } from "@/components/auth/no-auth";
 import { DirectionalTransition } from "@/components/directional-transition";
 import { ActiveMapTab } from "@/components/map/active-map-tab";
 import { HeroBans } from "@/components/map/hero-bans";
@@ -109,6 +110,12 @@ async function MapPageContent({
   const params = await paramsPromise;
   const searchParams = await searchParamsPromise;
   const id = parseInt(params.mapId);
+  // The route's access gate — the [scrimId] layout no longer gates the
+  // subtree (a layout gate adds a chrome-less loading phase above every
+  // child route).
+  if (!(await isAuthedToViewMap(parseInt(params.scrimId), id))) {
+    return <NoAuthCard />;
+  }
   const mapDataId = await resolveScrimMapDataId(parseInt(params.scrimId), id);
   const session = await auth();
   const user = await AppRuntime.runPromise(

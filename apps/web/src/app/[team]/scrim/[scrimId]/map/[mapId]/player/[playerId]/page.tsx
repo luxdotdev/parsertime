@@ -1,4 +1,5 @@
 import { AppHeader } from "@/components/app-header";
+import { NoAuthCard } from "@/components/auth/no-auth";
 import { PlayerCharts } from "@/components/charts/player/player-charts";
 import { DirectionalTransition } from "@/components/directional-transition";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
@@ -14,7 +15,7 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { defaultLocale } from "@/i18n/config";
-import { auth } from "@/lib/auth";
+import { auth, isAuthedToViewMap } from "@/lib/auth";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import {
   getMetadataTranslations,
@@ -82,8 +83,14 @@ async function PlayerDashboardContent({
   params: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]/player/[playerId]">["params"];
 }) {
   const params = await paramsPromise;
-  const t = await getTranslations("mapPage.player.dashboard");
   const id = parseInt(params.mapId);
+  // The route's access gate — the [scrimId] layout no longer gates the
+  // subtree (a layout gate adds a chrome-less loading phase above every
+  // child route).
+  if (!(await isAuthedToViewMap(parseInt(params.scrimId), id))) {
+    return <NoAuthCard />;
+  }
+  const t = await getTranslations("mapPage.player.dashboard");
   const mapDataId = await resolveMapDataId(id);
   const playerName = decodeURIComponent(params.playerId);
 

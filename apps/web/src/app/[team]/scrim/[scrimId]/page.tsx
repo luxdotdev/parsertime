@@ -1,4 +1,5 @@
 import { ScrimFeedbackBanner } from "@/components/team-ops/scrim-feedback-banner";
+import { NoAuthCard } from "@/components/auth/no-auth";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { DirectionalTransition } from "@/components/directional-transition";
 import { AddMapCard } from "@/components/map/add-map";
@@ -16,6 +17,7 @@ import {
 } from "@/components/scrim/scrim-overview-section";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Link } from "@/components/ui/link";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
@@ -36,7 +38,10 @@ import { defaultLocale } from "@/i18n/config";
 import { auth, canManageTeam, isAuthedToViewScrim } from "@/lib/auth";
 import { mapComparison, overviewCard, positionalData } from "@/lib/flags";
 import { getFlag } from "@/lib/flags-helpers";
-import { getMetadataTranslations } from "@/lib/metadata-i18n";
+import {
+  getMetadataTranslations,
+  getStaticTranslations,
+} from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@/generated/prisma/browser";
@@ -91,12 +96,54 @@ export async function generateMetadata(
   };
 }
 
-export default async function ScrimDashboardPage(
+// Static shell: the chrome and page frame prerender and mount ONCE. (The old
+// route-level loading.tsx and layout auth gate each rendered their own
+// DashboardLayout, so every fallback→content swap remounted the chrome and
+// re-suspended the header — the multi-skeleton flash.) Everything
+// request-derived streams into the single boundary below; the auth gate is
+// the first step of ScrimContent so it resolves inside the same skeleton.
+export default function ScrimDashboardPage(
   props: PagePropsWithLocale<"/[team]/scrim/[scrimId]">
 ) {
-  const params = await props.params;
+  return (
+    <DirectionalTransition>
+      <DashboardLayout guestModeSource={guestModeSource(props.params)}>
+        <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+          <Suspense fallback={<ScrimOverviewSkeleton />}>
+            <ScrimContent params={props.params} />
+          </Suspense>
+        </div>
+      </DashboardLayout>
+    </DirectionalTransition>
+  );
+}
+
+// Thunk, not a started promise: the read must begin inside the streamed
+// header (after `connection()`), never during the static shell render.
+function guestModeSource(
+  params: PagePropsWithLocale<"/[team]/scrim/[scrimId]">["params"]
+) {
+  return async () => {
+    const { scrimId } = await params;
+    const id = parseInt(scrimId);
+    if (!Number.isSafeInteger(id) || id <= 0) return false;
+    const row = await prisma.scrim.findFirst({
+      where: { id },
+      select: { guestMode: true },
+    });
+    return row?.guestMode ?? false;
+  };
+}
+
+async function ScrimContent({
+  params: paramsPromise,
+}: {
+  params: PagePropsWithLocale<"/[team]/scrim/[scrimId]">["params"];
+}) {
+  const params = await paramsPromise;
   const id = parseInt(params.scrimId);
   if (!Number.isSafeInteger(id) || id <= 0) notFound();
+  if (!(await isAuthedToViewScrim(id))) return <NoAuthCard />;
   const session = await auth();
   const t = await getTranslations("scrimPage");
 
@@ -108,7 +155,6 @@ export default async function ScrimDashboardPage(
     mapDataRows,
     user,
     feedbackScrim,
-    visibilityRow,
     mapComparisonEnabled,
     overviewCardEnabled,
     showPositional,
@@ -147,10 +193,6 @@ export default async function ScrimDashboardPage(
         opponentTeam: { select: { name: true } },
       },
     }),
-    prisma.scrim.findFirst({
-      where: { id },
-      select: { guestMode: true },
-    }),
     getFlag(mapComparison),
     getFlag(overviewCard),
     getFlag(positionalData),
@@ -158,7 +200,6 @@ export default async function ScrimDashboardPage(
   if (!scrim) notFound();
 
   const teamId = scrim.teamId;
-  const visibility = visibilityRow ?? { guestMode: false };
 
   const mapTeamNames = new Map<number, { team1: string; team2: string }>();
   for (const row of mapDataRows) {
@@ -291,207 +332,226 @@ export default async function ScrimDashboardPage(
   }
 
   return (
-    <DirectionalTransition>
-      <DashboardLayout guestMode={visibility.guestMode}>
-        <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
-          <nav className="text-muted-foreground flex items-center gap-3 text-sm">
-            <Link href="/dashboard" transitionTypes={["contract-map"]}>
-              &larr; {t("back")}
+    <>
+      <nav className="text-muted-foreground flex items-center gap-3 text-sm">
+        <Link href="/dashboard" transitionTypes={["contract-map"]}>
+          &larr; {t("back")}
+        </Link>
+        {teamId && (
+          <>
+            <span className="text-muted-foreground/40" aria-hidden="true">
+              |
+            </span>
+            <Link
+              href={`/stats/team/${teamId}` as Route}
+              transitionTypes={["nav-forward"]}
+            >
+              {t("viewStats")} &rarr;
             </Link>
-            {teamId && (
-              <>
-                <span className="text-muted-foreground/40" aria-hidden="true">
-                  |
-                </span>
+          </>
+        )}
+      </nav>
+
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+        <div className="flex min-w-0 items-center gap-2">
+          <h1 className="truncate text-2xl font-bold tracking-tight">
+            {scrim?.name ?? t("newScrim")}
+          </h1>
+          {hasPerms && (
+            <Tooltip>
+              <TooltipTrigger asChild>
                 <Link
-                  href={`/stats/team/${teamId}` as Route}
-                  transitionTypes={["nav-forward"]}
+                  href={`/${params.team}/scrim/${params.scrimId}/edit` as Route}
+                  aria-label={t("edit")}
+                  className="text-muted-foreground hover:bg-muted hover:text-foreground -mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors"
                 >
-                  {t("viewStats")} &rarr;
+                  <Pencil2Icon className="h-3.5 w-3.5" />
                 </Link>
-              </>
-            )}
-          </nav>
-
-          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
-            <div className="flex min-w-0 items-center gap-2">
-              <h1 className="truncate text-2xl font-bold tracking-tight">
-                {scrim?.name ?? t("newScrim")}
-              </h1>
-              {hasPerms && (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link
-                      href={
-                        `/${params.team}/scrim/${params.scrimId}/edit` as Route
-                      }
-                      aria-label={t("edit")}
-                      className="text-muted-foreground hover:bg-muted hover:text-foreground -mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors"
-                    >
-                      <Pencil2Icon className="h-3.5 w-3.5" />
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>{t("edit")}</TooltipContent>
-                </Tooltip>
-              )}
-            </div>
-            {showOverview && (
-              <div className="ml-auto flex items-center gap-3">
-                <WinLossBadge
-                  wins={overviewData.wins}
-                  losses={overviewData.losses}
-                  draws={overviewData.draws}
-                />
-                <WinRateBadge
-                  wins={overviewData.wins}
-                  mapCount={overviewData.mapCount}
-                />
-              </div>
-            )}
+              </TooltipTrigger>
+              <TooltipContent>{t("edit")}</TooltipContent>
+            </Tooltip>
+          )}
+        </div>
+        {showOverview && (
+          <div className="ml-auto flex items-center gap-3">
+            <WinLossBadge
+              wins={overviewData.wins}
+              losses={overviewData.losses}
+              draws={overviewData.draws}
+            />
+            <WinRateBadge
+              wins={overviewData.wins}
+              mapCount={overviewData.mapCount}
+            />
           </div>
+        )}
+      </div>
 
-          <div
-            className="text-muted-foreground mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[0.6875rem] tracking-[0.04em] uppercase tabular-nums"
-            aria-label="Scrim metadata"
-          >
-            <ClientDate date={scrim.date} />
+      <div
+        className="text-muted-foreground mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[0.6875rem] tracking-[0.04em] uppercase tabular-nums"
+        aria-label="Scrim metadata"
+      >
+        <ClientDate date={scrim.date} />
+        <span className="text-muted-foreground/40" aria-hidden="true">
+          ·
+        </span>
+        <span>{t("meta.mapCount", { count: maps.length })}</span>
+        {scrim.opponentTeamAbbr && (
+          <>
             <span className="text-muted-foreground/40" aria-hidden="true">
               ·
             </span>
-            <span>{t("meta.mapCount", { count: maps.length })}</span>
-            {scrim.opponentTeamAbbr && (
-              <>
-                <span className="text-muted-foreground/40" aria-hidden="true">
-                  ·
-                </span>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link
-                      href={
-                        `/scouting/team/${encodeURIComponent(scrim.opponentTeamAbbr)}` as Route
-                      }
-                      className="hover:text-foreground inline-flex items-center gap-1.5 no-underline"
-                    >
-                      <BadgeCheck
-                        className="text-primary size-3"
-                        aria-hidden="true"
-                      />
-                      <span>
-                        {t("meta.opp")}{" "}
-                        {opponentFullName ?? scrim.opponentTeamAbbr}
-                      </span>
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent>View OWCS scouting report</TooltipContent>
-                </Tooltip>
-              </>
-            )}
-          </div>
-
-          {feedbackScrim?.opponentTeamId != null &&
-            feedbackScrim.opponentTeam &&
-            !feedbackScrim.feedback &&
-            canManage && (
-              <div className="mt-4">
-                <ScrimFeedbackBanner
-                  scrimId={feedbackScrim.id}
-                  opponentName={feedbackScrim.opponentTeam.name}
-                />
-              </div>
-            )}
-
-          {showOverview ? (
-            <div className="mt-8">
-              <ScrimOverviewSection
-                data={overviewData}
-                positionalStats={positionalStats}
-                positionalArtifacts={positionalArtifacts}
-                initiation={scrimInitiation}
-                wpaSlot={
-                  // Streams in as the last accordion item without blocking the
-                  // page: aggregating WPA across a scrim's maps is the heaviest
-                  // read here. Returns null (no item) when there's no data.
-                  <Suspense fallback={null}>
-                    <ScrimWpaSection scrimId={id} />
-                  </Suspense>
-                }
-              />
-            </div>
-          ) : showOverviewUnavailable ? (
-            <div className="mt-8">
-              <ScrimOverviewUnavailable />
-            </div>
-          ) : (
-            showPositional &&
-            positionalStats && (
-              <div className="mt-8">
-                <PositionalStatsSection
-                  data={positionalStats}
-                  artifacts={positionalArtifacts}
-                />
-              </div>
-            )
-          )}
-
-          {hasPerms && (
-            <div className="mt-6">
-              <AddMapCard scrimId={id} existingMapCount={maps.length} />
-            </div>
-          )}
-
-          <div className="mt-10">
-            <h2 className="text-lg font-semibold tracking-tight">
-              {t("maps.title")}
-            </h2>
-
-            {maps.length > 0 ? (
-              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {maps.map((map) => {
-                  const meta = mapMetaById.get(map.id);
-                  return (
-                    <MapCardWithSelection
-                      key={map.id}
-                      map={map}
-                      scrimId={scrim.id}
-                      teamId={teamId ?? params.team}
-                      locale={params.locale}
-                      mapComparisonEnabled={mapComparisonEnabled}
-                      team1Name={meta?.team1Name}
-                      team2Name={meta?.team2Name}
-                      ourTeamName={ourTeamName}
-                      resolvedWinner={meta?.resolvedWinner}
-                      canManage={hasPerms}
-                    />
-                  );
-                })}
-              </div>
-            ) : (
-              <Alert variant="destructive" className="mt-4 max-w-xl">
-                <ExclamationTriangleIcon
-                  className="h-4 w-4"
-                  aria-hidden="true"
-                />
-                <AlertTitle>{t("noMaps.title")}</AlertTitle>
-                <AlertDescription>
-                  {t("noMaps.description")}
-                  <Link
-                    href="https://docs.parsertime.app"
-                    target="_blank"
-                    external
-                  >
-                    {t("noMaps.link")}
-                  </Link>
-                  .
-                </AlertDescription>
-              </Alert>
-            )}
-          </div>
-        </div>
-
-        {mapComparisonEnabled && teamId && (
-          <CompareSelectedButton teamId={teamId} />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link
+                  href={
+                    `/scouting/team/${encodeURIComponent(scrim.opponentTeamAbbr)}` as Route
+                  }
+                  className="hover:text-foreground inline-flex items-center gap-1.5 no-underline"
+                >
+                  <BadgeCheck
+                    className="text-primary size-3"
+                    aria-hidden="true"
+                  />
+                  <span>
+                    {t("meta.opp")} {opponentFullName ?? scrim.opponentTeamAbbr}
+                  </span>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent>View OWCS scouting report</TooltipContent>
+            </Tooltip>
+          </>
         )}
-      </DashboardLayout>
-    </DirectionalTransition>
+      </div>
+
+      {feedbackScrim?.opponentTeamId != null &&
+        feedbackScrim.opponentTeam &&
+        !feedbackScrim.feedback &&
+        canManage && (
+          <div className="mt-4">
+            <ScrimFeedbackBanner
+              scrimId={feedbackScrim.id}
+              opponentName={feedbackScrim.opponentTeam.name}
+            />
+          </div>
+        )}
+
+      {showOverview ? (
+        <div className="mt-8">
+          <ScrimOverviewSection
+            data={overviewData}
+            positionalStats={positionalStats}
+            positionalArtifacts={positionalArtifacts}
+            initiation={scrimInitiation}
+            wpaSlot={
+              // Streams in as the last accordion item without blocking the
+              // page: aggregating WPA across a scrim's maps is the heaviest
+              // read here. Returns null (no item) when there's no data.
+              <Suspense fallback={null}>
+                <ScrimWpaSection scrimId={id} />
+              </Suspense>
+            }
+          />
+        </div>
+      ) : showOverviewUnavailable ? (
+        <div className="mt-8">
+          <ScrimOverviewUnavailable />
+        </div>
+      ) : (
+        showPositional &&
+        positionalStats && (
+          <div className="mt-8">
+            <PositionalStatsSection
+              data={positionalStats}
+              artifacts={positionalArtifacts}
+            />
+          </div>
+        )
+      )}
+
+      {hasPerms && (
+        <div className="mt-6">
+          <AddMapCard scrimId={id} existingMapCount={maps.length} />
+        </div>
+      )}
+
+      <div className="mt-10">
+        <h2 className="text-lg font-semibold tracking-tight">
+          {t("maps.title")}
+        </h2>
+
+        {maps.length > 0 ? (
+          <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {maps.map((map) => {
+              const meta = mapMetaById.get(map.id);
+              return (
+                <MapCardWithSelection
+                  key={map.id}
+                  map={map}
+                  scrimId={scrim.id}
+                  teamId={teamId ?? params.team}
+                  locale={params.locale}
+                  mapComparisonEnabled={mapComparisonEnabled}
+                  team1Name={meta?.team1Name}
+                  team2Name={meta?.team2Name}
+                  ourTeamName={ourTeamName}
+                  resolvedWinner={meta?.resolvedWinner}
+                  canManage={hasPerms}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          <Alert variant="destructive" className="mt-4 max-w-xl">
+            <ExclamationTriangleIcon className="h-4 w-4" aria-hidden="true" />
+            <AlertTitle>{t("noMaps.title")}</AlertTitle>
+            <AlertDescription>
+              {t("noMaps.description")}
+              <Link href="https://docs.parsertime.app" target="_blank" external>
+                {t("noMaps.link")}
+              </Link>
+              .
+            </AlertDescription>
+          </Alert>
+        )}
+      </div>
+      {mapComparisonEnabled && teamId && (
+        <CompareSelectedButton teamId={teamId} />
+      )}
+    </>
+  );
+}
+
+// Mirrors the loaded page's frame (back-link nav, title, meta line, overview
+// band, add-map card, maps heading + grid) so content replaces it in place.
+function ScrimOverviewSkeleton() {
+  const t = getStaticTranslations("scrimPage");
+
+  return (
+    <>
+      <nav className="text-muted-foreground flex items-center gap-3 text-sm">
+        <Link href="/dashboard" transitionTypes={["contract-map"]}>
+          &larr; {t("back")}
+        </Link>
+      </nav>
+      <Skeleton className="mt-3 h-8 w-56" />
+      <Skeleton className="mt-2 h-4 w-72" />
+      <Skeleton className="mt-8 h-32 w-full rounded-xl" />
+      <Skeleton className="mt-6 h-16 w-full rounded-xl" />
+      <div className="mt-10">
+        <h2 className="text-lg font-semibold tracking-tight">
+          {t("maps.title")}
+        </h2>
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <Skeleton
+              // oxlint-disable-next-line react/no-array-index-key -- skeleton items are homogeneous
+              key={index}
+              className="aspect-video rounded-xl"
+            />
+          ))}
+        </div>
+      </div>
+    </>
   );
 }
