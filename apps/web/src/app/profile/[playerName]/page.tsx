@@ -29,6 +29,7 @@ import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth, getViewableScrimIds } from "@/lib/auth";
 import { positionalData } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { getCompositeSRLeaderboard } from "@/lib/hero-rating";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
@@ -307,7 +308,7 @@ export default async function ProfilePage(
     },
   });
 
-  const showPositioning = await positionalData();
+  const showPositioning = await getFlag(positionalData);
 
   const { stats, kills, deaths, mapWinrates } = await AppRuntime.runPromise(
     Effect.all(

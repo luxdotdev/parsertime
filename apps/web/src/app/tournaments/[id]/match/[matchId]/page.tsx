@@ -9,6 +9,7 @@ import { AppRuntime } from "@/data/runtime";
 import { TournamentService } from "@/data/tournament";
 import { auth, canViewTournament, getCurrentUser } from "@/lib/auth";
 import { tournament } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { ArrowLeft } from "lucide-react";
 import type { Metadata, Route } from "next";
 import { getTranslations } from "next-intl/server";
@@ -57,7 +58,7 @@ async function TournamentMatchPageContent({
 }: {
   params: Promise<{ id: string; matchId: string }>;
 }) {
-  const tournamentEnabled = await tournament();
+  const tournamentEnabled = await getFlag(tournament);
   if (!tournamentEnabled) notFound();
 
   const params = await paramsPromise;

@@ -18,6 +18,7 @@ import { UserService } from "@/data/user";
 import { defaultLocale } from "@/i18n/config";
 import { auth, isAuthedToViewTeam } from "@/lib/auth";
 import { scoutingTool } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import { computeTeamTsr } from "@/lib/tsr/team";
@@ -120,7 +121,7 @@ async function TeamContent({
       },
     }),
     prisma.teamManager.findMany({ where: { teamId } }),
-    scoutingTool(),
+    getFlag(scoutingTool),
     AppRuntime.runPromise(
       ScoutingService.pipe(Effect.flatMap((svc) => svc.getScoutingTeams()))
     ),

@@ -7,6 +7,7 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { ScoutingService, ScoutingAnalyticsService } from "@/data/player";
 import { scoutingTool } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -37,7 +38,7 @@ export async function generateMetadata(props: {
 export default async function ScoutingPlayerPage(
   props: PageProps<"/scouting/player/[slug]">
 ) {
-  const scoutingEnabled = await scoutingTool();
+  const scoutingEnabled = await getFlag(scoutingTool);
   if (!scoutingEnabled) notFound();
 
   const params = await props.params;

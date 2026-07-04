@@ -5,6 +5,7 @@ import {
 } from "@/components/admin/map-calibration/zone-section";
 import { getCurrentUser, isAdminUser } from "@/lib/auth";
 import { dataLabeling } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import type { MapTransform } from "@/lib/map-calibration/types";
 import prisma from "@/lib/prisma";
 import { r2 } from "@/lib/r2";
@@ -16,7 +17,7 @@ export default async function MapCalibrationEditorPage({
   params: Promise<{ mapName: string }>;
 }) {
   const [enabled, user, { mapName }] = await Promise.all([
-    dataLabeling(),
+    getFlag(dataLabeling),
     getCurrentUser(),
     params,
   ]);

@@ -7,6 +7,7 @@ import { AppRuntime } from "@/data/runtime";
 import { TournamentService } from "@/data/tournament";
 import { auth } from "@/lib/auth";
 import { tournament } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
@@ -26,7 +27,7 @@ export default function TournamentsPage() {
 }
 
 async function TournamentsPageContent() {
-  const tournamentEnabled = await tournament();
+  const tournamentEnabled = await getFlag(tournament);
   if (!tournamentEnabled) notFound();
 
   const session = await auth();

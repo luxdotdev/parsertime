@@ -3,6 +3,7 @@ import { LandingPage } from "@/components/home/landing-page";
 import { V3LandingPage } from "@/components/home/v3/landing-page";
 import type { Availability } from "@/lib/auth";
 import { newLandingPage } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { get } from "@vercel/edge-config";
 import { Suspense } from "react";
 
@@ -20,7 +21,7 @@ export default function Home() {
 async function HomeContent() {
   const [appAvailability, showNewLanding] = await Promise.all([
     get<Availability>("availability"),
-    newLandingPage(),
+    getFlag(newLandingPage),
   ]);
 
   const isPrivate = appAvailability === "private";

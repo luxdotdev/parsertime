@@ -10,6 +10,7 @@ import { AppRuntime } from "@/data/runtime";
 import { TournamentService } from "@/data/tournament";
 import { auth, canViewTournament, getCurrentUser } from "@/lib/auth";
 import { tournament } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import prisma from "@/lib/prisma";
 import { Effect } from "effect";
 import { ArrowLeft } from "lucide-react";
@@ -56,7 +57,7 @@ async function TournamentDetailPageContent({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const tournamentEnabled = await tournament();
+  const tournamentEnabled = await getFlag(tournament);
   if (!tournamentEnabled) notFound();
 
   const params = await paramsPromise;

@@ -1,12 +1,13 @@
 import { MapCalibrationList } from "@/components/admin/map-calibration/map-calibration-list";
 import { getCurrentUser, isAdminUser } from "@/lib/auth";
 import { dataLabeling } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import prisma from "@/lib/prisma";
 import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 
 export default async function MapCalibrationPage() {
-  const enabled = await dataLabeling();
+  const enabled = await getFlag(dataLabeling);
   if (!enabled) notFound();
   const t = await getTranslations("mapCalibrationPage");
 

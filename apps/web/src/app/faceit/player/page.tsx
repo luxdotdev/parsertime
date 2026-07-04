@@ -3,6 +3,7 @@ import { AppRuntime } from "@/data/runtime";
 import { FaceitPlayerScoutingService } from "@/data/faceit";
 import { Effect } from "effect";
 import { faceitScouting } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -14,7 +15,7 @@ export function generateMetadata(): Metadata {
 }
 
 export default async function FaceitPlayerSearchPage() {
-  const enabled = await faceitScouting();
+  const enabled = await getFlag(faceitScouting);
   if (!enabled) notFound();
   const t = await getTranslations("faceitPlayerPage");
   const players = await AppRuntime.runPromise(

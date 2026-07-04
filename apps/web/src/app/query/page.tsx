@@ -2,6 +2,7 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { QueryBuilder } from "@/components/query-builder/query-builder";
 import { auth } from "@/lib/auth";
 import { queryBuilder } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import { getViewableTeams, listSavedQueries } from "@/lib/query-builder/server";
 import type { Metadata } from "next";
@@ -14,7 +15,7 @@ export function generateMetadata(): Metadata {
 }
 
 export default async function QueryPage() {
-  const enabled = await queryBuilder();
+  const enabled = await getFlag(queryBuilder);
   if (!enabled) notFound();
 
   const session = await auth();

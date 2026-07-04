@@ -1,10 +1,11 @@
 import { CoachingCanvas } from "@/components/coaching/coaching-canvas";
 import { coachingCanvas } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 export default async function CoachingCanvasPage() {
-  const enabled = await coachingCanvas();
+  const enabled = await getFlag(coachingCanvas);
   if (!enabled) notFound();
 
   const t = await getTranslations("coaching");

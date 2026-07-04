@@ -11,6 +11,7 @@ import { UltimateEconomyCard } from "@/components/stats/team/ultimate-economy-ca
 import { AppRuntime } from "@/data/runtime";
 import { TeamFightStatsService, TeamUltService } from "@/data/team";
 import { ultimateImpactTool } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { getTempoBaselines } from "@/lib/tempo/read";
 import type { PagePropsWithLocale } from "@/types/next";
 import { Effect } from "effect";
@@ -73,7 +74,7 @@ async function PageContent({
         { concurrency: "unbounded" }
       )
     ),
-    ultimateImpactTool(),
+    getFlag(ultimateImpactTool),
   ]);
 
   const baselines = await getTempoBaselines();

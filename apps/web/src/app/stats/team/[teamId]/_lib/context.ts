@@ -8,6 +8,7 @@ import { UserService } from "@/data/user";
 import { $Enums } from "@/generated/prisma/browser";
 import { auth, canManageTeam } from "@/lib/auth";
 import { positionalData, simulationTool } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
 import { isValidTimeframe, type Timeframe } from "@/lib/timeframe";
@@ -162,8 +163,8 @@ export async function loadTeamStatsShell(
   const dateRange = computeDateRange(effectiveTimeframe, customFrom, customTo);
 
   const [positionalEnabled, simulationEnabled] = await Promise.all([
-    positionalData(),
-    simulationTool(),
+    getFlag(positionalData),
+    getFlag(simulationTool),
   ]);
 
   return {

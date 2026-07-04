@@ -4,6 +4,7 @@ import { AppRuntime } from "@/data/runtime";
 import { DataLabelingService } from "@/data/admin";
 import { getCurrentUser, isAdminUser } from "@/lib/auth";
 import { dataLabeling } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { notFound, redirect } from "next/navigation";
 
 type Params = { matchId: string };
@@ -13,7 +14,7 @@ export default async function MatchLabelingPage({
 }: {
   params: Promise<Params>;
 }) {
-  const enabled = await dataLabeling();
+  const enabled = await getFlag(dataLabeling);
   if (!enabled) notFound();
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in");

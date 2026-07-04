@@ -40,6 +40,7 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { auth, canViewTournament, getCurrentUser } from "@/lib/auth";
 import { tournament, simulationTool, ultimateImpactTool } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import prisma from "@/lib/prisma";
 import { getTempoBaselines } from "@/lib/tempo/read";
 import { getMapNames } from "@/lib/utils";
@@ -88,7 +89,7 @@ async function TournamentTeamStatsPageContent({
 }: {
   params: Promise<{ id: string; teamId: string }>;
 }) {
-  const tournamentEnabled = await tournament();
+  const tournamentEnabled = await getFlag(tournament);
   if (!tournamentEnabled) notFound();
 
   const session = await auth();
@@ -294,8 +295,8 @@ async function TournamentTeamStatsPageContent({
       },
     }),
     getMapNames(),
-    simulationTool(),
-    ultimateImpactTool(),
+    getFlag(simulationTool),
+    getFlag(ultimateImpactTool),
   ]);
 
   const baselines = await getTempoBaselines();

@@ -5,6 +5,7 @@ import { TeamStatsTabsNav } from "@/components/stats/team/team-stats-tabs-nav";
 import { defaultLocale } from "@/i18n/config";
 import { isAuthedToViewTeam } from "@/lib/auth";
 import { positionalData, simulationTool } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import type { Metadata } from "next";
@@ -89,8 +90,8 @@ async function TeamStatsNav({
   await connection();
 
   const [positionalEnabled, simulationEnabled] = await Promise.all([
-    positionalData(),
-    simulationTool(),
+    getFlag(positionalData),
+    getFlag(simulationTool),
   ]);
 
   return (

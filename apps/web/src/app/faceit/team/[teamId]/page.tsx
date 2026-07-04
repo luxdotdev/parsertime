@@ -2,6 +2,7 @@ import { AppRuntime } from "@/data/runtime";
 import { FaceitTeamScoutingService } from "@/data/faceit";
 import { Effect } from "effect";
 import { faceitScouting } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import prisma from "@/lib/prisma";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -39,7 +40,7 @@ export default async function FaceitTeamPage({
   params: Promise<{ teamId: string }>;
   searchParams: Promise<{ combined?: string }>;
 }) {
-  const enabled = await faceitScouting();
+  const enabled = await getFlag(faceitScouting);
   if (!enabled) notFound();
 
   const { teamId } = await params;

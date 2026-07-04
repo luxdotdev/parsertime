@@ -22,6 +22,7 @@ import { Effect } from "effect";
 import { auth } from "@/lib/auth";
 import { resolveDataAvailability } from "@/lib/data-availability";
 import { faceitScouting, scoutingTool } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { generateInsights } from "@/lib/insights";
 import prisma from "@/lib/prisma";
 import { ArrowLeft } from "lucide-react";
@@ -103,7 +104,7 @@ export default async function ScoutingTeamPage(
     searchParams: Promise<{ scoutFor?: string }>;
   }
 ) {
-  const scoutingEnabled = await scoutingTool();
+  const scoutingEnabled = await getFlag(scoutingTool);
   if (!scoutingEnabled) notFound();
 
   const [params, searchParams] = await Promise.all([
@@ -145,7 +146,7 @@ export default async function ScoutingTeamPage(
       )
     ),
     resolveDataAvailability(teamAbbr, userTeamId),
-    faceitScouting(),
+    getFlag(faceitScouting),
   ]);
 
   const [mapIntelligence, banIntelligence, playerIntelligence, faceitLink] =

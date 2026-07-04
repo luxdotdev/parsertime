@@ -2,6 +2,7 @@ import { DashboardLayout } from "@/components/dashboard-layout";
 import { PageContentSkeleton } from "@/components/skeletons/page-content-skeleton";
 import { CreateTournamentButton } from "@/components/tournament/create-tournament-button";
 import { tournament } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -21,7 +22,7 @@ export default function CreateTournamentPage() {
 }
 
 async function CreateTournamentPageContent() {
-  const tournamentEnabled = await tournament();
+  const tournamentEnabled = await getFlag(tournament);
   if (!tournamentEnabled) notFound();
 
   return (

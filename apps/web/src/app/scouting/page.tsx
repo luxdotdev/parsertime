@@ -3,6 +3,7 @@ import { AppRuntime } from "@/data/runtime";
 import { ScoutingService } from "@/data/scouting";
 import { Effect } from "effect";
 import { scoutingTool } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -18,7 +19,7 @@ export function generateMetadata(): Metadata {
 }
 
 export default async function ScoutingPage() {
-  const scoutingEnabled = await scoutingTool();
+  const scoutingEnabled = await getFlag(scoutingTool);
   if (!scoutingEnabled) notFound();
 
   const t = await getTranslations("scoutingPage");
