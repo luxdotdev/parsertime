@@ -1,11 +1,11 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
-import { PageContentSkeleton } from "@/components/skeletons/page-content-skeleton";
 import type { BracketMatchData } from "@/components/tournament/bracket/bracket-match-card";
 import { BracketView } from "@/components/tournament/bracket/bracket-view";
 import { DoubleBracketView } from "@/components/tournament/bracket/double-bracket-view";
 import { RoundRobinSEView } from "@/components/tournament/round-robin/round-robin-se-view";
 import { TournamentActions } from "@/components/tournament/tournament-actions";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { AppRuntime } from "@/data/runtime";
 import { TournamentService } from "@/data/tournament";
 import { auth, canViewTournament, getCurrentUser } from "@/lib/auth";
@@ -42,13 +42,55 @@ export async function generateMetadata(props: {
   };
 }
 
+// Static shell: DashboardLayout and the page frame prerender, and all
+// request-time work (flag, params, auth, bracket data) streams into ONE
+// boundary whose fallback mirrors the loaded header row and bracket area.
 export default function TournamentDetailPage(props: {
   params: Promise<{ id: string }>;
 }) {
   return (
-    <Suspense fallback={<PageContentSkeleton />}>
-      <TournamentDetailPageContent params={props.params} />
-    </Suspense>
+    <DashboardLayout>
+      <div className="flex min-h-[calc(100vh-4rem)] flex-col space-y-4 p-4 pt-6 md:p-8">
+        <Suspense fallback={<TournamentDetailSkeleton />}>
+          <TournamentDetailPageContent params={props.params} />
+        </Suspense>
+      </div>
+    </DashboardLayout>
+  );
+}
+
+function TournamentDetailSkeleton() {
+  return (
+    <>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Skeleton className="size-5" />
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-9 w-48" />
+              <Skeleton className="h-5 w-16 rounded-full" />
+            </div>
+            <Skeleton className="h-4 w-64" />
+          </div>
+        </div>
+        <Skeleton className="h-9 w-24" />
+      </div>
+
+      <div className="flex-1 rounded-lg border p-6">
+        <div className="flex min-h-[30vh] items-stretch gap-8">
+          {["a", "b", "c"].map((k) => (
+            <div key={k} className="flex min-w-56 flex-1 flex-col">
+              <Skeleton className="mx-auto mb-3 h-3 w-20" />
+              <div className="flex flex-1 flex-col justify-around gap-2">
+                {["x", "y"].map((m) => (
+                  <Skeleton key={m} className="h-20 w-full" />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -203,59 +245,50 @@ async function TournamentDetailPageContent({
   };
 
   return (
-    <DashboardLayout>
-      <div className="flex min-h-[calc(100vh-4rem)] flex-col space-y-4 p-4 pt-6 md:p-8">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link
-              href={"/tournaments" as Route}
-              className="text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <ArrowLeft className="size-5" />
-            </Link>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-3xl font-bold tracking-tight">
-                  {data.name}
-                </h2>
-                <Badge variant={statusVariants[data.status]}>
-                  {data.status}
-                </Badge>
-              </div>
-              <p className="text-muted-foreground text-sm">
-                {data.format.replace(/_/g, " ")} &middot;{" "}
-                {data.playoffBestOf && data.playoffBestOf !== data.bestOf
-                  ? `Bo${data.bestOf} / Bo${data.playoffBestOf}`
-                  : `Bo${data.bestOf}`}{" "}
-                &middot; {data.teams.length} teams
-              </p>
+    <>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Link
+            href={"/tournaments" as Route}
+            className="text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="size-5" />
+          </Link>
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-3xl font-bold tracking-tight">{data.name}</h2>
+              <Badge variant={statusVariants[data.status]}>{data.status}</Badge>
             </div>
+            <p className="text-muted-foreground text-sm">
+              {data.format.replace(/_/g, " ")} &middot;{" "}
+              {data.playoffBestOf && data.playoffBestOf !== data.bestOf
+                ? `Bo${data.bestOf} / Bo${data.playoffBestOf}`
+                : `Bo${data.bestOf}`}{" "}
+              &middot; {data.teams.length} teams
+            </p>
           </div>
-          <TournamentActions
-            tournamentId={data.id}
-            currentStatus={data.status}
-          />
         </div>
-
-        <div className="flex-1 rounded-lg border p-6">
-          {data.format === "ROUND_ROBIN_SE" ? (
-            <RoundRobinSEView
-              tournamentId={data.id}
-              standings={serializedStandings}
-              advancingCount={advancingCount}
-              rrRounds={rrRounds}
-              playoffRounds={playoffRounds}
-              allRRComplete={allRRComplete}
-              playoffsSeeded={playoffsSeeded}
-              canManage={canManage}
-            />
-          ) : data.format === "DOUBLE_ELIMINATION" ? (
-            <DoubleBracketView rounds={rounds} />
-          ) : (
-            <BracketView rounds={rounds} />
-          )}
-        </div>
+        <TournamentActions tournamentId={data.id} currentStatus={data.status} />
       </div>
-    </DashboardLayout>
+
+      <div className="flex-1 rounded-lg border p-6">
+        {data.format === "ROUND_ROBIN_SE" ? (
+          <RoundRobinSEView
+            tournamentId={data.id}
+            standings={serializedStandings}
+            advancingCount={advancingCount}
+            rrRounds={rrRounds}
+            playoffRounds={playoffRounds}
+            allRRComplete={allRRComplete}
+            playoffsSeeded={playoffsSeeded}
+            canManage={canManage}
+          />
+        ) : data.format === "DOUBLE_ELIMINATION" ? (
+          <DoubleBracketView rounds={rounds} />
+        ) : (
+          <BracketView rounds={rounds} />
+        )}
+      </div>
+    </>
   );
 }

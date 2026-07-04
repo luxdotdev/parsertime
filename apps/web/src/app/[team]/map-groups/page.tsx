@@ -1,5 +1,7 @@
 import { MapGroupManager } from "@/components/compare/map-group-manager";
 import { DashboardLayout } from "@/components/dashboard-layout";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
@@ -10,6 +12,7 @@ import type { PagePropsWithLocale } from "@/types/next";
 import { $Enums } from "@/generated/prisma/browser";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 export function generateMetadata(): Metadata {
   const t = getMetadataTranslations("mapGroupsPage.metadata");
@@ -20,10 +23,32 @@ export function generateMetadata(): Metadata {
   };
 }
 
-export default async function MapGroupsPage(
+// Static shell: the page frame and heading prerender, and the auth-derived
+// content streams into ONE boundary whose fallback mirrors MapGroupManager's
+// own pending layout (card frame + centered loader).
+export default function MapGroupsPage(
   props: PagePropsWithLocale<"/[team]/map-groups">
 ) {
-  const params = await props.params;
+  return (
+    <DashboardLayout>
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <div className="flex items-center justify-between space-y-2">
+          <h2 className="text-3xl font-bold tracking-tight">Map Groups</h2>
+        </div>
+        <Suspense fallback={<MapGroupsSkeleton />}>
+          <MapGroupsContent params={props.params} />
+        </Suspense>
+      </div>
+    </DashboardLayout>
+  );
+}
+
+async function MapGroupsContent({
+  params,
+}: {
+  params: PagePropsWithLocale<"/[team]/map-groups">["params"];
+}) {
+  const { team: teamSlug } = await params;
   const session = await auth();
 
   if (!session?.user?.email) {
@@ -38,7 +63,7 @@ export default async function MapGroupsPage(
   }
 
   // Extract team ID from team slug
-  const teamId = parseInt(params.team);
+  const teamId = parseInt(teamSlug);
   if (isNaN(teamId)) {
     notFound();
   }
@@ -86,14 +111,29 @@ export default async function MapGroupsPage(
       scrimDate: map.Scrim!.date,
     }));
 
+  return <MapGroupManager teamId={teamId} availableMaps={availableMaps} />;
+}
+
+// Mirrors MapGroupManager's first paint: the card frame with header row
+// (title, description, action button) and the centered pending indicator its
+// client-side query shows, so the streamed content replaces this in place.
+function MapGroupsSkeleton() {
   return (
-    <DashboardLayout>
-      <div className="flex-1 space-y-4 p-8 pt-6">
-        <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">Map Groups</h2>
+    <Card>
+      <CardHeader className="border-b">
+        <div className="flex items-center justify-between">
+          <div>
+            <Skeleton className="h-5 w-32" />
+            <Skeleton className="mt-2 h-4 w-72 max-w-full" />
+          </div>
+          <Skeleton className="h-8 w-28 rounded-md" />
         </div>
-        <MapGroupManager teamId={teamId} availableMaps={availableMaps} />
-      </div>
-    </DashboardLayout>
+      </CardHeader>
+      <CardContent className="pt-6">
+        <div className="flex items-center justify-center py-12">
+          <Skeleton className="size-6 rounded-full" />
+        </div>
+      </CardContent>
+    </Card>
   );
 }

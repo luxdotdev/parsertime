@@ -121,7 +121,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 <IntlProvider
                   // Same shape next-intl consumes at runtime; the JSON import
                   // type is too wide for AbstractIntlMessages (see i18n/request.ts).
-                  defaultMessages={enMessages as unknown as AbstractIntlMessages}
+                  defaultMessages={
+                    enMessages as unknown as AbstractIntlMessages
+                  }
                 >
                   <CommandMenuProvider>
                     <AppSettingsProvider>

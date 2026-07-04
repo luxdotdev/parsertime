@@ -7,7 +7,9 @@ import {
 } from "@/components/stats/leaderboard-card";
 import { Searchbar } from "@/components/stats/searchbar";
 import { Link } from "@/components/ui/link";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getApproximateCounts } from "@/lib/approximate-count";
+import { getStaticTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import {
   format,
@@ -17,8 +19,32 @@ import {
 } from "@/lib/utils";
 import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 
-export default async function StatsPage() {
+// Static shell: the page frame, title (default-locale via the cookie-free
+// translator), and searchbar prerender; the DB-derived sections stream into
+// ONE boundary whose fallback mirrors their loaded layout.
+export default function StatsPage() {
+  const t = getStaticTranslations("statsPage");
+
+  return (
+    <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+      <div className="mb-3 flex items-end justify-between gap-4">
+        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
+      </div>
+
+      <div className="mb-8">
+        <Searchbar />
+      </div>
+
+      <Suspense fallback={<StatsSkeleton />}>
+        <StatsContent />
+      </Suspense>
+    </div>
+  );
+}
+
+async function StatsContent() {
   const t = await getTranslations("statsPage");
 
   // Large tables use approximate counts (pg_class.reltuples) to avoid scanning
@@ -180,15 +206,7 @@ export default async function StatsPage() {
   }
 
   return (
-    <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
-      <div className="mb-3 flex items-end justify-between gap-4">
-        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
-      </div>
-
-      <div className="mb-8">
-        <Searchbar />
-      </div>
-
+    <>
       <section aria-labelledby="global-stats" className="mb-8">
         <SectionHeader id="global-stats" title={t("globalStats")} />
         <StatPanel>
@@ -291,6 +309,60 @@ export default async function StatsPage() {
           </div>
         </StatPanel>
       </section>
-    </div>
+    </>
+  );
+}
+
+// Mirrors the loaded sections: SectionHeader eyebrow, the four-block global
+// stat panel, and the eight-card leaderboard grid.
+function StatsSkeleton() {
+  return (
+    <>
+      <section className="mb-8">
+        <header className="mb-5 flex flex-col gap-1">
+          <Skeleton className="h-2.5 w-24" />
+        </header>
+        <div className="ring-foreground/10 bg-card overflow-hidden rounded-xl shadow-xs ring-1">
+          <div className="grid grid-cols-2 lg:grid-cols-4">
+            {["a", "b", "c", "d"].map((k) => (
+              <div key={k} className="flex min-w-0 flex-col px-5 py-4">
+                <Skeleton className="h-2.5 w-16" />
+                <Skeleton className="mt-3.5 h-7 w-20" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <header className="mb-5 flex flex-col gap-1">
+          <Skeleton className="h-2.5 w-28" />
+        </header>
+        <div className="ring-foreground/10 bg-card overflow-hidden rounded-xl shadow-xs ring-1">
+          <div className="bg-border grid grid-cols-1 gap-px md:grid-cols-2 lg:grid-cols-4">
+            {["a", "b", "c", "d", "e", "f", "g", "h"].map((k) => (
+              <div key={k} className="bg-card flex flex-col px-5 py-4">
+                <Skeleton className="h-2.5 w-28" />
+                <div className="mt-3 flex flex-col gap-1">
+                  <div className="flex gap-2 py-1">
+                    <Skeleton className="h-2.5 w-6" />
+                    <Skeleton className="h-2.5 w-16" />
+                    <Skeleton className="ml-auto h-2.5 w-14" />
+                  </div>
+                  {["a", "b", "c"].map((r) => (
+                    <div key={r} className="flex gap-2 py-1.5">
+                      <Skeleton className="h-4 w-6" />
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="ml-auto h-4 w-14" />
+                    </div>
+                  ))}
+                </div>
+                <Skeleton className="mt-3 h-3 w-36" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

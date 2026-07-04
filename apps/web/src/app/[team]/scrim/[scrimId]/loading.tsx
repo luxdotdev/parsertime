@@ -1,5 +1,6 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { DirectionalTransition } from "@/components/directional-transition";
+import { Link } from "@/components/ui/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getStaticTranslations } from "@/lib/metadata-i18n";
 
@@ -10,9 +11,13 @@ export default function ScrimLoading() {
     <DirectionalTransition>
       <DashboardLayout>
         <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
-          <Skeleton className="h-4 w-40" />
-          <Skeleton className="mt-3 h-7 w-56" />
-          <Skeleton className="mt-3 h-3.5 w-72" />
+          <nav className="text-muted-foreground flex items-center gap-3 text-sm">
+            <Link href="/dashboard" transitionTypes={["contract-map"]}>
+              &larr; {t("back")}
+            </Link>
+          </nav>
+          <Skeleton className="mt-3 h-8 w-56" />
+          <Skeleton className="mt-2 h-4 w-72" />
 
           <Skeleton className="mt-8 h-32 w-full rounded-xl" />
 

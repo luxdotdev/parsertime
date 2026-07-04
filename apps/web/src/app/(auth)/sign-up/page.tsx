@@ -1,9 +1,11 @@
 import { UserAuthForm } from "@/components/auth/user-auth-form";
 import { Link } from "@/components/ui/link";
 import { defaultLocale } from "@/i18n/config";
-import { getMetadataTranslations } from "@/lib/metadata-i18n";
+import {
+  getMetadataTranslations,
+  getStaticTranslations,
+} from "@/lib/metadata-i18n";
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
 export function generateMetadata(): Metadata {
@@ -30,8 +32,12 @@ export function generateMetadata(): Metadata {
   };
 }
 
-export default async function AuthenticationPage() {
-  const t = await getTranslations("signInPage");
+// Fully static: the wordmark is "Parsertime" in every catalog, so the
+// cookie-free translator keeps the whole page prerenderable — UserAuthForm is
+// a client component that hydrates with the streamed locale like the rest of
+// the shell.
+export default function AuthenticationPage() {
+  const t = getStaticTranslations("signInPage");
 
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">

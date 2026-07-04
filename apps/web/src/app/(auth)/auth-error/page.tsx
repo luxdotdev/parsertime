@@ -1,6 +1,9 @@
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getStaticTranslations } from "@/lib/metadata-i18n";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import { Suspense } from "react";
 
 type Error =
   | "Configuration"
@@ -10,9 +13,31 @@ type Error =
   | "AdapterError"
   | "Default";
 
-export default async function AuthErrorPage(props: PageProps<"/auth-error">) {
-  const searchParams = await props.searchParams;
-  const t = await getTranslations("authError");
+// Static shell: the page frame and heading prerender (default-locale title via
+// the cookie-free translator); the searchParams-derived error message streams
+// into ONE boundary whose fallback mirrors the loaded content's layout.
+export default function AuthErrorPage(props: PageProps<"/auth-error">) {
+  const t = getStaticTranslations("authError");
+
+  return (
+    <div className="flex h-[90vh] flex-col items-center justify-center space-y-6 p-6 text-center">
+      <h1 className="text-3xl font-bold">{t("title")}</h1>
+      <Suspense fallback={<AuthErrorSkeleton />}>
+        <AuthErrorContent searchParams={props.searchParams} />
+      </Suspense>
+    </div>
+  );
+}
+
+async function AuthErrorContent({
+  searchParams,
+}: {
+  searchParams: PageProps<"/auth-error">["searchParams"];
+}) {
+  const [params, t] = await Promise.all([
+    searchParams,
+    getTranslations("authError"),
+  ]);
 
   const errorMessages: Record<Error, string> = {
     Configuration: t("errors.configuration"),
@@ -22,15 +47,14 @@ export default async function AuthErrorPage(props: PageProps<"/auth-error">) {
     AdapterError: t("errors.adapterError"),
     Default: t("errors.default"),
   };
-  const rawError = searchParams.error;
+  const rawError = params.error;
   const error: Error =
     typeof rawError === "string" && Object.hasOwn(errorMessages, rawError)
       ? (rawError as Error)
       : "Default";
 
   return (
-    <div className="flex h-[90vh] flex-col items-center justify-center space-y-6 p-6 text-center">
-      <h1 className="text-3xl font-bold">{t("title")}</h1>
+    <>
       <p className="max-w-[600px] text-gray-500 dark:text-gray-400">
         <span className="font-bold">{t("error")}</span>{" "}
         {errorMessages[error] ?? errorMessages.Default}
@@ -52,6 +76,20 @@ export default async function AuthErrorPage(props: PageProps<"/auth-error">) {
           <Link href="/sign-in">{t("signIn")}</Link>
         </Button>
       </div>
-    </div>
+    </>
+  );
+}
+
+// Mirrors the loaded content: two message lines and the button row.
+function AuthErrorSkeleton() {
+  return (
+    <>
+      <Skeleton className="h-4 w-[500px] max-w-full" />
+      <Skeleton className="h-4 w-[440px] max-w-full" />
+      <div className="flex space-x-4">
+        <Skeleton className="h-10 w-24" />
+        <Skeleton className="h-10 w-24" />
+      </div>
+    </>
   );
 }

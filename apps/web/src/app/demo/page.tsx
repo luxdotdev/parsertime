@@ -9,9 +9,11 @@ import { HeatmapTab } from "@/components/map/heatmap/heatmap-tab";
 import { HeroBans } from "@/components/map/hero-bans";
 import { Killfeed } from "@/components/map/killfeed";
 import { MapEvents } from "@/components/map/map-events";
+import { MapTabsSkeleton } from "@/components/map/map-tabs-skeleton";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
 import { ReplayTab } from "@/components/map/replay/replay-tab";
 import { ModeToggle } from "@/components/theme-switcher";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
@@ -24,6 +26,7 @@ import { toTitleCase, translateMapName } from "@/lib/utils";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import { Suspense } from "react";
 
 const DEMO_MAP_ID = 10148;
 
@@ -67,7 +70,50 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function MapDashboardPage() {
+// Static shell: the demo route prerenders instantly and everything that reads
+// request data (locale, DB reads) streams into ONE boundary whose fallback
+// mirrors the loaded page's own frame — header bar, back link, title row, and
+// the overview tab's pending layout (MapTabsSkeleton).
+export default function MapDashboardPage() {
+  return (
+    <Suspense fallback={<DemoPageSkeleton />}>
+      <DemoPageContent />
+    </Suspense>
+  );
+}
+
+function DemoPageSkeleton() {
+  return (
+    <div className="flex-col md:flex">
+      <div className="border-b">
+        <div className="flex h-16 items-center px-4">
+          <Skeleton className="h-6 w-24" />
+          <div className="ml-auto flex items-center space-x-4">
+            <Skeleton className="hidden h-6 w-24 md:flex" />
+            <Skeleton className="h-6 w-6" />
+            <Skeleton className="h-6 w-6 md:hidden" />
+            <Skeleton className="hidden h-6 w-24 md:flex" />
+          </div>
+        </div>
+      </div>
+      <div className="flex-1 space-y-4 p-8 pt-6">
+        <div>
+          <h4 className="text-gray-600 dark:text-gray-400">
+            <Skeleton className="h-6 w-48" />
+          </h4>
+        </div>
+        <div className="flex items-center justify-between space-y-2">
+          <h2 className="text-3xl font-bold tracking-tight">
+            <Skeleton className="h-9 w-40" />
+          </h2>
+        </div>
+        <MapTabsSkeleton />
+      </div>
+    </div>
+  );
+}
+
+async function DemoPageContent() {
   const t = await getTranslations("mapPage");
   const id = DEMO_MAP_ID;
   const mapDataId = await resolveMapDataId(id);
