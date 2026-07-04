@@ -8,7 +8,7 @@ Before committing, ensure that changes are formatted, linted, typechecked, and p
 
 ## Cache Components (Cache Components / PPR is enabled)
 
-`cacheComponents: true` + `partialPrefetching: true` are on. PPR prerenders every request **twice** (a cache-warming pass, then the final prerender), so two rules prevent the recurring `HANGING_PROMISE_REJECTION` (`dynamic "use cache"`) and `Unexpected cache miss after cache warming phase` errors:
+`cacheComponents: true` + `partialPrefetching: true` are on. PPR prerenders every request **twice** (a cache-warming pass, then the final prerender), so three rules prevent the recurring `HANGING_PROMISE_REJECTION` (`dynamic "use cache"`) and `Unexpected cache miss after cache warming phase` errors:
 
 1. **`use cache` inputs must be deterministic across passes.** A cached function's arguments (and closure values) become its cache key. Only pass route params, scalar DB columns, or **fixed-order** constant arrays. Never pass:
    - a raw `findFirst`/`findMany` result — add an explicit `orderBy` (an unordered query can return a different row/order between passes; e.g. `resolveScrimMapDataId`, flag `identify`'s team `idArray`).
@@ -16,6 +16,8 @@ Before committing, ensure that changes are formatted, linted, typechecked, and p
    - a `new Date()`/`Date.now()`/`Math.random()` value — quantize it (e.g. day-align, like `computeDateRange`) or don't key on it.
 
 2. **Reads that reach `use cache` in a layout's static-shell region must be request-time.** `@vercel/edge-config`'s `get()` and every feature flag (`@/lib/flags`) compile to `use cache`. If such a read runs outside a page's dynamic boundary (e.g. in the `Footer`/a `layout.tsx`) without already being request-time, add `await connection()` as the first line (see `AuthedAppHeader`, `Footer`, the team-stats layout). Note: awaiting `getTranslations`/`getLocale` does **not** defer — only `connection()`/`headers()`/`cookies()`/`auth()` do.
+
+3. **Flag reads in render code must use the precomputed code.** `proxy.ts` evaluates all `pageFlags` once per request and forwards a signed code on the `x-flags-code` request header; pages/layouts/server components MUST read flags via `getFlag`/`getAllFlags` (`@/lib/flags-helpers`), never by calling the flag function directly. A live flag call can transiently fail and silently fall back to `defaultValue` in only one of the two prerender passes — the passes then disagree about *which* `use cache` calls run, which is the classic cause of `HANGING_PROMISE_REJECTION`. Route handlers and server actions (never prerendered) still call flags live (`resolveAllFlags` or the flag itself). New flags must be appended to `pageFlags` in `src/lib/flags-precompute.ts`.
 
 These surface only at request time on real `[param]` routes (not `next build`); check Vercel runtime logs after deploying cache-touching changes.
 
