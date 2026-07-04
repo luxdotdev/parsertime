@@ -13,6 +13,7 @@ import {
   scoutingTool,
   tournament,
 } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { get } from "@vercel/edge-config";
 import type { Route } from "next";
 import { connection } from "next/server";
@@ -217,11 +218,11 @@ async function FooterContent() {
   ] = await Promise.all([
     get<string>("version"),
     get<Route>("changelog"),
-    scoutingTool(),
-    aiChat(),
-    dataLabeling(),
-    coachingCanvas(),
-    tournament(),
+    getFlag(scoutingTool),
+    getFlag(aiChat),
+    getFlag(dataLabeling),
+    getFlag(coachingCanvas),
+    getFlag(tournament),
   ]);
 
   const columns: FooterColumn[] = [

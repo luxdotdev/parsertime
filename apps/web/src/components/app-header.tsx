@@ -16,6 +16,7 @@ import {
   scoutingTool,
   tournament,
 } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import type { Session } from "@/lib/auth";
 
 /**
@@ -48,13 +49,13 @@ export async function AppHeader({
     coachingCanvasEnabled,
     queryBuilderEnabled,
   ] = await Promise.all([
-    scoutingTool(),
-    faceitScouting(),
-    aiChat(),
-    dataLabeling(),
-    tournament(),
-    coachingCanvas(),
-    queryBuilder(),
+    getFlag(scoutingTool),
+    getFlag(faceitScouting),
+    getFlag(aiChat),
+    getFlag(dataLabeling),
+    getFlag(tournament),
+    getFlag(coachingCanvas),
+    getFlag(queryBuilder),
   ]);
 
   // Right-side utilities shared by both bars. The desktop bar additionally

@@ -17,7 +17,7 @@ import { auth } from "@/lib/auth";
 import { defaultLocale } from "@/i18n/config";
 import { DSG_TEAM_ID } from "@/lib/brand-theme";
 import { WebVitals } from "@/lib/axiom/client";
-import { resolveAllFlags, toFlagValues } from "@/lib/flags-helpers";
+import { getAllFlags, toFlagValues } from "@/lib/flags-helpers";
 import { QueryProvider } from "@/lib/query";
 import { cn } from "@/lib/utils";
 import { UsageBeacon } from "@/components/usage/usage-beacon";
@@ -144,7 +144,7 @@ async function RootProviders({ children }: { children: ReactNode }) {
     );
   }
 
-  const flags = await resolveAllFlags();
+  const flags = await getAllFlags();
 
   return (
     <NuqsAdapter>
