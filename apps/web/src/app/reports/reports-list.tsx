@@ -28,13 +28,16 @@ type ReportWithUser = ChatReport & { user: { name: string | null } };
 
 function formatRelativeDate(
   date: Date,
-  format: ReturnType<typeof useFormatter>
+  format: ReturnType<typeof useFormatter>,
+  nowMs: number
 ): string {
-  const now = new Date();
+  // `now` comes from the server parent so SSR and hydration agree, and so
+  // next-intl never falls back to the environment (ENVIRONMENT_FALLBACK).
+  const now = new Date(nowMs);
   const diff = now.getTime() - date.getTime();
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-  if (days < 30) return format.relativeTime(date);
+  if (days < 30) return format.relativeTime(date, now);
   return format.dateTime(date, {
     month: "short",
     day: "numeric",
@@ -57,7 +60,7 @@ function extractPreview(content: string): string {
   return firstLine.trim().slice(0, 120) + (firstLine.length > 120 ? "…" : "");
 }
 
-function ReportRow({ report }: { report: ReportWithUser }) {
+function ReportRow({ report, now }: { report: ReportWithUser; now: number }) {
   const format = useFormatter();
   const preview = useMemo(
     () => extractPreview(report.content),
@@ -80,7 +83,7 @@ function ReportRow({ report }: { report: ReportWithUser }) {
           className="text-muted-foreground font-mono text-xs tabular-nums"
           suppressHydrationWarning
         >
-          {formatRelativeDate(report.createdAt, format)}
+          {formatRelativeDate(report.createdAt, format, now)}
         </span>
         <ChevronRight
           className="text-muted-foreground -mr-1 size-4 opacity-0 transition-opacity group-hover:opacity-100"
@@ -91,7 +94,14 @@ function ReportRow({ report }: { report: ReportWithUser }) {
   );
 }
 
-export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
+export function ReportsList({
+  reports,
+  now,
+}: {
+  reports: ReportWithUser[];
+  /** Request-time timestamp from the server parent. */
+  now: number;
+}) {
   const t = useTranslations("reportsPage.list");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -167,7 +177,7 @@ export function ReportsList({ reports }: { reports: ReportWithUser[] }) {
           <div className="overflow-hidden rounded-lg border">
             <div className="divide-border divide-y">
               {paged.map((report) => (
-                <ReportRow key={report.id} report={report} />
+                <ReportRow key={report.id} report={report} now={now} />
               ))}
             </div>
           </div>

@@ -38,7 +38,9 @@ async function ReportsContent() {
     include: { user: { select: { name: true } } },
   });
 
-  return <ReportsList reports={reports} />;
+  // Request-time (post-auth), so Date.now() is safe here; serializing it as a
+  // prop keeps SSR and hydration on the same clock for relative timestamps.
+  return <ReportsList reports={reports} now={Date.now()} />;
 }
 
 // Mirrors ReportsList's frame (header, search row, report rows) so the

@@ -67,7 +67,10 @@ export function DashboardOverview({ isAdmin = false }: { isAdmin?: boolean }) {
   useEffect(() => setMounted(true), []);
   const collapsed = mounted && collapsedPref;
 
-  const { data, isLoading, isError } = useQuery<OverviewData, Error>({
+  const { data, isLoading, isError, dataUpdatedAt } = useQuery<
+    OverviewData,
+    Error
+  >({
     queryKey: isAdmin
       ? ["dashboard-overview", "admin"]
       : ["dashboard-overview", effectiveTeamId ?? "all"],
@@ -106,6 +109,7 @@ export function DashboardOverview({ isAdmin = false }: { isAdmin?: boolean }) {
           collapsed={collapsed}
           onToggle={toggle}
           panelId={panelId}
+          now={dataUpdatedAt}
         />
       )}
     </motion.section>
@@ -120,18 +124,22 @@ function Band({
   collapsed,
   onToggle,
   panelId,
+  now,
 }: {
   data: OverviewData;
   t: T;
   collapsed: boolean;
   onToggle: () => void;
   panelId: string;
+  /** The query's fetch timestamp — a stable "now" for relative times, so
+   * next-intl doesn't fall back to the environment (ENVIRONMENT_FALLBACK). */
+  now: number;
 }) {
   const format = useFormatter();
   const cells =
     data.mode === "team"
       ? teamCells(data, format, t)
-      : allCells(data, format, t);
+      : allCells(data, format, t, now);
 
   return (
     <div>
@@ -234,7 +242,8 @@ function teamCells(
 function allCells(
   data: AllOverview,
   format: ReturnType<typeof useFormatter>,
-  t: T
+  t: T,
+  now: number
 ): RibbonCell[] {
   const latest = data.latestScrim ? new Date(data.latestScrim) : null;
   return [
@@ -248,7 +257,7 @@ function allCells(
         : "—",
       valueAsText: true,
       // Inline the relative time rather than spending a third line on it.
-      meta: latest ? format.relativeTime(latest) : t("never"),
+      meta: latest ? format.relativeTime(latest, now) : t("never"),
     },
   ];
 }

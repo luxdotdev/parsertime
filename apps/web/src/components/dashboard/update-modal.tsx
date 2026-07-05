@@ -49,9 +49,13 @@ export function UpdateModal({ data }: { data: UpdateModalData }) {
             {new Date(data.date).toDateString()}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogDescription>
-          <div dangerouslySetInnerHTML={{ __html: data.content }} />
-        </AlertDialogDescription>
+        {/* Not an AlertDialogDescription: that renders a <p>, and the CMS
+            content contains block elements (<p>, <div>) — invalid nesting
+            that breaks hydration. */}
+        <div
+          className="text-muted-foreground *:[a]:hover:text-foreground text-sm md:text-pretty *:[a]:underline *:[a]:underline-offset-3"
+          dangerouslySetInnerHTML={{ __html: data.content }}
+        />
         <AlertDialogFooter>
           <AlertDialogAction asChild>
             <Button type="button" onClick={handleClose}>
