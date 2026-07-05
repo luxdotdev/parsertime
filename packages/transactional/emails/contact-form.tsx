@@ -1,18 +1,10 @@
-import { SITE_URL, SUPPORT_EMAIL } from "../lib/site";
 import {
-  Body,
-  Container,
-  Head,
-  Heading,
-  Hr,
-  Html,
-  Img,
-  Link,
-  Preview,
-  Section,
-  Text,
-} from "react-email";
-import { EmailTailwind } from "./_email-tailwind";
+  EmailLink,
+  EmailShell,
+  EmailText,
+  EmailTitle,
+  SnippetBlock,
+} from "./_components";
 
 type ContactFormEmailProps = {
   name?: string;
@@ -25,64 +17,19 @@ export function ContactFormEmail({
   email,
   message,
 }: ContactFormEmailProps) {
-  const previewText = `New Message from ${name} | Sightline`;
-
   return (
-    <Html>
-      <Head />
-      <Preview>{previewText}</Preview>
-      <EmailTailwind>
-        <Body className="mx-auto my-auto bg-white px-2 font-sans">
-          <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
-            <Section className="mt-[32px]">
-              <Img
-                src={`${SITE_URL}/parsertime.png`}
-                width="50"
-                height="50"
-                alt="Sightline Logo"
-                className="mx-auto my-0"
-              />
-            </Section>
-            <Heading className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal text-black">
-              New Message from <strong>{name}</strong>
-            </Heading>
-            <Text className="text-[14px] leading-[24px] text-black">
-              There is a new message from <strong>{name}</strong> (
-              <Link
-                href={`mailto:${email}`}
-                className="text-blue-600 no-underline"
-              >
-                {email}
-              </Link>
-              ):
-            </Text>
-            <Text className="text-[14px] leading-[24px] text-black">
-              {message}
-            </Text>
-            <Hr className="mx-0 my-[26px] w-full border border-solid border-[#eaeaea]" />
-            <Text className="text-[12px] leading-[24px] text-[#666666]">
-              This message was intended for{" "}
-              <span className="text-black">{SUPPORT_EMAIL}</span>. If you were
-              not expecting this message, you can ignore this email. If you are
-              concerned about your account&apos;s safety, please get in touch
-              with us at{" "}
-              <Link
-                href={`mailto:${SUPPORT_EMAIL}`}
-                className="text-blue-600 no-underline"
-              >
-                {SUPPORT_EMAIL}
-              </Link>
-              .
-            </Text>
-            {process.env.NODE_ENV !== "production" && (
-              <Text className="text-[12px] leading-[24px] text-[#666666]">
-                This email was sent from a development environment.
-              </Text>
-            )}
-          </Container>
-        </Body>
-      </EmailTailwind>
-    </Html>
+    <EmailShell preview={`New message from ${name}`}>
+      <EmailTitle>New message from {name}</EmailTitle>
+      <EmailText>
+        <strong>{name}</strong> (
+        <EmailLink href={`mailto:${email}`}>{email}</EmailLink>) wrote:
+      </EmailText>
+      <SnippetBlock>{message}</SnippetBlock>
+      <EmailText>
+        Reply directly to this email to answer{" "}
+        <EmailLink href={`mailto:${email}`}>{email}</EmailLink>.
+      </EmailText>
+    </EmailShell>
   );
 }
 

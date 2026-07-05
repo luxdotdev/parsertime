@@ -1,20 +1,7 @@
 import { SITE_URL, SUPPORT_EMAIL } from "../lib/site";
 import { toTitleCase } from "./_utils";
-import {
-  Body,
-  Container,
-  Head,
-  Heading,
-  Hr,
-  Html,
-  Img,
-  Link,
-  Preview,
-  Section,
-  Text,
-} from "react-email";
 import type { EmailUser } from "./_types";
-import { EmailTailwind } from "./_email-tailwind";
+import { EmailLink, EmailShell, EmailText, EmailTitle } from "./_components";
 
 type SubscriptionEmailProps = {
   user: EmailUser;
@@ -25,81 +12,25 @@ export function SubscriptionUpdatedEmail({
   user,
   billingPlan,
 }: SubscriptionEmailProps) {
-  const previewText = "Your subscription has been updated.";
+  const planName = toTitleCase(billingPlan);
 
   return (
-    <Html>
-      <Head />
-      <Preview>{previewText}</Preview>
-      <EmailTailwind>
-        <Body className="mx-auto my-auto bg-white px-2 font-sans">
-          <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
-            <Section className="mt-[32px]">
-              <Img
-                src={`${SITE_URL}/parsertime.png`}
-                width="50"
-                height="50"
-                alt="Sightline Logo"
-                className="mx-auto my-0"
-              />
-            </Section>
-            <Heading className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal text-black">
-              Your subscription has been updated.
-            </Heading>
-            <Text className="text-[14px] leading-[24px] text-black">
-              Hello {user.email},
-            </Text>
-            <Text className="text-[14px] leading-[24px] text-black">
-              Thank you for being a subscriber to Sightline! We&apos;re grateful
-              for your support. You are now on the{" "}
-              <strong>{toTitleCase(billingPlan)}</strong> plan.
-            </Text>
-            <Text className="text-[14px] leading-[24px] text-black">
-              To manage your subscription, including updating your payment
-              method, visit your{" "}
-              <Link
-                href={`${SITE_URL}/settings`}
-                className="text-blue-600 no-underline"
-              >
-                settings page
-              </Link>{" "}
-              and click &quot;Manage your subscription&quot;.
-            </Text>
-            <Text className="text-[14px] leading-[24px] text-black">
-              If you have any questions or need help, feel free to reach out to
-              us at{" "}
-              <Link
-                href={`mailto:${SUPPORT_EMAIL}`}
-                className="text-blue-600 no-underline"
-              >
-                {SUPPORT_EMAIL}
-              </Link>
-              . We appreciate your support!
-            </Text>
-            <Hr className="mx-0 my-[26px] w-full border border-solid border-[#eaeaea]" />
-            <Text className="text-[12px] leading-[24px] text-[#666666]">
-              This message was intended for{" "}
-              <span className="text-black">{user.email}</span>. If you were not
-              expecting this message, you can ignore this email. If you are
-              concerned about your account&apos;s safety, please get in touch
-              with us at{" "}
-              <Link
-                href={`mailto:${SUPPORT_EMAIL}`}
-                className="text-blue-600 no-underline"
-              >
-                {SUPPORT_EMAIL}
-              </Link>
-              .
-            </Text>
-            {process.env.NODE_ENV !== "production" && (
-              <Text className="text-[12px] leading-[24px] text-[#666666]">
-                This email was sent from a development environment.
-              </Text>
-            )}
-          </Container>
-        </Body>
-      </EmailTailwind>
-    </Html>
+    <EmailShell preview={`You're now on the ${planName} plan.`}>
+      <EmailTitle>You&apos;re now on the {planName} plan</EmailTitle>
+      <EmailText>
+        Hello, <strong>{user.name ?? user.email}</strong>.
+      </EmailText>
+      <EmailText>
+        We updated your Sightline subscription to the{" "}
+        <strong>{planName}</strong> plan. Manage it, including your payment
+        method, from your{" "}
+        <EmailLink href={`${SITE_URL}/settings`}>settings page</EmailLink>.
+      </EmailText>
+      <EmailText>
+        Questions? Reach out at{" "}
+        <EmailLink href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</EmailLink>.
+      </EmailText>
+    </EmailShell>
   );
 }
 

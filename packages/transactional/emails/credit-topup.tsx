@@ -1,19 +1,13 @@
-import { SITE_URL, SUPPORT_EMAIL } from "../lib/site";
-import {
-  Body,
-  Container,
-  Head,
-  Heading,
-  Hr,
-  Html,
-  Img,
-  Link,
-  Preview,
-  Section,
-  Text,
-} from "react-email";
+import { SITE_URL } from "../lib/site";
 import type { EmailUser } from "./_types";
-import { EmailTailwind } from "./_email-tailwind";
+import {
+  DetailList,
+  EmailLink,
+  EmailShell,
+  EmailSubheading,
+  EmailText,
+  EmailTitle,
+} from "./_components";
 
 type CreditTopupEmailProps = {
   user: EmailUser;
@@ -44,94 +38,53 @@ export function CreditTopupEmail({
     : `${formatCents(amountCents)} of AI credits added to your account`;
 
   return (
-    <Html>
-      <Head />
-      <Preview>{previewText}</Preview>
-      <EmailTailwind>
-        <Body className="mx-auto my-auto bg-white px-2 font-sans">
-          <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
-            <Section className="mt-[32px]">
-              <Img
-                src={`${SITE_URL}/parsertime.png`}
-                width="50"
-                height="50"
-                alt="Sightline Logo"
-                className="mx-auto my-0"
-              />
-            </Section>
-            <Heading className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal text-black">
-              {isAutoRefill ? "Auto-refill processed" : "Credits added"}
-            </Heading>
-            <Text className="text-[14px] leading-[24px] text-black">
-              Hello {user.name ?? user.email},
-            </Text>
-            <Text className="text-[14px] leading-[24px] text-black">
-              {isAutoRefill
-                ? `Your saved payment method was charged ${formatCents(amountCents)} to keep your AI chat credits topped up.`
-                : `We added ${formatCents(amountCents)} of AI chat credits to your account.`}
-            </Text>
-            <Text className="text-[14px] leading-[24px] text-black">
-              <strong>New balance:</strong> {formatCents(balanceAfterCents)}
-            </Text>
-
-            <Hr className="mx-0 my-[20px] w-full border border-solid border-[#eaeaea]" />
-
-            <Heading
-              as="h2"
-              className="mx-0 mb-[8px] p-0 text-[16px] font-medium text-black"
-            >
-              Auto-refill
-            </Heading>
-            {autoRefillEnabled ? (
-              <Text className="text-[14px] leading-[22px] text-black">
-                Auto-refill is <strong>on</strong>. We will charge your saved
-                card {formatCents(autoRefillAmountCents)} whenever your balance
-                drops below {formatCents(autoRefillThresholdCents)}. You can
-                change or turn this off on your{" "}
-                <Link
-                  href={`${SITE_URL}/settings/billing`}
-                  className="text-blue-600 no-underline"
-                >
-                  billing settings page
-                </Link>
-                .
-              </Text>
-            ) : (
-              <Text className="text-[14px] leading-[22px] text-black">
-                Auto-refill is currently <strong>off</strong>. You can turn it
-                on from your{" "}
-                <Link
-                  href={`${SITE_URL}/settings/billing`}
-                  className="text-blue-600 no-underline"
-                >
-                  billing settings page
-                </Link>{" "}
-                so your credits don&apos;t run out mid-scrim.
-              </Text>
-            )}
-
-            <Hr className="mx-0 my-[26px] w-full border border-solid border-[#eaeaea]" />
-            <Text className="text-[12px] leading-[24px] text-[#666666]">
-              This message was intended for{" "}
-              <span className="text-black">{user.email}</span>. Questions about
-              your account? Reach out at{" "}
-              <Link
-                href={`mailto:${SUPPORT_EMAIL}`}
-                className="text-blue-600 no-underline"
-              >
-                {SUPPORT_EMAIL}
-              </Link>
-              .
-            </Text>
-            {process.env.NODE_ENV !== "production" && (
-              <Text className="text-[12px] leading-[24px] text-[#666666]">
-                This email was sent from a development environment.
-              </Text>
-            )}
-          </Container>
-        </Body>
-      </EmailTailwind>
-    </Html>
+    <EmailShell preview={previewText}>
+      <EmailTitle>
+        {isAutoRefill ? "Auto-refill processed" : "Credits added"}
+      </EmailTitle>
+      <EmailText>
+        Hello, <strong>{user.name ?? user.email}</strong>.
+      </EmailText>
+      <EmailText>
+        {isAutoRefill ? (
+          <>
+            We charged your saved payment method{" "}
+            <strong>{formatCents(amountCents)}</strong> to top up your AI chat
+            credits.
+          </>
+        ) : (
+          <>
+            We added <strong>{formatCents(amountCents)}</strong> of AI chat
+            credits to your account.
+          </>
+        )}
+      </EmailText>
+      <DetailList
+        items={[
+          { label: "New balance", value: formatCents(balanceAfterCents) },
+        ]}
+      />
+      <EmailSubheading>Auto-refill</EmailSubheading>
+      {autoRefillEnabled ? (
+        <EmailText>
+          Auto-refill is <strong>on</strong>. We&apos;ll charge your saved card{" "}
+          {formatCents(autoRefillAmountCents)} whenever your balance drops below{" "}
+          {formatCents(autoRefillThresholdCents)}. Manage it in your{" "}
+          <EmailLink href={`${SITE_URL}/settings/billing`}>
+            billing settings
+          </EmailLink>
+          .
+        </EmailText>
+      ) : (
+        <EmailText>
+          Auto-refill is <strong>off</strong>. Turn it on in your{" "}
+          <EmailLink href={`${SITE_URL}/settings/billing`}>
+            billing settings
+          </EmailLink>{" "}
+          so your credits don&apos;t run out mid-scrim.
+        </EmailText>
+      )}
+    </EmailShell>
   );
 }
 

@@ -209,7 +209,7 @@ export async function GET(request: Request) {
   try {
     await email.sendEmail({
       to: "lucas@lux.dev",
-      subject: `Sightline Weekly Report — ${formatDate(weekStart)} to ${formatDate(now)}`,
+      subject: `Sightline weekly report — ${formatDate(weekStart)} to ${formatDate(now)}`,
       html: emailHtml,
     });
     Logger.info(`Usage report sent to lucas@lux.dev`);

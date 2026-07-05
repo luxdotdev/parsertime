@@ -1,20 +1,12 @@
 import { SITE_URL, SUPPORT_EMAIL } from "../lib/site";
-import {
-  Body,
-  Button,
-  Container,
-  Head,
-  Heading,
-  Hr,
-  Html,
-  Img,
-  Link,
-  Preview,
-  Section,
-  Text,
-} from "react-email";
 import type { EmailUser } from "./_types";
-import { EmailTailwind } from "./_email-tailwind";
+import {
+  EmailButton,
+  EmailLink,
+  EmailShell,
+  EmailText,
+  EmailTitle,
+} from "./_components";
 
 type CreditLowBalanceEmailProps = {
   user: EmailUser;
@@ -29,73 +21,32 @@ export function CreditLowBalanceEmail({
   user,
   balanceCents,
 }: CreditLowBalanceEmailProps) {
-  const previewText = `Your Sightline AI balance is running low (${formatCents(balanceCents)})`;
-
   return (
-    <Html>
-      <Head />
-      <Preview>{previewText}</Preview>
-      <EmailTailwind>
-        <Body className="mx-auto my-auto bg-white px-2 font-sans">
-          <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
-            <Section className="mt-[32px]">
-              <Img
-                src={`${SITE_URL}/parsertime.png`}
-                width="50"
-                height="50"
-                alt="Sightline Logo"
-                className="mx-auto my-0"
-              />
-            </Section>
-            <Heading className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal text-black">
-              Your AI credits are running low
-            </Heading>
-            <Text className="text-[14px] leading-[24px] text-black">
-              Hello {user.name ?? user.email},
-            </Text>
-            <Text className="text-[14px] leading-[24px] text-black">
-              Your Sightline AI chat balance just dropped to{" "}
-              <strong>{formatCents(balanceCents)}</strong>. At this rate you may
-              hit zero during your next scrim review. We&apos;ll block new
-              messages once your balance is exhausted so you don&apos;t get
-              surprise charges.
-            </Text>
-            <Text className="text-[14px] leading-[24px] text-black">
-              Top up from the chat page, or turn on auto-refill so a saved card
-              keeps your credits available without you having to think about it.
-            </Text>
-
-            <Section className="mt-[24px] text-center">
-              <Button
-                href={`${SITE_URL}/settings/billing`}
-                className="rounded bg-black px-[18px] py-[10px] text-[14px] font-medium text-white no-underline"
-              >
-                Manage credits
-              </Button>
-            </Section>
-
-            <Hr className="mx-0 my-[26px] w-full border border-solid border-[#eaeaea]" />
-            <Text className="text-[12px] leading-[24px] text-[#666666]">
-              This message was intended for{" "}
-              <span className="text-black">{user.email}</span>. Don&apos;t want
-              these alerts? Reply to{" "}
-              <Link
-                href={`mailto:${SUPPORT_EMAIL}`}
-                className="text-blue-600 no-underline"
-              >
-                {SUPPORT_EMAIL}
-              </Link>{" "}
-              and we&apos;ll turn them off for your account.
-            </Text>
-            {process.env.NODE_ENV !== "production" && (
-              <Text className="text-[12px] leading-[24px] text-[#666666]">
-                This email was sent from a development environment.
-              </Text>
-            )}
-          </Container>
-        </Body>
-      </EmailTailwind>
-    </Html>
+    <EmailShell
+      preview={`Your Sightline AI balance is running low (${formatCents(balanceCents)})`}
+    >
+      <EmailTitle>Your AI credits are running low</EmailTitle>
+      <EmailText>
+        Hello, <strong>{user.name ?? user.email}</strong>.
+      </EmailText>
+      <EmailText>
+        Your AI chat balance dropped to{" "}
+        <strong>{formatCents(balanceCents)}</strong>. We&apos;ll block new
+        messages once it hits zero, so you won&apos;t get surprise charges.
+      </EmailText>
+      <EmailText>
+        Top up now, or turn on auto-refill to keep credits available
+        automatically.
+      </EmailText>
+      <EmailButton href={`${SITE_URL}/settings/billing`}>
+        Manage credits
+      </EmailButton>
+      <EmailText>
+        Don&apos;t want these alerts? Reply to{" "}
+        <EmailLink href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</EmailLink>{" "}
+        and we&apos;ll turn them off.
+      </EmailText>
+    </EmailShell>
   );
 }
 

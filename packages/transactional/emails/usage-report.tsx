@@ -1,20 +1,5 @@
-import { SITE_URL, SUPPORT_EMAIL } from "../lib/site";
-import {
-  Body,
-  Column,
-  Container,
-  Head,
-  Heading,
-  Hr,
-  Html,
-  Img,
-  Link,
-  Preview,
-  Row,
-  Section,
-  Text,
-} from "react-email";
-import { EmailTailwind } from "./_email-tailwind";
+import { Column, Hr, Row, Section, Text } from "react-email";
+import { EmailShell, EmailTitle } from "./_components";
 
 type SignupMethod = {
   method: string;
@@ -91,11 +76,11 @@ function StatCard({
   sentiment?: DeltaSentiment;
 }) {
   return (
-    <div className="rounded border border-solid border-gray-200 bg-gray-50 p-[16px]">
-      <Text className="m-0 mb-[4px] text-[11px] leading-[16px] font-semibold tracking-wide text-gray-500 uppercase">
+    <div className="rounded-[6px] border border-solid border-[#eaeaea] bg-[#fafafa] p-[16px]">
+      <Text className="m-0 mb-[4px] text-[12px] leading-[18px] text-[#666666]">
         {label}
       </Text>
-      <Text className="m-0 mb-[4px] text-[24px] leading-[32px] font-bold text-gray-900">
+      <Text className="m-0 mb-[4px] text-[24px] leading-[32px] font-bold text-black">
         {value}
       </Text>
       {deltaLabel && sentiment && (
@@ -109,11 +94,17 @@ function StatCard({
   );
 }
 
-function SectionHeading({ children }: { children: React.ReactNode }) {
+function ReportSectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <Text className="m-0 mb-[12px] text-[13px] leading-[20px] font-semibold tracking-wide text-gray-700 uppercase">
+    <Text className="m-0 mb-[12px] text-[16px] leading-[24px] font-bold text-black">
       {children}
     </Text>
+  );
+}
+
+function ReportDivider() {
+  return (
+    <Hr className="mx-0 my-[20px] w-full border border-solid border-[#eaeaea]" />
   );
 }
 
@@ -140,235 +131,180 @@ export function UsageReportEmail({
   const previewText = `${newUsersThisWeek} new user${newUsersThisWeek !== 1 ? "s" : ""} this week${userDelta !== 0 ? `, ${userDelta > 0 ? "+" : ""}${userDelta} vs last week` : ""}. ${newScrimsThisWeek} scrim${newScrimsThisWeek !== 1 ? "s" : ""} created.`;
 
   return (
-    <Html>
-      <Head />
-      <Preview>{previewText}</Preview>
-      <EmailTailwind>
-        <Body className="mx-auto my-auto bg-white px-2 font-sans">
-          <Container className="mx-auto my-[40px] max-w-[500px] rounded border border-solid border-[#eaeaea] p-[20px]">
-            <Section className="mt-[32px]">
-              <Img
-                src={`${SITE_URL}/parsertime.png`}
-                width="50"
-                height="50"
-                alt="Sightline Logo"
-                className="mx-auto my-0"
-              />
-            </Section>
+    <EmailShell preview={previewText}>
+      <EmailTitle>Weekly usage report</EmailTitle>
+      <Text className="mt-[-16px] mb-[24px] text-[14px] leading-[22px] text-[#666666]">
+        {weekStart} &ndash; {weekEnd}
+      </Text>
 
-            <Heading className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal text-black">
-              Weekly Usage Report
-            </Heading>
+      <ReportSectionHeading>This week at a glance</ReportSectionHeading>
 
-            <Text className="m-0 mt-[-20px] mb-[24px] text-center text-[14px] leading-[22px] text-gray-500">
-              {weekStart} &ndash; {weekEnd}
+      <Row className="mb-[10px]">
+        <Column className="w-[50%] pr-[5px]">
+          <StatCard
+            label="New users"
+            value={newUsersThisWeek.toLocaleString()}
+            sentiment={getDeltaSentiment(newUsersThisWeek, newUsersLastWeek)}
+            deltaLabel={formatDelta(newUsersThisWeek, newUsersLastWeek)}
+          />
+        </Column>
+        <Column className="w-[50%] pl-[5px]">
+          <StatCard
+            label="New scrims"
+            value={newScrimsThisWeek.toLocaleString()}
+            sentiment={getDeltaSentiment(newScrimsThisWeek, newScrimsLastWeek)}
+            deltaLabel={formatDelta(newScrimsThisWeek, newScrimsLastWeek)}
+          />
+        </Column>
+      </Row>
+
+      <Row className="mb-[10px]">
+        <Column className="w-[50%] pr-[5px]">
+          <StatCard
+            label="New teams"
+            value={newTeamsThisWeek.toLocaleString()}
+            sentiment={getDeltaSentiment(newTeamsThisWeek, newTeamsLastWeek)}
+            deltaLabel={formatDelta(newTeamsThisWeek, newTeamsLastWeek)}
+          />
+        </Column>
+        <Column className="w-[50%] pl-[5px]">
+          <StatCard
+            label="Paid conversion"
+            value={`${conversionRate.toFixed(1)}%`}
+            sentiment="neutral"
+            deltaLabel={`${paidUsers.toLocaleString()} paid user${paidUsers !== 1 ? "s" : ""}`}
+          />
+        </Column>
+      </Row>
+
+      <Row className="mb-[10px]">
+        <Column className="w-[50%] pr-[5px]">
+          <StatCard label="Total users" value={totalUsers.toLocaleString()} />
+        </Column>
+        <Column className="w-[50%] pl-[5px]">
+          <StatCard label="Total scrims" value={totalScrims.toLocaleString()} />
+        </Column>
+      </Row>
+
+      <Row className="mb-[20px]">
+        <Column className="w-[50%] pr-[5px]">
+          <StatCard label="Total teams" value={totalTeams.toLocaleString()} />
+        </Column>
+        <Column className="w-[50%] pl-[5px]" />
+      </Row>
+
+      <ReportDivider />
+
+      <ReportSectionHeading>Signup methods</ReportSectionHeading>
+
+      {signupMethods.map((item) => (
+        <Row key={item.method} className="mb-[8px]">
+          <Column>
+            <Text className="m-0 text-[14px] leading-[22px] text-[#171717]">
+              {item.method}
             </Text>
-
-            <Hr className="mx-0 my-[20px] w-full border border-solid border-[#eaeaea]" />
-
-            <SectionHeading>This week at a glance</SectionHeading>
-
-            <Row className="mb-[10px]">
-              <Column className="pr-[5px]">
-                <StatCard
-                  label="New Users"
-                  value={newUsersThisWeek.toLocaleString()}
-                  sentiment={getDeltaSentiment(
-                    newUsersThisWeek,
-                    newUsersLastWeek
-                  )}
-                  deltaLabel={formatDelta(newUsersThisWeek, newUsersLastWeek)}
-                />
-              </Column>
-              <Column className="pl-[5px]">
-                <StatCard
-                  label="New Scrims"
-                  value={newScrimsThisWeek.toLocaleString()}
-                  sentiment={getDeltaSentiment(
-                    newScrimsThisWeek,
-                    newScrimsLastWeek
-                  )}
-                  deltaLabel={formatDelta(newScrimsThisWeek, newScrimsLastWeek)}
-                />
-              </Column>
-            </Row>
-
-            <Row className="mb-[10px]">
-              <Column className="pr-[5px]">
-                <StatCard
-                  label="New Teams"
-                  value={newTeamsThisWeek.toLocaleString()}
-                  sentiment={getDeltaSentiment(
-                    newTeamsThisWeek,
-                    newTeamsLastWeek
-                  )}
-                  deltaLabel={formatDelta(newTeamsThisWeek, newTeamsLastWeek)}
-                />
-              </Column>
-              <Column className="pl-[5px]">
-                <StatCard
-                  label="Paid Conversion"
-                  value={`${conversionRate.toFixed(1)}%`}
-                  sentiment="neutral"
-                  deltaLabel={`${paidUsers.toLocaleString()} paid user${paidUsers !== 1 ? "s" : ""}`}
-                />
-              </Column>
-            </Row>
-
-            <Row className="mb-[10px]">
-              <Column className="pr-[5px]">
-                <StatCard
-                  label="Total Users"
-                  value={totalUsers.toLocaleString()}
-                />
-              </Column>
-              <Column className="pl-[5px]">
-                <StatCard
-                  label="Total Scrims"
-                  value={totalScrims.toLocaleString()}
-                />
-              </Column>
-            </Row>
-
-            <Row className="mb-[20px]">
-              <Column className="pr-[5px]">
-                <StatCard
-                  label="Total Teams"
-                  value={totalTeams.toLocaleString()}
-                />
-              </Column>
-              <Column className="pl-[5px]" />
-            </Row>
-
-            <Hr className="mx-0 my-[20px] w-full border border-solid border-[#eaeaea]" />
-
-            <SectionHeading>Signup methods</SectionHeading>
-
-            {signupMethods.map((item) => (
-              <Row key={item.method} className="mb-[8px]">
-                <Column>
-                  <Text className="m-0 text-[14px] leading-[22px] text-gray-700">
-                    {item.method}
-                  </Text>
-                </Column>
-                <Column className="text-right">
-                  <Text className="m-0 text-[14px] leading-[22px] font-semibold text-gray-900">
-                    {item.count.toLocaleString()}{" "}
-                    <span className="font-normal text-gray-400">
-                      ({item.percentage}%)
-                    </span>
-                  </Text>
-                </Column>
-              </Row>
-            ))}
-
-            <Hr className="mx-0 my-[20px] w-full border border-solid border-[#eaeaea]" />
-
-            <SectionHeading>Billing plans</SectionHeading>
-
-            {billingPlans.map((item) => (
-              <Row key={item.plan} className="mb-[8px]">
-                <Column>
-                  <Text className="m-0 text-[14px] leading-[22px] text-gray-700">
-                    {item.plan.charAt(0) + item.plan.slice(1).toLowerCase()}
-                  </Text>
-                </Column>
-                <Column className="text-right">
-                  <Text className="m-0 text-[14px] leading-[22px] font-semibold text-gray-900">
-                    {item.count.toLocaleString()}{" "}
-                    <span className="font-normal text-gray-400">
-                      ({item.percentage}%)
-                    </span>
-                  </Text>
-                </Column>
-              </Row>
-            ))}
-
-            {topUsers.length > 0 && (
-              <>
-                <Hr className="mx-0 my-[20px] w-full border border-solid border-[#eaeaea]" />
-
-                <SectionHeading>Most active users</SectionHeading>
-
-                {topUsers.map((user, index) => (
-                  <Row key={user.name} className="mb-[8px]">
-                    <Column className="w-[24px]">
-                      <Text className="m-0 text-[14px] leading-[22px] font-semibold text-gray-400">
-                        {index + 1}
-                      </Text>
-                    </Column>
-                    <Column>
-                      <Text className="m-0 text-[14px] leading-[22px] text-gray-700">
-                        {user.name}
-                      </Text>
-                    </Column>
-                    <Column className="text-right">
-                      <Text className="m-0 text-[14px] leading-[22px] font-semibold text-gray-900">
-                        {user.scrimCount}{" "}
-                        <span className="font-normal text-gray-400">
-                          scrim{user.scrimCount !== 1 ? "s" : ""}
-                        </span>
-                      </Text>
-                    </Column>
-                  </Row>
-                ))}
-              </>
-            )}
-
-            {topTeams.length > 0 && (
-              <>
-                <Hr className="mx-0 my-[20px] w-full border border-solid border-[#eaeaea]" />
-
-                <SectionHeading>Most active teams</SectionHeading>
-
-                {topTeams.map((team, index) => (
-                  <Row key={team.name} className="mb-[8px]">
-                    <Column className="w-[24px]">
-                      <Text className="m-0 text-[14px] leading-[22px] font-semibold text-gray-400">
-                        {index + 1}
-                      </Text>
-                    </Column>
-                    <Column>
-                      <Text className="m-0 text-[14px] leading-[22px] text-gray-700">
-                        {team.name}
-                      </Text>
-                    </Column>
-                    <Column className="text-right">
-                      <Text className="m-0 text-[14px] leading-[22px] font-semibold text-gray-900">
-                        {team.scrimCount}{" "}
-                        <span className="font-normal text-gray-400">
-                          scrim{team.scrimCount !== 1 ? "s" : ""}
-                        </span>
-                      </Text>
-                    </Column>
-                  </Row>
-                ))}
-              </>
-            )}
-
-            <Hr className="mx-0 my-[26px] w-full border border-solid border-[#eaeaea]" />
-
-            <Text className="text-[12px] leading-[24px] text-[#666666]">
-              This is an automated weekly report sent to Sightline admins. If
-              you have questions, reach out at{" "}
-              <Link
-                href={`mailto:${SUPPORT_EMAIL}`}
-                className="text-blue-600 no-underline"
-              >
-                {SUPPORT_EMAIL}
-              </Link>
-              .
+          </Column>
+          <Column className="text-right">
+            <Text className="m-0 text-[14px] leading-[22px] font-semibold text-black">
+              {item.count.toLocaleString()}{" "}
+              <span className="font-normal text-[#999999]">
+                ({item.percentage}%)
+              </span>
             </Text>
+          </Column>
+        </Row>
+      ))}
 
-            {process.env.NODE_ENV !== "production" && (
-              <Text className="text-[12px] leading-[24px] text-[#666666]">
-                This email was sent from a development environment.
-              </Text>
-            )}
-          </Container>
-        </Body>
-      </EmailTailwind>
-    </Html>
+      <ReportDivider />
+
+      <ReportSectionHeading>Billing plans</ReportSectionHeading>
+
+      {billingPlans.map((item) => (
+        <Row key={item.plan} className="mb-[8px]">
+          <Column>
+            <Text className="m-0 text-[14px] leading-[22px] text-[#171717]">
+              {item.plan.charAt(0) + item.plan.slice(1).toLowerCase()}
+            </Text>
+          </Column>
+          <Column className="text-right">
+            <Text className="m-0 text-[14px] leading-[22px] font-semibold text-black">
+              {item.count.toLocaleString()}{" "}
+              <span className="font-normal text-[#999999]">
+                ({item.percentage}%)
+              </span>
+            </Text>
+          </Column>
+        </Row>
+      ))}
+
+      {topUsers.length > 0 && (
+        <>
+          <ReportDivider />
+
+          <ReportSectionHeading>Most active users</ReportSectionHeading>
+
+          {topUsers.map((user, index) => (
+            <Row key={user.name} className="mb-[8px]">
+              <Column className="w-[24px]">
+                <Text className="m-0 text-[14px] leading-[22px] font-semibold text-[#999999]">
+                  {index + 1}
+                </Text>
+              </Column>
+              <Column>
+                <Text className="m-0 text-[14px] leading-[22px] text-[#171717]">
+                  {user.name}
+                </Text>
+              </Column>
+              <Column className="text-right">
+                <Text className="m-0 text-[14px] leading-[22px] font-semibold text-black">
+                  {user.scrimCount}{" "}
+                  <span className="font-normal text-[#999999]">
+                    scrim{user.scrimCount !== 1 ? "s" : ""}
+                  </span>
+                </Text>
+              </Column>
+            </Row>
+          ))}
+        </>
+      )}
+
+      {topTeams.length > 0 && (
+        <>
+          <ReportDivider />
+
+          <ReportSectionHeading>Most active teams</ReportSectionHeading>
+
+          {topTeams.map((team, index) => (
+            <Row key={team.name} className="mb-[8px]">
+              <Column className="w-[24px]">
+                <Text className="m-0 text-[14px] leading-[22px] font-semibold text-[#999999]">
+                  {index + 1}
+                </Text>
+              </Column>
+              <Column>
+                <Text className="m-0 text-[14px] leading-[22px] text-[#171717]">
+                  {team.name}
+                </Text>
+              </Column>
+              <Column className="text-right">
+                <Text className="m-0 text-[14px] leading-[22px] font-semibold text-black">
+                  {team.scrimCount}{" "}
+                  <span className="font-normal text-[#999999]">
+                    scrim{team.scrimCount !== 1 ? "s" : ""}
+                  </span>
+                </Text>
+              </Column>
+            </Row>
+          ))}
+        </>
+      )}
+
+      <Section className="mt-[24px]">
+        <Text className="m-0 text-[13px] leading-[22px] text-[#666666]">
+          This automated report goes to Sightline admins every week.
+        </Text>
+      </Section>
+    </EmailShell>
   );
 }
 
