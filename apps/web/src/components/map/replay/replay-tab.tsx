@@ -1,16 +1,33 @@
 import { ReplayService } from "@/data/map";
 import { AppRuntime } from "@/data/runtime";
+import type { Locale } from "@/i18n/config";
+import { mapTag } from "@/lib/cache-tags";
+import { getLocaleTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import { Effect } from "effect";
-import { getTranslations } from "next-intl/server";
+import { cacheLife, cacheTag } from "next/cache";
 import { ReplayViewer } from "./replay-viewer";
 
-export async function ReplayTab({ id }: { id: number }) {
+export async function ReplayTab({
+  id,
+  mapId,
+  locale,
+}: {
+  /** The MapData id used to load replay data. */
+  id: number;
+  /** The Map id, used only for cache tagging/invalidation. */
+  mapId: number;
+  locale: Locale;
+}) {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(mapTag(mapId));
+
   const [data, t] = await Promise.all([
     AppRuntime.runPromise(
       ReplayService.pipe(Effect.flatMap((svc) => svc.getReplayData(id)))
     ),
-    getTranslations("mapPage.replay"),
+    getLocaleTranslations(locale, "mapPage.replay"),
   ]);
 
   if (data.type === "no_calibration") {

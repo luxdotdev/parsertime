@@ -1,20 +1,29 @@
 import { EventsTimeline } from "@/components/map/events/events-timeline";
+import type { Locale } from "@/i18n/config";
+import { mapTag } from "@/lib/cache-tags";
 import { getMapEventsData } from "@/lib/get-map-events";
-import { getTranslations } from "next-intl/server";
+import { getLocaleTranslations } from "@/lib/metadata-i18n";
+import { cacheLife, cacheTag } from "next/cache";
 
 export async function MapEvents({
   id,
+  locale,
   team1Color,
   team2Color,
   includePositional = false,
 }: {
   id: number;
+  locale: Locale;
   team1Color: string;
   team2Color: string;
   includePositional?: boolean;
 }) {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(mapTag(id));
+
   const data = await getMapEventsData(id, includePositional);
-  const t = await getTranslations("mapPage.events");
+  const t = await getLocaleTranslations(locale, "mapPage.events");
 
   if (!data) {
     return (

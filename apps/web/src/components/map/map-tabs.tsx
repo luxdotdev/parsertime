@@ -2,8 +2,14 @@
 
 import { DotMatrixLoader } from "@/components/dot-matrix-loader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  prefetchRoute,
+  usePredictivePrefetch,
+} from "@/hooks/use-predictive-prefetch";
 import { cn } from "@/lib/utils";
+import type { Route } from "next";
 import { useTranslations } from "next-intl";
+import { usePathname, useRouter } from "next/navigation";
 import { parseAsFloat, parseAsString, useQueryState } from "nuqs";
 import {
   createContext,
@@ -76,6 +82,31 @@ export function MapTabs({ tabs, activeTab, children }: MapTabsProps) {
     [setTab, setOptimisticTab]
   );
 
+  // Prefetch tabs before the click. The map page sets
+  // `prefetch = 'allow-runtime'`, so a kind:"full" prefetch lets the server
+  // prerender the target tab's (cached) content ahead of the navigation.
+  // Hover/focus warms the hovered trigger; the trajectory hook below warms
+  // triggers the cursor is heading toward.
+  const pathname = usePathname();
+  const router = useRouter();
+  const listRef = useRef<HTMLDivElement>(null);
+  usePredictivePrefetch(listRef, { prefetchKind: "full" });
+  const tabHref = useCallback(
+    (value: string) => `${pathname}?tab=${value}` as Route,
+    [pathname]
+  );
+  const prefetchedTabs = useRef(new Set<string>());
+  const prefetchTab = useCallback(
+    (value: string) => {
+      // Visited tabs render instantly from the client-side cache; skip them.
+      if (value === activeTab || visitedTabs.current.has(value)) return;
+      if (prefetchedTabs.current.has(value)) return;
+      prefetchedTabs.current.add(value);
+      prefetchRoute(router, tabHref(value), "full");
+    },
+    [activeTab, router, tabHref]
+  );
+
   // While a switch is in flight, `children` still holds the PREVIOUS tab's
   // content. Show the cached tree for the target tab when we have one;
   // otherwise keep the stale content dimmed under the loader until the new
@@ -93,13 +124,16 @@ export function MapTabs({ tabs, activeTab, children }: MapTabsProps) {
         onValueChange={switchTab}
         className="space-y-4"
       >
-        <TabsList aria-label={t("tabsLabel")}>
+        <TabsList ref={listRef} aria-label={t("tabsLabel")}>
           {tabs.map((tab) =>
             tab.hidden ? null : (
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
                 className={tab.className}
+                data-prefetch-href={tabHref(tab.value)}
+                onPointerEnter={() => prefetchTab(tab.value)}
+                onFocus={() => prefetchTab(tab.value)}
               >
                 {tab.shortLabel ? (
                   <>

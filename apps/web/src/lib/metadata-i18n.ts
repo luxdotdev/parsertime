@@ -1,4 +1,4 @@
-import { defaultLocale } from "@/i18n/config";
+import { defaultLocale, type Locale } from "@/i18n/config";
 import { createTranslator } from "next-intl";
 import enMessages from "../../messages/en.json";
 
@@ -29,6 +29,32 @@ export function getStaticTranslations(namespace?: string) {
   return createTranslator({
     locale: defaultLocale,
     messages: enMessages,
+    namespace,
+  } as Parameters<typeof createTranslator>[0]);
+}
+
+/**
+ * Cookie-free translator for an EXPLICIT locale, for use inside `"use cache"`
+ * scopes. `getTranslations` resolves the locale from the LOCALE cookie, and
+ * request APIs are forbidden inside public cache scopes — so cached server
+ * components take the locale as a prop (making it part of the cache key) and
+ * translate through this instead.
+ */
+export async function getLocaleTranslations(
+  locale: Locale,
+  namespace?: string
+) {
+  const messages =
+    locale === defaultLocale
+      ? enMessages
+      : (
+          (await import(`../../messages/${locale}.json`)) as {
+            default: typeof enMessages;
+          }
+        ).default;
+  return createTranslator({
+    locale,
+    messages,
     namespace,
   } as Parameters<typeof createTranslator>[0]);
 }

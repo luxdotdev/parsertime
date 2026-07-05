@@ -1,19 +1,39 @@
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { RouteMiningService } from "@/data/map/route-mining-service";
+import type { Locale } from "@/i18n/config";
+import { mapTag } from "@/lib/cache-tags";
 import { loadCalibration } from "@/lib/map-calibration/load-calibration";
+import { getLocaleTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
-import { getTranslations } from "next-intl/server";
+import { cacheLife, cacheTag } from "next/cache";
 import { RoutesView } from "./routes-view";
 import { RoutesControlTabs } from "./routes-control-tabs";
 import { RoutesEmptyState } from "./empty-state";
 
-export async function RoutesTab({ id }: { id: number }) {
+export async function RoutesTab({
+  id,
+  mapId,
+  locale,
+}: {
+  /** The MapData id used to load route analysis. */
+  id: number;
+  /** The Map id, used only for cache tagging/invalidation. */
+  mapId: number;
+  locale: Locale;
+}) {
+  "use cache";
+  // The rendered output embeds a presigned image URL that expires in 3600s
+  // (loadCalibration) — cap the entry's absolute age well under that so a
+  // cached render can never serve a dead URL.
+  cacheLife({ stale: 300, revalidate: 900, expire: 1800 });
+  cacheTag(mapTag(mapId));
+
   const [result, t] = await Promise.all([
     AppRuntime.runPromise(
       RouteMiningService.pipe(Effect.flatMap((svc) => svc.getRouteAnalysis(id)))
     ),
-    getTranslations("mapPage.routes"),
+    getLocaleTranslations(locale, "mapPage.routes"),
   ]);
 
   if (result === null) {

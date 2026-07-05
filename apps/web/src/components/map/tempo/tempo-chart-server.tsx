@@ -1,17 +1,20 @@
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { TempoService } from "@/data/map";
-import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/config";
+import { getLocaleTranslations } from "@/lib/metadata-i18n";
 import { TempoChart } from "./tempo-chart";
 
 type TempoChartServerProps = {
   id: number;
+  locale: Locale;
   team1Color: string;
   team2Color: string;
 };
 
 export async function TempoChartServer({
   id,
+  locale,
   team1Color,
   team2Color,
 }: TempoChartServerProps) {
@@ -19,7 +22,7 @@ export async function TempoChartServer({
     AppRuntime.runPromise(
       TempoService.pipe(Effect.flatMap((svc) => svc.getTempoChartData(id)))
     ),
-    getTranslations("mapPage.events.tempo"),
+    getLocaleTranslations(locale, "mapPage.events.tempo"),
   ]);
 
   if (!data) {

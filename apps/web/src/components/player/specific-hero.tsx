@@ -12,7 +12,9 @@ import {
   getMultipleStatComparisons,
   type StatCardComparison,
 } from "@/lib/stat-card-helpers";
+import type { Locale } from "@/i18n/config";
 import type { ValidStatColumn } from "@/lib/stat-percentiles";
+import { getLocaleTranslations } from "@/lib/metadata-i18n";
 import { cn, getHeroNames, round, toHero, toMins } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import type { PlayerStat } from "@/generated/prisma/client";
@@ -21,17 +23,37 @@ import { getTranslations } from "next-intl/server";
 export async function SpecificHero({
   playerStats,
   showTable = true,
+  locale,
 }: {
   playerStats: PlayerStat[];
   showTable?: boolean;
+  /**
+   * Required when rendered inside a "use cache" scope (e.g. via the map
+   * compare tab) — `getTranslations`/`getHeroNames` read the LOCALE cookie,
+   * which is forbidden there. Uncached request-time call sites may omit it.
+   */
+  locale?: Locale;
 }) {
-  const t = await getTranslations("mapPage.compare.playerCard.specificHero");
-  const heroNames = await getHeroNames();
+  const t = locale
+    ? await getLocaleTranslations(
+        locale,
+        "mapPage.compare.playerCard.specificHero"
+      )
+    : await getTranslations("mapPage.compare.playerCard.specificHero");
 
   const hero = playerStats[0].player_hero as HeroName;
   const playerStat = playerStats[0];
   const role = heroRoleMapping[hero];
-  const heroDisplayName = heroNames.get(toHero(hero)) ?? hero;
+
+  const heroKey = toHero(hero);
+  let heroDisplayName: string;
+  if (locale) {
+    const heroesT = await getLocaleTranslations(locale, "heroes");
+    heroDisplayName = heroesT.has(heroKey) ? heroesT(heroKey) : hero;
+  } else {
+    const heroNames = await getHeroNames();
+    heroDisplayName = heroNames.get(heroKey) ?? hero;
+  }
 
   const statsToCompare: { stat: ValidStatColumn; value: number }[] = [
     { stat: "eliminations", value: playerStat.eliminations },

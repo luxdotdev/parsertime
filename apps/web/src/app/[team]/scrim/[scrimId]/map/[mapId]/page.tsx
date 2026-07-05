@@ -10,26 +10,31 @@ import { PlayerSwitcher } from "@/components/map/player-switcher";
 import { ReplayCode } from "@/components/scrim/replay-code";
 import { StatsViewBeacon } from "@/components/usage/stats-view-beacon";
 import {
+  getCachedHeroBans,
+  getCachedMapDetails,
+  getCachedMapRow,
   getCachedMatchStory,
   getCachedMostPlayedHeroes,
+  getCachedScrimVisibility,
 } from "@/data/cached/map-cache";
-import { AppRuntime } from "@/data/runtime";
-import { UserService } from "@/data/user";
-import { defaultLocale } from "@/i18n/config";
-import { auth, isAuthedToViewMap } from "@/lib/auth";
-import { positionalData, tempoChart } from "@/lib/flags";
+import { getMapViewerContext } from "@/data/cached/map-viewer";
+import { defaultLocale, type Locale } from "@/i18n/config";
+import { coachingCanvas, positionalData, tempoChart } from "@/lib/flags";
 import { getFlag } from "@/lib/flags-helpers";
 import { resolveScrimMapDataId } from "@/lib/map-data-resolver";
 import { getMetadataTranslations } from "@/lib/metadata-i18n";
-import prisma from "@/lib/prisma";
-import { getColorblindMode } from "@/lib/server-utils";
 import { translateMapName } from "@/lib/utils";
 import type { PagePropsWithLocale, SearchParams } from "@/types/next";
-import { Effect } from "effect";
 import type { Metadata, Route } from "next";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { Suspense, ViewTransition } from "react";
+
+// Opt into runtime prefetching: MapTabs prefetches `?tab=` URLs with
+// kind:"full" on hover/trajectory, and the server can prerender the target
+// tab ahead of the click because the render path below is fully cached
+// (public caches for map data, "use cache: private" for the viewer context).
+export const prefetch = "allow-runtime";
 
 export async function generateMetadata(
   props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]">
@@ -37,21 +42,21 @@ export async function generateMetadata(
   const params = await props.params;
   const scrimId = parseInt(params.scrimId);
   const mapId = parseInt(decodeURIComponent(params.mapId));
+  // The gate goes through the private-cached viewer context: an uncached
+  // session read here fails the route's runtime prefetches with "couldn't
+  // prerender metadata" (E1370), and a slow read pushes the streamed <title>
+  // chunk to the tail of the stream.
   const canViewMap =
     Number.isSafeInteger(scrimId) &&
     Number.isSafeInteger(mapId) &&
-    (await isAuthedToViewMap(scrimId, mapId));
+    (await getMapViewerContext(scrimId, mapId)).canView;
   const t = getMetadataTranslations("mapPage.mapMetadata");
 
   const mapName = canViewMap
-    ? await prisma.matchStart.findFirst({
-        where: {
-          MapDataId: await resolveScrimMapDataId(scrimId, mapId),
-        },
-        select: {
-          map_name: true,
-        },
-      })
+    ? await getCachedMapDetails(
+        mapId,
+        await resolveScrimMapDataId(scrimId, mapId)
+      )
     : null;
 
   const translatedMapName = await translateMapName(mapName?.map_name ?? "Map");
@@ -110,25 +115,28 @@ async function MapPageContent({
   const params = await paramsPromise;
   const searchParams = await searchParamsPromise;
   const id = parseInt(params.mapId);
-  // The route's access gate — the [scrimId] layout no longer gates the
-  // subtree (a layout gate adds a chrome-less loading phase above every
-  // child route).
-  if (!(await isAuthedToViewMap(parseInt(params.scrimId), id))) {
+  const scrimId = parseInt(params.scrimId);
+  if (!Number.isSafeInteger(id) || !Number.isSafeInteger(scrimId)) {
     return <NoAuthCard />;
   }
-  const mapDataId = await resolveScrimMapDataId(parseInt(params.scrimId), id);
-  const session = await auth();
-  const user = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
-  );
+  // The route's access gate — the [scrimId] layout no longer gates the
+  // subtree (a layout gate adds a chrome-less loading phase above every
+  // child route). The viewer context is "use cache: private" so runtime
+  // prefetches can execute it (uncached session reads would abort them).
+  const viewer = await getMapViewerContext(scrimId, id);
+  if (!viewer.canView) {
+    return <NoAuthCard />;
+  }
+  const mapDataId = await resolveScrimMapDataId(scrimId, id);
   const t = await getTranslations("mapPage");
+  // The active tab components are cached ("use cache"), so the locale is
+  // passed in as a prop/cache key rather than read from the cookie inside.
+  const locale = (await getLocale()) as Locale;
 
   // Tournament context for back navigation
   const fromTournament = searchParams.from === "tournament";
   const tournamentId = searchParams.tournamentId as string | undefined;
   const matchId = searchParams.matchId as string | undefined;
-
-  const { team1, team2 } = await getColorblindMode(user?.id ?? "");
 
   const [
     mostPlayedHeroes,
@@ -136,36 +144,19 @@ async function MapPageContent({
     map,
     visibility,
     heroBans,
-    noteContent,
     tempoChartEnabled,
     positionalDataEnabled,
+    coachingCanvasEnabled,
     matchStory,
   ] = await Promise.all([
     getCachedMostPlayedHeroes(id),
-    prisma.matchStart.findFirst({
-      where: { MapDataId: mapDataId },
-      select: { map_name: true, team_1_name: true },
-    }),
-    prisma.map.findFirst({
-      where: { id },
-      select: { replayCode: true, vod: true },
-    }),
-    prisma.scrim.findFirst({
-      where: { id: parseInt(params.scrimId) },
-      select: { guestMode: true },
-    }),
-    prisma.heroBan.findMany({
-      where: { MapDataId: mapDataId },
-    }),
-    prisma.note.findFirst({
-      where: {
-        scrimId: parseInt(params.scrimId),
-        MapDataId: mapDataId,
-      },
-      select: { content: true },
-    }),
+    getCachedMapDetails(id, mapDataId),
+    getCachedMapRow(scrimId, id),
+    getCachedScrimVisibility(scrimId),
+    getCachedHeroBans(id, mapDataId),
     getFlag(tempoChart),
     getFlag(positionalData),
+    getFlag(coachingCanvas),
     getCachedMatchStory(id, mapDataId),
   ]);
 
@@ -207,8 +198,8 @@ async function MapPageContent({
     <div className="flex-col md:flex">
       <AppHeader
         switcher={<PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />}
-        session={session}
-        user={user}
+        session={viewer.session}
+        user={viewer.user}
         guestMode={visibility?.guestMode ?? false}
       />
       <div className="flex-1 space-y-4 px-6 pt-6 pb-12 md:px-8">
@@ -256,13 +247,14 @@ async function MapPageContent({
                 activeTab={activeTab}
                 id={id}
                 mapDataId={mapDataId}
-                scrimId={parseInt(params.scrimId)}
-                team1Color={team1}
-                team2Color={team2}
+                scrimId={scrimId}
+                locale={locale}
+                team1Color={viewer.team1Color}
+                team2Color={viewer.team2Color}
                 tempoChartEnabled={tempoChartEnabled}
                 positionalDataEnabled={positionalDataEnabled}
+                coachingCanvasEnabled={coachingCanvasEnabled}
                 matchStory={matchStory}
-                noteContent={noteContent?.content ?? ""}
                 vod={map?.vod ?? ""}
               />
             </Suspense>

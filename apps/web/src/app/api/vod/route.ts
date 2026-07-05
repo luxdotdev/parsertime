@@ -2,6 +2,7 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth, canEditScrim } from "@/lib/auth";
+import { revalidateMap } from "@/lib/cache-tags";
 import { Logger } from "@/lib/logger";
 import { parseVodUrl } from "@/lib/vods";
 import { NextResponse } from "next/server";
@@ -67,6 +68,9 @@ export async function POST(req: Request) {
     where: { id: mapId },
     data: { vod: vodUrl },
   });
+
+  // The map page frame reads the VOD through a cached reader (getCachedMapRow).
+  revalidateMap(mapId);
 
   return new NextResponse(JSON.stringify(updatedVod), { status: 200 });
 }

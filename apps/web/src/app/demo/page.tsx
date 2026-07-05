@@ -18,13 +18,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { PlayerService } from "@/data/player";
-import { defaultLocale } from "@/i18n/config";
+import { defaultLocale, type Locale } from "@/i18n/config";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import { toTitleCase, translateMapName } from "@/lib/utils";
 import type { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { Suspense } from "react";
 
@@ -115,6 +115,9 @@ function DemoPageSkeleton() {
 
 async function DemoPageContent() {
   const t = await getTranslations("mapPage");
+  // The tab components are cached ("use cache"), so the locale is resolved
+  // here at request time and passed in as a prop.
+  const locale = (await getLocale()) as Locale;
   const id = DEMO_MAP_ID;
   const mapDataId = await resolveMapDataId(id);
 
@@ -195,6 +198,7 @@ async function DemoPageContent() {
           <TabsContent value="overview" className="space-y-4">
             <DefaultOverview
               id={id}
+              locale={locale}
               team1Color={team1}
               team2Color={team2}
               positionalDataOverride
@@ -203,15 +207,17 @@ async function DemoPageContent() {
           <TabsContent value="killfeed" className="space-y-4">
             <Killfeed
               id={id}
+              locale={locale}
               team1Color={team1}
               team2Color={team2}
-              positionalDataOverride
-              coachingCanvasOverride
+              positionalDataEnabled
+              coachingCanvasEnabled
             />
           </TabsContent>
           <TabsContent value="charts" className="space-y-4">
             <MapCharts
               id={id}
+              locale={locale}
               team1Color={team1}
               team2Color={team2}
               tempoChartEnabled
@@ -219,19 +225,24 @@ async function DemoPageContent() {
           </TabsContent>
           <TabsContent value="heatmap" className="space-y-4">
             <PremiumHighlight>
-              <HeatmapTab id={mapDataId} />
+              <HeatmapTab id={mapDataId} mapId={id} locale={locale} />
             </PremiumHighlight>
           </TabsContent>
           <TabsContent value="replay" className="space-y-4">
             <PremiumHighlight>
-              <ReplayTab id={mapDataId} />
+              <ReplayTab id={mapDataId} mapId={id} locale={locale} />
             </PremiumHighlight>
           </TabsContent>
           <TabsContent value="events" className="space-y-4">
-            <MapEvents id={id} team1Color={team1} team2Color={team2} />
+            <MapEvents
+              id={id}
+              locale={locale}
+              team1Color={team1}
+              team2Color={team2}
+            />
           </TabsContent>
           <TabsContent value="compare" className="space-y-4">
-            <ComparePlayers id={id} />
+            <ComparePlayers id={id} locale={locale} />
           </TabsContent>
         </Tabs>
       </div>

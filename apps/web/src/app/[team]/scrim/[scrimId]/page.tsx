@@ -62,16 +62,10 @@ export async function generateMetadata(
     scrimId > 0 &&
     (await isAuthedToViewScrim(scrimId));
 
-  const scrim = canViewScrim
-    ? await prisma.scrim.findFirst({
-        where: {
-          id: scrimId,
-        },
-        select: {
-          name: true,
-        },
-      })
-    : null;
+  // Cached read: with streamed metadata under PPR, the <title> chunk flushes
+  // whenever generateMetadata resolves — a raw DB read here pushes the title
+  // deep into the stream, which reads as "the tab never shows a title".
+  const scrim = canViewScrim ? await getCachedScrim(scrimId) : null;
 
   const scrimName = scrim?.name ?? t("scrim");
 

@@ -1,10 +1,20 @@
+import { mapTag } from "@/lib/cache-tags";
 import prisma from "@/lib/prisma";
+import { cacheLife, cacheTag } from "next/cache";
 
 /**
  * Resolves a Map.id to its corresponding MapData.id.
  * URL route params use Map.id, but event tables reference MapData.id.
+ *
+ * Cached: the mapping is immutable once uploaded (re-uploads add rows, but the
+ * oldest row stays pinned below), and the result feeds nearly every cached map
+ * read — caching it also lets runtime prefetches advance past it. Invalidated
+ * via `map:${mapId}` on map removal.
  */
 export async function resolveMapDataId(mapId: number): Promise<number> {
+  "use cache";
+  cacheLife("max");
+  cacheTag(mapTag(mapId));
   const mapData = await prisma.mapData.findFirst({
     where: { mapId },
     select: { id: true },
@@ -30,12 +40,15 @@ export async function resolveMapDataId(mapId: number): Promise<number> {
 /**
  * Resolves a Map.id to MapData.id only when the map belongs to the route scrim.
  * Use this for request-controlled route params so MapData.id fallbacks cannot
- * cross resource boundaries.
+ * cross resource boundaries. Cached for the same reasons as `resolveMapDataId`.
  */
 export async function resolveScrimMapDataId(
   scrimId: number,
   mapId: number
 ): Promise<number> {
+  "use cache";
+  cacheLife("max");
+  cacheTag(mapTag(mapId));
   const mapData = await prisma.mapData.findFirst({
     where: { scrimId, mapId },
     select: { id: true },
