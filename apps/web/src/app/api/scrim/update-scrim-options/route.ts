@@ -1,5 +1,6 @@
 import { auditLog } from "@/lib/audit-logs";
 import { auth, canEditScrim, canManageTeam, getCurrentUser } from "@/lib/auth";
+import { revalidateScrim, revalidateTeamStats } from "@/lib/cache-tags";
 import prisma from "@/lib/prisma";
 import { unauthorized } from "next/navigation";
 import { after, type NextRequest } from "next/server";
@@ -114,6 +115,12 @@ export async function POST(req: NextRequest) {
       }
     }
   });
+
+  revalidateScrim(scrim.id);
+  // The scrim may have moved teams, so refresh both the old and new team's stats.
+  const newTeamId = targetTeamId === 0 ? null : targetTeamId;
+  if (scrim.teamId) revalidateTeamStats(scrim.teamId);
+  if (newTeamId && newTeamId !== scrim.teamId) revalidateTeamStats(newTeamId);
 
   after(async () => {
     await auditLog.createAuditLog({

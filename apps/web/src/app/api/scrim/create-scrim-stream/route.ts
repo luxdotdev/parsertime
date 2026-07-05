@@ -7,6 +7,7 @@ import {
   scrimCreatedCounter,
   scrimParsingDuration,
 } from "@/lib/axiom/metrics";
+import { revalidateTeamStats } from "@/lib/cache-tags";
 import { UsageEventName } from "@/lib/usage/names";
 import { usage } from "@/lib/usage/server";
 import { sendScrimNotifications } from "@/lib/bot-events";
@@ -155,6 +156,8 @@ export async function POST(request: NextRequest) {
             linkErr instanceof Error ? linkErr.message : String(linkErr);
         }
       }
+
+      if (teamId) revalidateTeamStats(teamId);
 
       emit({ type: "done", scrimId: newScrimId });
       event.outcome = "success";

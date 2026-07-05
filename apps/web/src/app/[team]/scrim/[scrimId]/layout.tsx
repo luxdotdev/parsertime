@@ -1,20 +1,13 @@
-import { NoAuthCard } from "@/components/auth/no-auth";
 import { SelectedPlayerProvider } from "@/components/map/player-switcher";
-import { isAuthedToViewScrim } from "@/lib/auth";
 
-export default async function ScrimDashboardLayout(
+// No auth gate here: gating the subtree in the layout forces a chrome-less
+// fallback ABOVE every child route's own loading design (an extra skeleton
+// phase on every scrim/map navigation). Each child route enforces access
+// itself as the first step of its Suspense-wrapped content component
+// (isAuthedToViewScrim / isAuthedToViewMap → <NoAuthCard />), so the check
+// resolves inside the route's single loading state instead.
+export default function ScrimDashboardLayout(
   props: LayoutProps<"/[team]/scrim/[scrimId]">
 ) {
-  const params = await props.params;
-
-  const { children } = props;
-
-  const id = parseInt(params.scrimId);
-  const isAuthed = await isAuthedToViewScrim(id);
-
-  if (!isAuthed) {
-    return <NoAuthCard />;
-  }
-
-  return <SelectedPlayerProvider>{children}</SelectedPlayerProvider>;
+  return <SelectedPlayerProvider>{props.children}</SelectedPlayerProvider>;
 }

@@ -15,8 +15,11 @@ import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { ScoutingService } from "@/data/scouting";
 import { UserService } from "@/data/user";
+import { defaultLocale } from "@/i18n/config";
 import { auth, isAuthedToViewTeam } from "@/lib/auth";
 import { scoutingTool } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import { computeTeamTsr } from "@/lib/tsr/team";
 import type { PagePropsWithLocale } from "@/types/next";
@@ -24,12 +27,14 @@ import { $Enums } from "@/generated/prisma/browser";
 import { Lock } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { Suspense } from "react";
+import { TeamDetailSkeleton } from "./loading-skeleton";
 
 export async function generateMetadata(
   props: PagePropsWithLocale<"/team/[teamId]">
 ): Promise<Metadata> {
   const params = await props.params;
-  const t = await getTranslations("teamPage.teamMetadata");
+  const t = getMetadataTranslations("teamPage.teamMetadata");
   const teamId = Number(params.teamId);
   const canViewTeam =
     Number.isSafeInteger(teamId) &&
@@ -61,15 +66,25 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale: params.locale,
+      locale: defaultLocale,
     },
   };
 }
 
-export default async function Team(
-  props: PagePropsWithLocale<"/team/[teamId]">
-) {
-  const params = await props.params;
+export default function Team(props: PagePropsWithLocale<"/team/[teamId]">) {
+  return (
+    <Suspense fallback={<TeamDetailSkeleton />}>
+      <TeamContent params={props.params} />
+    </Suspense>
+  );
+}
+
+async function TeamContent({
+  params: paramsPromise,
+}: {
+  params: PagePropsWithLocale<"/team/[teamId]">["params"];
+}) {
+  const params = await paramsPromise;
   const t = await getTranslations("teamPage");
   const session = await auth();
 
@@ -106,7 +121,7 @@ export default async function Team(
       },
     }),
     prisma.teamManager.findMany({ where: { teamId } }),
-    scoutingTool(),
+    getFlag(scoutingTool),
     AppRuntime.runPromise(
       ScoutingService.pipe(Effect.flatMap((svc) => svc.getScoutingTeams()))
     ),

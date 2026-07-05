@@ -1,10 +1,10 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
+import { defaultLocale } from "@/i18n/config";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import type { Metadata } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("leaderboardPage.metadata");
-  const locale = await getLocale();
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("leaderboardPage.metadata");
 
   return {
     title: t("title"),
@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
           height: 630,
         },
       ],
-      locale,
+      locale: defaultLocale,
     },
   };
 }

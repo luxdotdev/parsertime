@@ -1,24 +1,34 @@
 import { AppHeader } from "@/components/app-header";
 import { TeamSwitcher } from "@/components/dashboard/team-switcher";
 import { Footer } from "@/components/footer";
+import { HeaderSkeleton } from "@/components/header-skeleton";
 import { TeamSwitcherProvider } from "@/components/team-switcher-provider";
+import { Skeleton } from "@/components/ui/skeleton";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { Effect } from "effect";
+import { connection } from "next/server";
+import { Suspense, type ReactNode } from "react";
 
-export async function DashboardLayout({
+export function DashboardLayout({
   children,
   guestMode,
+  guestModeSource,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   guestMode?: boolean;
+  /**
+   * Late-resolved guest-mode read for routes whose guest state depends on
+   * route params (e.g. guest-shared scrims). It runs inside the streamed
+   * header — after `connection()` — so the caller's shell stays static; a
+   * plain `guestMode` boolean takes precedence when provided.
+   */
+  guestModeSource?: () => Promise<boolean>;
 }) {
-  const session = await auth();
-  const user = await AppRuntime.runPromise(
-    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
-  );
-
+  // The page chrome (skip link, layout structure, Footer) is static so any
+  // route using this layout paints instantly; the auth-derived header and the
+  // page content each stream in behind their own boundary.
   return (
     <TeamSwitcherProvider>
       <a
@@ -28,15 +38,60 @@ export async function DashboardLayout({
         Skip to content
       </a>
       <div className="min-h-[90vh] flex-col md:flex">
-        <AppHeader
-          switcher={session && <TeamSwitcher session={session} />}
-          session={session}
-          user={user}
-          guestMode={guestMode}
-        />
-        <main id="main-content">{children}</main>
+        <Suspense fallback={<HeaderSkeleton />}>
+          <AuthedAppHeader
+            guestMode={guestMode}
+            guestModeSource={guestModeSource}
+          />
+        </Suspense>
+        <main id="main-content">
+          <Suspense fallback={<DashboardContentSkeleton />}>
+            {children}
+          </Suspense>
+        </main>
       </div>
       <Footer />
     </TeamSwitcherProvider>
+  );
+}
+
+// Shown while a page's own content streams in, so the content area under the
+// (already-painted) header never drops to a blank.
+function DashboardContentSkeleton() {
+  return (
+    <div className="flex-1 space-y-4 px-6 pt-6 pb-12 md:px-8">
+      <Skeleton className="h-5 w-40" />
+      <Skeleton className="h-8 w-56" />
+      <Skeleton className="h-72 w-full rounded-xl" />
+    </div>
+  );
+}
+
+async function AuthedAppHeader({
+  guestMode,
+  guestModeSource,
+}: {
+  guestMode?: boolean;
+  guestModeSource?: () => Promise<boolean>;
+}) {
+  // This header is per-user (auth-derived) and always streams behind its
+  // Suspense boundary, so mark it request-time up front. Without this, PPR
+  // attempts to prerender it and trips on `Date.now()` inside the Effect
+  // runtime before the auth read defers it.
+  await connection();
+  const resolvedGuestMode =
+    guestMode ?? (guestModeSource ? await guestModeSource() : undefined);
+  const session = await auth();
+  const user = await AppRuntime.runPromise(
+    UserService.pipe(Effect.flatMap((svc) => svc.getUser(session?.user?.email)))
+  );
+
+  return (
+    <AppHeader
+      switcher={session && <TeamSwitcher session={session} />}
+      session={session}
+      user={user}
+      guestMode={resolvedGuestMode}
+    />
   );
 }

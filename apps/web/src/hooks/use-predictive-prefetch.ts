@@ -7,7 +7,6 @@ import {
   type Sample,
   type Vec,
 } from "@/lib/predictive-prefetch";
-import type { Route } from "next";
 import { useRouter } from "next/navigation";
 import type { RefObject } from "react";
 import { useEffect, useRef } from "react";
@@ -37,11 +36,38 @@ export type PredictivePrefetchOptions = {
   minSpeed?: number;
   enabled?: boolean;
   /**
+   * "auto" (default) prefetches the App Shell; "full" issues a runtime
+   * prefetch that includes request data — only useful when the destination
+   * route sets `prefetch = 'allow-runtime'`.
+   */
+  prefetchKind?: "auto" | "full";
+  /**
    * When provided, called each animation frame with the full detection state.
    * Used only by the debug overlay; absent in normal use (zero overhead).
    */
   onFrame?: (frame: PredictivePrefetchDebugFrame) => void;
 };
+
+/**
+ * Prefetch a route with an explicit kind. `kind: "full"` issues a runtime
+ * prefetch (request data included) when the destination route sets
+ * `prefetch = 'allow-runtime'`. Centralized here because `typedRoutes`
+ * narrows the router's `prefetch` signature to `(href)` even though the
+ * runtime accepts an options argument, and the `PrefetchKind` enum lives in
+ * next's internals (its FULL value is the string "full").
+ */
+export function prefetchRoute(
+  router: ReturnType<typeof useRouter>,
+  href: string,
+  kind: "auto" | "full"
+): void {
+  (
+    router.prefetch as unknown as (
+      href: string,
+      options?: { kind: "auto" | "full" }
+    ) => void
+  )(href, kind === "full" ? { kind } : undefined);
+}
 
 // Rolling sample window for the velocity estimate.
 const SAMPLE_WINDOW_MS = 50;
@@ -62,6 +88,7 @@ export function usePredictivePrefetch(
     coneAngleDeg = 30,
     minSpeed = 0.15,
     enabled = true,
+    prefetchKind = "auto",
     onFrame,
   } = options;
 
@@ -93,9 +120,11 @@ export function usePredictivePrefetch(
       if (!container || !cursor) return;
 
       const velocity = estimateVelocity(samples);
+      // Anchors plus non-link targets (e.g. tab triggers) that opt in via
+      // data-prefetch-href.
       const anchors = Array.from(
-        container.querySelectorAll<HTMLAnchorElement>(
-          'a[href^="/"]:not([href^="//"])'
+        container.querySelectorAll<HTMLElement>(
+          'a[href^="/"]:not([href^="//"]), [data-prefetch-href^="/"]:not([data-prefetch-href^="//"])'
         )
       );
 
@@ -105,7 +134,9 @@ export function usePredictivePrefetch(
         : null;
 
       for (const anchor of anchors) {
-        const href = anchor.getAttribute("href");
+        const href =
+          anchor.getAttribute("href") ??
+          anchor.getAttribute("data-prefetch-href");
         // Same-origin paths only: reject protocol-relative ("//host") and the
         // back-slash variant browsers normalize to it, plus in-page hashes.
         if (
@@ -130,7 +161,7 @@ export function usePredictivePrefetch(
           optsRef.current
         );
         if (heading && !already) {
-          router.prefetch(href as Route);
+          prefetchRoute(router, href, prefetchKind);
           prefetched.add(href);
         }
 
@@ -179,5 +210,5 @@ export function usePredictivePrefetch(
       window.removeEventListener("pointermove", handlePointerMove);
       if (frame) cancelAnimationFrame(frame);
     };
-  }, [containerRef, router, enabled]);
+  }, [containerRef, router, enabled, prefetchKind]);
 }

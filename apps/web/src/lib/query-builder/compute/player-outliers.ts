@@ -150,6 +150,9 @@ export async function computePlayerOutliers(
   const mapDataIds = Array.from(scopedMapIds);
   const playerStats = await prisma.playerStat.findMany({
     where: { MapDataId: { in: mapDataIds } },
+    // Deterministic order so downstream Map insertion order (which decides the
+    // primary-hero tie-break below) is stable across renders.
+    orderBy: [{ MapDataId: "asc" }, { id: "asc" }],
   });
 
   const maxTimeByMap = new Map<number, number>();
@@ -193,7 +196,8 @@ export async function computePlayerOutliers(
     (totals) => {
       const primaryHero =
         Array.from(totals.heroTimes.entries()).sort(
-          (a, b) => b[1] - a[1]
+          // Time desc, then hero name asc so exact ties resolve deterministically.
+          (a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)
         )[0]?.[0] ?? "Unknown";
       const role = determineRole(primaryHero as HeroName);
       const statDefs = statDefsForRole(role);

@@ -13,10 +13,13 @@ import {
   scoutingTool,
   tournament,
 } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
 import { get } from "@vercel/edge-config";
 import type { Route } from "next";
+import { connection } from "next/server";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
+import { Suspense } from "react";
 
 type FooterLink = {
   labelKey: string;
@@ -177,8 +180,32 @@ function FooterColumn({
   );
 }
 
-export async function Footer() {
+// The footer reads the locale cookie (getTranslations) and the current year,
+// both request-time. Wrapping its own content in Suspense lets it sit in any
+// route's static shell without blocking the prerender — it streams itself in.
+export function Footer() {
+  return (
+    <Suspense fallback={null}>
+      <FooterContent />
+    </Suspense>
+  );
+}
+
+async function FooterContent() {
+  // Force request-time rendering before any read below. This component reaches
+  // `use cache` functions — `@vercel/edge-config`'s `get()` and the feature
+  // flags (via `vercelAdapter`) both compile to cached Edge Config reads under
+  // Cache Components — and `getTranslations` (next-intl) reads the locale from a
+  // `cache()`d value, so it does NOT reliably push the render to request-time on
+  // its own. Without `connection()` those cache reads get prerendered into the
+  // route shell and, when the surrounding dynamic render aborts, turn into a
+  // "dynamic use cache" whose hanging promise rejects on prerender completion
+  // (HANGING_PROMISE_REJECTION, observed on `/profile/[playerName]` and
+  // `/dashboard`). It also makes the inline `new Date()` below safe. Same
+  // request-time guard as `AuthedAppHeader` in dashboard-layout.tsx.
+  await connection();
   const t = await getTranslations("footer");
+  const copyrightYear = new Date().getFullYear();
 
   const [
     version,
@@ -191,11 +218,11 @@ export async function Footer() {
   ] = await Promise.all([
     get<string>("version"),
     get<Route>("changelog"),
-    scoutingTool(),
-    aiChat(),
-    dataLabeling(),
-    coachingCanvas(),
-    tournament(),
+    getFlag(scoutingTool),
+    getFlag(aiChat),
+    getFlag(dataLabeling),
+    getFlag(coachingCanvas),
+    getFlag(tournament),
   ]);
 
   const columns: FooterColumn[] = [
@@ -255,7 +282,7 @@ export async function Footer() {
             <WorkshopCodePill code="Z0ASA" />
 
             <p className="text-muted-foreground font-mono text-xs">
-              &copy; 2024&ndash;{new Date().getFullYear()} lux.dev
+              &copy; 2024&ndash;{copyrightYear} lux.dev
             </p>
           </div>
 

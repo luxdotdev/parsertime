@@ -1,13 +1,13 @@
 import { DashboardLayout } from "@/components/dashboard-layout";
+import { defaultLocale } from "@/i18n/config";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import type { Metadata } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
 
 export async function generateMetadata(
   props: LayoutProps<"/profile/[playerName]">
 ): Promise<Metadata> {
   const params = await props.params;
-  const t = await getTranslations("profilePage.layoutMetadata");
-  const locale = await getLocale();
+  const t = getMetadataTranslations("profilePage.layoutMetadata");
   const playerName = decodeURIComponent(params.playerName);
 
   return {
@@ -26,7 +26,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale,
+      locale: defaultLocale,
     },
   };
 }

@@ -8,35 +8,36 @@ import {
   KillfeedCalibrationService,
   serializeCalibrationData,
 } from "@/data/map";
-import { coachingCanvas, positionalData } from "@/lib/flags";
+import type { Locale } from "@/i18n/config";
+import { mapTag } from "@/lib/cache-tags";
+import { getLocaleTranslations } from "@/lib/metadata-i18n";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import { removeDuplicateRows, toTimestamp } from "@/lib/utils";
 import { groupKillsIntoFights } from "@/lib/server-utils";
-import { getTranslations } from "next-intl/server";
+import { cacheLife, cacheTag } from "next/cache";
 
 export async function Killfeed({
   id,
+  locale,
   team1Color,
   team2Color,
-  positionalDataOverride,
-  coachingCanvasOverride,
+  positionalDataEnabled,
+  coachingCanvasEnabled,
 }: {
   id: number;
+  locale: Locale;
   team1Color: string;
   team2Color: string;
-  positionalDataOverride?: boolean;
-  coachingCanvasOverride?: boolean;
+  positionalDataEnabled: boolean;
+  coachingCanvasEnabled: boolean;
 }) {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(mapTag(id));
+
   const mapDataId = await resolveMapDataId(id);
-  const [
-    roundEndRows,
-    playerTeams,
-    fights,
-    ultimateData,
-    positionalEnabled,
-    canvasEnabled,
-  ] = await Promise.all([
+  const [roundEndRows, playerTeams, fights, ultimateData] = await Promise.all([
     prisma.roundEnd.findMany({
       where: { MapDataId: mapDataId },
       orderBy: { match_time: "asc" },
@@ -46,15 +47,9 @@ export async function Killfeed({
     AppRuntime.runPromise(
       KillfeedService.pipe(Effect.flatMap((svc) => svc.getUltimateSpans(id)))
     ),
-    positionalDataOverride != null
-      ? Promise.resolve(positionalDataOverride)
-      : positionalData(),
-    coachingCanvasOverride != null
-      ? Promise.resolve(coachingCanvasOverride)
-      : coachingCanvas(),
   ]);
 
-  const calibrationData = positionalEnabled
+  const calibrationData = positionalDataEnabled
     ? serializeCalibrationData(
         await AppRuntime.runPromise(
           KillfeedCalibrationService.pipe(
@@ -67,7 +62,7 @@ export async function Killfeed({
   const roundEnds = removeDuplicateRows(roundEndRows);
   const finalRound = roundEnds.at(-1) ?? null;
 
-  const t = await getTranslations("mapPage.killfeed");
+  const t = await getLocaleTranslations(locale, "mapPage.killfeed");
 
   const team1Name = playerTeams?.team_1_name ?? t("team1");
   const team2Name = playerTeams?.team_2_name ?? t("team2");
@@ -162,7 +157,7 @@ export async function Killfeed({
           team1Color={team1Color}
           team2Color={team2Color}
           calibrationData={calibrationData}
-          canvasImportEnabled={canvasEnabled && positionalEnabled}
+          canvasImportEnabled={coachingCanvasEnabled && positionalDataEnabled}
           mapDataId={mapDataId}
         />
       </div>

@@ -5,8 +5,6 @@ import { r2 } from "@/lib/r2";
 import { forbidden, unauthorized } from "next/navigation";
 import { NextResponse } from "next/server";
 
-export const runtime = "nodejs";
-
 const ALLOWED_IMAGE_CONTENT_TYPES = new Set([
   "image/jpeg",
   "image/png",

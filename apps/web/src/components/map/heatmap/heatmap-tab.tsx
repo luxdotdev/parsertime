@@ -1,16 +1,36 @@
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { HeatmapService } from "@/data/map";
-import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/config";
+import { mapTag } from "@/lib/cache-tags";
+import { getLocaleTranslations } from "@/lib/metadata-i18n";
+import { cacheLife, cacheTag } from "next/cache";
 import { HeatmapCanvas } from "./heatmap-canvas";
 import { HeatmapControlTabs } from "./heatmap-control-tabs";
 
-export async function HeatmapTab({ id }: { id: number }) {
+export async function HeatmapTab({
+  id,
+  mapId,
+  locale,
+}: {
+  /** The MapData id used to load heatmap data. */
+  id: number;
+  /** The Map id, used only for cache tagging/invalidation. */
+  mapId: number;
+  locale: Locale;
+}) {
+  "use cache";
+  // The rendered output embeds a presigned image URL that expires in 3600s
+  // (loadCalibration) — cap the entry's absolute age well under that so a
+  // cached render can never serve a dead URL.
+  cacheLife({ stale: 300, revalidate: 900, expire: 1800 });
+  cacheTag(mapTag(mapId));
+
   const [data, t] = await Promise.all([
     AppRuntime.runPromise(
       HeatmapService.pipe(Effect.flatMap((svc) => svc.getHeatmapData(id)))
     ),
-    getTranslations("mapPage.heatmap"),
+    getLocaleTranslations(locale, "mapPage.heatmap"),
   ]);
 
   const labels = {

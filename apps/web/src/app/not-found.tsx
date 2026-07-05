@@ -1,11 +1,12 @@
 import { Link } from "@/components/ui/link";
-import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 import { fallingHalftoneSvg } from "./falling-halftone";
+import { NotFoundCopy } from "./not-found-copy";
 
-export default async function NotFound() {
-  const t = await getTranslations("notFound");
-
+// Fully static: the SVG art stays server-rendered (it would bloat the client
+// bundle), and the translated copy lives in the NotFoundCopy client component
+// so this route prerenders instead of reading the LOCALE cookie.
+export default function NotFound() {
   return (
     <div className="bg-background text-foreground relative min-h-svh">
       {/* Desktop only: full-width red→chrome bleed behind both columns. */}
@@ -44,31 +45,7 @@ export default async function NotFound() {
             />
           </Link>
 
-          <div className="flex flex-1 flex-col justify-center py-12">
-            <div className="max-w-lg">
-              <p className="not-found-eyebrow font-mono text-sm font-semibold tracking-[0.15em] text-[#ee1c25]">
-                {t("404")}
-              </p>
-              <h1 className="not-found-title mt-4 font-mono text-4xl font-extrabold tracking-tight sm:text-6xl">
-                {t("header")}
-              </h1>
-              <p className="not-found-desc text-muted-foreground mt-6 text-base leading-7">
-                {t("description")}
-              </p>
-              <div className="mt-10">
-                <Link
-                  href="/"
-                  className="font-mono text-sm font-semibold text-[#ee1c25]"
-                >
-                  <span aria-hidden="true">&larr;</span> {t("backHome")}
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          <footer className="text-muted-foreground pt-8 text-sm">
-            <Link href="/contact">{t("contact")}</Link>
-          </footer>
+          <NotFoundCopy />
         </div>
       </div>
     </div>

@@ -2,7 +2,6 @@ import { Logger } from "@/lib/logger";
 import { recomputeTempoBaselines } from "@/lib/tempo/compute";
 import { timingSafeEqual } from "node:crypto";
 
-export const runtime = "nodejs";
 export const maxDuration = 300;
 
 type AuthResult =

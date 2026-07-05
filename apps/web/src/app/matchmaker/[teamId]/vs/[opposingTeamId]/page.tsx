@@ -13,8 +13,11 @@ import { getMatchmakerCandidates } from "@/lib/matchmaker/candidates";
 import { SkillDeviation } from "@/components/matchmaker/skill-deviation";
 import { SendRequestButton } from "@/components/matchmaker/send-request-button";
 import { TeamTsrCard } from "@/components/team/team-tsr-card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { getStaticTranslations } from "@/lib/metadata-i18n";
 import { FaceitTier, UserRole } from "@/generated/prisma/browser";
 import { getFormatter, getTranslations } from "next-intl/server";
+import { Suspense } from "react";
 
 type PageProps = {
   params: Promise<{ teamId: string; opposingTeamId: string }>;
@@ -23,7 +26,21 @@ type PageProps = {
 const COOLDOWN_HOURS = 24;
 const DAILY_LIMIT = 10;
 
-export default async function MatchmakerDetailPage({ params }: PageProps) {
+// Static shell: the page frame prerenders and the request-derived matchup
+// streams into ONE boundary whose fallback mirrors the loaded layout, so
+// navigation shows a single stable skeleton that the content replaces in
+// place.
+export default function MatchmakerDetailPage({ params }: PageProps) {
+  return (
+    <div className="container mx-auto max-w-5xl space-y-6 p-6">
+      <Suspense fallback={<MatchmakerDetailSkeleton />}>
+        <MatchmakerDetailContent params={params} />
+      </Suspense>
+    </div>
+  );
+}
+
+async function MatchmakerDetailContent({ params }: PageProps) {
   const [t, formatter] = await Promise.all([
     getTranslations("matchmaker"),
     getFormatter(),
@@ -159,7 +176,7 @@ export default async function MatchmakerDetailPage({ params }: PageProps) {
     disabledReason = t("send-button-limit-short");
 
   return (
-    <div className="container mx-auto max-w-5xl space-y-6 p-6">
+    <>
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <div>
           <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
@@ -227,6 +244,145 @@ export default async function MatchmakerDetailPage({ params }: PageProps) {
           disabledReason={disabledReason}
         />
       </section>
+    </>
+  );
+}
+
+// Mirrors the loaded layout (header row, two TSR cards, skill deviation,
+// availability card, message preview) so the streamed content replaces the
+// skeleton in place. Static labels render as default-locale text.
+function MatchmakerDetailSkeleton() {
+  const t = getStaticTranslations("matchmaker");
+
+  return (
+    <>
+      <div className="flex flex-wrap items-baseline justify-between gap-3">
+        <div>
+          <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+            {t("detail-eyebrow")}
+          </p>
+          <Skeleton className="mt-1 h-8 w-64" />
+        </div>
+        <Skeleton className="h-2.5 w-24" />
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="space-y-2">
+          <p className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
+            {t("your-team")}
+          </p>
+          <TsrCardSkeleton />
+        </div>
+        <div className="space-y-2">
+          <p className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
+            {t("their-team")}
+          </p>
+          <TsrCardSkeleton />
+        </div>
+      </div>
+
+      <section className="border-border bg-card rounded-xl border p-6">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+          <div>
+            <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+              {t("skill-deviation")}
+            </p>
+            <Skeleton className="mt-1 h-5 w-48" />
+          </div>
+          <div className="space-y-1">
+            <Skeleton className="ml-auto h-7 w-16" />
+            <div className="text-muted-foreground text-right font-mono text-[10px] tracking-[0.16em] uppercase">
+              ΔTSR
+            </div>
+          </div>
+        </div>
+        <div className="mt-6 space-y-4">
+          <div>
+            <p className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
+              {t("your-team")}
+            </p>
+            <div className="mt-2 space-y-3">
+              <Skeleton className="h-2 w-full" />
+              <div className="h-12" />
+            </div>
+          </div>
+          <div>
+            <p className="text-muted-foreground font-mono text-[10px] tracking-[0.16em] uppercase">
+              {t("their-team")}
+            </p>
+            <div className="mt-2 space-y-3">
+              <Skeleton className="h-2 w-full" />
+              <div className="h-12" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="border-border bg-card rounded-xl border p-6">
+        <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+          {t("availability-overlap-title")}
+        </p>
+        <div className="mt-2 space-y-2">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-3/4" />
+        </div>
+      </div>
+
+      <section className="border-border bg-card space-y-5 rounded-xl border p-6">
+        <div>
+          <p className="text-muted-foreground font-mono text-[11px] tracking-[0.16em] uppercase">
+            {t("message-preview")}
+          </p>
+          <div className="mt-2 space-y-2">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+            <Skeleton className="h-4 w-2/3" />
+          </div>
+        </div>
+        <Skeleton className="h-10 w-40" />
+      </section>
+    </>
+  );
+}
+
+function TsrCardSkeleton() {
+  return (
+    <div className="ring-foreground/10 bg-card flex flex-col gap-6 rounded-xl py-6 text-sm shadow-xs ring-1">
+      <div className="border-border border-b px-6 pb-6">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+          <div className="space-y-1.5">
+            <Skeleton className="h-2.5 w-32" />
+            <Skeleton className="h-5 w-28" />
+          </div>
+          <div className="space-y-1">
+            <Skeleton className="ml-auto h-8 w-20" />
+            <Skeleton className="ml-auto h-2.5 w-28" />
+          </div>
+        </div>
+      </div>
+      <div className="space-y-6 px-6">
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+            <Skeleton className="h-2.5 w-20" />
+            <Skeleton className="h-2.5 w-24" />
+          </div>
+          <Skeleton className="h-2 w-full" />
+          <div className="h-12" />
+        </div>
+        <ul className="divide-border divide-y">
+          {["a", "b", "c", "d", "e"].map((k) => (
+            <li
+              key={k}
+              className="grid grid-cols-[minmax(0,1fr)_minmax(0,7rem)_5rem_4rem] items-center gap-4 py-2"
+            >
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-1.5 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-2.5 w-full" />
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

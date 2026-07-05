@@ -1,9 +1,12 @@
 import { PlayerCard } from "@/components/map/player-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { Locale } from "@/i18n/config";
+import { mapTag } from "@/lib/cache-tags";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
+import { getLocaleTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
-import { getTranslations } from "next-intl/server";
+import { cacheLife, cacheTag } from "next/cache";
 
 type PlayerToSort = {
   player_name: string;
@@ -37,10 +40,12 @@ function uniquePlayers(players: PlayerToSort[]) {
 
 function TeamColumn({
   id,
+  locale,
   teamLabel,
   players,
 }: {
   id: number;
+  locale: Locale;
   teamLabel: string;
   players: string[];
 }) {
@@ -61,7 +66,7 @@ function TeamColumn({
         </TabsList>
         {players.map((player, index) => (
           <TabsContent key={player} value={index.toString()}>
-            <PlayerCard id={id} playerName={player} />
+            <PlayerCard id={id} playerName={player} locale={locale} />
           </TabsContent>
         ))}
       </Tabs>
@@ -69,8 +74,18 @@ function TeamColumn({
   );
 }
 
-export async function ComparePlayers({ id }: { id: number }) {
-  const t = await getTranslations("mapPage.compare");
+export async function ComparePlayers({
+  id,
+  locale,
+}: {
+  id: number;
+  locale: Locale;
+}) {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(mapTag(id));
+
+  const t = await getLocaleTranslations(locale, "mapPage.compare");
   const mapDataId = await resolveMapDataId(id);
 
   const teamNames = await prisma.matchStart.findFirst({
@@ -104,11 +119,13 @@ export async function ComparePlayers({ id }: { id: number }) {
     <div className="grid gap-8 lg:grid-cols-2">
       <TeamColumn
         id={id}
+        locale={locale}
         teamLabel={teamNames?.team_1_name ?? t("team1")}
         players={team1PlayersUnique}
       />
       <TeamColumn
         id={id}
+        locale={locale}
         teamLabel={teamNames?.team_2_name ?? t("team2")}
         players={team2PlayersUnique}
       />

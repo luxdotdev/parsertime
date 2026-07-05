@@ -1,14 +1,11 @@
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
+import { defaultLocale } from "@/i18n/config";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import type { Metadata } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
-  const t = await getTranslations({
-    locale,
-    namespace: "privacyPage.metadata",
-  });
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("privacyPage.metadata");
 
   return {
     title: t("title"),
@@ -27,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
           height: 630,
         },
       ],
-      locale,
+      locale: defaultLocale,
     },
   };
 }

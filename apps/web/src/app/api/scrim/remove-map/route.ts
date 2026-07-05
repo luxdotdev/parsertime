@@ -2,6 +2,11 @@ import { auditLog } from "@/lib/audit-logs";
 import { auth, canEditScrim, getCurrentUser } from "@/lib/auth";
 import { mapDeletionDuration, mapRemovedCounter } from "@/lib/axiom/metrics";
 import { Logger } from "@/lib/logger";
+import {
+  revalidateMap,
+  revalidateScrim,
+  revalidateTeamStats,
+} from "@/lib/cache-tags";
 import prisma from "@/lib/prisma";
 import { unauthorized } from "next/navigation";
 import { after, type NextRequest } from "next/server";
@@ -42,6 +47,10 @@ export async function POST(req: NextRequest) {
   await prisma.map.delete({ where: { id: mapId } });
   mapDeletionDuration.record(performance.now() - deleteStart);
   mapRemovedCounter.add(1);
+
+  revalidateMap(mapId);
+  revalidateScrim(scrim.id);
+  if (scrim.teamId) revalidateTeamStats(scrim.teamId);
 
   after(async () => {
     await auditLog.createAuditLog({

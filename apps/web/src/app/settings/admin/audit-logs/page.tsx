@@ -6,8 +6,18 @@ import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { $Enums } from "@/generated/prisma/browser";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { SettingsAdminAuditLogsSkeleton } from "./loading-skeleton";
 
-export default async function AuditLogsPage() {
+export default function AuditLogsPage() {
+  return (
+    <Suspense fallback={<SettingsAdminAuditLogsSkeleton />}>
+      <AuditLogsPageContent />
+    </Suspense>
+  );
+}
+
+async function AuditLogsPageContent() {
   const session = await auth();
   if (!session?.user) {
     redirect("/sign-in");

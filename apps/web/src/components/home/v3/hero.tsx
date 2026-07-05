@@ -8,6 +8,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { useIsLoggedIn } from "./logged-in-context";
 
 type HeroStat = {
   id: string;
@@ -28,7 +29,6 @@ type HeroProps = {
   latestUpdatesTitle?: string;
   latestUpdatesUrl?: string;
   stats: HeroStat[];
-  isLoggedIn: boolean;
 };
 
 const navLinks = [
@@ -119,8 +119,8 @@ export function Hero({
   latestUpdatesTitle,
   latestUpdatesUrl,
   stats,
-  isLoggedIn,
 }: HeroProps) {
+  const isLoggedIn = useIsLoggedIn();
   const isFirstVisit = useFirstVisit();
   const prefersReducedMotion = useReducedMotion();
 

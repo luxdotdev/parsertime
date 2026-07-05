@@ -1,22 +1,26 @@
 import { ClosedBetaBanner } from "@/components/home/banner";
-import { LandingPage } from "@/components/home/landing-page";
 import { V3LandingPage } from "@/components/home/v3/landing-page";
 import type { Availability } from "@/lib/auth";
-import { newLandingPage } from "@/lib/flags";
 import { get } from "@vercel/edge-config";
+import { cacheLife } from "next/cache";
 
+async function getAvailability() {
+  "use cache";
+  cacheLife("minutes");
+  return get<Availability>("availability");
+}
+
+// Marketing page: fully prerendered into the static shell (no loading state).
+// The availability read is cached so it can be part of the shell; the landing
+// page streams only its logged-in CTA state.
 export default async function Home() {
-  const [appAvailability, showNewLanding] = await Promise.all([
-    get<Availability>("availability"),
-    newLandingPage(),
-  ]);
-
+  const appAvailability = await getAvailability();
   const isPrivate = appAvailability === "private";
 
   return (
     <>
       {isPrivate && <ClosedBetaBanner />}
-      {showNewLanding ? <V3LandingPage /> : <LandingPage />}
+      <V3LandingPage />
     </>
   );
 }

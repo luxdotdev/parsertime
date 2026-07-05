@@ -1,31 +1,40 @@
+import { StatPanel } from "@/components/player/stat-panel";
+import { SectionHeader } from "@/components/section-header";
 import {
   RangePicker,
   type Timeframe,
 } from "@/components/stats/hero/range-picker";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
+import { Skeleton } from "@/components/ui/skeleton";
 import { HeroService } from "@/data/hero";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth, getViewableScrimIds } from "@/lib/auth";
+import { defaultLocale } from "@/i18n/config";
+import {
+  getMetadataTranslations,
+  getStaticTranslations,
+} from "@/lib/metadata-i18n";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
-import { translateHeroName } from "@/lib/utils";
+import { toHero, translateHeroName } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import type { PagePropsWithLocale } from "@/types/next";
 import type { Kill, PlayerStat, Scrim } from "@/generated/prisma/client";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 export async function generateMetadata(
   props: PagePropsWithLocale<"/stats/hero/[heroName]">
 ): Promise<Metadata> {
   const params = await props.params;
   const heroName = decodeURIComponent(params.heroName);
-  const hero = await translateHeroName(heroName);
-  const t = await getTranslations("statsPage.heroMetadata");
+  const hero = getMetadataTranslations("heroes")(toHero(heroName));
+  const t = getMetadataTranslations("statsPage.heroMetadata");
 
   return {
     title: t("title", { hero }),
@@ -43,12 +52,27 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale: params.locale,
+      locale: defaultLocale,
     },
   };
 }
 
-export default async function HeroStats(
+// Static shell: the page frame prerenders, and all request-time work (params,
+// auth, DB reads) streams into ONE boundary whose fallback mirrors the loaded
+// hero profile's pending layout.
+export default function HeroStats(
+  props: PagePropsWithLocale<"/stats/hero/[heroName]">
+) {
+  return (
+    <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+      <Suspense fallback={<HeroStatsSkeleton />}>
+        <HeroStatsContent {...props} />
+      </Suspense>
+    </div>
+  );
+}
+
+async function HeroStatsContent(
   props: PagePropsWithLocale<"/stats/hero/[heroName]">
 ) {
   const params = await props.params;
@@ -174,7 +198,7 @@ export default async function HeroStats(
     );
   } catch {
     return (
-      <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+      <>
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight">
             {translatedHeroName}
@@ -194,12 +218,12 @@ export default async function HeroStats(
             </Link>
           </div>
         </Card>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+    <>
       <div className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight">
           {translatedHeroName}
@@ -214,6 +238,116 @@ export default async function HeroStats(
         deaths={allHeroDeaths}
         hero={hero as HeroName}
       />
+    </>
+  );
+}
+
+// Mirrors the loaded state: heading, RangePicker's timeframe select, and the
+// HeroProfile section stack (SectionHeader + StatPanel, 250px chart cells) so
+// the streamed content replaces this in place.
+function HeroStatsSkeleton() {
+  const t = getStaticTranslations("statsPage.heroStats");
+
+  return (
+    <>
+      <div className="mb-6">
+        <Skeleton className="h-8 w-[220px]" />
+      </div>
+
+      <div className="space-y-6">
+        <div className="flex flex-wrap items-center gap-2">
+          <Skeleton className="h-9 w-[180px]" />
+        </div>
+
+        <div className="min-h-[60vh] space-y-10">
+          <section aria-labelledby="hero-overview">
+            <header className="mb-5 flex flex-col gap-1">
+              <h2
+                id="hero-overview"
+                className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.08em] uppercase"
+              >
+                {t("sections.overview")}
+              </h2>
+              <Skeleton className="h-4 w-56" />
+            </header>
+            <StatPanel>
+              <div className="bg-border grid grid-cols-1 gap-px lg:grid-cols-[auto_1fr]">
+                <div className="bg-card flex items-center gap-4 px-5 py-4">
+                  <Skeleton className="size-16 rounded-md" />
+                  <div className="flex flex-col gap-2">
+                    <Skeleton className="h-4 w-28" />
+                    <Skeleton className="h-3 w-16" />
+                  </div>
+                </div>
+                <div className="bg-card grid grid-cols-2 lg:grid-cols-4">
+                  {Array.from({ length: 4 }, (_, i) => (
+                    <div key={i} className="flex min-w-0 flex-col px-5 py-4">
+                      <Skeleton className="h-3 w-16" />
+                      <Skeleton className="mt-3.5 h-7 w-14" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </StatPanel>
+          </section>
+
+          <section aria-labelledby="hero-talent">
+            <SectionHeader
+              id="hero-talent"
+              title={t("sections.talent")}
+              description={t("talent.description")}
+            />
+            <StatPanel>
+              <div className="bg-border grid grid-cols-1 gap-px lg:grid-cols-[1.4fr_1fr]">
+                <ChartCellSkeleton />
+                <ChartCellSkeleton />
+              </div>
+            </StatPanel>
+          </section>
+
+          <section aria-labelledby="hero-form">
+            <SectionHeader id="hero-form" title={t("sections.form")} />
+            <StatPanel>
+              <div className="bg-border grid grid-cols-1 gap-px lg:grid-cols-2">
+                <ChartCellSkeleton />
+                <ChartCellSkeleton />
+              </div>
+            </StatPanel>
+            <div className="mt-3">
+              <StatPanel>
+                <ChartCellSkeleton />
+              </StatPanel>
+            </div>
+          </section>
+
+          <section aria-labelledby="hero-combat">
+            <SectionHeader id="hero-combat" title={t("sections.combat")} />
+            <StatPanel>
+              <div className="bg-border grid grid-cols-1 gap-px lg:grid-cols-2">
+                <ChartCellSkeleton />
+                <ChartCellSkeleton />
+              </div>
+            </StatPanel>
+            <div className="mt-3">
+              <StatPanel>
+                <div className="bg-border grid grid-cols-1 gap-px lg:grid-cols-2">
+                  <ChartCellSkeleton />
+                  <ChartCellSkeleton />
+                </div>
+              </StatPanel>
+            </div>
+          </section>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function ChartCellSkeleton() {
+  return (
+    <div className="bg-card flex flex-col px-5 py-5">
+      <Skeleton className="h-3.5 w-40" />
+      <Skeleton className="mt-5 h-[250px]" />
     </div>
   );
 }

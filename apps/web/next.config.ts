@@ -25,6 +25,8 @@ const cspHeader = `
 `;
 
 const nextConfig: NextConfig = {
+  cacheComponents: true,
+  partialPrefetching: true,
   reactCompiler: true,
   typedRoutes: true,
   transpilePackages: ["@parsertime/transactional"],

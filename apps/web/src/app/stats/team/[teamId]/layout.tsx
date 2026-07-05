@@ -2,18 +2,21 @@ import { RangeTransitionProvider } from "@/components/stats/team/range-transitio
 import { TeamStatsContent } from "@/components/stats/team/team-stats-content";
 import { TeamStatsHeaderClient } from "@/components/stats/team/team-stats-header-client";
 import { TeamStatsTabsNav } from "@/components/stats/team/team-stats-tabs-nav";
+import { defaultLocale } from "@/i18n/config";
 import { isAuthedToViewTeam } from "@/lib/auth";
 import { positionalData, simulationTool } from "@/lib/flags";
+import { getFlag } from "@/lib/flags-helpers";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import type { Metadata } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
+import { connection } from "next/server";
+import { Suspense } from "react";
 
 export async function generateMetadata(
   props: LayoutProps<"/stats/team/[teamId]">
 ): Promise<Metadata> {
   const params = await props.params;
-  const t = await getTranslations("teamStatsPage.layoutMetadata");
-  const locale = await getLocale();
+  const t = getMetadataTranslations("teamStatsPage.layoutMetadata");
 
   const teamId = parseInt(params.teamId);
   const canViewTeam =
@@ -45,7 +48,7 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale,
+      locale: defaultLocale,
     },
   };
 }
@@ -55,28 +58,50 @@ export async function generateMetadata(
 // in the header's stats-summary API route, since layouts do not re-render on
 // soft navigation and are not a valid security boundary. Only non-sensitive
 // data (feature flags, the teamId already in the URL) is read here.
-export default async function TeamStatsLayout(
+export default function TeamStatsLayout(
   props: LayoutProps<"/stats/team/[teamId]">
 ) {
-  const params = await props.params;
-  const teamId = parseInt(params.teamId);
-
-  const [positionalEnabled, simulationEnabled] = await Promise.all([
-    positionalData(),
-    simulationTool(),
-  ]);
-
   return (
     <div className="px-6 pt-8 pb-16 sm:px-10">
       <RangeTransitionProvider>
-        <TeamStatsHeaderClient teamId={teamId} />
-        <TeamStatsTabsNav
-          teamId={teamId}
-          positionalEnabled={positionalEnabled}
-          simulationEnabled={simulationEnabled}
-        />
+        <Suspense fallback={<div className="h-24" />}>
+          <TeamStatsNav params={props.params} />
+        </Suspense>
         <TeamStatsContent>{props.children}</TeamStatsContent>
       </RangeTransitionProvider>
     </div>
+  );
+}
+
+async function TeamStatsNav({
+  params,
+}: {
+  params: LayoutProps<"/stats/team/[teamId]">["params"];
+}) {
+  const { teamId: rawTeamId } = await params;
+  const teamId = parseInt(rawTeamId);
+
+  // This component lives in the layout's static-shell region and the flags
+  // below reach Edge Config `use cache` reads (via `vercelAdapter`). Force
+  // request-time so those never get prerendered into the shell and reject as a
+  // dynamic "use cache" hanging promise. `await params` above already defers on
+  // the fallback shell, but this makes the guard explicit and reorder-proof —
+  // same pattern as the footer and `AuthedAppHeader`.
+  await connection();
+
+  const [positionalEnabled, simulationEnabled] = await Promise.all([
+    getFlag(positionalData),
+    getFlag(simulationTool),
+  ]);
+
+  return (
+    <>
+      <TeamStatsHeaderClient teamId={teamId} />
+      <TeamStatsTabsNav
+        teamId={teamId}
+        positionalEnabled={positionalEnabled}
+        simulationEnabled={simulationEnabled}
+      />
+    </>
   );
 }

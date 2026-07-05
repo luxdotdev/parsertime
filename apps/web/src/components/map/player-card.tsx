@@ -4,14 +4,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrimService } from "@/data/scrim";
 import { AppRuntime } from "@/data/runtime";
 import { Effect } from "effect";
-import { getHeroNames, toHero } from "@/lib/utils";
-import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/config";
+import { getLocaleTranslations } from "@/lib/metadata-i18n";
+import { toHero } from "@/lib/utils";
 
-type Props = { id: number; playerName: string };
+type Props = { id: number; playerName: string; locale: Locale };
 
-export async function PlayerCard({ playerName, id }: Props) {
-  const t = await getTranslations("mapPage.compare.playerCard");
-  const heroNames = await getHeroNames();
+export async function PlayerCard({ playerName, id, locale }: Props) {
+  const [t, heroesT] = await Promise.all([
+    getLocaleTranslations(locale, "mapPage.compare.playerCard"),
+    getLocaleTranslations(locale, "heroes"),
+  ]);
 
   const playerStatsByFinalRound = await AppRuntime.runPromise(
     ScrimService.pipe(
@@ -30,7 +33,13 @@ export async function PlayerCard({ playerName, id }: Props) {
   if (heroesPlayed.length === 0) return null;
 
   if (heroesPlayed.length === 1) {
-    return <SpecificHero playerStats={playerStats} showTable={false} />;
+    return (
+      <SpecificHero
+        playerStats={playerStats}
+        showTable={false}
+        locale={locale}
+      />
+    );
   }
 
   return (
@@ -39,12 +48,16 @@ export async function PlayerCard({ playerName, id }: Props) {
         <TabsTrigger value="all-heroes">{t("allHeroes.title")}</TabsTrigger>
         {heroesPlayed.map((hero) => (
           <TabsTrigger key={hero} value={hero}>
-            {heroNames.get(toHero(hero)) ?? hero}
+            {heroesT.has(toHero(hero)) ? heroesT(toHero(hero)) : hero}
           </TabsTrigger>
         ))}
       </TabsList>
       <TabsContent value="all-heroes" className="space-y-4">
-        <AllHeroes playerStats={playerStats} showTable={false} />
+        <AllHeroes
+          playerStats={playerStats}
+          showTable={false}
+          locale={locale}
+        />
       </TabsContent>
       {heroesPlayed.map((hero) => (
         <TabsContent key={hero} value={hero} className="space-y-4">
@@ -53,6 +66,7 @@ export async function PlayerCard({ playerName, id }: Props) {
               (stat) => stat.player_hero === hero
             )}
             showTable={false}
+            locale={locale}
           />
         </TabsContent>
       ))}

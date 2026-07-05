@@ -232,10 +232,16 @@ export async function calculateMVPScoreFromStats({
 
   if (validStats.length === 0) return null;
 
-  // Only evaluate the most-played hero to avoid bias towards frequent swaps
-  const mostPlayedRow = validStats.reduce((prev, current) =>
-    prev.hero_time_played > current.hero_time_played ? prev : current
-  );
+  // Only evaluate the most-played hero to avoid bias towards frequent swaps.
+  // Break exact-time ties on a stable field (player_hero) rather than array
+  // position — otherwise an unordered `playerStats` order could pick a
+  // different hero between PPR passes and desync the downstream stat cache.
+  const mostPlayedRow = validStats.reduce((prev, current) => {
+    if (current.hero_time_played !== prev.hero_time_played) {
+      return current.hero_time_played > prev.hero_time_played ? current : prev;
+    }
+    return current.player_hero < prev.player_hero ? current : prev;
+  });
 
   const heroScore = await calculateHeroMVPScore(
     playerName,

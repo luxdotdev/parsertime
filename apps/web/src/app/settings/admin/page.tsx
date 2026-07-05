@@ -17,8 +17,18 @@ import { auth } from "@/lib/auth";
 import { $Enums } from "@/generated/prisma/browser";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { SettingsAdminSkeleton } from "./loading-skeleton";
 
-export default async function AdminDashboard() {
+export default function AdminDashboard() {
+  return (
+    <Suspense fallback={<SettingsAdminSkeleton />}>
+      <AdminDashboardContent />
+    </Suspense>
+  );
+}
+
+async function AdminDashboardContent() {
   const session = await auth();
   if (!session?.user) {
     redirect("/sign-in");

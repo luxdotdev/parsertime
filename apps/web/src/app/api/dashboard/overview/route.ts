@@ -13,8 +13,6 @@ import { unauthorized } from "next/navigation";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-export const runtime = "nodejs";
-
 function parseOptionalPositiveInt(value: string | null): number | undefined {
   if (value === null || !/^[1-9]\d*$/.test(value)) return undefined;
   const parsed = Number(value);

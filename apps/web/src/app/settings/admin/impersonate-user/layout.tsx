@@ -4,10 +4,21 @@ import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import { auth } from "@/lib/auth";
 import { $Enums } from "@/generated/prisma/browser";
+import { Suspense } from "react";
+import type { ReactNode } from "react";
+import { SettingsAdminImpersonateUserSkeleton } from "./loading-skeleton";
 
-export default async function AdminLayout({
+export default function AdminLayout({
   children,
 }: LayoutProps<"/settings/admin/impersonate-user">) {
+  return (
+    <Suspense fallback={<SettingsAdminImpersonateUserSkeleton />}>
+      <AdminImpersonateUserGate>{children}</AdminImpersonateUserGate>
+    </Suspense>
+  );
+}
+
+async function AdminImpersonateUserGate({ children }: { children: ReactNode }) {
   const session = await auth();
 
   const user = await AppRuntime.runPromise(

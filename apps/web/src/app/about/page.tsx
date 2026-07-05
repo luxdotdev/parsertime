@@ -1,4 +1,5 @@
 import { AboutHero } from "@/components/about/about-hero";
+import { Skeleton } from "@/components/ui/skeleton";
 import { AboutStory } from "@/components/about/about-story";
 import { AboutTimeline } from "@/components/about/about-timeline";
 import { AboutValues } from "@/components/about/about-values";
@@ -9,17 +10,17 @@ import { StatsCounter } from "@/components/home/new-landing/stats-counter";
 import { TrackedLink } from "@/components/home/new-landing/tracked-link";
 import { TrackedSection } from "@/components/home/new-landing/tracked-section";
 import { auth } from "@/lib/auth";
+import { getMetadataTranslations } from "@/lib/metadata-i18n";
 import prisma from "@/lib/prisma";
 import type { Metadata, Route } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { OrganizationJsonLd, ProfilePageJsonLd } from "next-seo";
-import { unstable_cache } from "next/cache";
+import { cacheLife } from "next/cache";
 import { Instrument_Serif } from "next/font/google";
-import type { SVGProps } from "react";
+import { Suspense, type SVGProps } from "react";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getLocale();
-  const t = await getTranslations({ locale, namespace: "aboutPage.metadata" });
+export function generateMetadata(): Metadata {
+  const t = getMetadataTranslations("aboutPage.metadata");
 
   return {
     title: t("title"),
@@ -41,27 +42,26 @@ const instrumentSerif = Instrument_Serif({
   variable: "--font-instrument-serif",
 });
 
-const getAboutPageStats = unstable_cache(
-  async () => {
-    const results = await Promise.allSettled([
-      prisma.playerStat.count(),
-      prisma.calculatedStat.count(),
-      prisma.kill.count(),
-      prisma.map.count(),
-    ]);
+async function getAboutPageStats() {
+  "use cache";
+  cacheLife("hours");
 
-    const [playerStatCount, calculatedStatCount, killCount, mapCount] =
-      results.map((r) => (r.status === "fulfilled" ? r.value : 0));
+  const results = await Promise.allSettled([
+    prisma.playerStat.count(),
+    prisma.calculatedStat.count(),
+    prisma.kill.count(),
+    prisma.map.count(),
+  ]);
 
-    return {
-      statsCount: Math.max(playerStatCount + calculatedStatCount, 800_000),
-      killCount: Math.max(killCount, 450_000),
-      mapCount: Math.max(mapCount, 6_000),
-    };
-  },
-  ["about-page-stats"],
-  { revalidate: 3600 }
-);
+  const [playerStatCount, calculatedStatCount, killCount, mapCount] =
+    results.map((r) => (r.status === "fulfilled" ? r.value : 0));
+
+  return {
+    statsCount: Math.max(playerStatCount + calculatedStatCount, 800_000),
+    killCount: Math.max(killCount, 450_000),
+    mapCount: Math.max(mapCount, 6_000),
+  };
+}
 
 function roundCount(count: number): { value: number; suffix: string } {
   if (count >= 100_000) {
@@ -125,7 +125,52 @@ const footerNavigation: FooterNavigation = {
   ],
 };
 
-export default async function AboutPage() {
+// Static shell: the font-variable wrapper and constant JSON-LD prerender, and
+// the translated/auth-derived content streams into ONE boundary whose fallback
+// mirrors the page's own section layout — a single stable skeleton instead of
+// stacked loading states.
+export default function AboutPage() {
+  return (
+    <div className={`${instrumentSerif.variable} bg-white dark:bg-black`}>
+      <OrganizationJsonLd
+        name="lux.dev"
+        url="https://lux.dev"
+        logo="https://parsertime.app/parsertime.png"
+        sameAs={[
+          "https://twitter.com/luxdotdev",
+          "https://bsky.app/profile/lux.dev",
+          "https://github.com/luxdotdev",
+        ]}
+      />
+      <ProfilePageJsonLd
+        mainEntity={
+          {
+            "@type": "Person",
+            name: "Lucas Doell",
+            url: "https://github.com/lucasdoell",
+            jobTitle: "Founder & Engineer",
+            worksFor: {
+              "@type": "Organization",
+              name: "lux.dev",
+              url: "https://lux.dev",
+            },
+            sameAs: [
+              "https://github.com/lucasdoell",
+              "https://twitter.com/lucasdoell",
+              "https://bsky.app/profile/lucasdoell.dev",
+            ],
+            // next-seo's Person type omits jobTitle despite it being a valid Schema.org property
+          } as Parameters<typeof ProfilePageJsonLd>[0]["mainEntity"]
+        }
+      />
+      <Suspense fallback={<AboutSkeleton />}>
+        <AboutContent />
+      </Suspense>
+    </div>
+  );
+}
+
+async function AboutContent() {
   const [{ statsCount, killCount, mapCount }, t, session] = await Promise.all([
     getAboutPageStats(),
     getTranslations("aboutPage"),
@@ -226,38 +271,7 @@ export default async function AboutPage() {
   ];
 
   return (
-    <div className={`${instrumentSerif.variable} bg-white dark:bg-black`}>
-      <OrganizationJsonLd
-        name="lux.dev"
-        url="https://lux.dev"
-        logo="https://parsertime.app/parsertime.png"
-        sameAs={[
-          "https://twitter.com/luxdotdev",
-          "https://bsky.app/profile/lux.dev",
-          "https://github.com/luxdotdev",
-        ]}
-      />
-      <ProfilePageJsonLd
-        mainEntity={
-          {
-            "@type": "Person",
-            name: "Lucas Doell",
-            url: "https://github.com/lucasdoell",
-            jobTitle: "Founder & Engineer",
-            worksFor: {
-              "@type": "Organization",
-              name: "lux.dev",
-              url: "https://lux.dev",
-            },
-            sameAs: [
-              "https://github.com/lucasdoell",
-              "https://twitter.com/lucasdoell",
-              "https://bsky.app/profile/lucasdoell.dev",
-            ],
-            // next-seo's Person type omits jobTitle despite it being a valid Schema.org property
-          } as Parameters<typeof ProfilePageJsonLd>[0]["mainEntity"]
-        }
-      />
+    <>
       <main>
         <TrackedSection name="about-hero">
           <AboutHero title={t("hero.title")} subtitle={t("hero.subtitle")} />
@@ -358,6 +372,163 @@ export default async function AboutPage() {
           </div>
         </div>
       </footer>
-    </div>
+    </>
+  );
+}
+
+// Mirrors the loaded sections' own layout (hero, story, timeline, stats,
+// values, founder, OSS banner, CTA, footer) so the streamed content replaces
+// this in place with no jump.
+function AboutSkeleton() {
+  return (
+    <>
+      <main>
+        <section className="py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto flex max-w-2xl flex-col items-center gap-4">
+              <Skeleton className="h-12 w-80 sm:h-16 sm:w-[480px]" />
+              <Skeleton className="h-5 w-96" />
+              <Skeleton className="h-5 w-72" />
+            </div>
+          </div>
+        </section>
+
+        <section className="py-16 sm:py-24">
+          <div className="mx-auto max-w-3xl px-6 lg:px-8">
+            <Skeleton className="h-9 w-64" />
+            <div className="mt-8 space-y-6">
+              {["a", "b", "c"].map((k) => (
+                <div key={k} className="space-y-2">
+                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-5 w-3/4" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <Skeleton className="h-9 w-56" />
+            <div className="relative mt-12 ml-4 space-y-12 border-l-2 border-dashed border-gray-200 dark:border-white/10">
+              {["a", "b", "c", "d", "e"].map((k) => (
+                <div key={k} className="relative pl-8">
+                  <Skeleton className="mb-1 h-3.5 w-24" />
+                  <Skeleton className="mb-2 h-5 w-48" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="mt-1 h-4 w-4/5" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl overflow-hidden px-6 py-32 sm:py-48 lg:px-8">
+          <div className="max-w-2xl space-y-4">
+            <Skeleton className="h-3.5 w-24" />
+            <Skeleton className="h-9 w-64" />
+            <Skeleton className="h-5 w-full" />
+            <Skeleton className="h-5 w-3/4" />
+          </div>
+          <div className="mt-16 grid grid-cols-2 gap-x-8 gap-y-10 sm:mt-20 lg:grid-cols-4">
+            {["a", "b", "c", "d"].map((k) => (
+              <div
+                key={k}
+                className="border-l border-gray-200 pl-6 dark:border-white/20"
+              >
+                <Skeleton className="h-7 w-28" />
+                <Skeleton className="mt-2 h-4 w-32" />
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto flex max-w-2xl flex-col items-center gap-4">
+              <Skeleton className="h-9 w-72" />
+              <Skeleton className="h-5 w-80" />
+            </div>
+            <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-6 sm:grid-cols-2 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+              {["a", "b", "c", "d", "e", "f"].map((k) => (
+                <div
+                  key={k}
+                  className="rounded-2xl border border-gray-200 bg-white/50 p-6 dark:border-white/10 dark:bg-white/5"
+                >
+                  <Skeleton className="h-10 w-10 rounded-lg" />
+                  <Skeleton className="mt-4 h-4 w-32" />
+                  <div className="mt-2 space-y-1.5">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="py-24 sm:py-32">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto grid max-w-2xl grid-cols-1 items-center gap-12 lg:max-w-none lg:grid-cols-[1fr_auto]">
+              <div className="space-y-4">
+                <Skeleton className="h-3.5 w-24" />
+                <Skeleton className="h-9 w-48" />
+                <Skeleton className="h-3.5 w-32" />
+                <div className="mt-6 space-y-2">
+                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-5 w-full" />
+                  <Skeleton className="h-5 w-3/4" />
+                </div>
+                <div className="mt-6 flex gap-x-4">
+                  {["a", "b", "c"].map((k) => (
+                    <Skeleton key={k} className="h-5 w-5 rounded" />
+                  ))}
+                </div>
+              </div>
+              <Skeleton className="h-[516px] w-[416px] rounded-2xl" />
+            </div>
+          </div>
+        </section>
+
+        <section className="py-16 sm:py-24">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto max-w-2xl rounded-2xl border border-gray-200 bg-white/50 p-8 sm:p-12 dark:border-white/10 dark:bg-white/5">
+              <div className="flex flex-col items-center gap-3">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <Skeleton className="h-6 w-64" />
+                <Skeleton className="h-4 w-80" />
+                <Skeleton className="h-4 w-56" />
+                <Skeleton className="mt-3 h-4 w-32" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-32 sm:py-40">
+          <div className="mx-auto flex max-w-2xl flex-col items-center gap-4 px-6 text-center lg:px-8">
+            <Skeleton className="h-9 w-64" />
+            <Skeleton className="h-9 w-48" />
+            <Skeleton className="mt-2 h-5 w-96" />
+            <Skeleton className="h-5 w-72" />
+            <div className="mt-6 flex gap-x-6">
+              <Skeleton className="h-10 w-32 rounded-md" />
+              <Skeleton className="h-10 w-24 rounded-md" />
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="mx-auto max-w-7xl px-6 pt-4 pb-8 lg:px-8">
+        <div className="flex items-center justify-between border-t border-gray-900/10 pt-8 dark:border-white/10">
+          <Skeleton className="h-3.5 w-48" />
+          <div className="flex space-x-6">
+            {["a", "b", "c"].map((k) => (
+              <Skeleton key={k} className="h-6 w-6 rounded" />
+            ))}
+          </div>
+        </div>
+      </footer>
+    </>
   );
 }

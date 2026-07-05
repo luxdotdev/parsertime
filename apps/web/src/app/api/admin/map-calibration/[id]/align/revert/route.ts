@@ -6,7 +6,6 @@ import { r2 } from "@/lib/r2";
 import { forbidden, unauthorized } from "next/navigation";
 import { NextResponse } from "next/server";
 
-export const runtime = "nodejs";
 export const maxDuration = 60;
 
 type Params = { params: Promise<{ id: string }> };

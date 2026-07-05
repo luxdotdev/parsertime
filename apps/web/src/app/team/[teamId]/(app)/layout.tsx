@@ -1,18 +1,24 @@
 import { NoAuthCard } from "@/components/auth/no-auth";
 import { DashboardLayout } from "@/components/dashboard-layout";
 import { isAuthedToViewTeam } from "@/lib/auth";
+import type { ReactNode } from "react";
 
-export default async function TeamLayout(props: LayoutProps<"/team/[teamId]">) {
-  const params = await props.params;
+export default function TeamLayout(props: LayoutProps<"/team/[teamId]">) {
+  return (
+    <DashboardLayout>
+      <TeamAuthGate params={props.params}>{props.children}</TeamAuthGate>
+    </DashboardLayout>
+  );
+}
 
-  const { children } = props;
-
-  const id = parseInt(params.teamId);
-  const isAuthed = await isAuthedToViewTeam(id);
-
-  if (!isAuthed) {
-    return NoAuthCard();
-  }
-
-  return <DashboardLayout>{children}</DashboardLayout>;
+async function TeamAuthGate({
+  params,
+  children,
+}: {
+  params: LayoutProps<"/team/[teamId]">["params"];
+  children: ReactNode;
+}) {
+  const { teamId } = await params;
+  if (!(await isAuthedToViewTeam(parseInt(teamId)))) return <NoAuthCard />;
+  return children;
 }

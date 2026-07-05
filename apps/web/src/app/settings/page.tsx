@@ -10,8 +10,18 @@ import { getCustomerPortalUrl } from "@/lib/stripe";
 import type { Route } from "next";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
+import { SettingsProfileSkeleton } from "./loading-skeleton";
 
-export default async function SettingsProfilePage() {
+export default function SettingsProfilePage() {
+  return (
+    <Suspense fallback={<SettingsProfileSkeleton />}>
+      <SettingsProfilePageContent />
+    </Suspense>
+  );
+}
+
+async function SettingsProfilePageContent() {
   const t = await getTranslations("settingsPage.profile");
 
   const session = await auth();

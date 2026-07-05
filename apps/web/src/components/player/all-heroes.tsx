@@ -5,6 +5,8 @@ import {
 } from "@/components/player/stat-panel";
 import { StatsTable } from "@/components/player/stats-table";
 import { CardIcon } from "@/components/ui/card-icon";
+import type { Locale } from "@/i18n/config";
+import { getLocaleTranslations } from "@/lib/metadata-i18n";
 import { cn, round, toMins } from "@/lib/utils";
 import { type HeroName, heroRoleMapping } from "@/types/heroes";
 import type { PlayerStat } from "@/generated/prisma/client";
@@ -13,11 +15,23 @@ import { getTranslations } from "next-intl/server";
 export async function AllHeroes({
   playerStats,
   showTable = true,
+  locale,
 }: {
   playerStats: PlayerStat[];
   showTable?: boolean;
+  /**
+   * Required when rendered inside a "use cache" scope (e.g. via the map
+   * compare tab) — `getTranslations` reads the LOCALE cookie, which is
+   * forbidden there. Uncached request-time call sites may omit it.
+   */
+  locale?: Locale;
 }) {
-  const t = await getTranslations("mapPage.compare.playerCard.allHeroes");
+  const t = locale
+    ? await getLocaleTranslations(
+        locale,
+        "mapPage.compare.playerCard.allHeroes"
+      )
+    : await getTranslations("mapPage.compare.playerCard.allHeroes");
   const hero = playerStats[0].player_hero as HeroName;
   const role = heroRoleMapping[hero];
 

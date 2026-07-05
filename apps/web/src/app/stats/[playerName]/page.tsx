@@ -1,9 +1,12 @@
+import { SectionHeader } from "@/components/section-header";
+import { StatPanel } from "@/components/player/stat-panel";
 import {
   RangePicker,
   type Timeframe,
 } from "@/components/stats/player/range-picker";
 import { Card } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ScrimService } from "@/data/scrim";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
@@ -11,17 +14,23 @@ import { UserService } from "@/data/user";
 import { auth, getViewableScrimIds } from "@/lib/auth";
 import { Permission } from "@/lib/permissions";
 import prisma from "@/lib/prisma";
+import { defaultLocale } from "@/i18n/config";
+import {
+  getMetadataTranslations,
+  getStaticTranslations,
+} from "@/lib/metadata-i18n";
 import type { PagePropsWithLocale } from "@/types/next";
 import type { Kill, PlayerStat, Scrim } from "@/generated/prisma/client";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 export async function generateMetadata(
   props: PagePropsWithLocale<"/stats/[playerName]">
 ): Promise<Metadata> {
   const params = await props.params;
-  const t = await getTranslations("statsPage.playerMetadata");
+  const t = getMetadataTranslations("statsPage.playerMetadata");
   const playerName = decodeURIComponent(params.playerName);
   const suffix = playerName.endsWith("s") ? "'" : "'s";
 
@@ -44,15 +53,33 @@ export async function generateMetadata(
           height: 630,
         },
       ],
-      locale: params.locale,
+      locale: defaultLocale,
     },
   };
 }
 
-export default async function PlayerStats(
+// Static shell: the page frame prerenders and the request-derived content
+// (params, auth, permissions, DB reads) streams into ONE boundary whose
+// fallback mirrors the profile's own pending layout. The player-name heading
+// is request-time (it comes from params), so it lives in the content child.
+export default function PlayerStats(
   props: PagePropsWithLocale<"/stats/[playerName]">
 ) {
-  const params = await props.params;
+  return (
+    <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+      <Suspense fallback={<PlayerStatsSkeleton />}>
+        <PlayerStatsContent params={props.params} />
+      </Suspense>
+    </div>
+  );
+}
+
+async function PlayerStatsContent({
+  params: paramsPromise,
+}: {
+  params: Promise<{ playerName: string }>;
+}) {
+  const params = await paramsPromise;
   const t = await getTranslations("statsPage.playerStats");
   const name = decodeURIComponent(params.playerName);
 
@@ -181,7 +208,7 @@ export default async function PlayerStats(
     allPlayerDeaths = result.allPlayerDeaths;
   } catch {
     return (
-      <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+      <>
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight">{name}</h1>
           <p className="text-muted-foreground mt-1 text-sm">
@@ -202,12 +229,12 @@ export default async function PlayerStats(
             </Link>
           </div>
         </Card>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
+    <>
       <div className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight">{name}</h1>
       </div>
@@ -221,6 +248,121 @@ export default async function PlayerStats(
         mapWinrates={mapWinrates}
         deaths={allPlayerDeaths}
       />
+    </>
+  );
+}
+
+// Mirrors the loaded layout: heading block, RangePicker toolbar row, then the
+// PlayerProfile sections (SectionHeader + StatPanel shapes) so the streamed
+// content replaces this in place with no jump.
+function PlayerStatsSkeleton() {
+  const t = getStaticTranslations("statsPage.playerStats");
+
+  return (
+    <>
+      <div className="mb-6">
+        <Skeleton className="h-8 w-[200px]" />
+      </div>
+
+      <main className="space-y-6">
+        <div className="flex flex-wrap items-center gap-2">
+          <Skeleton className="h-9 w-[180px] rounded-md" />
+          <Skeleton className="h-9 w-[280px] rounded-md" />
+        </div>
+
+        <div className="min-h-[60vh] space-y-10">
+          <section>
+            <SectionHeader
+              id="skeleton-overview"
+              title={t("sections.overview")}
+            />
+            <StatPanel>
+              <div className="grid grid-cols-2 lg:grid-cols-4">
+                {Array.from({ length: 4 }, (_, i) => (
+                  <div key={i} className="flex min-w-0 flex-col px-5 py-4">
+                    <Skeleton className="h-3.5 w-16" />
+                    <Skeleton className="mt-3.5 h-7 w-20" />
+                  </div>
+                ))}
+              </div>
+            </StatPanel>
+          </section>
+
+          <section>
+            <SectionHeader
+              id="skeleton-heroes"
+              title={t("heroPortfolio.title")}
+              description={t("heroPortfolio.description")}
+            />
+            <StatPanel>
+              <div className="px-5 py-5">
+                <Skeleton className="h-40" />
+              </div>
+            </StatPanel>
+          </section>
+
+          <section>
+            <SectionHeader id="skeleton-form" title={t("sections.form")} />
+            <StatPanel>
+              <div className="bg-border grid grid-cols-1 gap-px lg:grid-cols-2">
+                <ChartCellSkeleton title={t("avgHeroDmgDealtPer10.title")} />
+                <ChartCellSkeleton title={t("avgDeathPer10.title")} />
+              </div>
+            </StatPanel>
+            <div className="mt-3">
+              <StatPanel>
+                <ChartCellSkeleton title={t("stats.title")} />
+              </StatPanel>
+            </div>
+          </section>
+
+          <section>
+            <SectionHeader id="skeleton-maps" title={t("sections.maps")} />
+            <StatPanel>
+              <ChartCellSkeleton title={t("mapWinrates.title")} />
+            </StatPanel>
+            <div className="mt-3">
+              <StatPanel>
+                <ChartCellSkeleton title={t("winrateMapType.title")} />
+              </StatPanel>
+            </div>
+          </section>
+
+          <section>
+            <SectionHeader id="skeleton-habits" title={t("sections.habits")} />
+            <StatPanel>
+              <div className="bg-border grid grid-cols-1 gap-px lg:grid-cols-2">
+                <ChartCellSkeleton title={t("timeSpent.title")} />
+                <ChartCellSkeleton title={t("finalBlowsByMethod.title")} />
+              </div>
+            </StatPanel>
+          </section>
+
+          <section>
+            <SectionHeader id="skeleton-combat" title={t("sections.combat")} />
+            <StatPanel>
+              <div className="bg-border grid grid-cols-1 gap-px md:grid-cols-3">
+                <ChartCellSkeleton title={t("bestPerformance.title")} />
+                <ChartCellSkeleton title={t("heroesElimMost.title")} />
+                <ChartCellSkeleton title={t("heroesDiedToMost.title")} />
+              </div>
+            </StatPanel>
+          </section>
+        </div>
+      </main>
+    </>
+  );
+}
+
+function ChartCellSkeleton({ title }: { title: string }) {
+  return (
+    <div className="bg-card flex flex-col px-5 py-5">
+      <h3 className="text-muted-foreground font-mono text-[0.6875rem] tracking-[0.06em] uppercase">
+        {title}
+      </h3>
+      <div className="mt-5">
+        <Skeleton className="h-72" />
+      </div>
     </div>
   );
 }

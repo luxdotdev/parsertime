@@ -10,7 +10,6 @@ import { MODE_FAMILIES, type ModeFamily } from "@/lib/win-probability/types";
 import { timingSafeEqual } from "node:crypto";
 import { gunzipSync } from "node:zlib";
 
-export const runtime = "nodejs";
 export const maxDuration = 60;
 
 type AuthResult =

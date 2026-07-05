@@ -14,7 +14,6 @@ import { put } from "@vercel/blob";
 import { waitUntil } from "@vercel/functions";
 import { randomUUID, timingSafeEqual } from "node:crypto";
 
-export const runtime = "nodejs";
 // The export (map fetch + buildRows over every map) is the long pole; training
 // now runs in a separate Python function, so this route only extracts, writes
 // the matrices to Blob, and fires the trainer.

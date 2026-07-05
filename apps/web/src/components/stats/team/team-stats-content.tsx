@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
-import { DotMatrixLoader } from "./dot-matrix-loader";
+import { DotMatrixLoader } from "@/components/dot-matrix-loader";
 import { useRangeTransition } from "./range-transition-context";
 
 /**

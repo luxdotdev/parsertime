@@ -2,7 +2,7 @@ import "server-only";
 
 import prisma from "@/lib/prisma";
 import type { UsageEnv } from "@/generated/prisma/client";
-import { unstable_cache } from "next/cache";
+import { cacheLife } from "next/cache";
 import { FUNNELS, computeFunnel, type FunnelStep } from "./funnels";
 import { dayKey } from "./rollup";
 
@@ -170,10 +170,11 @@ async function loadFunnels(
   }));
 }
 
-export function getFunnels(env: UsageEnv, days = 30): Promise<FunnelResult[]> {
-  return unstable_cache(
-    () => loadFunnels(env, days),
-    ["usage-funnels", env, String(days)],
-    { revalidate: 60 * 60 * 24 } // daily
-  )();
+export async function getFunnels(
+  env: UsageEnv,
+  days = 30
+): Promise<FunnelResult[]> {
+  "use cache";
+  cacheLife("days");
+  return loadFunnels(env, days);
 }

@@ -11,14 +11,17 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { getMapUltAdvantage } from "@/data/map/ult-advantage";
+import type { Locale } from "@/i18n/config";
+import { mapTag } from "@/lib/cache-tags";
+import { getLocaleTranslations } from "@/lib/metadata-i18n";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
 import prisma from "@/lib/prisma";
 import type { Kill } from "@/generated/prisma/client";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
-import { getTranslations } from "next-intl/server";
+import { cacheLife, cacheTag } from "next/cache";
 
-async function ChartTooltip() {
-  const t = await getTranslations("mapPage.charts");
+async function ChartTooltip({ locale }: { locale: Locale }) {
+  const t = await getLocaleTranslations(locale, "mapPage.charts");
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -73,6 +76,7 @@ async function groupKillsByInterval(id: number, maxInterval: number) {
 
 type ChartSectionProps = {
   id: string;
+  locale: Locale;
   eyebrow: string;
   title: string;
   description: string;
@@ -81,6 +85,7 @@ type ChartSectionProps = {
 
 function ChartSection({
   id,
+  locale,
   eyebrow,
   title,
   description,
@@ -99,7 +104,7 @@ function ChartSection({
           >
             {title}
           </h3>
-          <ChartTooltip />
+          <ChartTooltip locale={locale} />
         </div>
       </div>
       <div className="-ml-2">{children}</div>
@@ -112,16 +117,22 @@ function ChartSection({
 
 export async function MapCharts({
   id,
+  locale,
   team1Color,
   team2Color,
   tempoChartEnabled,
 }: {
   id: number;
+  locale: Locale;
   team1Color: string;
   team2Color: string;
   tempoChartEnabled: boolean;
 }) {
-  const t = await getTranslations("mapPage.charts");
+  "use cache";
+  cacheLife("hours");
+  cacheTag(mapTag(id));
+
+  const t = await getLocaleTranslations(locale, "mapPage.charts");
   const mapDataId = await resolveMapDataId(id);
   const teams = await prisma.matchStart.findFirst({
     where: {
@@ -183,12 +194,14 @@ export async function MapCharts({
         <>
           <ChartSection
             id="tempo"
+            locale={locale}
             eyebrow={t("tempo.eyebrow")}
             title={t("tempo.title")}
             description={t("tempo.description")}
           >
             <TempoChartServer
               id={id}
+              locale={locale}
               team1Color={team1Color}
               team2Color={team2Color}
             />
@@ -200,6 +213,7 @@ export async function MapCharts({
 
       <ChartSection
         id="kills-by-fight"
+        locale={locale}
         eyebrow={t("killsByFight.eyebrow")}
         title={t("killsByFight.title")}
         description={t("killsByFight.description")}
@@ -213,6 +227,7 @@ export async function MapCharts({
 
           <ChartSection
             id="ult-advantage"
+            locale={locale}
             eyebrow={t("ultAdvantage.eyebrow")}
             title={t("ultAdvantage.title")}
             description={t("ultAdvantage.description", { team: team1Name })}
@@ -234,6 +249,7 @@ export async function MapCharts({
       <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
         <ChartSection
           id="final-blows-by-role"
+          locale={locale}
           eyebrow={t("finalBlowsByRole.eyebrow")}
           title={t("finalBlowsByRole.title")}
           description={t("finalBlowsByRole.description")}
@@ -247,6 +263,7 @@ export async function MapCharts({
 
         <ChartSection
           id="damage-by-round"
+          locale={locale}
           eyebrow={t("dmgByRound.eyebrow")}
           title={t("dmgByRound.title")}
           description={t("dmgByRound.description")}

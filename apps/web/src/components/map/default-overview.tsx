@@ -14,7 +14,6 @@ import {
   buildPlayerUltComparisons,
 } from "@/data/scrim/ult-helpers";
 import type { PlayerUltSummary, UltEfficiency } from "@/data/scrim/types";
-import { positionalData } from "@/lib/flags";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { filterUtilityRoundStartSwaps } from "@/data/team/hero-swap-service";
@@ -43,19 +42,28 @@ import {
   type SubroleName,
 } from "@/types/heroes";
 import { $Enums, type Kill } from "@/generated/prisma/browser";
-import { getTranslations } from "next-intl/server";
+import type { Locale } from "@/i18n/config";
+import { mapTag } from "@/lib/cache-tags";
+import { getLocaleTranslations } from "@/lib/metadata-i18n";
+import { cacheLife, cacheTag } from "next/cache";
 
 export async function DefaultOverview({
   id,
+  locale,
   team1Color: team1,
   team2Color: team2,
   positionalDataOverride,
 }: {
   id: number;
+  locale: Locale;
   team1Color: string;
   team2Color: string;
-  positionalDataOverride?: boolean;
+  positionalDataOverride: boolean;
 }) {
+  "use cache";
+  cacheLife("hours");
+  cacheTag(mapTag(id));
+
   const mapDataId = await resolveMapDataId(id);
   const [finalRound, matchDetails, finalRoundStats, playerStats, fights] =
     await Promise.all([
@@ -139,7 +147,7 @@ export async function DefaultOverview({
     }),
   ]);
 
-  const t = await getTranslations("mapPage.overview");
+  const t = await getLocaleTranslations(locale, "mapPage.overview");
 
   const mapType = matchDetails ? matchDetails.map_type : $Enums.MapType.Control;
   const payloadMapScore = calculatePayloadMapScore({
@@ -254,7 +262,7 @@ export async function DefaultOverview({
   const team1Name = matchDetails?.team_1_name ?? t("team1");
   const team2Name = matchDetails?.team_2_name ?? t("team2");
 
-  const positionalEnabled = positionalDataOverride ?? (await positionalData());
+  const positionalEnabled = positionalDataOverride;
 
   const [abilityTimingAnalysis, rotationDeathAnalysis, killfeedCalibration] =
     await Promise.all([
