@@ -1,5 +1,6 @@
 "use client";
 
+import { SUPPORT_EMAIL } from "@/lib/site";
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import {
@@ -198,9 +199,9 @@ export default function ContactPage() {
                 <dd>
                   <Link
                     className="hover:text-black dark:hover:text-white"
-                    href="mailto:help@parsertime.app"
+                    href={`mailto:${SUPPORT_EMAIL}`}
                   >
-                    help@parsertime.app
+                    {SUPPORT_EMAIL}
                   </Link>
                 </dd>
               </div>

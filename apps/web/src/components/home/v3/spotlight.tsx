@@ -1,3 +1,4 @@
+import { SITE_DOMAIN } from "@/lib/site";
 import Image from "next/image";
 
 type SpotlightProps = {
@@ -79,7 +80,7 @@ export function Spotlight({
                   className="bg-muted-foreground/30 h-2.5 w-2.5 rounded-full"
                 />
                 <span className="text-muted-foreground ml-3 font-mono text-[10px] tracking-[0.18em] uppercase">
-                  parsertime.app
+                  {SITE_DOMAIN}
                 </span>
               </div>
               <Image

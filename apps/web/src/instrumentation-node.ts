@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 import { logger } from "@/lib/axiom/server";
 import { makePoolMetricsLive } from "@/lib/db-metrics";
 import { getDbPool } from "@/lib/prisma";
@@ -152,7 +153,7 @@ export async function logRequestError(
       : undefined;
   let pathname = request.path;
   try {
-    pathname = new URL(request.path, "https://parsertime.app").pathname;
+    pathname = new URL(request.path, SITE_URL).pathname;
   } catch {
     pathname = request.path.split("?")[0] ?? request.path;
   }

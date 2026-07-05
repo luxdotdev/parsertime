@@ -84,14 +84,14 @@ export function FeaturesBento({
           <div className="relative h-52 overflow-hidden bg-gray-50 dark:bg-white/[0.02]">
             <Image
               src="/new-killfeed.png"
-              alt="Parsertime killfeed visualization showing match events"
+              alt="Sightline killfeed visualization showing match events"
               className="hidden object-cover object-top dark:block"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
             />
             <Image
               src="/new-killfeed-light.png"
-              alt="Parsertime killfeed visualization showing match events"
+              alt="Sightline killfeed visualization showing match events"
               className="block object-cover object-top dark:hidden"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
@@ -122,14 +122,14 @@ export function FeaturesBento({
           <div className="relative h-52 overflow-hidden bg-gray-50 dark:bg-white/[0.02]">
             <Image
               src="/scrim-overview-card.png"
-              alt="Parsertime scrim overview card with match results"
+              alt="Sightline scrim overview card with match results"
               className="hidden object-cover object-top dark:block"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
             />
             <Image
               src="/scrim-overview-card-light.png"
-              alt="Parsertime scrim overview card with match results"
+              alt="Sightline scrim overview card with match results"
               className="block object-cover object-top dark:hidden"
               fill
               sizes="(max-width: 768px) 100vw, 50vw"

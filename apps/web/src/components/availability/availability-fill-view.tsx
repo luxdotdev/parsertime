@@ -320,12 +320,12 @@ export function AvailabilityFillView({
         </section>
       </div>
 
-      {!sessionUserLoggedIn && <ParsertimePromoCard />}
+      {!sessionUserLoggedIn && <SightlinePromoCard />}
     </div>
   );
 }
 
-function ParsertimePromoCard() {
+function SightlinePromoCard() {
   const t = useTranslations("availability.fillView.promo");
 
   function strong(chunks: ReactNode) {

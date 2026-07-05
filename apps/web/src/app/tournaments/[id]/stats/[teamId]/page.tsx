@@ -66,7 +66,7 @@ export async function generateMetadata(props: {
         select: { name: true },
       });
 
-  if (!team) return { title: "Tournament Stats | Parsertime" };
+  if (!team) return { title: "Tournament Stats | Sightline" };
 
   return {
     title: t("title", { team: team.name }),

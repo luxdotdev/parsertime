@@ -1,4 +1,4 @@
-# Parsertime Skill Rating System
+# Sightline Skill Rating System
 
 This is the working spec, updated based on the dry-run findings against real
 FACEIT data. The original v1 spec is preserved in conversation; this document
@@ -55,7 +55,7 @@ anchors as TSR priors:
 | 3450–3849          | 3450 (Masters)      |
 | ≥ 3850             | 3850 (OWCS)         |
 
-Within each hero and TSR tier, Parsertime computes the same role-weighted
+Within each hero and TSR tier, Sightline computes the same role-weighted
 per-10 stat Z-score as Raw CSR, but the baseline is the player's TSR-tier peer
 pool instead of the global hero pool.
 
@@ -467,7 +467,7 @@ GET /search/players?nickname=<query>&game=ow2&offset=0&limit=20
 
 Rank candidates by `verified` flag first, then by OW2 `skill_level` desc.
 
-A `BattletagAlias` override table maps Parsertime BattleTags to FACEIT
+A `BattletagAlias` override table maps Sightline BattleTags to FACEIT
 `player_id` for renamed accounts (Battle.net linking on FACEIT is one-shot).
 
 ### Endpoints to avoid

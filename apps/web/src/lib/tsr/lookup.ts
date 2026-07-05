@@ -13,7 +13,7 @@ export type PlayerTsrSnapshot = {
 };
 
 // Resolve a player's TSR by trying every BattleTag they might be known by:
-// the registered Parsertime user's battletag, the raw display name, and any
+// the registered Sightline user's battletag, the raw display name, and any
 // rows in BattletagAlias. Returns null if nothing matches a FaceitPlayer
 // that has a computed PlayerTsr row.
 export async function getPlayerTsrByBattletag(

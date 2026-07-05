@@ -50,7 +50,7 @@ export function Features({
       description: features.dataCharts.description,
       imageSrcDark: "/new-killfeed.png",
       imageSrcLight: "/new-killfeed-light.png",
-      imageAlt: "Parsertime killfeed visualization showing match events",
+      imageAlt: "Sightline killfeed visualization showing match events",
     },
     {
       label: features.builtByCoaches.name,
@@ -58,7 +58,7 @@ export function Features({
       description: features.builtByCoaches.description,
       imageSrcDark: "/scrim-overview-card.png",
       imageSrcLight: "/scrim-overview-card-light.png",
-      imageAlt: "Parsertime scrim overview card with match results",
+      imageAlt: "Sightline scrim overview card with match results",
     },
   ];
 

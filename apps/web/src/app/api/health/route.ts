@@ -12,10 +12,13 @@ export async function GET() {
   }
 
   try {
-    const res = await fetch("https://discord.parsertime.app/health", {
-      cache: "no-store",
-      signal: AbortSignal.timeout(5000),
-    });
+    const res = await fetch(
+      `${process.env.BOT_API_URL ?? "https://discord.parsertime.app"}/health`,
+      {
+        cache: "no-store",
+        signal: AbortSignal.timeout(5000),
+      }
+    );
     checks.discordBot = res.ok ? "ok" : "error";
   } catch {
     checks.discordBot = "error";

@@ -16,7 +16,7 @@ export function DemoBanner() {
           <div className="pointer-events-auto flex items-center justify-between gap-x-6 border border-zinc-700 bg-black px-6 py-2.5 sm:rounded-xl sm:py-3 sm:pr-3.5 sm:pl-4 dark:bg-white">
             <p className="text-sm leading-6 text-white dark:text-gray-900">
               <Link href="/sign-up">
-                <strong className="font-semibold">Parsertime</strong>
+                <strong className="font-semibold">Sightline</strong>
                 <svg
                   viewBox="0 0 2 2"
                   className="mx-2 inline h-0.5 w-0.5 fill-current"

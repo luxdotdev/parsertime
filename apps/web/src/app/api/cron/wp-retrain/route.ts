@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
 import { datasetToCsv } from "@/lib/win-probability/training/csv";
@@ -151,7 +152,7 @@ export async function GET(req: Request): Promise<Response> {
     // route returns immediately (its maxDuration is 300 and must not block on
     // training). The trainer fetches the passed blob URLs, then POSTs the
     // finished artifact back to /api/cron/wp-publish.
-    const origin = "https://parsertime.app";
+    const origin = SITE_URL;
     waitUntil(
       fetch(`${origin}/api/wp-train`, {
         method: "POST",

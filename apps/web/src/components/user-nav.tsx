@@ -1,3 +1,4 @@
+import { DOCS_URL } from "@/lib/site";
 import { SignOutButton } from "@/components/auth/auth-components";
 import { StopImpersonatingButton } from "@/components/admin/stop-impersonating-button";
 import { SupporterHeart } from "@/components/profile/supporter-heart";
@@ -85,7 +86,7 @@ export async function UserNav() {
           <Link href="/contact">
             <DropdownMenuItem>{t("contact")}</DropdownMenuItem>
           </Link>
-          <Link href="https://docs.parsertime.app" target="_blank">
+          <Link href={DOCS_URL} target="_blank">
             <DropdownMenuItem>
               {t("docs")}
               <DropdownMenuShortcut>

@@ -1,3 +1,4 @@
+import { DOCS_URL } from "@/lib/site";
 import { CreateScrimButton } from "@/components/dashboard/create-scrim";
 import { Card, CardDescription } from "@/components/ui/card";
 import { Link } from "@/components/ui/link";
@@ -62,11 +63,7 @@ export function EmptyScrimList({ isOnboarding }: { isOnboarding?: boolean }) {
                 </p>
                 <p className="text-muted-foreground p-2">
                   {t("emptyScrimList.question")}{" "}
-                  <Link
-                    href="https://docs.parsertime.app"
-                    target="_blank"
-                    external
-                  >
+                  <Link href={DOCS_URL} target="_blank" external>
                     {t("emptyScrimList.documentation")}
                   </Link>
                 </p>

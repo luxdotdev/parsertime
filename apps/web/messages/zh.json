@@ -166,13 +166,13 @@
     "noAccessTitle": "没有可查询的团队",
     "noAccessBody": "你还无权访问任何团队。加入或创建团队以查询其训练赛数据。",
     "metadata": {
-      "title": "查询构建器 | Parsertime",
+      "title": "查询构建器 | Sightline",
       "description": "在您的《守望先锋》训练赛数据上构建自定义查询。"
     }
   },
   "analyst": {
     "metadata": {
-      "title": "分析师 | Parsertime",
+      "title": "分析师 | Sightline",
       "description": "为《守望先锋》训练赛数据、球员表现和团队趋势打造的 AI 分析师。"
     },
     "eyebrow": "分析师",
@@ -411,9 +411,9 @@
     "pipeline": {
       "eyebrow": "工作原理",
       "title": "从原始日志到教练决策",
-      "description": "训练赛结束后上传工坊日志。Parsertime 解析每个事件，计算评分与站位数据，在 VOD 复盘开始前就把当晚的训练赛变成仪表盘。",
+      "description": "训练赛结束后上传工坊日志。Sightline 解析每个事件，计算评分与站位数据，在 VOD 复盘开始前就把当晚的训练赛变成仪表盘。",
       "sourcesLabel": "训练赛日志",
-      "processingLabel": "Parsertime",
+      "processingLabel": "Sightline",
       "outputsLabel": "你的仪表盘",
       "outputDashboards": "队伍仪表盘",
       "outputRatings": "英雄技能评分",
@@ -510,7 +510,7 @@
     },
     "testimonial": {
       "starRating": "5 星好评",
-      "quote": "“Parsertime 是分析《守望先锋》比赛统计的绝佳工具。它让我深入了解数据并激发了我对数据科学的兴趣。如今，我使用 Parsertime 为四支队伍提供数据支持。它提供的见解影响深远，我可以帮助队员改进，例如延长存活时间、更有效地使用终极技能等。如果他们的治疗量低于平均值，我们还能一起找出原因。这是一个神奇的工具，帮助我们以广阔视角分析细节。”",
+      "quote": "“Sightline 是分析《守望先锋》比赛统计的绝佳工具。它让我深入了解数据并激发了我对数据科学的兴趣。如今，我使用 Sightline 为四支队伍提供数据支持。它提供的见解影响深远，我可以帮助队员改进，例如延长存活时间、更有效地使用终极技能等。如果他们的治疗量低于平均值，我们还能一起找出原因。这是一个神奇的工具，帮助我们以广阔视角分析细节。”",
       "author": "coy (@shy.coy)",
       "role": "o7 电竞经理"
     },
@@ -566,15 +566,15 @@
     }
   },
   "metadata": {
-    "title": "Parsertime",
-    "description": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
-    "ogTitle": "Parsertime",
-    "ogDescription": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
+    "title": "Sightline",
+    "description": "Sightline 是一款用于分析《守望先锋》训练赛的工具。",
+    "ogTitle": "Sightline",
+    "ogDescription": "Sightline 是一款用于分析《守望先锋》训练赛的工具。"
   },
   "authError": {
     "title": "登录时发生错误",
     "error": "错误：",
-    "description": "请重试。如果问题仍然存在，请联系支持：<link>help@parsertime.app</link>。",
+    "description": "请重试。如果问题仍然存在，请联系支持：<link>{email}</link>。",
     "back": "返回主页",
     "signIn": "登录",
     "errors": {
@@ -586,7 +586,7 @@
       "default": "登录时发生未知错误。请联系支持。"
     },
     "metadata": {
-      "title": "身份验证错误 | Parsertime",
+      "title": "身份验证错误 | Sightline",
       "description": "登录时出现问题。"
     }
   },
@@ -600,27 +600,27 @@
     "description": "我们已向您发送了一封带有登录链接的电子邮件。点击电子邮件中的链接以完成登录过程。",
     "back": "返回首页",
     "metadata": {
-      "title": "请查收邮件 | Parsertime",
+      "title": "请查收邮件 | Sightline",
       "description": "我们已向您发送登录链接以继续。"
     }
   },
   "signInPage": {
     "metadataSignIn": {
-      "title": "登录 | Parsertime",
-      "description": "登录您的账户。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
-      "ogTitle": "登录 | Parsertime",
-      "ogDescription": "登录您的账户。Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
+      "title": "登录 | Sightline",
+      "description": "登录您的账户。Sightline 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "登录 | Sightline",
+      "ogDescription": "登录您的账户。Sightline 是一款用于分析《守望先锋》训练赛的工具。"
     },
     "metadataSignUp": {
-      "title": "注册 | Parsertime",
-      "description": "注册账户。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
-      "ogTitle": "注册 | Parsertime",
-      "ogDescription": "注册账户。Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
+      "title": "注册 | Sightline",
+      "description": "注册账户。Sightline 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "注册 | Sightline",
+      "ogDescription": "注册账户。Sightline 是一款用于分析《守望先锋》训练赛的工具。"
     },
     "welcomeBack": "欢迎回来",
     "oauthSignIn": "使用您的账户登录",
     "email": "电子邮件",
-    "parsertime": "Parsertime",
+    "parsertime": "Sightline",
     "signUp": "注册",
     "signIn": "登录",
     "login": "登录",
@@ -645,10 +645,10 @@
   },
   "dashboard": {
     "metadata": {
-      "title": "仪表盘 | Parsertime",
+      "title": "仪表盘 | Sightline",
       "description": "一目了然地查看您的训练赛、地图和团队表现。",
-      "ogTitle": "仪表盘 | Parsertime",
-      "ogDescription": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
+      "ogTitle": "仪表盘 | Sightline",
+      "ogDescription": "Sightline 是一款用于分析《守望先锋》训练赛的工具。"
     },
     "title": "仪表盘",
     "overview": "您的比赛",
@@ -742,7 +742,7 @@
         "description": "提交问题时发生错误。"
       },
       "title": "报告问题",
-      "description": "如果您发现问题，请告诉我们。您的帮助将使 Parsertime 更加完善。",
+      "description": "如果您发现问题，请告诉我们。您的帮助将使 Sightline 更加完善。",
       "formTitle": "标题",
       "titlePlaceholder": "无法删除训练赛...",
       "titleDescription": "简要描述问题的标题。",
@@ -777,7 +777,7 @@
     "tour": {
       "title": "仪表盘导览",
       "step1": {
-        "title": "欢迎使用 Parsertime！",
+        "title": "欢迎使用 Sightline！",
         "description": "此导览将带你了解仪表盘的主要功能。我们开始吧！"
       },
       "step2": {
@@ -1068,7 +1068,7 @@
       "title": "可用时间设置",
       "description": "配置队伍共享可用时间日历的工作方式。",
       "metadata": {
-        "title": "可用时间设置 | Parsertime",
+        "title": "可用时间设置 | Sightline",
         "description": "配置团队的可用时间安排和时区。"
       }
     },
@@ -1138,7 +1138,7 @@
       },
       "promo": {
         "title": "面向《守望先锋》的训练赛分析和队伍工具",
-        "description": "Parsertime 会将原始 Workshop Log 数据转换为技能评分、趋势线和执教洞察，并提供你正在使用的可用时间日历等队伍管理工具。",
+        "description": "Sightline 会将原始 Workshop Log 数据转换为技能评分、趋势线和执教洞察，并提供你正在使用的可用时间日历等队伍管理工具。",
         "bullets": {
           "instantReview": "<strong>即时复盘。</strong> 上传训练赛后，几分钟内即可查看每位选手的统计、地图和团战，无需电子表格。",
           "csrRatings": "<strong>CSR 评分。</strong> 基于角色专属指标的客观 1-5000 英雄技能评分。",
@@ -1148,25 +1148,25 @@
           "freeToStart": "<strong>免费开始。</strong> 免费层级支持两个队伍和五名成员，无需信用卡。"
         },
         "signIn": "登录以查看队伍训练赛",
-        "learnMore": "进一步了解 Parsertime"
+        "learnMore": "进一步了解 Sightline"
       },
       "metadata": {
-        "title": "填写可用时间 | Parsertime",
+        "title": "填写可用时间 | Sightline",
         "description": "标记您可以参加训练赛的时间。"
       }
     },
     "metadata": {
-      "title": "可用时间 | Parsertime",
+      "title": "可用时间 | Sightline",
       "description": "查看团队成员的空闲时间，围绕每个人的日程安排训练赛。"
     }
   },
   "scrimPage": {
     "metadata": {
       "scrim": "训练赛",
-      "title": "{scrimName} 概述 | Parsertime",
+      "title": "{scrimName} 概述 | Sightline",
       "description": "{scrimName} 概览 — 这场《守望先锋》训练赛的地图结果、玩家数据和团战分析。",
-      "ogTitle": "{scrimName} 概述 | Parsertime",
-      "ogDescription": "在 Parsertime 上查看 {scrimName} 的概述。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "{scrimName} 概述 | Sightline",
+      "ogDescription": "在 Sightline 上查看 {scrimName} 的概述。Sightline 是一款用于分析《守望先锋》训练赛的工具。",
       "ogImage": "{scrimName} 概述"
     },
     "back": "返回仪表板",
@@ -1719,7 +1719,7 @@
       "ultsColumn": "终极技能"
     },
     "editMetadata": {
-      "title": "编辑 {scrimName} | Parsertime",
+      "title": "编辑 {scrimName} | Sightline",
       "description": "编辑 {scrimName} 的详情和设置。"
     },
     "wpa": {
@@ -1742,7 +1742,7 @@
   },
   "mapGroupsPage": {
     "metadata": {
-      "title": "地图组 | Parsertime",
+      "title": "地图组 | Sightline",
       "description": "创建和管理用于分析的自定义地图组"
     }
   },
@@ -1768,7 +1768,7 @@
       "summaryNoRanking": "团战不足"
     },
     "metadata": {
-      "title": "倾向 | Parsertime",
+      "title": "倾向 | Sightline",
       "description": "汇总最近训练赛，展示队伍在各地图上团战的优势与劣势区域"
     },
     "title": "倾向",
@@ -1791,7 +1791,7 @@
   },
   "comparePage": {
     "metadata": {
-      "title": "地图比较 | Parsertime",
+      "title": "地图比较 | Sightline",
       "description": "比较多张地图中的玩家表现"
     },
     "title": "地图比较",
@@ -2182,17 +2182,17 @@
   },
   "mapPage": {
     "mapMetadata": {
-      "title": "{mapName} 概览 | Parsertime",
-      "description": "查看 Parsertime 上 {mapName} 的地图概览。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
-      "ogTitle": "{mapName} 概览 | Parsertime",
-      "ogDescription": "查看 Parsertime 上 {mapName} 的地图概览。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
+      "title": "{mapName} 概览 | Sightline",
+      "description": "查看 Sightline 上 {mapName} 的地图概览。Sightline 是一款用于分析《守望先锋》对抗赛的工具。",
+      "ogTitle": "{mapName} 概览 | Sightline",
+      "ogDescription": "查看 Sightline 上 {mapName} 的地图概览。Sightline 是一款用于分析《守望先锋》对抗赛的工具。",
       "ogImage": "{mapName} 概览"
     },
     "playerMetadata": {
-      "title": "{playerName} 数据概览 | Parsertime",
-      "description": "查看 Parsertime 上 {playerName} 的数据概况。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
-      "ogTitle": "{playerName} 数据概览 | Parsertime",
-      "ogDescription": "查看 Parsertime 上 {playerName} 的数据概况。Parsertime 是一款用于分析《守望先锋》对抗赛的工具。",
+      "title": "{playerName} 数据概览 | Sightline",
+      "description": "查看 Sightline 上 {playerName} 的数据概况。Sightline 是一款用于分析《守望先锋》对抗赛的工具。",
+      "ogTitle": "{playerName} 数据概览 | Sightline",
+      "ogDescription": "查看 Sightline 上 {playerName} 的数据概况。Sightline 是一款用于分析《守望先锋》对抗赛的工具。",
       "ogImage": "{playerName} 数据概览"
     },
     "back": "返回比赛概览",
@@ -3297,9 +3297,9 @@
     "title": "球探",
     "subtitle": "搜索 OWCS 团队并分析他们的赛事表现。",
     "metadata": {
-      "title": "球探 | Parsertime",
+      "title": "球探 | Sightline",
       "description": "球探 OWCS 团队：按名称搜索，查看比赛历史、胜率和赛事表现。",
-      "ogTitle": "球探 | Parsertime",
+      "ogTitle": "球探 | Sightline",
       "ogDescription": "球探 OWCS 团队：按名称搜索，查看比赛历史、胜率和赛事表现。",
       "ogImage": "球探"
     },
@@ -3316,12 +3316,12 @@
       "title": "球探选手",
       "subtitle": "搜索职业选手并分析他们的赛事历史。",
       "metadata": {
-        "title": "球探选手 | Parsertime",
+        "title": "球探选手 | Sightline",
         "description": "搜索职业《守望先锋》选手，查看他们的赛事历史、英雄池和锦标赛表现。",
-        "ogTitle": "球探选手 | Parsertime",
+        "ogTitle": "球探选手 | Sightline",
         "ogDescription": "搜索职业《守望先锋》选手，查看他们的赛事历史、英雄池和锦标赛表现。",
         "ogImage": "球探选手",
-        "profileTitle": "{player} 球探 | Parsertime",
+        "profileTitle": "{player} 球探 | Sightline",
         "profileDescription": "球探 {player}——英雄池、赛事历史与训练赛表现。"
       },
       "search": {
@@ -3333,9 +3333,9 @@
       },
       "profile": {
         "metadata": {
-          "title": "{player} | 球探选手 | Parsertime",
+          "title": "{player} | 球探选手 | Sightline",
           "description": "球探 {player} — 查看英雄池、锦标赛历史和竞技表现。",
-          "ogTitle": "{player} | 球探选手 | Parsertime",
+          "ogTitle": "{player} | 球探选手 | Sightline",
           "ogDescription": "球探 {player} — 查看英雄池、锦标赛历史和竞技表现。"
         },
         "backToSearch": "返回搜索",
@@ -3374,7 +3374,7 @@
       "analytics": {
         "scrimOverview": {
           "title": "训练赛表现",
-          "description": "来自 Parsertime 训练赛数据的关键指标。",
+          "description": "来自 Sightline 训练赛数据的关键指标。",
           "mvpScore": "MVP 分数",
           "kdRatio": "K/D 比",
           "firstPickRate": "首杀率",
@@ -3394,18 +3394,18 @@
             "fightReversalRate": "该选手所在队伍在先损失 2 名或更多队员后仍赢下团战的比例，体现关键局能力。",
             "killsPerUltimate": "每次使用终极技能取得的平均消灭数。数值越高说明终极技能使用效率越好。",
             "consistencyScore": "根据各地图每 10 分钟数据的稳定程度给出 0-100 分。由消灭、死亡、伤害和治疗的平均变异系数倒数计算；75 以上表示非常稳定。",
-            "mapsPlayed": "Parsertime 中记录的该选手训练赛地图总数，是所有训练赛指标的样本量。"
+            "mapsPlayed": "Sightline 中记录的该选手训练赛地图总数，是所有训练赛指标的样本量。"
           },
           "eyebrow": "训练赛档案",
           "sectionTitle": "训练赛表现"
         },
         "performanceRadar": {
           "title": "表现画像",
-          "description": "与所有 Parsertime 选手的全局英雄平均值相比的 z 分数。",
+          "description": "与所有 Sightline 选手的全局英雄平均值相比的 z 分数。",
           "aboveAverage": "高于平均",
           "belowAverage": "低于平均",
           "noData": "暂无可用于雷达图的训练赛数据。",
-          "methodology": "每个轴表示该选手每 10 分钟数据距离同英雄全局平均值多少个标准差（σ）。基线来自所有 Parsertime 选手在同一英雄上的数据，且至少需要 3 张地图。"
+          "methodology": "每个轴表示该选手每 10 分钟数据距离同英雄全局平均值多少个标准差（σ）。基线来自所有 Sightline 选手在同一英雄上的数据，且至少需要 3 张地图。"
         },
         "heroZScores": {
           "title": "英雄表现",
@@ -3446,7 +3446,7 @@
           "count": "数量",
           "kills": "{count} 次击杀",
           "deaths": "{count} 次死亡",
-          "methodology": "击杀和死亡数据来自 Parsertime 训练赛日志。主要目标和威胁展示总数最高的 5 个被击杀英雄和导致该选手死亡的英雄。击杀方式按技能类型分组。职责分布根据所有训练赛中的英雄使用时间，反映 Tank、Damage 和 Support 的占比。"
+          "methodology": "击杀和死亡数据来自 Sightline 训练赛日志。主要目标和威胁展示总数最高的 5 个被击杀英雄和导致该选手死亡的英雄。击杀方式按技能类型分组。职责分布根据所有训练赛中的英雄使用时间，反映 Tank、Damage 和 Support 的占比。"
         },
         "strengthsWeaknesses": {
           "title": "球探洞察",
@@ -3459,7 +3459,7 @@
           "eyebrow": "球探解读",
           "readTitle": "关键信息"
         },
-        "noScrimData": "该选手尚无 Parsertime 训练赛数据。正式比赛分析和锦标赛历史仍可查看。",
+        "noScrimData": "该选手尚无 Sightline 训练赛数据。正式比赛分析和锦标赛历史仍可查看。",
         "statLabels": {
           "eliminations": "消灭",
           "deaths": "死亡",
@@ -3472,9 +3472,9 @@
     },
     "team": {
       "metadata": {
-        "title": "{team} 球探 | Parsertime",
+        "title": "{team} 球探 | Sightline",
         "description": "球探 {team} — 查看比赛历史、英雄禁用、地图表现和策略建议。",
-        "ogTitle": "{team} 球探 | Parsertime",
+        "ogTitle": "{team} 球探 | Sightline",
         "ogDescription": "球探 {team} — 查看比赛历史、英雄禁用、地图表现和策略建议。"
       },
       "backToSearch": "返回搜索",
@@ -3899,9 +3899,9 @@
     },
     "searchEyebrow": "FACEIT 球探",
     "metadata": {
-      "profileTitle": "{team} · FACEIT 球探 | Parsertime",
+      "profileTitle": "{team} · FACEIT 球探 | Sightline",
       "profileDescription": "{team} 球探报告：FSR、地图胜率、英雄禁用倾向、阵容，以及应对战术方案。",
-      "searchTitle": "FACEIT 团队球探 | Parsertime"
+      "searchTitle": "FACEIT 团队球探 | Sightline"
     },
     "patches": {
       "eyebrow": "补丁时间线",
@@ -4033,38 +4033,38 @@
     },
     "searchEyebrow": "FACEIT 球探",
     "metadata": {
-      "profileTitle": "{player} · FACEIT 球探 | Parsertime",
+      "profileTitle": "{player} · FACEIT 球探 | Sightline",
       "profileDescription": "{player} 球探报告：按职责与段位的 FSR、数据档案、地图胜率与比赛记录。",
-      "searchTitle": "FACEIT 选手球探 | Parsertime"
+      "searchTitle": "FACEIT 选手球探 | Sightline"
     }
   },
   "statsPage": {
     "layoutMetadata": {
-      "title": "统计数据 | Parsertime",
-      "description": "在 Parsertime 上查看您的统计数据和表现指标。",
-      "ogTitle": "统计数据 | Parsertime",
-      "ogDescription": "在 Parsertime 上查看您的统计数据和表现指标。",
+      "title": "统计数据 | Sightline",
+      "description": "在 Sightline 上查看您的统计数据和表现指标。",
+      "ogTitle": "统计数据 | Sightline",
+      "ogDescription": "在 Sightline 上查看您的统计数据和表现指标。",
       "ogImage": "统计数据"
     },
     "playerMetadata": {
-      "title": "{playerName}的统计数据 | Parsertime",
-      "description": "Parsertime 上 {playerName} 的玩家统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
-      "ogTitle": "{playerName}的统计数据 | Parsertime",
-      "ogDescription": "Parsertime 上 {playerName} 的玩家统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "title": "{playerName}的统计数据 | Sightline",
+      "description": "Sightline 上 {playerName} 的玩家统计数据。Sightline 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "{playerName}的统计数据 | Sightline",
+      "ogDescription": "Sightline 上 {playerName} 的玩家统计数据。Sightline 是一款用于分析《守望先锋》训练赛的工具。",
       "ogImage": "{playerName}的统计数据"
     },
     "heroStatsMetadata": {
-      "title": "英雄统计数据 | Parsertime",
-      "description": "在 Parsertime 上查看《守望先锋》英雄的统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
-      "ogTitle": "英雄统计数据 | Parsertime",
-      "ogDescription": "在 Parsertime 上查看《守望先锋》英雄的统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "title": "英雄统计数据 | Sightline",
+      "description": "在 Sightline 上查看《守望先锋》英雄的统计数据。Sightline 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "英雄统计数据 | Sightline",
+      "ogDescription": "在 Sightline 上查看《守望先锋》英雄的统计数据。Sightline 是一款用于分析《守望先锋》训练赛的工具。",
       "ogImage": "英雄统计数据"
     },
     "heroMetadata": {
-      "title": "{hero}的统计数据 | Parsertime",
-      "description": "Parsertime 上 {hero} 的统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
-      "ogTitle": "{hero}的统计数据 | Parsertime",
-      "ogDescription": "Parsertime 上 {hero} 的统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "title": "{hero}的统计数据 | Sightline",
+      "description": "Sightline 上 {hero} 的统计数据。Sightline 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "{hero}的统计数据 | Sightline",
+      "ogDescription": "Sightline 上 {hero} 的统计数据。Sightline 是一款用于分析《守望先锋》训练赛的工具。",
       "ogImage": "{hero}的统计数据"
     },
     "mapHeroTrends": {
@@ -4586,17 +4586,17 @@
   },
   "teamPage": {
     "metadata": {
-      "title": "团队 | Parsertime",
+      "title": "团队 | Sightline",
       "description": "创建和管理您的《守望先锋》团队、阵容和训练赛记录。",
-      "ogTitle": "团队 | Parsertime",
-      "ogDescription": "Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "团队 | Sightline",
+      "ogDescription": "Sightline 是一款用于分析《守望先锋》训练赛的工具。",
       "ogImage": "团队"
     },
     "teamMetadata": {
-      "title": "{teamName} 概述 | Parsertime",
-      "description": "Parsertime 上 {teamName} 的概述。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
-      "ogTitle": "{teamName} 概述 | Parsertime",
-      "ogDescription": "Parsertime 上 {teamName} 的概述。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "title": "{teamName} 概述 | Sightline",
+      "description": "Sightline 上 {teamName} 的概述。Sightline 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "{teamName} 概述 | Sightline",
+      "ogDescription": "Sightline 上 {teamName} 的概述。Sightline 是一款用于分析《守望先锋》训练赛的工具。",
       "ogImage": "{teamName} 概述",
       "defaultTeam": "团队"
     },
@@ -4821,15 +4821,15 @@
       }
     },
     "joinMetadata": {
-      "title": "加入团队 | Parsertime",
-      "description": "接受邀请，在 Parsertime 上加入您的《守望先锋》团队。"
+      "title": "加入团队 | Sightline",
+      "description": "接受邀请，在 Sightline 上加入您的《守望先锋》团队。"
     }
   },
   "settingsPage": {
     "metadata": {
-      "title": "设置 | Parsertime",
+      "title": "设置 | Sightline",
       "description": "管理账户设置和偏好。",
-      "ogTitle": "设置 | Parsertime",
+      "ogTitle": "设置 | Sightline",
       "ogDescription": "管理账户设置和偏好。",
       "ogImage": "设置"
     },
@@ -4994,7 +4994,7 @@
       },
       "bot": {
         "title": "Discord 机器人",
-        "description": "将 Parsertime 机器人添加到你的 Discord 服务器，查看数据统计并接收对局通知。",
+        "description": "将 Sightline 机器人添加到你的 Discord 服务器，查看数据统计并接收对局通知。",
         "invite": "邀请机器人到服务器"
       },
       "notifications": {
@@ -5020,7 +5020,7 @@
           "submit": "保存",
           "saving": "保存中...",
           "discordNotLinked": "请先在上方设置中关联您的 Discord 账号，然后选择服务器。",
-          "noSharedServers": "未找到服务器。您必须与 Parsertime 机器人共处至少一个服务器。"
+          "noSharedServers": "未找到服务器。您必须与 Sightline 机器人共处至少一个服务器。"
         },
         "toast": {
           "created": "通知配置创建成功。",
@@ -5183,7 +5183,7 @@
       },
       "user-search": {
         "metadata": {
-          "title": "用户搜索 — 管理员 | Parsertime",
+          "title": "用户搜索 — 管理员 | Sightline",
           "description": "使用高级筛选选项搜索用户"
         },
         "title": "用户搜索",
@@ -5398,21 +5398,21 @@
       }
     },
     "metadata": {
-      "title": "联系我们 | Parsertime",
-      "description": "联系 Parsertime 团队。",
-      "ogTitle": "联系我们 | Parsertime",
-      "ogDescription": "联系 Parsertime 团队。"
+      "title": "联系我们 | Sightline",
+      "description": "联系 Sightline 团队。",
+      "ogTitle": "联系我们 | Sightline",
+      "ogDescription": "联系 Sightline 团队。"
     }
   },
   "aboutPage": {
     "hero": {
       "title": "Born from the scrim room",
-      "subtitle": "Parsertime started as an internal tool for one collegiate Overwatch team. Two years and hundreds of thousands of stats later, it’s the analytics platform coaches actually want to open after practice."
+      "subtitle": "Sightline started as an internal tool for one collegiate Overwatch team. Two years and hundreds of thousands of stats later, it’s the analytics platform coaches actually want to open after practice."
     },
     "story": {
       "title": "How it started",
       "paragraph1": "In November 2023, the coaching staff at FIU Panthers had a problem: after every scrim, reviewing player stats meant copying numbers into spreadsheets, squinting at columns, and hoping someone didn’t fat-finger a formula. There had to be a better way.",
-      "paragraph2": "Parsertime launched publicly in April 2024. Within hours, teams outside FIU were signing up. Feature requests poured in. A simple stat viewer grew into a full analytics suite—skill ratings, trend lines, team dashboards, a Discord bot, and an open dataset used by the community for research.",
+      "paragraph2": "Sightline launched publicly in April 2024. Within hours, teams outside FIU were signing up. Feature requests poured in. A simple stat viewer grew into a full analytics suite—skill ratings, trend lines, team dashboards, a Discord bot, and an open dataset used by the community for research.",
       "paragraph3": "The goal hasn’t changed since that first commit: make it effortless for coaches and players to turn raw scrim data into insight they can act on before the next practice."
     },
     "timeline": {
@@ -5425,7 +5425,7 @@
       "milestone2": {
         "date": "April 2024",
         "title": "Public beta",
-        "description": "Parsertime opens to all teams. 160 visitors on launch day, with the first external teams signing up within hours."
+        "description": "Sightline opens to all teams. 160 visitors on launch day, with the first external teams signing up within hours."
       },
       "milestone3": {
         "date": "June 2024",
@@ -5469,7 +5469,7 @@
       },
       "openSource": {
         "name": "Open source",
-        "description": "Every line of Parsertime’s code is public. Browse it, fork it, open a PR—the best tools are built in the open."
+        "description": "Every line of Sightline’s code is public. Browse it, fork it, open a PR—the best tools are built in the open."
       },
       "improvement": {
         "name": "Continuous improvement",
@@ -5484,11 +5484,11 @@
       "label": "The Founder",
       "name": "Lucas Doell",
       "role": "Founder & Engineer",
-      "bio": "Lucas built Parsertime because he got tired of copying scrim stats into Google Sheets for FIU Panthers. What started as a side project turned into a full analytics platform—and he still ships code, reviews community PRs, and argues about hero balance on Discord."
+      "bio": "Lucas built Sightline because he got tired of copying scrim stats into Google Sheets for FIU Panthers. What started as a side project turned into a full analytics platform—and he still ships code, reviews community PRs, and argues about hero balance on Discord."
     },
     "openSource": {
       "title": "Open source from day one",
-      "description": "Parsertime’s source code has been public since the first commit. Browse the codebase, report a bug, or submit a pull request—contributions from the community make the platform better for everyone.",
+      "description": "Sightline’s source code has been public since the first commit. Browse the codebase, report a bug, or submit a pull request—contributions from the community make the platform better for everyone.",
       "linkText": "View on GitHub"
     },
     "cta": {
@@ -5503,9 +5503,9 @@
       "copyright": "lux.dev. All rights reserved."
     },
     "metadata": {
-      "title": "About Parsertime — The Story Behind the Scrim Analytics Platform",
-      "description": "Parsertime started as an internal tool for one collegiate Overwatch team in 2023. Today it tracks hundreds of thousands of stats for competitive teams everywhere. Open source from day one.",
-      "ogTitle": "About Parsertime — Born from the Scrim Room",
+      "title": "About Sightline — The Story Behind the Scrim Analytics Platform",
+      "description": "Sightline started as an internal tool for one collegiate Overwatch team in 2023. Today it tracks hundreds of thousands of stats for competitive teams everywhere. Open source from day one.",
+      "ogTitle": "About Sightline — Born from the Scrim Room",
       "ogDescription": "From a side project at FIU Panthers to the analytics platform trusted by competitive Overwatch teams. Meet the founder and see the milestones."
     }
   },
@@ -5590,11 +5590,11 @@
       "custom": "自定义功能请求"
     },
     "caseStudy": {
-      "title": "了解团队如何使用 Parsertime 改进他们的教练策略。",
+      "title": "了解团队如何使用 Sightline 改进他们的教练策略。",
       "description": "查看我们的案例研究"
     },
     "testimonial": {
-      "quote": "“Parsertime 是分析《守望先锋》比赛统计的绝佳工具。它让我深入了解数据并激发了我对数据科学的兴趣。如今，我使用 Parsertime 为四支队伍提供数据支持。它提供的见解影响深远，我可以帮助队员改进，例如延长存活时间、更有效地使用终极技能等。如果他们的治疗量低于平均值，我们还能一起找出原因。这是一个神奇的工具，帮助我们以广阔视角分析细节。”",
+      "quote": "“Sightline 是分析《守望先锋》比赛统计的绝佳工具。它让我深入了解数据并激发了我对数据科学的兴趣。如今，我使用 Sightline 为四支队伍提供数据支持。它提供的见解影响深远，我可以帮助队员改进，例如延长存活时间、更有效地使用终极技能等。如果他们的治疗量低于平均值，我们还能一起找出原因。这是一个神奇的工具，帮助我们以广阔视角分析细节。”",
       "author": "coy (@shy.coy)",
       "role": "o7 电竞经理",
       "starRating": "5 星好评"
@@ -5618,10 +5618,10 @@
       "answer6": "您的数据是安全的。如果您降级，您将失去对扩展统计时间范围的访问权限，但不会删除任何数据。再次升级，所有数据都还在。"
     },
     "metadata": {
-      "title": "定价 — Parsertime",
+      "title": "定价 — Sightline",
       "description": "免费、基础($10/月)和高级($15/月)计划。所有计划无限比赛。无需信用卡即可开始。",
       "ogTitle": "定价 — 适合各种规模团队的计划",
-      "ogDescription": "Parsertime 提供免费、基础和高级计划，让您的分析随团队一起成长。无需信用卡即可开始。"
+      "ogDescription": "Sightline 提供免费、基础和高级计划，让您的分析随团队一起成长。无需信用卡即可开始。"
     },
     "tools": {
       "title": "工具",
@@ -5650,14 +5650,14 @@
   },
   "privacyPage": {
     "metadata": {
-      "title": "隐私政策 | Parsertime",
-      "description": "Parsertime 如何收集、使用和保护您的数据。",
-      "ogTitle": "隐私政策 | Parsertime",
-      "ogDescription": "Parsertime 的隐私政策，Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
+      "title": "隐私政策 | Sightline",
+      "description": "Sightline 如何收集、使用和保护您的数据。",
+      "ogTitle": "隐私政策 | Sightline",
+      "ogDescription": "Sightline 的隐私政策，Sightline 是一款用于分析《守望先锋》训练赛的工具。"
     },
     "privacyPolicy": {
       "title": "隐私政策",
-      "description": "在 Parsertime，我们致力于维护访问我们网站的用户的信任和信心。特别是，我们希望您知道 Parsertime 并不会出于营销目的向其他公司和企业出售、出租或交易电子邮件列表。在本隐私政策中，我们提供了有关我们何时以及为何收集您的个人信息、如何使用这些信息以及如何确保其安全的详细信息。"
+      "description": "在 Sightline，我们致力于维护访问我们网站的用户的信任和信心。特别是，我们希望您知道 Sightline 并不会出于营销目的向其他公司和企业出售、出租或交易电子邮件列表。在本隐私政策中，我们提供了有关我们何时以及为何收集您的个人信息、如何使用这些信息以及如何确保其安全的详细信息。"
     },
     "collectInformation": {
       "title": "我们收集的信息",
@@ -5672,7 +5672,7 @@
       },
       "data": {
         "title": "游戏日志和性能数据",
-        "description": "来自《守望先锋 2》的数据用于可视化统计信息并显示用户和团队的性能数据。这些数据严格用于 Parsertime 提供的服务，不包含任何个人敏感信息。"
+        "description": "来自《守望先锋 2》的数据用于可视化统计信息并显示用户和团队的性能数据。这些数据严格用于 Sightline 提供的服务，不包含任何个人敏感信息。"
       }
     },
     "useInformation": {
@@ -5702,14 +5702,14 @@
   },
   "termsPage": {
     "metadata": {
-      "title": "服务条款 | Parsertime",
-      "description": "管辖您使用 Parsertime 的条款。",
-      "ogTitle": "服务条款 | Parsertime",
-      "ogDescription": "Parsertime 的服务条款，Parsertime 是一款用于分析《守望先锋》训练赛的工具。"
+      "title": "服务条款 | Sightline",
+      "description": "管辖您使用 Sightline 的条款。",
+      "ogTitle": "服务条款 | Sightline",
+      "ogDescription": "Sightline 的服务条款，Sightline 是一款用于分析《守望先锋》训练赛的工具。"
     },
     "termsOfService": {
       "title": "服务条款",
-      "description": "本服务条款规范您对 Parsertime 的使用，这是一个用于分析《守望先锋》训练赛的开源工具。通过访问或使用我们的服务，您同意受这些条款的约束。"
+      "description": "本服务条款规范您对 Sightline 的使用，这是一个用于分析《守望先锋》训练赛的开源工具。通过访问或使用我们的服务，您同意受这些条款的约束。"
     },
     "acceptance": {
       "title": "条款接受",
@@ -5717,14 +5717,14 @@
     },
     "openSource": {
       "title": "开源许可证",
-      "description": "Parsertime 在 MIT 许可证下发布，这意味着：",
+      "description": "Sightline 在 MIT 许可证下发布，这意味着：",
       "list1": "源代码可自由获取，可以修改、分发和用于任何目的；",
-      "list2": "没有商标限制 - 'Parsertime' 名称未注册商标；",
+      "list2": "没有商标限制 - 'Sightline' 名称未注册商标；",
       "list3": "您可以自由分叉、修改和创建软件的衍生作品。"
     },
     "useOfService": {
       "title": "服务使用",
-      "description": "虽然 Parsertime 是开源的，但在使用我们的托管服务时，您同意：",
+      "description": "虽然 Sightline 是开源的，但在使用我们的托管服务时，您同意：",
       "list1": "将服务用于分析《守望先锋》训练赛的预期目的；",
       "list2": "不试图使我们的服务器过载或中断；",
       "list3": "尊重其他用户并保持适当的行为；",
@@ -5760,7 +5760,7 @@
     },
     "limitationOfLiability": {
       "title": "责任限制",
-      "description": "在任何情况下，Parsertime 或其贡献者均不对因使用服务而产生的任何间接、偶然、特殊、后果性或惩罚性损害承担责任，包括但不限于利润、数据、使用、商誉或其他无形损失的损失。"
+      "description": "在任何情况下，Sightline 或其贡献者均不对因使用服务而产生的任何间接、偶然、特殊、后果性或惩罚性损害承担责任，包括但不限于利润、数据、使用、商誉或其他无形损失的损失。"
     },
     "termination": {
       "title": "终止",
@@ -5789,15 +5789,15 @@
   },
   "leaderboardPage": {
     "metadata": {
-      "title": "排行榜 | Parsertime",
+      "title": "排行榜 | Sightline",
       "description": "查看每位英雄排名最高的玩家。",
-      "ogTitle": "排行榜 | Parsertime",
+      "ogTitle": "排行榜 | Sightline",
       "ogDescription": "查看每位英雄排名最高的玩家。",
       "ogImage": "排行榜"
     },
     "hub": {
       "metadata": {
-        "title": "排行榜 | Parsertime",
+        "title": "排行榜 | Sightline",
         "description": "用两种方式理解《守望先锋 2》玩家实力：按英雄统计的综合评分，以及基于锦标赛的 Elo。"
       },
       "eyebrow": "排行榜",
@@ -5862,7 +5862,7 @@
     },
     "csrPage": {
       "metadata": {
-        "title": "综合技术评分 | Parsertime",
+        "title": "综合技术评分 | Sightline",
         "description": "按英雄计算的技术评分，来自与同英雄同侪比较后的 Z 分数统计表现。"
       },
       "eyebrow": "排行榜",
@@ -6108,10 +6108,10 @@
   },
   "profilePage": {
     "layoutMetadata": {
-      "title": "{playerName} 的个人资料 | Parsertime",
-      "description": "在 Parsertime 查看 {playerName} 的个人资料和统计数据。",
-      "ogTitle": "{playerName} 的个人资料 | Parsertime",
-      "ogDescription": "在 Parsertime 查看 {playerName} 的个人资料和统计数据。",
+      "title": "{playerName} 的个人资料 | Sightline",
+      "description": "在 Sightline 查看 {playerName} 的个人资料和统计数据。",
+      "ogTitle": "{playerName} 的个人资料 | Sightline",
+      "ogDescription": "在 Sightline 查看 {playerName} 的个人资料和统计数据。",
       "ogImage": "{playerName} 的个人资料"
     },
     "hoverCard": {
@@ -6348,7 +6348,7 @@
     "subtitle": "在地图上标注英雄站位、绘图和战术笔记。",
     "eyebrow": "战术板",
     "metadata": {
-      "title": "教练画布 | Parsertime",
+      "title": "教练画布 | Sightline",
       "description": "在地图上标注英雄站位和战术绘图。"
     },
     "sidebar": {
@@ -6394,7 +6394,7 @@
     "title": "数据标注",
     "subtitle": "为 OWCS 锦标赛比赛标注团队阵容。",
     "metadata": {
-      "title": "数据标注 | Parsertime",
+      "title": "数据标注 | Sightline",
       "description": "为 OWCS 锦标赛比赛标注团队阵容。"
     },
     "matchList": {
@@ -6451,14 +6451,14 @@
   },
   "demoPage": {
     "metadata": {
-      "title": "{mapName} 演示 | Parsertime",
-      "description": "{mapName} 演示概览 — 通过示例数据探索 Parsertime 的《守望先锋》训练赛分析。",
-      "ogTitle": "{mapName} 演示 | Parsertime",
-      "ogDescription": "Parsertime 上 {mapName} 的演示概览。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "title": "{mapName} 演示 | Sightline",
+      "description": "{mapName} 演示概览 — 通过示例数据探索 Sightline 的《守望先锋》训练赛分析。",
+      "ogTitle": "{mapName} 演示 | Sightline",
+      "ogDescription": "Sightline 上 {mapName} 的演示概览。Sightline 是一款用于分析《守望先锋》训练赛的工具。",
       "ogImage": "{mapName} 演示"
     },
     "banner": {
-      "demo": "您正在查看 Parsertime 的演示。点击此处注册",
+      "demo": "您正在查看 Sightline 的演示。点击此处注册",
       "dismiss": "关闭"
     }
   },
@@ -6481,8 +6481,8 @@
     "notification-created": "通知创建成功",
     "create-notification-error": "创建通知失败",
     "metadata": {
-      "title": "通知 | Parsertime",
-      "description": "您最新的 Parsertime 提醒和团队动态。"
+      "title": "通知 | Sightline",
+      "description": "您最新的 Sightline 提醒和团队动态。"
     }
   },
   "positioningCard": {
@@ -6500,8 +6500,8 @@
     "fightStartSpreadHint": "团战开始时与队友的平均距离。"
   },
   "titles": {
-    "DEVELOPER": "Parsertime 开发者",
-    "DEVELOPER-description": "授予为 Parsertime 开发做出贡献的用户。",
+    "DEVELOPER": "Sightline 开发者",
+    "DEVELOPER-description": "授予为 Sightline 开发做出贡献的用户。",
     "EMPLOYEE": "lux.dev 员工",
     "EMPLOYEE-description": "授予 lux.dev LLC 的员工。",
     "BETA_TESTER": "Beta 测试员",
@@ -6513,7 +6513,7 @@
     "PREMIUM_PLAN_SUBSCRIBER": "高级支持者",
     "PREMIUM_PLAN_SUBSCRIBER-description": "授予订阅高级方案的用户。订阅者还会在名称旁获得金色爱心图标。",
     "VIP": "VIP",
-    "VIP-description": "授予对 Parsertime 社区做出重大贡献的用户。",
+    "VIP-description": "授予对 Sightline 社区做出重大贡献的用户。",
     "HIGHEST_RANK_ON_A_HERO": "成就伟大",
     "HIGHEST_RANK_ON_A_HERO-description": "授予在某位英雄上达到最高排名的用户。",
     "HIGHEST_AJAX_COUNT": "Ajax 之王",
@@ -6537,7 +6537,7 @@
     "title": "训练赛匹配工具",
     "subtitle": "查找接近你实力水平的队伍",
     "metadata": {
-      "title": "匹配工具 | Parsertime",
+      "title": "匹配工具 | Sightline",
       "description": "寻找阵容 TSR 接近的训练赛伙伴，使用与你在团队页面看到的同一套技术评分。"
     },
     "hub": {
@@ -6713,14 +6713,14 @@
   "teamOps": {
     "title": "队伍管理",
     "blacklist": {
-      "subtitle": "你不想约训练赛的队伍。当黑名单中的队伍也在 Parsertime 时，双方在匹配工具中互相隐藏，且均无法发送训练赛请求。",
+      "subtitle": "你不想约训练赛的队伍。当黑名单中的队伍也在 Sightline 时，双方在匹配工具中互相隐藏，且均无法发送训练赛请求。",
       "heading": "黑名单",
       "addPlaceholder": "将队伍添加到黑名单",
       "searchPlaceholder": "搜索队伍或输入名称",
       "noMatches": "没有匹配的队伍",
       "blockOffPlatform": "屏蔽\"{name}\"",
       "offPlatform": "平台外",
-      "onPlatform": "已在 Parsertime",
+      "onPlatform": "已在 Sightline",
       "blocking": "正在屏蔽 {name}",
       "reasonPlaceholder": "原因（可选）",
       "confirmAdd": "加入黑名单",
@@ -6744,10 +6744,10 @@
   "teamStatsPage": {
     "layoutMetadata": {
       "defaultTeam": "团队",
-      "title": "{teamName} 统计 | Parsertime",
-      "description": "Parsertime 上 {teamName} 的统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
-      "ogTitle": "{teamName} 统计 | Parsertime",
-      "ogDescription": "Parsertime 上 {teamName} 的统计数据。Parsertime 是一款用于分析《守望先锋》训练赛的工具。",
+      "title": "{teamName} 统计 | Sightline",
+      "description": "Sightline 上 {teamName} 的统计数据。Sightline 是一款用于分析《守望先锋》训练赛的工具。",
+      "ogTitle": "{teamName} 统计 | Sightline",
+      "ogDescription": "Sightline 上 {teamName} 的统计数据。Sightline 是一款用于分析《守望先锋》训练赛的工具。",
       "ogImage": "{teamName} 统计"
     },
     "selector": {
@@ -7977,7 +7977,7 @@
       "decreased": "降低"
     },
     "metadata": {
-      "title": "选手目标 | Parsertime",
+      "title": "选手目标 | Sightline",
       "description": "为您的团队设定并追踪选手成长目标。"
     }
   },
@@ -8001,7 +8001,7 @@
   },
   "reportsPage": {
     "metadata": {
-      "title": "报告 | Parsertime",
+      "title": "报告 | Sightline",
       "description": "查看共享的 AI 训练赛分析报告。"
     },
     "list": {
@@ -8035,7 +8035,7 @@
       "failed": "导入失败"
     },
     "metadata": {
-      "title": "排位追踪器 | Parsertime",
+      "title": "排位追踪器 | Sightline",
       "description": "追踪您的《守望先锋2》排位对局并分析您的表现。"
     },
     "dashboard": {
@@ -8603,37 +8603,37 @@
   },
   "tournamentsPage": {
     "metadata": {
-      "title": "锦标赛 | Parsertime",
+      "title": "锦标赛 | Sightline",
       "description": "举办并追踪您的《守望先锋》锦标赛 — 对阵图、比赛和团队数据。"
     },
     "create": {
       "metadata": {
-        "title": "创建锦标赛 | Parsertime",
+        "title": "创建锦标赛 | Sightline",
         "description": "设置新的《守望先锋》锦标赛对阵图。"
       }
     },
     "detail": {
       "metadata": {
-        "title": "{name} | Parsertime",
+        "title": "{name} | Sightline",
         "description": "{name} 的对阵图、比赛和排名。"
       }
     },
     "match": {
       "metadata": {
-        "title": "{team1} vs {team2} | Parsertime",
+        "title": "{team1} vs {team2} | Sightline",
         "description": "{team1} vs {team2} 的比赛详情和地图结果。"
       }
     },
     "teamStats": {
       "metadata": {
-        "title": "{team} — 锦标赛数据 | Parsertime",
+        "title": "{team} — 锦标赛数据 | Sightline",
         "description": "{team} 的锦标赛表现分析。"
       }
     }
   },
   "debugPage": {
     "metadata": {
-      "title": "调试 | Parsertime",
+      "title": "调试 | Sightline",
       "description": "内部调试工具。"
     }
   },

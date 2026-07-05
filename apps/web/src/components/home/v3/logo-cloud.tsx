@@ -82,7 +82,7 @@ export function LogoCloud({ title }: LogoCloudProps) {
   return (
     <section
       className="mx-auto max-w-7xl px-6 py-16 sm:py-20 lg:px-8"
-      aria-label="Teams using Parsertime"
+      aria-label="Teams using Sightline"
     >
       <p className="text-muted-foreground mb-8 text-center text-sm font-medium">
         {title}

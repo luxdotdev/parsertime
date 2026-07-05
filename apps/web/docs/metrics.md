@@ -1,4 +1,4 @@
-# Parsertime Metrics
+# Sightline Metrics
 
 All metrics are emitted to the Axiom dataset `ptime-metrics`. Paste each MPL query into Axiom's metrics chart builder (Explore → new chart → paste into the editor).
 

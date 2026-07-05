@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 import { AppRuntime } from "@/data/runtime";
 import { UserService } from "@/data/user";
 import prisma from "@/lib/prisma";
@@ -36,9 +37,7 @@ export async function createCheckout(
   planName: string
 ) {
   const baseUrl =
-    process.env.NODE_ENV === "production"
-      ? "https://parsertime.app"
-      : "http://localhost:3000";
+    process.env.NODE_ENV === "production" ? SITE_URL : "http://localhost:3000";
 
   if (!session?.user?.email) {
     throw new Error("Unauthorized");
@@ -89,9 +88,7 @@ export async function createTopupCheckout(
   amountCents: number
 ) {
   const baseUrl =
-    process.env.NODE_ENV === "production"
-      ? "https://parsertime.app"
-      : "http://localhost:3000";
+    process.env.NODE_ENV === "production" ? SITE_URL : "http://localhost:3000";
 
   if (!session?.user?.email) {
     throw new Error("Unauthorized");
@@ -115,7 +112,7 @@ export async function createTopupCheckout(
           currency: "usd",
           unit_amount: amountCents,
           product_data: {
-            name: "Parsertime AI Chat credits",
+            name: "Sightline AI Chat credits",
             description: "Credits for pay-as-you-go AI analyst usage.",
           },
         },
@@ -147,9 +144,7 @@ export async function createTopupCheckout(
 
 export async function getCustomerPortalUrl(user: User) {
   const baseUrl =
-    process.env.NODE_ENV === "production"
-      ? "https://parsertime.app"
-      : "http://localhost:3000";
+    process.env.NODE_ENV === "production" ? SITE_URL : "http://localhost:3000";
 
   const customerId = await getOrCreateStripeCustomerId(user);
 

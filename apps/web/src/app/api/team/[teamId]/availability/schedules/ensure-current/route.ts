@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 import { authenticateBotSecret } from "@/lib/bot-auth";
 import { isTeamOwnerOrManager } from "@/lib/auth";
 import {
@@ -46,8 +47,7 @@ export async function POST(req: NextRequest, ctx: RouteCtx) {
     update: {},
   });
 
-  const baseUrl =
-    process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://parsertime.app";
+  const baseUrl = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? SITE_URL;
   const url = `${baseUrl}/team/${teamId}/availability/${schedule.id}`;
 
   return Response.json({

@@ -33,9 +33,9 @@ export function generateMetadata(): Metadata {
     openGraph: {
       title: t("ogTitle"),
       description: t("ogDescription"),
-      url: "https://parsertime.app/pricing",
+      url: "/pricing",
       type: "website",
-      siteName: "Parsertime",
+      siteName: "Sightline",
     },
   };
 }

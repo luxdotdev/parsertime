@@ -10,16 +10,15 @@ export function generateMetadata(): Metadata {
   return {
     title: t("title"),
     description: t("description"),
-    metadataBase: new URL("https://parsertime.app"),
     openGraph: {
       title: t("ogTitle"),
       description: t("ogDescription"),
-      url: "https://parsertime.app",
+      url: "/",
       type: "website",
-      siteName: "Parsertime",
+      siteName: "Sightline",
       images: [
         {
-          url: `https://parsertime.app/opengraph-image.png`,
+          url: "/opengraph-image.png",
           width: 1200,
           height: 630,
         },

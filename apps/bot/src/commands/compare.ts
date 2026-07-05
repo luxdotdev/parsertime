@@ -127,7 +127,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       .setDescription(`${p1.mapCount} maps · ${p2.mapCount} maps`)
       .addFields({ name: "Stats", value: table, inline: false })
       .setFooter({
-        text: `◄ ${n1} leads · ► ${n2} leads · Parsertime`,
+        text: `◄ ${n1} leads · ► ${n2} leads · Sightline`,
         iconURL: "https://parsertime.app/icon.png",
       });
 

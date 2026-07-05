@@ -1,3 +1,4 @@
+import { SUPPORT_EMAIL } from "@/lib/site";
 import ContactFormEmail from "@parsertime/transactional/emails/contact-form";
 import { email } from "@/lib/email";
 import { Logger } from "@/lib/logger";
@@ -46,9 +47,9 @@ export async function POST(req: NextRequest) {
 
   try {
     await email.sendEmail({
-      to: "help@parsertime.app",
+      to: SUPPORT_EMAIL,
       from: "noreply@lux.dev",
-      subject: `New message from ${body.data.name} | Parsertime`,
+      subject: `New message from ${body.data.name} | Sightline`,
       html: emailHtml,
     });
   } catch (error) {

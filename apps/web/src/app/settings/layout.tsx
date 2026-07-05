@@ -21,12 +21,12 @@ export function generateMetadata(): Metadata {
     openGraph: {
       title: t("ogTitle"),
       description: t("ogDescription"),
-      url: "https://parsertime.app",
+      url: "/",
       type: "website",
-      siteName: "Parsertime",
+      siteName: "Sightline",
       images: [
         {
-          url: `https://parsertime.app/api/og?title=${t("ogImage")}`,
+          url: `/api/og?title=${t("ogImage")}`,
           width: 1200,
           height: 630,
         },

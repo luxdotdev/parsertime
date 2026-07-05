@@ -34,7 +34,7 @@ export async function generateMetadata(props: {
         select: { name: true },
       });
 
-  if (!record) return { title: "Tournament | Parsertime" };
+  if (!record) return { title: "Tournament | Sightline" };
 
   return {
     title: t("title", { name: record.name }),

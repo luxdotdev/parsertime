@@ -1,5 +1,6 @@
 "use client";
 
+import { SITE_DOMAIN } from "@/lib/site";
 import { track } from "@vercel/analytics";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
@@ -149,7 +150,7 @@ export function HowItWorks({ title, steps }: HowItWorksProps) {
                 className="bg-muted-foreground/30 h-2.5 w-2.5 rounded-full"
               />
               <span className="text-muted-foreground ml-3 font-mono text-[10px] tracking-[0.18em] uppercase">
-                parsertime.app
+                {SITE_DOMAIN}
               </span>
             </div>
             <AnimatePresence mode="wait">

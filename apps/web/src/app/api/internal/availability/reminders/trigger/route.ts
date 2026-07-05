@@ -1,3 +1,4 @@
+import { SITE_DOMAIN, SITE_URL } from "@/lib/site";
 import {
   authenticateBotSecret,
   resolveDiscordUser,
@@ -32,8 +33,7 @@ export async function POST(req: NextRequest) {
     return Response.json(
       {
         success: false,
-        error:
-          "Link your Discord account at parsertime.app/settings to use this command",
+        error: `Link your Discord account at ${SITE_DOMAIN}/settings to use this command`,
       },
       { status: 403 }
     );
@@ -55,8 +55,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const baseUrl =
-    process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://parsertime.app";
+  const baseUrl = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? SITE_URL;
   const job = await buildReminderJob(teamId, baseUrl);
   if (!job) {
     return Response.json(

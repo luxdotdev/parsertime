@@ -1,4 +1,4 @@
-# Model card — Parsertime win probability (Match Story)
+# Model card — Sightline win probability (Match Story)
 
 **Model:** `wp-models/model-v3.json` · feature hash `27b4a8ec1f49` · trained 2026-06-14
 **Architecture:** per-mode **gradient-boosted trees (LightGBM)** + isotonic recalibration,

@@ -166,13 +166,13 @@
     "noAccessTitle": "No teams to query",
     "noAccessBody": "You do not have access to any teams yet. Join or create a team to start querying its scrim data.",
     "metadata": {
-      "title": "Query Builder | Parsertime",
+      "title": "Query Builder | Sightline",
       "description": "Build custom queries across your Overwatch scrim data."
     }
   },
   "analyst": {
     "metadata": {
-      "title": "Analyst | Parsertime",
+      "title": "Analyst | Sightline",
       "description": "Your AI analyst for Overwatch scrim data, player performance, and team trends."
     },
     "eyebrow": "Analyst",
@@ -411,9 +411,9 @@
     "pipeline": {
       "eyebrow": "How it works",
       "title": "From raw logs to coaching calls",
-      "description": "Drop your Workshop logs in after the block. Parsertime parses every event, computes ratings and positioning, and turns the night's scrims into dashboards before VOD review starts.",
+      "description": "Drop your Workshop logs in after the block. Sightline parses every event, computes ratings and positioning, and turns the night's scrims into dashboards before VOD review starts.",
       "sourcesLabel": "Scrim logs",
-      "processingLabel": "Parsertime",
+      "processingLabel": "Sightline",
       "outputsLabel": "Your dashboards",
       "outputDashboards": "Team dashboards",
       "outputRatings": "Hero skill ratings",
@@ -437,7 +437,7 @@
       "trustedBy": "Trusted by {count}+ teams",
       "latestUpdates": "Latest updates",
       "title": "Every stat the scoreboard doesn't show you",
-      "description": "Parsertime turns raw scrim data into skill ratings, trend lines, and the insights that change how you coach.",
+      "description": "Sightline turns raw scrim data into skill ratings, trend lines, and the insights that change how you coach.",
       "getStarted": "Get Started",
       "liveDemo": "See a live demo",
       "freeNote": "No credit card required",
@@ -450,7 +450,7 @@
     "feature1": {
       "subtitle": "Built for competition",
       "title": "See what the scoreboard doesn't show",
-      "description": "Parsertime captures the full picture — killfeeds, hero swaps, ultimate economy, and role-specific performance — so you can coach with data, not guesswork.",
+      "description": "Sightline captures the full picture — killfeeds, hero swaps, ultimate economy, and role-specific performance — so you can coach with data, not guesswork.",
       "learnMore": "Learn more"
     },
     "primaryFeatures": {
@@ -502,7 +502,7 @@
     "stats": {
       "subtitle": "By the numbers",
       "title": "Backed by real data",
-      "description": "Parsertime processes thousands of scrims for teams competing at the highest level.",
+      "description": "Sightline processes thousands of scrims for teams competing at the highest level.",
       "statsTracked": "Stats tracked",
       "kills": "Kills tracked",
       "maps": "Maps uploaded",
@@ -510,7 +510,7 @@
     },
     "testimonial": {
       "starRating": "5 out of 5 stars",
-      "quote": "“In my 8 years of coaching, I have used many different tools for analysis but this is the one I wish I had all along. Parsertime has been a game changer for us by identified trends and metrics that would otherwise be overlooked with just coaches watching alone. Both the ability to track team improvement incrementally and developing scouting plans based on scrim data make this tool a must for any serious coaches and teams.”",
+      "quote": "“In my 8 years of coaching, I have used many different tools for analysis but this is the one I wish I had all along. Sightline has been a game changer for us by identified trends and metrics that would otherwise be overlooked with just coaches watching alone. Both the ability to track team improvement incrementally and developing scouting plans based on scrim data make this tool a must for any serious coaches and teams.”",
       "author": "DSG byZenith (@byZenith)",
       "role": "Head Coach, Disguised"
     },
@@ -566,15 +566,15 @@
     }
   },
   "metadata": {
-    "title": "Parsertime — Overwatch Scrim Analytics for Competitive Teams",
+    "title": "Sightline — Overwatch Scrim Analytics for Competitive Teams",
     "description": "Turn Overwatch scrim data into skill ratings, trend lines, and coaching insights. Trusted by collegiate and professional teams. Free to start.",
-    "ogTitle": "Parsertime — Scrim Analytics That Win Games",
+    "ogTitle": "Sightline — Scrim Analytics That Win Games",
     "ogDescription": "Upload scrims, get instant skill ratings and coaching insights. Used by 50+ collegiate and pro Overwatch teams."
   },
   "authError": {
     "title": "There was an error signing in",
     "error": "Error:",
-    "description": "Please try again. If the problem persists, please contact support at <link>help@parsertime.app</link>.",
+    "description": "Please try again. If the problem persists, please contact support at <link>{email}</link>.",
     "back": "Back to Home",
     "signIn": "Sign In",
     "errors": {
@@ -586,7 +586,7 @@
       "default": "There was an unknown error signing in. Please contact support."
     },
     "metadata": {
-      "title": "Authentication Error | Parsertime",
+      "title": "Authentication Error | Sightline",
       "description": "Something went wrong while signing you in."
     }
   },
@@ -600,24 +600,24 @@
     "description": "We've sent an email to you with a link to sign in. Click the link in the email to complete the sign-in process.",
     "back": "Back to Home",
     "metadata": {
-      "title": "Check Your Email | Parsertime",
+      "title": "Check Your Email | Sightline",
       "description": "We sent you a sign-in link to continue."
     }
   },
   "signInPage": {
     "metadataSignIn": {
-      "title": "Sign In | Parsertime",
-      "description": "Sign in to your account. Parsertime is a tool for analyzing Overwatch scrims.",
-      "ogTitle": "Sign In | Parsertime",
-      "ogDescription": "Sign in to your account. Parsertime is a tool for analyzing Overwatch scrims."
+      "title": "Sign In | Sightline",
+      "description": "Sign in to your account. Sightline is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "Sign In | Sightline",
+      "ogDescription": "Sign in to your account. Sightline is a tool for analyzing Overwatch scrims."
     },
     "metadataSignUp": {
-      "title": "Sign Up | Parsertime",
-      "description": "Sign up for an account. Parsertime is a tool for analyzing Overwatch scrims.",
-      "ogTitle": "Sign Up | Parsertime",
-      "ogDescription": "Sign up for an account. Parsertime is a tool for analyzing Overwatch scrims."
+      "title": "Sign Up | Sightline",
+      "description": "Sign up for an account. Sightline is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "Sign Up | Sightline",
+      "ogDescription": "Sign up for an account. Sightline is a tool for analyzing Overwatch scrims."
     },
-    "parsertime": "Parsertime",
+    "parsertime": "Sightline",
     "signUp": "Sign Up",
     "signIn": "Sign In",
     "welcomeBack": "Welcome back",
@@ -645,10 +645,10 @@
   },
   "dashboard": {
     "metadata": {
-      "title": "Dashboard | Parsertime",
+      "title": "Dashboard | Sightline",
       "description": "Your scrims, maps, and team performance at a glance.",
-      "ogTitle": "Dashboard | Parsertime",
-      "ogDescription": "Parsertime is a tool for analyzing Overwatch scrims."
+      "ogTitle": "Dashboard | Sightline",
+      "ogDescription": "Sightline is a tool for analyzing Overwatch scrims."
     },
     "title": "Dashboard",
     "overview": "Your Scrims",
@@ -742,7 +742,7 @@
         "description": "An error occurred while submitting your bug report."
       },
       "title": "Report a Bug",
-      "description": "If you've found a bug, please report it to us. We appreciate your help in making Parsertime better.",
+      "description": "If you've found a bug, please report it to us. We appreciate your help in making Sightline better.",
       "formTitle": "Title",
       "titlePlaceholder": "Cannot remove scrim...",
       "titleDescription": "The title of the bug report. Be concise and descriptive.",
@@ -854,7 +854,7 @@
     "tour": {
       "title": "Dashboard-Tour",
       "step1": {
-        "title": "Welcome to Parsertime!",
+        "title": "Welcome to Sightline!",
         "description": "This tour will guide you through the main features of the dashboard. Let's get started!"
       },
       "step2": {
@@ -1068,7 +1068,7 @@
       "title": "Availability settings",
       "description": "Configure how the shared availability calendar works for your team.",
       "metadata": {
-        "title": "Availability Settings | Parsertime",
+        "title": "Availability Settings | Sightline",
         "description": "Configure your team's availability schedule and time zone."
       }
     },
@@ -1138,7 +1138,7 @@
       },
       "promo": {
         "title": "Scrim analytics and team tools for Overwatch",
-        "description": "Parsertime turns raw Workshop Log data into skill ratings, trend lines, and coaching insights - plus team management tools like the availability calendar you're using right now.",
+        "description": "Sightline turns raw Workshop Log data into skill ratings, trend lines, and coaching insights - plus team management tools like the availability calendar you're using right now.",
         "bullets": {
           "instantReview": "<strong>Instant review.</strong> Upload a scrim, see per-player stats, maps, and teamfights in minutes - no spreadsheets.",
           "csrRatings": "<strong>CSR ratings.</strong> Objective 1-5000 hero skill ratings across role-specific metrics.",
@@ -1148,25 +1148,25 @@
           "freeToStart": "<strong>Free to start.</strong> Two teams and five members on the free tier, no credit card."
         },
         "signIn": "Sign in to see your team's scrims",
-        "learnMore": "Learn more about Parsertime"
+        "learnMore": "Learn more about Sightline"
       },
       "metadata": {
-        "title": "Set Your Availability | Parsertime",
+        "title": "Set Your Availability | Sightline",
         "description": "Mark the times you're available for scrims."
       }
     },
     "metadata": {
-      "title": "Availability | Parsertime",
+      "title": "Availability | Sightline",
       "description": "See when your team is free and plan scrims around everyone's schedule."
     }
   },
   "scrimPage": {
     "metadata": {
       "scrim": "Scrim",
-      "title": "{scrimName} Overview | Parsertime",
+      "title": "{scrimName} Overview | Sightline",
       "description": "Overview for {scrimName} — map results, player stats, and fight breakdowns from this Overwatch scrim.",
-      "ogTitle": "{scrimName} Overview | Parsertime",
-      "ogDescription": "Overview for {scrimName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{scrimName} Overview | Sightline",
+      "ogDescription": "Overview for {scrimName} on Sightline. Sightline is a tool for analyzing Overwatch scrims.",
       "ogImage": "{scrimName} Overview"
     },
     "back": "Back to dashboard",
@@ -1719,7 +1719,7 @@
       "ultsColumn": "Ults"
     },
     "editMetadata": {
-      "title": "Edit {scrimName} | Parsertime",
+      "title": "Edit {scrimName} | Sightline",
       "description": "Edit details and settings for {scrimName}."
     },
     "wpa": {
@@ -1742,7 +1742,7 @@
   },
   "mapGroupsPage": {
     "metadata": {
-      "title": "Map Groups | Parsertime",
+      "title": "Map Groups | Sightline",
       "description": "Create and manage custom map groups for analysis"
     }
   },
@@ -1768,7 +1768,7 @@
       "summaryNoRanking": "Not enough fights"
     },
     "metadata": {
-      "title": "Tendencies | Parsertime",
+      "title": "Tendencies | Sightline",
       "description": "Where your team wins and loses fights on each map, pooled across recent scrims"
     },
     "title": "Tendencies",
@@ -1791,7 +1791,7 @@
   },
   "comparePage": {
     "metadata": {
-      "title": "Compare Maps | Parsertime",
+      "title": "Compare Maps | Sightline",
       "description": "Compare player performance across multiple maps"
     },
     "title": "Compare Maps",
@@ -2182,17 +2182,17 @@
   },
   "mapPage": {
     "mapMetadata": {
-      "title": "{mapName} Overview | Parsertime",
-      "description": "Map overview for {mapName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
-      "ogTitle": "{mapName} Overview | Parsertime",
-      "ogDescription": "Map overview for {mapName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "title": "{mapName} Overview | Sightline",
+      "description": "Map overview for {mapName} on Sightline. Sightline is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{mapName} Overview | Sightline",
+      "ogDescription": "Map overview for {mapName} on Sightline. Sightline is a tool for analyzing Overwatch scrims.",
       "ogImage": "{mapName} Overview"
     },
     "playerMetadata": {
-      "title": "{playerName} Overview | Parsertime",
-      "description": "Player overview for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
-      "ogTitle": "{playerName} Overview | Parsertime",
-      "ogDescription": "Player overview for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "title": "{playerName} Overview | Sightline",
+      "description": "Player overview for {playerName} on Sightline. Sightline is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{playerName} Overview | Sightline",
+      "ogDescription": "Player overview for {playerName} on Sightline. Sightline is a tool for analyzing Overwatch scrims.",
       "ogImage": "{playerName} Overview"
     },
     "back": "Back to scrim overview",
@@ -3297,9 +3297,9 @@
     "title": "Scouting",
     "subtitle": "Search for OWCS teams and analyze their tournament performance.",
     "metadata": {
-      "title": "Scouting | Parsertime",
+      "title": "Scouting | Sightline",
       "description": "Scout OWCS teams — search by name, view match history, win rates, and tournament performance.",
-      "ogTitle": "Scouting | Parsertime",
+      "ogTitle": "Scouting | Sightline",
       "ogDescription": "Scout OWCS teams — search by name, view match history, win rates, and tournament performance.",
       "ogImage": "Scouting"
     },
@@ -3314,9 +3314,9 @@
     },
     "team": {
       "metadata": {
-        "title": "{team} Scouting | Parsertime",
+        "title": "{team} Scouting | Sightline",
         "description": "Scout {team} — view match history, hero bans, map performance, and strategic recommendations.",
-        "ogTitle": "{team} Scouting | Parsertime",
+        "ogTitle": "{team} Scouting | Sightline",
         "ogDescription": "Scout {team} — view match history, hero bans, map performance, and strategic recommendations."
       },
       "backToSearch": "Back to search",
@@ -3636,12 +3636,12 @@
       "title": "Scout Player",
       "subtitle": "Search for professional players and analyze their competitive history.",
       "metadata": {
-        "title": "Scout Player | Parsertime",
+        "title": "Scout Player | Sightline",
         "description": "Search for professional Overwatch players and view their competitive history, hero pool, and tournament performance.",
-        "ogTitle": "Scout Player | Parsertime",
+        "ogTitle": "Scout Player | Sightline",
         "ogDescription": "Search for professional Overwatch players and view their competitive history, hero pool, and tournament performance.",
         "ogImage": "Scout Player",
-        "profileTitle": "{player} Scouting | Parsertime",
+        "profileTitle": "{player} Scouting | Sightline",
         "profileDescription": "Scout {player} — hero pool, competitive history, and scrim performance."
       },
       "search": {
@@ -3653,9 +3653,9 @@
       },
       "profile": {
         "metadata": {
-          "title": "{player} | Scout Player | Parsertime",
+          "title": "{player} | Scout Player | Sightline",
           "description": "Scout {player} — view hero pool, tournament history, and competitive performance.",
-          "ogTitle": "{player} | Scout Player | Parsertime",
+          "ogTitle": "{player} | Scout Player | Sightline",
           "ogDescription": "Scout {player} — view hero pool, tournament history, and competitive performance."
         },
         "backToSearch": "Back to search",
@@ -3694,7 +3694,7 @@
       "analytics": {
         "scrimOverview": {
           "title": "Scrim Performance",
-          "description": "Key metrics from Parsertime scrim data.",
+          "description": "Key metrics from Sightline scrim data.",
           "mvpScore": "MVP Score",
           "kdRatio": "K/D Ratio",
           "firstPickRate": "First Pick Rate",
@@ -3714,18 +3714,18 @@
             "fightReversalRate": "Percentage of fights won by this player's team after losing 2 or more players first. Indicates clutch potential.",
             "killsPerUltimate": "Average number of eliminations achieved per ultimate ability used. Higher values suggest efficient ultimate usage.",
             "consistencyScore": "Scored 0–100 based on how stable per-10 stats are across maps. Calculated as the inverse of the average coefficient of variation for eliminations, deaths, damage, and healing. Above 75 is highly consistent.",
-            "mapsPlayed": "Total number of scrim maps recorded in Parsertime for this player. Serves as the sample size for all scrim-based metrics."
+            "mapsPlayed": "Total number of scrim maps recorded in Sightline for this player. Serves as the sample size for all scrim-based metrics."
           },
           "eyebrow": "Scrim profile",
           "sectionTitle": "Scrim performance"
         },
         "performanceRadar": {
           "title": "Performance Profile",
-          "description": "Z-scores vs global hero averages across all Parsertime players.",
+          "description": "Z-scores vs global hero averages across all Sightline players.",
           "aboveAverage": "Above Average",
           "belowAverage": "Below Average",
           "noData": "No scrim data available for radar chart.",
-          "methodology": "Each axis shows how many standard deviations (σ) this player's per-10 stat is from the global average for their hero. Calculated using baselines from all Parsertime players on the same hero, across at least 3 maps of data."
+          "methodology": "Each axis shows how many standard deviations (σ) this player's per-10 stat is from the global average for their hero. Calculated using baselines from all Sightline players on the same hero, across at least 3 maps of data."
         },
         "heroZScores": {
           "title": "Hero Performance",
@@ -3766,7 +3766,7 @@
           "count": "Count",
           "kills": "{count, plural, one {# kill} other {# kills}}",
           "deaths": "{count, plural, one {# death} other {# deaths}}",
-          "methodology": "Kill and death data is sourced from Parsertime scrim logs. Top targets and threats show the 5 most-eliminated and most-died-to heroes by total count. Kill methods are grouped by ability type. Role distribution reflects the percentage of playtime on Tank, Damage, and Support based on hero time across all scrims."
+          "methodology": "Kill and death data is sourced from Sightline scrim logs. Top targets and threats show the 5 most-eliminated and most-died-to heroes by total count. Kill methods are grouped by ability type. Role distribution reflects the percentage of playtime on Tank, Damage, and Support based on hero time across all scrims."
         },
         "strengthsWeaknesses": {
           "title": "Scouting Insights",
@@ -3779,7 +3779,7 @@
           "eyebrow": "Scouting read",
           "readTitle": "What to know"
         },
-        "noScrimData": "This player doesn't have scrim data in Parsertime yet. Competitive analytics and tournament history are still available.",
+        "noScrimData": "This player doesn't have scrim data in Sightline yet. Competitive analytics and tournament history are still available.",
         "statLabels": {
           "eliminations": "Eliminations",
           "deaths": "Deaths",
@@ -3899,9 +3899,9 @@
     },
     "searchEyebrow": "FACEIT scouting",
     "metadata": {
-      "profileTitle": "{team} · FACEIT scouting | Parsertime",
+      "profileTitle": "{team} · FACEIT scouting | Sightline",
       "profileDescription": "Scouting report for {team}: FSR, map win rates, hero ban tendencies, roster, and a game plan for what to play into them.",
-      "searchTitle": "FACEIT Team Scouting | Parsertime"
+      "searchTitle": "FACEIT Team Scouting | Sightline"
     },
     "patches": {
       "eyebrow": "Patch timeline",
@@ -4033,9 +4033,9 @@
     },
     "searchEyebrow": "FACEIT scouting",
     "metadata": {
-      "profileTitle": "{player} · FACEIT scouting | Parsertime",
+      "profileTitle": "{player} · FACEIT scouting | Sightline",
       "profileDescription": "Scouting report for {player}: FSR by role and tier, stat profile, map win rates, and match history.",
-      "searchTitle": "FACEIT Player Scouting | Parsertime"
+      "searchTitle": "FACEIT Player Scouting | Sightline"
     }
   },
   "coaching": {
@@ -4043,7 +4043,7 @@
     "subtitle": "Annotate maps with hero placements, drawings, and strategy notes.",
     "eyebrow": "Tactical board",
     "metadata": {
-      "title": "Coaching Canvas | Parsertime",
+      "title": "Coaching Canvas | Sightline",
       "description": "Annotate maps with hero placements and strategy drawings."
     },
     "sidebar": {
@@ -4089,7 +4089,7 @@
     "title": "Data Labeling",
     "subtitle": "Label team compositions for OWCS tournament matches.",
     "metadata": {
-      "title": "Data Labeling | Parsertime",
+      "title": "Data Labeling | Sightline",
       "description": "Label team compositions for OWCS tournament matches."
     },
     "matchList": {
@@ -4146,31 +4146,31 @@
   },
   "statsPage": {
     "layoutMetadata": {
-      "title": "Stats | Parsertime",
-      "description": "View your stats and performance metrics on Parsertime.",
-      "ogTitle": "Stats | Parsertime",
-      "ogDescription": "View your stats and performance metrics on Parsertime.",
+      "title": "Stats | Sightline",
+      "description": "View your stats and performance metrics on Sightline.",
+      "ogTitle": "Stats | Sightline",
+      "ogDescription": "View your stats and performance metrics on Sightline.",
       "ogImage": "Statistics"
     },
     "playerMetadata": {
-      "title": "{playerName}{suffix} Stats | Parsertime",
-      "description": "Player stats for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
-      "ogTitle": "{playerName}{suffix} Stats | Parsertime",
-      "ogDescription": "Player stats for {playerName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "title": "{playerName}{suffix} Stats | Sightline",
+      "description": "Player stats for {playerName} on Sightline. Sightline is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{playerName}{suffix} Stats | Sightline",
+      "ogDescription": "Player stats for {playerName} on Sightline. Sightline is a tool for analyzing Overwatch scrims.",
       "ogImage": "{playerName}{suffix} Stats"
     },
     "heroStatsMetadata": {
-      "title": "Hero Stats | Parsertime",
-      "description": "Hero stats for Overwatch heroes on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
-      "ogTitle": "Hero Stats | Parsertime",
-      "ogDescription": "Hero stats for Overwatch heroes on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "title": "Hero Stats | Sightline",
+      "description": "Hero stats for Overwatch heroes on Sightline. Sightline is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "Hero Stats | Sightline",
+      "ogDescription": "Hero stats for Overwatch heroes on Sightline. Sightline is a tool for analyzing Overwatch scrims.",
       "ogImage": "Hero Stats"
     },
     "heroMetadata": {
-      "title": "Stats for {hero} | Parsertime",
-      "description": "Stats for {hero} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
-      "ogTitle": "Stats for {hero} | Parsertime",
-      "ogDescription": "Stats for {hero} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "title": "Stats for {hero} | Sightline",
+      "description": "Stats for {hero} on Sightline. Sightline is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "Stats for {hero} | Sightline",
+      "ogDescription": "Stats for {hero} on Sightline. Sightline is a tool for analyzing Overwatch scrims.",
       "ogImage": "Stats for {hero}"
     },
     "mapHeroTrends": {
@@ -4692,17 +4692,17 @@
   },
   "teamPage": {
     "metadata": {
-      "title": "Teams | Parsertime",
+      "title": "Teams | Sightline",
       "description": "Create and manage your Overwatch teams, rosters, and scrim history.",
-      "ogTitle": "Teams | Parsertime",
-      "ogDescription": "Parsertime is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "Teams | Sightline",
+      "ogDescription": "Sightline is a tool for analyzing Overwatch scrims.",
       "ogImage": "Teams"
     },
     "teamMetadata": {
-      "title": "{teamName} Overview | Parsertime",
-      "description": "Overview for {teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
-      "ogTitle": "{teamName} Overview | Parsertime",
-      "ogDescription": "Overview for {teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "title": "{teamName} Overview | Sightline",
+      "description": "Overview for {teamName} on Sightline. Sightline is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{teamName} Overview | Sightline",
+      "ogDescription": "Overview for {teamName} on Sightline. Sightline is a tool for analyzing Overwatch scrims.",
       "ogImage": "{teamName} Overview",
       "defaultTeam": "Team"
     },
@@ -4927,15 +4927,15 @@
     "viewStats": "View stats",
     "viewAvailability": "Availability",
     "joinMetadata": {
-      "title": "Join a Team | Parsertime",
-      "description": "Accept your invite and join your Overwatch team on Parsertime."
+      "title": "Join a Team | Sightline",
+      "description": "Accept your invite and join your Overwatch team on Sightline."
     }
   },
   "settingsPage": {
     "metadata": {
-      "title": "Settings | Parsertime",
+      "title": "Settings | Sightline",
       "description": "Manage your account settings and preferences.",
-      "ogTitle": "Settings | Parsertime",
+      "ogTitle": "Settings | Sightline",
       "ogDescription": "Manage your account settings and preferences.",
       "ogImage": "Settings"
     },
@@ -5100,7 +5100,7 @@
       },
       "bot": {
         "title": "Discord Bot",
-        "description": "Add the Parsertime bot to your Discord server to access stats and receive scrim notifications.",
+        "description": "Add the Sightline bot to your Discord server to access stats and receive scrim notifications.",
         "invite": "Invite Bot to Server"
       },
       "notifications": {
@@ -5126,7 +5126,7 @@
           "submit": "Save",
           "saving": "Saving...",
           "discordNotLinked": "Link your Discord account in the settings above to choose a server.",
-          "noSharedServers": "No servers found. You must share at least one server with the Parsertime bot."
+          "noSharedServers": "No servers found. You must share at least one server with the Sightline bot."
         },
         "toast": {
           "created": "Notification config created successfully.",
@@ -5271,7 +5271,7 @@
       },
       "user-search": {
         "metadata": {
-          "title": "User Search — Admin | Parsertime",
+          "title": "User Search — Admin | Sightline",
           "description": "Search for users with advanced filtering options"
         },
         "title": "User Search",
@@ -5504,21 +5504,21 @@
       }
     },
     "metadata": {
-      "title": "Contact | Parsertime",
-      "description": "Get in touch with the Parsertime team.",
-      "ogTitle": "Contact | Parsertime",
-      "ogDescription": "Get in touch with the Parsertime team."
+      "title": "Contact | Sightline",
+      "description": "Get in touch with the Sightline team.",
+      "ogTitle": "Contact | Sightline",
+      "ogDescription": "Get in touch with the Sightline team."
     }
   },
   "aboutPage": {
     "hero": {
       "title": "Born from the scrim room",
-      "subtitle": "Parsertime started as an internal tool for one collegiate Overwatch team. Two years and hundreds of thousands of stats later, it’s the analytics platform coaches actually want to open after practice."
+      "subtitle": "Sightline started as an internal tool for one collegiate Overwatch team. Two years and hundreds of thousands of stats later, it’s the analytics platform coaches actually want to open after practice."
     },
     "story": {
       "title": "How it started",
       "paragraph1": "In November 2023, the coaching staff at FIU Panthers had a problem: after every scrim, reviewing player stats meant copying numbers into spreadsheets, squinting at columns, and hoping someone didn’t fat-finger a formula. There had to be a better way.",
-      "paragraph2": "Parsertime launched publicly in April 2024. Within hours, teams outside FIU were signing up. Feature requests poured in. A simple stat viewer grew into a full analytics suite—skill ratings, trend lines, team dashboards, a Discord bot, and an open dataset used by the community for research.",
+      "paragraph2": "Sightline launched publicly in April 2024. Within hours, teams outside FIU were signing up. Feature requests poured in. A simple stat viewer grew into a full analytics suite—skill ratings, trend lines, team dashboards, a Discord bot, and an open dataset used by the community for research.",
       "paragraph3": "The goal hasn’t changed since that first commit: make it effortless for coaches and players to turn raw scrim data into insight they can act on before the next practice."
     },
     "timeline": {
@@ -5531,7 +5531,7 @@
       "milestone2": {
         "date": "April 2024",
         "title": "Public beta",
-        "description": "Parsertime opens to all teams. 160 visitors on launch day, with the first external teams signing up within hours."
+        "description": "Sightline opens to all teams. 160 visitors on launch day, with the first external teams signing up within hours."
       },
       "milestone3": {
         "date": "June 2024",
@@ -5575,7 +5575,7 @@
       },
       "openSource": {
         "name": "Open source",
-        "description": "Every line of Parsertime’s code is public. Browse it, fork it, open a PR—the best tools are built in the open."
+        "description": "Every line of Sightline’s code is public. Browse it, fork it, open a PR—the best tools are built in the open."
       },
       "improvement": {
         "name": "Continuous improvement",
@@ -5590,11 +5590,11 @@
       "label": "The Founder",
       "name": "Lucas Doell",
       "role": "Founder & Engineer",
-      "bio": "Lucas built Parsertime because he got tired of copying scrim stats into Google Sheets for FIU Panthers. What started as a side project turned into a full analytics platform—and he still ships code, reviews community PRs, and argues about hero balance on Discord."
+      "bio": "Lucas built Sightline because he got tired of copying scrim stats into Google Sheets for FIU Panthers. What started as a side project turned into a full analytics platform—and he still ships code, reviews community PRs, and argues about hero balance on Discord."
     },
     "openSource": {
       "title": "Open source from day one",
-      "description": "Parsertime’s source code has been public since the first commit. Browse the codebase, report a bug, or submit a pull request—contributions from the community make the platform better for everyone.",
+      "description": "Sightline’s source code has been public since the first commit. Browse the codebase, report a bug, or submit a pull request—contributions from the community make the platform better for everyone.",
       "linkText": "View on GitHub"
     },
     "cta": {
@@ -5609,18 +5609,18 @@
       "copyright": "lux.dev. All rights reserved."
     },
     "metadata": {
-      "title": "About Parsertime — The Story Behind the Scrim Analytics Platform",
-      "description": "Parsertime started as an internal tool for one collegiate Overwatch team in 2023. Today it tracks hundreds of thousands of stats for competitive teams everywhere. Open source from day one.",
-      "ogTitle": "About Parsertime — Born from the Scrim Room",
+      "title": "About Sightline — The Story Behind the Scrim Analytics Platform",
+      "description": "Sightline started as an internal tool for one collegiate Overwatch team in 2023. Today it tracks hundreds of thousands of stats for competitive teams everywhere. Open source from day one.",
+      "ogTitle": "About Sightline — Born from the Scrim Room",
       "ogDescription": "From a side project at FIU Panthers to the analytics platform trusted by competitive Overwatch teams. Meet the founder and see the milestones."
     }
   },
   "pricingPage": {
     "metadata": {
-      "title": "Pricing — Parsertime",
+      "title": "Pricing — Sightline",
       "description": "Free, Basic ($10/mo), and Premium ($15/mo) plans for competitive Overwatch teams. Unlimited scrims on every plan. No credit card to start.",
       "ogTitle": "Pricing — Plans for Teams of All Sizes",
-      "ogDescription": "Parsertime offers Free, Basic, and Premium plans so your analytics grow with your team. No credit card required to start."
+      "ogDescription": "Sightline offers Free, Basic, and Premium plans so your analytics grow with your team. No credit card required to start."
     },
     "pricing": {
       "title": "Pricing",
@@ -5726,12 +5726,12 @@
       "copyright": "lux.dev. All rights reserved."
     },
     "caseStudy": {
-      "title": "Learn how teams use Parsertime to improve their coaching strategy.",
+      "title": "Learn how teams use Sightline to improve their coaching strategy.",
       "description": "See our case study"
     },
     "testimonial": {
       "starRating": "5 out of 5 stars",
-      "quote": "“In my 8 years of coaching, I have used many different tools for analysis but this is the one I wish I had all along. Parsertime has been a game changer for us by identified trends and metrics that would otherwise be overlooked with just coaches watching alone. Both the ability to track team improvement incrementally and developing scouting plans based on scrim data make this tool a must for any serious coaches and teams.”",
+      "quote": "“In my 8 years of coaching, I have used many different tools for analysis but this is the one I wish I had all along. Sightline has been a game changer for us by identified trends and metrics that would otherwise be overlooked with just coaches watching alone. Both the ability to track team improvement incrementally and developing scouting plans based on scrim data make this tool a must for any serious coaches and teams.”",
       "author": "DSG byZenith (@byZenith)",
       "role": "Head Coach, Disguised"
     },
@@ -5756,14 +5756,14 @@
   },
   "privacyPage": {
     "metadata": {
-      "title": "Privacy Policy | Parsertime",
-      "description": "How Parsertime collects, uses, and protects your data.",
-      "ogTitle": "Privacy Policy | Parsertime",
-      "ogDescription": "Privacy Policy for Parsertime - A tool for analyzing Overwatch scrims."
+      "title": "Privacy Policy | Sightline",
+      "description": "How Sightline collects, uses, and protects your data.",
+      "ogTitle": "Privacy Policy | Sightline",
+      "ogDescription": "Privacy Policy for Sightline - A tool for analyzing Overwatch scrims."
     },
     "privacyPolicy": {
       "title": "Privacy Policy",
-      "description": "At Parsertime, we are committed to maintaining the trust and confidence of our visitors to our web site. In particular, we want you to know that Parsertime is not in the business of selling, renting, or trading email lists with other companies and businesses for marketing purposes. In this Privacy Policy, we've provided detailed information on when and why we collect your personal information, how we use it, and how we keep it secure."
+      "description": "At Sightline, we are committed to maintaining the trust and confidence of our visitors to our web site. In particular, we want you to know that Sightline is not in the business of selling, renting, or trading email lists with other companies and businesses for marketing purposes. In this Privacy Policy, we've provided detailed information on when and why we collect your personal information, how we use it, and how we keep it secure."
     },
     "collectInformation": {
       "title": "Information We Collect",
@@ -5778,7 +5778,7 @@
       },
       "data": {
         "title": "Game Logs and Performance Data",
-        "description": "Overwatch 2 to visualize stats and show data on user and team performance. This data is strictly used to provide services offered by Parsertime and does not include any personally sensitive information."
+        "description": "Overwatch 2 to visualize stats and show data on user and team performance. This data is strictly used to provide services offered by Sightline and does not include any personally sensitive information."
       }
     },
     "useInformation": {
@@ -5808,14 +5808,14 @@
   },
   "termsPage": {
     "metadata": {
-      "title": "Terms of Service | Parsertime",
-      "description": "The terms governing your use of Parsertime.",
-      "ogTitle": "Terms of Service | Parsertime",
-      "ogDescription": "Terms of Service for Parsertime - A tool for analyzing Overwatch scrims."
+      "title": "Terms of Service | Sightline",
+      "description": "The terms governing your use of Sightline.",
+      "ogTitle": "Terms of Service | Sightline",
+      "ogDescription": "Terms of Service for Sightline - A tool for analyzing Overwatch scrims."
     },
     "termsOfService": {
       "title": "Terms of Service",
-      "description": "These Terms of Service govern your use of Parsertime, an open source tool for analyzing Overwatch scrims. By accessing or using our service, you agree to be bound by these Terms."
+      "description": "These Terms of Service govern your use of Sightline, an open source tool for analyzing Overwatch scrims. By accessing or using our service, you agree to be bound by these Terms."
     },
     "acceptance": {
       "title": "Acceptance of Terms",
@@ -5823,14 +5823,14 @@
     },
     "openSource": {
       "title": "Open Source License",
-      "description": "Parsertime is released under the MIT License, which means:",
+      "description": "Sightline is released under the MIT License, which means:",
       "list1": "The source code is freely available and can be modified, distributed, and used for any purpose;",
-      "list2": "There are no trademark restrictions - the name 'Parsertime' is not trademarked;",
+      "list2": "There are no trademark restrictions - the name 'Sightline' is not trademarked;",
       "list3": "You are free to fork, modify, and create derivative works of the software."
     },
     "useOfService": {
       "title": "Use of Service",
-      "description": "While Parsertime is open source, when using our hosted service you agree to:",
+      "description": "While Sightline is open source, when using our hosted service you agree to:",
       "list1": "Use the service for its intended purpose of analyzing Overwatch scrims;",
       "list2": "Not attempt to overload or disrupt our servers;",
       "list3": "Respect other users and maintain appropriate conduct;",
@@ -5866,7 +5866,7 @@
     },
     "limitationOfLiability": {
       "title": "Limitation of Liability",
-      "description": "In no event shall Parsertime, nor its contributors, be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your use of the service."
+      "description": "In no event shall Sightline, nor its contributors, be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your use of the service."
     },
     "termination": {
       "title": "Termination",
@@ -6104,14 +6104,14 @@
   },
   "demoPage": {
     "metadata": {
-      "title": "{mapName} Demo | Parsertime",
-      "description": "Demo overview for {mapName} — explore Parsertime's Overwatch scrim analytics with sample data.",
-      "ogTitle": "{mapName} Demo | Parsertime",
-      "ogDescription": "Demo overview for {mapName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "title": "{mapName} Demo | Sightline",
+      "description": "Demo overview for {mapName} — explore Sightline's Overwatch scrim analytics with sample data.",
+      "ogTitle": "{mapName} Demo | Sightline",
+      "ogDescription": "Demo overview for {mapName} on Sightline. Sightline is a tool for analyzing Overwatch scrims.",
       "ogImage": "{mapName} Demo"
     },
     "banner": {
-      "demo": "You are viewing a demo of Parsertime. Click here to sign up",
+      "demo": "You are viewing a demo of Sightline. Click here to sign up",
       "dismiss": "Dismiss"
     }
   },
@@ -6134,15 +6134,15 @@
     "error-loading-description": "Please try refreshing the page.",
     "no-notifications-description": "You'll see notifications here when they arrive.",
     "metadata": {
-      "title": "Notifications | Parsertime",
-      "description": "Your latest Parsertime alerts and team activity."
+      "title": "Notifications | Sightline",
+      "description": "Your latest Sightline alerts and team activity."
     }
   },
   "matchmaker": {
     "title": "Scrim matchmaker",
     "subtitle": "Find a team near your skill level",
     "metadata": {
-      "title": "Matchmaker | Parsertime",
+      "title": "Matchmaker | Sightline",
       "description": "Find a scrim partner whose roster sits at a comparable TSR — built on the same skill rating you see on the team page."
     },
     "hub": {
@@ -6318,14 +6318,14 @@
   "teamOps": {
     "title": "Team ops",
     "blacklist": {
-      "subtitle": "Teams you don't want to scrim. When a blacklisted team is also on Parsertime, you're hidden from each other in the matchmaker and neither can send a scrim request.",
+      "subtitle": "Teams you don't want to scrim. When a blacklisted team is also on Sightline, you're hidden from each other in the matchmaker and neither can send a scrim request.",
       "heading": "Blacklist",
       "addPlaceholder": "Add a team to your blacklist",
       "searchPlaceholder": "Search teams, or type a name",
       "noMatches": "No matching teams",
       "blockOffPlatform": "Block \"{name}\"",
       "offPlatform": "Off-platform",
-      "onPlatform": "On Parsertime",
+      "onPlatform": "On Sightline",
       "blocking": "Blocking {name}",
       "reasonPlaceholder": "Reason (optional)",
       "confirmAdd": "Add to blacklist",
@@ -6356,10 +6356,10 @@
   },
   "profilePage": {
     "layoutMetadata": {
-      "title": "{playerName}'s Profile | Parsertime",
-      "description": "View {playerName}'s profile and stats on Parsertime.",
-      "ogTitle": "{playerName}'s Profile | Parsertime",
-      "ogDescription": "View {playerName}'s profile and stats on Parsertime.",
+      "title": "{playerName}'s Profile | Sightline",
+      "description": "View {playerName}'s profile and stats on Sightline.",
+      "ogTitle": "{playerName}'s Profile | Sightline",
+      "ogDescription": "View {playerName}'s profile and stats on Sightline.",
       "ogImage": "{playerName}'s Profile"
     },
     "hoverCard": {
@@ -6388,8 +6388,8 @@
     "fightStartSpreadHint": "Average distance to teammates when fights begin."
   },
   "titles": {
-    "DEVELOPER": "Parsertime Developer",
-    "DEVELOPER-description": "Awarded to users who have contributed to the development of Parsertime.",
+    "DEVELOPER": "Sightline Developer",
+    "DEVELOPER-description": "Awarded to users who have contributed to the development of Sightline.",
     "EMPLOYEE": "lux.dev Employee",
     "EMPLOYEE-description": "Awarded to users who are employees of lux.dev LLC.",
     "BETA_TESTER": "Beta Tester",
@@ -6401,7 +6401,7 @@
     "PREMIUM_PLAN_SUBSCRIBER": "Premium Supporter",
     "PREMIUM_PLAN_SUBSCRIBER-description": "For users who have subscribed to the premium plan. Subscribers are also rewarded with a gold heart icon next to their name.",
     "VIP": "VIP",
-    "VIP-description": "Awarded to users who have contributed significantly to the Parsertime community.",
+    "VIP-description": "Awarded to users who have contributed significantly to the Sightline community.",
     "HIGHEST_RANK_ON_A_HERO": "Achieved Greatness",
     "HIGHEST_RANK_ON_A_HERO-description": "Awarded to users who have achieved the highest rank on a hero.",
     "HIGHEST_AJAX_COUNT": "Ajax King",
@@ -6423,15 +6423,15 @@
   },
   "leaderboardPage": {
     "metadata": {
-      "title": "Leaderboard | Parsertime",
+      "title": "Leaderboard | Sightline",
       "description": "View the highest ranked players for each hero.",
-      "ogTitle": "Leaderboard | Parsertime",
+      "ogTitle": "Leaderboard | Sightline",
       "ogDescription": "View the highest ranked players for each hero.",
       "ogImage": "Leaderboard"
     },
     "hub": {
       "metadata": {
-        "title": "Leaderboards | Parsertime",
+        "title": "Leaderboards | Sightline",
         "description": "Two ways to read player skill in Overwatch 2: per-hero composite rating and tournament-grounded Elo."
       },
       "eyebrow": "Leaderboard",
@@ -6496,7 +6496,7 @@
     },
     "csrPage": {
       "metadata": {
-        "title": "Composite Skill Rating | Parsertime",
+        "title": "Composite Skill Rating | Sightline",
         "description": "Per-hero skill rating derived from Z-scored statistical performance against peers on the same hero."
       },
       "eyebrow": "Leaderboard",
@@ -6775,10 +6775,10 @@
   "teamStatsPage": {
     "layoutMetadata": {
       "defaultTeam": "Team",
-      "title": "{teamName} Stats | Parsertime",
-      "description": "Stats for {teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
-      "ogTitle": "{teamName} Stats | Parsertime",
-      "ogDescription": "Stats for {teamName} on Parsertime. Parsertime is a tool for analyzing Overwatch scrims.",
+      "title": "{teamName} Stats | Sightline",
+      "description": "Stats for {teamName} on Sightline. Sightline is a tool for analyzing Overwatch scrims.",
+      "ogTitle": "{teamName} Stats | Sightline",
+      "ogDescription": "Stats for {teamName} on Sightline. Sightline is a tool for analyzing Overwatch scrims.",
       "ogImage": "{teamName} Stats"
     },
     "tempoRead": {
@@ -7976,7 +7976,7 @@
       "decreased": "decreased"
     },
     "metadata": {
-      "title": "Player Targets | Parsertime",
+      "title": "Player Targets | Sightline",
       "description": "Set and track player development targets for your team."
     }
   },
@@ -8000,7 +8000,7 @@
   },
   "reportsPage": {
     "metadata": {
-      "title": "Reports | Parsertime",
+      "title": "Reports | Sightline",
       "description": "View shared AI-generated scrim analysis reports."
     },
     "list": {
@@ -8034,7 +8034,7 @@
       "failed": "Import failed"
     },
     "metadata": {
-      "title": "Ranked Tracker | Parsertime",
+      "title": "Ranked Tracker | Sightline",
       "description": "Track your ranked Overwatch 2 matches and analyze your performance."
     },
     "dashboard": {
@@ -8602,37 +8602,37 @@
   },
   "tournamentsPage": {
     "metadata": {
-      "title": "Tournaments | Parsertime",
+      "title": "Tournaments | Sightline",
       "description": "Run and track your Overwatch tournaments — brackets, matches, and team stats."
     },
     "create": {
       "metadata": {
-        "title": "Create Tournament | Parsertime",
+        "title": "Create Tournament | Sightline",
         "description": "Set up a new Overwatch tournament bracket."
       }
     },
     "detail": {
       "metadata": {
-        "title": "{name} | Parsertime",
+        "title": "{name} | Sightline",
         "description": "Bracket, matches, and standings for {name}."
       }
     },
     "match": {
       "metadata": {
-        "title": "{team1} vs {team2} | Parsertime",
+        "title": "{team1} vs {team2} | Sightline",
         "description": "Match details and map results for {team1} vs {team2}."
       }
     },
     "teamStats": {
       "metadata": {
-        "title": "{team} — Tournament Stats | Parsertime",
+        "title": "{team} — Tournament Stats | Sightline",
         "description": "Tournament performance breakdown for {team}."
       }
     }
   },
   "debugPage": {
     "metadata": {
-      "title": "Debug | Parsertime",
+      "title": "Debug | Sightline",
       "description": "Internal debugging tools."
     }
   },

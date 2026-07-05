@@ -1,3 +1,4 @@
+import { SITE_URL, SUPPORT_EMAIL } from "../lib/site";
 import {
   Body,
   Button,
@@ -29,22 +30,22 @@ export function MagicLinkEmail({ magicLink, username }: MagicLinkEmailProps) {
           <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
               <Img
-                src="https://parsertime.app/parsertime.png"
+                src={`${SITE_URL}/parsertime.png`}
                 width="50"
                 height="50"
-                alt="Parsertime Logo"
+                alt="Sightline Logo"
                 className="mx-auto my-0"
               />
             </Section>
             <Heading className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal text-black">
-              Sign In to <strong>Parsertime</strong>
+              Sign In to <strong>Sightline</strong>
             </Heading>
             <Text className="text-[14px] leading-[24px] text-black">
               Hello {username},
             </Text>
             <Text className="text-[14px] leading-[24px] text-black">
               Please click the button below to sign in to{" "}
-              <strong>Parsertime</strong>.
+              <strong>Sightline</strong>.
             </Text>
             <Section className="mt-[32px] mb-[32px] text-center">
               <Button
@@ -68,10 +69,10 @@ export function MagicLinkEmail({ magicLink, username }: MagicLinkEmailProps) {
               concerned about your account&apos;s safety, please get in touch
               with us at{" "}
               <Link
-                href="mailto:help@parsertime.app"
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="text-blue-600 no-underline"
               >
-                help@parsertime.app
+                {SUPPORT_EMAIL}
               </Link>
               .
             </Text>
@@ -89,7 +90,7 @@ export function MagicLinkEmail({ magicLink, username }: MagicLinkEmailProps) {
 
 MagicLinkEmail.PreviewProps = {
   username: "Alex Morgan",
-  magicLink: "https://parsertime.app/auth/magic?token=preview-token",
+  magicLink: `${SITE_URL}/auth/magic?token=preview-token`,
 } satisfies MagicLinkEmailProps;
 
 export default MagicLinkEmail;

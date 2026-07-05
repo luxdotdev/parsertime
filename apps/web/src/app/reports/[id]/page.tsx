@@ -17,14 +17,14 @@ export async function generateMetadata({
   const { id } = await params;
   const session = await auth();
   if (!session?.user?.email) {
-    return { title: "Report | Parsertime" };
+    return { title: "Report | Sightline" };
   }
 
   const userData = await AppRuntime.runPromise(
     UserService.pipe(Effect.flatMap((svc) => svc.getUser(session.user.email)))
   );
   if (!userData) {
-    return { title: "Report | Parsertime" };
+    return { title: "Report | Sightline" };
   }
 
   const report = await prisma.chatReport.findUnique({
@@ -35,8 +35,8 @@ export async function generateMetadata({
   return {
     title:
       report?.userId === userData.id
-        ? `${report.title} | Parsertime`
-        : "Report | Parsertime",
+        ? `${report.title} | Sightline`
+        : "Report | Sightline",
   };
 }
 

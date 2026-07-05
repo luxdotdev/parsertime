@@ -256,7 +256,7 @@ async function FooterContent() {
                 className="h-7 w-auto dark:invert"
               />
               <span className="text-foreground text-base font-semibold tracking-tight">
-                Parsertime
+                Sightline
               </span>
             </Link>
 

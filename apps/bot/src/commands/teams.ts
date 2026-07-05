@@ -22,7 +22,7 @@ const NAME_COL_MAX = 32;
 
 export const data = new SlashCommandBuilder()
   .setName("teams")
-  .setDescription("List your Parsertime teams and their IDs");
+  .setDescription("List your Sightline teams and their IDs");
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   await tracedDeferReply(interaction, { flags: [MessageFlags.Ephemeral] });

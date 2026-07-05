@@ -1,3 +1,4 @@
+import { SITE_URL, SUPPORT_EMAIL } from "../lib/site";
 import {
   Body,
   Container,
@@ -30,10 +31,10 @@ export function SubscriptionDeletedEmail({ user }: SubscriptionEmailProps) {
           <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
               <Img
-                src="https://parsertime.app/parsertime.png"
+                src={`${SITE_URL}/parsertime.png`}
                 width="50"
                 height="50"
-                alt="Parsertime Logo"
+                alt="Sightline Logo"
                 className="mx-auto my-0"
               />
             </Section>
@@ -44,15 +45,15 @@ export function SubscriptionDeletedEmail({ user }: SubscriptionEmailProps) {
               Hello {user.email},
             </Text>
             <Text className="text-[14px] leading-[24px] text-black">
-              We&apos;re sorry to see you go! Your subscription to Parsertime
-              has been cancelled. You will continue to have access to your plan
+              We&apos;re sorry to see you go! Your subscription to Sightline has
+              been cancelled. You will continue to have access to your plan
               features until your current billing period ends.
             </Text>
             <Text className="text-[14px] leading-[24px] text-black">
               To manage your subscription, including updating your payment
               method, visit your{" "}
               <Link
-                href="https://parsertime.app/settings"
+                href={`${SITE_URL}/settings`}
                 className="text-blue-600 no-underline"
               >
                 settings page
@@ -63,10 +64,10 @@ export function SubscriptionDeletedEmail({ user }: SubscriptionEmailProps) {
               If you have any questions or need help, feel free to reach out to
               us at{" "}
               <Link
-                href="mailto:help@parsertime.app"
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="text-blue-600 no-underline"
               >
-                help@parsertime.app
+                {SUPPORT_EMAIL}
               </Link>
               . We hope to see you back soon!
             </Text>
@@ -78,10 +79,10 @@ export function SubscriptionDeletedEmail({ user }: SubscriptionEmailProps) {
               concerned about your account&apos;s safety, please get in touch
               with us at{" "}
               <Link
-                href="mailto:help@parsertime.app"
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="text-blue-600 no-underline"
               >
-                help@parsertime.app
+                {SUPPORT_EMAIL}
               </Link>
               .
             </Text>

@@ -1,3 +1,4 @@
+import { SITE_URL, SUPPORT_EMAIL } from "../lib/site";
 import {
   Body,
   Button,
@@ -28,7 +29,7 @@ export function CreditLowBalanceEmail({
   user,
   balanceCents,
 }: CreditLowBalanceEmailProps) {
-  const previewText = `Your Parsertime AI balance is running low (${formatCents(balanceCents)})`;
+  const previewText = `Your Sightline AI balance is running low (${formatCents(balanceCents)})`;
 
   return (
     <Html>
@@ -39,10 +40,10 @@ export function CreditLowBalanceEmail({
           <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
               <Img
-                src="https://parsertime.app/parsertime.png"
+                src={`${SITE_URL}/parsertime.png`}
                 width="50"
                 height="50"
-                alt="Parsertime Logo"
+                alt="Sightline Logo"
                 className="mx-auto my-0"
               />
             </Section>
@@ -53,7 +54,7 @@ export function CreditLowBalanceEmail({
               Hello {user.name ?? user.email},
             </Text>
             <Text className="text-[14px] leading-[24px] text-black">
-              Your Parsertime AI chat balance just dropped to{" "}
+              Your Sightline AI chat balance just dropped to{" "}
               <strong>{formatCents(balanceCents)}</strong>. At this rate you may
               hit zero during your next scrim review. We&apos;ll block new
               messages once your balance is exhausted so you don&apos;t get
@@ -66,7 +67,7 @@ export function CreditLowBalanceEmail({
 
             <Section className="mt-[24px] text-center">
               <Button
-                href="https://parsertime.app/settings/billing"
+                href={`${SITE_URL}/settings/billing`}
                 className="rounded bg-black px-[18px] py-[10px] text-[14px] font-medium text-white no-underline"
               >
                 Manage credits
@@ -79,10 +80,10 @@ export function CreditLowBalanceEmail({
               <span className="text-black">{user.email}</span>. Don&apos;t want
               these alerts? Reply to{" "}
               <Link
-                href="mailto:help@parsertime.app"
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="text-blue-600 no-underline"
               >
-                help@parsertime.app
+                {SUPPORT_EMAIL}
               </Link>{" "}
               and we&apos;ll turn them off for your account.
             </Text>

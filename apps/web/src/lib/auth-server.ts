@@ -105,7 +105,7 @@ export const auth = betterAuth({
             await email.sendEmail({
               to: user.email,
               from: "noreply@lux.dev",
-              subject: `Welcome to Parsertime!`,
+              subject: `Welcome to Sightline!`,
               html: emailHtml,
             });
           } catch (error) {
@@ -179,7 +179,7 @@ export const auth = betterAuth({
           await email.sendEmail({
             to: userEmail,
             from: "noreply@lux.dev",
-            subject: "Sign in to Parsertime",
+            subject: "Sign in to Sightline",
             html: emailHtml,
           });
         } catch (error) {

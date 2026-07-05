@@ -3,7 +3,7 @@ import { getInitialTsrLeaderboard } from "@/lib/tsr/leaderboard";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Tournament Skill Rating | Parsertime",
+  title: "Tournament Skill Rating | Sightline",
   description:
     "Elo-style rating from FACEIT-hosted Overwatch 2 tournament results, recency weighted and anchored at peak tier reached.",
 };

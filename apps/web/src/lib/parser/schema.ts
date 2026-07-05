@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 /*
- * This file contains Zod schemas for the event types Parsertime supports. These schemas
+ * This file contains Zod schemas for the event types Sightline supports. These schemas
  * are used to validate and parse the data. By checking the data against these schemas,
  * we can ensure that the data is in the correct format and can be parsed accordingly.
  *

@@ -42,12 +42,12 @@ export async function generateMetadata(
     openGraph: {
       title: t("ogTitle", { hero }),
       description: t("ogDescription", { hero }),
-      url: "https://parsertime.app",
+      url: "/",
       type: "website",
-      siteName: "Parsertime",
+      siteName: "Sightline",
       images: [
         {
-          url: `https://parsertime.app/api/og?title=${t("ogImage", { hero })}`,
+          url: `/api/og?title=${t("ogImage", { hero })}`,
           width: 1200,
           height: 630,
         },

@@ -34,7 +34,7 @@ export default function NotFound() {
         {/* Chrome panel — themed. */}
         <div className="flex flex-col p-6 sm:p-10 lg:p-14">
           <Link href="/" className="inline-flex w-fit">
-            <span className="sr-only">Parsertime</span>
+            <span className="sr-only">Sightline</span>
             <Image
               className="h-10 w-auto sm:h-12 dark:invert"
               src="/parsertime.png"

@@ -1,3 +1,4 @@
+import { DOCS_URL } from "@/lib/site";
 import { ScrimFeedbackBanner } from "@/components/team-ops/scrim-feedback-banner";
 import { NoAuthCard } from "@/components/auth/no-auth";
 import { DashboardLayout } from "@/components/dashboard-layout";
@@ -75,12 +76,12 @@ export async function generateMetadata(
     openGraph: {
       title: t("ogTitle", { scrimName }),
       description: t("ogDescription", { scrimName }),
-      url: "https://parsertime.app",
+      url: "/",
       type: "website",
-      siteName: "Parsertime",
+      siteName: "Sightline",
       images: [
         {
-          url: `https://parsertime.app/api/og?title=${encodeURIComponent(t("ogImage", { scrimName }))}`,
+          url: `/api/og?title=${encodeURIComponent(t("ogImage", { scrimName }))}`,
           width: 1200,
           height: 630,
         },
@@ -501,7 +502,7 @@ async function ScrimContent({
             <AlertTitle>{t("noMaps.title")}</AlertTitle>
             <AlertDescription>
               {t("noMaps.description")}
-              <Link href="https://docs.parsertime.app" target="_blank" external>
+              <Link href={DOCS_URL} target="_blank" external>
                 {t("noMaps.link")}
               </Link>
               .

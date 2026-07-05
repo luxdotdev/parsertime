@@ -1,3 +1,4 @@
+import { DOCS_URL, SITE_URL, SUPPORT_EMAIL } from "../lib/site";
 import {
   Body,
   Container,
@@ -19,7 +20,7 @@ type OnboardingEmailProps = {
 };
 
 export function UserOnboardingEmail({ name, email }: OnboardingEmailProps) {
-  const previewText = "Welcome to Parsertime!";
+  const previewText = "Welcome to Sightline!";
 
   return (
     <Html>
@@ -30,29 +31,29 @@ export function UserOnboardingEmail({ name, email }: OnboardingEmailProps) {
           <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
               <Img
-                src="https://parsertime.app/parsertime.png"
+                src={`${SITE_URL}/parsertime.png`}
                 width="50"
                 height="50"
-                alt="Parsertime Logo"
+                alt="Sightline Logo"
                 className="mx-auto my-0"
               />
             </Section>
             <Heading className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal text-black">
-              Welcome <strong>{name}</strong> to <strong>Parsertime</strong>!
+              Welcome <strong>{name}</strong> to <strong>Sightline</strong>!
             </Heading>
             <Text className="text-[14px] leading-[24px] text-black">
               Hello {name},
             </Text>
             <Text className="text-[14px] leading-[24px] text-black">
-              Welcome to Parsertime! We&apos;re excited to have you on board.
-              You can now start uploading your scrims and matches to get
-              started. Here are a few things you can do to get started:
+              Welcome to Sightline! We&apos;re excited to have you on board. You
+              can now start uploading your scrims and matches to get started.
+              Here are a few things you can do to get started:
             </Text>
             <ul className="text-[14px] leading-[24px] text-black">
               <li>
                 Set up your profile in your{" "}
                 <Link
-                  href="https://parsertime.app/settings"
+                  href={`${SITE_URL}/settings`}
                   className="text-blue-600 no-underline"
                 >
                   settings
@@ -76,13 +77,10 @@ export function UserOnboardingEmail({ name, email }: OnboardingEmailProps) {
               </li>
               <li>
                 Read through our{" "}
-                <Link
-                  href="https://docs.parsertime.app/"
-                  className="text-blue-600 no-underline"
-                >
+                <Link href={DOCS_URL} className="text-blue-600 no-underline">
                   docs
                 </Link>{" "}
-                to learn more about Parsertime and how to use it.
+                to learn more about Sightline and how to use it.
               </li>
               <li>
                 Join our{" "}
@@ -100,10 +98,10 @@ export function UserOnboardingEmail({ name, email }: OnboardingEmailProps) {
               If you have any questions or need help, feel free to reach out to
               us at{" "}
               <Link
-                href="mailto:help@parsertime.app"
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="text-blue-600 no-underline"
               >
-                help@parsertime.app
+                {SUPPORT_EMAIL}
               </Link>
               . Happy scrimming!
             </Text>
@@ -115,10 +113,10 @@ export function UserOnboardingEmail({ name, email }: OnboardingEmailProps) {
               concerned about your account&apos;s safety, please get in touch
               with us at{" "}
               <Link
-                href="mailto:help@parsertime.app"
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="text-blue-600 no-underline"
               >
-                help@parsertime.app
+                {SUPPORT_EMAIL}
               </Link>
               .
             </Text>

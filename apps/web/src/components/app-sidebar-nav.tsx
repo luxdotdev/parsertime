@@ -1,5 +1,6 @@
 "use client";
 
+import { DOCS_URL } from "@/lib/site";
 import { TeamSwitcherContext } from "@/components/team-switcher-provider";
 import {
   Collapsible,
@@ -391,11 +392,7 @@ function FooterMenu({ activePath }: { activePath: string | null }) {
       </SidebarMenuItem>
       <SidebarMenuItem>
         <SidebarMenuButton asChild tooltip={t("docs")}>
-          <a
-            href="https://docs.parsertime.app"
-            target="_blank"
-            rel="noreferrer"
-          >
+          <a href={DOCS_URL} target="_blank" rel="noreferrer">
             <BookOpenIcon />
             <span>{t("docs")}</span>
             <ExternalLinkIcon className="ml-auto opacity-60" />

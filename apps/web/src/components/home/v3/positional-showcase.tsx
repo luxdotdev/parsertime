@@ -1,3 +1,4 @@
+import { SITE_DOMAIN } from "@/lib/site";
 import Image from "next/image";
 
 type PanelLabel = {
@@ -92,7 +93,7 @@ export function PositionalShowcase({
         <div className="mt-14 grid gap-6 lg:grid-cols-3">
           {/* Map replay viewer */}
           <div className="bg-card ring-foreground/10 overflow-hidden rounded-xl ring-1 lg:col-span-2">
-            <ChromeBar label="parsertime.app · map replay" />
+            <ChromeBar label={`${SITE_DOMAIN} · map replay`} />
             <div className="relative h-72 sm:h-96">
               <Image
                 src="/map-replay.png"

@@ -52,12 +52,12 @@ export async function generateMetadata(): Promise<Metadata> {
       description: t("ogDescription", {
         mapName: toTitleCase(mapName?.map_name ?? "Map"),
       }),
-      url: "https://parsertime.app",
+      url: "/",
       type: "website",
-      siteName: "Parsertime",
+      siteName: "Sightline",
       images: [
         {
-          url: `https://parsertime.app/api/og?title=${t("ogImage", {
+          url: `/api/og?title=${t("ogImage", {
             mapName: toTitleCase(mapName?.map_name ?? "Map"),
           })}`,
           width: 1200,

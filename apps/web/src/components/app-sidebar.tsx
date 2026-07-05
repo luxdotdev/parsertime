@@ -51,7 +51,7 @@ export function AppSidebar() {
                   height={32}
                   className="size-8 shrink-0 dark:invert"
                 />
-                <span className="font-semibold">Parsertime</span>
+                <span className="font-semibold">Sightline</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

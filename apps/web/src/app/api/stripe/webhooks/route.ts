@@ -329,8 +329,8 @@ async function notifyCreditPurchase(
         from: "noreply@lux.dev",
         subject:
           source === "auto_refill"
-            ? "Your Parsertime credits were auto-refilled"
-            : "Your Parsertime AI credits receipt",
+            ? "Your Sightline credits were auto-refilled"
+            : "Your Sightline AI credits receipt",
         html: await render(
           CreditTopupEmail({
             user,

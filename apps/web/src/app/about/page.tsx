@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 import { AboutHero } from "@/components/about/about-hero";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AboutStory } from "@/components/about/about-story";
@@ -28,9 +29,9 @@ export function generateMetadata(): Metadata {
     openGraph: {
       title: t("ogTitle"),
       description: t("ogDescription"),
-      url: "https://parsertime.app/about",
+      url: "/about",
       type: "website",
-      siteName: "Parsertime",
+      siteName: "Sightline",
     },
   };
 }
@@ -135,7 +136,7 @@ export default function AboutPage() {
       <OrganizationJsonLd
         name="lux.dev"
         url="https://lux.dev"
-        logo="https://parsertime.app/parsertime.png"
+        logo={`${SITE_URL}/parsertime.png`}
         sameAs={[
           "https://twitter.com/luxdotdev",
           "https://bsky.app/profile/lux.dev",

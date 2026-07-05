@@ -87,7 +87,7 @@ export async function handleSubscriptionEvent(
         await email.sendEmail({
           to: user.email,
           from: "noreply@lux.dev",
-          subject: `Thank you for subscribing to Parsertime!`,
+          subject: `Thank you for subscribing to Sightline!`,
           html: await render(
             SubscriptionCreatedEmail({ user, billingPlan: currentBillingPlan })
           ),
@@ -126,7 +126,7 @@ export async function handleSubscriptionEvent(
           await email.sendEmail({
             to: user.email,
             from: "noreply@lux.dev",
-            subject: `Your Parsertime subscription has been updated`,
+            subject: `Your Sightline subscription has been updated`,
             html: await render(
               SubscriptionUpdatedEmail({
                 user,
@@ -158,7 +158,7 @@ export async function handleSubscriptionEvent(
         await email.sendEmail({
           to: user.email,
           from: "noreply@lux.dev",
-          subject: `Your subscription to Parsertime has been cancelled`,
+          subject: `Your subscription to Sightline has been cancelled`,
           html: await render(SubscriptionDeletedEmail({ user })),
         });
         Logger.info("Subscription deleted email sent");

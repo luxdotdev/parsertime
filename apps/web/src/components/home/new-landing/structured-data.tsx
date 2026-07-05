@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 import {
   FAQJsonLd,
   OrganizationJsonLd,
@@ -13,10 +14,10 @@ export function StructuredData({ teamCount }: StructuredDataProps) {
     <>
       <SoftwareApplicationJsonLd
         type="WebApplication"
-        name="Parsertime"
+        name="Sightline"
         applicationCategory="GameApplication"
         operatingSystem="Web"
-        url="https://parsertime.app"
+        url={SITE_URL}
         description="Overwatch scrim analytics platform that turns raw match data into skill ratings, trend lines, and coaching insights."
         offers={{
           price: 0,
@@ -35,23 +36,23 @@ export function StructuredData({ teamCount }: StructuredDataProps) {
       <FAQJsonLd
         questions={[
           {
-            question: "What is Parsertime?",
+            question: "What is Sightline?",
             answer:
-              "Parsertime is an Overwatch scrim analytics platform that turns raw match data into skill ratings, trend lines, and coaching insights for competitive teams.",
+              "Sightline is an Overwatch scrim analytics platform that turns raw match data into skill ratings, trend lines, and coaching insights for competitive teams.",
           },
           {
-            question: "How does Parsertime work?",
+            question: "How does Sightline work?",
             answer:
               "Create your team, upload your scrim data after each session, and get instant access to charts, trends, and player ratings. The parser handles the heavy lifting automatically.",
           },
           {
-            question: "Is Parsertime free?",
+            question: "Is Sightline free?",
             answer:
-              "Yes, Parsertime is free to start with no credit card required. Create a team, upload your first scrim, and see results in minutes.",
+              "Yes, Sightline is free to start with no credit card required. Create a team, upload your first scrim, and see results in minutes.",
           },
           {
-            question: "What stats does Parsertime track?",
-            answer: `Parsertime captures killfeeds, hero swaps, ultimate economy, role-specific performance, and more. It processes over ${teamCount} teams' data with custom hero skill ratings on a 1-5000 scale.`,
+            question: "What stats does Sightline track?",
+            answer: `Sightline captures killfeeds, hero swaps, ultimate economy, role-specific performance, and more. It processes over ${teamCount} teams' data with custom hero skill ratings on a 1-5000 scale.`,
           },
         ]}
       />

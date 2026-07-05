@@ -6,7 +6,7 @@ product
 
 ## Users
 
-**Primary audience: coaches and analysts** on collegiate and pro Overwatch 2 teams who use Parsertime to dig into post-scrim data, surface outliers, and build insights they take back to their roster. They are technically literate, comfortable with dense tables, and want signal over hand-holding.
+**Primary audience: coaches and analysts** on collegiate and pro Overwatch 2 teams who use Sightline to dig into post-scrim data, surface outliers, and build insights they take back to their roster. They are technically literate, comfortable with dense tables, and want signal over hand-holding.
 
 **Volume audience: players** checking their own scrim stats. They want fast answers ("how did I do?", "where did the team fall apart?") rather than deep exploration. The interface must serve them well without dragging the analyst experience down to a casual level.
 
@@ -18,11 +18,13 @@ product
 
 ## Product Purpose
 
-Parsertime turns raw Overwatch 2 scrim data into skill ratings, trend lines, and coaching insights. Coaches and players upload Workshop Log data from scrims and get dashboards with per-player stats, hero skill ratings (CSR, a 1–5000 Z-score scale), trend analysis, and team performance breakdowns across eight dimensions (Overview, Performance, Heroes, Trends, Maps, Swaps, Teamfights, Ultimates).
+Sightline turns raw Overwatch 2 scrim data into skill ratings, trend lines, and coaching insights. Coaches and players upload Workshop Log data from scrims and get dashboards with per-player stats, hero skill ratings (CSR, a 1–5000 Z-score scale), trend analysis, and team performance breakdowns across eight dimensions (Overview, Performance, Heroes, Trends, Maps, Swaps, Teamfights, Ultimates).
 
-It exists because the in-game scoreboard is incomplete, replay codes expire, and existing alternatives (Google Sheets, generic esports analytics tools) cost coaches hours of manual data entry per week and still can't show trends or hero-specific skill ratings. Parsertime makes data permanent, instant, and analyzable across any timeframe.
+It exists because the in-game scoreboard is incomplete, replay codes expire, and existing alternatives (Google Sheets, generic esports analytics tools) cost coaches hours of manual data entry per week and still can't show trends or hero-specific skill ratings. Sightline makes data permanent, instant, and analyzable across any timeframe.
 
 Success looks like: coaches make practice decisions from data instead of gut feel; players see week-over-week improvement they can act on; programs justify investment with season-long analytics — and all of it happens in the gap between when a scrim ends and when the team starts VOD review.
+
+**Naming.** Sightline is the product's name as of July 2026, replacing Parsertime. The old name came from parsing ScrimTime logs; the product outgrew it — ranked tracking, FACEIT/OWCS scouting, matchmaking, AI analysis, and team operations now sit alongside scrims, and the long-term ambition is multi-game. Rebrand decisions: the amber identity carries over unchanged (it is the brand, not the name); the wordmark text is "Sightline" everywhere; logo image assets still show the old mark pending a designer pass; copy stays Overwatch-native for now since Overwatch is the only supported title; the `parsertime.app` domain, support email, and package names are unchanged for the time being. The "Disguised" theme is a DSG-team easter egg and needs no rebrand treatment.
 
 ## Brand Personality
 

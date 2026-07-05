@@ -33,7 +33,7 @@ export async function generateMetadata(
     )
   );
 
-  if (!scrim) return { title: "Edit Scrim | Parsertime" };
+  if (!scrim) return { title: "Edit Scrim | Sightline" };
 
   return {
     title: t("title", { scrimName: scrim.name }),

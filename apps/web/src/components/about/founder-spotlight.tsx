@@ -125,7 +125,7 @@ export function FounderSpotlight({
             <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white/50 p-2 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
               <Image
                 src={imageSrc}
-                alt={`${name}, Founder of Parsertime`}
+                alt={`${name}, Founder of Sightline`}
                 className="rounded-xl object-cover"
                 width={400}
                 height={500}

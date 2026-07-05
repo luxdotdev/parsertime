@@ -1,3 +1,4 @@
+import { SITE_DOMAIN } from "@/lib/site";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
 import { TeamStatsService } from "@/data/team";
@@ -50,8 +51,7 @@ export async function GET(request: NextRequest) {
       return Response.json(
         {
           success: false,
-          error:
-            "Link your Discord account at parsertime.app/settings to use this command",
+          error: `Link your Discord account at ${SITE_DOMAIN}/settings to use this command`,
         },
         { status: 403 }
       );

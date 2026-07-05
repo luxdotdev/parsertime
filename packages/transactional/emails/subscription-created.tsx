@@ -1,3 +1,4 @@
+import { SITE_URL, SUPPORT_EMAIL } from "../lib/site";
 import { toTitleCase } from "./_utils";
 import {
   Body,
@@ -24,7 +25,7 @@ export function SubscriptionCreatedEmail({
   user,
   billingPlan,
 }: SubscriptionEmailProps) {
-  const previewText = "Thank you for subscribing to Parsertime!";
+  const previewText = "Thank you for subscribing to Sightline!";
 
   return (
     <Html>
@@ -35,10 +36,10 @@ export function SubscriptionCreatedEmail({
           <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
               <Img
-                src="https://parsertime.app/parsertime.png"
+                src={`${SITE_URL}/parsertime.png`}
                 width="50"
                 height="50"
-                alt="Parsertime Logo"
+                alt="Sightline Logo"
                 className="mx-auto my-0"
               />
             </Section>
@@ -49,7 +50,7 @@ export function SubscriptionCreatedEmail({
               Hello {user.email},
             </Text>
             <Text className="text-[14px] leading-[24px] text-black">
-              Thank you for subscribing to Parsertime! We&apos;re grateful for
+              Thank you for subscribing to Sightline! We&apos;re grateful for
               your support and can&apos;t wait to help you level up your
               Overwatch experience. You are now on the{" "}
               <strong>{toTitleCase(billingPlan)}</strong> plan.
@@ -58,7 +59,7 @@ export function SubscriptionCreatedEmail({
               To manage your subscription, including updating your payment
               method, visit your{" "}
               <Link
-                href="https://parsertime.app/settings"
+                href={`${SITE_URL}/settings`}
                 className="text-blue-600 no-underline"
               >
                 settings page
@@ -69,10 +70,10 @@ export function SubscriptionCreatedEmail({
               If you have any questions or need help, feel free to reach out to
               us at{" "}
               <Link
-                href="mailto:help@parsertime.app"
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="text-blue-600 no-underline"
               >
-                help@parsertime.app
+                {SUPPORT_EMAIL}
               </Link>
               . We appreciate your support and look forward to helping you
               improve your scrim experience!
@@ -85,10 +86,10 @@ export function SubscriptionCreatedEmail({
               concerned about your account&apos;s safety, please get in touch
               with us at{" "}
               <Link
-                href="mailto:help@parsertime.app"
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="text-blue-600 no-underline"
               >
-                help@parsertime.app
+                {SUPPORT_EMAIL}
               </Link>
               .
             </Text>

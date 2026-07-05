@@ -18,7 +18,7 @@ client.on(interactionCreate.name, (...args) =>
 // Login to Discord
 void client.login(process.env.DISCORD_TOKEN);
 
-// Start HTTP server for Parsertime -> Bot communication
+// Start HTTP server for Sightline -> Bot communication
 const port = Number(process.env.PORT) || 8080;
 startServer(client, port);
 

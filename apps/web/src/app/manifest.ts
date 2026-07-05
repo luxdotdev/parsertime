@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Parsertime",
-    short_name: "Parsertime",
+    name: "Sightline",
+    short_name: "Sightline",
     description: "The analytics engine for competitive Overwatch",
     start_url: "/",
     display: "standalone",

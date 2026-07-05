@@ -1,5 +1,6 @@
 "use client";
 
+import { DOCS_URL } from "@/lib/site";
 import type { GetTeamsResponse } from "@/app/api/team/get-teams/route";
 import { BugReportForm } from "@/components/bug-reporting-form";
 import { CommandMenuContext } from "@/components/command-menu-provider";
@@ -89,11 +90,7 @@ export function CommandDialogMenu({ user }: { user: User | null }) {
             <span>{t("suggestions.dashboard")}</span>
           </CommandItem>
           <CommandItem
-            onSelect={() =>
-              runCommand(() =>
-                window.open("https://docs.parsertime.app", "_blank")
-              )
-            }
+            onSelect={() => runCommand(() => window.open(DOCS_URL, "_blank"))}
           >
             <ReaderIcon className="mr-2 h-4 w-4" />
             <span>{t("suggestions.docs")}</span>

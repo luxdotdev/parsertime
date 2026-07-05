@@ -1,3 +1,4 @@
+import { SITE_URL, SUPPORT_EMAIL } from "../lib/site";
 import {
   Body,
   Container,
@@ -51,10 +52,10 @@ export function CreditTopupEmail({
           <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
               <Img
-                src="https://parsertime.app/parsertime.png"
+                src={`${SITE_URL}/parsertime.png`}
                 width="50"
                 height="50"
-                alt="Parsertime Logo"
+                alt="Sightline Logo"
                 className="mx-auto my-0"
               />
             </Section>
@@ -88,7 +89,7 @@ export function CreditTopupEmail({
                 drops below {formatCents(autoRefillThresholdCents)}. You can
                 change or turn this off on your{" "}
                 <Link
-                  href="https://parsertime.app/settings/billing"
+                  href={`${SITE_URL}/settings/billing`}
                   className="text-blue-600 no-underline"
                 >
                   billing settings page
@@ -100,7 +101,7 @@ export function CreditTopupEmail({
                 Auto-refill is currently <strong>off</strong>. You can turn it
                 on from your{" "}
                 <Link
-                  href="https://parsertime.app/settings/billing"
+                  href={`${SITE_URL}/settings/billing`}
                   className="text-blue-600 no-underline"
                 >
                   billing settings page
@@ -115,10 +116,10 @@ export function CreditTopupEmail({
               <span className="text-black">{user.email}</span>. Questions about
               your account? Reach out at{" "}
               <Link
-                href="mailto:help@parsertime.app"
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="text-blue-600 no-underline"
               >
-                help@parsertime.app
+                {SUPPORT_EMAIL}
               </Link>
               .
             </Text>

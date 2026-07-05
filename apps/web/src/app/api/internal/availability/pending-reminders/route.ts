@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 import { authenticateBotSecret } from "@/lib/bot-auth";
 import {
   buildReminderJob,
@@ -17,8 +18,7 @@ export async function GET(req: NextRequest) {
   }
 
   const now = new Date();
-  const baseUrl =
-    process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://parsertime.app";
+  const baseUrl = process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? SITE_URL;
 
   const enabled = await prisma.teamAvailabilitySettings.findMany({
     where: { reminderEnabled: true },

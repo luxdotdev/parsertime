@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
@@ -29,6 +30,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: "https://parsertime.app/sitemap.xml",
+    sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

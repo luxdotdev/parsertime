@@ -1,3 +1,4 @@
+import { DOCS_URL } from "@/lib/site";
 import { DamageByRoundChart } from "@/components/charts/map/damage-by-round-chart";
 import { KillsByFightChart } from "@/components/charts/map/kills-by-fight-chart";
 import { KillsByRoleChart } from "@/components/charts/map/kills-by-role-chart";
@@ -30,7 +31,7 @@ async function ChartTooltip({ locale }: { locale: Locale }) {
       <TooltipContent className="max-w-[280px]">
         {t.rich("tooltip", {
           link: (chunks) => (
-            <Link href="https://docs.parsertime.app/maps/charts" external>
+            <Link href={`${DOCS_URL}/maps/charts`} external>
               {chunks}
             </Link>
           ),

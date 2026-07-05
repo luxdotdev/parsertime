@@ -1,6 +1,7 @@
 /* oxlint-disable @typescript-eslint/require-await */
 /* oxlint-disable @next/next/no-img-element */
 
+import { SITE_URL } from "@/lib/site";
 import { Logger } from "@/lib/logger";
 import { ImageResponse } from "next/og";
 
@@ -37,9 +38,9 @@ export async function GET(request: Request) {
           }}
         >
           <img
-            alt="Parsertime"
+            alt="Sightline"
             height={200}
-            src="https://parsertime.app/parsertime.png"
+            src={`${SITE_URL}/parsertime.png`}
             style={{ margin: "0 30px", filter: "invert(1)" }}
             width={200}
           />

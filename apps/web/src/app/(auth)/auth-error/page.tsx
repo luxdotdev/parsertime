@@ -1,3 +1,4 @@
+import { SUPPORT_EMAIL } from "@/lib/site";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getStaticTranslations } from "@/lib/metadata-i18n";
@@ -61,8 +62,9 @@ async function AuthErrorContent({
       </p>
       <p className="max-w-[600px] text-gray-500 dark:text-gray-400">
         {t.rich("description", {
+          email: SUPPORT_EMAIL,
           link: (chunks) => (
-            <Link href="mailto:help@parsertime.app" className="underline">
+            <Link href={`mailto:${SUPPORT_EMAIL}`} className="underline">
               {chunks}
             </Link>
           ),

@@ -42,7 +42,7 @@ const CATEGORIES: CommandCategory[] = [
     commands: [
       {
         usage: "/teams",
-        description: "List your Parsertime teams and their IDs.",
+        description: "List your Sightline teams and their IDs.",
       },
       {
         usage: "/availability setup team_id:<id>",
@@ -69,10 +69,10 @@ const CATEGORIES: CommandCategory[] = [
 
 export const data = new SlashCommandBuilder()
   .setName("help")
-  .setDescription("List everything the Parsertime bot can do");
+  .setDescription("List everything the Sightline bot can do");
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  const embed = brandEmbed("Parsertime bot — commands").setDescription(
+  const embed = brandEmbed("Sightline bot — commands").setDescription(
     "Bot-linked actions require linking your Discord account at parsertime.app/settings."
   );
 

@@ -1,3 +1,4 @@
+import { SITE_URL, SUPPORT_EMAIL } from "../lib/site";
 import {
   Body,
   Button,
@@ -35,7 +36,7 @@ export function TeamInviteUserEmail({
   teamImage,
   inviteLink,
 }: TeamInviteUserEmailProps) {
-  const previewText = `Join ${invitedByUsername} on Parsertime`;
+  const previewText = `Join ${invitedByUsername} on Sightline`;
 
   return (
     <Html>
@@ -46,15 +47,15 @@ export function TeamInviteUserEmail({
           <Container className="mx-auto my-[40px] max-w-[465px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
               <Img
-                src="https://parsertime.app/parsertime.png"
+                src={`${SITE_URL}/parsertime.png`}
                 width="50"
                 height="50"
-                alt="Parsertime Logo"
+                alt="Sightline Logo"
                 className="mx-auto my-0"
               />
             </Section>
             <Heading className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal text-black">
-              Join <strong>{teamName}</strong> on <strong>Parsertime</strong>
+              Join <strong>{teamName}</strong> on <strong>Sightline</strong>
             </Heading>
             <Text className="text-[14px] leading-[24px] text-black">
               Hello {username},
@@ -68,7 +69,7 @@ export function TeamInviteUserEmail({
                 {invitedByEmail}
               </Link>
               ) has invited you to the <strong>{teamName}</strong> team on{" "}
-              <strong>Parsertime</strong>.
+              <strong>Sightline</strong>.
             </Text>
             <Section>
               <Row>
@@ -82,7 +83,7 @@ export function TeamInviteUserEmail({
                 </Column>
                 <Column align="center">
                   <Img
-                    src="https://parsertime.app/team-invite-arrow.png"
+                    src={`${SITE_URL}/team-invite-arrow.png`}
                     width="12"
                     height="9"
                     alt="invited you to"
@@ -120,10 +121,10 @@ export function TeamInviteUserEmail({
               concerned about your account&apos;s safety, please get in touch
               with us at{" "}
               <Link
-                href="mailto:help@parsertime.app"
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="text-blue-600 no-underline"
               >
-                help@parsertime.app
+                {SUPPORT_EMAIL}
               </Link>
               .
             </Text>
@@ -141,12 +142,12 @@ export function TeamInviteUserEmail({
 
 TeamInviteUserEmail.PreviewProps = {
   username: "Alex Morgan",
-  userImage: "https://parsertime.app/parsertime.png",
+  userImage: `${SITE_URL}/parsertime.png`,
   invitedByUsername: "Jordan Lee",
   invitedByEmail: "jordan@example.com",
   teamName: "Neon Wolves",
-  teamImage: "https://parsertime.app/parsertime.png",
-  inviteLink: "https://parsertime.app/team/join?token=preview-token",
+  teamImage: `${SITE_URL}/parsertime.png`,
+  inviteLink: `${SITE_URL}/team/join?token=preview-token`,
 } satisfies TeamInviteUserEmailProps;
 
 export default TeamInviteUserEmail;

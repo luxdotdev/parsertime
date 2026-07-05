@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 import { Logger } from "@/lib/logger";
 import type { User as PrismaUser } from "@/generated/prisma/client";
 import { $Enums } from "@/generated/prisma/browser";
@@ -47,8 +48,8 @@ type DiscordWebhook = {
  */
 export function newUserWebhookConstructor(user: WebhookUser): DiscordWebhook {
   return {
-    username: "Parsertime",
-    avatar_url: "https://parsertime.app/icon.png",
+    username: "Sightline",
+    avatar_url: `${SITE_URL}/icon.png`,
     embeds: [
       {
         title: "New User",
@@ -59,8 +60,8 @@ export function newUserWebhookConstructor(user: WebhookUser): DiscordWebhook {
           url: user.image ?? `https://avatar.vercel.sh/${user.email}.png`,
         },
         footer: {
-          text: "Parsertime",
-          icon_url: "https://parsertime.app/icon.png",
+          text: "Sightline",
+          icon_url: `${SITE_URL}/icon.png`,
         },
       },
     ],
@@ -77,8 +78,8 @@ export function deleteUserWebhookConstructor(
   user: WebhookUser
 ): DiscordWebhook {
   return {
-    username: "Parsertime",
-    avatar_url: "https://parsertime.app/icon.png",
+    username: "Sightline",
+    avatar_url: `${SITE_URL}/icon.png`,
     embeds: [
       {
         title: "User Deleted",
@@ -89,8 +90,8 @@ export function deleteUserWebhookConstructor(
           url: user.image ?? `https://avatar.vercel.sh/${user.email}.png`,
         },
         footer: {
-          text: "Parsertime",
-          icon_url: "https://parsertime.app/icon.png",
+          text: "Sightline",
+          icon_url: `${SITE_URL}/icon.png`,
         },
       },
     ],
@@ -119,8 +120,8 @@ export function newBugReportWebhookConstructor(
   }
 ): DiscordWebhook {
   return {
-    username: "Parsertime",
-    avatar_url: "https://parsertime.app/icon.png",
+    username: "Sightline",
+    avatar_url: `${SITE_URL}/icon.png`,
     content:
       subscription === $Enums.BillingPlan.BASIC ||
       subscription === $Enums.BillingPlan.PREMIUM
@@ -149,8 +150,8 @@ export function newBugReportWebhookConstructor(
         timestamp: new Date(),
         color: 0xff0000,
         footer: {
-          text: "Parsertime",
-          icon_url: "https://parsertime.app/icon.png",
+          text: "Sightline",
+          icon_url: `${SITE_URL}/icon.png`,
         },
       },
     ],
@@ -158,7 +159,7 @@ export function newBugReportWebhookConstructor(
 }
 
 /**
- * Constructs a Discord webhook payload for reporting suspicious activity on Parsertime.
+ * Constructs a Discord webhook payload for reporting suspicious activity on Sightline.
  *
  * @param user - The user object associated with the suspicious activity.
  * @param activity - A description of the suspicious activity.
@@ -183,12 +184,12 @@ export function newSuspiciousActivityWebhookConstructor(
   }
 ): DiscordWebhook {
   return {
-    username: "Parsertime",
-    avatar_url: "https://parsertime.app/icon.png",
-    content: `<@&${process.env.BUG_REPORT_NOTIFICATIONS_ROLE_ID}> Suspicious activity detected on Parsertime`,
+    username: "Sightline",
+    avatar_url: `${SITE_URL}/icon.png`,
+    content: `<@&${process.env.BUG_REPORT_NOTIFICATIONS_ROLE_ID}> Suspicious activity detected on Sightline`,
     embeds: [
       {
-        title: `‼️ Suspicious activity detected on Parsertime`,
+        title: `‼️ Suspicious activity detected on Sightline`,
         description: `
         ### **Details:**
         > **User:** \`${user.name} (${user.email})\`
@@ -204,8 +205,8 @@ export function newSuspiciousActivityWebhookConstructor(
         timestamp: new Date(),
         color: 0xff0000,
         footer: {
-          text: "Parsertime",
-          icon_url: "https://parsertime.app/icon.png",
+          text: "Sightline",
+          icon_url: `${SITE_URL}/icon.png`,
         },
       },
     ],
@@ -217,8 +218,8 @@ export function userSubscribedWebhookConstructor(
   billingPlan: string
 ): DiscordWebhook {
   return {
-    username: "Parsertime",
-    avatar_url: "https://parsertime.app/icon.png",
+    username: "Sightline",
+    avatar_url: `${SITE_URL}/icon.png`,
     embeds: [
       {
         title: `<@&${process.env.BUG_REPORT_NOTIFICATIONS_ROLE_ID}> User Subscribed`,
@@ -229,8 +230,8 @@ export function userSubscribedWebhookConstructor(
           url: user.image ?? `https://avatar.vercel.sh/${user.email}.png`,
         },
         footer: {
-          text: "Parsertime",
-          icon_url: "https://parsertime.app/icon.png",
+          text: "Sightline",
+          icon_url: `${SITE_URL}/icon.png`,
         },
       },
     ],
@@ -242,8 +243,8 @@ export function userUnsubscribedWebhookConstructor(
   billingPlan: string
 ): DiscordWebhook {
   return {
-    username: "Parsertime",
-    avatar_url: "https://parsertime.app/icon.png",
+    username: "Sightline",
+    avatar_url: `${SITE_URL}/icon.png`,
     embeds: [
       {
         title: `<@&${process.env.BUG_REPORT_NOTIFICATIONS_ROLE_ID}> User Unsubscribed`,
@@ -254,8 +255,8 @@ export function userUnsubscribedWebhookConstructor(
           url: user.image ?? `https://avatar.vercel.sh/${user.email}.png`,
         },
         footer: {
-          text: "Parsertime",
-          icon_url: "https://parsertime.app/icon.png",
+          text: "Sightline",
+          icon_url: `${SITE_URL}/icon.png`,
         },
       },
     ],
@@ -273,8 +274,8 @@ export function userToppedUpWebhookConstructor(
   const label = source === "auto_refill" ? "Auto-refill" : "AI credits top-up";
 
   return {
-    username: "Parsertime",
-    avatar_url: "https://parsertime.app/icon.png",
+    username: "Sightline",
+    avatar_url: `${SITE_URL}/icon.png`,
     embeds: [
       {
         title: `<@&${process.env.BUG_REPORT_NOTIFICATIONS_ROLE_ID}> ${label}`,
@@ -285,8 +286,8 @@ export function userToppedUpWebhookConstructor(
           url: user.image ?? `https://avatar.vercel.sh/${user.email}.png`,
         },
         footer: {
-          text: "Parsertime",
-          icon_url: "https://parsertime.app/icon.png",
+          text: "Sightline",
+          icon_url: `${SITE_URL}/icon.png`,
         },
       },
     ],

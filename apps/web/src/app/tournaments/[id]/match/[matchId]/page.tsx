@@ -32,7 +32,7 @@ export async function generateMetadata(props: {
         )
       );
 
-  if (!match) return { title: "Match | Parsertime" };
+  if (!match) return { title: "Match | Sightline" };
 
   const team1 = match.team1?.name ?? "TBD";
   const team2 = match.team2?.name ?? "TBD";

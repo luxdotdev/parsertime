@@ -1,5 +1,5 @@
 ---
-name: Parsertime
+name: Sightline
 description: Coach's terminal for Overwatch 2 scrim analytics — achromatic-first, amber-as-signal, dense and tuned for late-night desktop sessions.
 colors:
   background-light: "oklch(0.985 0.003 250)"
@@ -146,13 +146,13 @@ components:
     height: "20px"
 ---
 
-# Design System: Parsertime
+# Design System: Sightline
 
 ## 1. Overview
 
 **Creative North Star: "The Coach's Terminal"**
 
-Parsertime sits next to a coach at 10pm ET, after the scrim block ends, on a 27" monitor. It is a working surface, not a marketing surface — the data is the product, and every interface decision serves a coach who is reading numbers fast, comparing players across weeks, and deciding what next practice should focus on. The closest reference is a Bloomberg terminal in temperament: cool neutrals carry the UI, warm signal lands on the things that matter, and the system never gets visually tiring across hours of use. Linear's tuning, Vercel's restraint, PlanetScale's data calm.
+Sightline sits next to a coach at 10pm ET, after the scrim block ends, on a 27" monitor. It is a working surface, not a marketing surface — the data is the product, and every interface decision serves a coach who is reading numbers fast, comparing players across weeks, and deciding what next practice should focus on. The closest reference is a Bloomberg terminal in temperament: cool neutrals carry the UI, warm signal lands on the things that matter, and the system never gets visually tiring across hours of use. Linear's tuning, Vercel's restraint, PlanetScale's data calm.
 
 The system is **achromatic-first with a single amber accent**. Neutrals are very slightly cool-tinted (hue ~250°, chroma 0.003–0.005); the coolness is imperceptible as "blue" but it makes amber read as deliberately _gold_, not _mustard_. Amber is the brand identity, but the **specific lightness shifts per mode for contrast**: a deep amber `oklch(0.55 0.17 68)` paired with near-white foreground in light mode, a bright amber `oklch(0.82 0.17 78)` paired with near-black foreground in dark mode. Both still read as amber; both clear WCAG AA when the token is used as text on the page background — which is the active-nav case the original mode-independent doctrine missed. Amber is reserved for **selected, active, and primary CTA** states. Hover gets a subtler treatment so amber stays meaningful for "this is the chosen one." Team identity, win/loss deltas, and chart series carry the rest of the chromatic weight.
 

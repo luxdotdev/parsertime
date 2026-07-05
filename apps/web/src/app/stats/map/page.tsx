@@ -9,7 +9,7 @@ import { connection } from "next/server";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Map Hero Trends | Parsertime",
+  title: "Map Hero Trends | Sightline",
   description: "Recent hero pick rates, winrates, and playtime trends by map.",
 };
 

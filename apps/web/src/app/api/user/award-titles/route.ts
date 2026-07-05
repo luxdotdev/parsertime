@@ -9,7 +9,7 @@ import type { NextRequest } from "next/server";
 
 // Title display names for notifications
 const TITLE_DISPLAY_NAMES: Record<$Enums.Title, string> = {
-  DEVELOPER: "Parsertime Developer",
+  DEVELOPER: "Sightline Developer",
   EMPLOYEE: "lux.dev Employee",
   BETA_TESTER: "Beta Tester",
   DAY_ONE_USER: "Here Since the Beginning",

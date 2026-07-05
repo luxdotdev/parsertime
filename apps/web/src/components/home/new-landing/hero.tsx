@@ -67,13 +67,13 @@ export function Hero({
             <Link href="/" className="flex items-center gap-3">
               <Image
                 src="/parsertime.png"
-                alt="Parsertime"
+                alt="Sightline"
                 width={32}
                 height={32}
                 className="h-8 w-8 invert dark:invert"
               />
               <span className="text-lg font-semibold text-white">
-                Parsertime
+                Sightline
               </span>
             </Link>
             <div className="hidden items-center gap-8 sm:flex">
@@ -238,7 +238,7 @@ export function Hero({
             <div className="overflow-hidden rounded-t-2xl">
               <Image
                 src="/player-page.png"
-                alt="Parsertime player analytics dashboard showing skill ratings and performance charts"
+                alt="Sightline player analytics dashboard showing skill ratings and performance charts"
                 width={2432}
                 height={1442}
                 className="hidden w-full dark:block"
@@ -246,7 +246,7 @@ export function Hero({
               />
               <Image
                 src="/player-page-light.png"
-                alt="Parsertime player analytics dashboard showing skill ratings and performance charts"
+                alt="Sightline player analytics dashboard showing skill ratings and performance charts"
                 width={2432}
                 height={1442}
                 className="block w-full dark:hidden"

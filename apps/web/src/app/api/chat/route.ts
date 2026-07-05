@@ -167,7 +167,7 @@ export async function POST(req: Request) {
                   await email.sendEmail({
                     to: user.email,
                     from: "noreply@lux.dev",
-                    subject: "Your Parsertime AI credits are running low",
+                    subject: "Your Sightline AI credits are running low",
                     html: await render(
                       CreditLowBalanceEmail({
                         user,

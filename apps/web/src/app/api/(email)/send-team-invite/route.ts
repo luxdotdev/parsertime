@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 import TeamInviteUserEmail from "@parsertime/transactional/emails/team-invite";
 import { auditLog } from "@/lib/audit-logs";
 import { canManageTeam, getCurrentUser } from "@/lib/auth";
@@ -34,9 +35,7 @@ export async function POST(req: NextRequest) {
   const normalizedInviteeEmail = inviteeEmail.toLowerCase();
 
   const baseUrl =
-    process.env.NODE_ENV === "production"
-      ? "https://parsertime.app"
-      : "http://localhost:3000";
+    process.env.NODE_ENV === "production" ? SITE_URL : "http://localhost:3000";
 
   const teamInviteToken = await prisma.teamInviteToken.findUnique({
     where: { token: inviteToken },
@@ -93,7 +92,7 @@ export async function POST(req: NextRequest) {
     try {
       await notifications.createInAppNotification({
         userId: invitee.id,
-        title: `You've been invited to join ${team.name} on Parsertime`,
+        title: `You've been invited to join ${team.name} on Sightline`,
         description: `You've been invited to join ${team.name} by ${user.name}. Click this notification to accept the invitation.`,
         href: `/team/join/${inviteToken}`,
       });
@@ -109,7 +108,7 @@ export async function POST(req: NextRequest) {
     await email.sendEmail({
       to: inviteeEmail,
       from: "noreply@lux.dev",
-      subject: `Join ${team.name} on Parsertime`,
+      subject: `Join ${team.name} on Sightline`,
       html: emailHtml,
     });
   } catch (error) {

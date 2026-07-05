@@ -16,12 +16,12 @@ export async function generateMetadata(
     openGraph: {
       title: t("ogTitle", { player }),
       description: t("ogDescription", { player }),
-      url: "https://parsertime.app",
+      url: "/",
       type: "website",
-      siteName: "Parsertime",
+      siteName: "Sightline",
       images: [
         {
-          url: `https://parsertime.app/api/og?title=${encodeURIComponent(t("ogTitle", { player }))}`,
+          url: `/api/og?title=${encodeURIComponent(t("ogTitle", { player }))}`,
           width: 1200,
           height: 630,
         },

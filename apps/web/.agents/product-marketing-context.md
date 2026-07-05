@@ -4,8 +4,8 @@ _Last updated: 2026-03-14_
 
 ## Product Overview
 
-**One-liner:** Parsertime turns raw Overwatch scrim data into skill ratings, trend lines, and coaching insights.
-**What it does:** Parsertime is a scrim analytics platform for competitive Overwatch teams. Players and coaches upload Workshop Log data from scrims and instantly get dashboards with per-player stats, hero skill ratings, trend analysis, and team performance breakdowns — replacing manual spreadsheet tracking with automated, visual analytics.
+**One-liner:** Sightline turns raw Overwatch scrim data into skill ratings, trend lines, and coaching insights.
+**What it does:** Sightline is a scrim analytics platform for competitive Overwatch teams. Players and coaches upload Workshop Log data from scrims and instantly get dashboards with per-player stats, hero skill ratings, trend analysis, and team performance breakdowns — replacing manual spreadsheet tracking with automated, visual analytics.
 **Product category:** Esports analytics / scrim analytics platform
 **Product type:** SaaS (web application)
 **Business model:** Freemium with three tiers — Free ($0/mo, 2 teams, 5 members), Basic ($10/mo, 5 teams, 10 members), Premium ($15/mo, 10 teams, 20 members). Discounts available for collegiate and Calling All Heroes teams. Open source codebase.
@@ -71,11 +71,11 @@ _Last updated: 2026-03-14_
 
 | Objection                                        | Response                                                                                                                                                   |
 | ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| "We already use spreadsheets and they work fine" | Spreadsheets take hours of manual entry every week and can't show trend lines or skill ratings. Parsertime gives you more insight in minutes, free to try. |
+| "We already use spreadsheets and they work fine" | Spreadsheets take hours of manual entry every week and can't show trend lines or skill ratings. Sightline gives you more insight in minutes, free to try. |
 | "Is my team's data private?"                     | Yes — passwordless login, team-scoped permissions, zero data sharing between teams. Your scrims stay yours.                                                |
 | "We're a small/casual team, is this for us?"     | The free tier supports 2 teams and 5 members with full analytics. First-time coaches and seasoned analysts both feel at home.                              |
 
-**Anti-persona:** Casual players who don't scrim or play competitively. Teams that don't use the ScrimTime Workshop code for data collection. Players looking for ranked/competitive ladder stats (Parsertime is for scrims, not ranked play).
+**Anti-persona:** Casual players who don't scrim or play competitively. Teams that don't use the ScrimTime Workshop code for data collection. Players looking for ranked/competitive ladder stats (Sightline is for scrims, not ranked play).
 
 ## Switching Dynamics
 
@@ -93,7 +93,7 @@ _Last updated: 2026-03-14_
 - "Replay codes expire and then our data is gone"
 - "We're coaching based on gut feel, not data"
   **How they describe us:**
-- "Parsertime is so impactful to the point where my players can be coached on things they actively need help with, like living more, or holding their ult longer and being patient."
+- "Sightline is so impactful to the point where my players can be coached on things they actively need help with, like living more, or holding their ult longer and being patient."
 - "We can actually see how players are improving week over week now"
   **Words to use:** scrims, coaching insights, skill ratings, trend lines, analytics, dashboard, upload, team workspace, performance tracking
   **Words to avoid:** AI-powered (not applicable), "big data," enterprise, corporate jargon, overly technical database terms
@@ -124,7 +124,7 @@ _Last updated: 2026-03-14_
 - 7 major releases in ~2 years
   **Customers:** St. Clair College, Cornell University, Florida International University, Georgia State University, VLLN, o7 Esports
   **Testimonials:**
-  > "Parsertime is so impactful to the point where my players can be coached on things they actively need help with, like living more, or holding their ult longer and being patient." — coy (@shy.coy), Manager for o7 Esports
+  > "Sightline is so impactful to the point where my players can be coached on things they actively need help with, like living more, or holding their ult longer and being patient." — coy (@shy.coy), Manager for o7 Esports
   > **Value themes:**
   > | Theme | Proof |
   > |-------|-------|

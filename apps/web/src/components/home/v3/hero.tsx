@@ -1,5 +1,6 @@
 "use client";
 
+import { SITE_DOMAIN } from "@/lib/site";
 import { AnimatedCounter } from "@/components/home/new-landing/animated-counter";
 import { useFirstVisit } from "@/components/home/new-landing/use-first-visit";
 import { Button } from "@/components/ui/button";
@@ -149,12 +150,12 @@ export function Hero({
           <Link href="/" className="flex items-center gap-3">
             <Image
               src="/parsertime.png"
-              alt="Parsertime"
+              alt="Sightline"
               width={28}
               height={28}
               className="h-7 w-7 dark:invert"
             />
-            <span className="text-base font-semibold">Parsertime</span>
+            <span className="text-base font-semibold">Sightline</span>
           </Link>
           <div className="hidden items-center gap-8 sm:flex">
             {navLinks.map((link) => (
@@ -326,12 +327,12 @@ export function Hero({
                     className="bg-muted-foreground/30 h-2.5 w-2.5 rounded-full"
                   />
                   <span className="text-muted-foreground ml-3 font-mono text-[10px] tracking-[0.18em] uppercase">
-                    parsertime.app
+                    {SITE_DOMAIN}
                   </span>
                 </div>
                 <Image
                   src="/player-page.png"
-                  alt="Parsertime player analytics dashboard showing skill ratings and performance charts"
+                  alt="Sightline player analytics dashboard showing skill ratings and performance charts"
                   width={2432}
                   height={1442}
                   className="hidden w-full dark:block"
@@ -339,7 +340,7 @@ export function Hero({
                 />
                 <Image
                   src="/player-page-light.png"
-                  alt="Parsertime player analytics dashboard showing skill ratings and performance charts"
+                  alt="Sightline player analytics dashboard showing skill ratings and performance charts"
                   width={2432}
                   height={1442}
                   className="block w-full dark:hidden"

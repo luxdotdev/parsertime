@@ -35,6 +35,7 @@ import type { AbstractIntlMessages } from "next-intl";
 import { Suspense } from "react";
 import { cookies } from "next/headers";
 import { getMetadataTranslations } from "@/lib/metadata-i18n";
+import { SITE_URL } from "@/lib/site";
 import { Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
@@ -49,16 +50,16 @@ export function generateMetadata(): Metadata {
   return {
     title: t("title"),
     description: t("description"),
-    metadataBase: new URL("https://parsertime.app"),
+    metadataBase: new URL(SITE_URL),
     openGraph: {
       title: t("ogTitle"),
       description: t("ogDescription"),
-      url: "https://parsertime.app",
+      url: "/",
       type: "website",
-      siteName: "Parsertime",
+      siteName: "Sightline",
       images: [
         {
-          url: `https://parsertime.app/opengraph-image.png`,
+          url: "/opengraph-image.png",
           width: 1200,
           height: 630,
         },

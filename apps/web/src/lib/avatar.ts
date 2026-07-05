@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 import { $Enums, type User } from "@/generated/prisma/browser";
 
 export const AVATAR_PREFIXES = {
@@ -28,9 +29,7 @@ export function imageProxyPath(
 
 /** Canonical site base URL for the few server contexts that need absolute URLs. */
 export function getBaseUrl(): string {
-  return (
-    process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? "https://parsertime.app"
-  );
+  return process.env.NEXTAUTH_URL?.replace(/\/$/, "") ?? SITE_URL;
 }
 
 /** True when a stored value still points at Vercel Blob (used by backfill/verify). */

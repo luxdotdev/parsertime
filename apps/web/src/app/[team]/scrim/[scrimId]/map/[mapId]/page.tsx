@@ -63,12 +63,12 @@ export async function generateMetadata(
     openGraph: {
       title: t("ogTitle", { mapName: translatedMapName }),
       description: t("ogDescription", { mapName: translatedMapName }),
-      url: "https://parsertime.app",
+      url: "/",
       type: "website",
-      siteName: "Parsertime",
+      siteName: "Sightline",
       images: [
         {
-          url: `https://parsertime.app/api/og?title=${t("ogImage", { mapName: translatedMapName })}`,
+          url: `/api/og?title=${t("ogImage", { mapName: translatedMapName })}`,
           width: 1200,
           height: 630,
         },

@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site";
 import { UserAuthForm } from "@/components/auth/user-auth-form";
 import { Link } from "@/components/ui/link";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -21,12 +22,12 @@ export function generateMetadata(): Metadata {
     openGraph: {
       title: t("ogTitle"),
       description: t("ogDescription"),
-      url: "https://parsertime.app",
+      url: "/",
       type: "website",
-      siteName: "Parsertime",
+      siteName: "Sightline",
       images: [
         {
-          url: `https://parsertime.app/opengraph-image.png`,
+          url: "/opengraph-image.png",
           width: 1200,
           height: 630,
         },
@@ -36,7 +37,7 @@ export function generateMetadata(): Metadata {
   };
 }
 
-const APP_ORIGIN = "https://parsertime.app";
+const APP_ORIGIN = SITE_URL;
 
 function hasUnsafeRedirectChars(value: string) {
   return [...value].some((char) => {
@@ -81,7 +82,7 @@ export default function AuthenticationPage(props: {
             <Image
               className="invert dark:invert-0"
               src="/parsertime.png"
-              alt="Parsertime Logo"
+              alt="Sightline Logo"
               width={24}
               height={24}
             />

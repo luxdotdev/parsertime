@@ -1,3 +1,4 @@
+import { SITE_URL, SUPPORT_EMAIL } from "../lib/site";
 import {
   Body,
   Column,
@@ -147,10 +148,10 @@ export function UsageReportEmail({
           <Container className="mx-auto my-[40px] max-w-[500px] rounded border border-solid border-[#eaeaea] p-[20px]">
             <Section className="mt-[32px]">
               <Img
-                src="https://parsertime.app/parsertime.png"
+                src={`${SITE_URL}/parsertime.png`}
                 width="50"
                 height="50"
-                alt="Parsertime Logo"
+                alt="Sightline Logo"
                 className="mx-auto my-0"
               />
             </Section>
@@ -348,13 +349,13 @@ export function UsageReportEmail({
             <Hr className="mx-0 my-[26px] w-full border border-solid border-[#eaeaea]" />
 
             <Text className="text-[12px] leading-[24px] text-[#666666]">
-              This is an automated weekly report sent to Parsertime admins. If
+              This is an automated weekly report sent to Sightline admins. If
               you have questions, reach out at{" "}
               <Link
-                href="mailto:help@parsertime.app"
+                href={`mailto:${SUPPORT_EMAIL}`}
                 className="text-blue-600 no-underline"
               >
-                help@parsertime.app
+                {SUPPORT_EMAIL}
               </Link>
               .
             </Text>
