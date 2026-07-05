@@ -680,55 +680,59 @@
       "guestUser": "게스트 사용자",
       "signIn": "로그인"
     },
-    "commandMenu": {
-      "searchPlaceholder": "명령어 입력 또는 검색...",
-      "searchResult": "결과가 없습니다.",
-      "suggestions": {
-        "title": "추천",
-        "dashboard": "대시보드",
-        "docs": "문서",
-        "signIn": "로그인",
-        "home": "홈"
+    "find": {
+      "title": "찾기",
+      "placeholder": "페이지, 스크림, 팀, 플레이어 검색...",
+      "searching": "검색 중",
+      "close": "닫기",
+      "groups": {
+        "recent": "최근",
+        "suggested": "이동",
+        "commands": "명령어",
+        "fallback": "대신 시도해 보세요"
       },
-      "scrim": {
-        "title": "스크림"
+      "noResults": "“{query}”에 대한 결과가 없습니다",
+      "noResultsHint": "페이지, 스크림, 팀 또는 플레이어 이름으로 검색해 보세요.",
+      "hints": {
+        "navigate": "이동",
+        "open": "열기",
+        "close": "닫기"
       },
-      "link": {
-        "title": "링크 복사됨",
+      "kinds": {
+        "team": "팀",
+        "player": "플레이어",
+        "scrim": "스크림",
+        "action": "명령어"
+      },
+      "pages": {
+        "linkedAccounts": "연동 계정",
+        "billing": "결제",
+        "home": "홈",
+        "debugAssistant": "디버깅 도우미",
+        "teamOverview": "팀 개요",
+        "teamPerformance": "팀 퍼포먼스",
+        "teamHeroes": "팀 영웅",
+        "teamTrends": "팀 추세",
+        "teamMaps": "팀 지도",
+        "teamSwaps": "팀 스왑",
+        "teamTeamfights": "팀 한타",
+        "teamUltimates": "팀 궁극기"
+      },
+      "actions": {
+        "themeLight": "라이트 테마 사용",
+        "themeDark": "다크 테마 사용",
+        "themeSystem": "시스템 테마 사용",
+        "changeLocale": "{locale}로 언어 변경",
+        "shareScrim": "공유 링크 복사",
+        "bugReport": "버그 신고",
+        "discord": "커뮤니티 디스코드",
+        "signIn": "로그인"
+      },
+      "share": {
+        "copied": "링크 복사됨",
         "description": "이 {pathname}에 대한 링크가 복사되었습니다.",
-        "share": "{pathname}에 대한 링크 공유",
         "map": "지도",
         "scrim": "스크림"
-      },
-      "teams": {
-        "title": "팀",
-        "viewTeams": "팀 보기",
-        "viewScrims": "스크림 보기: {team}"
-      },
-      "settings": {
-        "title": "설정",
-        "profile": "프로필",
-        "linkedAccounts": "Integrations"
-      },
-      "debugging": {
-        "title": "디버깅",
-        "assistant": "디버깅 도우미"
-      },
-      "feedback": {
-        "title": "피드백",
-        "bugReport": "버그 신고",
-        "contact": "문의하기",
-        "discord": "커뮤니티 디스코드"
-      },
-      "locale": {
-        "title": "언어",
-        "change": "{locale}로 언어 변경"
-      },
-      "theme": {
-        "title": "테마",
-        "light": "라이트",
-        "dark": "다크",
-        "system": "시스템"
       }
     },
     "bugReportForm": {

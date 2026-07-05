@@ -1,6 +1,5 @@
 "use client";
 
-import { DOCS_URL } from "@/lib/site";
 import { TeamSwitcherContext } from "@/components/team-switcher-provider";
 import {
   Collapsible,
@@ -21,321 +20,98 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import {
-  BookOpenIcon,
-  ChartColumnIcon,
-  ChevronRightIcon,
-  CrosshairIcon,
-  ExternalLinkIcon,
-  EyeIcon,
-  FileTextIcon,
-  LayoutDashboardIcon,
-  MailIcon,
-  MapIcon,
-  MedalIcon,
-  MessageSquareIcon,
-  PenLineIcon,
-  SettingsIcon,
-  ShuffleIcon,
-  TagIcon,
-  TerminalIcon,
-  TrophyIcon,
-  UsersIcon,
-  type LucideIcon,
-} from "lucide-react";
+  FOOTER_SCHEMA,
+  NAV_SCHEMA,
+  type FindContext,
+  type NavGroup as NavGroupData,
+  type NavLeaf,
+} from "@/lib/find/schema";
+import type { FeatureFlags } from "@/lib/flags-helpers";
+import { ChevronRightIcon, ExternalLinkIcon } from "lucide-react";
 import type { Route } from "next";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Suspense, use } from "react";
 
-// Route-active matchers carried over from the retired MainNav.
-const STATS_PLAYER_ROUTE = /^\/stats\/(?!hero$|team$|map$|compare$)[^/]+$/;
-const SCOUTING_TEAM_ROUTE = /^\/scouting\/(?!player$|team$)[^/]+$/;
-
-type NavSubItem = {
-  key: string;
-  label: string;
-  href: Route;
-  isActive: boolean;
-};
-
-type NavLinkItem = {
-  key: string;
-  label: string;
-  icon: LucideIcon;
-  href: Route;
-  isActive: boolean;
-};
-
-type NavGroupItemData = {
-  key: string;
-  label: string;
-  icon: LucideIcon;
-  isActive: boolean;
-  subItems: NavSubItem[];
-};
-
-type NavEntry = NavLinkItem | NavGroupItemData;
-
 /**
  * The primary sidebar navigation: SCRIMS (the organized-play platform),
- * RANKED (the solo suite), and TOOLS (flag-gated utilities). Feature flags
- * are resolved by the server loader in `app-sidebar.tsx` and passed in as
- * props so this stays a plain client renderer.
+ * RANKED (the solo suite), and TOOLS (flag-gated utilities). The structure
+ * comes from the shared nav schema (`@/lib/find/schema`) — the same source
+ * Find searches — so the two surfaces can never drift. Feature flags are
+ * resolved by the server loader in `app-sidebar.tsx` and passed in as props
+ * so this stays a plain client renderer.
  */
-export function AppSidebarNav({
-  scoutingEnabled,
-  faceitScoutingEnabled,
-  aiChatEnabled,
-  dataToolsEnabled,
-  tournamentEnabled,
-  coachingCanvasEnabled,
-  queryBuilderEnabled,
-}: {
-  scoutingEnabled: boolean;
-  faceitScoutingEnabled: boolean;
-  aiChatEnabled: boolean;
-  dataToolsEnabled: boolean;
-  tournamentEnabled: boolean;
-  coachingCanvasEnabled: boolean;
-  queryBuilderEnabled: boolean;
-}) {
-  const t = useTranslations("dashboard.mainNav");
-  const tSidebar = useTranslations("dashboard.sidebar");
+export function AppSidebarNav({ flags }: { flags: Partial<FeatureFlags> }) {
+  const t = useTranslations("dashboard");
   const pathname = usePathname();
   const { teamId } = use(TeamSwitcherContext);
-
-  const availabilityHref = (
-    teamId !== undefined ? `/team/${teamId}/availability` : "/team"
-  ) as Route;
-
-  const scrimsItems: NavEntry[] = [
-    {
-      key: "dashboard",
-      label: t("dashboard"),
-      icon: LayoutDashboardIcon,
-      href: "/dashboard",
-      isActive: pathname === "/dashboard",
-    },
-    {
-      key: "stats",
-      label: t("stats"),
-      icon: ChartColumnIcon,
-      isActive: pathname.startsWith("/stats"),
-      subItems: [
-        {
-          key: "player",
-          label: t("playerStats"),
-          href: "/stats",
-          isActive: pathname === "/stats" || STATS_PLAYER_ROUTE.test(pathname),
-        },
-        {
-          key: "hero",
-          label: t("heroStats"),
-          href: "/stats/hero",
-          isActive: pathname.startsWith("/stats/hero"),
-        },
-        {
-          key: "team",
-          label: t("teamStats"),
-          href: "/stats/team",
-          isActive: pathname.startsWith("/stats/team"),
-        },
-        {
-          key: "map",
-          label: t("mapStats"),
-          href: "/stats/map",
-          isActive: pathname.startsWith("/stats/map"),
-        },
-        {
-          key: "compare",
-          label: t("compareStats"),
-          href: "/stats/compare",
-          isActive: pathname === "/stats/compare",
-        },
-      ],
-    },
-    {
-      key: "teams",
-      label: t("teams"),
-      icon: UsersIcon,
-      isActive: pathname.split("/")[1] === "team",
-      subItems: [
-        {
-          key: "yourTeams",
-          label: t("yourTeams"),
-          href: "/team",
-          isActive: pathname === "/team",
-        },
-        {
-          key: "availability",
-          label: t("availability"),
-          href: availabilityHref,
-          isActive: pathname.includes("/availability"),
-        },
-      ],
-    },
-    {
-      key: "matchmaker",
-      label: t("matchmaker"),
-      icon: ShuffleIcon,
-      href: "/matchmaker",
-      isActive: pathname.startsWith("/matchmaker"),
-    },
-    {
-      key: "leaderboard",
-      label: t("leaderboard"),
-      icon: TrophyIcon,
-      href: "/leaderboard/csr",
-      isActive: pathname.startsWith("/leaderboard"),
-    },
-  ];
-
-  if (scoutingEnabled || faceitScoutingEnabled) {
-    scrimsItems.push({
-      key: "scouting",
-      label: t("scouting"),
-      icon: EyeIcon,
-      isActive:
-        pathname.startsWith("/scouting") || pathname.startsWith("/faceit"),
-      subItems: [
-        ...(scoutingEnabled
-          ? [
-              {
-                key: "scoutTeam",
-                label: t("scoutTeam"),
-                href: "/scouting" as Route,
-                isActive:
-                  pathname === "/scouting" ||
-                  SCOUTING_TEAM_ROUTE.test(pathname),
-              },
-              {
-                key: "scoutPlayer",
-                label: t("scoutPlayer"),
-                href: "/scouting/player" as Route,
-                isActive: pathname.startsWith("/scouting/player"),
-              },
-            ]
-          : []),
-        ...(faceitScoutingEnabled
-          ? [
-              {
-                key: "faceitTeam",
-                label: t("scoutFaceitTeam"),
-                href: "/faceit" as Route,
-                isActive:
-                  pathname === "/faceit" || pathname.startsWith("/faceit/team"),
-              },
-              {
-                key: "faceitPlayer",
-                label: t("scoutFaceitPlayer"),
-                href: "/faceit/player" as Route,
-                isActive: pathname.startsWith("/faceit/player"),
-              },
-            ]
-          : []),
-      ],
-    });
-  }
-
-  if (tournamentEnabled) {
-    scrimsItems.push({
-      key: "tournaments",
-      label: t("tournaments"),
-      icon: MedalIcon,
-      href: "/tournaments" as Route,
-      isActive: pathname.startsWith("/tournaments"),
-    });
-  }
-
-  const rankedItems: NavEntry[] = [
-    {
-      key: "rankedTracker",
-      label: tSidebar("rankedTracker"),
-      icon: CrosshairIcon,
-      href: "/ranked" as Route,
-      isActive: pathname.startsWith("/ranked"),
-    },
-  ];
-
-  const toolsItems: NavEntry[] = [
-    ...(aiChatEnabled
-      ? [
-          {
-            key: "chat",
-            label: t("chat"),
-            icon: MessageSquareIcon,
-            href: "/chat" as Route,
-            isActive: pathname.startsWith("/chat"),
-          },
-          {
-            key: "reports",
-            label: t("chatReports"),
-            icon: FileTextIcon,
-            href: "/reports" as Route,
-            isActive: pathname.startsWith("/reports"),
-          },
-        ]
-      : []),
-    ...(queryBuilderEnabled
-      ? [
-          {
-            key: "query",
-            label: t("query"),
-            icon: TerminalIcon,
-            href: "/query" as Route,
-            isActive: pathname.startsWith("/query"),
-          },
-        ]
-      : []),
-    ...(dataToolsEnabled
-      ? [
-          {
-            key: "dataLabeling",
-            label: t("dataLabeling"),
-            icon: TagIcon,
-            href: "/data-labeling" as Route,
-            isActive: pathname.startsWith("/data-labeling"),
-          },
-          {
-            key: "mapCalibration",
-            label: t("mapCalibration"),
-            icon: MapIcon,
-            href: "/map-calibration" as Route,
-            isActive: pathname.startsWith("/map-calibration"),
-          },
-        ]
-      : []),
-    ...(coachingCanvasEnabled
-      ? [
-          {
-            key: "coachingCanvas",
-            label: t("coachingCanvas"),
-            icon: PenLineIcon,
-            href: "/coaching/canvas" as Route,
-            isActive: pathname.startsWith("/coaching"),
-          },
-        ]
-      : []),
-  ];
+  const ctx: FindContext = { teamId };
 
   return (
     <>
-      <NavSection label={tSidebar("sections.scrims")} items={scrimsItems} />
-      <RailSectionBreak />
-      <NavSection label={tSidebar("sections.ranked")} items={rankedItems} />
-      {toolsItems.length > 0 && (
-        <>
-          <RailSectionBreak />
-          <NavSection label={tSidebar("sections.tools")} items={toolsItems} />
-        </>
-      )}
+      {NAV_SCHEMA.map((section, i) => {
+        const entries = section.entries
+          .map((entry) =>
+            entry.kind === "group"
+              ? {
+                  ...entry,
+                  children: entry.children.filter(
+                    (child) => !child.flag || flags[child.flag]
+                  ),
+                }
+              : entry
+          )
+          .filter((entry) =>
+            entry.kind === "group"
+              ? entry.children.length > 0
+              : !entry.flag || flags[entry.flag]
+          );
+        if (entries.length === 0) return null;
+
+        return (
+          <div key={section.id} className="contents">
+            {i > 0 && <RailSectionBreak />}
+            <SidebarGroup>
+              <SidebarGroupLabel className="font-mono text-[10px] tracking-[0.16em] uppercase">
+                {t(section.labelKey)}
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {entries.map((entry) =>
+                    entry.kind === "group" ? (
+                      <NavGroup
+                        key={entry.id}
+                        item={entry}
+                        pathname={pathname}
+                        ctx={ctx}
+                      />
+                    ) : (
+                      <NavLink
+                        key={entry.id}
+                        item={entry}
+                        pathname={pathname}
+                        ctx={ctx}
+                      />
+                    )
+                  )}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </div>
+        );
+      })}
     </>
   );
 }
 
+function leafHref(leaf: NavLeaf, ctx: FindContext): Route {
+  return typeof leaf.href === "function" ? leaf.href(ctx) : leaf.href;
+}
+
 /**
- * Pinned footer links: Settings, Contact, and the external docs site.
+ * Pinned footer links: Settings, Contact, and the external docs site —
+ * rendered from the schema's footer entries.
  *
  * `usePathname()` is URL data, so the active-state variant must live behind a
  * Suspense boundary on dynamic routes (E1316); the fallback renders the same
@@ -355,7 +131,7 @@ function ActiveFooterMenu() {
 }
 
 function FooterMenu({ activePath }: { activePath: string | null }) {
-  const t = useTranslations("dashboard.mainNav");
+  const t = useTranslations("dashboard");
   const { isMobile, setOpenMobile } = useSidebar();
 
   function closeMobileSidebar() {
@@ -364,41 +140,38 @@ function FooterMenu({ activePath }: { activePath: string | null }) {
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          asChild
-          isActive={activePath?.startsWith("/settings") ?? false}
-          tooltip={t("settings")}
-          className="data-active:text-sidebar-primary"
-        >
-          <Link href="/settings" onClick={closeMobileSidebar}>
-            <SettingsIcon />
-            <span>{t("settings")}</span>
-          </Link>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-      <SidebarMenuItem>
-        <SidebarMenuButton
-          asChild
-          isActive={activePath?.startsWith("/contact") ?? false}
-          tooltip={t("contact")}
-          className="data-active:text-sidebar-primary"
-        >
-          <Link href="/contact" onClick={closeMobileSidebar}>
-            <MailIcon />
-            <span>{t("contact")}</span>
-          </Link>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
-      <SidebarMenuItem>
-        <SidebarMenuButton asChild tooltip={t("docs")}>
-          <a href={DOCS_URL} target="_blank" rel="noreferrer">
-            <BookOpenIcon />
-            <span>{t("docs")}</span>
-            <ExternalLinkIcon className="ml-auto opacity-60" />
-          </a>
-        </SidebarMenuButton>
-      </SidebarMenuItem>
+      {FOOTER_SCHEMA.map((leaf) => {
+        const label = t(leaf.labelKey);
+        const isActive =
+          activePath !== null && (leaf.isActive?.(activePath) ?? false);
+
+        return (
+          <SidebarMenuItem key={leaf.id}>
+            <SidebarMenuButton
+              asChild
+              isActive={isActive}
+              tooltip={label}
+              className="data-active:text-sidebar-primary"
+            >
+              {leaf.external ? (
+                <a href={leaf.href as string} target="_blank" rel="noreferrer">
+                  {leaf.icon && <leaf.icon />}
+                  <span>{label}</span>
+                  <ExternalLinkIcon className="ml-auto opacity-60" />
+                </a>
+              ) : (
+                <Link
+                  href={leafHref(leaf, {})}
+                  onClick={closeMobileSidebar}
+                >
+                  {leaf.icon && <leaf.icon />}
+                  <span>{label}</span>
+                </Link>
+              )}
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        );
+      })}
     </SidebarMenu>
   );
 }
@@ -411,65 +184,64 @@ function RailSectionBreak() {
   );
 }
 
-function NavSection({ label, items }: { label: string; items: NavEntry[] }) {
-  return (
-    <SidebarGroup>
-      <SidebarGroupLabel className="font-mono text-[10px] tracking-[0.16em] uppercase">
-        {label}
-      </SidebarGroupLabel>
-      <SidebarGroupContent>
-        <SidebarMenu>
-          {items.map((item) =>
-            "subItems" in item ? (
-              <NavGroup key={item.key} item={item} />
-            ) : (
-              <NavLink key={item.key} item={item} />
-            )
-          )}
-        </SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
-  );
-}
-
-function NavLink({ item }: { item: NavLinkItem }) {
+function NavLink({
+  item,
+  pathname,
+  ctx,
+}: {
+  item: NavLeaf;
+  pathname: string;
+  ctx: FindContext;
+}) {
+  const t = useTranslations("dashboard");
   const { isMobile, setOpenMobile } = useSidebar();
+  const label = t(item.labelKey);
 
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
         asChild
-        isActive={item.isActive}
-        tooltip={item.label}
+        isActive={item.isActive?.(pathname) ?? false}
+        tooltip={label}
         className="data-active:text-sidebar-primary"
       >
         <Link
-          href={item.href}
+          href={leafHref(item, ctx)}
           onClick={() => {
             if (isMobile) setOpenMobile(false);
           }}
         >
-          <item.icon />
-          <span>{item.label}</span>
+          {item.icon && <item.icon />}
+          <span>{label}</span>
         </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>
   );
 }
 
-function NavGroup({ item }: { item: NavGroupItemData }) {
+function NavGroup({
+  item,
+  pathname,
+  ctx,
+}: {
+  item: NavGroupData & { children: NavLeaf[] };
+  pathname: string;
+  ctx: FindContext;
+}) {
+  const t = useTranslations("dashboard");
   const { isMobile, setOpen, setOpenMobile, state } = useSidebar();
+  const label = t(item.labelKey);
 
   return (
     <Collapsible
       asChild
-      defaultOpen={item.isActive}
+      defaultOpen={item.isActive?.(pathname) ?? false}
       className="group/collapsible"
     >
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
           <SidebarMenuButton
-            tooltip={item.label}
+            tooltip={label}
             onClick={() => {
               // In the icon rail the submenu is hidden, so a group click
               // expands the sidebar (with the group opening) instead of
@@ -478,26 +250,26 @@ function NavGroup({ item }: { item: NavGroupItemData }) {
             }}
           >
             <item.icon />
-            <span>{item.label}</span>
+            <span>{label}</span>
             <ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
           </SidebarMenuButton>
         </CollapsibleTrigger>
         <CollapsibleContent>
           <SidebarMenuSub>
-            {item.subItems.map((sub) => (
-              <SidebarMenuSubItem key={sub.key}>
+            {item.children.map((sub) => (
+              <SidebarMenuSubItem key={sub.id}>
                 <SidebarMenuSubButton
                   asChild
-                  isActive={sub.isActive}
+                  isActive={sub.isActive?.(pathname) ?? false}
                   className="data-active:text-sidebar-primary"
                 >
                   <Link
-                    href={sub.href}
+                    href={leafHref(sub, ctx)}
                     onClick={() => {
                       if (isMobile) setOpenMobile(false);
                     }}
                   >
-                    <span>{sub.label}</span>
+                    <span>{t(sub.labelKey)}</span>
                   </Link>
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>

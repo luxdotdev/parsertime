@@ -1,24 +1,26 @@
 "use client";
 
-import { CommandMenuContext } from "@/components/command-menu-provider";
+import { FindContext } from "@/components/find/find-provider";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import type { User } from "@/generated/prisma/browser";
-import type { DialogProps } from "@radix-ui/react-dialog";
 import { SearchIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { use } from "react";
 
-export function Search(_: DialogProps & { user: User | null }) {
-  const { setOpen } = use(CommandMenuContext);
+/**
+ * The header search affordance Find morphs out of. While the dialog is
+ * engaged, the morph animation imperatively hides this button (the panel
+ * visually *is* the button, mid-flight); it reappears when the close
+ * animation lands back on it.
+ */
+export function FindTrigger() {
+  const { setOpen, triggerRef } = use(FindContext);
   const t = useTranslations("dashboard");
 
   return (
     <Button
+      ref={triggerRef}
       variant="outline"
-      className={cn(
-        "text-muted-foreground h-8 w-8 justify-center rounded-md bg-transparent p-0 text-sm font-normal shadow-none xl:relative xl:w-44 xl:justify-start xl:px-3 xl:pr-12 2xl:w-56"
-      )}
+      className="text-muted-foreground h-8 w-8 justify-center rounded-md bg-transparent p-0 text-sm font-normal shadow-none xl:relative xl:w-44 xl:justify-start xl:px-3 xl:pr-12 2xl:w-56"
       onClick={() => setOpen(true)}
     >
       <SearchIcon className="size-4 shrink-0 xl:hidden" />

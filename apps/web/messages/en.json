@@ -680,55 +680,59 @@
       "guestUser": "Guest User",
       "signIn": "Sign In"
     },
-    "commandMenu": {
-      "searchPlaceholder": "Type a command or search...",
-      "searchResult": "No results found.",
-      "suggestions": {
-        "title": "Suggestions",
-        "dashboard": "Dashboard",
-        "docs": "Docs",
-        "signIn": "Sign In",
-        "home": "Home"
+    "find": {
+      "title": "Find",
+      "placeholder": "Find pages, scrims, teams, players...",
+      "searching": "Searching",
+      "close": "Close",
+      "groups": {
+        "recent": "Recent",
+        "suggested": "Navigate",
+        "commands": "Commands",
+        "fallback": "Try instead"
       },
-      "scrim": {
-        "title": "Scrim"
+      "noResults": "No results for “{query}”",
+      "noResultsHint": "Try a page, scrim, team, or player name.",
+      "hints": {
+        "navigate": "Navigate",
+        "open": "Open",
+        "close": "Close"
       },
-      "link": {
-        "title": "Link Copied",
+      "kinds": {
+        "team": "Team",
+        "player": "Player",
+        "scrim": "Scrim",
+        "action": "Command"
+      },
+      "pages": {
+        "linkedAccounts": "Integrations",
+        "billing": "Billing",
+        "home": "Home",
+        "debugAssistant": "Debugging Assistant",
+        "teamOverview": "Team Overview",
+        "teamPerformance": "Team Performance",
+        "teamHeroes": "Team Heroes",
+        "teamTrends": "Team Trends",
+        "teamMaps": "Team Maps",
+        "teamSwaps": "Team Swaps",
+        "teamTeamfights": "Team Teamfights",
+        "teamUltimates": "Team Ultimates"
+      },
+      "actions": {
+        "themeLight": "Use light theme",
+        "themeDark": "Use dark theme",
+        "themeSystem": "Use system theme",
+        "changeLocale": "Change language to {locale}",
+        "shareScrim": "Copy share link",
+        "bugReport": "Report a bug",
+        "discord": "Community Discord",
+        "signIn": "Sign in"
+      },
+      "share": {
+        "copied": "Link copied",
         "description": "The link to this {pathname} has been copied.",
-        "share": "Share Link to {pathname}",
-        "map": "Map",
-        "scrim": "Scrim"
-      },
-      "teams": {
-        "title": "Teams",
-        "viewTeams": "View Teams",
-        "viewScrims": "View Scrims: {team}"
-      },
-      "settings": {
-        "title": "Settings",
-        "profile": "Profile",
-        "linkedAccounts": "Integrations"
-      },
-      "debugging": {
-        "title": "Debugging",
-        "assistant": "Debugging Assistant"
-      },
-      "feedback": {
-        "title": "Feedback",
-        "bugReport": "Report a Bug",
-        "contact": "Contact Us",
-        "discord": "Community Discord"
-      },
-      "locale": {
-        "title": "Locales",
-        "change": "Change Locale to {locale}"
-      },
-      "theme": {
-        "title": "Theme",
-        "light": "Light",
-        "dark": "Dark",
-        "system": "System"
+        "map": "map",
+        "scrim": "scrim"
       }
     },
     "bugReportForm": {

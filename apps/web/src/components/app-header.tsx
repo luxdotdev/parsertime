@@ -1,4 +1,4 @@
-import { Search } from "@/components/dashboard/search";
+import { FindTrigger } from "@/components/find/find-trigger";
 import { GuestNav } from "@/components/guest-nav";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { Notifications } from "@/components/notifications";
@@ -18,12 +18,13 @@ import type { Session } from "@/lib/auth";
 export function AppHeader({
   switcher,
   session,
-  user,
   guestMode = false,
 }: {
   /** Left-side switcher slot, e.g. <TeamSwitcher /> or <PlayerSwitcher />. */
   switcher?: React.ReactNode;
   session: Session | null;
+  /** Unused by the header itself (Find gets it via the root layout), kept so
+   * call sites don't churn. */
   user: User | null;
   guestMode?: boolean;
 }) {
@@ -44,9 +45,7 @@ export function AppHeader({
           </>
         )}
         <div className="ml-auto flex items-center gap-2">
-          <div className="hidden sm:block">
-            <Search user={user} />
-          </div>
+          <FindTrigger />
           <ModeToggle />
           <LocaleSwitcher />
           {session ? (

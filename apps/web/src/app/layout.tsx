@@ -2,8 +2,8 @@ import {
   BrandThemeHydrator,
   BrandThemeProvider,
 } from "@/components/brand-theme-provider";
-import { CommandDialogMenu } from "@/components/command-menu";
-import { CommandMenuProvider } from "@/components/command-menu-provider";
+import { FindDialog } from "@/components/find/find-dialog";
+import { FindProvider } from "@/components/find/find-provider";
 import { DevTools } from "@/components/devtools";
 import {
   FeatureFlagsHydrator,
@@ -126,7 +126,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                     enMessages as unknown as AbstractIntlMessages
                   }
                 >
-                  <CommandMenuProvider>
+                  <FindProvider>
                     <AppSettingsProvider>
                       <BrandThemeProvider>
                         <FeatureFlagsProvider>
@@ -144,7 +144,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                         </FeatureFlagsProvider>
                       </BrandThemeProvider>
                     </AppSettingsProvider>
-                  </CommandMenuProvider>
+                  </FindProvider>
                 </IntlProvider>
               </TooltipProvider>
               <Toaster />
@@ -200,9 +200,9 @@ async function FlagsIsland() {
 }
 
 /**
- * Streams the session-derived extras: the command-menu dialog (its `user`
- * prop only feeds the lazily-opened bug-report form) and the DSG brand-theme
- * unlock. Nothing visible blocks on these.
+ * Streams the session-derived extras: the Find dialog (its `user` prop gates
+ * the entity index and feeds the lazily-opened bug-report form) and the DSG
+ * brand-theme unlock. Nothing visible blocks on these.
  */
 async function SessionIsland() {
   const session = await auth();
@@ -226,7 +226,7 @@ async function SessionIsland() {
   return (
     <>
       <BrandThemeHydrator canUseDisguised={isDsgMember} />
-      <CommandDialogMenu user={user} />
+      <FindDialog user={user} />
     </>
   );
 }

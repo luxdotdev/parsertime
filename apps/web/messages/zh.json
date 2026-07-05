@@ -680,55 +680,59 @@
       "guestUser": "访客用户",
       "signIn": "登录"
     },
-    "commandMenu": {
-      "searchPlaceholder": "输入命令或搜索...",
-      "searchResult": "未找到结果。",
-      "suggestions": {
-        "title": "建议",
-        "dashboard": "仪表盘",
-        "docs": "文档",
-        "signIn": "登录",
-        "home": "首页"
+    "find": {
+      "title": "查找",
+      "placeholder": "查找页面、训练赛、团队、玩家...",
+      "searching": "搜索中",
+      "close": "关闭",
+      "groups": {
+        "recent": "最近",
+        "suggested": "导航",
+        "commands": "命令",
+        "fallback": "试试这些"
       },
-      "scrim": {
-        "title": "训练赛"
+      "noResults": "未找到“{query}”的结果",
+      "noResultsHint": "请尝试页面、训练赛、团队或玩家名称。",
+      "hints": {
+        "navigate": "导航",
+        "open": "打开",
+        "close": "关闭"
       },
-      "link": {
-        "title": "链接已复制",
+      "kinds": {
+        "team": "团队",
+        "player": "玩家",
+        "scrim": "训练赛",
+        "action": "命令"
+      },
+      "pages": {
+        "linkedAccounts": "关联账户",
+        "billing": "账单",
+        "home": "首页",
+        "debugAssistant": "调试助手",
+        "teamOverview": "团队概览",
+        "teamPerformance": "团队表现",
+        "teamHeroes": "团队英雄",
+        "teamTrends": "团队趋势",
+        "teamMaps": "团队地图",
+        "teamSwaps": "团队换人",
+        "teamTeamfights": "团队团战",
+        "teamUltimates": "团队终极技能"
+      },
+      "actions": {
+        "themeLight": "使用浅色主题",
+        "themeDark": "使用深色主题",
+        "themeSystem": "使用系统主题",
+        "changeLocale": "将语言更改为 {locale}",
+        "shareScrim": "复制分享链接",
+        "bugReport": "报告问题",
+        "discord": "社区 Discord",
+        "signIn": "登录"
+      },
+      "share": {
+        "copied": "链接已复制",
         "description": "此 {pathname} 的链接已复制。",
-        "share": "共享链接至 {pathname}",
         "map": "地图",
         "scrim": "训练赛"
-      },
-      "teams": {
-        "title": "团队",
-        "viewTeams": "查看团队",
-        "viewScrims": "查看 {team} 的比赛"
-      },
-      "settings": {
-        "title": "设置",
-        "profile": "个人资料",
-        "linkedAccounts": "Integrations"
-      },
-      "debugging": {
-        "title": "调试",
-        "assistant": "调试助手"
-      },
-      "feedback": {
-        "title": "反馈",
-        "bugReport": "报告问题",
-        "contact": "联系我们",
-        "discord": "社区讨论区"
-      },
-      "locale": {
-        "title": "语言",
-        "change": "将语言更改为 {locale}"
-      },
-      "theme": {
-        "title": "主题",
-        "light": "浅色",
-        "dark": "深色",
-        "system": "系统默认"
       }
     },
     "bugReportForm": {

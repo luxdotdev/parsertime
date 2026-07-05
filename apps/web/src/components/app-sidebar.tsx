@@ -80,7 +80,7 @@ async function AppSidebarNavLoader() {
     scoutingEnabled,
     faceitScoutingEnabled,
     aiChatEnabled,
-    dataToolsEnabled,
+    dataLabelingEnabled,
     tournamentEnabled,
     coachingCanvasEnabled,
     queryBuilderEnabled,
@@ -96,13 +96,15 @@ async function AppSidebarNavLoader() {
 
   return (
     <AppSidebarNav
-      scoutingEnabled={scoutingEnabled}
-      faceitScoutingEnabled={faceitScoutingEnabled}
-      aiChatEnabled={aiChatEnabled}
-      dataToolsEnabled={dataToolsEnabled}
-      tournamentEnabled={tournamentEnabled}
-      coachingCanvasEnabled={coachingCanvasEnabled}
-      queryBuilderEnabled={queryBuilderEnabled}
+      flags={{
+        scoutingEnabled,
+        faceitScoutingEnabled,
+        aiChatEnabled,
+        dataLabelingEnabled,
+        tournamentEnabled,
+        coachingCanvasEnabled,
+        queryBuilderEnabled,
+      }}
     />
   );
 }
