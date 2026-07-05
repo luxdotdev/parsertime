@@ -21,11 +21,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import {
-  CaretSortIcon,
-  CheckIcon,
-  PlusCircledIcon,
-} from "@radix-ui/react-icons";
+import { CheckIcon, ChevronsUpDownIcon, PlusCircleIcon } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Session } from "@/lib/auth";
 import { useTranslations } from "next-intl";
@@ -106,14 +102,17 @@ export function TeamSwitcher({
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
+            variant="ghost"
             role="combobox"
             aria-expanded={open}
             aria-controls="team-switcher-listbox"
             aria-label={t("selectTeam")}
-            className={cn("w-[200px] justify-between", className)}
+            className={cn(
+              "h-8 max-w-52 justify-start gap-2 px-2 font-medium",
+              className
+            )}
           >
-            <Avatar className="mr-2 h-5 w-5">
+            <Avatar className="size-5">
               <AvatarImage
                 src={
                   selectedTeam.image ??
@@ -123,11 +122,11 @@ export function TeamSwitcher({
               />
               <AvatarFallback>PT</AvatarFallback>
             </Avatar>
-            <p className="truncate">{selectedTeam.label}</p>
-            <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+            <span className="truncate">{selectedTeam.label}</span>
+            <ChevronsUpDownIcon className="ml-1 size-3.5 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0">
+        <PopoverContent className="w-[220px] p-0" align="start">
           <Command>
             <CommandList id="team-switcher-listbox">
               <CommandInput placeholder={t("searchTeamPlaceholder")} />
@@ -164,7 +163,7 @@ export function TeamSwitcher({
                         {team.label}
                         <CheckIcon
                           className={cn(
-                            "ml-auto h-4 w-4",
+                            "ml-auto size-4",
                             selectedTeam.value === team.value
                               ? "opacity-100"
                               : "opacity-0"
@@ -186,7 +185,7 @@ export function TeamSwitcher({
                       setShowNewTeamDialog(true);
                     }}
                   >
-                    <PlusCircledIcon className="mr-2 h-5 w-5" />
+                    <PlusCircleIcon className="mr-2 size-5" />
                     {t("createTeam")}
                   </CommandItem>
                 </DialogTrigger>

@@ -362,7 +362,14 @@ function SidebarSeparator({
     <Separator
       data-slot="sidebar-separator"
       data-sidebar="separator"
-      className={cn("bg-sidebar-border mx-2 w-auto", className)}
+      // The extra variant-scoped w-auto is load-bearing: the base Separator
+      // sets `data-[orientation=horizontal]:w-full`, which a plain `w-auto`
+      // can't override (different variant, later in the cascade), leaving the
+      // hairline overflowing its right margin.
+      className={cn(
+        "bg-sidebar-border mx-2 w-auto data-[orientation=horizontal]:w-auto",
+        className
+      )}
       {...props}
     />
   );
@@ -512,7 +519,9 @@ function SidebarMenuButton({
       data-slot="sidebar-menu-button"
       data-sidebar="menu-button"
       data-size={size}
-      data-active={isActive}
+      // The styles use the presence-matching `data-active:` variant, so the
+      // attribute must be absent (not "false") on inactive items.
+      data-active={isActive || undefined}
       className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
       {...props}
     />
@@ -671,7 +680,8 @@ function SidebarMenuSubButton({
       data-slot="sidebar-menu-sub-button"
       data-sidebar="menu-sub-button"
       data-size={size}
-      data-active={isActive}
+      // Same presence-matching caveat as SidebarMenuButton above.
+      data-active={isActive || undefined}
       className={cn(
         "text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground [&>svg]:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 outline-hidden group-data-[collapsible=icon]:hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[size=md]:text-sm data-[size=sm]:text-xs [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
         className

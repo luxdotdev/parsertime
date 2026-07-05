@@ -655,6 +655,9 @@
     "admin": "管理员视图",
     "pendingFeedback": "{count, plural, other {{count} 场训练赛等待反馈}}",
     "search": "搜索...",
+    "localeSwitcher": {
+      "toggle": "更改语言"
+    },
     "themeSwitcher": {
       "toggle": "切换主题",
       "light": "浅色",
@@ -839,6 +842,14 @@
       "availability": "可用时间",
       "matchmaker": "匹配工具",
       "ranked": "排位追踪器"
+    },
+    "sidebar": {
+      "sections": {
+        "scrims": "训练赛",
+        "ranked": "排位",
+        "tools": "工具"
+      },
+      "rankedTracker": "追踪器"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "搜索团队...",

@@ -1,5 +1,4 @@
 import { PlayerCharts } from "@/components/charts/player/player-charts";
-import { MainNav } from "@/components/dashboard/main-nav";
 import { Search } from "@/components/dashboard/search";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { PlayerSwitcher } from "@/components/map/player-switcher";
@@ -122,7 +121,6 @@ async function PlayerDashboardDemoContent({
       <div className="border-b">
         <div className="hidden h-16 items-center px-4 md:flex">
           <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
-          <MainNav className="mx-6" scoutingEnabled={false} />
           <div className="ml-auto flex items-center space-x-4">
             <Search user={null} />
             <ModeToggle />

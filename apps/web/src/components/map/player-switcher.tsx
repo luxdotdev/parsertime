@@ -58,10 +58,6 @@ export function PlayerSwitcher({
 
   const [open, setOpen] = React.useState(false);
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false);
-  const [selectedPlayer, setSelectedPlayer] = React.useState<Player>(() => ({
-    label: t("default"),
-    value: "default",
-  }));
 
   const router = useRouter();
   const pathname = usePathname();
@@ -71,20 +67,24 @@ export function PlayerSwitcher({
       ? "/demo"
       : (pathname.split("/").slice(0, 6).join("/") as Route);
 
-  React.useEffect(() => {
-    const playerId = decodeURIComponent(pathname.split("/").pop()!);
-    if (playerId) {
+  // The switcher lives in the map layout's header and persists across
+  // map ⇄ player navigations, so the selection must be DERIVED from the URL
+  // rather than held in mount-time state — otherwise it goes stale when the
+  // route changes underneath it (e.g. browser back to the overview).
+  const selectedPlayer = React.useMemo<Player>(() => {
+    const segments = pathname.split("/");
+    const playerIndex = segments.indexOf("player");
+    const playerId = segments[playerIndex + 1];
+    if (playerIndex !== -1 && playerId) {
       const player = mostPlayedHeroes.find(
-        (player) => player.player_name === playerId
+        (candidate) => candidate.player_name === decodeURIComponent(playerId)
       );
       if (player) {
-        setSelectedPlayer({
-          label: player.player_name,
-          value: player.player_hero,
-        });
+        return { label: player.player_name, value: player.player_hero };
       }
     }
-  }, [mostPlayedHeroes, pathname]);
+    return { label: t("default"), value: "default" };
+  }, [mostPlayedHeroes, pathname, t]);
 
   const teams = React.useMemo(() => {
     const sorted = [...mostPlayedHeroes]
@@ -147,6 +147,10 @@ export function PlayerSwitcher({
                     <CommandItem
                       key={player.label}
                       onSelect={() => {
+                        // The switcher persists across the navigation, so the
+                        // popover must close itself — there's no remount to
+                        // reset it.
+                        setOpen(false);
                         router.push(
                           `${mapUrl}/player/${player.label}` as Route,
                           { transitionTypes: ["nav-forward"] }
@@ -181,12 +185,9 @@ export function PlayerSwitcher({
                 <DialogTrigger asChild>
                   <CommandItem
                     onSelect={() => {
+                      setOpen(false);
                       router.push(mapUrl, {
                         transitionTypes: ["nav-back"],
-                      });
-                      setSelectedPlayer({
-                        label: t("default"),
-                        value: "default",
                       });
                     }}
                   >

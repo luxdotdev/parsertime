@@ -1,4 +1,3 @@
-import { AppHeader } from "@/components/app-header";
 import { NoAuthCard } from "@/components/auth/no-auth";
 import { DirectionalTransition } from "@/components/directional-transition";
 import { ActiveMapTab } from "@/components/map/active-map-tab";
@@ -6,7 +5,6 @@ import { HeroBans } from "@/components/map/hero-bans";
 import { MapPageSkeleton } from "@/components/map/map-page-skeleton";
 import { MapTabs } from "@/components/map/map-tabs";
 import { MapTabsSkeleton } from "@/components/map/map-tabs-skeleton";
-import { PlayerSwitcher } from "@/components/map/player-switcher";
 import { ReplayCode } from "@/components/scrim/replay-code";
 import { StatsViewBeacon } from "@/components/usage/stats-view-beacon";
 import {
@@ -14,8 +12,6 @@ import {
   getCachedMapDetails,
   getCachedMapRow,
   getCachedMatchStory,
-  getCachedMostPlayedHeroes,
-  getCachedScrimVisibility,
 } from "@/data/cached/map-cache";
 import { getMapViewerContext } from "@/data/cached/map-viewer";
 import { defaultLocale, type Locale } from "@/i18n/config";
@@ -139,20 +135,16 @@ async function MapPageContent({
   const matchId = searchParams.matchId as string | undefined;
 
   const [
-    mostPlayedHeroes,
     mapDetails,
     map,
-    visibility,
     heroBans,
     tempoChartEnabled,
     positionalDataEnabled,
     coachingCanvasEnabled,
     matchStory,
   ] = await Promise.all([
-    getCachedMostPlayedHeroes(id),
     getCachedMapDetails(id, mapDataId),
     getCachedMapRow(scrimId, id),
-    getCachedScrimVisibility(scrimId),
     getCachedHeroBans(id, mapDataId),
     getFlag(tempoChart),
     getFlag(positionalData),
@@ -196,12 +188,6 @@ async function MapPageContent({
 
   return (
     <div className="flex-col md:flex">
-      <AppHeader
-        switcher={<PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />}
-        session={viewer.session}
-        user={viewer.user}
-        guestMode={visibility?.guestMode ?? false}
-      />
       <div className="flex-1 space-y-4 px-6 pt-6 pb-12 md:px-8">
         <nav className="text-muted-foreground text-sm">
           <Link

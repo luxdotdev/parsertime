@@ -1,4 +1,5 @@
 import { AppHeader } from "@/components/app-header";
+import { AppShell } from "@/components/app-shell";
 import { TeamSwitcher } from "@/components/dashboard/team-switcher";
 import { Footer } from "@/components/footer";
 import { HeaderSkeleton } from "@/components/header-skeleton";
@@ -26,9 +27,10 @@ export function DashboardLayout({
    */
   guestModeSource?: () => Promise<boolean>;
 }) {
-  // The page chrome (skip link, layout structure, Footer) is static so any
-  // route using this layout paints instantly; the auth-derived header and the
-  // page content each stream in behind their own boundary.
+  // The page chrome (skip link, sidebar frame, layout structure, Footer) is
+  // static so any route using this layout paints instantly; the auth-derived
+  // top bar, the sidebar's flag-gated nav, and the page content each stream
+  // in behind their own boundary.
   return (
     <TeamSwitcherProvider>
       <a
@@ -37,20 +39,23 @@ export function DashboardLayout({
       >
         Skip to content
       </a>
-      <div className="min-h-[90vh] flex-col md:flex">
-        <Suspense fallback={<HeaderSkeleton />}>
-          <AuthedAppHeader
-            guestMode={guestMode}
-            guestModeSource={guestModeSource}
-          />
-        </Suspense>
-        <main id="main-content">
+      <AppShell
+        header={
+          <Suspense fallback={<HeaderSkeleton />}>
+            <AuthedAppHeader
+              guestMode={guestMode}
+              guestModeSource={guestModeSource}
+            />
+          </Suspense>
+        }
+      >
+        <main id="main-content" className="flex-1">
           <Suspense fallback={<DashboardContentSkeleton />}>
             {children}
           </Suspense>
         </main>
-      </div>
-      <Footer />
+        <Footer />
+      </AppShell>
     </TeamSwitcherProvider>
   );
 }

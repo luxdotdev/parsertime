@@ -9,10 +9,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { type Locale, locales } from "@/i18n/config";
 import { setUserLocale } from "@/lib/locale";
+import { CheckIcon, LanguagesIcon } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 
 export function LocaleSwitcher() {
   const router = useRouter();
+  const activeLocale = useLocale();
+  const t = useTranslations("dashboard.localeSwitcher");
 
   async function updateUserLocale(localeCode: Locale) {
     await setUserLocale(localeCode);
@@ -22,26 +26,9 @@ export function LocaleSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all"
-          >
-            <path d="m5 8 6 6" />
-            <path d="m4 14 6-6 2-3" />
-            <path d="M2 5h12" />
-            <path d="M7 2h1" />
-            <path d="m22 22-5-10-5 10" />
-            <path d="M14 18h6" />
-          </svg>
+        <Button variant="ghost" size="icon" className="size-8">
+          <LanguagesIcon className="size-[1.1rem]" />
+          <span className="sr-only">{t("toggle")}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -51,6 +38,9 @@ export function LocaleSwitcher() {
             onClick={() => updateUserLocale(locale.code)}
           >
             {locale.name}
+            {activeLocale === locale.code && (
+              <CheckIcon className="ml-auto size-4" />
+            )}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

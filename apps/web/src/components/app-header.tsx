@@ -1,34 +1,21 @@
-import { MainNav } from "@/components/dashboard/main-nav";
 import { Search } from "@/components/dashboard/search";
 import { GuestNav } from "@/components/guest-nav";
 import { LocaleSwitcher } from "@/components/locale-switcher";
-import { MobileNav } from "@/components/mobile-nav";
 import { Notifications } from "@/components/notifications";
 import { ModeToggle } from "@/components/theme-switcher";
 import { UserNav } from "@/components/user-nav";
+import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import type { User } from "@/generated/prisma/browser";
-import {
-  aiChat,
-  coachingCanvas,
-  dataLabeling,
-  faceitScouting,
-  queryBuilder,
-  scoutingTool,
-  tournament,
-} from "@/lib/flags";
-import { getFlag } from "@/lib/flags-helpers";
 import type { Session } from "@/lib/auth";
 
 /**
- * Shared header bar for authenticated app pages (dashboard, map, player).
- *
- * Owns the single source of truth for the header shell: the wrapper, the
- * desktop/mobile bars, and the right-side utility cluster. The only thing that
- * varies between pages is which switcher sits on the left, so it is passed in
- * as a slot. All nav feature flags are resolved here (deduped per request) so
- * the navigation is identical on every page.
+ * The slim top bar for authenticated app pages. Primary navigation lives in
+ * the sidebar (`AppSidebar`); this bar carries context and utilities: the
+ * sidebar trigger, the left-side switcher slot (team or player switcher),
+ * search, and the user cluster.
  */
-export async function AppHeader({
+export function AppHeader({
   switcher,
   session,
   user,
@@ -40,79 +27,36 @@ export async function AppHeader({
   user: User | null;
   guestMode?: boolean;
 }) {
-  const [
-    scoutingEnabled,
-    faceitScoutingEnabled,
-    aiChatEnabled,
-    dataToolsEnabled,
-    tournamentEnabled,
-    coachingCanvasEnabled,
-    queryBuilderEnabled,
-  ] = await Promise.all([
-    getFlag(scoutingTool),
-    getFlag(faceitScouting),
-    getFlag(aiChat),
-    getFlag(dataLabeling),
-    getFlag(tournament),
-    getFlag(coachingCanvas),
-    getFlag(queryBuilder),
-  ]);
-
-  // Right-side utilities shared by both bars. The desktop bar additionally
-  // prepends the Search button.
-  const trailingUtilities = (
-    <>
-      <ModeToggle />
-      <LocaleSwitcher />
-      {session ? (
-        <>
-          <Notifications />
-          <UserNav />
-        </>
-      ) : (
-        <GuestNav guestMode={guestMode} />
-      )}
-    </>
-  );
-
   return (
     <header
-      className="relative z-50 shadow-xs"
+      className="bg-background relative z-40 border-b"
       style={{ viewTransitionName: "site-header" }}
     >
-      <div className="hidden min-h-16 items-center px-4 py-2 md:flex">
-        {switcher}
-        <MainNav
-          className="mx-6 hidden lg:block"
-          scoutingEnabled={scoutingEnabled}
-          faceitScoutingEnabled={faceitScoutingEnabled}
-          aiChatEnabled={aiChatEnabled}
-          dataToolsEnabled={dataToolsEnabled}
-          tournamentEnabled={tournamentEnabled}
-          coachingCanvasEnabled={coachingCanvasEnabled}
-          queryBuilderEnabled={queryBuilderEnabled}
-        />
-        <MobileNav
-          className="block pl-2 lg:hidden"
-          session={session}
-          aiChatEnabled={aiChatEnabled}
-          dataToolsEnabled={dataToolsEnabled}
-          coachingCanvasEnabled={coachingCanvasEnabled}
-        />
-        <div className="ml-auto flex items-center space-x-4">
-          <Search user={user} />
-          {trailingUtilities}
-        </div>
-      </div>
-      <div className="flex h-16 items-center px-4 md:hidden">
-        <MobileNav
-          session={session}
-          aiChatEnabled={aiChatEnabled}
-          dataToolsEnabled={dataToolsEnabled}
-          coachingCanvasEnabled={coachingCanvasEnabled}
-        />
-        <div className="ml-auto flex items-center space-x-4">
-          {trailingUtilities}
+      <div className="flex h-14 items-center gap-2 px-4">
+        <SidebarTrigger />
+        {switcher && (
+          <>
+            <Separator
+              orientation="vertical"
+              className="mr-1 data-[orientation=vertical]:h-4 data-[orientation=vertical]:self-center"
+            />
+            <div className="min-w-0">{switcher}</div>
+          </>
+        )}
+        <div className="ml-auto flex items-center gap-2">
+          <div className="hidden sm:block">
+            <Search user={user} />
+          </div>
+          <ModeToggle />
+          <LocaleSwitcher />
+          {session ? (
+            <>
+              <Notifications />
+              <UserNav />
+            </>
+          ) : (
+            <GuestNav guestMode={guestMode} />
+          )}
         </div>
       </div>
     </header>

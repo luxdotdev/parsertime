@@ -1,5 +1,4 @@
 import { MapCharts } from "@/components/charts/map/map-charts";
-import { MainNav } from "@/components/dashboard/main-nav";
 import { Search } from "@/components/dashboard/search";
 import { PremiumHighlight } from "@/components/demo/premium-highlight";
 import { LocaleSwitcher } from "@/components/locale-switcher";
@@ -148,7 +147,6 @@ async function DemoPageContent() {
       <div className="border-b">
         <div className="hidden h-16 items-center px-4 md:flex">
           <PlayerSwitcher mostPlayedHeroes={mostPlayedHeroes} />
-          <MainNav className="mx-6" scoutingEnabled={false} />
           <div className="ml-auto flex items-center space-x-4">
             <Search user={null} />
             <ModeToggle />

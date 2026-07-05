@@ -655,6 +655,9 @@
     "admin": "Admin View",
     "pendingFeedback": "{count, plural, one {# scrim awaiting feedback} other {# scrims awaiting feedback}}",
     "search": "Search...",
+    "localeSwitcher": {
+      "toggle": "Change language"
+    },
     "themeSwitcher": {
       "toggle": "Toggle theme",
       "light": "Light",
@@ -804,6 +807,14 @@
       "availability": "Availability",
       "matchmaker": "Matchmaker",
       "ranked": "Ranked Tracker"
+    },
+    "sidebar": {
+      "sections": {
+        "scrims": "Scrims",
+        "ranked": "Ranked",
+        "tools": "Tools"
+      },
+      "rankedTracker": "Tracker"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "Search team...",

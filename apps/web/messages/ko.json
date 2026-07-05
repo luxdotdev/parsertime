@@ -655,6 +655,9 @@
     "admin": "관리자 보기",
     "pendingFeedback": "{count, plural, other {{count}개의 스크림이 피드백을 기다리고 있습니다}}",
     "search": "검색...",
+    "localeSwitcher": {
+      "toggle": "언어 변경"
+    },
     "themeSwitcher": {
       "toggle": "테마 전환",
       "light": "라이트",
@@ -839,6 +842,14 @@
       "availability": "가능 시간",
       "matchmaker": "매치메이커",
       "ranked": "랭크 트래커"
+    },
+    "sidebar": {
+      "sections": {
+        "scrims": "스크림",
+        "ranked": "랭크",
+        "tools": "도구"
+      },
+      "rankedTracker": "트래커"
     },
     "teamSwitcher": {
       "searchTeamPlaceholder": "팀 검색...",
