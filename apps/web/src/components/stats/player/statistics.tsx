@@ -253,7 +253,7 @@ export function Statistics({
     if (!scrimId || !mapId) return null;
     const teamId = activeScrims.find((scrim) => scrim.id === scrimId)?.teamId;
     if (!teamId) return null;
-    return `/${teamId}/scrim/${scrimId}/map/${mapId}` as Route;
+    return `/scrims/${scrimId}/map/${mapId}` as Route;
   }
 
   return (

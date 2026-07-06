@@ -25,7 +25,7 @@ import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 
 export async function generateMetadata(
-  props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]/player/[playerId]">
+  props: PagePropsWithLocale<"/scrims/[scrimId]/map/[mapId]/player/[playerId]">
 ): Promise<Metadata> {
   const params = await props.params;
   const t = getMetadataTranslations("mapPage.playerMetadata");
@@ -59,7 +59,7 @@ export async function generateMetadata(
 // fallback mirrors the loaded page frame and the overview tab's pending
 // layout — a single stable skeleton the content replaces in place.
 export default function PlayerDashboardPage(
-  props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]/player/[playerId]">
+  props: PagePropsWithLocale<"/scrims/[scrimId]/map/[mapId]/player/[playerId]">
 ) {
   return (
     <DirectionalTransition>
@@ -75,7 +75,7 @@ export default function PlayerDashboardPage(
 async function PlayerDashboardContent({
   params: paramsPromise,
 }: {
-  params: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]/player/[playerId]">["params"];
+  params: PagePropsWithLocale<"/scrims/[scrimId]/map/[mapId]/player/[playerId]">["params"];
 }) {
   const params = await paramsPromise;
   const id = parseInt(params.mapId);
@@ -115,7 +115,7 @@ async function PlayerDashboardContent({
       <nav className="text-muted-foreground flex items-center gap-3 text-sm">
         <Link
           href={
-            `/${params.team}/scrim/${params.scrimId}/map/${params.mapId}` as Route
+            `/scrims/${params.scrimId}/map/${params.mapId}` as Route
           }
           transitionTypes={["nav-back"]}
           className="hover:text-foreground"

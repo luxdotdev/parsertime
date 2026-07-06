@@ -53,7 +53,7 @@ import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata(
-  props: PagePropsWithLocale<"/[team]/scrim/[scrimId]">
+  props: PagePropsWithLocale<"/scrims/[scrimId]">
 ): Promise<Metadata> {
   const params = await props.params;
   const t = getMetadataTranslations("scrimPage.metadata");
@@ -98,7 +98,7 @@ export async function generateMetadata(
 // request-derived streams into the single boundary below; the auth gate is
 // the first step of ScrimContent so it resolves inside the same skeleton.
 export default function ScrimDashboardPage(
-  props: PagePropsWithLocale<"/[team]/scrim/[scrimId]">
+  props: PagePropsWithLocale<"/scrims/[scrimId]">
 ) {
   return (
     <DirectionalTransition>
@@ -116,7 +116,7 @@ export default function ScrimDashboardPage(
 // Thunk, not a started promise: the read must begin inside the streamed
 // header (after `connection()`), never during the static shell render.
 function guestModeSource(
-  params: PagePropsWithLocale<"/[team]/scrim/[scrimId]">["params"]
+  params: PagePropsWithLocale<"/scrims/[scrimId]">["params"]
 ) {
   return async () => {
     const { scrimId } = await params;
@@ -133,7 +133,7 @@ function guestModeSource(
 async function ScrimContent({
   params: paramsPromise,
 }: {
-  params: PagePropsWithLocale<"/[team]/scrim/[scrimId]">["params"];
+  params: PagePropsWithLocale<"/scrims/[scrimId]">["params"];
 }) {
   const params = await paramsPromise;
   const id = parseInt(params.scrimId);
@@ -356,7 +356,7 @@ async function ScrimContent({
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href={`/${params.team}/scrim/${params.scrimId}/edit` as Route}
+                  href={`/scrims/${params.scrimId}/edit` as Route}
                   aria-label={t("edit")}
                   className="text-muted-foreground hover:bg-muted hover:text-foreground -mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors"
                 >
@@ -484,7 +484,7 @@ async function ScrimContent({
                   key={map.id}
                   map={map}
                   scrimId={scrim.id}
-                  teamId={teamId ?? params.team}
+                  teamId={teamId}
                   locale={params.locale}
                   mapComparisonEnabled={mapComparisonEnabled}
                   team1Name={meta?.team1Name}

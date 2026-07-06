@@ -23,7 +23,7 @@ import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 
 export async function generateMetadata(
-  props: PageProps<"/[team]/scrim/[scrimId]/edit">
+  props: PageProps<"/scrims/[scrimId]/edit">
 ): Promise<Metadata> {
   const params = await props.params;
   const t = getMetadataTranslations("scrimPage.editMetadata");
@@ -46,7 +46,7 @@ export async function generateMetadata(
 // the form's pending layout — the back link needs route params, so it streams
 // with the content.
 export default function EditScrimPage(
-  props: PageProps<"/[team]/scrim/[scrimId]/edit">
+  props: PageProps<"/scrims/[scrimId]/edit">
 ) {
   return (
     <DashboardLayout>
@@ -62,9 +62,9 @@ export default function EditScrimPage(
 async function EditScrimContent({
   params,
 }: {
-  params: PageProps<"/[team]/scrim/[scrimId]/edit">["params"];
+  params: PageProps<"/scrims/[scrimId]/edit">["params"];
 }) {
-  const { team, scrimId } = await params;
+  const { scrimId } = await params;
   // The route's access gate — the [scrimId] layout no longer gates the
   // subtree (a layout gate adds a chrome-less loading phase above every
   // child route).
@@ -131,7 +131,7 @@ async function EditScrimContent({
   return (
     <>
       <h4 className="pb-2 text-gray-600 dark:text-gray-400">
-        <Link href={`/${team}/scrim/${scrimId}` as Route}>
+        <Link href={`/scrims/${scrimId}` as Route}>
           &larr; {t("back")}
         </Link>
       </h4>

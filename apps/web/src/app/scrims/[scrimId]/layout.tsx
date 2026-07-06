@@ -7,7 +7,7 @@ import { SelectedPlayerProvider } from "@/components/map/player-switcher";
 // (isAuthedToViewScrim / isAuthedToViewMap → <NoAuthCard />), so the check
 // resolves inside the route's single loading state instead.
 export default function ScrimDashboardLayout(
-  props: LayoutProps<"/[team]/scrim/[scrimId]">
+  props: LayoutProps<"/scrims/[scrimId]">
 ) {
   return <SelectedPlayerProvider>{props.children}</SelectedPlayerProvider>;
 }

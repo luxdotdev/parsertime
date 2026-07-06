@@ -579,7 +579,7 @@ function buildMapHref(
   if (mapId === null) return null;
   const scrim = scrims.find((s) => s.id === scrimId);
   if (!scrim || scrim.teamId === null) return null;
-  return `/${scrim.teamId}/scrim/${scrimId}/map/${mapId}`;
+  return `/scrims/${scrimId}/map/${mapId}`;
 }
 
 function buildScopeNote(

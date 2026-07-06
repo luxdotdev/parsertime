@@ -314,7 +314,7 @@ export async function createNewScrimFromParsedData(
           userId: user.id,
           title: `${team?.name}: New scrim uploaded by ${session.user?.name}`,
           description: `Scrim "${scrimName}" has been uploaded by ${session.user?.name} to ${team?.name}.`,
-          href: `/${teamId}/scrim/${scrimId}`,
+          href: `/scrims/${scrimId}`,
         });
       }
     }

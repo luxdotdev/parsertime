@@ -37,7 +37,7 @@ import { toast } from "sonner";
 type MapCardWithSelectionProps = {
   map: Map;
   scrimId: number;
-  teamId: number | string;
+  teamId: number | null;
   locale: string;
   mapComparisonEnabled: boolean;
   team1Name?: string | null;
@@ -147,7 +147,7 @@ function MapCardWithSelectionComponent({
       }
     >
       <Link
-        href={`/${teamId}/scrim/${scrimId}/map/${map.id}` as Route}
+        href={`/scrims/${scrimId}/map/${map.id}` as Route}
         prefetch={true}
         transitionTypes={["expand-map"]}
       >
@@ -259,7 +259,7 @@ function MapCardWithSelectionComponent({
             <ContextMenuSeparator />
             <ContextMenuItem asChild>
               <Link
-                href={`/${teamId}/scrim/${scrimId}/map/${map.id}` as Route}
+                href={`/scrims/${scrimId}/map/${map.id}` as Route}
                 className="cursor-pointer"
               >
                 {t("contextMenu.viewDetails")}

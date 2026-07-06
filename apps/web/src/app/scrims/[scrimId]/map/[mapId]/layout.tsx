@@ -22,7 +22,7 @@ import { connection } from "next/server";
 import { Suspense, type ReactNode } from "react";
 
 export default function MapDashboardLayout(
-  props: LayoutProps<"/[team]/scrim/[scrimId]/map/[mapId]">
+  props: LayoutProps<"/scrims/[scrimId]/map/[mapId]">
 ) {
   // The chrome (provider, sidebar frame, banner, footer) is static so
   // navigations to a map paint instantly; the auth-derived top bar and the
@@ -53,7 +53,7 @@ export default function MapDashboardLayout(
 async function MapAppHeader({
   params,
 }: {
-  params: LayoutProps<"/[team]/scrim/[scrimId]/map/[mapId]">["params"];
+  params: LayoutProps<"/scrims/[scrimId]/map/[mapId]">["params"];
 }) {
   // Always streams behind its Suspense boundary; mark request-time up front
   // (same pattern as AuthedAppHeader) so PPR never tries to prerender the
@@ -99,7 +99,7 @@ async function MapAuthGate({
   params,
   children,
 }: {
-  params: LayoutProps<"/[team]/scrim/[scrimId]/map/[mapId]">["params"];
+  params: LayoutProps<"/scrims/[scrimId]/map/[mapId]">["params"];
   children: ReactNode;
 }) {
   const { scrimId, mapId } = await params;

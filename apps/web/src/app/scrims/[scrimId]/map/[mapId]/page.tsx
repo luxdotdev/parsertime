@@ -33,7 +33,7 @@ import { Suspense, ViewTransition } from "react";
 export const prefetch = "allow-runtime";
 
 export async function generateMetadata(
-  props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]">
+  props: PagePropsWithLocale<"/scrims/[scrimId]/map/[mapId]">
 ): Promise<Metadata> {
   const params = await props.params;
   const scrimId = parseInt(params.scrimId);
@@ -79,7 +79,7 @@ export async function generateMetadata(
 }
 
 export default function MapDashboardPage(
-  props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]"> & {
+  props: PagePropsWithLocale<"/scrims/[scrimId]/map/[mapId]"> & {
     searchParams: SearchParams;
   }
 ) {
@@ -105,7 +105,7 @@ async function MapPageContent({
   params: paramsPromise,
   searchParams: searchParamsPromise,
 }: {
-  params: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]">["params"];
+  params: PagePropsWithLocale<"/scrims/[scrimId]/map/[mapId]">["params"];
   searchParams: SearchParams;
 }) {
   const params = await paramsPromise;
@@ -194,7 +194,7 @@ async function MapPageContent({
             href={
               (fromTournament && tournamentId && matchId
                 ? `/tournaments/${tournamentId}/match/${matchId}`
-                : `/${params.team}/scrim/${params.scrimId}`) as Route
+                : `/scrims/${params.scrimId}`) as Route
             }
             transitionTypes={["contract-map"]}
             className="hover:text-foreground"

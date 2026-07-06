@@ -516,7 +516,7 @@ function scrimDoc(
       label: scrim.name,
       meta,
       icon: SwordsIcon,
-      href: `/${scrim.teamId}/scrim/${scrim.id}` as Route,
+      href: `/scrims/${scrim.id}` as Route,
     },
   };
 }

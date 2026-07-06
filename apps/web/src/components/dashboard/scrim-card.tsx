@@ -41,7 +41,7 @@ export function ScrimCard({ scrim, prefetch }: Props) {
         <div className="flex items-start justify-between gap-3">
           <h3 className="line-clamp-2 text-base leading-tight font-semibold tracking-tight">
             <Link
-              href={`/${scrim.teamId}/scrim/${scrim.id}` as Route}
+              href={`/scrims/${scrim.id}` as Route}
               prefetch={prefetch}
               transitionTypes={["expand-map"]}
               className="outline-none after:absolute after:inset-0 focus-visible:underline focus-visible:underline-offset-4"
@@ -54,7 +54,7 @@ export function ScrimCard({ scrim, prefetch }: Props) {
               <TooltipTrigger asChild>
                 {/* `relative` lifts this above the title link's overlay. */}
                 <Link
-                  href={`/${scrim.teamId}/scrim/${scrim.id}/edit` as Route}
+                  href={`/scrims/${scrim.id}/edit` as Route}
                   aria-label={t("editScrim")}
                   className="text-muted-foreground hover:bg-muted hover:text-foreground relative -mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors"
                 >
