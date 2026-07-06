@@ -1,4 +1,4 @@
-import { validateMatchInput } from "@/app/ranked/validation";
+import { validateMatchInput } from "@/app/ranked/tracker/validation";
 import { expect, test } from "vitest";
 
 const base = {

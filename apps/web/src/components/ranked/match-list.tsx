@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteRankedMatch } from "@/app/ranked/actions";
+import { deleteRankedMatch } from "@/app/ranked/tracker/actions";
 import {
   AlertDialog,
   AlertDialogAction,

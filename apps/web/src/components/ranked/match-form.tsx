@@ -1,6 +1,6 @@
 "use client";
 
-import { createMatches } from "@/app/ranked/actions";
+import { createMatches } from "@/app/ranked/tracker/actions";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {

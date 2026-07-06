@@ -1,6 +1,6 @@
 "use client";
 
-import { importRankedJson } from "@/app/ranked/import-action";
+import { importRankedJson } from "@/app/ranked/tracker/import-action";
 import { Button } from "@/components/ui/button";
 import { useRef, useState, useTransition } from "react";
 import { toast } from "sonner";

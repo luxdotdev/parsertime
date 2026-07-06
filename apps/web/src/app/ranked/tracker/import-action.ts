@@ -36,6 +36,6 @@ export async function importRankedJson(raw: string): Promise<ImportResult> {
     user.id,
     parsed.bundle
   );
-  revalidatePath("/ranked");
+  revalidatePath("/ranked/tracker");
   return { success: true, imported, skipped, invalid };
 }

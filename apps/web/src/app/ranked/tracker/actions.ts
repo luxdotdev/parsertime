@@ -51,7 +51,7 @@ export async function createMatches(
     );
   }
 
-  revalidatePath("/ranked");
+  revalidatePath("/ranked/tracker");
   return { success: true };
 }
 
@@ -71,6 +71,6 @@ export async function deleteRankedMatch(
     )
   );
 
-  revalidatePath("/ranked");
+  revalidatePath("/ranked/tracker");
   return { success: true };
 }

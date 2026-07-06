@@ -274,7 +274,7 @@ export const NAV_SCHEMA: NavSection[] = [
         labelKey: "sidebar.rankedTracker",
         icon: CrosshairIcon,
         aliases: ["ranked", "competitive", "winrate"],
-        href: "/ranked" as Route,
+        href: "/ranked/tracker" as Route,
         isActive: (p) => p.startsWith("/ranked"),
       },
     ],

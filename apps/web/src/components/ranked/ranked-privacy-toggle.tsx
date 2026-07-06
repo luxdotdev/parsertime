@@ -1,6 +1,6 @@
 "use client";
 
-import { setRankedStatsPublic } from "@/app/ranked/privacy-action";
+import { setRankedStatsPublic } from "@/app/ranked/tracker/privacy-action";
 import { Switch } from "@/components/ui/switch";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
