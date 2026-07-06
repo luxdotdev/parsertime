@@ -74,7 +74,7 @@ export function MatchMapsPanel({
 
             const mapDetailHref =
               tournamentMap.map && scrimId
-                ? `/_/scrim/${scrimId}/map/${tournamentMap.map.id}?from=tournament&tournamentId=${tournamentId}&matchId=${matchId}`
+                ? `/scrims/${scrimId}/map/${tournamentMap.map.id}?from=tournament&tournamentId=${tournamentId}&matchId=${matchId}`
                 : null;
 
             const card = (
