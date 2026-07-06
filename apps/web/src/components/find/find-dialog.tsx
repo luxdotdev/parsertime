@@ -9,13 +9,7 @@ import { cn } from "@/lib/utils";
 import type { User } from "@/generated/prisma/browser";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { useTranslations } from "next-intl";
-import {
-  use,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { use, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 /**
  * Find's shell: a custom dialog that morphs open from the header trigger and
@@ -140,8 +134,7 @@ export function FindDialog({ user }: { user: User | null }) {
       if (trigger) trigger.style.opacity = "0";
       if (reduceMotion) return;
 
-      const trig =
-        !mobile && trigger ? trigger.getBoundingClientRect() : null;
+      const trig = !mobile && trigger ? trigger.getBoundingClientRect() : null;
 
       if (trig && fin) {
         play(

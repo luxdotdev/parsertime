@@ -1,7 +1,4 @@
-import {
-  frecencyBoost,
-  type FrecencyTable,
-} from "@/lib/find/frecency";
+import { frecencyBoost, type FrecencyTable } from "@/lib/find/frecency";
 import { matchAll, matchTokens, tokenize } from "@/lib/find/matcher";
 import type { FindActionDef } from "@/lib/find/schema";
 import type { LucideIcon } from "lucide-react";

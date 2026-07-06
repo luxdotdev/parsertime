@@ -182,10 +182,7 @@ function FooterMenu({ activePath }: { activePath: string | null }) {
                   <ExternalLinkIcon className="ml-auto opacity-60" />
                 </a>
               ) : (
-                <Link
-                  href={leafHref(leaf, {})}
-                  onClick={closeMobileSidebar}
-                >
+                <Link href={leafHref(leaf, {})} onClick={closeMobileSidebar}>
                   {leaf.icon && <leaf.icon />}
                   <span>{label}</span>
                 </Link>
@@ -223,9 +220,7 @@ function NavLink({
     <SidebarMenuItem>
       <SidebarMenuButton
         asChild
-        isActive={
-          activePath !== null && (item.isActive?.(activePath) ?? false)
-        }
+        isActive={activePath !== null && (item.isActive?.(activePath) ?? false)}
         tooltip={label}
         className="data-active:text-sidebar-primary"
       >

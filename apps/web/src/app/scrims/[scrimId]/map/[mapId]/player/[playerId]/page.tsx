@@ -114,9 +114,7 @@ async function PlayerDashboardContent({
     <div className="flex-1 px-6 pt-6 pb-12 md:px-8">
       <nav className="text-muted-foreground flex items-center gap-3 text-sm">
         <Link
-          href={
-            `/scrims/${params.scrimId}/map/${params.mapId}` as Route
-          }
+          href={`/scrims/${params.scrimId}/map/${params.mapId}` as Route}
           transitionTypes={["nav-back"]}
           className="hover:text-foreground"
         >

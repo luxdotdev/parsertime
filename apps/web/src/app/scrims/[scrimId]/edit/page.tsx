@@ -131,9 +131,7 @@ async function EditScrimContent({
   return (
     <>
       <h4 className="pb-2 text-gray-600 dark:text-gray-400">
-        <Link href={`/scrims/${scrimId}` as Route}>
-          &larr; {t("back")}
-        </Link>
+        <Link href={`/scrims/${scrimId}` as Route}>&larr; {t("back")}</Link>
       </h4>
       <div className="mx-auto max-w-lg px-4">
         <h3 className="scroll-m-20 pb-2 text-2xl font-semibold tracking-tight">

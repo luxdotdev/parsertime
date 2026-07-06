@@ -75,7 +75,10 @@ export function recordVisit(key: string, now = Date.now()): void {
   const table = loadFrecency();
   const entry = table[key] ?? { count: 0, visits: [] };
 
-  if (entry.visits[0] !== undefined && now - entry.visits[0] < DEDUPE_WINDOW_MS) {
+  if (
+    entry.visits[0] !== undefined &&
+    now - entry.visits[0] < DEDUPE_WINDOW_MS
+  ) {
     return;
   }
 
@@ -87,7 +90,9 @@ export function recordVisit(key: string, now = Date.now()): void {
   const keys = Object.keys(table);
   if (keys.length > MAX_ENTRIES) {
     keys
-      .sort((a, b) => frecencyScore(table[a], now) - frecencyScore(table[b], now))
+      .sort(
+        (a, b) => frecencyScore(table[a], now) - frecencyScore(table[b], now)
+      )
       .slice(0, keys.length - MAX_ENTRIES)
       .forEach((k) => delete table[k]);
   }

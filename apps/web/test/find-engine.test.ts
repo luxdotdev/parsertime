@@ -73,11 +73,7 @@ describe("mergeStable", () => {
   });
 
   it("always includes the top-ranked fresh result somewhere", () => {
-    const merged = mergeStable(
-      [r("a"), r("b")],
-      [r("winner"), r("a")],
-      "a"
-    );
+    const merged = mergeStable([r("a"), r("b")], [r("winner"), r("a")], "a");
     expect(merged.map((m) => m.key)).toContain("winner");
   });
 });
@@ -107,9 +103,7 @@ describe("frecency", () => {
     const table = loadFrecency();
     expect(table["dashboard"].count).toBe(2);
     expect(table["settings"].count).toBe(1);
-    expect(
-      topFrecent(table, 2, now + 11 * 60 * 1000)[0]
-    ).toBe("dashboard");
+    expect(topFrecent(table, 2, now + 11 * 60 * 1000)[0]).toBe("dashboard");
   });
 
   it("scores recent visits above stale ones", () => {

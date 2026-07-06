@@ -41,13 +41,7 @@ import type { Route } from "next";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import {
-  use,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { use, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const RESULT_LIMIT = 8;
@@ -430,10 +424,7 @@ export function FindContent({
       </div>
 
       <CommandList
-        className={cn(
-          "max-h-none scroll-py-2 p-2",
-          mobile && "h-auto flex-1"
-        )}
+        className={cn("max-h-none scroll-py-2 p-2", mobile && "h-auto flex-1")}
         style={mobile ? undefined : { height: listHeight }}
       >
         {trimmed === "" ? (
@@ -553,10 +544,10 @@ function FindRow({
     <CommandItem
       value={result.key}
       onSelect={() => onRun(result)}
-      className="group/find-row h-11 gap-3 rounded-md px-3 data-[selected=true]:bg-muted"
+      className="group/find-row data-[selected=true]:bg-muted h-11 gap-3 rounded-md px-3"
     >
       {result.icon && (
-        <result.icon className="text-muted-foreground size-4 shrink-0 transition-colors group-data-[selected=true]/find-row:text-primary" />
+        <result.icon className="text-muted-foreground group-data-[selected=true]/find-row:text-primary size-4 shrink-0 transition-colors" />
       )}
       <span className="truncate text-sm">{result.label}</span>
       {result.external && (

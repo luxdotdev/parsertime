@@ -124,10 +124,7 @@ export async function GET(req: NextRequest) {
     } satisfies FindIndexResponse);
   } catch (error) {
     Logger.error("Error building Find index:", error);
-    return NextResponse.json(
-      { error: "Failed to search" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to search" }, { status: 500 });
   }
 }
 

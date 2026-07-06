@@ -35,7 +35,11 @@ export function frecencyKeyForPathname(pathname: string): string | null {
   // Exact static-href pages first, so `/settings/accounts` credits the
   // subpage rather than the broader `/settings` matcher.
   for (const leaf of leaves) {
-    if (!leaf.external && typeof leaf.href === "string" && leaf.href === pathname) {
+    if (
+      !leaf.external &&
+      typeof leaf.href === "string" &&
+      leaf.href === pathname
+    ) {
       return leaf.id;
     }
   }
