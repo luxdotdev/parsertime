@@ -27,7 +27,7 @@ export function generateMetadata(): Metadata {
 // content streams into ONE boundary whose fallback mirrors MapGroupManager's
 // own pending layout (card frame + centered loader).
 export default function MapGroupsPage(
-  props: PagePropsWithLocale<"/[team]/map-groups">
+  props: PagePropsWithLocale<"/team/[teamId]/map-groups">
 ) {
   return (
     <DashboardLayout>
@@ -46,9 +46,9 @@ export default function MapGroupsPage(
 async function MapGroupsContent({
   params,
 }: {
-  params: PagePropsWithLocale<"/[team]/map-groups">["params"];
+  params: PagePropsWithLocale<"/team/[teamId]/map-groups">["params"];
 }) {
-  const { team: teamSlug } = await params;
+  const { teamId: teamSlug } = await params;
   const session = await auth();
 
   if (!session?.user?.email) {

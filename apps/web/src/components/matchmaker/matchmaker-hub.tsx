@@ -162,7 +162,7 @@ function TeamRow({ team }: { team: HubTeam }) {
           </Button>
         )}
         <Link
-          href={`/${team.id}/ops` as Route}
+          href={`/team/${team.id}/ops` as Route}
           className="text-muted-foreground font-mono text-[11px] tracking-[0.12em] uppercase hover:underline"
         >
           {t("manageBlacklist")}

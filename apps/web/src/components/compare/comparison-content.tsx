@@ -335,7 +335,7 @@ export function ComparisonContent({ teamId }: ComparisonContentProps) {
                   {t("mapSelectionMode.selectGroups")}
                 </Label>
                 <Link
-                  href={`/${teamId}/map-groups` as Route}
+                  href={`/team/${teamId}/map-groups` as Route}
                   className="text-primary flex items-center gap-1 text-xs hover:underline"
                 >
                   <FolderCog className="h-3 w-3" />

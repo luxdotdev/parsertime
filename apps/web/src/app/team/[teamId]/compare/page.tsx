@@ -27,7 +27,7 @@ export function generateMetadata(): Metadata {
 // ComparisonContent's own layout, so navigation shows a single stable
 // skeleton instead of a cascade of different loading states.
 export default function ComparePage(
-  props: PagePropsWithLocale<"/[team]/compare">
+  props: PagePropsWithLocale<"/team/[teamId]/compare">
 ) {
   return (
     <DashboardLayout>
@@ -41,9 +41,9 @@ export default function ComparePage(
 async function CompareContent({
   params,
 }: {
-  params: PagePropsWithLocale<"/[team]/compare">["params"];
+  params: PagePropsWithLocale<"/team/[teamId]/compare">["params"];
 }) {
-  const { team, locale } = await params;
+  const { teamId: teamIdParam, locale } = await params;
   const session = await auth();
 
   if (!session?.user?.email) {
@@ -58,7 +58,7 @@ async function CompareContent({
   }
 
   // Extract team ID from team slug
-  const teamId = parseInt(team);
+  const teamId = parseInt(teamIdParam);
   if (isNaN(teamId)) {
     notFound();
   }

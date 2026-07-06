@@ -78,7 +78,7 @@ export function CompareSelectedButton({ teamId }: CompareSelectedButtonProps) {
 
   const handleCompare = useCallback(() => {
     const mapIdsParam = selectedMapIds.join(",");
-    const url = `/${teamId}/compare?maps=${mapIdsParam}` as Route;
+    const url = `/team/${teamId}/compare?maps=${mapIdsParam}` as Route;
     router.push(url);
   }, [selectedMapIds, teamId, router]);
 

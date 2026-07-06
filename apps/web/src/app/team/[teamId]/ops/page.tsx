@@ -30,7 +30,9 @@ export function generateMetadata(): Metadata {
 // Static shell: the page frame and headings prerender (default-locale text via
 // the cookie-free translator), and the auth/blacklist content streams into ONE
 // boundary whose fallback mirrors BlacklistManager's own pending layout.
-export default function TeamOpsPage(props: PagePropsWithLocale<"/[team]/ops">) {
+export default function TeamOpsPage(
+  props: PagePropsWithLocale<"/team/[teamId]/ops">
+) {
   const t = getStaticTranslations("teamOps");
 
   return (
@@ -60,9 +62,9 @@ export default function TeamOpsPage(props: PagePropsWithLocale<"/[team]/ops">) {
 async function TeamOpsContent({
   params,
 }: {
-  params: PagePropsWithLocale<"/[team]/ops">["params"];
+  params: PagePropsWithLocale<"/team/[teamId]/ops">["params"];
 }) {
-  const { team } = await params;
+  const { teamId: teamIdParam } = await params;
   const session = await auth();
 
   if (!session?.user?.email) {
@@ -76,7 +78,7 @@ async function TeamOpsContent({
     notFound();
   }
 
-  const teamId = parseInt(team);
+  const teamId = parseInt(teamIdParam);
   if (isNaN(teamId)) {
     notFound();
   }

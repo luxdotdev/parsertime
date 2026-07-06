@@ -81,7 +81,7 @@ export function MapGroupComparisonSelector({
             {t("noGroups.description")}
           </p>
         </div>
-        <Link href={`/${teamId}/map-groups` as Route}>
+        <Link href={`/team/${teamId}/map-groups` as Route}>
           <Button size="sm" variant="outline">
             <FolderCog className="mr-2 size-4" />
             {t("noGroups.createButton")}
