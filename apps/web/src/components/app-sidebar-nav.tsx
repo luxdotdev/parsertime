@@ -19,6 +19,7 @@ import {
   SidebarSeparator,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useFeatureFlags } from "@/components/feature-flags-provider";
 import {
   FOOTER_SCHEMA,
   NAV_SCHEMA,
@@ -26,7 +27,6 @@ import {
   type NavGroup as NavGroupData,
   type NavLeaf,
 } from "@/lib/find/schema";
-import type { FeatureFlags } from "@/lib/flags-helpers";
 import { ChevronRightIcon, ExternalLinkIcon } from "lucide-react";
 import type { Route } from "next";
 import { useTranslations } from "next-intl";
@@ -38,13 +38,35 @@ import { Suspense, use } from "react";
  * The primary sidebar navigation: SCRIMS (the organized-play platform),
  * RANKED (the solo suite), and TOOLS (flag-gated utilities). The structure
  * comes from the shared nav schema (`@/lib/find/schema`) — the same source
- * Find searches — so the two surfaces can never drift. Feature flags are
- * resolved by the server loader in `app-sidebar.tsx` and passed in as props
- * so this stays a plain client renderer.
+ * Find searches — so the two surfaces can never drift.
+ *
+ * Flags come from the root layout's persistent `FeatureFlagsProvider` rather
+ * than a per-route server read: every route mounts its own shell, so a
+ * streamed nav would drop to a skeleton on each cross-shell navigation. With
+ * client flags the remounted nav paints synchronously and pixel-identically.
+ * Gated TOOLS entries appear a beat after first paint on a hard load (the
+ * provider's documented trade-off); navigations render them immediately.
+ *
+ * Same E1316 split as the footer: `usePathname()` is URL data, so the
+ * active-state variant lives behind Suspense and the fallback renders the
+ * identical items without active state.
  */
-export function AppSidebarNav({ flags }: { flags: Partial<FeatureFlags> }) {
-  const t = useTranslations("dashboard");
+export function AppSidebarNav() {
+  return (
+    <Suspense fallback={<NavMenu activePath={null} />}>
+      <ActiveNavMenu />
+    </Suspense>
+  );
+}
+
+function ActiveNavMenu() {
   const pathname = usePathname();
+  return <NavMenu activePath={pathname} />;
+}
+
+function NavMenu({ activePath }: { activePath: string | null }) {
+  const t = useTranslations("dashboard");
+  const flags = useFeatureFlags();
   const { teamId } = use(TeamSwitcherContext);
   const ctx: FindContext = { teamId };
 
@@ -83,14 +105,14 @@ export function AppSidebarNav({ flags }: { flags: Partial<FeatureFlags> }) {
                       <NavGroup
                         key={entry.id}
                         item={entry}
-                        pathname={pathname}
+                        activePath={activePath}
                         ctx={ctx}
                       />
                     ) : (
                       <NavLink
                         key={entry.id}
                         item={entry}
-                        pathname={pathname}
+                        activePath={activePath}
                         ctx={ctx}
                       />
                     )
@@ -186,11 +208,11 @@ function RailSectionBreak() {
 
 function NavLink({
   item,
-  pathname,
+  activePath,
   ctx,
 }: {
   item: NavLeaf;
-  pathname: string;
+  activePath: string | null;
   ctx: FindContext;
 }) {
   const t = useTranslations("dashboard");
@@ -201,7 +223,9 @@ function NavLink({
     <SidebarMenuItem>
       <SidebarMenuButton
         asChild
-        isActive={item.isActive?.(pathname) ?? false}
+        isActive={
+          activePath !== null && (item.isActive?.(activePath) ?? false)
+        }
         tooltip={label}
         className="data-active:text-sidebar-primary"
       >
@@ -221,11 +245,11 @@ function NavLink({
 
 function NavGroup({
   item,
-  pathname,
+  activePath,
   ctx,
 }: {
   item: NavGroupData & { children: NavLeaf[] };
-  pathname: string;
+  activePath: string | null;
   ctx: FindContext;
 }) {
   const t = useTranslations("dashboard");
@@ -235,7 +259,9 @@ function NavGroup({
   return (
     <Collapsible
       asChild
-      defaultOpen={item.isActive?.(pathname) ?? false}
+      defaultOpen={
+        activePath !== null && (item.isActive?.(activePath) ?? false)
+      }
       className="group/collapsible"
     >
       <SidebarMenuItem>
@@ -260,7 +286,9 @@ function NavGroup({
               <SidebarMenuSubItem key={sub.id}>
                 <SidebarMenuSubButton
                   asChild
-                  isActive={sub.isActive?.(pathname) ?? false}
+                  isActive={
+                    activePath !== null && (sub.isActive?.(activePath) ?? false)
+                  }
                   className="data-active:text-sidebar-primary"
                 >
                   <Link
