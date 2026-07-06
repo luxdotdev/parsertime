@@ -37,7 +37,6 @@ import type { Kill, RoundEnd } from "@/generated/prisma/browser";
 import { GeistMono } from "geist/font/mono";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { ImportToCanvasLink } from "@/components/map/import-to-canvas-link";
 
 type Fight = {
@@ -73,13 +72,10 @@ export function KillfeedTable({
   canvasImportEnabled,
   mapDataId,
 }: KillfeedTableProps) {
-  const pathname = usePathname();
-  const teamId = pathname.split("/")[1];
   const t = useTranslations("mapPage.killfeedTable");
   const tUlt = useTranslations("mapPage.killfeedUlt");
 
-  const environmentalString =
-    teamId === "1" ? t("limitTest") : t("environment");
+  const environmentalString = t("environment");
 
   const anyUltFeature = options ? hasAnyUltFeature(options) : false;
 

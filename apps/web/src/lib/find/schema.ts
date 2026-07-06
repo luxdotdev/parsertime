@@ -505,7 +505,7 @@ export const FIND_ACTIONS: FindActionDef[] = [
     labelKey: "find.actions.shareScrim",
     icon: Share2Icon,
     aliases: ["copy link", "share", "url"],
-    pathnamePattern: /\/scrim\//,
+    pathnamePattern: /^\/scrims\//,
   },
   {
     kind: "action",

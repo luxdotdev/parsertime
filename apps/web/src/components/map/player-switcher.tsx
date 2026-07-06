@@ -62,10 +62,13 @@ export function PlayerSwitcher({
   const router = useRouter();
   const pathname = usePathname();
 
+  const pathSegments = pathname.split("/");
   const mapUrl =
-    pathname.split("/")[1] === "demo"
+    pathSegments[1] === "demo"
       ? "/demo"
-      : (pathname.split("/").slice(0, 6).join("/") as Route);
+      : (pathSegments
+          .slice(0, pathSegments.indexOf("map") + 2)
+          .join("/") as Route);
 
   // The switcher lives in the map layout's header and persists across
   // map ⇄ player navigations, so the selection must be DERIVED from the URL
