@@ -102,6 +102,40 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      // Scrim URLs lived at /{teamId}/scrim/{scrimId}/... until 2026-07; the
+      // links are shared externally (guest mode) and stored in in-app
+      // notification rows, so they redirect permanently. The :team segment is
+      // constrained to the values the app ever emitted — numeric teamIds, the
+      // literal "null" (stringified null teamId on individual scrims), and
+      // "_" (tournament match-map links) — so this can never shadow literal
+      // routes like /api/*.
+      {
+        source: "/:team(\\d+|null|_)/scrim/:path*",
+        destination: "/scrims/:path*",
+        permanent: true,
+      },
+      // Team-scoped pages moved under /team/{teamId}/ at the same time.
+      {
+        source: "/:teamId(\\d+)/compare",
+        destination: "/team/:teamId/compare",
+        permanent: true,
+      },
+      {
+        source: "/:teamId(\\d+)/map-groups",
+        destination: "/team/:teamId/map-groups",
+        permanent: true,
+      },
+      {
+        source: "/:teamId(\\d+)/ops",
+        destination: "/team/:teamId/ops",
+        permanent: true,
+      },
+      // NOTE: deliberately no /ranked -> /ranked/tracker redirect; a ranked
+      // hub page is about to claim /ranked.
+    ];
+  },
 };
 
 const withNextIntl = createNextIntlPlugin();
