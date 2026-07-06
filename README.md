@@ -1,9 +1,9 @@
-# Parsertime
+# Sightline
 
 <p align="center">
   <a href="https://parsertime.app/">
     <img src="https://parsertime.app/icon.png" height="96">
-    <h3 align="center">Parsertime</h3>
+    <h3 align="center">Sightline</h3>
   </a>
 </p>
 
@@ -11,7 +11,14 @@
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/lucasdoell/parsertime/vitest.yml?style=for-the-badge&label=Tests&labelColor=000)
 ![GitHub Repo stars](https://img.shields.io/github/stars/lucasdoell/parsertime?style=for-the-badge&labelColor=000)
 
-Parsertime turns raw Overwatch 2 Workshop logs into per-player stats, hero skill
+> [!NOTE]
+> **Sightline** is the new name for **Parsertime** — same platform, new brand.
+> The product now goes by Sightline, but the domain (`parsertime.app`), the npm
+> packages (`parsertime`, `@parsertime/*`), and this repository still carry the
+> `parsertime` name, so you'll see both throughout the codebase. A full rename
+> will land later; for now, "Parsertime" in code and URLs means Sightline.
+
+Sightline turns raw Overwatch 2 Workshop logs into per-player stats, hero skill
 ratings, trend lines, and team breakdowns — usually within minutes of a scrim
 ending. It's built for the gap between when the scrim ends and when VOD review
 starts: upload your logs, get a dashboard, and walk into review already knowing
@@ -25,9 +32,9 @@ performance, scout opponents, coordinate practice, and find scrim partners.
 ## How it works
 
 In Overwatch 2, enable _Gameplay → Enable Workshop Inspector Log File_ and host
-your scrim using Parsertime's [ScrimTime workshop code](https://workshop.codes/DKEEH).
+your scrim using Sightline's [ScrimTime workshop code](https://workshop.codes/DKEEH).
 The Workshop writes per-map log files to your `Documents/Overwatch/Workshop`
-folder. Upload those logs to Parsertime and it parses them into a structured,
+folder. Upload those logs to Sightline and it parses them into a structured,
 queryable dataset — eliminations, deaths, damage, healing, ultimates, positions,
 and more — that powers everything below.
 
@@ -76,7 +83,7 @@ auto-refill — no subscription required.
 ### Matchmaker
 
 `/matchmaker` pairs teams by Team TSR bracket and region, then ferries scrim
-requests to the other team's Discord through the Parsertime bot — built to close
+requests to the other team's Discord through the Sightline bot — built to close
 the gap between "we need a scrim Thursday" and "we have one on the calendar."
 
 ### Coaching Canvas
@@ -130,7 +137,7 @@ reminders, and new-scrim announcements, all without leaving the server.
 
 ## Plans
 
-Parsertime is free to start. Paid tiers (managed via Stripe) raise team and
+Sightline is free to start. Paid tiers (managed via Stripe) raise team and
 member limits, extend data retention, and unlock advanced tooling.
 
 | Tier        | Highlights                                                                                      |
@@ -141,9 +148,31 @@ member limits, extend data retention, and unlock advanced tooling.
 
 See the [pricing page](https://parsertime.app/pricing) for the current breakdown.
 
-## What's inside?
+## Repository structure
 
-This is a [Turborepo](https://turborepo.com/) monorepo managed with [pnpm](https://pnpm.io/) workspaces. It contains three deployable services:
+This is a [Turborepo](https://turborepo.com/) monorepo managed with [pnpm](https://pnpm.io/)
+workspaces: three deployable apps under `apps/` and shared code under `packages/`,
+all installed from a single root lockfile. Packages keep the `parsertime` /
+`@parsertime/*` names for now (see the branding note above).
+
+```text
+parsertime/
+├── apps/
+│   ├── web/      # parsertime       — Next.js web platform          (Vercel)
+│   ├── docs/     # parsertime-docs  — fumadocs documentation site   (Vercel)
+│   └── bot/      # parsertime-bot   — Discord bot, runs on Bun      (Railway)
+├── packages/
+│   ├── lint-config/     # @parsertime/lint-config    — shared oxlint + oxfmt config
+│   └── transactional/   # @parsertime/transactional  — React Email templates
+├── turbo.json    # Turborepo task pipeline
+└── package.json  # root workspace + pnpm config (overrides, onlyBuiltDependencies)
+```
+
+Each app is deployed as its own service with its **Root Directory** set to the
+app folder (`apps/web` and `apps/docs` are separate Vercel projects; `apps/bot`
+runs on Railway).
+
+### Deployable apps (`apps/`)
 
 | Path        | Package           | Description                                                            | Deploy  |
 | ----------- | ----------------- | --------------------------------------------------------------------- | ------- |
@@ -151,12 +180,27 @@ This is a [Turborepo](https://turborepo.com/) monorepo managed with [pnpm](https
 | `apps/docs` | `parsertime-docs` | The documentation site — Next.js + [fumadocs](https://fumadocs.dev/). | Vercel  |
 | `apps/bot`  | `parsertime-bot`  | The Discord bot — [discord.js](https://discord.js.org/), runs on Bun. | Railway |
 
-Shared packages live under `packages/`:
+The bot's HTTP API is consumed by the web app via
+`apps/web/src/lib/bot-discord-access.ts`, so a contract change usually touches
+both apps.
+
+### Shared packages (`packages/`)
 
 | Path                     | Package                     | Description                                                                                    |
 | ------------------------ | --------------------------- | ---------------------------------------------------------------------------------------------- |
 | `packages/lint-config`   | `@parsertime/lint-config`   | Shared oxlint + oxfmt config for every app.                                                     |
 | `packages/transactional` | `@parsertime/transactional` | Transactional email templates — [React Email](https://react.email/), consumed by the web app.  |
+
+## Open core
+
+This repository is the **public core** of the platform, mirroring an internal
+repository where the proprietary work happens.
+
+**Sightline Core** — everything in this repo — remains open source under the
+[MIT license](./LICENSE). Advanced replay processing, computer-vision extraction,
+and coaching intelligence are developed as proprietary Sightline services. Public
+schemas and client integrations stay open so the community can build around the
+platform.
 
 ## Tech Stack
 
@@ -207,4 +251,4 @@ Common root scripts delegate to Turborepo across all packages: `pnpm build`, `pn
   <img src="https://contrib.rocks/image?repo=luxdotdev/parsertime" />
 </a>
 
-Thanks to all the contributors who have helped make Parsertime better!
+Thanks to all the contributors who have helped make Sightline better!
