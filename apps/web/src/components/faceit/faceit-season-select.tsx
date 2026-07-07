@@ -22,6 +22,14 @@ export function FaceitSeasonSelect({ seasons, selected }: Props) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  // The list holds only seasons the subject played, but a hand-typed
+  // ?season= can select one outside it — without an option the trigger
+  // renders empty.
+  const options =
+    selected != null && !seasons.includes(selected)
+      ? [...seasons, selected].sort((a, b) => b - a)
+      : seasons;
+
   function onValueChange(value: string) {
     const params = new URLSearchParams(searchParams);
     if (value === "all") {
@@ -43,7 +51,7 @@ export function FaceitSeasonSelect({ seasons, selected }: Props) {
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="all">{t("all")}</SelectItem>
-        {seasons.map((s) => (
+        {options.map((s) => (
           <SelectItem key={s} value={String(s)}>
             {t("season", { n: s })}
           </SelectItem>

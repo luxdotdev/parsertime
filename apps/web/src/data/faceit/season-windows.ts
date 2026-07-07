@@ -57,3 +57,14 @@ export function resolveSeasonWindow(
   if (season == null) return null;
   return windows.find((w) => w.season === season) ?? null;
 }
+
+// Keep only the windows containing at least one of the given match dates —
+// the season dropdown should offer only seasons the subject actually played.
+export function filterPlayedSeasons(
+  windows: FaceitSeasonWindow[],
+  dates: Date[]
+): FaceitSeasonWindow[] {
+  return windows.filter((w) =>
+    dates.some((d) => d >= w.startDate && d <= w.endDate)
+  );
+}

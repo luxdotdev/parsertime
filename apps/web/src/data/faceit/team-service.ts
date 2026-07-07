@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import { Prisma } from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Exit, Layer, Metric } from "effect";
 import { FaceitScoutingQueryError } from "./errors";
-import { resolveSeasonWindow } from "./season-windows";
+import { filterPlayedSeasons, resolveSeasonWindow } from "./season-windows";
 import { fetchFaceitSeasons } from "./seasons";
 import {
   faceitCacheMissTotal,
@@ -206,6 +206,13 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> =
         );
         const patches = yield* fetchBalancePatches();
 
+        // When a season filter ran, matchRows only cover that window — the
+        // dropdown still needs the team's all-time season presence.
+        const playedDates = seasonWindow
+          ? yield* fetchMatchDates(includedTeamIds, coreFilter)
+          : matchRows.map((r) => r.finishedAt);
+        const playedSeasons = filterPlayedSeasons(seasons, playedDates);
+
         const overview = buildOverview(matchRows);
         const { byMap, byType } = mapWinrates(mapRows);
         const mapAnalysis = {
@@ -228,7 +235,7 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> =
           team: { faceitTeamId: teamId, name: nameRow[0]?.name ?? "" },
           combined,
           includedTeamIds,
-          seasons,
+          seasons: playedSeasons,
           season: seasonWindow?.season ?? null,
           overview,
           strength,
@@ -298,27 +305,58 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> =
       tsr: number | null;
     };
 
-    function fetchTeamData(
-      teamIds: string[],
-      coreFilter: {
-        scoutedTeamId: string;
-        players: string[];
-        minShared: number;
-      } | null,
-      seasonClause: Prisma.Sql
-    ) {
-      const ids = teamIds.length > 0 ? teamIds : [""];
-      // Optional clause: always keep the scouted team's own rows; keep a related
-      // team's row only when its chosen-side roster contains at least `minShared`
-      // of the scouted team's core players.
-      const coreClause =
-        coreFilter && coreFilter.players.length > 0
-          ? Prisma.sql`AND (mt."faceitTeamId" = ${coreFilter.scoutedTeamId} OR (
+    type CoreFilter = {
+      scoutedTeamId: string;
+      players: string[];
+      minShared: number;
+    } | null;
+
+    // Optional clause: always keep the scouted team's own rows; keep a related
+    // team's row only when its chosen-side roster contains at least `minShared`
+    // of the scouted team's core players.
+    function buildCoreClause(coreFilter: CoreFilter): Prisma.Sql {
+      return coreFilter && coreFilter.players.length > 0
+        ? Prisma.sql`AND (mt."faceitTeamId" = ${coreFilter.scoutedTeamId} OR (
             SELECT COUNT(*) FROM "FaceitMatchRoster" rf
             WHERE rf."matchId" = mt."matchId" AND rf."teamSide" = mt."teamSide"
               AND rf."faceitPlayerId" IN (${Prisma.join(coreFilter.players)})
           ) >= ${coreFilter.minShared})`
-          : Prisma.empty;
+        : Prisma.empty;
+    }
+
+    // All-time match dates for the chosen team set — the season dropdown must
+    // list only seasons the team actually played in, regardless of the
+    // currently applied season filter.
+    function fetchMatchDates(
+      teamIds: string[],
+      coreFilter: CoreFilter
+    ): Effect.Effect<Date[], FaceitScoutingQueryError> {
+      const ids = teamIds.length > 0 ? teamIds : [""];
+      const coreClause = buildCoreClause(coreFilter);
+      return Effect.tryPromise({
+        try: () => prisma.$queryRaw<{ finished_at: Date }[]>(
+          Prisma.sql`
+          SELECT DISTINCT m."finishedAt" AS finished_at
+          FROM "FaceitMatchTeam" mt
+          JOIN "FaceitMatch" m ON m."faceitMatchId" = mt."matchId"
+          WHERE mt."faceitTeamId" IN (${Prisma.join(ids)})
+          ${coreClause}`
+        ),
+        catch: (error) =>
+          new FaceitScoutingQueryError({
+            operation: "fetch team match dates",
+            cause: error,
+          }),
+      }).pipe(Effect.map((rows) => rows.map((r) => r.finished_at)));
+    }
+
+    function fetchTeamData(
+      teamIds: string[],
+      coreFilter: CoreFilter,
+      seasonClause: Prisma.Sql
+    ) {
+      const ids = teamIds.length > 0 ? teamIds : [""];
+      const coreClause = buildCoreClause(coreFilter);
       return Effect.tryPromise({
         try: async () => {
           const matchRowsRaw = await prisma.$queryRaw<RawMatchRow[]>(

@@ -4,7 +4,7 @@ import { Prisma, FaceitRole } from "@/generated/prisma/client";
 import type { FaceitTier } from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Exit, Layer, Metric } from "effect";
 import { FaceitScoutingQueryError } from "./errors";
-import { resolveSeasonWindow } from "./season-windows";
+import { filterPlayedSeasons, resolveSeasonWindow } from "./season-windows";
 import { fetchFaceitSeasons } from "./seasons";
 import {
   faceitCacheMissTotal,
@@ -478,6 +478,13 @@ export const make: Effect.Effect<FaceitPlayerScoutingServiceInterface> =
           })
         );
 
+        // When a season filter ran, the history only covers that window — the
+        // dropdown still needs the player's all-time season presence.
+        const playedDates = seasonWindow
+          ? yield* fetchPlayerMatchDates(playerId)
+          : matchHistory.map((h) => h.finishedAt);
+        const playedSeasons = filterPlayedSeasons(seasons, playedDates);
+
         // Step 7: teams
         const teamRows = yield* Effect.tryPromise({
           try: () =>
@@ -588,7 +595,7 @@ export const make: Effect.Effect<FaceitPlayerScoutingServiceInterface> =
             verified: header.verified,
           },
           rated,
-          seasons,
+          seasons: playedSeasons,
           season: seasonWindow?.season ?? null,
           fsrRoles,
           roleUsage: roleUsageResult,
@@ -624,6 +631,30 @@ export const make: Effect.Effect<FaceitPlayerScoutingServiceInterface> =
         ),
         Effect.withSpan("faceit.getFaceitPlayerProfile")
       );
+    }
+
+    // All-time match dates for the player — the season dropdown must list
+    // only seasons the player actually played in, regardless of the
+    // currently applied season filter.
+    function fetchPlayerMatchDates(
+      playerId: string
+    ): Effect.Effect<Date[], FaceitScoutingQueryError> {
+      return Effect.tryPromise({
+        try: () =>
+          prisma.$queryRaw<{ finished_at: Date }[]>(
+            Prisma.sql`
+              SELECT DISTINCT m."finishedAt" AS finished_at
+              FROM "FaceitMatchRoster" r
+              JOIN "FaceitMatch" m ON m."faceitMatchId" = r."matchId"
+              WHERE r."faceitPlayerId" = ${playerId}
+            `
+          ),
+        catch: (error) =>
+          new FaceitScoutingQueryError({
+            operation: "fetch player match dates",
+            cause: error,
+          }),
+      }).pipe(Effect.map((rows) => rows.map((r) => r.finished_at)));
     }
 
     // --- caches ---

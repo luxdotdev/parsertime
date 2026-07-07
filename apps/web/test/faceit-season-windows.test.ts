@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buildSeasonWindows,
+  filterPlayedSeasons,
   parseFaceitSeasonNumber,
   resolveSeasonWindow,
 } from "@/data/faceit/season-windows";
@@ -128,5 +129,44 @@ describe("resolveSeasonWindow", () => {
   it("returns null for unknown or absent seasons", () => {
     expect(resolveSeasonWindow(windows, 99)).toBe(null);
     expect(resolveSeasonWindow(windows, undefined)).toBe(null);
+  });
+});
+
+describe("filterPlayedSeasons", () => {
+  const windows = buildSeasonWindows([
+    {
+      name: "S7 NA Open Central - Regular Season",
+      firstMatch: new Date("2025-11-23T00:00:00Z"),
+      lastMatch: new Date("2026-02-02T00:00:00Z"),
+      matchCount: 807,
+    },
+    {
+      name: "S6 NA Open Central - Regular Season",
+      firstMatch: new Date("2025-08-01T00:00:00Z"),
+      lastMatch: new Date("2025-09-28T00:00:00Z"),
+      matchCount: 517,
+    },
+  ]);
+
+  it("keeps only windows containing at least one match date", () => {
+    const played = filterPlayedSeasons(windows, [
+      new Date("2025-12-01T00:00:00Z"),
+    ]);
+    expect(played.map((w) => w.season)).toEqual([7]);
+  });
+
+  it("treats window boundaries as inclusive", () => {
+    const played = filterPlayedSeasons(windows, [
+      new Date("2025-08-01T00:00:00Z"),
+      new Date("2026-02-02T00:00:00Z"),
+    ]);
+    expect(played.map((w) => w.season)).toEqual([7, 6]);
+  });
+
+  it("drops everything for off-season or empty date lists", () => {
+    expect(
+      filterPlayedSeasons(windows, [new Date("2025-10-15T00:00:00Z")])
+    ).toEqual([]);
+    expect(filterPlayedSeasons(windows, [])).toEqual([]);
   });
 });
