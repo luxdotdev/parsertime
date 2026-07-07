@@ -153,3 +153,10 @@ export type FaceitTeamProfile = {
   recommendations: FaceitRecommendation[];
   patchTimeline: PatchEra[];
 };
+
+export type FaceitSeasonWindow = {
+  season: number;
+  startDate: Date;
+  endDate: Date;
+  matchCount: number;
+};
