@@ -3,6 +3,8 @@ import prisma from "@/lib/prisma";
 import { Prisma } from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { FaceitScoutingQueryError } from "./errors";
+import { resolveSeasonWindow } from "./season-windows";
+import { fetchFaceitSeasons } from "./seasons";
 import {
   faceitCacheMissTotal,
   faceitCacheRequestTotal,
@@ -27,6 +29,7 @@ import {
 import type {
   FaceitRoleKey,
   FaceitRosterPlayer,
+  FaceitSeasonWindow,
   FaceitTeamListEntry,
   FaceitTeamMapRow,
   FaceitTeamMatchRow,
@@ -36,6 +39,7 @@ import type {
 } from "./types";
 
 const CACHE_TTL = Duration.seconds(30);
+const SEASONS_CACHE_TTL = Duration.hours(1);
 const CACHE_CAPACITY = 64;
 const CORE_SIZE = 5;
 const RELATED_MIN_SHARED = 4;
@@ -53,7 +57,7 @@ export type FaceitTeamScoutingServiceInterface = {
   >;
   readonly getFaceitTeamProfile: (
     teamId: string,
-    opts?: { combined?: boolean }
+    opts?: { combined?: boolean; season?: number }
   ) => Effect.Effect<FaceitTeamProfile | null, FaceitScoutingQueryError>;
 };
 
@@ -63,6 +67,12 @@ export class FaceitTeamScoutingService extends Context.Tag(
 
 export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> =
   Effect.gen(function* () {
+    const seasonsCache = yield* Cache.make({
+      capacity: 1,
+      timeToLive: SEASONS_CACHE_TTL,
+      lookup: (_k: string) => fetchFaceitSeasons(),
+    });
+
     // --- search list: distinct team, most-recent name, match count ---
     function getFaceitTeams(): Effect.Effect<
       FaceitTeamListEntry[],
@@ -130,13 +140,23 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> =
     // --- profile ---
     function getFaceitTeamProfile(
       teamId: string,
-      opts?: { combined?: boolean }
+      opts?: { combined?: boolean; season?: number }
     ): Effect.Effect<FaceitTeamProfile | null, FaceitScoutingQueryError> {
       const combined = opts?.combined ?? false;
       const startTime = Date.now();
-      const wideEvent: Record<string, unknown> = { team_id: teamId, combined };
+      const wideEvent: Record<string, unknown> = {
+        team_id: teamId,
+        combined,
+        season: opts?.season ?? null,
+      };
       return Effect.gen(function* () {
         const related = yield* fetchRelatedTeams(teamId);
+        const seasons: FaceitSeasonWindow[] =
+          yield* seasonsCache.get("__all__");
+        const seasonWindow = resolveSeasonWindow(seasons, opts?.season);
+        const seasonClause = seasonWindow
+          ? Prisma.sql`AND m."finishedAt" BETWEEN ${seasonWindow.startDate} AND ${seasonWindow.endDate}`
+          : Prisma.empty;
         const includedTeamIds = combined
           ? [teamId, ...related.map((r) => r.faceitTeamId)]
           : [teamId];
@@ -176,7 +196,8 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> =
 
         const { matchRows, mapRows, roster } = yield* fetchTeamData(
           includedTeamIds,
-          coreFilter
+          coreFilter,
+          seasonClause
         );
         const patches = yield* fetchBalancePatches();
 
@@ -202,6 +223,8 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> =
           team: { faceitTeamId: teamId, name: nameRow[0]?.name ?? "" },
           combined,
           includedTeamIds,
+          seasons,
+          season: seasonWindow?.season ?? null,
           overview,
           strength,
           mapAnalysis,
@@ -276,7 +299,8 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> =
         scoutedTeamId: string;
         players: string[];
         minShared: number;
-      } | null
+      } | null,
+      seasonClause: Prisma.Sql
     ) {
       const ids = teamIds.length > 0 ? teamIds : [""];
       // Optional clause: always keep the scouted team's own rows; keep a related
@@ -297,8 +321,10 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> =
           WITH chosen AS (
             SELECT DISTINCT ON (mt."matchId") mt."matchId", mt."teamSide", mt.winner
             FROM "FaceitMatchTeam" mt
+            JOIN "FaceitMatch" m ON m."faceitMatchId" = mt."matchId"
             WHERE mt."faceitTeamId" IN (${Prisma.join(ids)})
             ${coreClause}
+            ${seasonClause}
             ORDER BY mt."matchId", array_position(ARRAY[${Prisma.join(ids)}]::text[], mt."faceitTeamId")
           )
           SELECT ch."matchId" AS match_id, m."finishedAt" AS finished_at, c.tier::text AS tier, ch.winner AS won
@@ -311,8 +337,10 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> =
           WITH chosen AS (
             SELECT DISTINCT ON (mt."matchId") mt."matchId", mt."teamSide", mt.winner
             FROM "FaceitMatchTeam" mt
+            JOIN "FaceitMatch" m ON m."faceitMatchId" = mt."matchId"
             WHERE mt."faceitTeamId" IN (${Prisma.join(ids)})
             ${coreClause}
+            ${seasonClause}
             ORDER BY mt."matchId", array_position(ARRAY[${Prisma.join(ids)}]::text[], mt."faceitTeamId")
           )
           SELECT ch."matchId" AS match_id, m."finishedAt" AS finished_at, c.tier::text AS tier,
@@ -330,8 +358,10 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> =
           WITH chosen AS (
             SELECT DISTINCT ON (mt."matchId") mt."matchId", mt."teamSide"
             FROM "FaceitMatchTeam" mt
+            JOIN "FaceitMatch" m ON m."faceitMatchId" = mt."matchId"
             WHERE mt."faceitTeamId" IN (${Prisma.join(ids)})
             ${coreClause}
+            ${seasonClause}
             ORDER BY mt."matchId", array_position(ARRAY[${Prisma.join(ids)}]::text[], mt."faceitTeamId")
           ),
           appear AS (
@@ -517,11 +547,12 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> =
       capacity: CACHE_CAPACITY,
       timeToLive: CACHE_TTL,
       lookup: (key: string) => {
-        const [id, c] = key.split("|");
+        const [id, c, s] = key.split("|");
         if (!id) return Effect.succeed(null);
-        return getFaceitTeamProfile(id, { combined: c === "1" }).pipe(
-          Effect.tap(() => Metric.increment(faceitCacheMissTotal))
-        );
+        return getFaceitTeamProfile(id, {
+          combined: c === "1",
+          season: s != null && s !== "all" ? Number(s) : undefined,
+        }).pipe(Effect.tap(() => Metric.increment(faceitCacheMissTotal)));
       },
     });
 
@@ -532,7 +563,7 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> =
           .pipe(Effect.tap(() => Metric.increment(faceitCacheRequestTotal))),
       getFaceitTeamProfile: (teamId, o) =>
         profileCache
-          .get(`${teamId}|${o?.combined ? "1" : "0"}`)
+          .get(`${teamId}|${o?.combined ? "1" : "0"}|${o?.season ?? "all"}`)
           .pipe(Effect.tap(() => Metric.increment(faceitCacheRequestTotal))),
     } satisfies FaceitTeamScoutingServiceInterface;
   });

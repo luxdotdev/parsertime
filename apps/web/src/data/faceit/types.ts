@@ -144,6 +144,8 @@ export type FaceitTeamProfile = {
   team: { faceitTeamId: string; name: string };
   combined: boolean;
   includedTeamIds: string[];
+  seasons: FaceitSeasonWindow[];
+  season: number | null;
   overview: FaceitTeamOverview;
   strength: RosterStrength;
   mapAnalysis: FaceitMapAnalysis;
