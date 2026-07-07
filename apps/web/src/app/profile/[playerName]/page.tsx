@@ -107,7 +107,6 @@ async function ProfileContent({
   });
   const scrimIds = playerScrims.map((scrim) => scrim.scrimId);
   const viewableScrimIds = await getViewableScrimIds(scrimIds, sessionUser);
-  const canUseFullProfileRatings = viewableScrimIds.length === scrimIds.length;
 
   const [timeframe1, timeframe2, timeframe3] = await Promise.all([
     new Permission("stats-timeframe-1").check(),
@@ -177,13 +176,11 @@ async function ProfileContent({
 
   const heroRatings = await Promise.all(
     heroesPlayed.map(async (hero) => {
-      const compositeLeaderboard = canUseFullProfileRatings
-        ? await getCompositeSRLeaderboard({
-            hero: hero.player_hero as HeroName,
-            player: name,
-            limit: 300,
-          })
-        : null;
+      const compositeLeaderboard = await getCompositeSRLeaderboard({
+        hero: hero.player_hero as HeroName,
+        player: name,
+        limit: 300,
+      });
 
       if (!compositeLeaderboard) {
         const mapsPlayed = await prisma.playerStat.groupBy({
