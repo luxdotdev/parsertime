@@ -1,7 +1,7 @@
 import { EffectObservabilityLive } from "@/instrumentation";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@/generated/prisma/client";
-import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
+import { Cache, Context, Duration, Effect, Exit, Layer, Metric } from "effect";
 import { FaceitScoutingQueryError } from "./errors";
 import { resolveSeasonWindow } from "./season-windows";
 import { fetchFaceitSeasons } from "./seasons";
@@ -39,7 +39,10 @@ import type {
 } from "./types";
 
 const CACHE_TTL = Duration.seconds(30);
+// Freshness trade-off: the in-progress season's endDate (MAX(finishedAt)) can
+// lag up to an hour behind newly ingested matches.
 const SEASONS_CACHE_TTL = Duration.hours(1);
+const SEASONS_ERROR_TTL = Duration.seconds(30);
 const CACHE_CAPACITY = 64;
 const CORE_SIZE = 5;
 const RELATED_MIN_SHARED = 4;
@@ -67,10 +70,11 @@ export class FaceitTeamScoutingService extends Context.Tag(
 
 export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> =
   Effect.gen(function* () {
-    const seasonsCache = yield* Cache.make({
+    const seasonsCache = yield* Cache.makeWith({
       capacity: 1,
-      timeToLive: SEASONS_CACHE_TTL,
       lookup: (_k: string) => fetchFaceitSeasons(),
+      timeToLive: (exit) =>
+        Exit.isSuccess(exit) ? SEASONS_CACHE_TTL : SEASONS_ERROR_TTL,
     });
 
     // --- search list: distinct team, most-recent name, match count ---
@@ -154,6 +158,7 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> =
         const seasons: FaceitSeasonWindow[] =
           yield* seasonsCache.get("__all__");
         const seasonWindow = resolveSeasonWindow(seasons, opts?.season);
+        wideEvent.season_resolved = seasonWindow?.season ?? null;
         const seasonClause = seasonWindow
           ? Prisma.sql`AND m."finishedAt" BETWEEN ${seasonWindow.startDate} AND ${seasonWindow.endDate}`
           : Prisma.empty;

@@ -13,6 +13,9 @@ describe("parseFaceitSeasonNumber", () => {
     expect(
       parseFaceitSeasonNumber("S5 EMEA Master Central - Regular Season")
     ).toBe(5);
+    expect(
+      parseFaceitSeasonNumber("S10 NA Open Central - Regular Season")
+    ).toBe(10);
   });
 
   it("parses qualifier names (FACEIT League Season N)", () => {
