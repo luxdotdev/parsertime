@@ -13,10 +13,12 @@ import {
 } from "@/components/ui/tooltip";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
+import { getCachedTeamName } from "@/data/cached/team-cache";
+import { getCachedCanViewTeam } from "@/data/cached/viewer-access";
 import { ScoutingService } from "@/data/scouting";
 import { UserService } from "@/data/user";
 import { defaultLocale } from "@/i18n/config";
-import { auth, isAuthedToViewTeam } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { scoutingTool } from "@/lib/flags";
 import { getFlag } from "@/lib/flags-helpers";
 import { getMetadataTranslations } from "@/lib/metadata-i18n";
@@ -36,19 +38,17 @@ export async function generateMetadata(
   const params = await props.params;
   const t = getMetadataTranslations("teamPage.teamMetadata");
   const teamId = Number(params.teamId);
+  // Cached reads only: with streamed metadata under PPR, an uncached
+  // session/DB read here pushes the <title> chunk deep into the stream and the
+  // tab shows the raw path until it lands. The (app) layout's TeamAuthGate
+  // keeps the live gate; this one only picks the title copy.
   const canViewTeam =
     Number.isSafeInteger(teamId) &&
     teamId > 0 &&
-    (await isAuthedToViewTeam(teamId));
+    (await getCachedCanViewTeam(teamId));
 
-  const team = canViewTeam
-    ? await prisma.team.findFirst({
-        where: { id: teamId },
-        select: { name: true },
-      })
-    : null;
-
-  const teamName = team?.name ?? t("defaultTeam");
+  const teamName =
+    (canViewTeam ? await getCachedTeamName(teamId) : null) ?? t("defaultTeam");
 
   return {
     title: t("title", { teamName }),

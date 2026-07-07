@@ -3,7 +3,8 @@ import "server-only";
 import { AppRuntime } from "@/data/runtime";
 import { type TeamDateRange, TeamStatsService } from "@/data/team";
 import { getTeamSubstituteNames } from "@/data/team/substitutes";
-import { teamStatsTag } from "@/lib/cache-tags";
+import { teamStatsTag, teamTag } from "@/lib/cache-tags";
+import prisma from "@/lib/prisma";
 import { Effect } from "effect";
 import { cacheLife, cacheTag } from "next/cache";
 
@@ -32,4 +33,19 @@ export async function getCachedTeamSubstituteNames(teamId: number) {
   cacheLife("days");
   cacheTag(teamStatsTag(teamId));
   return getTeamSubstituteNames(teamId);
+}
+
+/**
+ * Team name for page/layout metadata. User-editable via the team settings
+ * form (update-name route), which revalidates `team:${teamId}`.
+ */
+export async function getCachedTeamName(teamId: number) {
+  "use cache";
+  cacheLife("max");
+  cacheTag(teamTag(teamId));
+  const team = await prisma.team.findFirst({
+    where: { id: teamId },
+    select: { name: true },
+  });
+  return team?.name ?? null;
 }

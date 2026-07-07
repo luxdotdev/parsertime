@@ -30,6 +30,7 @@ import {
   getCachedScrimPositionalArtifacts,
   getCachedScrimPositionalStats,
 } from "@/data/cached/scrim-cache";
+import { getCachedCanViewScrim } from "@/data/cached/viewer-access";
 import { resolveScrimMapWinners } from "@/data/scrim/map-winner-names";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
@@ -57,14 +58,16 @@ export async function generateMetadata(
   const params = await props.params;
   const t = getMetadataTranslations("scrimPage.metadata");
   const scrimId = Number(params.scrimId);
+  // Cached reads only: with streamed metadata under PPR, the <title> chunk
+  // flushes whenever generateMetadata resolves — an uncached session/DB read
+  // here pushes the title deep into the stream, which reads as "the tab never
+  // shows a title" (the browser falls back to the raw path). ScrimContent
+  // keeps the live gate; this one only picks the title copy.
   const canViewScrim =
     Number.isSafeInteger(scrimId) &&
     scrimId > 0 &&
-    (await isAuthedToViewScrim(scrimId));
+    (await getCachedCanViewScrim(scrimId));
 
-  // Cached read: with streamed metadata under PPR, the <title> chunk flushes
-  // whenever generateMetadata resolves — a raw DB read here pushes the title
-  // deep into the stream, which reads as "the tab never shows a title".
   const scrim = canViewScrim ? await getCachedScrim(scrimId) : null;
 
   const scrimName = scrim?.name ?? t("scrim");

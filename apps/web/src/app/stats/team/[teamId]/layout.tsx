@@ -2,12 +2,12 @@ import { RangeTransitionProvider } from "@/components/stats/team/range-transitio
 import { TeamStatsContent } from "@/components/stats/team/team-stats-content";
 import { TeamStatsHeaderClient } from "@/components/stats/team/team-stats-header-client";
 import { TeamStatsTabsNav } from "@/components/stats/team/team-stats-tabs-nav";
+import { getCachedTeamName } from "@/data/cached/team-cache";
+import { getCachedCanViewTeam } from "@/data/cached/viewer-access";
 import { defaultLocale } from "@/i18n/config";
-import { isAuthedToViewTeam } from "@/lib/auth";
 import { positionalData, simulationTool } from "@/lib/flags";
 import { getFlag } from "@/lib/flags-helpers";
 import { getMetadataTranslations } from "@/lib/metadata-i18n";
-import prisma from "@/lib/prisma";
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
@@ -19,18 +19,18 @@ export async function generateMetadata(
   const t = getMetadataTranslations("teamStatsPage.layoutMetadata");
 
   const teamId = parseInt(params.teamId);
+  // Cached reads only: with streamed metadata under PPR, an uncached
+  // session/DB read here pushes the <title> chunk deep into the stream and the
+  // tab shows the raw path until it lands. Authorization stays in each page's
+  // loadTeamStatsShell (see the layout comment below); this gate only picks
+  // the title copy.
   const canViewTeam =
     Number.isSafeInteger(teamId) &&
     teamId > 0 &&
-    (await isAuthedToViewTeam(teamId));
-  const team = canViewTeam
-    ? await prisma.team.findFirst({
-        where: { id: teamId },
-        select: { name: true },
-      })
-    : null;
+    (await getCachedCanViewTeam(teamId));
 
-  const teamName = team?.name ?? t("defaultTeam");
+  const teamName =
+    (canViewTeam ? await getCachedTeamName(teamId) : null) ?? t("defaultTeam");
 
   return {
     title: t("title", { teamName }),

@@ -16,6 +16,10 @@ export function teamStatsTag(teamId: number) {
   return `team-stats:${teamId}`;
 }
 
+export function teamTag(teamId: number) {
+  return `team:${teamId}`;
+}
+
 export function revalidateScrim(scrimId: number) {
   revalidateTag(scrimTag(scrimId), "max");
 }
@@ -26,4 +30,8 @@ export function revalidateMap(mapId: number) {
 
 export function revalidateTeamStats(teamId: number) {
   revalidateTag(teamStatsTag(teamId), "max");
+}
+
+export function revalidateTeam(teamId: number) {
+  revalidateTag(teamTag(teamId), "max");
 }

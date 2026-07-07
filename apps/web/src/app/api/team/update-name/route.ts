@@ -1,5 +1,6 @@
 import { auditLog } from "@/lib/audit-logs";
 import { auth, canManageTeam, getCurrentUser } from "@/lib/auth";
+import { revalidateTeam } from "@/lib/cache-tags";
 import prisma from "@/lib/prisma";
 import { unauthorized } from "next/navigation";
 import { after, type NextRequest } from "next/server";
@@ -58,6 +59,8 @@ export async function POST(req: NextRequest) {
       scoutingTeamAbbr: body.data.scoutingTeamAbbr ?? null,
     },
   });
+
+  revalidateTeam(body.data.teamId);
 
   after(async () => {
     await auditLog.createAuditLog({

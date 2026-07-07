@@ -17,6 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Effect } from "effect";
 import { AppRuntime } from "@/data/runtime";
+import { getCachedMapDetails } from "@/data/cached/map-cache";
 import { PlayerService } from "@/data/player";
 import { defaultLocale, type Locale } from "@/i18n/config";
 import { resolveMapDataId } from "@/lib/map-data-resolver";
@@ -32,16 +33,11 @@ const DEMO_MAP_ID = 10148;
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = getMetadataTranslations("demoPage.metadata");
+  // Cached reads only: with streamed metadata under PPR, an uncached DB read
+  // here pushes the <title> chunk deep into the stream and the tab shows the
+  // raw path until it lands.
   const mapDataId = await resolveMapDataId(DEMO_MAP_ID);
-
-  const mapName = await prisma.matchStart.findFirst({
-    where: {
-      MapDataId: mapDataId,
-    },
-    select: {
-      map_name: true,
-    },
-  });
+  const mapName = await getCachedMapDetails(DEMO_MAP_ID, mapDataId);
 
   return {
     title: t("title", { mapName: toTitleCase(mapName?.map_name ?? "Map") }),
