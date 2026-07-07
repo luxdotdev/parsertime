@@ -41,14 +41,16 @@ export async function generateMetadata({
 // sections, so navigation shows a single stable skeleton.
 export default function FaceitPlayerPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ playerId: string }>;
+  searchParams: Promise<{ season?: string }>;
 }) {
   return (
     <div className="flex flex-1 flex-col px-4 pt-8 pb-16 sm:px-8">
       <div className="mx-auto w-full max-w-5xl space-y-12">
         <Suspense fallback={<PlayerProfileSkeleton />}>
-          <FaceitPlayerContent params={params} />
+          <FaceitPlayerContent params={params} searchParams={searchParams} />
         </Suspense>
       </div>
     </div>
@@ -57,15 +59,20 @@ export default function FaceitPlayerPage({
 
 async function FaceitPlayerContent({
   params,
+  searchParams,
 }: {
   params: Promise<{ playerId: string }>;
+  searchParams: Promise<{ season?: string }>;
 }) {
   const enabled = await getFlag(faceitScouting);
   if (!enabled) notFound();
   const { playerId } = await params;
+  const { season: seasonParam } = await searchParams;
+  const parsedSeason = Number.parseInt(seasonParam ?? "", 10);
+  const season = Number.isNaN(parsedSeason) ? undefined : parsedSeason;
   const profile = await AppRuntime.runPromise(
     FaceitPlayerScoutingService.pipe(
-      Effect.flatMap((svc) => svc.getFaceitPlayerProfile(playerId))
+      Effect.flatMap((svc) => svc.getFaceitPlayerProfile(playerId, { season }))
     )
   );
   if (!profile) notFound();
@@ -74,7 +81,11 @@ async function FaceitPlayerContent({
 
   return (
     <>
-      <PlayerProfileHeader player={profile.player} />
+      <PlayerProfileHeader
+        player={profile.player}
+        seasons={profile.seasons.map((s) => s.season)}
+        season={profile.season}
+      />
       <PlayerThreatAssessment
         rated={profile.rated}
         roles={profile.fsrRoles}

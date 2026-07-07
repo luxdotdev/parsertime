@@ -2,14 +2,17 @@
 
 import { SectionHeader } from "@/components/stats/team/section-header";
 import { StatRibbon } from "@/components/stats/team/stat-ribbon";
+import { FaceitSeasonSelect } from "@/components/faceit/faceit-season-select";
 import type { FaceitPlayerProfile } from "@/data/faceit/player-types";
 import { useTranslations } from "next-intl";
 
 type Props = {
   player: FaceitPlayerProfile["player"];
+  seasons: number[];
+  season: number | null;
 };
 
-export function PlayerProfileHeader({ player }: Props) {
+export function PlayerProfileHeader({ player, seasons, season }: Props) {
   const t = useTranslations("faceitPlayerPage");
 
   const cells = [
@@ -30,6 +33,7 @@ export function PlayerProfileHeader({ player }: Props) {
         eyebrow={t("header.eyebrow")}
         title={player.nickname}
         description={player.battletag ?? undefined}
+        rightSlot={<FaceitSeasonSelect seasons={seasons} selected={season} />}
       />
       <StatRibbon cells={cells} columns={3} />
     </div>
