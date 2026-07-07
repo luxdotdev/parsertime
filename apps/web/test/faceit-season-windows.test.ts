@@ -46,7 +46,9 @@ describe("parseFaceitSeasonNumber", () => {
 });
 
 describe("buildSeasonWindows", () => {
-  const d = (iso: string) => new Date(iso);
+  function d(iso: string) {
+    return new Date(iso);
+  }
 
   it("folds championships into per-season windows, newest first", () => {
     const windows = buildSeasonWindows([
