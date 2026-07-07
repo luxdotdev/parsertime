@@ -3873,6 +3873,11 @@
       "shared": "{n} shared players",
       "matches": "{n} matches"
     },
+    "seasonFilter": {
+      "label": "Season",
+      "all": "All seasons",
+      "season": "Season {n}"
+    },
     "header": {
       "eyebrow": "FACEIT team scout"
     },

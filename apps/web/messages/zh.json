@@ -3873,6 +3873,11 @@
       "shared": "{n} 名共同选手",
       "matches": "{n} 场比赛"
     },
+    "seasonFilter": {
+      "label": "赛季",
+      "all": "所有赛季",
+      "season": "第 {n} 赛季"
+    },
     "header": {
       "eyebrow": "FACEIT 团队球探"
     },

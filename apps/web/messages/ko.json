@@ -3873,6 +3873,11 @@
       "shared": "공유 선수 {n}명",
       "matches": "{n}경기"
     },
+    "seasonFilter": {
+      "label": "시즌",
+      "all": "전체 시즌",
+      "season": "시즌 {n}"
+    },
     "header": {
       "eyebrow": "FACEIT 팀 스카우트"
     },
