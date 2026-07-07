@@ -3,6 +3,7 @@
 import { SectionHeader } from "@/components/stats/team/section-header";
 import { StatRibbon } from "@/components/stats/team/stat-ribbon";
 import { FsrExplainer } from "@/components/faceit/fsr-explainer";
+import { FaceitSeasonSelect } from "@/components/faceit/faceit-season-select";
 import type {
   FaceitTeamOverview,
   RelatedTeam,
@@ -19,6 +20,8 @@ type Props = {
   related: RelatedTeam[];
   teamId: string;
   combined: boolean;
+  seasons: number[];
+  season: number | null;
 };
 
 export function FaceitTeamHeader({
@@ -28,6 +31,8 @@ export function FaceitTeamHeader({
   related,
   teamId,
   combined,
+  seasons,
+  season,
 }: Props) {
   const t = useTranslations("faceitScoutingPage");
 
@@ -63,10 +68,14 @@ export function FaceitTeamHeader({
     },
   ];
 
+  const toggleParams = new URLSearchParams();
+  if (!combined) toggleParams.set("combined", "1");
+  if (season != null) toggleParams.set("season", String(season));
+  const toggleQs = toggleParams.toString();
   const toggleHref = (
-    combined
-      ? `/faceit/team/${encodeURIComponent(teamId)}`
-      : `/faceit/team/${encodeURIComponent(teamId)}?combined=1`
+    toggleQs
+      ? `/faceit/team/${encodeURIComponent(teamId)}?${toggleQs}`
+      : `/faceit/team/${encodeURIComponent(teamId)}`
   ) as Route;
 
   return (
@@ -74,7 +83,12 @@ export function FaceitTeamHeader({
       <SectionHeader
         eyebrow={t("header.eyebrow")}
         title={name}
-        rightSlot={<FsrExplainer />}
+        rightSlot={
+          <div className="flex items-center gap-2">
+            <FaceitSeasonSelect seasons={seasons} selected={season} />
+            <FsrExplainer />
+          </div>
+        }
       />
       <StatRibbon cells={cells} columns={4} />
       {related.length > 0 ? (

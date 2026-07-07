@@ -43,7 +43,7 @@ export default function FaceitTeamPage({
   searchParams,
 }: {
   params: Promise<{ teamId: string }>;
-  searchParams: Promise<{ combined?: string }>;
+  searchParams: Promise<{ combined?: string; season?: string }>;
 }) {
   return (
     <div className="flex flex-1 flex-col px-4 pt-8 pb-16 sm:px-8">
@@ -61,18 +61,22 @@ async function FaceitTeamContent({
   searchParams,
 }: {
   params: Promise<{ teamId: string }>;
-  searchParams: Promise<{ combined?: string }>;
+  searchParams: Promise<{ combined?: string; season?: string }>;
 }) {
   const enabled = await getFlag(faceitScouting);
   if (!enabled) notFound();
 
   const { teamId } = await params;
-  const { combined: combinedParam } = await searchParams;
+  const { combined: combinedParam, season: seasonParam } = await searchParams;
   const combined = combinedParam === "1";
+  const parsedSeason = Number.parseInt(seasonParam ?? "", 10);
+  const season = Number.isNaN(parsedSeason) ? undefined : parsedSeason;
 
   const profile = await AppRuntime.runPromise(
     FaceitTeamScoutingService.pipe(
-      Effect.flatMap((svc) => svc.getFaceitTeamProfile(teamId, { combined }))
+      Effect.flatMap((svc) =>
+        svc.getFaceitTeamProfile(teamId, { combined, season })
+      )
     )
   );
   if (!profile) notFound();
@@ -86,6 +90,8 @@ async function FaceitTeamContent({
         related={profile.relatedTeams}
         teamId={teamId}
         combined={combined}
+        seasons={profile.seasons.map((s) => s.season)}
+        season={profile.season}
       />
       <FaceitGamePlan recommendations={profile.recommendations} />
       <FaceitTeamOverview
