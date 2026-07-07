@@ -4,6 +4,8 @@ import { Prisma, FaceitRole } from "@/generated/prisma/client";
 import type { FaceitTier } from "@/generated/prisma/client";
 import { Cache, Context, Duration, Effect, Layer, Metric } from "effect";
 import { FaceitScoutingQueryError } from "./errors";
+import { resolveSeasonWindow } from "./season-windows";
+import { fetchFaceitSeasons } from "./seasons";
 import {
   faceitCacheMissTotal,
   faceitCacheRequestTotal,
@@ -29,9 +31,14 @@ import type {
   PlayerRoleUsage,
   PlayerTeamEntry,
 } from "./player-types";
-import type { FaceitTeamMapRow, MapWinrateEntry } from "./types";
+import type {
+  FaceitSeasonWindow,
+  FaceitTeamMapRow,
+  MapWinrateEntry,
+} from "./types";
 
 const CACHE_TTL = Duration.seconds(30);
+const SEASONS_CACHE_TTL = Duration.hours(1);
 const CACHE_CAPACITY = 64;
 
 const DB_ROLE_TO_ENUM: Record<string, FaceitRole> = {
@@ -123,7 +130,8 @@ export type FaceitPlayerScoutingServiceInterface = {
     FaceitScoutingQueryError
   >;
   readonly getFaceitPlayerProfile: (
-    playerId: string
+    playerId: string,
+    opts?: { season?: number }
   ) => Effect.Effect<FaceitPlayerProfile | null, FaceitScoutingQueryError>;
 };
 
@@ -135,6 +143,12 @@ export class FaceitPlayerScoutingService extends Context.Tag(
 
 export const make: Effect.Effect<FaceitPlayerScoutingServiceInterface> =
   Effect.gen(function* () {
+    const seasonsCache = yield* Cache.make({
+      capacity: 1,
+      timeToLive: SEASONS_CACHE_TTL,
+      lookup: (_k: string) => fetchFaceitSeasons(),
+    });
+
     // --- search list ---
     function getFaceitPlayers(): Effect.Effect<
       FaceitPlayerListEntry[],
@@ -206,11 +220,22 @@ export const make: Effect.Effect<FaceitPlayerScoutingServiceInterface> =
 
     // --- profile ---
     function getFaceitPlayerProfile(
-      playerId: string
+      playerId: string,
+      opts?: { season?: number }
     ): Effect.Effect<FaceitPlayerProfile | null, FaceitScoutingQueryError> {
       const startTime = Date.now();
-      const wideEvent: Record<string, unknown> = { player_id: playerId };
+      const wideEvent: Record<string, unknown> = {
+        player_id: playerId,
+        season: opts?.season ?? null,
+      };
       return Effect.gen(function* () {
+        const seasons: FaceitSeasonWindow[] =
+          yield* seasonsCache.get("__all__");
+        const seasonWindow = resolveSeasonWindow(seasons, opts?.season);
+        const seasonClause = seasonWindow
+          ? Prisma.sql`AND m."finishedAt" BETWEEN ${seasonWindow.startDate} AND ${seasonWindow.endDate}`
+          : Prisma.empty;
+
         // Step 1: header
         const headerRows = yield* Effect.tryPromise({
           try: () =>
@@ -323,6 +348,7 @@ export const make: Effect.Effect<FaceitPlayerScoutingServiceInterface> =
                 JOIN "FaceitChampionship" c ON c."championshipId" = m."championshipId"
                 WHERE s."faceitPlayerId" = ${playerId}
                   AND mm."winnerFaction" IS NOT NULL
+                  ${seasonClause}
               `
             ),
           catch: (error) =>
@@ -422,6 +448,7 @@ export const make: Effect.Effect<FaceitPlayerScoutingServiceInterface> =
                 LEFT JOIN "FaceitMatchTeam" opp
                   ON opp."matchId" = r."matchId" AND opp."teamSide" <> r."teamSide"
                 WHERE r."faceitPlayerId" = ${playerId}
+                  ${seasonClause}
                 ORDER BY m."finishedAt" DESC
               `
             ),
@@ -462,8 +489,10 @@ export const make: Effect.Effect<FaceitPlayerScoutingServiceInterface> =
                 FROM "FaceitMatchRoster" r
                 JOIN "FaceitMatchTeam" mt
                   ON mt."matchId" = r."matchId" AND mt."teamSide" = r."teamSide"
+                JOIN "FaceitMatch" m ON m."faceitMatchId" = r."matchId"
                 WHERE r."faceitPlayerId" = ${playerId}
                   AND mt."faceitTeamId" IS NOT NULL
+                  ${seasonClause}
                 GROUP BY mt."faceitTeamId"
                 ORDER BY appearances DESC
               `
@@ -554,6 +583,8 @@ export const make: Effect.Effect<FaceitPlayerScoutingServiceInterface> =
             verified: header.verified,
           },
           rated,
+          seasons,
+          season: seasonWindow?.season ?? null,
           fsrRoles,
           roleUsage: roleUsageResult,
           mapWinrates: mapWinratesResult,
@@ -603,10 +634,13 @@ export const make: Effect.Effect<FaceitPlayerScoutingServiceInterface> =
     const profileCache = yield* Cache.make({
       capacity: CACHE_CAPACITY,
       timeToLive: CACHE_TTL,
-      lookup: (playerId: string) =>
-        getFaceitPlayerProfile(playerId).pipe(
-          Effect.tap(() => Metric.increment(faceitCacheMissTotal))
-        ),
+      lookup: (key: string) => {
+        const [id, s] = key.split("|");
+        if (!id) return Effect.succeed(null);
+        return getFaceitPlayerProfile(id, {
+          season: s != null && s !== "all" ? Number(s) : undefined,
+        }).pipe(Effect.tap(() => Metric.increment(faceitCacheMissTotal)));
+      },
     });
 
     return {
@@ -614,9 +648,9 @@ export const make: Effect.Effect<FaceitPlayerScoutingServiceInterface> =
         playersCache
           .get("__all__")
           .pipe(Effect.tap(() => Metric.increment(faceitCacheRequestTotal))),
-      getFaceitPlayerProfile: (playerId: string) =>
+      getFaceitPlayerProfile: (playerId: string, opts?: { season?: number }) =>
         profileCache
-          .get(playerId)
+          .get(`${playerId}|${opts?.season ?? "all"}`)
           .pipe(Effect.tap(() => Metric.increment(faceitCacheRequestTotal))),
     } satisfies FaceitPlayerScoutingServiceInterface;
   });

@@ -1,5 +1,5 @@
 import type { FaceitRole, FaceitTier } from "@/generated/prisma/client";
-import type { MapWinrateEntry } from "./types";
+import type { FaceitSeasonWindow, MapWinrateEntry } from "./types";
 
 export type FaceitPlayerListEntry = {
   faceitPlayerId: string;
@@ -75,6 +75,8 @@ export type FaceitPlayerProfile = {
     verified: boolean;
   };
   rated: boolean; // has at least one PlayerFsr row
+  seasons: FaceitSeasonWindow[];
+  season: number | null;
   fsrRoles: PlayerFsrRole[]; // empty if unrated
   roleUsage: PlayerRoleUsage[];
   mapWinrates: { byMap: MapWinrateEntry[]; byType: MapWinrateEntry[] };
