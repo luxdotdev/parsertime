@@ -47,52 +47,64 @@ export function useBulkMapUpload(maxMaps: number = MAX_MAPS_PER_UPLOAD) {
     async (files: File[]) => {
       if (files.length === 0) return;
 
-      // Reserve slots up front so we never exceed the cap, even mid-parse.
-      let accepted: File[] = [];
-      setPendingMaps((prev) => {
-        const room = maxMaps - prev.length;
-        if (room <= 0) {
-          toast.error(t("maxMapsTitle"), {
-            description: t("maxMaps", { max: maxMaps }),
-          });
-          return prev;
-        }
-
-        const valid = files.filter((file) => {
-          if (file.type !== TXT) {
-            toast.error(t("fileTypeTitle"), { description: t("fileType") });
-            return false;
-          }
-          if (file.size > MAX_FILE_SIZE) {
-            toast.error(t("fileSizeTitle"), { description: t("fileSize") });
-            return false;
-          }
-          return true;
+      // `accepted` must be computed OUTSIDE the state updater. React only
+      // invokes an updater synchronously as a bail-out optimization when the
+      // hook's update queue is empty; with any update pending (a parse-progress
+      // patch, a queued transition) the updater runs later at render time, so a
+      // local variable assigned inside it is still empty when parsing starts —
+      // placeholder rows then sit at "parsing" forever and submit stays
+      // disabled. Updaters also must stay pure: no toasts, no seqRef++.
+      const room = maxMaps - pendingMaps.length;
+      if (room <= 0) {
+        toast.error(t("maxMapsTitle"), {
+          description: t("maxMaps", { max: maxMaps }),
         });
+        return;
+      }
 
-        accepted = valid.slice(0, room);
-        if (valid.length > accepted.length) {
-          toast.error(t("maxMapsTitle"), {
-            description: t("maxMaps", { max: maxMaps }),
-          });
+      const valid = files.filter((file) => {
+        if (file.type !== TXT) {
+          toast.error(t("fileTypeTitle"), { description: t("fileType") });
+          return false;
         }
-
-        const placeholders: PendingMap[] = accepted.map((file) => ({
-          id: makeId(),
-          seq: seqRef.current++,
-          file,
-          fileName: file.name,
-          timestamp: parseLogFilenameTimestamp(file.name),
-          status: "parsing",
-          rowCount: 0,
-          progress: 0,
-          hasCorruption: false,
-          parseFailed: false,
-          heroBans: [],
-        }));
-
-        return sortMaps([...prev, ...placeholders]);
+        if (file.size > MAX_FILE_SIZE) {
+          toast.error(t("fileSizeTitle"), { description: t("fileSize") });
+          return false;
+        }
+        return true;
       });
+
+      const accepted = valid.slice(0, room);
+      if (valid.length > accepted.length) {
+        toast.error(t("maxMapsTitle"), {
+          description: t("maxMaps", { max: maxMaps }),
+        });
+      }
+
+      const placeholders: PendingMap[] = accepted.map((file) => ({
+        id: makeId(),
+        seq: seqRef.current++,
+        file,
+        fileName: file.name,
+        timestamp: parseLogFilenameTimestamp(file.name),
+        status: "parsing",
+        rowCount: 0,
+        progress: 0,
+        hasCorruption: false,
+        parseFailed: false,
+        heroBans: [],
+      }));
+
+      Logger.info({
+        operation: "bulk_upload_add_files",
+        files_received: files.length,
+        valid_count: valid.length,
+        accepted_count: accepted.length,
+        pending_count: pendingMaps.length,
+        room,
+      });
+
+      setPendingMaps((prev) => sortMaps([...prev, ...placeholders]));
 
       // Parse each accepted file; resolve its row in place as it finishes.
       // Each file emits exactly one structured "wide event" (file metadata,
@@ -210,7 +222,7 @@ export function useBulkMapUpload(maxMaps: number = MAX_MAPS_PER_UPLOAD) {
         })
       );
     },
-    [maxMaps, t]
+    [maxMaps, pendingMaps, t]
   );
 
   const removeMap = useCallback((id: string) => {
