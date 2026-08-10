@@ -1,11 +1,6 @@
 import { Logger } from "@/lib/logger";
 import prisma from "@/lib/prisma";
-import {
-  aggregateActiveUsers,
-  aggregateFeatureRollups,
-  aggregatePageRollups,
-  dayKey,
-} from "@/lib/usage/rollup";
+import { dayKey } from "@/lib/usage/rollup";
 import { getWorkflowMetadata } from "workflow";
 import {
   acquireLeaseStep,
@@ -49,74 +44,78 @@ async function listUsageRollupDaysStep(anchorIso: string): Promise<string[]> {
   return days;
 }
 
-async function rollupUsageDayStep(day: string): Promise<number> {
+export async function rollupUsageDayStep(day: string): Promise<number> {
   "use step";
 
   const start = new Date(`${day}T00:00:00.000Z`);
   const end = new Date(`${day}T00:00:00.000Z`);
   end.setUTCDate(end.getUTCDate() + 1);
 
-  const rows = await prisma.usageEvent.findMany({
-    where: { ts: { gte: start, lt: end } },
-    select: {
-      name: true,
-      environment: true,
-      userId: true,
-      teamId: true,
-      path: true,
+  return prisma.$transaction(
+    async (tx) => {
+      const [countRow] = await tx.$queryRaw<{ count: bigint }[]>`
+        SELECT COUNT(*)::bigint AS count
+        FROM "UsageEvent"
+        WHERE ts >= ${start} AND ts < ${end}
+      `;
+
+      await tx.$executeRaw`
+        INSERT INTO "DailyFeatureRollup"
+          (environment, day, name, "totalEvents", "uniqueUsers", "uniqueTeams")
+        SELECT
+          environment,
+          ${day},
+          name,
+          COUNT(*)::integer,
+          COUNT(DISTINCT NULLIF("userId", ''))::integer,
+          COUNT(DISTINCT "teamId")::integer
+        FROM "UsageEvent"
+        WHERE ts >= ${start} AND ts < ${end}
+        GROUP BY environment, name
+        ON CONFLICT (environment, day, name) DO UPDATE SET
+          "totalEvents" = EXCLUDED."totalEvents",
+          "uniqueUsers" = EXCLUDED."uniqueUsers",
+          "uniqueTeams" = EXCLUDED."uniqueTeams"
+      `;
+
+      await tx.$executeRaw`
+        INSERT INTO "DailyPageRollup"
+          (environment, day, path, views, "uniqueUsers")
+        SELECT
+          environment,
+          ${day},
+          path,
+          COUNT(*)::integer,
+          COUNT(DISTINCT NULLIF("userId", ''))::integer
+        FROM "UsageEvent"
+        WHERE ts >= ${start} AND ts < ${end}
+          AND name = 'page_view'
+          AND path IS NOT NULL
+          AND path <> ''
+        GROUP BY environment, path
+        ON CONFLICT (environment, day, path) DO UPDATE SET
+          views = EXCLUDED.views,
+          "uniqueUsers" = EXCLUDED."uniqueUsers"
+      `;
+
+      await tx.$executeRaw`
+        INSERT INTO "UserActiveDay" (environment, day, "userId")
+        SELECT DISTINCT environment, ${day}, "userId"
+        FROM "UsageEvent"
+        WHERE ts >= ${start} AND ts < ${end}
+          AND "userId" IS NOT NULL
+          AND "userId" <> ''
+        ON CONFLICT (environment, day, "userId") DO NOTHING
+      `;
+
+      return Number(countRow?.count ?? BigInt(0));
     },
-  });
-  const features = aggregateFeatureRollups(rows, day);
-  const pages = aggregatePageRollups(rows, day);
-  const actives = aggregateActiveUsers(rows, day);
-
-  await prisma.$transaction([
-    ...features.map((feature) =>
-      prisma.dailyFeatureRollup.upsert({
-        where: {
-          environment_day_name: {
-            environment: feature.environment,
-            day: feature.day,
-            name: feature.name,
-          },
-        },
-        create: feature,
-        update: {
-          totalEvents: feature.totalEvents,
-          uniqueUsers: feature.uniqueUsers,
-          uniqueTeams: feature.uniqueTeams,
-        },
-      })
-    ),
-    ...pages.map((page) =>
-      prisma.dailyPageRollup.upsert({
-        where: {
-          environment_day_path: {
-            environment: page.environment,
-            day: page.day,
-            path: page.path,
-          },
-        },
-        create: page,
-        update: { views: page.views, uniqueUsers: page.uniqueUsers },
-      })
-    ),
-    ...actives.map((active) =>
-      prisma.userActiveDay.upsert({
-        where: {
-          environment_day_userId: {
-            environment: active.environment,
-            day: active.day,
-            userId: active.userId,
-          },
-        },
-        create: active,
-        update: {},
-      })
-    ),
-  ]);
-
-  return rows.length;
+    {
+      isolationLevel: "RepeatableRead",
+      maxWait: 20_000,
+      timeout: 120_000,
+    }
+  );
 }
 
 async function logUsageRollupCompletionStep(processed: Record<string, number>) {

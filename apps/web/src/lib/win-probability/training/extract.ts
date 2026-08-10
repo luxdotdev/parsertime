@@ -127,10 +127,44 @@ export async function fetchEventLog(
   // every other page render.
   const [matchStart, kills, rezzes, ultCharged, ultStart] = await Promise.all([
     prisma.matchStart.findFirst({ where }),
-    prisma.kill.findMany({ where, orderBy: { match_time: "asc" } }),
-    prisma.mercyRez.findMany({ where }),
-    prisma.ultimateCharged.findMany({ where }),
-    prisma.ultimateStart.findMany({ where }),
+    prisma.kill.findMany({
+      where,
+      select: {
+        match_time: true,
+        victim_team: true,
+        victim_name: true,
+        victim_hero: true,
+        attacker_team: true,
+        attacker_name: true,
+      },
+      orderBy: { match_time: "asc" },
+    }),
+    prisma.mercyRez.findMany({
+      where,
+      select: {
+        match_time: true,
+        resurrectee_team: true,
+        resurrectee_player: true,
+      },
+    }),
+    prisma.ultimateCharged.findMany({
+      where,
+      select: {
+        match_time: true,
+        player_team: true,
+        player_name: true,
+        player_hero: true,
+        hero_duplicated: true,
+      },
+    }),
+    prisma.ultimateStart.findMany({
+      where,
+      select: {
+        match_time: true,
+        player_team: true,
+        player_name: true,
+      },
+    }),
   ]);
 
   if (matchStart === null) return null;
