@@ -116,23 +116,34 @@ export async function upsertTeamTsrSnapshot(teamId: number): Promise<void> {
   });
 }
 
-export async function recomputeAllTeamTsrSnapshots(): Promise<{
+export type TeamTsrSnapshotBatchResult = {
   written: number;
   cleared: number;
-}> {
-  const teams = await prisma.team.findMany({ select: { id: true } });
+};
+
+export async function recomputeTeamTsrSnapshotBatch(
+  teamIds: number[]
+): Promise<TeamTsrSnapshotBatchResult> {
   let written = 0;
   let cleared = 0;
-  for (const t of teams) {
+  for (const teamId of teamIds) {
     const before = await prisma.teamTsrSnapshot.findUnique({
-      where: { teamId: t.id },
+      where: { teamId },
     });
-    await upsertTeamTsrSnapshot(t.id);
+    await upsertTeamTsrSnapshot(teamId);
     const after = await prisma.teamTsrSnapshot.findUnique({
-      where: { teamId: t.id },
+      where: { teamId },
     });
     if (after) written += 1;
     else if (before) cleared += 1;
   }
   return { written, cleared };
+}
+
+export async function recomputeAllTeamTsrSnapshots(): Promise<TeamTsrSnapshotBatchResult> {
+  const teams = await prisma.team.findMany({
+    select: { id: true },
+    orderBy: { id: "asc" },
+  });
+  return recomputeTeamTsrSnapshotBatch(teams.map((team) => team.id));
 }

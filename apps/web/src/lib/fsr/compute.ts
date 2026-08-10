@@ -15,7 +15,7 @@ import {
 } from "@/lib/fsr/formula";
 import { ALL_FSR_STAT_COLUMNS, getFsrStatConfigs } from "@/lib/fsr/config";
 import type { FsrStatColumn } from "@/lib/fsr/types";
-import type { Prisma } from "@/generated/prisma/client";
+import type { FaceitRole, FaceitTier, Prisma } from "@/generated/prisma/client";
 
 export type FsrRecomputeResult = {
   groupsLoaded: number;
@@ -27,38 +27,46 @@ export type FsrRecomputeResult = {
   skipped?: boolean;
 };
 
-const FSR_RECOMPUTE_LOCK_ID = 732402;
+export type FsrRecomputePlan = {
+  computedAt: string;
+  groupsLoaded: number;
+  durationMs: number;
+  baselines: {
+    tier: FaceitTier;
+    role: FaceitRole;
+    sampleN: number;
+    stats: Prisma.InputJsonValue;
+  }[];
+  cells: {
+    faceitPlayerId: string;
+    role: FaceitRole;
+    tier: FaceitTier;
+    fsr: number;
+    compositeZ: number;
+    mapCount: number;
+    minutesPlayed: number;
+    peerCount: number;
+    statZ: Prisma.InputJsonValue;
+  }[];
+  players: {
+    faceitPlayerId: string;
+    role: FaceitRole;
+    fsr: number;
+    compositeZ: number;
+    effectiveAnchor: number;
+    mapCount: number;
+    recentMapCount365d: number;
+    tiersPlayed: FaceitTier[];
+  }[];
+};
 
 export async function recomputeAllFsr(): Promise<FsrRecomputeResult> {
-  const lockStart = Date.now();
-  const [lock] = await prisma.$queryRaw<{ locked: boolean }[]>`
-    SELECT pg_try_advisory_lock(${FSR_RECOMPUTE_LOCK_ID}) AS locked
-  `;
-  if (!lock?.locked) {
-    const durationMs = Date.now() - lockStart;
-    Logger.info({
-      event: "fsr.recompute",
-      outcome: "skipped_locked",
-      duration_ms: durationMs,
-    });
-    return {
-      groupsLoaded: 0,
-      cellsWritten: 0,
-      playersWritten: 0,
-      baselinesWritten: 0,
-      staleRowsDropped: 0,
-      durationMs,
-      skipped: true,
-    };
-  }
-  try {
-    return await recomputeAllFsrUnlocked();
-  } finally {
-    await prisma.$executeRaw`SELECT pg_advisory_unlock(${FSR_RECOMPUTE_LOCK_ID})`;
-  }
+  const plan = await buildFsrRecomputePlan();
+  return writeFsrRecomputePlan(plan);
 }
 
-async function recomputeAllFsrUnlocked(): Promise<FsrRecomputeResult> {
+/** Compute a serializable replacement plan without changing live FSR rows. */
+export async function buildFsrRecomputePlan(): Promise<FsrRecomputePlan> {
   const start = Date.now();
   const now = new Date();
   const recentCutoff = new Date(
@@ -147,8 +155,6 @@ async function recomputeAllFsrUnlocked(): Promise<FsrRecomputeResult> {
     byPlayerRole.set(key, acc);
   }
 
-  const computedAt = now;
-
   const baselineList = [...baselines.values()];
 
   const baselineData = baselineList.map((b) => ({
@@ -156,7 +162,6 @@ async function recomputeAllFsrUnlocked(): Promise<FsrRecomputeResult> {
     role: b.role,
     sampleN: b.sampleN,
     stats: b.baseline as unknown as Prisma.InputJsonValue,
-    computedAt,
   }));
 
   const cellData = cells.map((c) => ({
@@ -169,7 +174,6 @@ async function recomputeAllFsrUnlocked(): Promise<FsrRecomputeResult> {
     minutesPlayed: c.minutesPlayed,
     peerCount: c.peerCount,
     statZ: c.statZ as unknown as Prisma.InputJsonValue,
-    computedAt,
   }));
 
   const headlineEntries = [...byPlayerRole.entries()];
@@ -185,9 +189,28 @@ async function recomputeAllFsrUnlocked(): Promise<FsrRecomputeResult> {
       mapCount: acc.mapCount,
       recentMapCount365d: acc.recentMapCount,
       tiersPlayed: [...acc.tiers],
-      computedAt,
     };
   });
+
+  return {
+    computedAt: now.toISOString(),
+    groupsLoaded: groups.length,
+    durationMs: Date.now() - start,
+    baselines: baselineData,
+    cells: cellData,
+    players: playerData,
+  };
+}
+
+/** Atomically swap a previously computed plan into the live FSR tables. */
+export async function writeFsrRecomputePlan(
+  plan: FsrRecomputePlan
+): Promise<FsrRecomputeResult> {
+  const writeStart = Date.now();
+  const computedAt = new Date(plan.computedAt);
+  const baselineData = plan.baselines.map((row) => ({ ...row, computedAt }));
+  const cellData = plan.cells.map((row) => ({ ...row, computedAt }));
+  const playerData = plan.players.map((row) => ({ ...row, computedAt }));
 
   // Chunk so each createMany stays under Postgres' 65,535-parameter limit
   // (rows × columns). Largest table has 10 columns, so 2,000 rows ≈ 20k params.
@@ -224,23 +247,23 @@ async function recomputeAllFsrUnlocked(): Promise<FsrRecomputeResult> {
   const playersWritten = playerData.length;
   const staleRowsDropped = 0; // full-replace in-transaction; no separate stale sweep
 
-  const durationMs = Date.now() - start;
+  const durationMs = plan.durationMs + (Date.now() - writeStart);
   Logger.info({
     event: "fsr.recompute",
     outcome: "success",
-    groups_loaded: groups.length,
+    groups_loaded: plan.groupsLoaded,
     cells_written: cellsWritten,
     players_written: playersWritten,
-    baselines_written: baselineList.length,
+    baselines_written: baselineData.length,
     stale_rows_dropped: staleRowsDropped,
     duration_ms: durationMs,
   });
 
   return {
-    groupsLoaded: groups.length,
+    groupsLoaded: plan.groupsLoaded,
     cellsWritten,
     playersWritten,
-    baselinesWritten: baselineList.length,
+    baselinesWritten: baselineData.length,
     staleRowsDropped,
     durationMs,
   };

@@ -8,9 +8,9 @@ import {
 
 describe("parseFaceitSeasonNumber", () => {
   it("parses league split names (SN prefix)", () => {
-    expect(
-      parseFaceitSeasonNumber("S8 NA Open Central - Regular Season")
-    ).toBe(8);
+    expect(parseFaceitSeasonNumber("S8 NA Open Central - Regular Season")).toBe(
+      8
+    );
     expect(
       parseFaceitSeasonNumber("S5 EMEA Master Central - Regular Season")
     ).toBe(5);
@@ -21,7 +21,9 @@ describe("parseFaceitSeasonNumber", () => {
 
   it("parses qualifier names (FACEIT League Season N)", () => {
     expect(
-      parseFaceitSeasonNumber("FACEIT League Season 7 - Expert Qualifier (EMEA)")
+      parseFaceitSeasonNumber(
+        "FACEIT League Season 7 - Expert Qualifier (EMEA)"
+      )
     ).toBe(7);
     expect(
       parseFaceitSeasonNumber(

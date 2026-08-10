@@ -10,5 +10,6 @@ dependencies = [
   # numpy 2.x ("module compiled using NumPy 1.x cannot be run in NumPy 2.4").
   "numpy>=1.24,<2",
   "pandas>=2.0,<3",
+  "psycopg[binary]>=3.2,<4",
   "requests>=2.31,<3",
 ]

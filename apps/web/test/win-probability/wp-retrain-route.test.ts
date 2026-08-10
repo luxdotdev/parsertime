@@ -1,9 +1,11 @@
 import { beforeEach, expect, test, vi } from "vitest";
 
-const { findMany, fetchEventLog, buildRows } = vi.hoisted(() => ({
+const { findMany, fetchEventLog, buildRows, put, start } = vi.hoisted(() => ({
   findMany: vi.fn().mockResolvedValue([]),
   fetchEventLog: vi.fn(),
   buildRows: vi.fn(),
+  put: vi.fn().mockResolvedValue({ url: "https://blob.test/x" }),
+  start: vi.fn().mockResolvedValue({ runId: "workflow-run-1" }),
 }));
 vi.mock("@/lib/prisma", () => ({
   default: { matchStart: { findMany } },
@@ -13,17 +15,18 @@ vi.mock("@/lib/win-probability/training/extract", () => ({
   buildRows,
 }));
 vi.mock("@vercel/blob", () => ({
-  put: vi.fn().mockResolvedValue({ url: "https://blob.test/x" }),
+  put,
 }));
-vi.mock("@vercel/functions", () => ({
-  // Run the deferred work synchronously so the trigger fetch is observable.
-  waitUntil: vi.fn((p: Promise<unknown>) => p),
-}));
+vi.mock("workflow/api", () => ({ start }));
 vi.mock("@/lib/logger", () => ({
   Logger: { warn: vi.fn(), info: vi.fn(), error: vi.fn() },
 }));
 
 import { GET } from "@/app/api/cron/wp-retrain/route";
+import {
+  exportWinProbabilityDatasetBatchStep,
+  triggerWinProbabilityTrainerStep,
+} from "@/workflows/cron/wp-retrain";
 
 beforeEach(() => {
   process.env.CRON_SECRET = "test-secret-value";
@@ -32,6 +35,8 @@ beforeEach(() => {
   findMany.mockClear().mockResolvedValue([]);
   fetchEventLog.mockClear();
   buildRows.mockClear();
+  put.mockClear().mockResolvedValue({ url: "https://blob.test/x" });
+  start.mockClear().mockResolvedValue({ runId: "workflow-run-1" });
 });
 
 function req(auth?: string): Request {
@@ -56,43 +61,81 @@ test("fails closed when CRON_SECRET is unset", async () => {
   expect(res.status).toBe(500);
 });
 
-test("authorized run with no maps exports nothing", async () => {
+test("authorized request starts a workflow and returns its run ID", async () => {
   const res = await GET(req("Bearer test-secret-value"));
-  expect(res.status).toBe(200);
+  expect(res.status).toBe(202);
   const body = (await res.json()) as {
-    exported: boolean;
+    ok: boolean;
+    status: string;
     runId: string;
-    modes: string[];
   };
-  expect(body.exported).toBe(true);
-  expect(body.modes).toEqual([]);
-  expect(typeof body.runId).toBe("string");
+  expect(body).toEqual({
+    ok: true,
+    status: "started",
+    runId: "workflow-run-1",
+  });
+  expect(start).toHaveBeenCalledTimes(1);
 });
 
-test("triggers the trainer with { runId, urls } when modes export", async () => {
-  findMany.mockResolvedValue([{ MapDataId: 1 }]);
+test("dataset batch export reports no data when there are no maps", async () => {
+  const result = await exportWinProbabilityDatasetBatchStep("run-empty", 0, []);
+  expect(result.mapsExported).toBe(0);
+  expect(result.urls).toEqual({});
+  expect(put).not.toHaveBeenCalled();
+});
+
+test("exports deterministic blobs and triggers the trainer", async () => {
   fetchEventLog.mockResolvedValue({ modeFamily: "control" });
   buildRows.mockReturnValue([
     { matchId: 1, roundId: 1, label: 1, features: [0] },
   ]);
+  const exported = await exportWinProbabilityDatasetBatchStep("run-1", 0, [1]);
+
+  expect(exported.urls).toEqual({ control: ["https://blob.test/x"] });
+  expect(put).toHaveBeenCalledWith(
+    "wp-train/run-1/parts/0-control.csv",
+    expect.any(String),
+    expect.objectContaining({
+      addRandomSuffix: false,
+      allowOverwrite: true,
+    })
+  );
+
   const fetchSpy = vi
     .spyOn(globalThis, "fetch")
-    .mockResolvedValue(new Response("{}", { status: 200 }));
+    .mockResolvedValue(
+      Response.json({ published: true, runId: "run-1", trained: ["control"] })
+    );
 
-  const res = await GET(req("Bearer test-secret-value"));
-  expect(res.status).toBe(200);
-  const body = (await res.json()) as { runId: string; modes: string[] };
-  expect(body.modes).toEqual(["control"]);
+  await triggerWinProbabilityTrainerStep("run-1", exported.urls);
 
   expect(fetchSpy).toHaveBeenCalledTimes(1);
   const [url, init] = fetchSpy.mock.calls[0];
   expect(String(url)).toContain("/api/wp-train");
   const sent = JSON.parse((init as RequestInit).body as string) as {
     runId: string;
-    urls: Record<string, string>;
+    urls: Record<string, string[]>;
   };
-  expect(sent.runId).toBe(body.runId);
-  expect(sent.urls).toEqual({ control: "https://blob.test/x" });
+  expect(sent.runId).toBe("run-1");
+  expect(sent.urls).toEqual({ control: ["https://blob.test/x"] });
+
+  fetchSpy.mockRestore();
+});
+
+test("trainer step fails when no model was published", async () => {
+  const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+    Response.json({
+      published: false,
+      runId: "run-2",
+      reason: "no_modes_trained",
+    })
+  );
+
+  await expect(
+    triggerWinProbabilityTrainerStep("run-2", {
+      control: ["https://blob.test/control.csv"],
+    })
+  ).rejects.toThrow("no_modes_trained");
 
   fetchSpy.mockRestore();
 });

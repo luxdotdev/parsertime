@@ -2,6 +2,7 @@ import withVercelToolbar from "@vercel/toolbar/plugins/next";
 import { NextConfig } from "next";
 import { withAxiom } from "next-axiom";
 import createNextIntlPlugin from "next-intl/plugin";
+import { withWorkflow } from "workflow/next";
 
 const cspHeader = `
     default-src 'self';
@@ -106,4 +107,6 @@ const nextConfig: NextConfig = {
 
 const withNextIntl = createNextIntlPlugin();
 
-export default withNextIntl(withAxiom(withVercelToolbar()(nextConfig)));
+export default withWorkflow(
+  withNextIntl(withAxiom(withVercelToolbar()(nextConfig)))
+);

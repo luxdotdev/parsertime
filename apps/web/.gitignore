@@ -64,3 +64,4 @@ artifacts/
 
 # Prisma generated client
 src/generated/
+/.swc

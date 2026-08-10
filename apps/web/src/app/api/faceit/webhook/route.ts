@@ -1,8 +1,9 @@
 import { Logger } from "@/lib/logger";
 import { ingestMatchById } from "@/lib/tsr/ingest";
-import { recomputeAllTsrs } from "@/lib/tsr/replay";
+import { tsrRecomputeWorkflow } from "@/workflows/cron/tsr-recompute";
 import { kv } from "@vercel/kv";
 import { timingSafeEqual } from "node:crypto";
+import { start } from "workflow/api";
 
 type FaceitWebhookEvent = {
   transaction_id?: string;
@@ -146,15 +147,10 @@ export async function POST(req: Request): Promise<Response> {
     wideEvent.affected_player_count = result.affectedPlayerIds.length;
 
     if (result.ingested) {
-      // Recompute is region-agnostic and cheap; fire and forget so the
-      // webhook ack stays fast. The recompute emits its own wide event.
-      recomputeAllTsrs().catch((err) => {
-        Logger.error({
-          event: "tsr.faceit.webhook.recompute_failed",
-          match_id: matchId,
-          error_message: err instanceof Error ? err.message : "unknown",
-        });
-      });
+      // Queue the durable recompute. Its workflow lease collapses a burst of
+      // match-finished webhooks into at most one active replay.
+      const run = await start(tsrRecomputeWorkflow);
+      wideEvent.workflow_run_id = run.runId;
     }
 
     wideEvent.outcome = "success";

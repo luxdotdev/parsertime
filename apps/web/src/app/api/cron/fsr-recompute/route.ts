@@ -1,83 +1,38 @@
+import { authorizeCron, cronAuthFailureResponse } from "@/lib/cron/authorize";
 import { Logger } from "@/lib/logger";
-import { recomputeAllFsr } from "@/lib/fsr/compute";
-import { timingSafeEqual } from "node:crypto";
-
-export const maxDuration = 300;
-
-type AuthResult =
-  | { ok: true }
-  | { ok: false; status: number; reason: "missing_secret" | "unauthorized" };
-
-function authorizeCron(req: Request): AuthResult {
-  const expected = process.env.CRON_SECRET;
-  // Fail closed when the secret is unset — without this guard, a missing env
-  // var collapses the comparison string to "Bearer undefined" and any caller
-  // sending that literal would pass.
-  if (!expected) {
-    return { ok: false, status: 500, reason: "missing_secret" };
-  }
-  const header = req.headers.get("Authorization");
-  const provided = header?.startsWith("Bearer ") ? header.slice(7) : null;
-  if (!provided || provided.length !== expected.length) {
-    return { ok: false, status: 401, reason: "unauthorized" };
-  }
-  try {
-    const ok = timingSafeEqual(Buffer.from(provided), Buffer.from(expected));
-    if (!ok) return { ok: false, status: 401, reason: "unauthorized" };
-  } catch {
-    return { ok: false, status: 401, reason: "unauthorized" };
-  }
-  return { ok: true };
-}
+import { fsrRecomputeWorkflow } from "@/workflows/cron/fsr-recompute";
+import { start } from "workflow/api";
 
 export async function GET(req: Request): Promise<Response> {
-  const startTime = Date.now();
-  const wideEvent: Record<string, unknown> = {
-    event: "fsr.cron.recompute",
-    method: "GET",
-    path: "/api/cron/fsr-recompute",
-    timestamp: new Date().toISOString(),
-  };
+  const auth = authorizeCron(req);
+  if (!auth.ok) {
+    Logger.info({
+      event: "fsr.cron.recompute",
+      outcome: "denied",
+      auth_reason: auth.reason,
+      status_code: auth.status,
+    });
+    return cronAuthFailureResponse(auth);
+  }
 
   try {
-    const auth = authorizeCron(req);
-    if (!auth.ok) {
-      wideEvent.outcome = "denied";
-      wideEvent.auth_reason = auth.reason;
-      wideEvent.status_code = auth.status;
-      const body =
-        auth.reason === "missing_secret"
-          ? "Server misconfigured"
-          : "Unauthorized";
-      return new Response(body, { status: auth.status });
-    }
-    wideEvent.auth_reason = "ok";
-
-    const fsr = await recomputeAllFsr();
-    wideEvent.fsr = {
-      groups_loaded: fsr.groupsLoaded,
-      cells_written: fsr.cellsWritten,
-      players_written: fsr.playersWritten,
-      baselines_written: fsr.baselinesWritten,
-      stale_rows_dropped: fsr.staleRowsDropped,
-      duration_ms: fsr.durationMs,
-      skipped: fsr.skipped ?? false,
-    };
-
-    wideEvent.status_code = 200;
-    wideEvent.outcome = "success";
-
-    return Response.json({ ok: true, fsr: wideEvent.fsr });
+    const run = await start(fsrRecomputeWorkflow);
+    Logger.info({
+      event: "fsr.cron.recompute",
+      outcome: "started",
+      status_code: 202,
+      workflow_run_id: run.runId,
+    });
+    return Response.json(
+      { ok: true, status: "started", runId: run.runId },
+      { status: 202 }
+    );
   } catch (error) {
-    wideEvent.status_code = 500;
-    wideEvent.outcome = "error";
-    wideEvent.error = {
-      message: error instanceof Error ? error.message : "Unknown error",
-      type: error instanceof Error ? error.name : "Error",
-    };
+    Logger.error({
+      event: "fsr.cron.recompute",
+      outcome: "start_failed",
+      error_message: error instanceof Error ? error.message : "unknown",
+    });
     throw error;
-  } finally {
-    wideEvent.duration_ms = Date.now() - startTime;
-    Logger.info(wideEvent);
   }
 }

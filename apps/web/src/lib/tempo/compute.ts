@@ -27,7 +27,9 @@ export type TempoRecomputeResult = {
   perMetricSampleN: Record<TempoMetricKey, number>;
 };
 
-async function sampleTeam(teamId: number): Promise<TeamTempoSample> {
+export async function sampleTeamTempo(
+  teamId: number
+): Promise<TeamTempoSample> {
   const mapRows = await prisma.scrim.findMany({
     where: { teamId },
     select: { id: true },
@@ -73,7 +75,7 @@ export async function recomputeTempoBaselines(): Promise<TempoRecomputeResult> {
   for (let i = 0; i < teams.length; i += CONCURRENCY) {
     const chunk = teams.slice(i, i + CONCURRENCY);
     const chunkResults = await Promise.allSettled(
-      chunk.map((t) => sampleTeam(t.id))
+      chunk.map((t) => sampleTeamTempo(t.id))
     );
     for (let j = 0; j < chunkResults.length; j++) {
       const result = chunkResults[j];
@@ -89,6 +91,15 @@ export async function recomputeTempoBaselines(): Promise<TempoRecomputeResult> {
     }
   }
 
+  return writeTempoBaselines(samples, teams.length, teamsFailed);
+}
+
+/** Persist summaries after durable workflow steps have sampled the teams. */
+export async function writeTempoBaselines(
+  samples: TeamTempoSample[],
+  teamsConsidered: number,
+  teamsFailed: number
+): Promise<TempoRecomputeResult> {
   const buckets = bucketTeamSamples(samples);
   const computedAt = new Date();
   const perMetricSampleN: Record<TempoMetricKey, number> = {
@@ -112,7 +123,7 @@ export async function recomputeTempoBaselines(): Promise<TempoRecomputeResult> {
   }
 
   return {
-    teamsConsidered: teams.length,
+    teamsConsidered,
     teamsFailed,
     baselinesWritten,
     perMetricSampleN,

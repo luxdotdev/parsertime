@@ -44,7 +44,21 @@ export type RecomputeResult = {
   skipped?: boolean;
 };
 
-const TSR_RECOMPUTE_LOCK_ID = 732401;
+export type TsrPlayerWriteRow = {
+  faceitPlayerId: string;
+  region: TsrRegion;
+  rating: number;
+  matchCount: number;
+  recentMatchCount365d: number;
+  maxTierReached: FaceitTier;
+};
+
+export type TsrReplayPlan = {
+  matchesReplayed: number;
+  computedAt: string;
+  players: TsrPlayerWriteRow[];
+  durationMs: number;
+};
 
 async function loadReplayMatches(): Promise<ReplayMatch[]> {
   const rows = await prisma.faceitMatch.findMany({
@@ -107,36 +121,34 @@ async function loadReplayMatches(): Promise<ReplayMatch[]> {
 }
 
 export async function recomputeAllTsrs(): Promise<RecomputeResult> {
-  const lockStart = Date.now();
-  const [lock] = await prisma.$queryRaw<{ locked: boolean }[]>`
-    SELECT pg_try_advisory_lock(${TSR_RECOMPUTE_LOCK_ID}) AS locked
-  `;
-  if (!lock?.locked) {
-    const durationMs = Date.now() - lockStart;
-    Logger.info({
-      event: "tsr.recompute",
-      outcome: "skipped_locked",
-      duration_ms: durationMs,
-    });
-    return {
-      matchesReplayed: 0,
-      playersUpdated: 0,
-      staleRowsDropped: 0,
-      durationMs,
-      skipped: true,
-    };
+  const plan = await buildTsrReplayPlan();
+  const chunkSize = 500;
+  for (let index = 0; index < plan.players.length; index += chunkSize) {
+    await writeTsrPlayerBatch(
+      plan.players.slice(index, index + chunkSize),
+      plan.computedAt
+    );
   }
-
-  try {
-    return await recomputeAllTsrsUnlocked();
-  } finally {
-    await prisma.$executeRaw`
-      SELECT pg_advisory_unlock(${TSR_RECOMPUTE_LOCK_ID})
-    `;
-  }
+  const staleRowsDropped = await dropStaleTsrRows(plan.computedAt);
+  const durationMs = plan.durationMs;
+  Logger.info({
+    event: "tsr.recompute",
+    matches_replayed: plan.matchesReplayed,
+    players_updated: plan.players.length,
+    stale_rows_dropped: staleRowsDropped,
+    duration_ms: durationMs,
+    outcome: "success",
+  });
+  return {
+    matchesReplayed: plan.matchesReplayed,
+    playersUpdated: plan.players.length,
+    staleRowsDropped,
+    durationMs,
+  };
 }
 
-async function recomputeAllTsrsUnlocked(): Promise<RecomputeResult> {
+/** Build the authoritative replay output without mutating PlayerTsr rows. */
+export async function buildTsrReplayPlan(): Promise<TsrReplayPlan> {
   const start = Date.now();
   const matches = await loadReplayMatches();
 
@@ -209,56 +221,53 @@ async function recomputeAllTsrsUnlocked(): Promise<RecomputeResult> {
     playerRows.map((r) => [r.faceitPlayerId, r.region])
   );
 
-  let updated = 0;
-  const CHUNK = 500;
-  for (let i = 0; i < ids.length; i += CHUNK) {
-    const slice = ids.slice(i, i + CHUNK);
-    await prisma.$transaction(
-      slice.map((pid) => {
-        const s = states.get(pid)!;
-        const region = regionByPlayer.get(pid) ?? TsrRegion.OTHER;
-        return prisma.playerTsr.upsert({
-          where: { faceitPlayerId: pid },
-          create: {
-            faceitPlayerId: pid,
-            region,
-            rating: Math.round(s.rating),
-            matchCount: s.matchCount,
-            recentMatchCount365d: s.recentCount,
-            maxTierReached: s.maxTier,
-            computedAt,
-          },
-          update: {
-            region,
-            rating: Math.round(s.rating),
-            matchCount: s.matchCount,
-            recentMatchCount365d: s.recentCount,
-            maxTierReached: s.maxTier,
-            computedAt,
-          },
-        });
-      })
-    );
-    updated += slice.length;
-  }
-
-  const stale = await prisma.playerTsr.deleteMany({
-    where: { computedAt: { lt: computedAt } },
-  });
-
-  const durationMs = Date.now() - start;
-  Logger.info({
-    event: "tsr.recompute",
-    matches_replayed: matches.length,
-    players_updated: updated,
-    stale_rows_dropped: stale.count,
-    duration_ms: durationMs,
-    outcome: "success",
-  });
   return {
     matchesReplayed: matches.length,
-    playersUpdated: updated,
-    staleRowsDropped: stale.count,
-    durationMs,
+    computedAt: computedAt.toISOString(),
+    players: ids.map((pid) => {
+      const state = states.get(pid)!;
+      return {
+        faceitPlayerId: pid,
+        region: regionByPlayer.get(pid) ?? TsrRegion.OTHER,
+        rating: Math.round(state.rating),
+        matchCount: state.matchCount,
+        recentMatchCount365d: state.recentCount,
+        maxTierReached: state.maxTier,
+      };
+    }),
+    durationMs: Date.now() - start,
   };
+}
+
+/** Idempotently persist one durable replay checkpoint. */
+export async function writeTsrPlayerBatch(
+  rows: TsrPlayerWriteRow[],
+  computedAtIso: string
+): Promise<number> {
+  const computedAt = new Date(computedAtIso);
+  await prisma.$transaction(
+    rows.map((row) =>
+      prisma.playerTsr.upsert({
+        where: { faceitPlayerId: row.faceitPlayerId },
+        create: { ...row, computedAt },
+        update: {
+          region: row.region,
+          rating: row.rating,
+          matchCount: row.matchCount,
+          recentMatchCount365d: row.recentMatchCount365d,
+          maxTierReached: row.maxTierReached,
+          computedAt,
+        },
+      })
+    )
+  );
+  return rows.length;
+}
+
+/** Drop old rows only after every replay batch has committed. */
+export async function dropStaleTsrRows(computedAtIso: string): Promise<number> {
+  const stale = await prisma.playerTsr.deleteMany({
+    where: { computedAt: { lt: new Date(computedAtIso) } },
+  });
+  return stale.count;
 }

@@ -334,14 +334,15 @@ export const make: Effect.Effect<FaceitTeamScoutingServiceInterface> =
       const ids = teamIds.length > 0 ? teamIds : [""];
       const coreClause = buildCoreClause(coreFilter);
       return Effect.tryPromise({
-        try: () => prisma.$queryRaw<{ finished_at: Date }[]>(
-          Prisma.sql`
+        try: () =>
+          prisma.$queryRaw<{ finished_at: Date }[]>(
+            Prisma.sql`
           SELECT DISTINCT m."finishedAt" AS finished_at
           FROM "FaceitMatchTeam" mt
           JOIN "FaceitMatch" m ON m."faceitMatchId" = mt."matchId"
           WHERE mt."faceitTeamId" IN (${Prisma.join(ids)})
           ${coreClause}`
-        ),
+          ),
         catch: (error) =>
           new FaceitScoutingQueryError({
             operation: "fetch team match dates",

@@ -5,6 +5,31 @@ datasource db {
   provider = "postgresql"
 }
 
+/// Durable, expiring mutex for workflows that must not overlap. Unlike a
+/// PostgreSQL session advisory lock, this remains correct behind transaction-
+/// mode PgBouncer and is automatically recoverable after a crashed run.
+model WorkflowLease {
+  key       String   @id
+  ownerId   String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([expiresAt])
+}
+
+/// Idempotency record for the at-least-once handoff to the Python WP trainer.
+model WpTrainingRun {
+  runId       String   @id
+  status      String
+  result      Json?
+  leaseUntil  DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status, leaseUntil])
+}
+
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"

@@ -5,7 +5,14 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**", ".source/**"]
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "dist/**",
+        ".source/**",
+        "app/.well-known/workflow/**",
+        "src/app/.well-known/workflow/**"
+      ]
     },
     "dev": {
       "cache": false,

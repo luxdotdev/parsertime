@@ -19,6 +19,9 @@
       },
       {
         "name": "@effect/language-service"
+      },
+      {
+        "name": "workflow"
       }
     ],
     "paths": {
