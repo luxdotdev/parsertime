@@ -1156,6 +1156,7 @@ export const Zenyatta = {
 } as const;
 
 export type Tank =
+  | typeof Dmon
   | typeof Dva
   | typeof Domina
   | typeof Doomfist
@@ -1222,6 +1223,7 @@ export const heroRoleMapping: Record<HeroName, "Tank" | "Damage" | "Support"> =
     Cassidy: "Damage",
     Domina: "Tank",
     Doomfist: "Tank",
+    "D.Mon": "Tank",
     "D.Va": "Tank",
     Echo: "Damage",
     Emre: "Damage",
@@ -1272,6 +1274,7 @@ export const roleHeroMapping: Record<
   HeroName[]
 > = {
   Tank: [
+    "D.Mon",
     "D.Va",
     "Domina",
     "Doomfist",
@@ -1371,6 +1374,7 @@ export const subroleHeroMapping: Record<
     "Venture",
   ],
   GroundTank: [
+    "D.Mon",
     "Domina",
     "Junker Queen",
     "Mauga",
@@ -1382,23 +1386,16 @@ export const subroleHeroMapping: Record<
     "Zarya",
   ],
   DiveTank: ["D.Va", "Doomfist", "Hazard", "Winston", "Wrecking Ball"],
-  FlexSupport: [
-    "Ana",
-    "Baptiste",
-    "Illari",
-    "Kiriko",
-    "Mizuki",
-    "Moira",
-    "Wuyang",
-    "Zenyatta",
-  ],
+  FlexSupport: ["Ana", "Baptiste", "Illari", "Kiriko", "Moira", "Zenyatta"],
   MainSupport: [
     "Brigitte",
     "Juno",
     "Lifeweaver",
     "Lúcio",
     "Mercy",
+    "Mizuki",
     "Jetpack Cat",
+    "Wuyang",
   ],
 };
 
@@ -1462,6 +1459,7 @@ export const allHeroes = [
   Cassidy,
   Domina,
   Doomfist,
+  Dmon,
   Dva,
   Echo,
   Emre,
