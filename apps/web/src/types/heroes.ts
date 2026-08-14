@@ -209,6 +209,26 @@ export const Doomfist = {
   ultimate: { name: "Meteor Strike" },
 } as const;
 
+export const Dmon = {
+  name: "D.Mon",
+  image: "dmon.png",
+  ability1: {
+    name: "Propulsors",
+    description: "Consume fuel to surge in any horizontal direction.",
+    cooldown: 0.5,
+    tags: ["movement"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Fusion Repeater",
+    description: "Active a rapid-fire machine gun.",
+    cooldown: 4,
+    tags: ["damage"],
+    impact: "low",
+  },
+  ultimate: { name: "Limit Break" },
+};
+
 export const Dva = {
   name: "D.Va",
   image: "dva.png",
