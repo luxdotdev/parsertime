@@ -37,8 +37,8 @@ export type PredictivePrefetchOptions = {
   enabled?: boolean;
   /**
    * "auto" (default) prefetches the App Shell; "full" issues a runtime
-   * prefetch that includes request data — only useful when the destination
-   * route sets `prefetch = 'allow-runtime'`.
+   * prefetch that includes request data — allowed by `partialPrefetching`
+   * (globally or via the destination's `prefetch = 'partial'`).
    */
   prefetchKind?: "auto" | "full";
   /**
@@ -50,8 +50,8 @@ export type PredictivePrefetchOptions = {
 
 /**
  * Prefetch a route with an explicit kind. `kind: "full"` issues a runtime
- * prefetch (request data included) when the destination route sets
- * `prefetch = 'allow-runtime'`. Centralized here because `typedRoutes`
+ * prefetch (request data included) when the destination allows partial
+ * prefetching. Centralized here because `typedRoutes`
  * narrows the router's `prefetch` signature to `(href)` even though the
  * runtime accepts an options argument, and the `PrefetchKind` enum lives in
  * next's internals (its FULL value is the string "full").

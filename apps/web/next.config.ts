@@ -36,7 +36,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     authInterrupts: true,
-    viewTransition: true,
+    useTypeScriptCli: false,
     optimizePackageImports: ["@radix-ui/react-icons"],
     proxyClientMaxBodySize: "150mb",
   },

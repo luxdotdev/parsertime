@@ -30,11 +30,12 @@ import { getLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { Suspense, ViewTransition } from "react";
 
-// Opt into runtime prefetching: MapTabs prefetches `?tab=` URLs with
-// kind:"full" on hover/trajectory, and the server can prerender the target
-// tab ahead of the click because the render path below is fully cached
-// (public caches for map data, "use cache: private" for the viewer context).
-export const prefetch = "allow-runtime";
+// Runtime prefetching: MapTabs prefetches `?tab=` URLs with kind:"full" on
+// hover/trajectory, and the server can prerender the target tab ahead of the
+// click because the render path below is fully cached (public caches for map
+// data, "use cache: private" for the viewer context). The global
+// `partialPrefetching` flag allows the runtime prefetch; no segment config
+// needed (16.3 removed `prefetch = "allow-runtime"`).
 
 export async function generateMetadata(
   props: PagePropsWithLocale<"/[team]/scrim/[scrimId]/map/[mapId]">
