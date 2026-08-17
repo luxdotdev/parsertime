@@ -227,7 +227,7 @@ export const Dmon = {
     impact: "low",
   },
   ultimate: { name: "Limit Break" },
-};
+} as const;
 
 export const Dva = {
   name: "D.Va",
