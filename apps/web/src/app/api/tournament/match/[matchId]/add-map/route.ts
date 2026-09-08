@@ -4,6 +4,7 @@ import { Logger } from "@/lib/logger";
 import { createNewMap } from "@/lib/parser";
 import prisma from "@/lib/prisma";
 import { advanceMatch } from "@/lib/tournaments/advancement";
+import { readUploadJson } from "@/lib/upload-body";
 import { calculateWinner } from "@/lib/winrate";
 import { Prisma } from "@/generated/prisma/client";
 import type { ParserData } from "@/types/parser";
@@ -201,7 +202,7 @@ export async function POST(
       return Response.json({ error: "Rate limit exceeded" }, { status: 429 });
     }
 
-    const data = parseAddTournamentMapRequest(await req.json());
+    const data = parseAddTournamentMapRequest(await readUploadJson(req));
     if (!data) {
       event.outcome = "invalid_map_data";
       event.statusCode = 400;

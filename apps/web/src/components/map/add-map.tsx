@@ -60,7 +60,8 @@ export function AddMapCard({
             order,
             heroBans: map.heroBans.length > 0 ? map.heroBans : undefined,
           },
-          reportProgress
+          reportProgress,
+          { tooLarge: tb("payloadTooLarge") }
         );
         return sid!;
       },

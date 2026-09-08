@@ -41,6 +41,7 @@
     "fileType": "仅支持 .txt 工作坊日志。",
     "fileSizeTitle": "文件过大",
     "fileSize": "每个日志必须小于 10MB。",
+    "payloadTooLarge": "此日志即使压缩后仍然过大，无法上传。请尝试较短的日志。",
     "addDescription": "拖入工作坊日志以添加地图。",
     "addTitle": "添加地图",
     "addDialogDescription": "拖入工作坊日志，设置英雄禁用，然后上传。地图将保持所示顺序。"

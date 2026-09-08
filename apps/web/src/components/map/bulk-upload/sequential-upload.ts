@@ -1,4 +1,5 @@
 import { Logger } from "@/lib/logger";
+import { encodeUploadBody, MAX_FUNCTION_BODY_BYTES } from "@/lib/upload-body";
 import type { PendingMap } from "./types";
 
 /**
@@ -72,8 +73,17 @@ export async function runSequentialUpload({
 
 type StreamResult = { scrimId?: number; mapId?: number };
 
+export type UploadMessages = {
+  /** Shown when the encoded body would exceed the platform request cap. */
+  tooLarge: string;
+};
+
 /**
  * POST a map to a streaming upload endpoint and surface its NDJSON progress.
+ *
+ * The body is gzipped client-side (see `encodeUploadBody`): Vercel rejects
+ * function requests over 4.5 MB with a platform 413 before the route runs,
+ * and a parsed log serialises to slightly more than its raw size.
  *
  * Validation failures arrive as an ordinary non-OK response (read as text);
  * once the stream starts, a "done" event resolves the upload and an "error"
@@ -82,10 +92,11 @@ type StreamResult = { scrimId?: number; mapId?: number };
 export async function uploadMapStream(
   url: string,
   body: unknown,
-  reportProgress: (fraction: number) => void
+  reportProgress: (fraction: number) => void,
+  messages: UploadMessages
 ): Promise<StreamResult> {
   const startedAt = performance.now();
-  const serializedBody = JSON.stringify(body);
+  const encoded = await encodeUploadBody(body);
   // One wide event per stream attempt. A stuck upload (the original "stuck
   // loading" report) never emits a terminal "done"/"error", so the telling
   // signature in the logs is a `started` event with no matching completion —
@@ -93,7 +104,8 @@ export async function uploadMapStream(
   const wideEvent: Record<string, unknown> = {
     operation: "client_upload_map_stream",
     url,
-    request_bytes: serializedBody.length,
+    request_bytes: encoded.bytes,
+    request_compressed: encoded.compressed,
     timestamp: new Date().toISOString(),
   };
   Logger.info({ ...wideEvent, phase: "started" });
@@ -104,14 +116,28 @@ export async function uploadMapStream(
     | "done"
     | "error"
     | "closed_without_terminal"
-    | "http_error" = "closed_without_terminal";
+    | "http_error"
+    | "too_large" = "closed_without_terminal";
 
   try {
+    // Fail before the network does: the platform 413 is an opaque HTML page
+    // with no useful message for the user.
+    if (encoded.bytes > MAX_FUNCTION_BODY_BYTES) {
+      terminalEvent = "too_large";
+      throw new Error(messages.tooLarge);
+    }
+
     const res = await fetch(url, {
       method: "POST",
-      body: serializedBody,
+      headers: encoded.headers,
+      body: encoded.body,
     });
     wideEvent.http_status = res.status;
+
+    if (res.status === 413) {
+      terminalEvent = "too_large";
+      throw new Error(messages.tooLarge);
+    }
 
     if (!res.ok || !res.body) {
       terminalEvent = "http_error";

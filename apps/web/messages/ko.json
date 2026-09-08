@@ -41,6 +41,7 @@
     "fileType": ".txt 워크샵 로그만 지원됩니다.",
     "fileSizeTitle": "파일이 너무 큽니다",
     "fileSize": "각 로그는 10MB 미만이어야 합니다.",
+    "payloadTooLarge": "이 로그는 압축 후에도 업로드하기에 너무 큽니다. 더 짧은 로그를 사용해 보세요.",
     "addDescription": "워크샵 로그를 놓아 맵을 추가하세요.",
     "addTitle": "맵 추가",
     "addDialogDescription": "워크샵 로그를 놓고 영웅 밴을 설정한 후 업로드하세요. 맵은 표시된 순서를 유지합니다."

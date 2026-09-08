@@ -7,6 +7,7 @@ import { createNewMap } from "@/lib/parser";
 import prisma from "@/lib/prisma";
 import { normalizeMapForScrim } from "@/lib/team-normalization";
 import { resolveSetWinnerOutcome } from "@/lib/scrim/set-winner-validation";
+import { readUploadJson } from "@/lib/upload-body";
 import { UsageEventName } from "@/lib/usage/names";
 import { usage } from "@/lib/usage/server";
 import type { ParserData } from "@/types/parser";
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
     const id = req.nextUrl.searchParams.get("id") ?? "";
     event.scrim_id_raw = id;
 
-    const data = (await req.json()) as AddMapRequestData;
+    const data = await readUploadJson<AddMapRequestData>(req);
     event.has_hero_bans = (data.heroBans?.length ?? 0) > 0;
     event.hero_ban_count = data.heroBans?.length ?? 0;
 

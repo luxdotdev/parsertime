@@ -193,7 +193,8 @@ export function ScrimCreationForm({
               scrimRequestId: linked?.scrimRequestId ?? null,
               opponentTeamId: linked?.opponentTeamId ?? null,
             },
-            reportProgress
+            reportProgress,
+            { tooLarge: tb("payloadTooLarge") }
           );
           if (scrimId == null) {
             throw new Error("Server did not return a scrim id");
@@ -210,7 +211,8 @@ export function ScrimCreationForm({
             winner: map.winner ?? null,
             winnerSource: map.winnerSource ?? null,
           },
-          reportProgress
+          reportProgress,
+          { tooLarge: tb("payloadTooLarge") }
         );
         return sid;
       },

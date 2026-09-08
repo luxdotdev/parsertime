@@ -8,6 +8,7 @@ import prisma from "@/lib/prisma";
 import { createNdjsonStream } from "@/lib/progress-stream";
 import { normalizeMapForScrim } from "@/lib/team-normalization";
 import { resolveSetWinnerOutcome } from "@/lib/scrim/set-winner-validation";
+import { readUploadJson } from "@/lib/upload-body";
 import { UsageEventName } from "@/lib/usage/names";
 import { usage } from "@/lib/usage/server";
 import { track } from "@vercel/analytics/server";
@@ -33,7 +34,7 @@ export async function POST(req: NextRequest) {
 
   const session = await auth();
   const id = req.nextUrl.searchParams.get("id") ?? "";
-  const data = (await req.json()) as AddMapRequestData;
+  const data = await readUploadJson<AddMapRequestData>(req);
 
   if (!session?.user?.email) {
     return new Response("Unauthorized", { status: 401 });

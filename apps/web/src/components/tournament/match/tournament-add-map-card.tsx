@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { ClientOnly } from "@/lib/client-only";
 import { parseData } from "@/lib/parser/client";
+import { encodeUploadBody, MAX_FUNCTION_BODY_BYTES } from "@/lib/upload-body";
 import { cn, detectFileCorruption } from "@/lib/utils";
 import { heroRoleMapping } from "@/types/heroes";
 import type { ParserData } from "@/types/parser";
@@ -124,15 +125,24 @@ export function TournamentAddMapCard({
     toast.info("Uploading map...", { duration: 5000 });
 
     try {
+      const encoded = await encodeUploadBody({
+        map: parsedData,
+        heroBans: heroBans.length > 0 ? heroBans : undefined,
+        gameNumber: Number(gameNumber),
+      });
+      if (encoded.bytes > MAX_FUNCTION_BODY_BYTES) {
+        throw new Error("This log is too large to upload. Try a shorter log.");
+      }
+
       const res = await fetch(`/api/tournament/match/${matchId}/add-map`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          map: parsedData,
-          heroBans: heroBans.length > 0 ? heroBans : undefined,
-          gameNumber: Number(gameNumber),
-        }),
+        headers: encoded.headers,
+        body: encoded.body,
       });
+
+      if (res.status === 413) {
+        throw new Error("This log is too large to upload. Try a shorter log.");
+      }
 
       if (!res.ok) {
         const errBody = (await res.json()) as { error?: string };

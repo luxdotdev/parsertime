@@ -41,6 +41,7 @@
     "fileType": "Only .txt Workshop logs are supported.",
     "fileSizeTitle": "File too large",
     "fileSize": "Each log must be under 10MB.",
+    "payloadTooLarge": "This log is too large to upload even after compression. Try a shorter log.",
     "addDescription": "Drop one or more Workshop logs to add maps.",
     "addTitle": "Add maps",
     "addDialogDescription": "Drop your Workshop logs, set any hero bans, and upload. Maps keep the order shown."
