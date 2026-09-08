@@ -4740,22 +4740,35 @@
     "addMember": "Add a member...",
     "empty": {
       "title": "No Teams",
-      "joinInvite": "Click here to join a team from an invite code.",
+      "joinInvite": "Have an invite? Open the link in your invitation email to join the team.",
       "createPrompt": "Or, create a new team by clicking the button below.",
       "createTeam": "Create Team"
     },
     "join": {
-      "enterToken": "Enter Your Invite Token",
-      "joinTeam": "Join Team",
-      "invalidToken": {
-        "title": "Invalid token",
-        "description": "The token you provided is invalid."
+      "error": {
+        "invalid": {
+          "title": "Invite not found",
+          "description": "This invite link is invalid or has already been used. Ask a team manager to send you a new one."
+        },
+        "expired": {
+          "title": "Invite expired",
+          "description": "This invite link has expired. Ask a team manager to send you a new one."
+        },
+        "emailMismatch": {
+          "title": "Wrong account",
+          "description": "This invite was sent to {invited}, but you are signed in as {current}. Sign in with the invited address to accept it."
+        },
+        "error": {
+          "title": "Something went wrong",
+          "description": "We couldn't process this invite. Try again in a moment."
+        },
+        "switchAccount": "Switch account",
+        "switchingAccount": "Signing out...",
+        "dashboard": "Go to dashboard"
       },
       "handleSubmit": {
         "title": "Joined team",
-        "description": "You have successfully joined the team.",
-        "errorTitle": "Error",
-        "errorDescription": "An error occurred: {res}"
+        "description": "You have successfully joined the team."
       },
       "success": {
         "title": "Success!",

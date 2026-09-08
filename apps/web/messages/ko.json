@@ -4649,22 +4649,35 @@
     },
     "empty": {
       "title": "팀 없음",
-      "joinInvite": "초대 코드로 팀에 가입하려면 여기를 클릭하세요.",
+      "joinInvite": "초대를 받으셨나요? 초대 이메일의 링크를 열어 팀에 가입하세요.",
       "createPrompt": "또는 아래 버튼을 클릭해 새 팀을 만드세요.",
       "createTeam": "팀 만들기"
     },
     "join": {
-      "enterToken": "초대 토큰 입력",
-      "joinTeam": "팀 가입",
-      "invalidToken": {
-        "title": "유효하지 않은 토큰",
-        "description": "입력한 토큰이 유효하지 않습니다."
+      "error": {
+        "invalid": {
+          "title": "초대를 찾을 수 없음",
+          "description": "이 초대 링크는 유효하지 않거나 이미 사용되었습니다. 팀 매니저에게 새 초대를 요청하세요."
+        },
+        "expired": {
+          "title": "초대 만료됨",
+          "description": "이 초대 링크는 만료되었습니다. 팀 매니저에게 새 초대를 요청하세요."
+        },
+        "emailMismatch": {
+          "title": "다른 계정으로 로그인됨",
+          "description": "이 초대는 {invited}(으)로 발송되었지만 현재 {current}(으)로 로그인되어 있습니다. 초대받은 이메일 주소로 로그인하여 수락하세요."
+        },
+        "error": {
+          "title": "문제가 발생했습니다",
+          "description": "이 초대를 처리할 수 없습니다. 잠시 후 다시 시도하세요."
+        },
+        "switchAccount": "계정 전환",
+        "switchingAccount": "로그아웃 중...",
+        "dashboard": "대시보드로 이동"
       },
       "handleSubmit": {
         "title": "팀 가입 완료",
-        "description": "성공적으로 팀에 가입했습니다.",
-        "errorTitle": "오류",
-        "errorDescription": "오류가 발생했습니다: {res}"
+        "description": "성공적으로 팀에 가입했습니다."
       },
       "success": {
         "title": "성공!",

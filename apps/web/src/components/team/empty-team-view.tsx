@@ -6,7 +6,6 @@ import { Card, CardDescription } from "@/components/ui/card";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { ClientOnly } from "@/lib/client-only";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -31,9 +30,7 @@ export function EmptyTeamView() {
             <h2 className="text-2xl font-bold tracking-tight text-black dark:text-white">
               {t("title")}
             </h2>
-            <p className="text-gray-500">
-              <Link href="/team/join">{t("joinInvite")}</Link>
-            </p>
+            <p className="text-gray-500">{t("joinInvite")}</p>
             <p className="text-gray-500">{t("createPrompt")}</p>
             <Dialog
               open={showNewTeamDialog}

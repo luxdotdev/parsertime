@@ -4649,22 +4649,35 @@
     },
     "empty": {
       "title": "没有团队",
-      "joinInvite": "点击这里使用邀请码加入团队。",
+      "joinInvite": "收到邀请了吗？打开邀请邮件中的链接即可加入团队。",
       "createPrompt": "或者点击下方按钮创建新团队。",
       "createTeam": "创建团队"
     },
     "join": {
-      "enterToken": "输入您的邀请令牌",
-      "joinTeam": "加入团队",
-      "invalidToken": {
-        "title": "令牌无效",
-        "description": "您提供的令牌无效。"
+      "error": {
+        "invalid": {
+          "title": "未找到邀请",
+          "description": "此邀请链接无效或已被使用。请联系团队管理员重新发送邀请。"
+        },
+        "expired": {
+          "title": "邀请已过期",
+          "description": "此邀请链接已过期。请联系团队管理员重新发送邀请。"
+        },
+        "emailMismatch": {
+          "title": "账号不匹配",
+          "description": "此邀请发送给了 {invited}，但您当前登录的是 {current}。请使用受邀的邮箱地址登录以接受邀请。"
+        },
+        "error": {
+          "title": "出了点问题",
+          "description": "我们无法处理此邀请。请稍后重试。"
+        },
+        "switchAccount": "切换账号",
+        "switchingAccount": "正在退出登录...",
+        "dashboard": "前往仪表板"
       },
       "handleSubmit": {
         "title": "已加入团队",
-        "description": "您已成功加入团队。",
-        "errorTitle": "错误",
-        "errorDescription": "发生错误：{res}"
+        "description": "您已成功加入团队。"
       },
       "success": {
         "title": "成功！",
