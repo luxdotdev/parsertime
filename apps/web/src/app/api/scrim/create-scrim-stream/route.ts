@@ -14,6 +14,7 @@ import { sendScrimNotifications } from "@/lib/bot-events";
 import { Logger } from "@/lib/logger";
 import { createNewScrimFromParsedData } from "@/lib/parser";
 import { Permission } from "@/lib/permissions";
+import { readUploadJson } from "@/lib/upload-body";
 import { createNdjsonStream } from "@/lib/progress-stream";
 import { normalizeMapForScrim } from "@/lib/team-normalization";
 import { resolveSetWinnerOutcome } from "@/lib/scrim/set-winner-validation";
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
     return new Response("Rate limit exceeded", { status: 429 });
   }
 
-  const parsed = createScrimSchema.safeParse(await request.json());
+  const parsed = createScrimSchema.safeParse(await readUploadJson(request));
   if (!parsed.success) {
     return Response.json(
       { error: "Invalid request", details: parsed.error.flatten() },
