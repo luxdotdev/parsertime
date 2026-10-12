@@ -894,22 +894,44 @@ export const Soldier76 = {
   ultimate: { name: "Tactical Visor" },
 } as const;
 
+export const Doctrine = {
+  name: "Doctrine",
+  image: "doctrine.png",
+  ability1: {
+    name: "Invigorating Drones",
+    description:
+      "Deploy drones to an ally, granting attack speed and healing. Infused: Also deploy drones to yourself.",
+    cooldown: null,
+    tags: ["healing", "sustain", "tempo"],
+    impact: "negligible",
+  },
+  ability2: {
+    name: "Shrouded Momentum",
+    description:
+      "Rush horizontally with damage reduction. Infused: Gain free-flight.",
+    cooldown: 8,
+    tags: ["movement", "sustain"],
+    impact: "negligible",
+  },
+  ultimate: { name: "Deliverance" },
+} as const;
+
 export const Sombra = {
   name: "Sombra",
   image: "sombra.png",
   ability1: {
-    name: "Virus",
+    name: "Cyberspace",
     description:
-      "Sombra infects an enemy with a projectile that deals damage over time. Hacked enemies take increased damage from Virus.",
-    cooldown: 6,
+      "Launch a projectile that explodes on impact, creating a zone that weakens enemies and heals allies.",
+    cooldown: null,
     tags: ["damage"],
     impact: "negligible",
   },
   ability2: {
     name: "Translocator",
     description:
-      "Tosses a beacon that allows instant teleportation back to its location while active.",
-    cooldown: 6,
+      "Throw a beacon and teleport to it. Become stealthed for a short duration after teleporting.",
+    cooldown: 7.5,
     tags: ["movement"],
     impact: "negligible",
   },
@@ -1189,7 +1211,6 @@ export type DPS =
   | typeof Sierra
   | typeof Sojourn
   | typeof Soldier76
-  | typeof Sombra
   | typeof Symmetra
   | typeof Torbjorn
   | typeof Tracer
@@ -1197,6 +1218,8 @@ export type DPS =
   | typeof Venture
   | typeof Widowmaker;
 export type Support =
+  | typeof Doctrine
+  | typeof Sombra
   | typeof Ana
   | typeof Baptiste
   | typeof Brigitte
@@ -1255,7 +1278,8 @@ export const heroRoleMapping: Record<HeroName, "Tank" | "Damage" | "Support"> =
     Sigma: "Tank",
     Sojourn: "Damage",
     "Soldier: 76": "Damage",
-    Sombra: "Damage",
+    Sombra: "Support",
+    Doctrine: "Support",
     Symmetra: "Damage",
     Torbjörn: "Damage",
     Tracer: "Damage",
@@ -1308,7 +1332,6 @@ export const roleHeroMapping: Record<
     "Sierra",
     "Sojourn",
     "Soldier: 76",
-    "Sombra",
     "Symmetra",
     "Torbjörn",
     "Tracer",
@@ -1317,6 +1340,8 @@ export const roleHeroMapping: Record<
     "Widowmaker",
   ],
   Support: [
+    "Doctrine",
+    "Sombra",
     "Ana",
     "Baptiste",
     "Brigitte",
@@ -1366,7 +1391,6 @@ export const subroleHeroMapping: Record<
     "Pharah",
     "Reaper",
     "Shion",
-    "Sombra",
     "Symmetra",
     "Torbjörn",
     "Tracer",
@@ -1451,6 +1475,7 @@ export function getHeroRole(hero: string): RoleName {
 
 export const allHeroes = [
   Ana,
+  Doctrine,
   Anran,
   Ashe,
   Baptiste,
